@@ -29,7 +29,7 @@ jobs:
           go-version: "1.21"
       - name: Enforce linting
         run: |
-          lint_output=$(go vet ./backend/...)
+          cd backend && lint_output=$(go vet ./...)
           if [[ -n "$lint_output" ]]; then
             echo "$lint_output"
             echo "::error::Linting issues found"
@@ -56,13 +56,12 @@ jobs:
         with:
           go-version: "1.21"
       - name: Install Dependencies
-        run: go get ./backend/...
+        run: cd backend && go get ./...
       - name: Install Migrate
         run: go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
       - name: Migrate Database
         run: SKIP_DOCKER=true ./scripts/init_db.sh
       - name: Run Tests with Coverage
-        run: go test -race -coverprofile=coverage.txt -covermode=atomic ./backend/...
+        run: cd backend && go test -race -coverprofile=coverage.txt -covermode=atomic ./...
       - name: Print Coverage
-        run: |
-          go tool cover -func=coverage.txt
+        run: cd backend && go tool cover -func=coverage.txt
