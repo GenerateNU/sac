@@ -1,3 +1,11 @@
-# sac
+<h1 align="center">sac</h1>
 
-[<img alt="build status" src="https://img.shields.io/github/actions/workflow/status/GenerateNU/sac/go.yml?branch=main&style=for-the-badge" height="20">](https://github.com/GenerateNU/sac/actions?query=branch%3Amain)
+<br />
+
+<div align="center">
+  <!-- Github Actions -->
+  <a href="https://github.com/GenerateNU/sac/actions/workflows/go.yml">
+    <img src="https://github.com/GenerateNU/sac/actions/workflows/go.yml/badge.svg"
+      alt="Go Workflow Status" />
+  </a>
+</div>
