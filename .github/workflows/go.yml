@@ -57,7 +57,7 @@ jobs:
         with:
           go-version: "1.21"
       - name: Install Dependencies
-        run: cd ./backend/ && go get .
+        run: cd ./backend/ && ls && go get .
       - name: Install Migrate
         run: go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
       - name: Migrate Database
