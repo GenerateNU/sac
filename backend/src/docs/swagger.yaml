@@ -1,0 +1,57 @@
+basePath: /api/v1
+definitions:
+  models.User:
+    properties:
+      created_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      email:
+        type: string
+      firebase_id:
+        type: string
+      id:
+        example: 1
+        type: integer
+      password:
+        type: string
+      updated_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - firebase_id
+    - password
+    - username
+    type: object
+host: 127.0.0.1:8080
+info:
+  contact:
+    email: oduneye.d@northeastern.edu and ladley.g@northeastern.edu
+    name: David Oduneye and Garrett Ladley
+  description: Backend Server for SAC App
+  title: SAC API
+  version: "1.0"
+paths:
+  /api/users/:
+    get:
+      description: Returns all users
+      operationId: get-all-users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "404":
+          description: Failed to fetch users
+          schema:
+            type: string
+      summary: Gets all users
+      tags:
+      - user
+swagger: "2.0"

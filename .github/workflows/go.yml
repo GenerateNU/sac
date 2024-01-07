@@ -1,0 +1,70 @@
+name: Go
+
+on:
+  pull_request:
+
+jobs:
+  format:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: "1.21"
+      - name: Enforce formatting
+        run: gofmt -l . | grep ".go$" | xargs -r echo "Files not formatted:"
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: "1.21"
+      - name: Enforce linting
+        run: |
+          lint_output=$(go vet ./...)
+          if [[ -n "$lint_output" ]]; then
+            echo "$lint_output"
+            echo "::error::Linting issues found"
+            exit 1
+          fi
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: sac
+        ports:
+          - 5432:5432
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: "1.21"
+      - name: Install Dependencies
+        run: go get .
+      - name: Install Migrate
+        run: go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+      - name: Build
+        run: go build -v ./...
+      - name: Migrate Database
+        run: SKIP_DOCKER=true ./scripts/init_db.sh
+      - name: Run Tests with Coverage
+        run: go test -race -coverprofile=coverage.txt -covermode=atomic ./...
+      - name: Print Coverage
+        run: |
+          go tool cover -func=coverage.txt
