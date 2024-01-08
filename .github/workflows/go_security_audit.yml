@@ -8,16 +8,16 @@ on:
       - "**/go.mod"
       - "**/go.sum"
       - "**/*.go"
-      - ".github/workflows/security_audit.yml"
+      - ".github/workflows/go_security_audit.yml"
   pull_request:
     paths:
       - "**/go.mod"
       - "**/go.sum"
       - "**/*.go"
-      - ".github/workflows/security_audit.yml"
+      - ".github/workflows/go_security_audit.yml"
 
 jobs:
-  security_audit:
+  go_security_audit:
     runs-on: ubuntu-latest
     env:
       GO111MODULE: on
