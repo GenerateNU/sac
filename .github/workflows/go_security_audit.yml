@@ -4,11 +4,8 @@ on:
   schedule:
     - cron: "0 0 * * *"
   push:
-    paths:
-      - "**/go.mod"
-      - "**/go.sum"
-      - "**/*.go"
-      - ".github/workflows/go_security_audit.yml"
+    branches:
+      - main
   pull_request:
     paths:
       - "**/go.mod"
