@@ -66,7 +66,7 @@ jobs:
         run: cd backend && go get ./...
       - name: Run App to Auto-Migrate DB
         run: |
-          cd backend && go run main.go &
+          cd backend/src && go run main.go &
           sleep 5
           kill %1
       - name: Run Tests with Coverage
