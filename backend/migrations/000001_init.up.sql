@@ -39,8 +39,7 @@ CREATE TABLE IF NOT EXISTS interest (
 
 CREATE TYPE category_name AS ENUM ('academic', 'arts', 'business', 'cultural', 'health', 'political', 'professional', 'religious', 'social', 'sports', 'technology', 'other');
 
-CREATE TABLE IF NOT EXISTS category
-(
+CREATE TABLE IF NOT EXISTS category (
     id         UUID          NOT NULL PRIMARY KEY,
     created_at TIMESTAMPTZ   NOT NULL DEFAULT NOW(),
 
@@ -53,7 +52,7 @@ CREATE TYPE recruitment_type AS ENUM ('accepting', 'tryout', 'application');
 CREATE TABLE IF NOT EXISTS club (
     id                UUID              NOT NULL PRIMARY KEY,
     created_at        TIMESTAMPTZ       NOT NULL DEFAULT NOW(),
-    
+
     soft_deleted_at   TIMESTAMPTZ,
 
     parent            UUID REFERENCES club (id),
@@ -66,7 +65,7 @@ CREATE TABLE IF NOT EXISTS club (
     recruitment_cycle recruitment_cycle NOT NULL,
     recruitment_type  recruitment_type  NOT NULL,
     application_link  VARCHAR(255),
-    logo              VARCHAR(255)      NOT NULL -- S3 URI
+    logo              VARCHAR(255)      NOT NULL, -- S3 URI
 
     CONSTRAINT fk_parent
         FOREIGN KEY (parent)
@@ -118,16 +117,16 @@ CREATE TABLE IF NOT EXISTS tag (
 CREATE TYPE event_type AS ENUM ('open', 'membersOnly');
 
 CREATE TABLE IF NOT EXISTS event (
-    id          UUID         NOT NULL PRIMARY KEY,
-    created_at  TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+    id         UUID         NOT NULL PRIMARY KEY,
+    created_at TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
 
-    name        VARCHAR(255) NOT NULL,
-    preview     VARCHAR(255) NOT NULL,
-    content VARCHAR(255) NOT NULL,
-    start_time  TIMESTAMPTZ  NOT NULL,
-    end_time    TIMESTAMPTZ  NOT NULL,
-    location    VARCHAR(255) NOT NULL,
-    type        event_type   NOT NULL
+    name       VARCHAR(255) NOT NULL,
+    preview    VARCHAR(255) NOT NULL,
+    content    VARCHAR(255) NOT NULL,
+    start_time TIMESTAMPTZ  NOT NULL,
+    end_time   TIMESTAMPTZ  NOT NULL,
+    location   VARCHAR(255) NOT NULL,
+    type       event_type   NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS notification (
@@ -149,7 +148,7 @@ CREATE TABLE IF NOT EXISTS sac_user_interest (
     id          UUID        NOT NULL PRIMARY KEY,
     created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-    sac_user_id     UUID        NOT NULL REFERENCES sac_user (id),
+    sac_user_id UUID        NOT NULL REFERENCES sac_user (id),
     interest_id UUID        NOT NULL REFERENCES interest (id),
 
     CONSTRAINT fk_sac_user
@@ -167,7 +166,7 @@ CREATE TABLE IF NOT EXISTS sac_user_category (
     id          UUID        NOT NULL PRIMARY KEY,
     created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-    sac_user_id     UUID        NOT NULL REFERENCES sac_user (id),
+    sac_user_id UUID        NOT NULL REFERENCES sac_user (id),
     category_id UUID        NOT NULL REFERENCES category (id),
 
     CONSTRAINT fk_sac_user
@@ -184,11 +183,11 @@ CREATE TABLE IF NOT EXISTS sac_user_category (
 -- sac_user <-> Club Bridges
 
 CREATE TABLE IF NOT EXISTS membership (
-    id         UUID        NOT NULL PRIMARY KEY,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    id          UUID        NOT NULL PRIMARY KEY,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-    sac_user_id    UUID        NOT NULL REFERENCES sac_user (id),
-    club_id    UUID        NOT NULL REFERENCES club (id),
+    sac_user_id UUID        NOT NULL REFERENCES sac_user (id),
+    club_id     UUID        NOT NULL REFERENCES club (id),
 
     CONSTRAINT fk_sac_user
         FOREIGN KEY (sac_user_id)
@@ -202,11 +201,11 @@ CREATE TABLE IF NOT EXISTS membership (
 );
 
 CREATE TABLE IF NOT EXISTS intended_applicant (
-    id         UUID        NOT NULL PRIMARY KEY,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    id          UUID        NOT NULL PRIMARY KEY,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-    sac_user_id    UUID        NOT NULL REFERENCES sac_user (id),
-    club_id    UUID        NOT NULL REFERENCES club (id),
+    sac_user_id UUID        NOT NULL REFERENCES sac_user (id),
+    club_id     UUID        NOT NULL REFERENCES club (id),
 
     CONSTRAINT fk_sac_user
         FOREIGN KEY (sac_user_id)
@@ -219,12 +218,12 @@ CREATE TABLE IF NOT EXISTS intended_applicant (
             ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS follower(
-    id         UUID        NOT NULL PRIMARY KEY,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+CREATE TABLE IF NOT EXISTS follower (
+    id          UUID        NOT NULL PRIMARY KEY,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-    sac_user_id    UUID        NOT NULL REFERENCES sac_user (id),
-    club_id    UUID        NOT NULL REFERENCES club (id),
+    sac_user_id UUID        NOT NULL REFERENCES sac_user (id),
+    club_id     UUID        NOT NULL REFERENCES club (id),
 
     CONSTRAINT fk_sac_user
         FOREIGN KEY (sac_user_id)
@@ -319,11 +318,11 @@ CREATE TABLE IF NOT EXISTS event_tag (
 -- Event <-> sac_user Bridges
 
 CREATE TABLE IF NOT EXISTS event_waitlist (
-    id         UUID        NOT NULL PRIMARY KEY,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    id          UUID        NOT NULL PRIMARY KEY,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-    sac_user_id    UUID        NOT NULL REFERENCES sac_user (id),
-    event_id   UUID        NOT NULL REFERENCES event (id),
+    sac_user_id UUID        NOT NULL REFERENCES sac_user (id),
+    event_id    UUID        NOT NULL REFERENCES event (id),
 
     CONSTRAINT fk_sac_user
         FOREIGN KEY (sac_user_id)
@@ -337,11 +336,11 @@ CREATE TABLE IF NOT EXISTS event_waitlist (
 );
 
 CREATE TABLE IF NOT EXISTS event_rsvp (
-    id         UUID        NOT NULL PRIMARY KEY,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    id          UUID        NOT NULL PRIMARY KEY,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-    sac_user_id    UUID        NOT NULL REFERENCES sac_user (id),
-    event_id   UUID        NOT NULL REFERENCES event (id),
+    sac_user_id UUID        NOT NULL REFERENCES sac_user (id),
+    event_id    UUID        NOT NULL REFERENCES event (id),
 
     CONSTRAINT fk_sac_user
         FOREIGN KEY (sac_user_id)
