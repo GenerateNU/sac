@@ -149,12 +149,12 @@ CREATE TABLE IF NOT EXISTS sac_user_interest (
     id          UUID        NOT NULL PRIMARY KEY,
     created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-    sac_user_id     UUID        NOT NULL REFERENCES "sac_user" (id),
+    sac_user_id     UUID        NOT NULL REFERENCES sac_user (id),
     interest_id UUID        NOT NULL REFERENCES interest (id),
 
     CONSTRAINT fk_sac_user
         FOREIGN KEY (sac_user_id)
-            REFERENCES "sac_user" (id)
+            REFERENCES sac_user (id)
             ON DELETE CASCADE,
 
     CONSTRAINT fk_interest
@@ -167,12 +167,12 @@ CREATE TABLE IF NOT EXISTS sac_user_category (
     id          UUID        NOT NULL PRIMARY KEY,
     created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-    sac_user_id     UUID        NOT NULL REFERENCES "sac_user" (id),
+    sac_user_id     UUID        NOT NULL REFERENCES sac_user (id),
     category_id UUID        NOT NULL REFERENCES category (id),
 
     CONSTRAINT fk_sac_user
         FOREIGN KEY (sac_user_id)
-            REFERENCES "sac_user" (id)
+            REFERENCES sac_user (id)
             ON DELETE CASCADE,
 
     CONSTRAINT fk_category
@@ -187,12 +187,12 @@ CREATE TABLE IF NOT EXISTS membership (
     id         UUID        NOT NULL PRIMARY KEY,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-    sac_user_id    UUID        NOT NULL REFERENCES "sac_user" (id),
+    sac_user_id    UUID        NOT NULL REFERENCES sac_user (id),
     club_id    UUID        NOT NULL REFERENCES club (id),
 
     CONSTRAINT fk_sac_user
         FOREIGN KEY (sac_user_id)
-            REFERENCES "sac_user" (id)
+            REFERENCES sac_user (id)
             ON DELETE CASCADE,
 
     CONSTRAINT fk_club
@@ -205,12 +205,12 @@ CREATE TABLE IF NOT EXISTS intended_applicant (
     id         UUID        NOT NULL PRIMARY KEY,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-    sac_user_id    UUID        NOT NULL REFERENCES "sac_user" (id),
+    sac_user_id    UUID        NOT NULL REFERENCES sac_user (id),
     club_id    UUID        NOT NULL REFERENCES club (id),
 
     CONSTRAINT fk_sac_user
         FOREIGN KEY (sac_user_id)
-            REFERENCES "sac_user" (id)
+            REFERENCES sac_user (id)
             ON DELETE CASCADE,
 
     CONSTRAINT fk_club
@@ -223,12 +223,12 @@ CREATE TABLE IF NOT EXISTS follower(
     id         UUID        NOT NULL PRIMARY KEY,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-    sac_user_id    UUID        NOT NULL REFERENCES "sac_user" (id),
+    sac_user_id    UUID        NOT NULL REFERENCES sac_user (id),
     club_id    UUID        NOT NULL REFERENCES club (id),
 
     CONSTRAINT fk_sac_user
         FOREIGN KEY (sac_user_id)
-            REFERENCES "sac_user" (id)
+            REFERENCES sac_user (id)
             ON DELETE CASCADE,
 
     CONSTRAINT fk_club
@@ -241,10 +241,10 @@ CREATE TABLE IF NOT EXISTS faq (
     id                UUID         NOT NULL PRIMARY KEY,
     created_at        TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
 
-    created_by        UUID         NOT NULL REFERENCES "sac_user" (id),
+    created_by        UUID         NOT NULL REFERENCES sac_user (id),
     question          VARCHAR(255) NOT NULL,
 
-    answered_by       UUID REFERENCES "sac_user" (id),
+    answered_by       UUID REFERENCES sac_user (id),
     answer            VARCHAR(255),
     num_found_helpful INT,
 
@@ -322,12 +322,12 @@ CREATE TABLE IF NOT EXISTS event_waitlist (
     id         UUID        NOT NULL PRIMARY KEY,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-    sac_user_id    UUID        NOT NULL REFERENCES "sac_user" (id),
+    sac_user_id    UUID        NOT NULL REFERENCES sac_user (id),
     event_id   UUID        NOT NULL REFERENCES event (id),
 
     CONSTRAINT fk_sac_user
         FOREIGN KEY (sac_user_id)
-            REFERENCES "sac_user" (id)
+            REFERENCES sac_user (id)
             ON DELETE CASCADE,
 
     CONSTRAINT fk_event
@@ -340,12 +340,12 @@ CREATE TABLE IF NOT EXISTS event_rsvp (
     id         UUID        NOT NULL PRIMARY KEY,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-    sac_user_id    UUID        NOT NULL REFERENCES "sac_user" (id),
+    sac_user_id    UUID        NOT NULL REFERENCES sac_user (id),
     event_id   UUID        NOT NULL REFERENCES event (id),
 
     CONSTRAINT fk_sac_user
         FOREIGN KEY (sac_user_id)
-            REFERENCES "sac_user" (id)
+            REFERENCES sac_user (id)
             ON DELETE CASCADE,
 
     CONSTRAINT fk_event
