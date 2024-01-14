@@ -2,9 +2,11 @@ package types
 
 import (
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type Model struct {
-	ID        uint      `gorm:"primarykey" json:"id" example:"1"`
-	CreatedAt time.Time `gorm:"type:timestamp;default:CURRENT_TIMESTAMP" json:"created_at" example:"2023-09-20T16:34:50Z"`
+	ID        uuid.UUID `gorm:"primarykey;default:uuid_generate_v4()" json:"id"`
+	CreatedAt time.Time `json:"created_at"`
 }
