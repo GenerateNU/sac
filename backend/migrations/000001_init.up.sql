@@ -106,6 +106,25 @@ CREATE TABLE IF NOT EXISTS contact (
             ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS faq (
+    id                UUID         NOT NULL PRIMARY KEY,
+    created_at        TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+
+    created_by        UUID         NOT NULL REFERENCES sac_user (id),
+    question          VARCHAR(255) NOT NULL,
+
+    answered_by       UUID REFERENCES sac_user (id),
+    answer            VARCHAR(255),
+    num_found_helpful INT,
+
+    club_id           UUID         NOT NULL REFERENCES club (id),
+
+    CONSTRAINT fk_club
+        FOREIGN KEY (club_id)
+            REFERENCES club (id)
+            ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS tag (
     id         UUID         NOT NULL PRIMARY KEY,
     created_at TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
@@ -228,25 +247,6 @@ CREATE TABLE IF NOT EXISTS follower (
         FOREIGN KEY (sac_user_id)
             REFERENCES sac_user (id)
             ON DELETE CASCADE,
-
-    CONSTRAINT fk_club
-        FOREIGN KEY (club_id)
-            REFERENCES club (id)
-            ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS faq (
-    id                UUID         NOT NULL PRIMARY KEY,
-    created_at        TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
-
-    created_by        UUID         NOT NULL REFERENCES sac_user (id),
-    question          VARCHAR(255) NOT NULL,
-
-    answered_by       UUID REFERENCES sac_user (id),
-    answer            VARCHAR(255),
-    num_found_helpful INT,
-
-    club_id           UUID         NOT NULL REFERENCES club (id),
 
     CONSTRAINT fk_club
         FOREIGN KEY (club_id)
