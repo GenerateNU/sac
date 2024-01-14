@@ -32,6 +32,5 @@ type User struct {
 	LastName     string   `gorm:"type:varchar(255)" json:"last_name" validate:"required"`
 	Email        string   `gorm:"type:varchar(255);unique" json:"email" validate:"required,email"`
 	PasswordHash string   `gorm:"type:text" json:"-" validate:"-"`
-	DateOfBirth  string   `gorm:"type:date" json:"date_of_birth" validate:"required"`
 	College      College  `gorm:"type:college" json:"college" validate:"required"`
 }

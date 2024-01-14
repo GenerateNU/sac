@@ -24,7 +24,6 @@ CREATE TABLE IF NOT EXISTS sac_user (
     last_name     VARCHAR(255) NOT NULL,
     email         VARCHAR(255) NOT NULL UNIQUE,
     password_hash TEXT         NOT NULL,
-    dob           DATE         NOT NULL,
     college       college      NOT NULL
 );
 
