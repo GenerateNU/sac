@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS category (
 );
 
 CREATE TYPE recruitment_cycle AS ENUM ('fall', 'spring', 'fallSpring', 'always');
-CREATE TYPE recruitment_type AS ENUM ('accepting', 'tryout', 'application');
+CREATE TYPE recruitment_type AS ENUM ('unrestricted', 'tryout', 'application');
 
 CREATE TABLE IF NOT EXISTS club (
     id                UUID              NOT NULL PRIMARY KEY,

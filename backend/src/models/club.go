@@ -19,9 +19,9 @@ const (
 type RecruitmentType string
 
 const (
-	Accepting   RecruitmentType = "accepting"
-	Tryout      RecruitmentType = "tryout"
-	Application RecruitmentType = "application"
+	Unrestricted RecruitmentType = "unrestricted"
+	Tryout       RecruitmentType = "tryout"
+	Application  RecruitmentType = "application"
 )
 
 type Club struct {
