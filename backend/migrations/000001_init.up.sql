@@ -14,8 +14,7 @@ CREATE TYPE college AS ENUM (
     'CoSSG' -- College of Social Sciences and Humanities
     );
 
-CREATE TABLE IF NOT EXISTS sac_user
-(
+CREATE TABLE IF NOT EXISTS sac_user (
     id            UUID         NOT NULL PRIMARY KEY,
     created_at    TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
 
@@ -29,8 +28,7 @@ CREATE TABLE IF NOT EXISTS sac_user
     college       college      NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS interest
-(
+CREATE TABLE IF NOT EXISTS interest (
     id         UUID         NOT NULL PRIMARY KEY,
     created_at TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
 
@@ -52,8 +50,7 @@ CREATE TABLE IF NOT EXISTS category
 CREATE TYPE recruitment_cycle AS ENUM ('fall', 'spring', 'fallSpring', 'always');
 CREATE TYPE recruitment_type AS ENUM ('open', 'tryout', 'application');
 
-CREATE TABLE IF NOT EXISTS club
-(
+CREATE TABLE IF NOT EXISTS club (
     id                UUID              NOT NULL PRIMARY KEY,
     created_at        TIMESTAMPTZ       NOT NULL DEFAULT NOW(),
     soft_deleted_at   TIMESTAMPTZ,
@@ -78,8 +75,7 @@ CREATE TABLE IF NOT EXISTS club
             ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS point_of_contact
-(
+CREATE TABLE IF NOT EXISTS point_of_contact (
     id         UUID         NOT NULL PRIMARY KEY,
     created_at TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
 
@@ -98,8 +94,7 @@ CREATE TABLE IF NOT EXISTS point_of_contact
 
 CREATE TYPE media AS ENUM ('facebook', 'instagram', 'twitter', 'linkedin', 'youtube', 'github', 'custom');
 
-CREATE TABLE IF NOT EXISTS contact
-(
+CREATE TABLE IF NOT EXISTS contact (
     id         UUID         NOT NULL PRIMARY KEY,
     created_at TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
 
@@ -114,8 +109,7 @@ CREATE TABLE IF NOT EXISTS contact
             ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS tag
-(
+CREATE TABLE IF NOT EXISTS tag (
     id         UUID         NOT NULL PRIMARY KEY,
     created_at TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
 
@@ -124,8 +118,7 @@ CREATE TABLE IF NOT EXISTS tag
 
 CREATE TYPE event_type AS ENUM ('open', 'membersOnly');
 
-CREATE TABLE IF NOT EXISTS event
-(
+CREATE TABLE IF NOT EXISTS event (
     id          UUID         NOT NULL PRIMARY KEY,
     created_at  TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
 
@@ -138,8 +131,7 @@ CREATE TABLE IF NOT EXISTS event
     type        event_type   NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS notification
-(
+CREATE TABLE IF NOT EXISTS notification (
     id         UUID         NOT NULL PRIMARY KEY,
     created_at TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
 
@@ -154,8 +146,7 @@ CREATE TABLE IF NOT EXISTS notification
 -- BRIDGE TABLES
 
 -- sac_user Profile Bridges
-CREATE TABLE IF NOT EXISTS sac_user_interest
-(
+CREATE TABLE IF NOT EXISTS sac_user_interest (
     id          UUID        NOT NULL PRIMARY KEY,
     created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
@@ -173,8 +164,7 @@ CREATE TABLE IF NOT EXISTS sac_user_interest
             ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS sac_user_category
-(
+CREATE TABLE IF NOT EXISTS sac_user_category (
     id          UUID        NOT NULL PRIMARY KEY,
     created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
@@ -194,8 +184,7 @@ CREATE TABLE IF NOT EXISTS sac_user_category
 
 -- sac_user <-> Club Bridges
 
-CREATE TABLE IF NOT EXISTS membership
-(
+CREATE TABLE IF NOT EXISTS membership (
     id         UUID        NOT NULL PRIMARY KEY,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
@@ -213,8 +202,7 @@ CREATE TABLE IF NOT EXISTS membership
             ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS intended_applicant
-(
+CREATE TABLE IF NOT EXISTS intended_applicant (
     id         UUID        NOT NULL PRIMARY KEY,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
@@ -232,8 +220,7 @@ CREATE TABLE IF NOT EXISTS intended_applicant
             ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS follower
-(
+CREATE TABLE IF NOT EXISTS follower(
     id         UUID        NOT NULL PRIMARY KEY,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
@@ -251,8 +238,7 @@ CREATE TABLE IF NOT EXISTS follower
             ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS faq
-(
+CREATE TABLE IF NOT EXISTS faq (
     id                UUID         NOT NULL PRIMARY KEY,
     created_at        TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
 
@@ -273,8 +259,7 @@ CREATE TABLE IF NOT EXISTS faq
 
 -- Club <-> Tag Bridge
 
-CREATE TABLE IF NOT EXISTS club_tag
-(
+CREATE TABLE IF NOT EXISTS club_tag (
     id         UUID        NOT NULL PRIMARY KEY,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
@@ -294,8 +279,7 @@ CREATE TABLE IF NOT EXISTS club_tag
 
 -- Club <-> Event Bridge
 
-CREATE TABLE IF NOT EXISTS club_event
-(
+CREATE TABLE IF NOT EXISTS club_event (
     id         UUID        NOT NULL PRIMARY KEY,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
@@ -315,8 +299,7 @@ CREATE TABLE IF NOT EXISTS club_event
 
 -- Event <-> Tag Bridge
 
-CREATE TABLE IF NOT EXISTS event_tag
-(
+CREATE TABLE IF NOT EXISTS event_tag (
     id         UUID        NOT NULL PRIMARY KEY,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
@@ -336,8 +319,7 @@ CREATE TABLE IF NOT EXISTS event_tag
 
 -- Event <-> sac_user Bridges
 
-CREATE TABLE IF NOT EXISTS event_waitlist
-(
+CREATE TABLE IF NOT EXISTS event_waitlist (
     id         UUID        NOT NULL PRIMARY KEY,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
@@ -355,8 +337,7 @@ CREATE TABLE IF NOT EXISTS event_waitlist
             ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS event_rsvp
-(
+CREATE TABLE IF NOT EXISTS event_rsvp (
     id         UUID        NOT NULL PRIMARY KEY,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
@@ -376,8 +357,7 @@ CREATE TABLE IF NOT EXISTS event_rsvp
 
 -- Notifcation Bridges
 
-CREATE TABLE IF NOT EXISTS club_notification
-(
+CREATE TABLE IF NOT EXISTS club_notification (
     id              UUID        NOT NULL PRIMARY KEY,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
@@ -395,8 +375,7 @@ CREATE TABLE IF NOT EXISTS club_notification
             ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS event_notification
-(
+CREATE TABLE IF NOT EXISTS event_notification (
     id              UUID        NOT NULL PRIMARY KEY,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
