@@ -7,11 +7,11 @@ CREATE TYPE college AS ENUM (
     'DMSB', -- D'Amore-McKim School of Business
     'KCCS', -- Khoury College of Computer Sciences
     'CoE', -- College of Engineering
-    'BCOHS', -- Bouvé College of Health Sciences
+    'BCoHS', -- Bouvé College of Health Sciences
     'SoL', -- School of Law
     'CoPS', -- College of Professional Studies
     'CoS', -- College of Science
-    'CoSSG' -- College of Social Sciences and Humanities
+    'CoSSH' -- College of Social Sciences and Humanities
     );
 
 CREATE TABLE IF NOT EXISTS sac_user (
@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS sac_user (
     first_name    VARCHAR(255) NOT NULL,
     last_name     VARCHAR(255) NOT NULL,
     email         VARCHAR(255) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
+    password_hash TEXT         NOT NULL,
     dob           DATE         NOT NULL,
     college       college      NOT NULL
 );
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS interest (
 );
 
 
-CREATE TYPE category_name AS ENUM ('Academic', 'Arts', 'Business', 'Cultural', 'Health', 'Media', 'Political', 'Professional', 'Religious', 'Social', 'Sports', 'Technology', 'Other');
+CREATE TYPE category_name AS ENUM ('academic', 'arts', 'business', 'cultural', 'health', 'political', 'professional', 'religious', 'social', 'sports', 'technology', 'other');
 
 CREATE TABLE IF NOT EXISTS category
 (
@@ -48,26 +48,25 @@ CREATE TABLE IF NOT EXISTS category
 );
 
 CREATE TYPE recruitment_cycle AS ENUM ('fall', 'spring', 'fallSpring', 'always');
-CREATE TYPE recruitment_type AS ENUM ('open', 'tryout', 'application');
+CREATE TYPE recruitment_type AS ENUM ('accepting', 'tryout', 'application');
 
 CREATE TABLE IF NOT EXISTS club (
     id                UUID              NOT NULL PRIMARY KEY,
     created_at        TIMESTAMPTZ       NOT NULL DEFAULT NOW(),
+    
     soft_deleted_at   TIMESTAMPTZ,
+
+    parent            UUID REFERENCES club (id),
 
     name              VARCHAR(255)      NOT NULL,
     preview           VARCHAR(255)      NOT NULL,
     description       VARCHAR(255)      NOT NULL, -- MongoDB URI
-
-    num_members       INT               NOT NULL, -- on sac_user join, increment this field in transaction for efficient num_members computation
+    num_members       INT               NOT NULL, -- on sac_user join, increment this field in transaction for efficient num_members query
     is_recruiting     BOOLEAN           NOT NULL,
     recruitment_cycle recruitment_cycle NOT NULL,
     recruitment_type  recruitment_type  NOT NULL,
     application_link  VARCHAR(255),
-
-    logo              VARCHAR(255)      NOT NULL, -- S3 URI
-
-    parent            UUID REFERENCES club (id),
+    logo              VARCHAR(255)      NOT NULL -- S3 URI
 
     CONSTRAINT fk_parent
         FOREIGN KEY (parent)
@@ -124,7 +123,7 @@ CREATE TABLE IF NOT EXISTS event (
 
     name        VARCHAR(255) NOT NULL,
     preview     VARCHAR(255) NOT NULL,
-    description VARCHAR(255) NOT NULL,
+    content VARCHAR(255) NOT NULL,
     start_time  TIMESTAMPTZ  NOT NULL,
     end_time    TIMESTAMPTZ  NOT NULL,
     location    VARCHAR(255) NOT NULL,
