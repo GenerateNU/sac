@@ -22,7 +22,7 @@ func TestGetAllUsersWorks(t *testing.T) {
 
 	assert.NilError(err)
 
-	req := httptest.NewRequest("GET", fmt.Sprintf("%s/api/v1/users/", app.Address), nil)
+	req := httptest.NewRequest("GET", fmt.Sprintf("%s/api/v1/users", app.Address), nil)
 
 	resp, err := app.App.Test(req)
 
