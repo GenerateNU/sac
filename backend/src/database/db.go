@@ -3,14 +3,15 @@ package database
 import (
 	"backend/src/config"
 	"backend/src/models"
-	"fmt"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
-func CreatePostgresConnection(settings config.Settings) (*gorm.DB, error) {
+func ConfigureDB(settings config.Settings) (*gorm.DB, error) {
 	db, err := gorm.Open(postgres.Open(settings.Database.WithDb()), &gorm.Config{
+		Logger:                 logger.Default.LogMode(logger.Info),
 		SkipDefaultTransaction: true,
 	})
 
@@ -18,20 +19,82 @@ func CreatePostgresConnection(settings config.Settings) (*gorm.DB, error) {
 		return nil, err
 	}
 
+	if err := MigrateDB(settings, db); err != nil {
+		return nil, err
+	}
+
+	return db, nil
+}
+
+func ConnPooling(db *gorm.DB) error {
 	sqlDB, err := db.DB()
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	sqlDB.SetMaxIdleConns(10)
 	sqlDB.SetMaxOpenConns(100)
 
-	if err := db.AutoMigrate(
+	return nil
+}
+
+func MigrateDB(settings config.Settings, db *gorm.DB) error {
+	err := db.AutoMigrate(
+		&models.Category{},
+		&models.Club{},
+		&models.Contact{},
+		&models.Event{},
+		&models.Notification{},
+		&models.PointOfContact{},
+		&models.Tag{},
 		&models.User{},
-	); err != nil {
-		return nil, fmt.Errorf("failed to perform database auto migration: %v", err)
+	)
+
+	if err != nil {
+		return err
 	}
 
-	return db, nil
+	tx := db.Begin()
+
+	if err := tx.Error; err != nil {
+		return err
+	}
+
+	superUser := models.User{
+		Role:         models.Super,
+		NUID:         "000000000",
+		Email:        "generatesac@gmail.com",
+		PasswordHash: settings.SuperUser.Password,
+		FirstName:    "SAC",
+		LastName:     "Super",
+		College:      models.KCCS,
+		Year:         models.First,
+	}
+	if err := tx.Create(&superUser).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	superClub := models.Club{
+		Name:        "SAC",
+		Preview:     "SAC",
+		Description: "SAC",
+	}
+	if err := tx.Create(&superClub).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Model(&superClub).Association("Member").Append(&superUser); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Model(&superClub).Update("num_members", gorm.Expr("num_members + ?", 1)).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit().Error
 }

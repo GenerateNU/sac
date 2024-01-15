@@ -10,6 +10,10 @@ on:
       - "scripts/init_db.sh"
       - ".github/workflows/go.yml"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   format:
     name: Format
@@ -48,7 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:12
+        image: postgres:15
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
@@ -64,10 +68,9 @@ jobs:
           go-version: "1.21"
       - name: Install Dependencies
         run: cd backend && go get ./...
-      - name: Install Migrate
-        run: go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
-      - name: Migrate Database
-        run: SKIP_DOCKER=true ./scripts/init_db.sh
+      - name: Migrate DB
+        run: |
+          cd backend/src && go run main.go --only-migrate
       - name: Run Tests with Coverage
         run: cd backend && go test -race -coverprofile=coverage.txt -covermode=atomic ./...
       - name: Print Coverage

@@ -2,20 +2,28 @@ package tests
 
 import (
 	"backend/src/config"
+	"backend/src/database"
 	"backend/src/server"
 	crand "crypto/rand"
 	"fmt"
 	"math/big"
 	"net"
-	"os"
+	"testing"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/postgres"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/huandu/go-assert"
 	gormPostgres "gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
+
+func InitTest(t *testing.T) (TestApp, *assert.A) {
+	assert := assert.New(t)
+	app, err := spawnApp()
+
+	assert.NilError(err)
+
+	return app, assert
+}
 
 type TestApp struct {
 	App     *fiber.App
@@ -23,7 +31,7 @@ type TestApp struct {
 	Conn    *gorm.DB
 }
 
-func SpawnApp() (TestApp, error) {
+func spawnApp() (TestApp, error) {
 	listener, err := net.Listen("tcp", "127.0.0.1:0")
 
 	if err != nil {
@@ -38,7 +46,7 @@ func SpawnApp() (TestApp, error) {
 
 	configuration.Database.DatabaseName = generateRandomDBName()
 
-	connectionWithDB, err := configureDatabase(configuration.Database)
+	connectionWithDB, err := configureDatabase(configuration)
 
 	if err != nil {
 		return TestApp{}, err
@@ -66,63 +74,28 @@ func generateRandomDBName() string {
 	return string(result)
 }
 
-func configureDatabase(config config.DatabaseSettings) (*gorm.DB, error) {
-	dsnWithoutDB := config.WithoutDb()
-	dbWithoutDB, err := gorm.Open(gormPostgres.Open(dsnWithoutDB), &gorm.Config{})
+func configureDatabase(config config.Settings) (*gorm.DB, error) {
+	dsnWithoutDB := config.Database.WithoutDb()
+	dbWithoutDB, err := gorm.Open(gormPostgres.Open(dsnWithoutDB), &gorm.Config{SkipDefaultTransaction: true})
 	if err != nil {
 		return nil, err
 	}
 
-	err = dbWithoutDB.Exec(fmt.Sprintf("CREATE DATABASE %s;", config.DatabaseName)).Error
+	err = dbWithoutDB.Exec(fmt.Sprintf("CREATE DATABASE %s;", config.Database.DatabaseName)).Error
 	if err != nil {
 		return nil, err
 	}
 
-	dsnWithDB := config.WithDb()
-	dbWithDB, err := gorm.Open(gormPostgres.Open(dsnWithDB), &gorm.Config{})
-	if err != nil {
-		return nil, err
-	}
-
-	initialDir, err := os.Getwd()
-	if err != nil {
-		return nil, err
-	}
-
-	err = os.Chdir("../../")
-	if err != nil {
-		return nil, err
-	}
-
-	db, err := dbWithDB.DB()
+	dsnWithDB := config.Database.WithDb()
+	dbWithDB, err := gorm.Open(gormPostgres.Open(dsnWithDB), &gorm.Config{SkipDefaultTransaction: true})
 
 	if err != nil {
 		return nil, err
 	}
 
-	driver, err := postgres.WithInstance(db, &postgres.Config{})
+	err = database.MigrateDB(config, dbWithDB)
 
 	if err != nil {
-		return nil, err
-	}
-
-	m, err := migrate.NewWithDatabaseInstance(
-		"file://migrations",
-		config.DatabaseName,
-		driver,
-	)
-
-	if err != nil {
-		return nil, err
-	}
-
-	err = os.Chdir(initialDir)
-	if err != nil {
-		return nil, err
-	}
-
-	err = m.Up()
-	if err != nil && err != migrate.ErrNoChange {
 		return nil, err
 	}
 

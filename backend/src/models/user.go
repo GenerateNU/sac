@@ -2,10 +2,57 @@ package models
 
 import "backend/src/types"
 
+type UserRole string
+
+const (
+	Super     UserRole = "super"
+	ClubAdmin UserRole = "clubAdmin"
+	Student   UserRole = "student"
+)
+
+type College string
+
+const (
+	CAMD College = "CAMD" // College of Arts, Media and Design
+	DMSB College = "DMSB" // D'Amore-McKim School of Business
+	KCCS College = "KCCS" // Khoury College of Computer Sciences
+	CE   College = "CE"   // College of Engineering
+	BCHS College = "BCHS" // Bouvé College of Health Sciences
+	SL   College = "SL"   // School of Law
+	CPS  College = "CPS"  // College of Professional Studies
+	CS   College = "CS"   // College of Science
+	CSSH College = "CSSH" // College of Social Sciences and Humanities
+)
+
+type Year uint
+
+const (
+	First    Year = 1
+	Second   Year = 2
+	Third    Year = 3
+	Fourth   Year = 4
+	Fifth    Year = 5
+	Graduate Year = 6
+)
+
 type User struct {
 	types.Model
-	Username   string `gorm:"type:varchar(255);unique" json:"username" validate:"required"`
-	FirebaseID string `gorm:"type:varchar(255);unique" json:"firebase_id" validate:"required"`
-	Password   string `gorm:"type:text" json:"password" validate:"required"`
-	Email      string `gorm:"type:varchar(255);unique" json:"email" validate:"required,email"`
+
+	Role         UserRole `gorm:"type:varchar(255);" json:"user_role" validate:"required"`
+	NUID         string   `gorm:"column:nuid;type:varchar(9);unique" json:"nuid" validate:"required"`
+	FirstName    string   `gorm:"type:varchar(255)" json:"first_name" validate:"required"`
+	LastName     string   `gorm:"type:varchar(255)" json:"last_name" validate:"required"`
+	Email        string   `gorm:"type:varchar(255);unique" json:"email" validate:"required,email"`
+	PasswordHash string   `gorm:"type:text" json:"-" validate:"required"`
+	College      College  `gorm:"type:varchar(255)" json:"college" validate:"required"`
+	Year         Year     `gorm:"type:smallint" json:"year" validate:"required"`
+
+	Tag               []Tag     `gorm:"many2many:user_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"tags" validate:"-"`
+	Member            []Club    `gorm:"many2many:user_club_members;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"club_members" validate:"required"`
+	Follower          []Club    `gorm:"many2many:user_club_followers;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"club_followers" validate:"-"`
+	IntendedApplicant []Club    `gorm:"many2many:user_club_intended_applicants;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"club_intended_applicants" validate:"-"`
+	Asked             []Comment `gorm:"foreignKey:AskedByID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"comments" validate:"-"`
+	Answered          []Comment `gorm:"foreignKey:AnsweredByID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"answered" validate:"-"`
+	RSVP              []Event   `gorm:"many2many:user_event_rsvps;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"event_rsvps" validate:"-"`
+	Waitlist          []Event   `gorm:"many2many:user_event_waitlists;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"event_waitlist" validate:"-"`
 }

@@ -4,6 +4,7 @@ import (
 	"backend/src/config"
 	"backend/src/database"
 	"backend/src/server"
+	"flag"
 	"fmt"
 )
 
@@ -16,13 +17,27 @@ import (
 // @host 127.0.0.1:8080
 // @BasePath /api/v1
 func main() {
+	onlyMigrate := flag.Bool("only-migrate", false, "Specify if you want to only perform the database migration")
+
+	flag.Parse()
+
 	config, err := config.GetConfiguration("../../config")
 
 	if err != nil {
 		panic(err)
 	}
 
-	db, err := database.CreatePostgresConnection(config)
+	db, err := database.ConfigureDB(config)
+
+	if err != nil {
+		panic(err)
+	}
+
+	if *onlyMigrate {
+		return
+	}
+
+	err = database.ConnPooling(db)
 
 	if err != nil {
 		panic(err)
@@ -30,5 +45,5 @@ func main() {
 
 	app := server.Init(db)
 
-	go app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
+	app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
 }
