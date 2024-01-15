@@ -4,16 +4,13 @@ import (
 	"fmt"
 	"net/http/httptest"
 	"testing"
-
-	"github.com/huandu/go-assert"
 )
 
 func TestHealthWorks(t *testing.T) {
-	assert := assert.New(t)
-	app, err := SpawnApp()
+	// initialize the test
+	app, assert := InitTest(t)
 
-	assert.NilError(err)
-
+	// create a GET request to the APP/health endpoint
 	req := httptest.NewRequest("GET", fmt.Sprintf("%s/health", app.Address), nil)
 
 	resp, err := app.App.Test(req)
