@@ -10,7 +10,9 @@ import (
 )
 
 func CreatePostgresConnection(settings config.Settings) (*gorm.DB, error) {
-	db, err := gorm.Open(postgres.Open(settings.Database.WithDb()), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(settings.Database.WithDb()), &gorm.Config{
+		SkipDefaultTransaction: true,
+	})
 
 	if err != nil {
 		return nil, err
