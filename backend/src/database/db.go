@@ -56,7 +56,6 @@ func MigrateDB(settings config.Settings, db *gorm.DB) error {
 		return err
 	}
 
-
 	tx := db.Begin()
 
 	if err := tx.Error; err != nil {
