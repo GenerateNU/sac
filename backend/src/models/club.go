@@ -35,7 +35,7 @@ type Club struct {
 	RecruitmentCycle RecruitmentCycle `gorm:"type:varchar(255);default:always" json:"recruitment_cycle" validate:"required"`
 	RecruitmentType  RecruitmentType  `gorm:"type:varchar(255);default:unrestricted" json:"recruitment_type" validate:"required"`
 	ApplicationLink  string           `gorm:"type:varchar(255);default:NULL" json:"application_link" validate:"required"`
-	Logo             string           `gorm:"type:varchar(255);" json:"logo" validate:"required"` // S3 URI
+	Logo             string           `gorm:"type:varchar(255);default:NULL" json:"logo" validate:"-"` // S3 URI
 
 	Parent *uint `gorm:"foreignKey:Parent" json:"parent_club" validate:"-"`
 	Tag    []Tag `gorm:"many2many:club_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"tags" validate:"-"`

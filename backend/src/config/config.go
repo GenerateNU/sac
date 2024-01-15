@@ -9,8 +9,9 @@ import (
 )
 
 type Settings struct {
-	Database    DatabaseSettings    `yaml:"database"`
 	Application ApplicationSettings `yaml:"application"`
+	Database    DatabaseSettings    `yaml:"database"`
+	SuperUser   SuperUserSettings   `yaml:"superuser"`
 }
 
 type ProductionSettings struct {
@@ -32,7 +33,7 @@ type ProductionApplicationSettings struct {
 type DatabaseSettings struct {
 	Username     string `yaml:"username"`
 	Password     string `yaml:"password"`
-	Port         uint16 `yaml:"port"`
+	Port         uint   `yaml:"port"`
 	Host         string `yaml:"host"`
 	DatabaseName string `yaml:"databasename"`
 	RequireSSL   bool   `yaml:"requiressl"`
@@ -56,6 +57,10 @@ func (s *DatabaseSettings) WithoutDb() string {
 
 func (s *DatabaseSettings) WithDb() string {
 	return fmt.Sprintf("%s dbname=%s", s.WithoutDb(), s.DatabaseName)
+}
+
+type SuperUserSettings struct {
+	Password string `yaml:"password"`
 }
 
 type Environment string
@@ -106,29 +111,33 @@ func GetConfiguration(path string) (Settings, error) {
 		}
 
 		appPrefix := "APP_"
-		dbPrefix := fmt.Sprintf("%sDATABASE__", appPrefix)
 		applicationPrefix := fmt.Sprintf("%sAPPLICATION__", appPrefix)
+		dbPrefix := fmt.Sprintf("%sDATABASE__", appPrefix)
+		superUserPrefix := fmt.Sprintf("%sSUPERUSER__", appPrefix)
 
 		portStr := os.Getenv(fmt.Sprintf("%sPORT", appPrefix))
-		portInt, err := (strconv.Atoi(portStr))
+		portInt, err := strconv.Atoi(portStr)
 
 		if err != nil {
 			return Settings{}, fmt.Errorf("failed to parse port: %w", err)
 		}
 
 		return Settings{
-			Database: DatabaseSettings{
-				Username:     os.Getenv(fmt.Sprintf("%sUSERNAME", dbPrefix)),
-				Password:     os.Getenv(fmt.Sprintf("%sPASSWORD", dbPrefix)),
-				Host:         os.Getenv(fmt.Sprintf("%sHOST", dbPrefix)),
-				Port:         uint16(portInt),
-				DatabaseName: os.Getenv(fmt.Sprintf("%sDATABASE_NAME", dbPrefix)),
-				RequireSSL:   prodSettings.Database.RequireSSL,
-			},
 			Application: ApplicationSettings{
 				Port:    prodSettings.Application.Port,
 				Host:    prodSettings.Application.Host,
 				BaseUrl: os.Getenv(fmt.Sprintf("%sBASE_URL", applicationPrefix)),
+			},
+			Database: DatabaseSettings{
+				Username:     os.Getenv(fmt.Sprintf("%sUSERNAME", dbPrefix)),
+				Password:     os.Getenv(fmt.Sprintf("%sPASSWORD", dbPrefix)),
+				Host:         os.Getenv(fmt.Sprintf("%sHOST", dbPrefix)),
+				Port:         uint(portInt),
+				DatabaseName: os.Getenv(fmt.Sprintf("%sDATABASE_NAME", dbPrefix)),
+				RequireSSL:   prodSettings.Database.RequireSSL,
+			},
+			SuperUser: SuperUserSettings{
+				Password: os.Getenv(fmt.Sprintf("%sPASSWORD", superUserPrefix)),
 			},
 		}, nil
 	}

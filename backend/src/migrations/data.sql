@@ -1,18 +1,3 @@
--- BEGIN SUPER CREATION TRANSACTION
-BEGIN;
-
--- SUPER USER
-INSERT INTO users (role, nuid, email, password_hash, first_name, last_name, college, year) VALUES ('super', '000000000', 'generatesac@gmail.com', 'rust', 'SAC', 'Super', 'KCCS', 1);
-
--- SAC SUPER CLUB
-INSERT INTO clubs (name, preview, description, num_members, logo) VALUES ('SAC', 'SAC', 'SAC', 1, 'foo');
-
--- INSERT SUPER USER INTO SAC SUPER CLUB
-INSERT INTO user_club_members (club_id, user_id) VALUES (1, 1);
-
-COMMIT;
--- END SUPER CREATION TRANSACTION
-
 -- BEGIN MOCK DATA TRANSACTION
 BEGIN;
 

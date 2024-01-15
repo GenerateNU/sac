@@ -3,17 +3,27 @@ package tests
 import (
 	"backend/src/config"
 	"backend/src/database"
-	"backend/src/models"
 	"backend/src/server"
 	crand "crypto/rand"
 	"fmt"
 	"math/big"
 	"net"
+	"testing"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/huandu/go-assert"
 	gormPostgres "gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
+
+func InitTest(t *testing.T) (TestApp, *assert.A) {
+	assert := assert.New(t)
+	app, err := spawnApp()
+
+	assert.NilError(err)
+
+	return app, assert
+}
 
 type TestApp struct {
 	App     *fiber.App
@@ -21,7 +31,7 @@ type TestApp struct {
 	Conn    *gorm.DB
 }
 
-func SpawnApp() (TestApp, error) {
+func spawnApp() (TestApp, error) {
 	listener, err := net.Listen("tcp", "127.0.0.1:0")
 
 	if err != nil {
@@ -36,7 +46,7 @@ func SpawnApp() (TestApp, error) {
 
 	configuration.Database.DatabaseName = generateRandomDBName()
 
-	connectionWithDB, err := configureDatabase(configuration.Database)
+	connectionWithDB, err := configureDatabase(configuration)
 
 	if err != nil {
 		return TestApp{}, err
@@ -64,51 +74,30 @@ func generateRandomDBName() string {
 	return string(result)
 }
 
-func configureDatabase(config config.DatabaseSettings) (*gorm.DB, error) {
-	dsnWithoutDB := config.WithoutDb()
+func configureDatabase(config config.Settings) (*gorm.DB, error) {
+	dsnWithoutDB := config.Database.WithoutDb()
 	dbWithoutDB, err := gorm.Open(gormPostgres.Open(dsnWithoutDB), &gorm.Config{SkipDefaultTransaction: true})
 	if err != nil {
 		return nil, err
 	}
 
-	err = dbWithoutDB.Exec(fmt.Sprintf("CREATE DATABASE %s;", config.DatabaseName)).Error
+	err = dbWithoutDB.Exec(fmt.Sprintf("CREATE DATABASE %s;", config.Database.DatabaseName)).Error
 	if err != nil {
 		return nil, err
 	}
 
-	dsnWithDB := config.WithDb()
+	dsnWithDB := config.Database.WithDb()
 	dbWithDB, err := gorm.Open(gormPostgres.Open(dsnWithDB), &gorm.Config{SkipDefaultTransaction: true})
 
 	if err != nil {
 		return nil, err
 	}
 
-	err = database.MigrateDB(dbWithDB)
+	err = database.MigrateDB(config, dbWithDB)
 
 	if err != nil {
 		return nil, err
 	}
 
 	return dbWithDB, nil
-}
-
-func (app *TestApp) InsertSampleUser() (models.User, error) {
-	user := models.User{
-		Role:         models.Super,
-		NUID:         "000000000",
-		Email:        "generatesac@gmail.com",
-		PasswordHash: "rust",
-		FirstName:    "SAC",
-		LastName:     "Super",
-		College:      models.KCCS,
-		Year:         models.First,
-	}
-
-	result := app.Conn.Create(&user)
-
-	if result.Error != nil {
-		return models.User{}, result.Error
-	}
-
-	return user, nil
 }

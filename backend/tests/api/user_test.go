@@ -8,28 +8,23 @@ import (
 	"testing"
 
 	"github.com/goccy/go-json"
-
-	"github.com/huandu/go-assert"
 )
 
 func TestGetAllUsersWorks(t *testing.T) {
-	assert := assert.New(t)
-	app, err := SpawnApp()
+	// initialize the test
+	app, assert := InitTest(t)
 
-	assert.NilError(err)
-
-	_, err = app.InsertSampleUser() // THIS SHOULD BE REPLACED BY INSERTING A USER WITH OUR CREATE ENDPOINT
-
-	assert.NilError(err)
-
+	// create a GET request to the APP/api/v1/users endpoint
 	req := httptest.NewRequest("GET", fmt.Sprintf("%s/api/v1/users", app.Address), nil)
 
+	// send the request to the app
 	resp, err := app.App.Test(req)
 
 	assert.NilError(err)
 
 	assert.Equal(200, resp.StatusCode)
 
+	// decode the response body into a slice of users
 	var users []models.User
 
 	err = json.NewDecoder(resp.Body).Decode(&users)
@@ -40,6 +35,7 @@ func TestGetAllUsersWorks(t *testing.T) {
 
 	respUser := users[0]
 
+	// get all users from the database
 	dbUsers, err := transactions.GetAllUsers(app.Conn)
 
 	assert.NilError(err)
@@ -48,5 +44,6 @@ func TestGetAllUsersWorks(t *testing.T) {
 
 	dbUser := dbUsers[0]
 
+	// assert that the user returned from the database is the same as the user returned from the API
 	assert.Equal(dbUser, respUser)
 }
