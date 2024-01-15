@@ -48,12 +48,5 @@ func TestGetAllUsersWorks(t *testing.T) {
 
 	dbUser := dbUsers[0]
 
-	assert.Equal(dbUser.ID, respUser.ID)
-	assert.Equal(dbUser.Role, respUser.Role)
-	assert.Equal(dbUser.NUID, respUser.NUID)
-	assert.Equal(dbUser.Email, respUser.Email)
-	assert.Equal(dbUser.FirstName, respUser.FirstName)
-	assert.Equal(dbUser.LastName, respUser.LastName)
-	assert.Equal(dbUser.College, respUser.College)
-	assert.Equal(dbUser.Year, respUser.Year)
+	assert.Equal(dbUser, respUser)
 }
