@@ -124,15 +124,16 @@
    go vet ./... // lint code
    ```
 
-### Others (WIP)
+### Others
 
    ```bash
    sac-cli migrate // run migrations
+   sac-cli drop // drop database
    sac-cli reset // reset database
    sac-cli swagger // generate swagger docs
-   sac-cli lint // lint code
-   sac-cli format // format code
-   sac-cli test // run tests
+   sac-cli lint // lint code (WIP)
+   sac-cli format // format code (WIP)
+   sac-cli test // run tests (WIP)
    ```
 
 # Git Flow
