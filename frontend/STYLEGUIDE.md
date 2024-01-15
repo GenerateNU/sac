@@ -10,6 +10,8 @@
 ## General
 
 - Use functional components over class components
+- Use Arrow functions over functions
+    - Unless defining a class or an object only use functions
 - Use `camelCase` for variables, functions, and file names
 - Use `PascalCase` for components and their files
 - Use `UPPER_SNAKE_CASE` for constants
@@ -63,6 +65,7 @@ import { Button } from '@/components/Button';
     - Components that are only used in one part of the app should be in a `_components` folder in that part of the app
     - Avoid hardcoding properties
     - Never use `any` as a type
+- Avoid using `Component` or `Screen` as an modifier for a file name as it is implied
 
 ```js
 // Button.tsx
@@ -91,10 +94,9 @@ interface HomeProps {
   name: string;
 }
 
-export default function Home({ name }: HomeProps) {
+const Home = ({ name }: HomeProps) => {
   return <Text>Hello, {name}!</Text>;
 }
+
+export default Home;
 ```
-
-
-## Styling
