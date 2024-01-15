@@ -39,7 +39,7 @@ import React from 'react';
 4. Components from `src`
 
 ```js   
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import { CopyrightIcon } from "lucide-react"
 
