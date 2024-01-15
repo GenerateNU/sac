@@ -9,7 +9,7 @@ import (
 func GetAllUsers(db *gorm.DB) ([]models.User, error) {
 	var users []models.User
 
-	if err := db.Unscoped().Omit("password").Find(&users).Error; err != nil {
+	if err := db.Unscoped().Omit("password_hash").Find(&users).Error; err != nil {
 		return nil, err
 	}
 

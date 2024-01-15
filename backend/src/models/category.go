@@ -5,21 +5,22 @@ import "backend/src/types"
 type CategoryName string
 
 const (
-	Academic     CategoryName = "academic"
-	Arts         CategoryName = "arts"
-	Business     CategoryName = "business"
-	Cultural     CategoryName = "cultural"
-	Health       CategoryName = "health"
-	Political    CategoryName = "political"
-	Professional CategoryName = "professional"
-	Religious    CategoryName = "religious"
-	Social       CategoryName = "social"
-	Sports       CategoryName = "sports"
-	Technology   CategoryName = "technology"
-	Other        CategoryName = "other"
+	ArtsAndDesign                 CategoryName = "artsAndDesign"
+	Business                      CategoryName = "business"
+	Cultural                      CategoryName = "cultural"
+	EquityAndInclusion            CategoryName = "equityAndInclusion"
+	PoliticalAndLaw               CategoryName = "politicalAndLaw"
+	Religious                     CategoryName = "religious"
+	Social                        CategoryName = "social"
+	Sports                        CategoryName = "sports"
+	Sciences                      CategoryName = "sciences"
+	ComputerScienceAndEngineering CategoryName = "computerScienceAndEngineering"
 )
 
 type Category struct {
 	types.Model
-	Name CategoryName `gorm:"type:category_name" json:"category_name" validate:"required"`
+
+	Name CategoryName `gorm:"type:varchar(255)" json:"category_name" validate:"required"`
+
+	Tag []Tag `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"tags" validate:"-"`
 }

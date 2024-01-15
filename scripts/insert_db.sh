@@ -17,7 +17,7 @@ if psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d "$PGDATABASE" -t -c "$CHECK_TA
   echo "Database $PGDATABASE exists with tables."
 else
   echo "Error: Database $PGDATABASE does not exist or has no tables. Running database migration."
-  task run > /dev/null &
+  go run ../backend/src/main.go
   sleep 3
 
   # Find the process running on port 8080 and kill it

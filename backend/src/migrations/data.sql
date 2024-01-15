@@ -1,1 +1,1 @@
--- INSERT MOCK DATA HERE
+INSERT INTO users (role, nuid, email, password_hash, first_name, last_name, college, year) VALUES ('super', '002183108', 'oduneye.d@northeastern.edu', 'rust', 'David', 'Oduneye', 'KCCS', 3);

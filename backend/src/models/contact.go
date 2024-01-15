@@ -2,8 +2,6 @@ package models
 
 import (
 	"backend/src/types"
-
-	"github.com/google/uuid"
 )
 
 type Media string
@@ -20,7 +18,9 @@ const (
 
 type Contact struct {
 	types.Model
-	Type    Media     `gorm:"type:media" json:"type" validate:"required"`
-	Content string    `gorm:"type:varchar(255)" json:"content" validate:"required"` // media URI
-	ClubID  uuid.UUID `gorm:"type:uuid;" json:"club_id" validate:"required"`
+
+	Type    Media  `gorm:"type:varchar(255)" json:"type" validate:"required"`
+	Content string `gorm:"type:varchar(255)" json:"content" validate:"required"` // media URI
+
+	ClubID uint `gorm:"foreignKey:ClubID" json:"-" validate:"-"`
 }
