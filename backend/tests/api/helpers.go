@@ -2,6 +2,8 @@ package tests
 
 import (
 	"backend/src/config"
+	"backend/src/database"
+	"backend/src/models"
 	"backend/src/server"
 	crand "crypto/rand"
 	"fmt"
@@ -64,7 +66,7 @@ func generateRandomDBName() string {
 
 func configureDatabase(config config.DatabaseSettings) (*gorm.DB, error) {
 	dsnWithoutDB := config.WithoutDb()
-	dbWithoutDB, err := gorm.Open(gormPostgres.Open(dsnWithoutDB), &gorm.Config{})
+	dbWithoutDB, err := gorm.Open(gormPostgres.Open(dsnWithoutDB), &gorm.Config{SkipDefaultTransaction: true})
 	if err != nil {
 		return nil, err
 	}
@@ -75,10 +77,38 @@ func configureDatabase(config config.DatabaseSettings) (*gorm.DB, error) {
 	}
 
 	dsnWithDB := config.WithDb()
-	dbWithDB, err := gorm.Open(gormPostgres.Open(dsnWithDB), &gorm.Config{})
+	dbWithDB, err := gorm.Open(gormPostgres.Open(dsnWithDB), &gorm.Config{SkipDefaultTransaction: true})
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = database.MigrateDB(dbWithDB)
+
 	if err != nil {
 		return nil, err
 	}
 
 	return dbWithDB, nil
+}
+
+func (app *TestApp) InsertSampleUser() (models.User, error) {
+	user := models.User{
+		Role:         models.Super,
+		NUID:         "000000000",
+		Email:        "generatesac@gmail.com",
+		PasswordHash: "rust",
+		FirstName:    "SAC",
+		LastName:     "Super",
+		College:      models.KCCS,
+		Year:         models.First,
+	}
+
+	result := app.Conn.Create(&user)
+
+	if result.Error != nil {
+		return models.User{}, result.Error
+	}
+
+	return user, nil
 }

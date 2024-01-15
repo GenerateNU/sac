@@ -37,6 +37,12 @@ func main() {
 		return
 	}
 
+	err = database.ConnPooling(db)
+
+	if err != nil {
+		panic(err)
+	}
+
 	app := server.Init(db)
 
 	app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))

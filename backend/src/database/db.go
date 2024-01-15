@@ -3,7 +3,6 @@ package database
 import (
 	"backend/src/config"
 	"backend/src/models"
-	"fmt"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -20,16 +19,28 @@ func ConfigureDB(settings config.Settings) (*gorm.DB, error) {
 		return nil, err
 	}
 
+	if err := MigrateDB(db); err != nil {
+		return nil, err
+	}
+
+	return db, nil
+}
+
+func ConnPooling(db *gorm.DB) error {
 	sqlDB, err := db.DB()
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	sqlDB.SetMaxIdleConns(10)
 	sqlDB.SetMaxOpenConns(100)
 
-	if err := db.AutoMigrate(
+	return nil
+}
+
+func MigrateDB(db *gorm.DB) error {
+	return db.AutoMigrate(
 		&models.Category{},
 		&models.Club{},
 		&models.Contact{},
@@ -38,9 +49,5 @@ func ConfigureDB(settings config.Settings) (*gorm.DB, error) {
 		&models.PointOfContact{},
 		&models.Tag{},
 		&models.User{},
-	); err != nil {
-		return nil, fmt.Errorf("failed to perform database auto migration: %v", err)
-	}
-
-	return db, nil
+	)
 }
