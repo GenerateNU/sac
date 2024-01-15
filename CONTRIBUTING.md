@@ -1,18 +1,113 @@
-# Getting Started
+
+# Package Managers
+
+- Mac - [Homebrew](https://brew.sh/)
+- Windows - get [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10) 
+- Linux (you know what you're doing)
+
+
+# Prerequisites
+
+- [Git](https://git-scm.com/)
+- [Node.js](https://nodejs.org/en/)
+- [Yarn](https://yarnpkg.com/)
+- [Go](https://golang.org/)
+- [Docker](https://www.docker.com/)
+- [PostgreSQL](https://www.postgresql.org/)
+   - Install through brew: `brew install postgresql@15`
+   - It requires you to add all the exports to path so read the end of the installation carefully!
+- [Trunk](https://marketplace.visualstudio.com/items?itemName=Trunk.io) (Recommended!)
+   - Visual Studio Code extension for linting/formatting
+
+# Setup 
 
 1. **Clone the repository**
 
    ```bash
-   git clone <repository-url>
+   git clone git@github.com:GenerateNU/sac.git
    ```
 
-2. **Create a new branch**
+2. **Install dependencies**
+
+   ```bash
+   cd frontend/* 
+   yarn install
+   ```
+
+   - If you get an error about `expo-cli` not being installed, run `yarn global add expo-cli` and then run `yarn install` again.
+
+   ```bash
+   cd server
+   go get ./...
+   ```
+
+   - If this doesnt work, try running `go mod tidy` and then `go get ./...` again or delete the go.mod and go.sum files and then run `go mod init server` and `go mod tidy` again.
+
+### React Native Builds
+
+1. **Create client build**
+
+   ```bash
+   cd frotend/sac-mobile
+   eas login
+   eas build:configure
+   # ios
+   eas build -p ios --profile development
+   # android
+   eas build -p android --profile development
+
+   ```
+
+2. **Download the build and drag into simulator**
+
+3. **Start the client**
+
+   ```bash
+   cd frontend/sac-mobile
+   npx expo start --dev-client
+   ```
+
+   - You can then open the app in the Expo app in the simulator.
+
+
+### Postgresql Setup
+
+1. **Turn on postgresql**
+
+   - MacOS
+
+   ```bash
+   brew services start postgresql@15
+   ```
+
+   - Windows
+
+   ```bash
+   pg_ctl -D /usr/local/var/postgres start
+   ```
+
+2. **Create a user**
+
+   ```bash
+   createdb
+   ```
+
+3. **Create a database**
+
+   ```bash
+   psql // opens psql shell
+   CREATE DATABASE sac;
+   ```
+
+# Git Flow
+
+1. **Create a new branch**
 
    ```bash
    git checkout -b feature/<branch-name>
    ```
 
-3. **Make changes and commit changes:**
+2. **Make changes and commit changes:**
 
    - **Commit changes**
 
@@ -21,11 +116,11 @@
      git commit
      ```
 
-   - We use pre-commit hooks that allow us to format code before committing. This ensures that all code is formatted the same way. If your code gets formatted you will need to run `git add .` again before committing to add the formatted code to the commit. You can also run `task format` to format all code.
+   - We use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for commit messages. (READ!)
 
-   - More information on commit messages can be found [here](#commit-messages).
+   <!-- - We especially recommend [Trunk](https://marketplace.visualstudio.com/items?itemName=Trunk.io) for linting -->
 
-4. **Push changes to GitHub**
+3. **Push changes to GitHub**
 
    ```bash
    git push
@@ -37,40 +132,11 @@
    git push origin feature/<branch-name>
    ```
 
-5. **Create a pull request**
-   - Go to the [repository](https://github.com/GenerateNU/legacy) on GitHub
+4. **Create a pull request**
+   - Go to the [repository](https://github.com/GenerateNU/sac) on GitHub
    - Click on the `Pull requests` tab
    - Click on the `New pull request` button
    - Select the `base` branch as `main`
    - Select the `compare` branch as `feature/<branch-name>`
    - Click on the `Create pull request` button
 
-### Commit Messages
-
-- Commit messages should be in the present tense.
-- Keep them short and concise. If necessary, add a longer description in the body of the commit.
-- Use the following format for commit messages:
-
-  ```
-  <type>: <subject>
-  <BLANK LINE>
-  <body>
-  ```
-
-- The `<type>` can be one of the following:
-  - **feat**: A new feature
-  - **fix**: A bug fix
-  - **docs**: Documentation only changes
-  - **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc.)
-  - **refactor**: A code change that neither fixes a bug nor adds a feature
-  - **perf**: A code change that improves performance
-  - **test**: Adding missing tests
-  - **chore**: Changes to the build process or auxiliary tools and libraries such as documentation generation
-
-### Pull Requests
-
-- Ensure your pull request has a clear title and a summary of the changes made.
-- Describe the problem you're solving or the feature you're adding.
-- Mention any related issues or dependencies.
-- Ensure your changes don't break any existing functionality, add tests if necessary.
-- Request reviews from fellow developers or team members.
