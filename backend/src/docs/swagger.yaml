@@ -1,30 +1,465 @@
 basePath: /api/v1
 definitions:
-  models.User:
+  models.Club:
+    properties:
+      application_link:
+        type: string
+      club_followers:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+      club_intended_applicants:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+      club_members:
+        description: User
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+      comments:
+        items:
+          $ref: '#/definitions/models.Comment'
+        type: array
+      contacts:
+        items:
+          $ref: '#/definitions/models.Contact'
+        type: array
+      created_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      description:
+        description: MongoDB URI
+        type: string
+      events:
+        description: Event
+        items:
+          $ref: '#/definitions/models.Event'
+        type: array
+      id:
+        example: 1
+        type: integer
+      is_recruiting:
+        type: boolean
+      logo:
+        description: S3 URI
+        type: string
+      name:
+        type: string
+      notifications:
+        items:
+          $ref: '#/definitions/models.Notification'
+        type: array
+      num_members:
+        type: integer
+      parent_club:
+        type: integer
+      point_of_contacts:
+        items:
+          $ref: '#/definitions/models.PointOfContact'
+        type: array
+      preview:
+        type: string
+      recruitment_cycle:
+        $ref: '#/definitions/models.RecruitmentCycle'
+      recruitment_type:
+        $ref: '#/definitions/models.RecruitmentType'
+      tags:
+        items:
+          $ref: '#/definitions/models.Tag'
+        type: array
+      updated_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+    required:
+    - application_link
+    - club_members
+    - contacts
+    - description
+    - is_recruiting
+    - logo
+    - name
+    - num_members
+    - point_of_contacts
+    - preview
+    - recruitment_cycle
+    - recruitment_type
+    type: object
+  models.College:
+    enum:
+    - CAMD
+    - DMSB
+    - KCCS
+    - CE
+    - BCHS
+    - SL
+    - CPS
+    - CS
+    - CSSH
+    type: string
+    x-enum-comments:
+      BCHS: Bouvé College of Health Sciences
+      CAMD: College of Arts, Media and Design
+      CE: College of Engineering
+      CPS: College of Professional Studies
+      CS: College of Science
+      CSSH: College of Social Sciences and Humanities
+      DMSB: D'Amore-McKim School of Business
+      KCCS: Khoury College of Computer Sciences
+      SL: School of Law
+    x-enum-varnames:
+    - CAMD
+    - DMSB
+    - KCCS
+    - CE
+    - BCHS
+    - SL
+    - CPS
+    - CS
+    - CSSH
+  models.Comment:
+    properties:
+      answer:
+        type: string
+      answered_by:
+        $ref: '#/definitions/models.User'
+      asked_by:
+        $ref: '#/definitions/models.User'
+      asked_by_id:
+        type: integer
+      club:
+        $ref: '#/definitions/models.Club'
+      club_id:
+        type: integer
+      created_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      id:
+        example: 1
+        type: integer
+      num_found_helpful:
+        type: integer
+      question:
+        type: string
+      updated_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      user_id:
+        type: integer
+    required:
+    - question
+    type: object
+  models.Contact:
+    properties:
+      content:
+        description: media URI
+        type: string
+      created_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      id:
+        example: 1
+        type: integer
+      type:
+        $ref: '#/definitions/models.Media'
+      updated_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+    required:
+    - content
+    - type
+    type: object
+  models.Event:
+    properties:
+      clubs:
+        items:
+          $ref: '#/definitions/models.Club'
+        type: array
+      content:
+        type: string
+      created_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      end_time:
+        type: string
+      event_type:
+        $ref: '#/definitions/models.EventType'
+      id:
+        example: 1
+        type: integer
+      location:
+        type: string
+      name:
+        type: string
+      notifications:
+        items:
+          $ref: '#/definitions/models.Notification'
+        type: array
+      preview:
+        type: string
+      start_time:
+        type: string
+      tags:
+        items:
+          $ref: '#/definitions/models.Tag'
+        type: array
+      updated_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      user_rsvps:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+      user_waitlists:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+    required:
+    - clubs
+    - content
+    - end_time
+    - event_type
+    - location
+    - name
+    - preview
+    - start_time
+    type: object
+  models.EventType:
+    enum:
+    - open
+    - membersOnly
+    type: string
+    x-enum-varnames:
+    - Open
+    - MembersOnly
+  models.Media:
+    enum:
+    - facebook
+    - instagram
+    - twitter
+    - linkedin
+    - youtube
+    - github
+    - custom
+    type: string
+    x-enum-varnames:
+    - Facebook
+    - Instagram
+    - Twitter
+    - LinkedIn
+    - YouTube
+    - GitHub
+    - Custom
+  models.Notification:
+    properties:
+      content:
+        type: string
+      created_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      deep_link:
+        type: string
+      icon:
+        description: S3 URI
+        type: string
+      id:
+        example: 1
+        type: integer
+      reference_id:
+        type: integer
+      reference_type:
+        $ref: '#/definitions/models.NotificationType'
+      send_at:
+        type: string
+      title:
+        type: string
+      updated_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+    required:
+    - content
+    - deep_link
+    - icon
+    - reference_id
+    - reference_type
+    - send_at
+    - title
+    type: object
+  models.NotificationType:
+    enum:
+    - event
+    - club
+    type: string
+    x-enum-varnames:
+    - EventNotification
+    - ClubNotification
+  models.PointOfContact:
     properties:
       created_at:
         example: "2023-09-20T16:34:50Z"
         type: string
       email:
         type: string
-      firebase_id:
-        type: string
       id:
         example: 1
         type: integer
-      password:
+      name:
+        type: string
+      position:
         type: string
       updated_at:
         example: "2023-09-20T16:34:50Z"
         type: string
-      username:
-        type: string
     required:
     - email
-    - firebase_id
-    - password
-    - username
+    - name
+    - position
     type: object
+  models.RecruitmentCycle:
+    enum:
+    - fall
+    - spring
+    - fallSpring
+    - always
+    type: string
+    x-enum-varnames:
+    - Fall
+    - Spring
+    - FallSpring
+    - Always
+  models.RecruitmentType:
+    enum:
+    - unrestricted
+    - tryout
+    - application
+    type: string
+    x-enum-varnames:
+    - Unrestricted
+    - Tryout
+    - Application
+  models.Tag:
+    properties:
+      category_id:
+        type: integer
+      clubs:
+        items:
+          $ref: '#/definitions/models.Club'
+        type: array
+      created_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      events:
+        items:
+          $ref: '#/definitions/models.Event'
+        type: array
+      id:
+        example: 1
+        type: integer
+      name:
+        type: string
+      updated_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      users:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+    required:
+    - name
+    type: object
+  models.User:
+    properties:
+      answered:
+        items:
+          $ref: '#/definitions/models.Comment'
+        type: array
+      club_followers:
+        items:
+          $ref: '#/definitions/models.Club'
+        type: array
+      club_intended_applicants:
+        items:
+          $ref: '#/definitions/models.Club'
+        type: array
+      club_members:
+        items:
+          $ref: '#/definitions/models.Club'
+        type: array
+      college:
+        $ref: '#/definitions/models.College'
+      comments:
+        items:
+          $ref: '#/definitions/models.Comment'
+        type: array
+      created_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      email:
+        type: string
+      event_rsvps:
+        items:
+          $ref: '#/definitions/models.Event'
+        type: array
+      event_waitlist:
+        items:
+          $ref: '#/definitions/models.Event'
+        type: array
+      first_name:
+        type: string
+      id:
+        example: 1
+        type: integer
+      last_name:
+        type: string
+      nuid:
+        type: string
+      tags:
+        items:
+          $ref: '#/definitions/models.Tag'
+        type: array
+      updated_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      user_role:
+        $ref: '#/definitions/models.UserRole'
+      year:
+        $ref: '#/definitions/models.Year'
+    required:
+    - club_members
+    - college
+    - email
+    - first_name
+    - last_name
+    - nuid
+    - user_role
+    - year
+    type: object
+  models.UserRole:
+    enum:
+    - super
+    - clubAdmin
+    - student
+    type: string
+    x-enum-varnames:
+    - Super
+    - ClubAdmin
+    - Student
+  models.Year:
+    enum:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    type: integer
+    x-enum-varnames:
+    - First
+    - Second
+    - Third
+    - Fourth
+    - Fifth
+    - Graduate
 host: 127.0.0.1:8080
 info:
   contact:

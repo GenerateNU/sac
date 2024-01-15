@@ -9,6 +9,28 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+func FormatCommand() *cli.Command {
+	command := cli.Command{
+		Name:  "format",
+		Usage: "Runs formatter",
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "frontend",
+				Aliases: []string{"f"},
+				Usage:   "Runs frontend formatter",
+				Value:   "",
+			},
+			&cli.BoolFlag{
+				Name:    "backend",
+				Aliases: []string{"b"},
+				Usage:   "Runs backend formatter",
+			},
+		},
+		Action: Format,
+	}
+
+	return &command
+}
 
 func Format(c *cli.Context) error {
 	if c.Args().Len() > 0 {

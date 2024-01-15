@@ -2,34 +2,39 @@ package commands
 
 import (
 	"fmt"
-	"os"
 	"os/exec"
-	"path/filepath"
 
 	"github.com/urfave/cli/v2"
 )
 
-func Swagger(c *cli.Context) error {
-	if c.Args().Len() > 0 {
-		return cli.Exit("Invalid arguments", 1)
+func SwaggerCommand(backendDir string) *cli.Command {
+	command := cli.Command{
+		Name:  "swagger",
+		Usage: "Updates the swagger documentation",
+		Action: func(c *cli.Context) error {
+			if c.Args().Len() > 0 {
+				return cli.Exit("Invalid arguments", 1)
+			}
+
+			Swagger(backendDir)
+			return nil
+		},
 	}
 
-	currentDir, err := os.Getwd()
-	if err != nil {
-		return cli.Exit("Error getting current directory", 1)
-	}
+	return &command
+}
 
-	backendDir := filepath.Join(currentDir, "../backend/src")
 
+func Swagger(backendDir string) error {
 	cmd := exec.Command("swag", "init")
-	cmd.Dir = backendDir
+	cmd.Dir = backendDir 
 
-	output, err := cmd.CombinedOutput()
+	out, err := cmd.CombinedOutput()
 	if err != nil {
-		return cli.Exit("Error generating swagger docs", 1)
+		fmt.Println(string(out))
+		return cli.Exit("Failed to generate swagger.json", 1)
 	}
 
-	fmt.Println(string(output))
-	
+	fmt.Println(string(out))
 	return nil
 }
