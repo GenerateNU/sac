@@ -70,9 +70,7 @@ jobs:
         run: cd backend && go get ./...
       - name: Run App to Auto-Migrate DB
         run: |
-          cd backend/src && go run main.go &
-          sleep 5
-          kill %1
+          cd backend/src && go run main.go --only-migrate
       - name: Run Tests with Coverage
         run: cd backend && go test -race -coverprofile=coverage.txt -covermode=atomic ./...
       - name: Print Coverage
