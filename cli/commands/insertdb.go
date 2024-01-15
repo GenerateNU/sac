@@ -21,7 +21,18 @@ func InsertDB(c *cli.Context) error {
 
 	backendDir := filepath.Join(currentDir, "../backend/src")
 
-	cmd := exec.Command("./init_db.sh")
+	cmd := exec.Command("go", "run", "main.go")
+	cmd.Dir = backendDir
+
+	err = cmd.Run()
+	if err != nil {
+		return cli.Exit("Error running main.go", 1)
+	}
+
+	// kill the server
+	cmd.Process.Kill()
+
+	cmd = exec.Command("../../scripts/init_db.sh")
 	cmd.Dir = backendDir
 
 	output, err := cmd.CombinedOutput()
