@@ -35,106 +35,12 @@ func main() {
 		Usage: "CLI for SAC",
 		Commands: []*cli.Command{
 			swaggerCommand(),
-			{
-				Name:  "start",
-				Usage: "Start frontend and/or backend",
-				Flags: []cli.Flag{
-					&cli.StringFlag{
-						Name:    "ngrok",
-						Aliases: []string{"n"},
-						Value:   "",
-						Usage:   "Run backend with ngrok instead of locally (requires ngrok URL)",
-					},
-					&cli.StringFlag{
-						Name:    "frontend",
-						Aliases: []string{"f"},
-						Value:   "",
-						Usage:   "Specify the frontend folder",
-					},
-				},
-				Action: func(c *cli.Context) error {
-					ngrok := c.Bool("ngrok")
-					folder := c.String("frontend")
-
-					fmt.Println("start", ngrok, folder)
-					return nil
-				},
-			},
-			{
-				Name:  "initdb",
-				Usage: "Initializes the database",
-				Action: func(c *cli.Context) error {
-					fmt.Println("initdb")
-					return nil
-				},
-			},
-			{
-				Name:  "resetdb",
-				Usage: "Resets the database",
-				Action: func(c *cli.Context) error {
-					fmt.Println("resetdb")
-					return nil
-				},
-			},
-			{
-				Name:  "test",
-				Usage: "Runs tests",
-				Flags: []cli.Flag{
-					&cli.BoolFlag{
-						Name:    "frontend",
-						Aliases: []string{"f"},
-						Usage:   "Runs frontend tests",
-					},
-					&cli.BoolFlag{
-						Name:    "backend",
-						Aliases: []string{"b"},
-						Usage:   "Runs backend tests",
-					},
-				},
-				Action: func(c *cli.Context) error {
-					fmt.Println("test", c.Bool("frontend"), c.Bool("backend"))
-					return nil
-				},
-			},
-			{
-				Name:  "lint",
-				Usage: "Runs linter",
-				Flags: []cli.Flag{
-					&cli.StringFlag{
-						Name:    "frontend",
-						Aliases: []string{"f"},
-						Usage:   "Runs frontend linter",
-						Value:   "",
-					},
-					&cli.BoolFlag{
-						Name:    "backend",
-						Aliases: []string{"b"},
-						Usage:   "Runs backend linter",
-					},
-				},
-				Action: func(c *cli.Context) error {
-					fmt.Println("lint", c.String("frontend"), c.Bool("backend"))
-					return nil
-				},
-			},
-			{
-				Name:  "format",
-				Usage: "Runs formatter",
-				Flags: []cli.Flag{
-					&cli.StringFlag{
-						Name:    "frontend",
-						Aliases: []string{"f"},
-						Usage:   "Runs frontend formatter",
-						Value:   "",
-					},
-					&cli.BoolFlag{
-						Name:    "backend",
-						Aliases: []string{"b"},
-						Usage:   "Runs backend formatter",
-					},
-				},
-				Action: commands.Format,
-			},
+			startCommand(),
+			initdbCommand(),
+			resetdbCommand(),
+			testCommand(),
+			lintCommand(),
+			formatCommand(),
 		},
 	}
 
@@ -149,6 +55,133 @@ func swaggerCommand() *cli.Command {
 		Name:  "swagger",
 		Usage: "Updates the swagger documentation",
 		Action: commands.Swagger,
+	}
+
+	return &command
+}
+
+func startCommand() *cli.Command {
+	command := cli.Command{
+		Name:  "start",
+		Usage: "Start frontend and/or backend",
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "ngrok",
+				Aliases: []string{"n"},
+				Value:   "",
+				Usage:   "Run backend with ngrok instead of locally (requires ngrok URL)",
+			},
+			&cli.StringFlag{
+				Name:    "frontend",
+				Aliases: []string{"f"},
+				Value:   "",
+				Usage:   "Specify the frontend folder",
+			},
+		},
+		Action: func(c *cli.Context) error {
+			ngrok := c.Bool("ngrok")
+			folder := c.String("frontend")
+
+			fmt.Println("start", ngrok, folder)
+			return nil
+		},
+	}
+
+	return &command
+}
+
+func initdbCommand() *cli.Command {
+	command := cli.Command{
+		Name:  "initdb",
+		Usage: "Initializes the database",
+		Action: commands.InsertDB,
+	}
+
+	return &command
+}
+
+func resetdbCommand() *cli.Command {
+	command := cli.Command{
+		Name:  "resetdb",
+		Usage: "Resets the database",
+		Action: func(c *cli.Context) error {
+			fmt.Println("resetdb")
+			return nil
+		},
+	}
+
+	return &command
+}
+
+func testCommand() *cli.Command {
+	command := cli.Command{
+		Name:  "test",
+		Usage: "Runs tests",
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:    "frontend",
+				Aliases: []string{"f"},
+				Usage:   "Runs frontend tests",
+			},
+			&cli.BoolFlag{
+				Name:    "backend",
+				Aliases: []string{"b"},
+				Usage:   "Runs backend tests",
+			},
+		},
+		Action: func(c *cli.Context) error {
+			fmt.Println("test", c.Bool("frontend"), c.Bool("backend"))
+			return nil
+		},
+	}
+
+	return &command
+}
+
+func lintCommand() *cli.Command {
+	command := cli.Command{
+		Name:  "lint",
+		Usage: "Runs linter",
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "frontend",
+				Aliases: []string{"f"},
+				Usage:   "Runs frontend linter",
+				Value:   "",
+			},
+			&cli.BoolFlag{
+				Name:    "backend",
+				Aliases: []string{"b"},
+				Usage:   "Runs backend linter",
+			},
+		},
+		Action: func(c *cli.Context) error {
+			fmt.Println("lint", c.String("frontend"), c.Bool("backend"))
+			return nil
+		},
+	}
+
+	return &command
+}
+
+func formatCommand() *cli.Command {
+	command := cli.Command{
+		Name:  "format",
+		Usage: "Runs formatter",
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "frontend",
+				Aliases: []string{"f"},
+				Usage:   "Runs frontend formatter",
+				Value:   "",
+			},
+			&cli.BoolFlag{
+				Name:    "backend",
+				Aliases: []string{"b"},
+				Usage:   "Runs backend formatter",
+			},
+		},
+		Action: commands.Format,
 	}
 
 	return &command

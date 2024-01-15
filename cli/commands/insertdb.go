@@ -9,7 +9,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func Swagger(c *cli.Context) error {
+func InsertDB(c *cli.Context) error {
 	if c.Args().Len() > 0 {
 		return cli.Exit("Invalid arguments", 1)
 	}
@@ -21,12 +21,12 @@ func Swagger(c *cli.Context) error {
 
 	backendDir := filepath.Join(currentDir, "../backend/src")
 
-	cmd := exec.Command("swag", "init")
+	cmd := exec.Command("./init_db.sh")
 	cmd.Dir = backendDir
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return cli.Exit("Error generating swagger docs", 1)
+		return cli.Exit("Error running init_db.sh", 1)
 	}
 
 	fmt.Println(string(output))
