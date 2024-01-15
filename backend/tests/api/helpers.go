@@ -7,12 +7,8 @@ import (
 	"fmt"
 	"math/big"
 	"net"
-	"os"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/postgres"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
 	gormPostgres "gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -81,48 +77,6 @@ func configureDatabase(config config.DatabaseSettings) (*gorm.DB, error) {
 	dsnWithDB := config.WithDb()
 	dbWithDB, err := gorm.Open(gormPostgres.Open(dsnWithDB), &gorm.Config{})
 	if err != nil {
-		return nil, err
-	}
-
-	initialDir, err := os.Getwd()
-	if err != nil {
-		return nil, err
-	}
-
-	err = os.Chdir("../../")
-	if err != nil {
-		return nil, err
-	}
-
-	db, err := dbWithDB.DB()
-
-	if err != nil {
-		return nil, err
-	}
-
-	driver, err := postgres.WithInstance(db, &postgres.Config{})
-
-	if err != nil {
-		return nil, err
-	}
-
-	m, err := migrate.NewWithDatabaseInstance(
-		"file://migrations",
-		config.DatabaseName,
-		driver,
-	)
-
-	if err != nil {
-		return nil, err
-	}
-
-	err = os.Chdir(initialDir)
-	if err != nil {
-		return nil, err
-	}
-
-	err = m.Up()
-	if err != nil && err != migrate.ErrNoChange {
 		return nil, err
 	}
 

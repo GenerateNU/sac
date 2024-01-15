@@ -2,6 +2,7 @@ package services
 
 import (
 	"backend/src/models"
+	"backend/src/transactions"
 
 	"gorm.io/gorm"
 )
@@ -16,11 +17,5 @@ type UserService struct {
 
 // Gets all users (including soft deleted users) for testing
 func (u *UserService) GetAllUsers() ([]models.User, error) {
-	var users []models.User
-	if err := u.DB.Unscoped().Omit("password").Find(&users).Error; err != nil {
-		return nil, err
-	}
-
-	return users, nil
-
+	return transactions.GetAllUsers(u.DB)
 }

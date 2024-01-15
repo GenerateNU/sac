@@ -26,8 +26,9 @@ func NewUserController(userService services.UserServiceInterface) *UserControlle
 // @Router		/api/users/  [get]
 func (u *UserController) GetAllUsers(c *fiber.Ctx) error {
 	users, err := u.userService.GetAllUsers()
+
 	if err != nil {
-		return fiber.NewError(fiber.StatusServiceUnavailable, "Failed to fetch users")
+		return fiber.NewError(fiber.StatusInternalServerError, "Failed to fetch users")
 	}
 
 	return c.Status(fiber.StatusOK).JSON(users)

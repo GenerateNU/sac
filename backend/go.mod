@@ -12,12 +12,7 @@ require (
 	gorm.io/gorm v1.25.5
 )
 
-require (
-	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
-	github.com/hashicorp/errwrap v1.1.0 // indirect
-	github.com/hashicorp/go-multierror v1.1.1 // indirect
-	github.com/lib/pq v1.10.9 // indirect
-)
+require github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
@@ -32,7 +27,7 @@ require (
 	github.com/go-openapi/swag v0.19.15 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/golang-migrate/migrate/v4 v4.17.0
+	github.com/goccy/go-json v0.10.2
 	github.com/google/uuid v1.5.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/huandu/go-assert v1.1.6

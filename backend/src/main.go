@@ -30,5 +30,5 @@ func main() {
 
 	app := server.Init(db)
 
-	go app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
+	app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
 }
