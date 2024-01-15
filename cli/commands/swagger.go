@@ -24,10 +24,9 @@ func SwaggerCommand(backendDir string) *cli.Command {
 	return &command
 }
 
-
 func Swagger(backendDir string) error {
 	cmd := exec.Command("swag", "init")
-	cmd.Dir = backendDir 
+	cmd.Dir = backendDir
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {
