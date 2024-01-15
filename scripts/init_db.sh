@@ -1,51 +1,40 @@
-#!/usr/bin/env bash
-set -x
-set -eo pipefail
+#!/bin/bash
 
-if ! [ -x "$(command -v psql)" ]; then
-  echo >&2 "Error: psql is not installed."
-  exit 1
-fi
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+PGHOST="127.0.0.1"
+PGPORT="5432"
+PGUSER="postgres"
+PGPASSWORD="postgres"
+PGDATABASE="sac"
+INSERTSQL="../backend/src/migrations/data.sql"
+CHECK_TABLES_QUERY="SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' LIMIT 1);"
 
-if ! [ -x "$(command -v migrate)" ]; then
-  echo >&2 "Error: migration CLI is not installed."
-  echo >&2 "Use:"
-  echo >&2 "    go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest"
-  echo >&2 "to install it."
-  exit 1
-fi
+# Change the working directory to the specified location
+cd "$SCRIPT_DIR" || { echo "Error: Could not change directory to $SCRIPT_DIR"; exit 1; }
 
-DB_USER="${POSTGRES_USER:=postgres}"
-DB_PASSWORD="${POSTGRES_PASSWORD:=password}"
-DB_NAME="${POSTGRES_DB:=sac}"
-DB_PORT="${POSTGRES_PORT:=5432}"
-DB_HOST="${POSTGRES_HOST:=127.0.0.1}"
+# Check if tables exist in the database
+if psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d "$PGDATABASE" -t -c "$CHECK_TABLES_QUERY" | grep -q "t";  then
+  echo "Database $PGDATABASE exists with tables."
+else
+  echo "Error: Database $PGDATABASE does not exist or has no tables. Running database migration."
+  go run ../backend/src/main.go
+  sleep 3
 
-if [[ -z "${SKIP_DOCKER}" ]]
-then
-  RUNNING_POSTGRES_CONTAINER=$(docker ps --filter 'name=postgres' --format '{{.ID}}')
-  if [[ -n $RUNNING_POSTGRES_CONTAINER ]]; then
-    echo >&2 "there is a postgres container already running, kill it with"
-    echo >&2 "    docker kill ${RUNNING_POSTGRES_CONTAINER}"
-    exit 1
+  # Find the process running on port 8080 and kill it
+  PROCESS_ID=$(lsof -i :8080 | awk 'NR==2{print $2}')
+  if [ -n "$PROCESS_ID" ]; then
+    kill -INT $PROCESS_ID
+    echo "Killed process $PROCESS_ID running on port 8080."
+  else
+    echo "No process running on port 8080."
+    exit 0
   fi
-  docker run \
-      -e POSTGRES_USER=${DB_USER} \
-      -e POSTGRES_PASSWORD=${DB_PASSWORD} \
-      -e POSTGRES_DB=${DB_NAME} \
-      -p "${DB_PORT}":5432 \
-      -d \
-      --name "postgres_$(date '+%s')" \
-      postgres -N 1000
 fi
 
-until PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST}" -U "${DB_USER}" -p "${DB_PORT}" -d "postgres" -c '\q'; do
-  >&2 echo "Postgres is still unavailable - sleeping"
-  sleep 1
-done
-
->&2 echo "Postgres is up and running on port ${DB_PORT} - running migrations now!"
-
-migrate -database postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable -path ./backend/migrations/ up
-
->&2 echo "Postgres has been migrated, ready to go!"
+# Insert data from data.sql
+if psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d "$PGDATABASE" -a -f "$INSERTSQL" > /dev/null 2>&1; then
+  echo "Data inserted successfully."
+else
+  echo "Error: Failed to insert data."
+  exit 1
+fi
