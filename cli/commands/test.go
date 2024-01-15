@@ -35,7 +35,6 @@ func TestCommand(backendDir string, frontendDir string) *cli.Command {
 			}
 
 			fmt.Println("Frontend", c.String("frontend"))
-
 			folder := c.String("frontend")
 			runFrontend := folder != ""
 			runBackend := c.Bool("backend")

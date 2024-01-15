@@ -96,6 +96,37 @@
    psql // opens psql shell
    CREATE DATABASE sac;
    ```
+# Commands
+
+### React Native
+
+  ```bash
+   npx expo start --dev-client // runnning dev client
+   npx expo start --dev-client --ios // specific platform
+   yarn format // format code
+   yarn lint // lint code
+   yarn test // run tests
+   ```
+
+### Go
+
+   ```bash
+   go run main.go // run server
+   go test ./... // run tests
+   go fmt ./... // format code
+   go vet ./... // lint code
+   ```
+
+### Others (WIP)
+
+   ```bash
+   sac-cli migrate // run migrations
+   sac-cli reset // reset database
+   sac-cli swagger // generate swagger docs
+   sac-cli lint // lint code
+   sac-cli format // format code
+   sac-cli test // run tests
+   ```
 
 4. **Create a user**
 
