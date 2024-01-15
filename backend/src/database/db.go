@@ -65,7 +65,7 @@ func MigrateDB(settings config.Settings, db *gorm.DB) error {
 		Role:         models.Super,
 		NUID:         "000000000",
 		Email:        "generatesac@gmail.com",
-		PasswordHash: settings.SuperUser.Password,
+		PasswordHash: settings.SuperUser.Password, // TODO: hash this
 		FirstName:    "SAC",
 		LastName:     "Super",
 		College:      models.KCCS,
