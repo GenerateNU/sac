@@ -62,4 +62,5 @@ func userRoutes(router fiber.Router, userService services.UserServiceInterface) 
 	users := router.Group("/users")
 
 	users.Get("/", userController.GetAllUsers)
+	users.Patch("/:id", userController.UpdateUser) 
 }
