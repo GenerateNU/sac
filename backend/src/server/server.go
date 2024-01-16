@@ -69,6 +69,7 @@ func userRoutes(router fiber.Router, userService services.UserServiceInterface) 
 
 	users.Get("/", userController.GetAllUsers)
 	users.Get("/:id", userController.GetUser)
+	users.Patch("/:id", userController.UpdateUser)
 }
 
 func categoryRoutes(router fiber.Router, categoryService services.CategoryServiceInterface) {

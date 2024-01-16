@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
 
 	"github.com/gofiber/fiber/v2"
@@ -53,4 +54,33 @@ func (u *UserController) GetUser(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusOK).JSON(user)
+}
+
+// UpdateUser godoc
+//
+// @Summary		Updates a user
+// @Description	Updates a user
+// @ID			update-user-by-id
+// @Tags      	user
+// @Produce		json
+// @Success		200	  {object}	  models.User
+// @Failure     404   {string}    string "Failed to update user"
+// @Router		/api/v1/users/:id  [patch]
+func (u *UserController) UpdateUser(c *fiber.Ctx) error {
+	var user models.User
+
+	if err := c.BodyParser(&user); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, "Invalid request body")
+	}
+
+	userID := c.Params("id")
+
+	updatedUser, err := u.userService.UpdateUser(userID, user)
+
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "Failed to update user")
+	}
+
+	// Return the updated user details
+	return c.Status(fiber.StatusOK).JSON(updatedUser)
 }

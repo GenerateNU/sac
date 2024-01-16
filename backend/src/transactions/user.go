@@ -31,3 +31,17 @@ func GetUser(db *gorm.DB, id uint) (*models.User, error) {
 
 	return &user, nil
 }
+
+func UpdateUser(db *gorm.DB, id string, payload models.User) (models.User, error) {
+	var existingUser models.User
+
+	if err := db.First(&existingUser, id).Error; err != nil {
+		return models.User{}, err
+	}
+
+	if err := db.Model(&existingUser).Updates(&payload).Error; err != nil {
+		return models.User{}, err
+	}
+
+	return existingUser, nil
+}

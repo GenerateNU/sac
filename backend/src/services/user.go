@@ -11,7 +11,8 @@ import (
 
 type UserServiceInterface interface {
 	GetAllUsers() ([]models.User, error)
-	GetUser(string) (*models.User, error)
+	GetUser(id string) (*models.User, error)
+	UpdateUser(id string, user models.User) (models.User, error)
 }
 
 type UserService struct {
@@ -31,4 +32,11 @@ func (u *UserService) GetUser(userID string) (*models.User, error) {
 	}
 
 	return transactions.GetUser(u.DB, *idAsUint)
+}
+
+// Updates a user
+func (u *UserService) UpdateUser(id string, payload models.User) (models.User, error) {
+
+	//TODO: validation
+	return transactions.UpdateUser(u.DB, id, payload)
 }
