@@ -27,7 +27,7 @@ func NewTagController(tagService services.TagServiceInterface) *TagController {
 // @Success		200	  {object}	string
 // @Failure     400   {string}    string "Failed to process the request"
 // @Failure     400   {string}    string "Failed to validate the data"
-// @Failure     400   {string}    string "Failed to create tag"
+// @Failure     500   {string}    string "Failed to create tag"
 // @Router		/api/v1/tags/create  [post]
 func (t *TagController) CreateTag(c *fiber.Ctx) error {
 	var tag models.Tag
@@ -42,7 +42,7 @@ func (t *TagController) CreateTag(c *fiber.Ctx) error {
 
 	tag, err := t.tagService.CreateTag(tag)
 	if err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "Failed to create tag")
+		return fiber.NewError(fiber.StatusInternalServerError, "Failed to create tag")
 	}
 
 	return c.Status(fiber.StatusOK).JSON(tag)

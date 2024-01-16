@@ -9,7 +9,7 @@ type Tag struct {
 
 	Name string `gorm:"type:varchar(255)" json:"name" validate:"required"`
 
-	CategoryID uint `gorm:"foreignKey:CategoryID" json:"category_id" validate:"-"`
+	CategoryID uint `gorm:"foreignKey:CategoryID" json:"category_id" validate:"required"`
 
 	User  []User  `gorm:"many2many:user_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"users" validate:"-"`
 	Club  []Club  `gorm:"many2many:club_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"clubs" validate:"-"`
