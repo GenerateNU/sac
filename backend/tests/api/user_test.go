@@ -14,8 +14,8 @@ func TestGetAllUsersWorks(t *testing.T) {
 	// initialize the test
 	app, assert := InitTest(t)
 
-	// create a GET request to the APP/api/v1/users endpoint
-	req := httptest.NewRequest("GET", fmt.Sprintf("%s/api/v1/users", app.Address), nil)
+	// create a GET request to the APP/api/v1/users/ endpoint
+	req := httptest.NewRequest("GET", fmt.Sprintf("%s/api/v1/users/", app.Address), nil)
 
 	// send the request to the app
 	resp, err := app.App.Test(req)
