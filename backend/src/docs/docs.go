@@ -18,7 +18,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/users/": {
+        "/api/v1/users/": {
             "get": {
                 "description": "Returns all users",
                 "produces": [
@@ -39,7 +39,7 @@ const docTemplate = `{
                             }
                         }
                     },
-                    "404": {
+                    "500": {
                         "description": "Failed to fetch users",
                         "schema": {
                             "type": "string"
@@ -58,7 +58,6 @@ const docTemplate = `{
                 "contacts",
                 "description",
                 "is_recruiting",
-                "logo",
                 "name",
                 "num_members",
                 "point_of_contacts",
@@ -471,6 +470,10 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "photo": {
+                    "description": "S3 URI, fallback to default logo if null",
+                    "type": "string"
+                },
                 "position": {
                     "type": "string"
                 },
@@ -687,7 +690,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "127.0.0.1:8080",
-	BasePath:         "/api/v1",
+	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "SAC API",
 	Description:      "Backend Server for SAC App",
