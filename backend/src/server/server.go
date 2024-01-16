@@ -30,6 +30,7 @@ func Init(db *gorm.DB) *fiber.App {
 
 	apiv1 := app.Group("/api/v1")
 	userRoutes(apiv1, &services.UserService{DB: db})
+	tagRoutes(apiv1, &services.TagService{DB: db})
 
 	return app
 }
@@ -62,4 +63,12 @@ func userRoutes(router fiber.Router, userService services.UserServiceInterface) 
 	users := router.Group("/users")
 
 	users.Get("/", userController.GetAllUsers)
+}
+
+func tagRoutes(router fiber.Router, tagService services.TagServiceInterface) {
+	tagController := controllers.NewTagController(tagService)
+
+	tags := router.Group("/tags")
+
+	tags.Post("/create", tagController.CreateTag)
 }
