@@ -41,7 +41,7 @@
    go get ./...
    ```
 
-   - If this doesnt work, try running `go mod tidy` and then `go get ./...` again or delete the go.mod and go.sum files and then run `go mod init server` and `go mod tidy` again.
+   - If this doesnt work, try running `go mod tidy` and then `go get ./...` again or delete the go.mod and go.sum files and then run `go mod init backend` and `go mod tidy` again.
 
 ### React Native Builds
 
