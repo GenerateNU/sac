@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"backend/src/models"
 	"backend/src/services"
+	"backend/src/types"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -35,7 +35,6 @@ func (u *UserController) GetAllUsers(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(users)
 }
 
-
 // UpdateUser godoc
 //
 // @Summary		Updates a user
@@ -47,10 +46,10 @@ func (u *UserController) GetAllUsers(c *fiber.Ctx) error {
 // @Failure     404   {string}    string "Failed to update user"
 // @Router		/api/v1/users/:id  [patch]
 func (u *UserController) UpdateUser(c *fiber.Ctx) error {
-	var user models.User
-	
+	var user types.UserParams
+
 	if err := c.BodyParser(&user); err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "Invalid request body")
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
 	userID := c.Params("id")
@@ -58,7 +57,7 @@ func (u *UserController) UpdateUser(c *fiber.Ctx) error {
 	updatedUser, err := u.userService.UpdateUser(userID, user)
 
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "Failed to update user")
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
 	// Return the updated user details
