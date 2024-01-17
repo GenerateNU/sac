@@ -6,12 +6,12 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateTag(db *gorm.DB, tag models.Tag) (models.Tag, error) {
+func CreateTag(db *gorm.DB, tag models.Tag) (*models.Tag, error) {
 	if err := db.Create(&tag).Error; err != nil {
-		return models.Tag{}, err
+		return nil, err
 	}
 
-	return tag, nil
+	return &tag, nil
 }
 
 func GetTag(db *gorm.DB, id uint) (models.Tag, error) {

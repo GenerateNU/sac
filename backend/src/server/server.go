@@ -70,5 +70,5 @@ func tagRoutes(router fiber.Router, tagService services.TagServiceInterface) {
 
 	tags := router.Group("/tags")
 
-	tags.Post("/create", tagController.CreateTag)
+	tags.Post("/", tagController.CreateTag)
 }

@@ -31,7 +31,7 @@ func TestCreateTagWorks(t *testing.T) {
 
 	assert.NilError(err)
 
-	assert.Equal(200, resp.StatusCode)
+	assert.Equal(201, resp.StatusCode)
 
 	var respTag models.Tag
 
