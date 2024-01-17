@@ -39,7 +39,7 @@ func UpdateUser(db *gorm.DB, id string, payload models.User) (models.User, error
 		return models.User{}, err
 	}
 
-	if err := db.Model(&existingUser).Updates(&payload).Error; err != nil {
+	if err := db.Model(&existingUser).Updates(&user).Error; err != nil {
 		return models.User{}, err
 	}
 
