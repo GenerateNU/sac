@@ -24,7 +24,7 @@ func TestCreateTagWorks(t *testing.T) {
 
 	assert.NilError(err)
 
-	req := httptest.NewRequest("POST", fmt.Sprintf("%s/api/v1/tags/create", app.Address), bytes.NewBuffer(body))
+	req := httptest.NewRequest("POST", fmt.Sprintf("%s/api/v1/tags/", app.Address), bytes.NewBuffer(body))
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := app.App.Test(req)
@@ -65,7 +65,7 @@ func TestCreateTagFailsBadRequest(t *testing.T) {
 
 		assert.NilError(err)
 
-		req := httptest.NewRequest("POST", fmt.Sprintf("%s/api/v1/tags/create", app.Address), bytes.NewBuffer(body))
+		req := httptest.NewRequest("POST", fmt.Sprintf("%s/api/v1/tags/", app.Address), bytes.NewBuffer(body))
 		req.Header.Set("Content-Type", "application/json")
 
 		resp, err := app.App.Test(req)
@@ -100,7 +100,7 @@ func TestCreateTagFailsValidation(t *testing.T) {
 
 		assert.NilError(err)
 
-		req := httptest.NewRequest("POST", fmt.Sprintf("%s/api/v1/tags/create", app.Address), bytes.NewBuffer(body))
+		req := httptest.NewRequest("POST", fmt.Sprintf("%s/api/v1/tags/", app.Address), bytes.NewBuffer(body))
 		req.Header.Set("Content-Type", "application/json")
 
 		resp, err := app.App.Test(req)
