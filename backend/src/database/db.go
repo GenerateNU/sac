@@ -55,12 +55,6 @@ func MigrateDB(settings config.Settings, db *gorm.DB) error {
 		return err
 	}
 
-	tx := db.Begin()
-
-	if err := tx.Error; err != nil {
-		return err
-	}
-
 	superUser := models.User{
 		Role:         models.Super,
 		NUID:         "000000000",
@@ -74,7 +68,13 @@ func MigrateDB(settings config.Settings, db *gorm.DB) error {
 
 	var user models.User
 
-	if err := tx.Where("nuid = ?", superUser.NUID).First(&user).Error; err != nil {
+	if err := db.Where("nuid = ?", superUser.NUID).First(&user).Error; err != nil {
+		tx := db.Begin()
+
+		if err := tx.Error; err != nil {
+			return err
+		}
+
 		if err := tx.Create(&superUser).Error; err != nil {
 			tx.Rollback()
 			return err
@@ -99,7 +99,9 @@ func MigrateDB(settings config.Settings, db *gorm.DB) error {
 			tx.Rollback()
 			return err
 		}
-	}
 
-	return tx.Commit().Error
+		return tx.Commit().Error
+
+	}
+	return nil
 }
