@@ -37,7 +37,7 @@ func (u *UserController) GetAllUsers(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(users)
 }
 
-// GetAllUsers godoc
+// GetUser godoc
 //
 // @Summary		Gets specific user
 // @Description	Returns specific user
