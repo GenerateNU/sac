@@ -25,7 +25,7 @@ func NewCategoryController(categoryService services.CategoryServiceInterface) *C
 // @Success		200	  {object}	  []models.Category
 // @Failure 	400	  {string}	  string "Failed to process the request"
 // @Failure 	400	  {string}	  string "Failed to validate data"
-// @Failure     500   {string}    string "Failed to fetch users"
+// @Failure     500   {string}    string "Failed to create category"
 // @Router		/api/v1/category/  [post]
 func (t *CategoryController) CreateCategory(c *fiber.Ctx) error {
 	var categoryBody models.CategoryPartial
