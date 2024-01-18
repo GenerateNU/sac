@@ -3,7 +3,6 @@ package controllers
 import (
 	"backend/src/services"
 
-	"log"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
