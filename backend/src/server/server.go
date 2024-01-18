@@ -29,7 +29,9 @@ func Init(db *gorm.DB) *fiber.App {
 	utilityRoutes(app)
 
 	apiv1 := app.Group("/api/v1")
+	
 	userRoutes(apiv1, &services.UserService{DB: db})
+	categoryRoutes(apiv1, &services.CategoryService{DB: db})
 
 	return app
 }
@@ -62,4 +64,12 @@ func userRoutes(router fiber.Router, userService services.UserServiceInterface) 
 	users := router.Group("/users")
 
 	users.Get("/", userController.GetAllUsers)
+}
+
+func categoryRoutes(router fiber.Router, categoryService services.CategoryServiceInterface) {
+	categoryController := controllers.NewCategoryController(categoryService)
+
+	category := router.Group("/category")
+
+	category.Post("/", categoryController.CreateCategory)
 }
