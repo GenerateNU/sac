@@ -140,7 +140,7 @@
 1. **Create a new branch**
 
    ```bash
-   git checkout -b feature/<branch-name>
+   git checkout -b <branch-name> // this is determined by your ticket name
    ```
 
 2. **Make changes and commit changes:**
@@ -165,7 +165,7 @@
    or
 
    ```bash
-   git push origin feature/<branch-name>
+   git push origin <branch-name>
    ```
 
 4. **Create a pull request**
@@ -173,7 +173,7 @@
    - Click on the `Pull requests` tab
    - Click on the `New pull request` button
    - Select the `base` branch as `main`
-   - Select the `compare` branch as `feature/<branch-name>`
+   - Select the `compare` branch as `<branch-name>`
    - Click on the `Create pull request` button
 
 5. **Issues**
