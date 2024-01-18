@@ -3,7 +3,6 @@ package transactions
 import (
 	"backend/src/models"
 	"errors"
-	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
