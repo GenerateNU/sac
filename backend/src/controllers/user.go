@@ -23,8 +23,8 @@ func NewUserController(userService services.UserServiceInterface) *UserControlle
 // @Tags      	user
 // @Produce		json
 // @Success		200	  {object}	  []models.User
-// @Failure     404   {string}    string "Failed to fetch users"
-// @Router		/api/users/  [get]
+// @Failure     500   {string}    string "Failed to fetch users"
+// @Router		/api/v1/users/  [get]
 func (u *UserController) GetAllUsers(c *fiber.Ctx) error {
 	users, err := u.userService.GetAllUsers()
 

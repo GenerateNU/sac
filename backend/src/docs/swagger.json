@@ -10,9 +10,9 @@
         "version": "1.0"
     },
     "host": "127.0.0.1:8080",
-    "basePath": "/api/v1",
+    "basePath": "/",
     "paths": {
-        "/api/users/": {
+        "/api/v1/users/": {
             "get": {
                 "description": "Returns all users",
                 "produces": [
@@ -33,7 +33,7 @@
                             }
                         }
                     },
-                    "404": {
+                    "500": {
                         "description": "Failed to fetch users",
                         "schema": {
                             "type": "string"
@@ -52,7 +52,6 @@
                 "contacts",
                 "description",
                 "is_recruiting",
-                "logo",
                 "name",
                 "num_members",
                 "point_of_contacts",
@@ -463,6 +462,10 @@
                     "example": 1
                 },
                 "name": {
+                    "type": "string"
+                },
+                "photo": {
+                    "description": "S3 URI, fallback to default logo if null",
                     "type": "string"
                 },
                 "position": {

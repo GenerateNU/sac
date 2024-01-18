@@ -71,29 +71,34 @@ func MigrateDB(settings config.Settings, db *gorm.DB) error {
 		College:      models.KCCS,
 		Year:         models.First,
 	}
-	if err := tx.Create(&superUser).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
 
-	superClub := models.Club{
-		Name:        "SAC",
-		Preview:     "SAC",
-		Description: "SAC",
-	}
-	if err := tx.Create(&superClub).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
+	var user models.User
 
-	if err := tx.Model(&superClub).Association("Member").Append(&superUser); err != nil {
-		tx.Rollback()
-		return err
-	}
+	if err := tx.Where("nuid = ?", superUser.NUID).First(&user).Error; err != nil {
+		if err := tx.Create(&superUser).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
 
-	if err := tx.Model(&superClub).Update("num_members", gorm.Expr("num_members + ?", 1)).Error; err != nil {
-		tx.Rollback()
-		return err
+		superClub := models.Club{
+			Name:        "SAC",
+			Preview:     "SAC",
+			Description: "SAC",
+		}
+		if err := tx.Create(&superClub).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		if err := tx.Model(&superClub).Association("Member").Append(&superUser); err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		if err := tx.Model(&superClub).Update("num_members", gorm.Expr("num_members + ?", 1)).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
 	}
 
 	return tx.Commit().Error

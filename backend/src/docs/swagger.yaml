@@ -1,4 +1,4 @@
-basePath: /api/v1
+basePath: /
 definitions:
   models.Club:
     properties:
@@ -77,7 +77,6 @@ definitions:
     - contacts
     - description
     - is_recruiting
-    - logo
     - name
     - num_members
     - point_of_contacts
@@ -305,6 +304,9 @@ definitions:
         type: integer
       name:
         type: string
+      photo:
+        description: S3 URI, fallback to default logo if null
+        type: string
       position:
         type: string
       updated_at:
@@ -469,7 +471,7 @@ info:
   title: SAC API
   version: "1.0"
 paths:
-  /api/users/:
+  /api/v1/users/:
     get:
       description: Returns all users
       operationId: get-all-users
@@ -482,7 +484,7 @@ paths:
             items:
               $ref: '#/definitions/models.User'
             type: array
-        "404":
+        "500":
           description: Failed to fetch users
           schema:
             type: string
