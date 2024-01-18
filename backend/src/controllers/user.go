@@ -53,9 +53,11 @@ func (u *UserController) GetUser(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "id must be a positive number")
 	}
 
-	if user, err:= u.userService.GetUser(userID); err != nil {
+	user, err := u.userService.GetUser(userID)
+
+	if err != nil {
 		return err
 	}
 
-	return c.Status(fiber.StatusOK).JSON(&user)
+	return c.Status(fiber.StatusOK).JSON(user)
 }
