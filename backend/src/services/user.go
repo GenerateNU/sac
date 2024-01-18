@@ -21,7 +21,6 @@ func (u *UserService) GetAllUsers() ([]models.User, error) {
 	return transactions.GetAllUsers(u.DB)
 }
 
-// Gets specific users (including soft deleted users) for testing
 func (u *UserService) GetUser(id string) (*models.User, error) {
 	return transactions.GetUser(u.DB, id)
 }
