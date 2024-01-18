@@ -56,7 +56,6 @@ func (u *UserController) GetUser(c *fiber.Ctx) error {
 
 	user, err := u.userService.GetUser(userID)
 	if err != nil {
-		log.Println(err.Error())
 		return err
 	}
 
