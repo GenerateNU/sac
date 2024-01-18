@@ -3,7 +3,6 @@ package controllers
 import (
 	"backend/src/services"
 
-	"log"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -37,7 +36,7 @@ func (u *UserController) GetAllUsers(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(users)
 }
 
-// GetAllUsers godoc
+// GetUser godoc
 //
 // @Summary		Gets specific user
 // @Description	Returns specific user
@@ -54,9 +53,7 @@ func (u *UserController) GetUser(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "id must be a positive number")
 	}
 
-	user, err := u.userService.GetUser(userID)
-	if err != nil {
-		log.Println(err.Error())
+	if user, err:= u.userService.GetUser(userID); err != nil {
 		return err
 	}
 

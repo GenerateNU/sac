@@ -3,7 +3,6 @@ package transactions
 import (
 	"backend/src/models"
 	"errors"
-	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
@@ -29,7 +28,6 @@ func GetUser(db *gorm.DB, id string) (*models.User, error) {
 		return nil, fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
-	fmt.Printf("%+v\n", user)
 
 	return &user, nil
 }
