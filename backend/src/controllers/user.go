@@ -50,7 +50,7 @@ func (u *UserController) GetAllUsers(c *fiber.Ctx) error {
 func (u *UserController) GetUser(c *fiber.Ctx) error {
 	userID := c.Params("id")
 
-	if _, integerErr := strconv.Atoi(userID); integerErr != nil {
+	if integer, integerErr := strconv.Atoi(userID); integerErr != nil || integer <= 0 {
 		return fiber.NewError(fiber.StatusBadRequest, "id must be a positive number")
 	}
 
