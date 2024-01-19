@@ -63,6 +63,9 @@ func (u *UserService) UpdateUser(id string, userBody models.UserRequestBody) (*m
 	return transactions.UpdateUser(u.DB, *idAsUint, *user)
 }
 
+// Updates a user
 func (u *UserService) DeleteUser(id string) error {
+
+	//TODO: validation
 	return transactions.DeleteUser(u.DB, id)
 }

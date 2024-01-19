@@ -85,3 +85,32 @@ func (u *UserController) UpdateUser(c *fiber.Ctx) error {
 	// Return the updated user details
 	return c.Status(fiber.StatusOK).JSON(updatedUser)
 }
+
+// DeleteUser godoc
+//
+// @Summary		Deletes the given userID
+// @Description	Returns nil
+// @ID			get-all-users
+// @Tags      	user
+// @Produce		json
+// @Success		200	  {object}	  []models.User
+// @Failure     500   {string}    string "failed to get all users"
+// @Router		/api/v1/users/  [get]
+func (u *UserController) DeleteUser(c *fiber.Ctx) error {
+	var user models.User
+
+	if err := c.BodyParser(&user); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, "Invalid request body")
+	}
+
+	userID := c.Params("id")
+
+	err := u.userService.DeleteUser(userID)
+
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "Failed to delete user")
+	}
+
+	// Return the updated user details
+	return c.Status(fiber.StatusOK).JSON(nil)
+}
