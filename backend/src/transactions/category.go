@@ -17,10 +17,10 @@ func CreateCategory(db *gorm.DB, category models.Category) (*models.Category, er
 
 func GetCategory(db *gorm.DB, id uint) (*models.Category, error) {
 	var category models.Category
-	
+
 	if err := db.First(&category, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, fiber.NewError(fiber.StatusBadRequest, "invalid category id")
+			return nil, fiber.NewError(fiber.StatusNotFound, "invalid category id")
 		} else {
 			return nil, fiber.NewError(fiber.StatusInternalServerError, "unable to retrieve category")
 		}
