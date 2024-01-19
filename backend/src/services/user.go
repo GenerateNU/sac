@@ -8,6 +8,7 @@ import (
 	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/go-playground/validator/v10"
+	"github.com/gofiber/fiber/v2"
 
 	"gorm.io/gorm"
 )
@@ -47,6 +48,9 @@ func (u *UserService) ValidateUserParams(params types.UserParams, noEmptyFields 
 		}
 		if params.College == "" {
 			return errors.New("college is missing")
+		}
+		if params.Year == 0 {
+			return errors.New("year is missing")
 		}
 	}
 
@@ -104,7 +108,7 @@ func (u *UserService) GetUser(userID string) (*models.User, error) {
 // Updates a user
 func (u *UserService) UpdateUser(id string, params types.UserParams) (models.User, error) {
 	if err := u.ValidateUserParams(params, false); err != nil {
-		return models.User{}, err
+		return models.User{}, fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
 	return transactions.UpdateUser(u.DB, id, u.CreateUserFromParams(params))

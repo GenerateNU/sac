@@ -43,7 +43,8 @@ func (u *UserController) GetAllUsers(c *fiber.Ctx) error {
 // @Tags      	user
 // @Produce		json
 // @Success		200	  {object}	  models.User
-// @Failure     404   {string}    string "Failed to update user"
+// @Failure     404   {string}    string "User not found"
+// @Failure 	400   {string}    string "Failed to update user"
 // @Router		/api/v1/users/:id  [patch]
 func (u *UserController) UpdateUser(c *fiber.Ctx) error {
 	var user types.UserParams
@@ -57,7 +58,7 @@ func (u *UserController) UpdateUser(c *fiber.Ctx) error {
 	updatedUser, err := u.userService.UpdateUser(userID, user)
 
 	if err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+		return err
 	}
 
 	// Return the updated user details

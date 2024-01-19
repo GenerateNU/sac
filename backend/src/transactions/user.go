@@ -36,11 +36,11 @@ func UpdateUser(db *gorm.DB, id string, payload models.User) (models.User, error
 	var existingUser models.User
 
 	if err := db.First(&existingUser, id).Error; err != nil {
-		return models.User{}, err
+		return models.User{}, fiber.NewError(fiber.StatusNotFound, "User not found")
 	}
 
 	if err := db.Model(&existingUser).Updates(&user).Error; err != nil {
-		return models.User{}, err
+		return models.User{}, fiber.NewError(fiber.StatusBadRequest, "Failed to update user")
 	}
 
 	return existingUser, nil
