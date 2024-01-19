@@ -9,6 +9,7 @@ import (
 
 type UserServiceInterface interface {
 	GetAllUsers() ([]models.User, error)
+	DeleteUser() error
 }
 
 type UserService struct {
@@ -18,4 +19,8 @@ type UserService struct {
 // Gets all users (including soft deleted users) for testing
 func (u *UserService) GetAllUsers() ([]models.User, error) {
 	return transactions.GetAllUsers(u.DB)
+}
+
+func (u *UserService) DeleteUser(id string) error {
+	return transactions.DeleteUser(u.DB, id)
 }
