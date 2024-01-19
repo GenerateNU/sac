@@ -4,11 +4,16 @@ import (
 	"backend/src/config"
 	"backend/src/database"
 	"backend/src/server"
+	"bytes"
 	crand "crypto/rand"
 	"fmt"
 	"math/big"
 	"net"
+	"net/http"
+	"net/http/httptest"
 	"testing"
+
+	"github.com/goccy/go-json"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/huandu/go-assert"
@@ -26,9 +31,10 @@ func InitTest(t *testing.T) (TestApp, *assert.A) {
 }
 
 type TestApp struct {
-	App     *fiber.App
-	Address string
-	Conn    *gorm.DB
+	App      *fiber.App
+	Address  string
+	Conn     *gorm.DB
+	Settings config.Settings
 }
 
 func spawnApp() (TestApp, error) {
@@ -100,4 +106,38 @@ func configureDatabase(config config.Settings) (*gorm.DB, error) {
 	}
 
 	return dbWithDB, nil
+}
+
+func (app TestApp) DropDB() {
+	app.Conn.Exec(fmt.Sprintf("DROP DATABASE %s;", app.Settings.Database.DatabaseName))
+}
+
+type TestRequest struct {
+	TestApp TestApp
+	Assert  *assert.A
+	Resp    *http.Response
+}
+
+func RequestTestSetup(t *testing.T, method string, path string, body *map[string]interface{}) (TestApp, *assert.A, *http.Response) {
+	app, assert := InitTest(t)
+
+	address := fmt.Sprintf("%s%s", app.Address, path)
+
+	var req *http.Request
+
+	if body == nil {
+		req = httptest.NewRequest(method, address, nil)
+	} else {
+		bodyBytes, err := json.Marshal(body)
+
+		assert.NilError(err)
+
+		req = httptest.NewRequest(method, address, bytes.NewBuffer(bodyBytes))
+	}
+
+	resp, err := app.App.Test(req)
+
+	assert.NilError(err)
+
+	return app, assert, resp
 }
