@@ -4,11 +4,12 @@ import (
 	"backend/src/models"
 	"backend/src/transactions"
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/goccy/go-json"
 )
 
 func TestCreateCategoryWorks(t *testing.T) {
@@ -103,7 +104,7 @@ func TestCreateCategoryFailsIfNameIsNotString(t *testing.T) {
 
 	msg := string(bodyBytes)
 
-	assert.Equal(msg, "Failed to process the request")
+	assert.Equal("failed to process the request", msg)
 
 	assert.Equal(400, resp.StatusCode)
 }
@@ -130,7 +131,7 @@ func TestCreateCategoryFailsIfNameIsMissing(t *testing.T) {
 
 	msg := string(bodyBytes)
 
-	assert.Equal("Failed to validate the data", msg)
+	assert.Equal("failed to validate the data", msg)
 
 	assert.Equal(400, resp.StatusCode)
 }

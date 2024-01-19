@@ -28,7 +28,7 @@ func NewCategoryController(categoryService services.CategoryServiceInterface) *C
 // @Failure     500   {string}    string "failed to create category"
 // @Router		/api/v1/category/  [post]
 func (t *CategoryController) CreateCategory(c *fiber.Ctx) error {
-	var categoryBody models.CreateCategoryBody
+	var categoryBody models.CreateCategoryRequestBody
 
 	if err := c.BodyParser(&categoryBody); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "failed to process the request")
