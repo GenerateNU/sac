@@ -19,8 +19,8 @@ const (
 type Contact struct {
 	types.Model
 
-	Type    Media  `gorm:"type:varchar(255)" json:"type" validate:"required"`
-	Content string `gorm:"type:varchar(255)" json:"content" validate:"required,url"` // media URL
+	Type    Media  `gorm:"type:varchar(255)" json:"type" validate:"required,len<=255"`
+	Content string `gorm:"type:varchar(255)" json:"content" validate:"required,url,len<=255"` // media URL
 
-	ClubID uint `gorm:"foreignKey:ClubID" json:"-" validate:"-"`
+	ClubID uint `gorm:"foreignKey:ClubID" json:"-" validate:"min=1"`
 }
