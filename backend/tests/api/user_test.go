@@ -42,7 +42,7 @@ func TestGetAllUsersWorks(t *testing.T) {
 	assert.Equal(dbUser, respUser)
 }
 
-func TestGetUser(t *testing.T) {
+func TestGetUserHappyPath(t *testing.T) {
 	// initialize the test
 	app, assert := InitTest(t)
 
@@ -69,49 +69,65 @@ func TestGetUser(t *testing.T) {
 
 	assert.Equal(dbUser.Email, user.Email)
 	assert.Equal(user.Email, "generatesac@gmail.com")
+}
+
+func TestGetUserBadRequest(t *testing.T) {
+	app, assert := InitTest(t)
+	// create a GET request to the APP/api/v1/users/:id endpoint
+	req := httptest.NewRequest("GET", fmt.Sprintf("%s/api/v1/users/letters", app.Address), nil)
+	resp, err := app.App.Test(req)
+	assert.NilError(err)
+	defer resp.Body.Close()
+	bodyBytes, io_err := io.ReadAll(resp.Body)
+	assert.NilError(io_err)
+	msg := string(bodyBytes)
+	assert.Equal("id must be a positive number", msg)
+	assert.Equal(400, resp.StatusCode)
 
 	// create a GET request to the APP/api/v1/users/:id endpoint
-	req2 := httptest.NewRequest("GET", fmt.Sprintf("%s/api/v1/users/letters", app.Address), nil)
-	resp2, err := app.App.Test(req2)
+	req2 := httptest.NewRequest("GET", fmt.Sprintf("%s/api/v1/users/null", app.Address), nil)
+	resp2, err2 := app.App.Test(req2)
+	assert.NilError(err2)
 	defer resp2.Body.Close()
-	bodyBytes2, err := io.ReadAll(resp2.Body)
+	bodyBytes2, io_err2 := io.ReadAll(resp2.Body)
+	assert.NilError(io_err2)
 	msg2 := string(bodyBytes2)
 	assert.Equal("id must be a positive number", msg2)
 	assert.Equal(400, resp2.StatusCode)
+}
+func TestGetUserBadId(t *testing.T) {
+	app, assert := InitTest(t)
+	// create a GET request to the APP/api/v1/users/:id endpoint
+	req1 := httptest.NewRequest("GET", fmt.Sprintf("%s/api/v1/users/-1", app.Address), nil)
+	resp1, err1 := app.App.Test(req1)
+	assert.NilError(err1)
+	defer resp1.Body.Close()
+	bodyBytes1, err1 := io.ReadAll(resp1.Body)
+	msg1 := string(bodyBytes1)
+	assert.Equal("id must be a positive number", msg1)
+	assert.Equal(400, resp1.StatusCode)
 
 	// create a GET request to the APP/api/v1/users/:id endpoint
-	req3 := httptest.NewRequest("GET", fmt.Sprintf("%s/api/v1/users/null", app.Address), nil)
-	resp3, err := app.App.Test(req3)
-	defer resp3.Body.Close()
-	bodyBytes3, err := io.ReadAll(resp3.Body)
-	msg3 := string(bodyBytes3)
-	assert.Equal("id must be a positive number", msg3)
-	assert.Equal(400, resp3.StatusCode)
-
+	req2 := httptest.NewRequest("GET", fmt.Sprintf("%s/api/v1/users/0", app.Address), nil)
+	resp2, err2 := app.App.Test(req2)
+	assert.NilError(err2)
+	defer resp2.Body.Close()
+	bodyBytes2, io_err2 := io.ReadAll(resp2.Body)
+	assert.NilError(io_err2)
+	msg2 := string(bodyBytes2)
+	assert.Equal("id must be a positive number", msg2)
+	assert.Equal(400, resp2.StatusCode)
+}
+func TestGetUserNotFound(t *testing.T) {
+	app, assert := InitTest(t)
 	// create a GET request to the APP/api/v1/users/:id endpoint
-	req4 := httptest.NewRequest("GET", fmt.Sprintf("%s/api/v1/users/100", app.Address), nil)
-	resp4, err := app.App.Test(req4)
-	defer resp4.Body.Close()
-	bodyBytes4, err := io.ReadAll(resp4.Body)
-	msg4 := string(bodyBytes4)
-	assert.Equal("record not found", msg4)
-	assert.Equal(404, resp4.StatusCode)
-
-	// create a GET request to the APP/api/v1/users/:id endpoint
-	req5 := httptest.NewRequest("GET", fmt.Sprintf("%s/api/v1/users/-1", app.Address), nil)
-	resp5, err := app.App.Test(req5)
-	defer resp5.Body.Close()
-	bodyBytes5, err := io.ReadAll(resp5.Body)
-	msg5 := string(bodyBytes5)
-	assert.Equal("id must be a positive number", msg5)
-	assert.Equal(400, resp5.StatusCode)
-
-	// create a GET request to the APP/api/v1/users/:id endpoint
-	req6 := httptest.NewRequest("GET", fmt.Sprintf("%s/api/v1/users/0", app.Address), nil)
-	resp6, err := app.App.Test(req6)
-	defer resp5.Body.Close()
-	bodyBytes6, err := io.ReadAll(resp6.Body)
-	msg6 := string(bodyBytes6)
-	assert.Equal("id must be a positive number", msg6)
-	assert.Equal(400, resp6.StatusCode)
+	req := httptest.NewRequest("GET", fmt.Sprintf("%s/api/v1/users/100", app.Address), nil)
+	resp, err := app.App.Test(req)
+	assert.NilError(err)
+	defer resp.Body.Close()
+	bodyBytes, io_err := io.ReadAll(resp.Body)
+	assert.NilError(io_err)
+	msg := string(bodyBytes)
+	assert.Equal("record not found", msg)
+	assert.Equal(404, resp.StatusCode)
 }
