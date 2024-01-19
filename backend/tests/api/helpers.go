@@ -118,7 +118,7 @@ type TestRequest struct {
 	Resp    *http.Response
 }
 
-func RequestTestSetup(t *testing.T, method string, path string, body *map[string]interface{}) (TestApp, *assert.A, *http.Response) {
+func RequestTestSetup(t *testing.T, method string, path string, body *map[string]interface{}, headers *map[string]string) (TestApp, *assert.A, *http.Response) {
 	app, assert := InitTest(t)
 
 	address := fmt.Sprintf("%s%s", app.Address, path)
@@ -133,6 +133,12 @@ func RequestTestSetup(t *testing.T, method string, path string, body *map[string
 		assert.NilError(err)
 
 		req = httptest.NewRequest(method, address, bytes.NewBuffer(bodyBytes))
+
+		if headers != nil {
+			for key, value := range *headers {
+				req.Header.Set(key, value)
+			}
+		}
 	}
 
 	resp, err := app.App.Test(req)

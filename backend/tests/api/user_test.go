@@ -10,7 +10,7 @@ import (
 
 func TestGetAllUsersWorks(t *testing.T) {
 	// setup the test
-	app, assert, resp := RequestTestSetup(t, "GET", "/api/v1/users/", nil)
+	app, assert, resp := RequestTestSetup(t, "GET", "/api/v1/users/", nil, nil)
 	defer app.DropDB()
 
 	assert.Equal(200, resp.StatusCode)
