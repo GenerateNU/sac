@@ -43,13 +43,13 @@ func Format(c *cli.Context) error {
 	}
 
 	frontendDir := filepath.Join(currentDir, "frontend/")
-	backendDir := filepath.Join(currentDir, "backend/")
+	backendDir := filepath.Join(currentDir, "github.com/GenerateNU/sac/backend/")
 	list, err := os.ReadDir(frontendDir)
 	if err != nil {
 		return cli.Exit("Error reading frontend directory", 1)
 	}
 
-	if !c.IsSet("frontend") && !c.IsSet("backend") {	
+	if !c.IsSet("frontend") && !c.IsSet("backend") {
 		formatBackend(backendDir)
 		for _, f := range list {
 			if f.IsDir() {
@@ -63,15 +63,19 @@ func Format(c *cli.Context) error {
 		formatBackend(backendDir)
 	}
 
-	if c.IsSet("frontend") { formatFrontend(frontendDir, c.String("frontend")) }
-	if c.IsSet("backend") { formatBackend(backendDir) }
+	if c.IsSet("frontend") {
+		formatFrontend(frontendDir, c.String("frontend"))
+	}
+	if c.IsSet("backend") {
+		formatBackend(backendDir)
+	}
 
 	return nil
 }
 
 func formatFrontend(frontendDir string, folder string) {
 	cmd := exec.Command("yarn", "format")
-	cmd.Dir = filepath.Join(frontendDir, folder) 
+	cmd.Dir = filepath.Join(frontendDir, folder)
 
 	err := cmd.Run()
 	if err != nil {
@@ -84,7 +88,6 @@ func formatFrontend(frontendDir string, folder string) {
 func formatBackend(backendDir string) {
 	cmd := exec.Command("go", "fmt", "./...")
 	cmd.Dir = filepath.Join(backendDir)
-
 
 	err := cmd.Run()
 	if err != nil {

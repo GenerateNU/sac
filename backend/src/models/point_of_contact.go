@@ -1,7 +1,7 @@
 package models
 
 import (
-	"backend/src/types"
+	"github.com/GenerateNU/sac/backend/src/types"
 )
 
 type PointOfContact struct {

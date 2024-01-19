@@ -1,9 +1,10 @@
 package tests
 
 import (
-	"backend/src/models"
-	"backend/src/transactions"
 	"testing"
+
+	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/GenerateNU/sac/backend/src/transactions"
 
 	"github.com/goccy/go-json"
 )
