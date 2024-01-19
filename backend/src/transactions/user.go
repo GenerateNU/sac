@@ -18,7 +18,7 @@ func GetAllUsers(db *gorm.DB) ([]models.User, error) {
 	return users, nil
 }
 
-func GetUser(db *gorm.DB, id string) (*models.User, error) {
+func GetUser(db *gorm.DB, id uint) (*models.User, error) {
 	var user models.User
 	if err := db.First(&user, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
