@@ -1,10 +1,10 @@
 package services
 
 import (
-	"backend/src/models"
-	"backend/src/transactions"
-	"backend/src/types"
-	"backend/src/utilities"
+	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/GenerateNU/sac/backend/src/transactions"
+	"github.com/GenerateNU/sac/backend/src/types"
+	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
