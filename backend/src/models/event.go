@@ -1,8 +1,9 @@
 package models
 
 import (
-	"backend/src/types"
 	"time"
+
+	"github.com/GenerateNU/sac/backend/src/types"
 )
 
 type EventType string

@@ -1,9 +1,9 @@
 package services
 
 import (
-	"backend/src/models"
-	"backend/src/transactions"
-	"backend/src/utilities"
+	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/GenerateNU/sac/backend/src/transactions"
+	"github.com/GenerateNU/sac/backend/src/utilities"
 
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/text/cases"

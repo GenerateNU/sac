@@ -1,4 +1,4 @@
-module cli
+module github.com/GenerateNU/sac/cli
 
 go 1.21.1
 

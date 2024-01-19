@@ -1,8 +1,9 @@
 package tests
 
 import (
-	"backend/src/utilities"
 	"testing"
+
+	"github.com/GenerateNU/sac/backend/src/utilities"
 
 	"github.com/huandu/go-assert"
 )

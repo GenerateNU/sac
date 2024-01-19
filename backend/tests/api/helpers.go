@@ -1,9 +1,6 @@
 package tests
 
 import (
-	"backend/src/config"
-	"backend/src/database"
-	"backend/src/server"
 	"bytes"
 	crand "crypto/rand"
 	"fmt"
@@ -13,6 +10,10 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/GenerateNU/sac/backend/src/config"
+	"github.com/GenerateNU/sac/backend/src/database"
+	"github.com/GenerateNU/sac/backend/src/server"
 
 	"github.com/goccy/go-json"
 
