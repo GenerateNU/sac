@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"backend/src/models"
-	"backend/src/services"
+	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/GenerateNU/sac/backend/src/services"
 
 	"github.com/gofiber/fiber/v2"
 )

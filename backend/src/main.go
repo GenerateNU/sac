@@ -1,11 +1,12 @@
 package main
 
 import (
-	"backend/src/config"
-	"backend/src/database"
-	"backend/src/server"
 	"flag"
 	"fmt"
+
+	"github.com/GenerateNU/sac/backend/src/config"
+	"github.com/GenerateNU/sac/backend/src/database"
+	"github.com/GenerateNU/sac/backend/src/server"
 )
 
 // @title SAC API

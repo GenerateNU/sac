@@ -1,6 +1,6 @@
 package models
 
-import "backend/src/types"
+import "github.com/GenerateNU/sac/backend/src/types"
 
 type UserRole string
 

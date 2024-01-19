@@ -100,7 +100,7 @@
 4. **Create a user**
 
    ```bash
-   createuser postgres -U <your osusername>
+   createuser postgres -U <your username>
    ```
 
 # Commands

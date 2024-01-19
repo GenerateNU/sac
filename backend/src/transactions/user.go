@@ -1,7 +1,7 @@
 package transactions
 
 import (
-	"backend/src/models"
+	"github.com/GenerateNU/sac/backend/src/models"
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
