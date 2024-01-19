@@ -7,7 +7,7 @@ type Category struct {
 
 	Name string `gorm:"type:varchar(255)" json:"category_name" validate:"required"`
 
-	Tag []Tag `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"tags" validate:"-"`
+	Tag []Tag `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 }
 
 type CreateCategoryRequestBody struct {
