@@ -42,7 +42,7 @@
 
    - If this doesnt work, try running `go mod tidy` and then `go get ./...` again or delete the go.mod and go.sum files and then run `go mod init backend` and `go mod tidy` again.
 
-### React Native Builds
+## React Native Builds
 
 1. **Create client build**
 
@@ -105,7 +105,7 @@
 
 # Commands
 
-### React Native
+## React Native
 
   ```bash
    npx expo start --dev-client // runnning dev client
