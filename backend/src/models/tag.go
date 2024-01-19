@@ -7,7 +7,7 @@ import (
 type Tag struct {
 	types.Model
 
-	Name string `gorm:"type:varchar(255)" json:"name" validate:"required,len<=255"`
+	Name string `gorm:"type:varchar(255)" json:"name" validate:"required,max=255"`
 
 	CategoryID uint `gorm:"foreignKey:CategoryID" json:"category_id" validate:"-"`
 

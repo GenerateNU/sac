@@ -38,13 +38,13 @@ const (
 type User struct {
 	types.Model
 
-	Role         UserRole `gorm:"type:varchar(255);" json:"user_role" validate:"required,len<=255"`
+	Role         UserRole `gorm:"type:varchar(255);" json:"user_role" validate:"required,max=255"`
 	NUID         string   `gorm:"column:nuid;type:varchar(9);unique" json:"nuid" validate:"required,numeric,len=9"`
-	FirstName    string   `gorm:"type:varchar(255)" json:"first_name" validate:"required,len<=255"`
-	LastName     string   `gorm:"type:varchar(255)" json:"last_name" validate:"required,len<=255"`
-	Email        string   `gorm:"type:varchar(255);unique" json:"email" validate:"required,email,len<=255"`
+	FirstName    string   `gorm:"type:varchar(255)" json:"first_name" validate:"required,max=255"`
+	LastName     string   `gorm:"type:varchar(255)" json:"last_name" validate:"required,max=255"`
+	Email        string   `gorm:"type:varchar(255);unique" json:"email" validate:"required,email,max=255"`
 	PasswordHash string   `gorm:"type:text" json:"-" validate:"required"`
-	College      College  `gorm:"type:varchar(255)" json:"college" validate:"required,len<=255"`
+	College      College  `gorm:"type:varchar(255)" json:"college" validate:"required,max=255"`
 	Year         Year     `gorm:"type:smallint" json:"year" validate:"required,min=1,max=6"`
 
 	Tag               []Tag     `gorm:"many2many:user_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
