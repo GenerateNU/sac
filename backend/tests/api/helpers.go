@@ -11,6 +11,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/goccy/go-json"
@@ -182,4 +183,20 @@ func RequestTesterWithJSONBody(t *testing.T, method string, path string, body *m
 	}
 
 	return RequestTester(t, method, path, body, headers, exisitingApp, exisitingAssert)
+}
+
+func generateCasingPermutations(word string, currentPermutation string, index int, results *[]string) {
+	if index == len(word) {
+		*results = append(*results, currentPermutation)
+		return
+	}
+
+	generateCasingPermutations(word, currentPermutation+strings.ToLower(string(word[index])), index+1, results)
+	generateCasingPermutations(word, currentPermutation+strings.ToUpper(string(word[index])), index+1, results)
+}
+
+func AllCasingPermutations(word string) []string {
+	results := make([]string, 0)
+	generateCasingPermutations(word, "", 0, &results)
+	return results
 }

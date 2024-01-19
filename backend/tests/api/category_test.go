@@ -87,8 +87,9 @@ func TestCreateCategoryFailsIfNameIsMissing(t *testing.T) {
 }
 
 func TestCreateCategoryFailsICategoryWithThatNameAlreadyExists(t *testing.T) {
+	categoryName := "Science"
 	app, assert, resp := RequestTesterWithJSONBody(t, "POST", "/api/v1/categories/", &map[string]interface{}{
-		"category_name": "Science",
+		"category_name": categoryName,
 	}, nil, nil, nil)
 
 	assert.Equal(201, resp.StatusCode)
@@ -105,20 +106,21 @@ func TestCreateCategoryFailsICategoryWithThatNameAlreadyExists(t *testing.T) {
 
 	assert.Equal(dbCategory, &respCategory)
 
-	_, _, resp = RequestTesterWithJSONBody(t, "POST", "/api/v1/categories/", &map[string]interface{}{
-		"category_name": "Science",
-	}, nil, &app, assert)
+	for _, permutation := range AllCasingPermutations(categoryName) {
+		_, _, resp = RequestTesterWithJSONBody(t, "POST", "/api/v1/categories/", &map[string]interface{}{
+			"category_name": permutation,
+		}, nil, &app, assert)
 
-	defer resp.Body.Close()
+		defer resp.Body.Close()
 
-	bodyBytes, err := io.ReadAll(resp.Body)
+		bodyBytes, err := io.ReadAll(resp.Body)
 
-	assert.NilError(err)
+		assert.NilError(err)
 
-	msg := string(bodyBytes)
+		msg := string(bodyBytes)
 
-	assert.Equal("category with that name already exists", msg)
+		assert.Equal("category with that name already exists", msg)
 
-	assert.Equal(400, resp.StatusCode)
-
+		assert.Equal(400, resp.StatusCode)
+	}
 }
