@@ -118,7 +118,7 @@ type TestRequest struct {
 	Resp    *http.Response
 }
 
-func RequestTestSetup(t *testing.T, method string, path string, body *map[string]interface{}, headers *map[string]string) (TestApp, *assert.A, *http.Response) {
+func RequestTester(t *testing.T, method string, path string, body *map[string]interface{}, headers *map[string]string) (TestApp, *assert.A, *http.Response) {
 	app, assert := InitTest(t)
 
 	address := fmt.Sprintf("%s%s", app.Address, path)
