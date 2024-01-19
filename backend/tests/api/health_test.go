@@ -5,7 +5,8 @@ import (
 )
 
 func TestHealthWorks(t *testing.T) {
-	_, assert, resp := RequestTestSetup(t, "GET", "/health", nil)
+	app, assert, resp := RequestTestSetup(t, "GET", "/health", nil)
+	defer app.DropDB()
 
 	assert.Equal(200, resp.StatusCode)
 }

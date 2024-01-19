@@ -108,7 +108,7 @@ func configureDatabase(config config.Settings) (*gorm.DB, error) {
 	return dbWithDB, nil
 }
 
-func (app TestApp) Close() {
+func (app TestApp) DropDB() {
 	app.Conn.Exec(fmt.Sprintf("DROP DATABASE %s;", app.Settings.Database.DatabaseName))
 }
 
@@ -121,16 +121,18 @@ type TestRequest struct {
 func RequestTestSetup(t *testing.T, method string, path string, body *map[string]interface{}) (TestApp, *assert.A, *http.Response) {
 	app, assert := InitTest(t)
 
+	address := fmt.Sprintf("%s%s", app.Address, path)
+
 	var req *http.Request
 
 	if body == nil {
-		req = httptest.NewRequest(method, fmt.Sprintf(path, app.Address), nil)
+		req = httptest.NewRequest(method, address, nil)
 	} else {
 		bodyBytes, err := json.Marshal(body)
 
 		assert.NilError(err)
 
-		req = httptest.NewRequest(method, fmt.Sprintf(path, app.Address), bytes.NewBuffer(bodyBytes))
+		req = httptest.NewRequest(method, address, bytes.NewBuffer(bodyBytes))
 	}
 
 	resp, err := app.App.Test(req)
