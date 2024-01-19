@@ -2,9 +2,8 @@
 # Package Managers
 
 - Mac - [Homebrew](https://brew.sh/)
-- Windows - get [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10) 
+- Windows - get [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
 - Linux (you know what you're doing)
-
 
 # Prerequisites
 
@@ -14,12 +13,12 @@
 - [Go](https://golang.org/)
 - [Docker](https://www.docker.com/)
 - [PostgreSQL](https://www.postgresql.org/)
-   - Install through brew: `brew install postgresql@15`
-   - It requires you to add all the exports to path so read the end of the installation carefully!
+  - Install through brew: `brew install postgresql@15`
+  - It requires you to add all the exports to path so read the end of the installation carefully!
 - [Trunk](https://marketplace.visualstudio.com/items?itemName=Trunk.io) (Recommended!)
-   - Visual Studio Code extension for linting/formatting
+  - Visual Studio Code extension for linting/formatting
 
-# Setup 
+# Setup
 
 1. **Clone the repository**
 
@@ -41,7 +40,7 @@
    go get ./...
    ```
 
-   - If this doesnt work, try running `go mod tidy` and then `go get ./...` again or delete the go.mod and go.sum files and then run `go mod init server` and `go mod tidy` again.
+   - If this doesnt work, try running `go mod tidy` and then `go get ./...` again or delete the go.mod and go.sum files and then run `go mod init backend` and `go mod tidy` again.
 
 ### React Native Builds
 
@@ -68,7 +67,6 @@
    ```
 
    - You can then open the app in the Expo app in the simulator.
-
 
 ### Postgresql Setup
 
@@ -98,6 +96,13 @@
    psql // opens psql shell
    CREATE DATABASE sac;
    ```
+
+4. **Create a user**
+
+   ```bash
+   createuser postgres -U <your osusername>
+   ```
+
 # Commands
 
 ### React Native
