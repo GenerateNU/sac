@@ -39,7 +39,7 @@ type User struct {
 	types.Model
 
 	Role         UserRole `gorm:"type:varchar(255);" json:"user_role" validate:"required"`
-	NUID         string   `gorm:"column:nuid;type:varchar(9);unique" json:"nuid" validate:"required"`
+	NUID         string   `gorm:"column:nuid;type:varchar(9);unique" json:"nuid" validate:"required,numeric,len=9"`
 	FirstName    string   `gorm:"type:varchar(255)" json:"first_name" validate:"required"`
 	LastName     string   `gorm:"type:varchar(255)" json:"last_name" validate:"required"`
 	Email        string   `gorm:"type:varchar(255);unique" json:"email" validate:"required,email"`

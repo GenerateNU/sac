@@ -19,7 +19,7 @@ type Notification struct {
 	Title    string    `gorm:"type:varchar(255)" json:"title" validate:"required"`
 	Content  string    `gorm:"type:varchar(255)" json:"content" validate:"required"`
 	DeepLink string    `gorm:"type:varchar(255)" json:"deep_link" validate:"required"`
-	Icon     string    `gorm:"type:varchar(255)" json:"icon" validate:"required"` // S3 URI
+	Icon     string    `gorm:"type:varchar(255)" json:"icon" validate:"required,url"` // S3 URL
 
 	ReferenceID   uint             `gorm:"type:int" json:"-" validate:"-"`
 	ReferenceType NotificationType `gorm:"type:varchar(255)" json:"-" validate:"-"`

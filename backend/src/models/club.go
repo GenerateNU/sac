@@ -29,13 +29,13 @@ type Club struct {
 
 	Name             string           `gorm:"type:varchar(255)" json:"name" validate:"required"`
 	Preview          string           `gorm:"type:varchar(255)" json:"preview" validate:"required"`
-	Description      string           `gorm:"type:varchar(255)" json:"description" validate:"required"` // MongoDB URI
+	Description      string           `gorm:"type:varchar(255)" json:"description" validate:"required,url"` // MongoDB URL
 	NumMembers       int              `gorm:"type:int;default:0" json:"num_members" validate:"required"`
 	IsRecruiting     bool             `gorm:"type:bool;default:false" json:"is_recruiting" validate:"required"`
 	RecruitmentCycle RecruitmentCycle `gorm:"type:varchar(255);default:always" json:"recruitment_cycle" validate:"required"`
 	RecruitmentType  RecruitmentType  `gorm:"type:varchar(255);default:unrestricted" json:"recruitment_type" validate:"required"`
 	ApplicationLink  string           `gorm:"type:varchar(255);default:NULL" json:"application_link" validate:"required"`
-	Logo             string           `gorm:"type:varchar(255);default:NULL" json:"logo" validate:"-"` // S3 URI
+	Logo             string           `gorm:"type:varchar(255);default:NULL" json:"logo" validate:"url"` // S3 URL
 
 	Parent *uint `gorm:"foreignKey:Parent" json:"-" validate:"-"`
 	Tag    []Tag `gorm:"many2many:club_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
