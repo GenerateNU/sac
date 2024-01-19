@@ -5,8 +5,6 @@ import (
 	"backend/src/services"
 
 	"github.com/gofiber/fiber/v2"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 )
 
 type CategoryController struct {
@@ -37,10 +35,8 @@ func (t *CategoryController) CreateCategory(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "failed to process the request")
 	}
 
-	titleCasedCategoryName := cases.Title(language.English).String(categoryBody.Name)
-
 	category := models.Category{
-		Name: titleCasedCategoryName,
+		Name: categoryBody.Name,
 	}
 
 	newCategory, err := t.categoryService.CreateCategory(category)
