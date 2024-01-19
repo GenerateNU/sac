@@ -9,6 +9,7 @@ import (
 )
 
 func TestGetAllUsersWorks(t *testing.T) {
+	// setup the test
 	app, assert, resp := RequestTestSetup(t, "GET", "/api/v1/users/", nil)
 
 	assert.Equal(200, resp.StatusCode)
