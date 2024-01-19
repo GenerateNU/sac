@@ -9,7 +9,7 @@ import (
 
 type UserServiceInterface interface {
 	GetAllUsers() ([]models.User, error)
-	DeleteUser() error
+	DeleteUser(id string) (error)
 }
 
 type UserService struct {
@@ -21,6 +21,9 @@ func (u *UserService) GetAllUsers() ([]models.User, error) {
 	return transactions.GetAllUsers(u.DB)
 }
 
-func (u *UserService) DeleteUser(id string) error {
+// Updates a user
+func (u *UserService) DeleteUser(id string) (error) {
+
+	//TODO: validation
 	return transactions.DeleteUser(u.DB, id)
 }
