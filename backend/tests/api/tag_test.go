@@ -74,6 +74,8 @@ func TestCreateTagFailsBadRequest(t *testing.T) {
 
 		assert.Equal(400, resp.StatusCode)
 
+		defer resp.Body.Close()
+
 		body, err = io.ReadAll(resp.Body)
 
 		assert.NilError(err)
@@ -108,6 +110,8 @@ func TestCreateTagFailsValidation(t *testing.T) {
 		assert.NilError(err)
 
 		assert.Equal(400, resp.StatusCode)
+
+		defer resp.Body.Close()
 
 		body, err = io.ReadAll(resp.Body)
 
