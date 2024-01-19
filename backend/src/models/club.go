@@ -30,7 +30,7 @@ type Club struct {
 	Name             string           `gorm:"type:varchar(255)" json:"name" validate:"required,max=255"`
 	Preview          string           `gorm:"type:varchar(255)" json:"preview" validate:"required,max=255"`
 	Description      string           `gorm:"type:varchar(255)" json:"description" validate:"required,url,max=255"` // MongoDB URL
-	NumMembers       int              `gorm:"type:int;default:0" json:"num_members" validate:"required,min=1"`
+	NumMembers       int              `gorm:"type:int" json:"num_members" validate:"required,min=1"`
 	IsRecruiting     bool             `gorm:"type:bool;default:false" json:"is_recruiting" validate:"required"`
 	RecruitmentCycle RecruitmentCycle `gorm:"type:varchar(255);default:always" json:"recruitment_cycle" validate:"required,max=255"`
 	RecruitmentType  RecruitmentType  `gorm:"type:varchar(255);default:unrestricted" json:"recruitment_type" validate:"required,max=255"`

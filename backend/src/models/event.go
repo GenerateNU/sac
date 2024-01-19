@@ -18,8 +18,8 @@ type Event struct {
 	Name      string    `gorm:"type:varchar(255)" json:"name" validate:"required,max=255"`
 	Preview   string    `gorm:"type:varchar(255)" json:"preview" validate:"required,max=255"`
 	Content   string    `gorm:"type:varchar(255)" json:"content" validate:"required,max=255"`
-	StartTime time.Time `gorm:"type:timestamptz" json:"start_time" validate:"required"`
-	EndTime   time.Time `gorm:"type:timestamptz" json:"end_time" validate:"required"`
+	StartTime time.Time `gorm:"type:timestamptz" json:"start_time" validate:"required,datetime,ltecsfield=EndTime"`
+	EndTime   time.Time `gorm:"type:timestamptz" json:"end_time" validate:"required,datetime,gtecsfield=StartTime"`
 	Location  string    `gorm:"type:varchar(255)" json:"location" validate:"required,max=255"`
 	EventType EventType `gorm:"type:varchar(255);default:open" json:"event_type" validate:"required,max=255"`
 
