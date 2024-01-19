@@ -1,13 +1,13 @@
 package models
 
 import (
-	"backend/src/types"
+	"github.com/GenerateNU/sac/backend/src/types"
 )
 
 type Tag struct {
 	types.Model
 
-	Name string `gorm:"type:varchar(255)" json:"name" validate:"required"`
+	Name string `gorm:"type:varchar(255)" json:"name" validate:"required,max=255"`
 
 	CategoryID uint `gorm:"foreignKey:CategoryID" json:"category_id" validate:"-"`
 

@@ -29,7 +29,7 @@ func ValidatePassword(fl validator.FieldLevel) bool {
 }
 
 // Validate the data sent to the server if the data is invalid, return an error otherwise, return nil
-func ValidateData(c *fiber.Ctx, model interface{}) error {
+func ValidateData(model interface{}) error {
 	validate := validator.New(validator.WithRequiredStructEnabled())
 	if err := validate.Struct(model); err != nil {
 		return err

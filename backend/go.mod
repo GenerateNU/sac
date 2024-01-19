@@ -1,4 +1,4 @@
-module backend
+module github.com/GenerateNU/sac/backend
 
 go 1.21.1
 

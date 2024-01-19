@@ -8,27 +8,23 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/GenerateNU/sac/backend/src/transactions"
+
 	"github.com/goccy/go-json"
 )
 
 func TestGetAllUsersWorks(t *testing.T) {
-	// initialize the test
-	app, assert := InitTest(t)
-
-	// create a GET request to the APP/api/v1/users/ endpoint
-	req := httptest.NewRequest("GET", fmt.Sprintf("%s/api/v1/users/", app.Address), nil)
-
-	// send the request to the app
-	resp, err := app.App.Test(req)
-
-	assert.NilError(err)
+	// setup the test
+	app, assert, resp := RequestTester(t, "GET", "/api/v1/users/", nil, nil, nil, nil)
+	defer app.DropDB()
 
 	assert.Equal(200, resp.StatusCode)
 
 	// decode the response body into a slice of users
 	var users []models.User
 
-	err = json.NewDecoder(resp.Body).Decode(&users)
+	err := json.NewDecoder(resp.Body).Decode(&users)
 
 	assert.NilError(err)
 
