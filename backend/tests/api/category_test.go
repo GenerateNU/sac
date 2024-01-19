@@ -86,7 +86,7 @@ func TestCreateCategoryFailsIfNameIsMissing(t *testing.T) {
 	assert.Equal(400, resp.StatusCode)
 }
 
-func TestCreateCategoryFailsICategoryWithThatNameAlreadyExists(t *testing.T) {
+func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
 	categoryName := "Science"
 	app, assert, resp := RequestTesterWithJSONBody(t, "POST", "/api/v1/categories/", &map[string]interface{}{
 		"category_name": categoryName,
