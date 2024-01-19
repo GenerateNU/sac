@@ -1,21 +1,13 @@
 package tests
 
 import (
-	"fmt"
-	"net/http/httptest"
 	"testing"
 )
 
 func TestHealthWorks(t *testing.T) {
-	// initialize the test
-	app, assert := InitTest(t)
+	app, assert, resp := RequestTester(t, "GET", "/health", nil, nil)
 
-	// create a GET request to the APP/health endpoint
-	req := httptest.NewRequest("GET", fmt.Sprintf("%s/health", app.Address), nil)
-
-	resp, err := app.App.Test(req)
-
-	assert.NilError(err)
+	defer app.DropDB()
 
 	assert.Equal(200, resp.StatusCode)
 }
