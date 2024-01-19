@@ -5,7 +5,7 @@ import (
 )
 
 func TestHealthWorks(t *testing.T) {
-	app, assert, resp := RequestTester(t, "GET", "/health", nil, nil)
+	app, assert, resp := RequestTester(t, "GET", "/health", nil, nil, nil, nil)
 
 	defer app.DropDB()
 

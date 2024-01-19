@@ -31,10 +31,11 @@ func InitTest(t *testing.T) (TestApp, *assert.A) {
 }
 
 type TestApp struct {
-	App      *fiber.App
-	Address  string
-	Conn     *gorm.DB
-	Settings config.Settings
+	App           *fiber.App
+	Address       string
+	Conn          *gorm.DB
+	Settings      config.Settings
+	InitialDBName string
 }
 
 func spawnApp() (TestApp, error) {
@@ -50,6 +51,8 @@ func spawnApp() (TestApp, error) {
 		return TestApp{}, err
 	}
 
+	initialDBName := configuration.Database.DatabaseName
+
 	configuration.Database.DatabaseName = generateRandomDBName()
 
 	connectionWithDB, err := configureDatabase(configuration)
@@ -59,9 +62,11 @@ func spawnApp() (TestApp, error) {
 	}
 
 	return TestApp{
-		App:     server.Init(connectionWithDB),
-		Address: fmt.Sprintf("http://%s", listener.Addr().String()),
-		Conn:    connectionWithDB,
+		App:           server.Init(connectionWithDB),
+		Address:       fmt.Sprintf("http://%s", listener.Addr().String()),
+		Conn:          connectionWithDB,
+		Settings:      configuration,
+		InitialDBName: initialDBName,
 	}, nil
 }
 func generateRandomInt(max int64) int64 {
@@ -109,6 +114,20 @@ func configureDatabase(config config.Settings) (*gorm.DB, error) {
 }
 
 func (app TestApp) DropDB() {
+	db, err := app.Conn.DB()
+
+	if err != nil {
+		panic(err)
+	}
+
+	db.Close()
+
+	app.Conn, err = gorm.Open(gormPostgres.Open(app.Settings.Database.WithoutDb()), &gorm.Config{SkipDefaultTransaction: true})
+
+	if err != nil {
+		panic(err)
+	}
+
 	app.Conn.Exec(fmt.Sprintf("DROP DATABASE %s;", app.Settings.Database.DatabaseName))
 }
 
@@ -118,8 +137,15 @@ type TestRequest struct {
 	Resp    *http.Response
 }
 
-func RequestTester(t *testing.T, method string, path string, body *map[string]interface{}, headers *map[string]string) (TestApp, *assert.A, *http.Response) {
-	app, assert := InitTest(t)
+func RequestTester(t *testing.T, method string, path string, body *map[string]interface{}, headers *map[string]string, exisitingApp *TestApp, exisitingAssert *assert.A) (TestApp, *assert.A, *http.Response) {
+	var app TestApp
+	var assert *assert.A
+
+	if exisitingApp == nil || exisitingAssert == nil {
+		app, assert = InitTest(t)
+	} else {
+		app, assert = *exisitingApp, exisitingAssert
+	}
 
 	address := fmt.Sprintf("%s%s", app.Address, path)
 
@@ -146,4 +172,14 @@ func RequestTester(t *testing.T, method string, path string, body *map[string]in
 	assert.NilError(err)
 
 	return app, assert, resp
+}
+
+func RequestTesterWithJSONBody(t *testing.T, method string, path string, body *map[string]interface{}, headers *map[string]string, exisitingApp *TestApp, exisitingAssert *assert.A) (TestApp, *assert.A, *http.Response) {
+	if headers == nil {
+		headers = &map[string]string{"Content-Type": "application/json"}
+	} else if _, ok := (*headers)["Content-Type"]; !ok {
+		(*headers)["Content-Type"] = "application/json"
+	}
+
+	return RequestTester(t, method, path, body, headers, exisitingApp, exisitingAssert)
 }
