@@ -109,10 +109,9 @@ func TestUpdateUserFailsOnInvalidParams(t *testing.T) {
 
 	// Each entry in invalid_datas represents JSON for a request that should fail (status code 400)
 	invalidDatas := []map[string]interface{}{
-		// TODO: add the email and password tests in once those validations are complete
-		//{"email": "not-northeastern@gmail.com"},
+		{"email": "not.northeastern@gmail.com"},
 		{"nuid": "1800-123-4567"},
-		//{"password": "bad-password"},
+		{"password": "1234"},
 		{"year": 1963},
 		{"college": "UT-Austin"},
 	}
