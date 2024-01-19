@@ -51,3 +51,13 @@ func UpdateUser(db *gorm.DB, id uint, user models.User) (*models.User, error) {
 
 	return &existingUser, nil
 }
+
+func DeleteUser(db *gorm.DB, id string) error {
+	var deletedUser models.User
+
+	result := db.Where("id = ?", id).Delete(&deletedUser)
+	if result.Error != nil {
+		return fiber.NewError(fiber.StatusBadRequest, "Unable to delete user")
+	}
+	return nil
+}

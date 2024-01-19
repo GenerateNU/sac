@@ -15,6 +15,7 @@ type UserServiceInterface interface {
 	GetAllUsers() ([]models.User, error)
 	GetUser(id string) (*models.User, error)
 	UpdateUser(id string, userBody models.UserRequestBody) (*models.User, error)
+	DeleteUser(id string) error
 }
 
 type UserService struct {
@@ -60,4 +61,8 @@ func (u *UserService) UpdateUser(id string, userBody models.UserRequestBody) (*m
 	user.PasswordHash = *passwordHash
 
 	return transactions.UpdateUser(u.DB, *idAsUint, *user)
+}
+
+func (u *UserService) DeleteUser(id string) error {
+	return transactions.DeleteUser(u.DB, id)
 }
