@@ -56,8 +56,13 @@ func DeleteUser(db *gorm.DB, id string) error {
 	var deletedUser models.User
 
 	result := db.Where("id = ?", id).Delete(&deletedUser)
-	if result.Error != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "Unable to delete user")
+	if result.RowsAffected == 0 {
+		err := db.Where("id = ?", id).First(&deletedUser)
+		if errors.Is(err.Error, gorm.ErrRecordNotFound) {
+			return fiber.NewError(fiber.StatusNotFound, "user not found")
+		} else {
+			return fiber.NewError(fiber.StatusInternalServerError, "not connected to database")
+		}
 	}
 	return nil
 }
