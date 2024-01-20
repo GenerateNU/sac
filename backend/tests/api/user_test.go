@@ -1,40 +1,47 @@
 package tests
 
 import (
-	"backend/src/models"
-	"backend/src/transactions"
+	"net/http"
 	"testing"
+
+	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/GenerateNU/sac/backend/src/transactions"
+	"github.com/huandu/go-assert"
 
 	"github.com/goccy/go-json"
 )
 
 func TestGetAllUsersWorks(t *testing.T) {
-	// setup the test
-	app, assert, resp := RequestTester(t, "GET", "/api/v1/users/", nil, nil, nil, nil)
-	defer app.DropDB()
+	TestRequest{
+		Method: "GET",
+		Path:   "/api/v1/users/",
+	}.TestOnStatusAndDB(t, nil,
+		DBTesterWithStatus{
+			Status: 200,
+			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+				// decode the response body into a slice of users
+				var users []models.User
 
-	assert.Equal(200, resp.StatusCode)
+				err := json.NewDecoder(resp.Body).Decode(&users)
 
-	// decode the response body into a slice of users
-	var users []models.User
+				assert.NilError(err)
 
-	err := json.NewDecoder(resp.Body).Decode(&users)
+				assert.Equal(1, len(users))
 
-	assert.NilError(err)
+				respUser := users[0]
 
-	assert.Equal(1, len(users))
+				// get all users from the database
+				dbUsers, err := transactions.GetAllUsers(app.Conn)
 
-	respUser := users[0]
+				assert.NilError(err)
 
-	// get all users from the database
-	dbUsers, err := transactions.GetAllUsers(app.Conn)
+				assert.Equal(1, len(dbUsers))
 
-	assert.NilError(err)
+				dbUser := dbUsers[0]
 
-	assert.Equal(1, len(dbUsers))
-
-	dbUser := dbUsers[0]
-
-	// assert that the user returned from the database is the same as the user returned from the API
-	assert.Equal(dbUser, respUser)
+				// assert that the user returned from the database is the same as the user returned from the API
+				assert.Equal(dbUser, respUser)
+			},
+		},
+	)
 }
