@@ -1,6 +1,8 @@
 package transactions
 
 import (
+	"errors"
+
 	"github.com/GenerateNU/sac/backend/src/models"
 
 	"github.com/gofiber/fiber/v2"
@@ -17,12 +19,17 @@ func GetAllUsers(db *gorm.DB) ([]models.User, error) {
 	return users, nil
 }
 
-func DeleteUser(db *gorm.DB, id string) error {
+func DeleteUser(db *gorm.DB, id uint) error {
 	var deletedUser models.User
 
 	result := db.Where("id = ?", id).Delete(&deletedUser)
-	if result.Error != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "Unable to delete user")
+	if result.RowsAffected == 0 {
+		err := db.Where("id = ?", id).First(&deletedUser)
+		if errors.Is(err.Error, gorm.ErrRecordNotFound) {
+			return fiber.NewError(fiber.StatusNotFound, "cannot delete since user does not exist")
+		} else {
+			return fiber.NewError(fiber.StatusInternalServerError, "not connected to database")
+		}
 	}
 	return nil
 }

@@ -1,8 +1,11 @@
 package services
 
 import (
+	"strconv"
+
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
+	"github.com/gofiber/fiber/v2"
 
 	"gorm.io/gorm"
 )
@@ -21,9 +24,14 @@ func (u *UserService) GetAllUsers() ([]models.User, error) {
 	return transactions.GetAllUsers(u.DB)
 }
 
-// Updates a user
+// Delete user with a specific id
 func (u *UserService) DeleteUser(id string) (error) {
-
-	//TODO: validation
-	return transactions.DeleteUser(u.DB, id)
+	idAsInt, err := strconv.Atoi(id)
+	if idAsInt < 1 {
+		return fiber.NewError(fiber.StatusBadRequest, "wrong or invalid id")
+	}
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, "invalid id")
+	}
+	return transactions.DeleteUser(u.DB, uint(idAsInt))
 }
