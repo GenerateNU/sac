@@ -16,3 +16,11 @@ func GetAllUsers(db *gorm.DB) ([]models.User, error) {
 
 	return users, nil
 }
+
+func CreateUser(db *gorm.DB, user *models.User) (*models.User, error) {
+	if err := db.Create(user).Error; err != nil {
+		return nil, fiber.NewError(fiber.StatusInternalServerError, "failed to create user")
+	}
+
+	return user, nil
+}
