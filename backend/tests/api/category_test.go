@@ -122,7 +122,7 @@ func TestCreateCategoryFailsIfNameIsMissing(t *testing.T) {
 }
 
 func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
-	categoryName := "Science"
+	categoryName := "foo"
 
 	existingAppAssert := CreateSampleCategory(t, categoryName)
 

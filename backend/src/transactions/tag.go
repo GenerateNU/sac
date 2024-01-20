@@ -21,9 +21,9 @@ func GetTag(db *gorm.DB, id uint) (*models.Tag, error) {
 
 	if err := db.First(&tag, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, fiber.NewError(fiber.StatusBadRequest, "invalid tag id")
+			return nil, fiber.NewError(fiber.StatusNotFound, "failed to find tag")
 		} else {
-			return nil, fiber.NewError(fiber.StatusInternalServerError, "unable to retrieve tag")
+			return nil, fiber.NewError(fiber.StatusInternalServerError, "failed to retrieve tag")
 		}
 	}
 
