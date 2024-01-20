@@ -66,3 +66,25 @@ func (t *TagController) GetTag(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusOK).JSON(&tag)
 }
+
+// DeleteTag godoc
+//
+// @Summary		Deletes a tag
+// @Description	Deletes a tag
+// @ID			delete-tag
+// @Tags      	tag
+// @Param		id	path	int	true	"Tag ID"
+// @Success		204	  {string}    string "No Content"
+// @Failure     400   {string}    string "failed to validate id"
+// @Failure     404   {string}    string "failed to find tag"
+// @Failure     500   {string}    string "failed to delete tag"
+// @Router		/api/v1/tags/{id}  [delete]
+func (t *TagController) DeleteTag(c *fiber.Ctx) error {
+	err := t.tagService.DeleteTag(c.Params("id"))
+
+	if err != nil {
+		return err
+	}
+
+	return c.SendStatus(fiber.StatusNoContent)
+}

@@ -11,6 +11,7 @@ import (
 type TagServiceInterface interface {
 	CreateTag(partialTag models.CreateTagRequestBody) (*models.Tag, error)
 	GetTag(id string) (*models.Tag, error)
+	DeleteTag(id string) error
 }
 
 type TagService struct {
@@ -38,4 +39,14 @@ func (t *TagService) GetTag(id string) (*models.Tag, error) {
 	}
 
 	return transactions.GetTag(t.DB, *idAsUint)
+}
+
+func (t *TagService) DeleteTag(id string) error {
+	idAsUint, err := utilities.ValidateID(id)
+
+	if err != nil {
+		return err
+	}
+
+	return transactions.DeleteTag(t.DB, *idAsUint)
 }

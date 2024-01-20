@@ -86,7 +86,7 @@ func generateRandomDBName() string {
 		result[i] = letterBytes[generateRandomInt(int64(len(letterBytes)))]
 	}
 
-	return string(result)
+	return fmt.Sprintf("%s%s", prefix, string(result))
 }
 
 func configureDatabase(config config.Settings) (*gorm.DB, error) {

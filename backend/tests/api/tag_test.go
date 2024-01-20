@@ -46,7 +46,7 @@ func TestCreateTagWorks(t *testing.T) {
 	appAssert.App.DropDB()
 }
 
-var AssertNoTagCreation = func(app TestApp, assert *assert.A, resp *http.Response) {
+var AssertNoTags = func(app TestApp, assert *assert.A, resp *http.Response) {
 	var tags []models.Tag
 
 	err := app.Conn.Find(&tags).Error
@@ -79,7 +79,7 @@ func TestCreateTagFailsBadRequest(t *testing.T) {
 					Status:  400,
 					Message: "failed to process the request",
 				},
-				DBTester: AssertNoTagCreation,
+				DBTester: AssertNoTags,
 			},
 		)
 	}
@@ -107,7 +107,7 @@ func TestCreateTagFailsValidation(t *testing.T) {
 					Status:  400,
 					Message: "failed to validate the data",
 				},
-				DBTester: AssertNoTagCreation,
+				DBTester: AssertNoTags,
 			},
 		)
 	}
@@ -137,6 +137,8 @@ func TestGetTagWorks(t *testing.T) {
 			},
 		},
 	)
+
+	existingAppAssert.App.DropDB()
 }
 
 func TestGetTagFailsBadRequest(t *testing.T) {
@@ -164,6 +166,56 @@ func TestGetTagFailsBadRequest(t *testing.T) {
 func TestGetTagFailsNotFound(t *testing.T) {
 	TestRequest{
 		Method: "GET",
+		Path:   "/api/v1/tags/1",
+	}.TestOnStatusAndMessage(t, nil,
+		MessageWithStatus{
+			Status:  404,
+			Message: "failed to find tag",
+		},
+	)
+}
+
+func TestDeleteTagWorks(t *testing.T) {
+	existingAppAssert := CreateSampleTag(t, "Generate", "Science")
+
+	TestRequest{
+		Method: "DELETE",
+		Path:   "/api/v1/tags/1",
+	}.TestOnStatusAndDB(t, &existingAppAssert,
+		DBTesterWithStatus{
+			Status:   204,
+			DBTester: AssertNoTags,
+		},
+	)
+
+	existingAppAssert.App.DropDB()
+}
+
+func TestDeleteTagFailsBadRequest(t *testing.T) {
+	badRequests := []string{
+		"0",
+		"-1",
+		"1.1",
+		"foo",
+		"null",
+	}
+
+	for _, badRequest := range badRequests {
+		TestRequest{
+			Method: "DELETE",
+			Path:   fmt.Sprintf("/api/v1/tags/%s", badRequest),
+		}.TestOnStatusAndMessage(t, nil,
+			MessageWithStatus{
+				Status:  400,
+				Message: "failed to validate id",
+			},
+		)
+	}
+}
+
+func TestDeleteTagFailsNotFound(t *testing.T) {
+	TestRequest{
+		Method: "DELETE",
 		Path:   "/api/v1/tags/1",
 	}.TestOnStatusAndMessage(t, nil,
 		MessageWithStatus{
