@@ -71,7 +71,7 @@ func TestGetUserHappyPath(t *testing.T) {
 	assert.Equal(user.Email, "generatesac@gmail.com")
 }
 
-func TestGetUserBadRequest(t *testing.T) {
+func TestGetUserBadRequestStringID(t *testing.T) {
 	app, assert := InitTest(t)
 	// create a GET request to the APP/api/v1/users/:id endpoint
 	req := httptest.NewRequest("GET", fmt.Sprintf("%s/api/v1/users/letters", app.Address), nil)
@@ -83,7 +83,10 @@ func TestGetUserBadRequest(t *testing.T) {
 	msg := string(bodyBytes)
 	assert.Equal("id must be a positive number", msg)
 	assert.Equal(400, resp.StatusCode)
+}
 
+func TestGetUserBadRequestNullID(t *testing.T) {
+	app, assert := InitTest(t)
 	// create a GET request to the APP/api/v1/users/:id endpoint
 	req2 := httptest.NewRequest("GET", fmt.Sprintf("%s/api/v1/users/null", app.Address), nil)
 	resp2, err2 := app.App.Test(req2)
@@ -95,7 +98,7 @@ func TestGetUserBadRequest(t *testing.T) {
 	assert.Equal("id must be a positive number", msg2)
 	assert.Equal(400, resp2.StatusCode)
 }
-func TestGetUserBadId(t *testing.T) {
+func TestGetUserBadRequestNegativeID(t *testing.T) {
 	app, assert := InitTest(t)
 	// create a GET request to the APP/api/v1/users/:id endpoint
 	req1 := httptest.NewRequest("GET", fmt.Sprintf("%s/api/v1/users/-1", app.Address), nil)
@@ -106,7 +109,10 @@ func TestGetUserBadId(t *testing.T) {
 	msg1 := string(bodyBytes1)
 	assert.Equal("id must be a positive number", msg1)
 	assert.Equal(400, resp1.StatusCode)
+}
 
+func TestGetUserBadRequestZeroID(t *testing.T) {
+	app, assert := InitTest(t)
 	// create a GET request to the APP/api/v1/users/:id endpoint
 	req2 := httptest.NewRequest("GET", fmt.Sprintf("%s/api/v1/users/0", app.Address), nil)
 	resp2, err2 := app.App.Test(req2)
