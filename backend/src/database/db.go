@@ -56,7 +56,6 @@ func MigrateDB(settings config.Settings, db *gorm.DB) error {
 		return err
 	}
 
-
 	tx := db.Begin()
 
 	if err := tx.Error; err != nil {
@@ -64,7 +63,6 @@ func MigrateDB(settings config.Settings, db *gorm.DB) error {
 	}
 
 	passwordHash, err := auth.ComputePasswordHash(settings.SuperUser.Password)
-
 	if err != nil {
 		return err
 	}

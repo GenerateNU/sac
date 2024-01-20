@@ -3,12 +3,16 @@ package services
 import (
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
+	"github.com/GenerateNU/sac/backend/src/utilities"
 
 	"gorm.io/gorm"
 )
 
 type UserServiceInterface interface {
 	GetAllUsers() ([]models.User, error)
+	GetUser(id uint) (*models.User, error)
+	Register(userBody models.CreateUserResponseBody) (*models.User, error)
+	Login(userBody models.LoginUserResponseBody) (*models.User, error)
 }
 
 type UserService struct {
@@ -18,4 +22,51 @@ type UserService struct {
 // Gets all users (including soft deleted users) for testing
 func (u *UserService) GetAllUsers() ([]models.User, error) {
 	return transactions.GetAllUsers(u.DB)
+}
+
+func (u *UserService) GetUser(id uint) (*models.User, error) {
+	return transactions.GetUser(u.DB, id)
+}
+
+// Registers a user
+func (u *UserService) Register(userBody models.CreateUserResponseBody) (*models.User, error) {
+	if err := utilities.ValidateData(userBody); err != nil {
+		return nil, err
+	}
+
+	passwordHash, err := utilities.EncryptPassword(userBody.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	user := models.User{
+		Role:         models.Student,
+		NUID:         userBody.NUID,
+		FirstName:    userBody.FirstName,
+		LastName:     userBody.LastName,
+		Email:        userBody.Email,
+		PasswordHash: passwordHash,
+		College:      models.College(userBody.College),
+		Year:         models.Year(userBody.Year),
+	}
+
+	return transactions.CreateUser(u.DB, user)
+}
+
+func (u *UserService) Login(userBody models.LoginUserResponseBody) (*models.User, error) {
+	if err := utilities.ValidateData(userBody); err != nil {
+		return nil, err
+	}
+
+	// check if user exists
+	user, err := transactions.GetUserByEmail(u.DB, userBody.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = utilities.ValidatePassword(userBody.Password, user.PasswordHash); err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }

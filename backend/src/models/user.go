@@ -56,3 +56,18 @@ type User struct {
 	RSVP              []Event   `gorm:"many2many:user_event_rsvps;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	Waitlist          []Event   `gorm:"many2many:user_event_waitlists;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 }
+
+type CreateUserResponseBody struct {
+	NUID      string `json:"nuid" validate:"len=9"`
+	FirstName string `json:"first_name" validate:"max=255"`
+	LastName  string `json:"last_name" validate:"max=255"`
+	Email     string `json:"email" validate:"email"`
+	Password  string `json:"password" validate:"min=8,max=255"`
+	College   string `json:"college" validate:"oneof=CAMD DMSB KCCS CE BCHS SL CPS CS CSSH"`
+	Year      uint   `json:"year" validate:"min=1,max=6"`
+}
+
+type LoginUserResponseBody struct {
+	Email    string `json:"email" validate:"email"`
+	Password string `json:"password" validate:"min=8,max=255"`
+}

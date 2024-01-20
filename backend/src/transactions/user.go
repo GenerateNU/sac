@@ -16,3 +16,31 @@ func GetAllUsers(db *gorm.DB) ([]models.User, error) {
 
 	return users, nil
 }
+
+func GetUser(db *gorm.DB, id uint) (*models.User, error) {
+	var user models.User
+
+	if err := db.Where("id = ?", id).First(&user).Error; err != nil {
+		return nil, fiber.NewError(fiber.StatusNotFound, "user not found")
+	}
+
+	return &user, nil
+}
+
+func GetUserByEmail(db *gorm.DB, email string) (*models.User, error) {
+	var user models.User
+
+	if err := db.Where("email = ?", email).First(&user).Error; err != nil {
+		return nil, fiber.NewError(fiber.StatusNotFound, "user not found")
+	}
+
+	return &user, nil
+}
+
+func CreateUser(db *gorm.DB, user models.User) (*models.User, error) {
+	if err := db.Create(&user).Error; err != nil {
+		return nil, fiber.NewError(fiber.StatusInternalServerError, "failed to create user")
+	}
+
+	return &user, nil
+}
