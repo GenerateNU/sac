@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"backend/src/models"
-	"backend/src/services"
+	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/GenerateNU/sac/backend/src/services"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -29,18 +29,13 @@ func NewTagController(tagService services.TagServiceInterface) *TagController {
 // @Failure     500   {string}    string "failed to create tag"
 // @Router		/api/v1/tags/  [post]
 func (t *TagController) CreateTag(c *fiber.Ctx) error {
-	var tag models.TagCreateRequestBody
+	var tagBody models.CreateTagRequestBody
 
-	if err := c.BodyParser(&tag); err != nil {
+	if err := c.BodyParser(&tagBody); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "failed to process the request")
 	}
 
-	partialTag := models.Tag{
-		Name:       tag.Name,
-		CategoryID: tag.CategoryID,
-	}
-
-	dbTag, err := t.tagService.CreateTag(partialTag)
+	dbTag, err := t.tagService.CreateTag(tagBody)
 
 	if err != nil {
 		return err

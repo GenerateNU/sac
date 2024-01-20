@@ -16,7 +16,7 @@ type Tag struct {
 	Event []Event `gorm:"many2many:event_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 }
 
-type TagCreateRequestBody struct {
+type CreateTagRequestBody struct {
 	Name       string `json:"name" validate:"required"`
 	CategoryID uint   `json:"category_id" validate:"required"`
 }

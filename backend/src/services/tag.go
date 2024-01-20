@@ -1,23 +1,27 @@
 package services
 
 import (
-	"backend/src/models"
-	"backend/src/transactions"
-	"backend/src/utilities"
-
+	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/GenerateNU/sac/backend/src/transactions"
+	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
 
 type TagServiceInterface interface {
-	CreateTag(tag models.Tag) (*models.Tag, error)
+	CreateTag(partialTag models.CreateTagRequestBody) (*models.Tag, error)
 }
 
 type TagService struct {
 	DB *gorm.DB
 }
 
-func (t *TagService) CreateTag(tag models.Tag) (*models.Tag, error) {
+func (t *TagService) CreateTag(partialTag models.CreateTagRequestBody) (*models.Tag, error) {
+	tag := models.Tag{
+		Name:       partialTag.Name,
+		CategoryID: partialTag.CategoryID,
+	}
+
 	if err := utilities.ValidateData(tag); err != nil {
 		return nil, fiber.NewError(fiber.StatusBadRequest, "failed to validate the data")
 	}
