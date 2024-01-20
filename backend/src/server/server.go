@@ -1,8 +1,8 @@
 package server
 
 import (
-	"backend/src/controllers"
-	"backend/src/services"
+	"github.com/GenerateNU/sac/backend/src/controllers"
+	"github.com/GenerateNU/sac/backend/src/services"
 
 	"github.com/goccy/go-json"
 

@@ -1,8 +1,8 @@
 package services
 
 import (
-	"backend/src/models"
-	"backend/src/transactions"
+	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/GenerateNU/sac/backend/src/transactions"
 
 	"gorm.io/gorm"
 )

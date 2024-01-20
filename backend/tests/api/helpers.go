@@ -1,18 +1,20 @@
 package tests
 
 import (
-	"backend/src/config"
-	"backend/src/database"
-	"backend/src/server"
 	"bytes"
 	crand "crypto/rand"
 	"fmt"
+	"io"
 	"math/big"
 	"net"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/GenerateNU/sac/backend/src/config"
+	"github.com/GenerateNU/sac/backend/src/database"
+	"github.com/GenerateNU/sac/backend/src/server"
 
 	"github.com/goccy/go-json"
 
@@ -132,37 +134,43 @@ func (app TestApp) DropDB() {
 	app.Conn.Exec(fmt.Sprintf("DROP DATABASE %s;", app.Settings.Database.DatabaseName))
 }
 
-type TestRequest struct {
-	TestApp TestApp
-	Assert  *assert.A
-	Resp    *http.Response
+type ExistingAppAssert struct {
+	App    TestApp
+	Assert *assert.A
 }
 
-func RequestTester(t *testing.T, method string, path string, body *map[string]interface{}, headers *map[string]string, exisitingApp *TestApp, exisitingAssert *assert.A) (TestApp, *assert.A, *http.Response) {
+type TestRequest struct {
+	Method  string
+	Path    string
+	Body    *map[string]interface{}
+	Headers *map[string]string
+}
+
+func (request TestRequest) Test(t *testing.T, existingAppAssert *ExistingAppAssert) (ExistingAppAssert, *http.Response) {
 	var app TestApp
 	var assert *assert.A
 
-	if exisitingApp == nil || exisitingAssert == nil {
+	if existingAppAssert == nil {
 		app, assert = InitTest(t)
 	} else {
-		app, assert = *exisitingApp, exisitingAssert
+		app, assert = existingAppAssert.App, existingAppAssert.Assert
 	}
 
-	address := fmt.Sprintf("%s%s", app.Address, path)
+	address := fmt.Sprintf("%s%s", app.Address, request.Path)
 
 	var req *http.Request
 
-	if body == nil {
-		req = httptest.NewRequest(method, address, nil)
+	if request.Body == nil {
+		req = httptest.NewRequest(request.Method, address, nil)
 	} else {
-		bodyBytes, err := json.Marshal(body)
+		bodyBytes, err := json.Marshal(request.Body)
 
 		assert.NilError(err)
 
-		req = httptest.NewRequest(method, address, bytes.NewBuffer(bodyBytes))
+		req = httptest.NewRequest(request.Method, address, bytes.NewBuffer(bodyBytes))
 
-		if headers != nil {
-			for key, value := range *headers {
+		if request.Headers != nil {
+			for key, value := range *request.Headers {
 				req.Header.Set(key, value)
 			}
 		}
@@ -172,17 +180,87 @@ func RequestTester(t *testing.T, method string, path string, body *map[string]in
 
 	assert.NilError(err)
 
-	return app, assert, resp
+	return ExistingAppAssert{
+		App:    app,
+		Assert: assert,
+	}, resp
 }
 
-func RequestTesterWithJSONBody(t *testing.T, method string, path string, body *map[string]interface{}, headers *map[string]string, exisitingApp *TestApp, exisitingAssert *assert.A) (TestApp, *assert.A, *http.Response) {
-	if headers == nil {
-		headers = &map[string]string{"Content-Type": "application/json"}
-	} else if _, ok := (*headers)["Content-Type"]; !ok {
-		(*headers)["Content-Type"] = "application/json"
+func (request TestRequest) TestOnStatus(t *testing.T, existingAppAssert *ExistingAppAssert, status int) ExistingAppAssert {
+	appAssert, resp := request.Test(t, existingAppAssert)
+	app, assert := appAssert.App, appAssert.Assert
+	if existingAppAssert != nil {
+		defer app.DropDB()
 	}
 
-	return RequestTester(t, method, path, body, headers, exisitingApp, exisitingAssert)
+	assert.Equal(status, resp.StatusCode)
+
+	return appAssert
+}
+
+func (request TestRequest) TestWithJSONBody(t *testing.T, existingAppAssert *ExistingAppAssert) (ExistingAppAssert, *http.Response) {
+	if request.Headers == nil {
+		request.Headers = &map[string]string{"Content-Type": "application/json"}
+	} else if _, ok := (*request.Headers)["Content-Type"]; !ok {
+		(*request.Headers)["Content-Type"] = "application/json"
+	}
+
+	return request.Test(t, existingAppAssert)
+}
+
+type MessageWithStatus struct {
+	Status  int
+	Message string
+}
+
+func (request TestRequest) TestOnStatusAndMessage(t *testing.T, existingAppAssert *ExistingAppAssert, messagedStatus MessageWithStatus) ExistingAppAssert {
+	appAssert := request.TestOnStatusAndMessageKeepDB(t, existingAppAssert, messagedStatus)
+	appAssert.App.DropDB()
+	return appAssert
+}
+
+func (request TestRequest) TestOnStatusAndMessageKeepDB(t *testing.T, existingAppAssert *ExistingAppAssert, messagedStatus MessageWithStatus) ExistingAppAssert {
+	appAssert, resp := request.TestWithJSONBody(t, existingAppAssert)
+	assert := appAssert.Assert
+
+	defer resp.Body.Close()
+
+	bodyBytes, err := io.ReadAll(resp.Body)
+
+	appAssert.Assert.NilError(err)
+
+	msg := string(bodyBytes)
+
+	assert.Equal(messagedStatus.Message, msg)
+
+	assert.Equal(messagedStatus.Status, resp.StatusCode)
+
+	return appAssert
+}
+
+type DBTester func(app TestApp, assert *assert.A, resp *http.Response)
+
+type DBTesterWithStatus struct {
+	Status int
+	DBTester
+}
+
+func (request TestRequest) TestOnStatusAndDB(t *testing.T, existingAppAssert *ExistingAppAssert, dbTesterStatus DBTesterWithStatus) ExistingAppAssert {
+	appAssert := request.TestOnStatusAndDBKeepDB(t, existingAppAssert, dbTesterStatus)
+	appAssert.App.DropDB()
+	return appAssert
+}
+
+func (request TestRequest) TestOnStatusAndDBKeepDB(t *testing.T, existingAppAssert *ExistingAppAssert, dbTesterStatus DBTesterWithStatus) ExistingAppAssert {
+	appAssert, resp := request.TestWithJSONBody(t, existingAppAssert)
+	app, assert := appAssert.App, appAssert.Assert
+	defer resp.Body.Close()
+
+	assert.Equal(dbTesterStatus.Status, resp.StatusCode)
+
+	dbTesterStatus.DBTester(app, assert, resp)
+
+	return appAssert
 }
 
 func generateCasingPermutations(word string, currentPermutation string, index int, results *[]string) {

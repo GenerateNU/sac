@@ -5,11 +5,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"cli/commands"
+	"github.com/GenerateNU/sac/cli/commands"
 
 	"github.com/urfave/cli/v2"
 )
-
 
 func main() {
 	ROOT_DIR, err := os.Getwd()
