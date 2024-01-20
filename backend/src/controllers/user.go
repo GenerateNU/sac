@@ -3,8 +3,6 @@ package controllers
 import (
 	"github.com/GenerateNU/sac/backend/src/services"
 
-	"strconv"
-
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -50,10 +48,6 @@ func (u *UserController) GetAllUsers(c *fiber.Ctx) error {
 // @Router		/api/v1/users/  [get]
 func (u *UserController) GetUser(c *fiber.Ctx) error {
 	userID := c.Params("id")
-
-	if integer, integerErr := strconv.Atoi(userID); integerErr != nil || integer <= 0 {
-		return fiber.NewError(fiber.StatusBadRequest, "id must be a positive number")
-	}
 
 	user, err := u.userService.GetUser(userID)
 	if err != nil {

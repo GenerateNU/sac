@@ -88,7 +88,7 @@ func TestGetUserBadRequestStringID(t *testing.T) {
 	bodyBytes, io_err := io.ReadAll(resp.Body)
 	assert.NilError(io_err)
 	msg := string(bodyBytes)
-	assert.Equal("id must be a positive number", msg)
+	assert.Equal("id must be a positive integer", msg)
 	assert.Equal(400, resp.StatusCode)
 }
 
@@ -102,7 +102,7 @@ func TestGetUserBadRequestNullID(t *testing.T) {
 	bodyBytes2, io_err2 := io.ReadAll(resp2.Body)
 	assert.NilError(io_err2)
 	msg2 := string(bodyBytes2)
-	assert.Equal("id must be a positive number", msg2)
+	assert.Equal("id must be a positive integer", msg2)
 	assert.Equal(400, resp2.StatusCode)
 }
 func TestGetUserBadRequestNegativeID(t *testing.T) {
@@ -114,7 +114,7 @@ func TestGetUserBadRequestNegativeID(t *testing.T) {
 	defer resp1.Body.Close()
 	bodyBytes1, err1 := io.ReadAll(resp1.Body)
 	msg1 := string(bodyBytes1)
-	assert.Equal("id must be a positive number", msg1)
+	assert.Equal("id must be a positive integer", msg1)
 	assert.Equal(400, resp1.StatusCode)
 }
 
@@ -128,7 +128,7 @@ func TestGetUserBadRequestZeroID(t *testing.T) {
 	bodyBytes2, io_err2 := io.ReadAll(resp2.Body)
 	assert.NilError(io_err2)
 	msg2 := string(bodyBytes2)
-	assert.Equal("id must be a positive number", msg2)
+	assert.Equal("id must be a positive integer", msg2)
 	assert.Equal(400, resp2.StatusCode)
 }
 func TestGetUserNotFound(t *testing.T) {
