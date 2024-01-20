@@ -11,8 +11,9 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
-	"github.com/goccy/go-json"
 	"github.com/huandu/go-assert"
+
+	"github.com/goccy/go-json"
 )
 
 func TestGetAllUsersWorks(t *testing.T) {
@@ -248,13 +249,11 @@ func TestDeleteUserWorks(t *testing.T) {
 	}
 	err := app.Conn.Create(&user).Error
 	assert.NilError(err)
-	app, assert, resp := RequestTesterWithJSONBody(t, "DELETE", fmt.Sprintf("%s/api/v1/users/%d", app.Address, user.ID), nil, nil, app, assert)
-	assert.Equal(resp.StatusCode, 200)
 
-	// req := httptest.NewRequest("DELETE", fmt.Sprintf("%s/api/v1/users/%d", app.Address, user.ID), nil)
-	// req.Header.Set("Content-Type", "application/json")å
-	// resp, _ := app.App.Test(req)
-	// assert.Equal(resp.StatusCode, 200)
+	req := httptest.NewRequest("DELETE", fmt.Sprintf("%s/api/v1/users/%d", app.Address, user.ID), nil)
+	req.Header.Set("Content-Type", "application/json")
+	resp, _ := app.App.Test(req)
+	assert.Equal(resp.StatusCode, 200)
 }
 
 func TestDeleteUserNotExist(t *testing.T) {
