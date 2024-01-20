@@ -5,9 +5,9 @@ import (
 	"strconv"
 
 	"github.com/GenerateNU/sac/backend/src/errors"
+	"github.com/mcnijman/go-emailaddress"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/mcnijman/go-emailaddress"
 )
 
 func RegisterCustomValidators(validate *validator.Validate) {

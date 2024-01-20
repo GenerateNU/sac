@@ -76,3 +76,8 @@ type UpdateUserRequestBody struct {
 	College   College `json:"college" validate:"omitempty,oneof=CAMD DMSB KCCS CE BCHS SL CPS CS CSSH"`
 	Year      Year    `json:"year" validate:"omitempty,min=1,max=6"`
 }
+
+type LoginUserResponseBody struct {
+	Email    string `json:"email" validate:"email"`
+	Password string `json:"password" validate:"min=8,max=255"`
+}

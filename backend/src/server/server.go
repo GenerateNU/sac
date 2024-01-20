@@ -47,7 +47,9 @@ func newFiberApp() *fiber.App {
 		JSONDecoder: json.Unmarshal,
 	})
 
-	app.Use(cors.New())
+	app.Use(cors.New(cors.Config{
+		AllowCredentials: true,
+	}))
 	app.Use(requestid.New())
 	app.Use(logger.New(logger.Config{
 		Format: "[${time}] ${ip}:${port} ${pid} ${locals:requestid} ${status} - ${latency} ${method} ${path}\n",
@@ -73,6 +75,12 @@ func userRoutes(router fiber.Router, userService services.UserServiceInterface) 
 	users.Get("/:id", userController.GetUser)
 	users.Patch("/:id", userController.UpdateUser)
 	users.Delete("/:id", userController.DeleteUser)
+	users.Get("/", userController.GetAllUsers)
+	users.Get("/:id", userController.GetUser)
+	users.Get("/current", userController.CurrentUser)
+	users.Post("/register", userController.Register)
+	users.Post("/login", userController.Login)
+	users.Get("/logout", userController.Logout)
 }
 
 func categoryRoutes(router fiber.Router, categoryService services.CategoryServiceInterface) {

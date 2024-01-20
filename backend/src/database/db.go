@@ -76,7 +76,6 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 	}
 
 	passwordHash, err := auth.ComputePasswordHash(settings.SuperUser.Password)
-
 	if err != nil {
 		return err
 	}

@@ -5,6 +5,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/gofiber/fiber/v2"
 
 	"gorm.io/gorm"
 )
@@ -73,4 +74,22 @@ func DeleteUser(db *gorm.DB, id uint) *errors.Error {
 		}
 	}
 	return nil
+}
+
+func GetUserByEmail(db *gorm.DB, email string) (*models.User, error) {
+	var user models.User
+
+	if err := db.Where("email = ?", email).First(&user).Error; err != nil {
+		return nil, fiber.NewError(fiber.StatusNotFound, "user not found")
+	}
+
+	return &user, nil
+}
+
+func CreateUser(db *gorm.DB, user models.User) (*models.User, error) {
+	if err := db.Create(&user).Error; err != nil {
+		return nil, fiber.NewError(fiber.StatusInternalServerError, "failed to create user")
+	}
+
+	return &user, nil
 }
