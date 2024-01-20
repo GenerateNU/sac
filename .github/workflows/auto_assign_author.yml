@@ -1,11 +1,11 @@
-name: "Auto Assign Author"
+name: Auto Assign Author
 
 on:
   pull_request:
     types: [opened, ready_for_review, reopened]
 
 jobs:
-  add-reviews:
+  auto-add-assignee:
     runs-on: ubuntu-latest
     steps:
       - uses: kentaro-m/auto-assign-action@v1.2.6
