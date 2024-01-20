@@ -3,7 +3,6 @@ package controllers
 import (
 	"backend/src/services"
 
-	"log"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -25,13 +24,13 @@ func NewUserController(userService services.UserServiceInterface) *UserControlle
 // @Tags      	user
 // @Produce		json
 // @Success		200	  {object}	  []models.User
-// @Failure     500   {string}    string "Failed to fetch users"
+// @Failure     500   {string}    string "failed to get all users"
 // @Router		/api/v1/users/  [get]
 func (u *UserController) GetAllUsers(c *fiber.Ctx) error {
 	users, err := u.userService.GetAllUsers()
 
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "Failed to fetch users")
+		return err
 	}
 
 	return c.Status(fiber.StatusOK).JSON(users)
@@ -54,7 +53,7 @@ func (u *UserController) GetUser(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "id must be a positive number")
 	}
 
-	if user, err:= u.userService.GetUser(userID); err != nil {
+	if user, err := u.userService.GetUser(userID); err != nil {
 		return err
 	}
 

@@ -4,11 +4,17 @@ import (
 	"backend/src/config"
 	"backend/src/database"
 	"backend/src/server"
+	"bytes"
 	crand "crypto/rand"
 	"fmt"
 	"math/big"
 	"net"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
+
+	"github.com/goccy/go-json"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/huandu/go-assert"
@@ -26,9 +32,11 @@ func InitTest(t *testing.T) (TestApp, *assert.A) {
 }
 
 type TestApp struct {
-	App     *fiber.App
-	Address string
-	Conn    *gorm.DB
+	App           *fiber.App
+	Address       string
+	Conn          *gorm.DB
+	Settings      config.Settings
+	InitialDBName string
 }
 
 func spawnApp() (TestApp, error) {
@@ -44,6 +52,8 @@ func spawnApp() (TestApp, error) {
 		return TestApp{}, err
 	}
 
+	initialDBName := configuration.Database.DatabaseName
+
 	configuration.Database.DatabaseName = generateRandomDBName()
 
 	connectionWithDB, err := configureDatabase(configuration)
@@ -53,9 +63,11 @@ func spawnApp() (TestApp, error) {
 	}
 
 	return TestApp{
-		App:     server.Init(connectionWithDB),
-		Address: fmt.Sprintf("http://%s", listener.Addr().String()),
-		Conn:    connectionWithDB,
+		App:           server.Init(connectionWithDB),
+		Address:       fmt.Sprintf("http://%s", listener.Addr().String()),
+		Conn:          connectionWithDB,
+		Settings:      configuration,
+		InitialDBName: initialDBName,
 	}, nil
 }
 func generateRandomInt(max int64) int64 {
@@ -100,4 +112,91 @@ func configureDatabase(config config.Settings) (*gorm.DB, error) {
 	}
 
 	return dbWithDB, nil
+}
+
+func (app TestApp) DropDB() {
+	db, err := app.Conn.DB()
+
+	if err != nil {
+		panic(err)
+	}
+
+	db.Close()
+
+	app.Conn, err = gorm.Open(gormPostgres.Open(app.Settings.Database.WithoutDb()), &gorm.Config{SkipDefaultTransaction: true})
+
+	if err != nil {
+		panic(err)
+	}
+
+	app.Conn.Exec(fmt.Sprintf("DROP DATABASE %s;", app.Settings.Database.DatabaseName))
+}
+
+type TestRequest struct {
+	TestApp TestApp
+	Assert  *assert.A
+	Resp    *http.Response
+}
+
+func RequestTester(t *testing.T, method string, path string, body *map[string]interface{}, headers *map[string]string, exisitingApp *TestApp, exisitingAssert *assert.A) (TestApp, *assert.A, *http.Response) {
+	var app TestApp
+	var assert *assert.A
+
+	if exisitingApp == nil || exisitingAssert == nil {
+		app, assert = InitTest(t)
+	} else {
+		app, assert = *exisitingApp, exisitingAssert
+	}
+
+	address := fmt.Sprintf("%s%s", app.Address, path)
+
+	var req *http.Request
+
+	if body == nil {
+		req = httptest.NewRequest(method, address, nil)
+	} else {
+		bodyBytes, err := json.Marshal(body)
+
+		assert.NilError(err)
+
+		req = httptest.NewRequest(method, address, bytes.NewBuffer(bodyBytes))
+
+		if headers != nil {
+			for key, value := range *headers {
+				req.Header.Set(key, value)
+			}
+		}
+	}
+
+	resp, err := app.App.Test(req)
+
+	assert.NilError(err)
+
+	return app, assert, resp
+}
+
+func RequestTesterWithJSONBody(t *testing.T, method string, path string, body *map[string]interface{}, headers *map[string]string, exisitingApp *TestApp, exisitingAssert *assert.A) (TestApp, *assert.A, *http.Response) {
+	if headers == nil {
+		headers = &map[string]string{"Content-Type": "application/json"}
+	} else if _, ok := (*headers)["Content-Type"]; !ok {
+		(*headers)["Content-Type"] = "application/json"
+	}
+
+	return RequestTester(t, method, path, body, headers, exisitingApp, exisitingAssert)
+}
+
+func generateCasingPermutations(word string, currentPermutation string, index int, results *[]string) {
+	if index == len(word) {
+		*results = append(*results, currentPermutation)
+		return
+	}
+
+	generateCasingPermutations(word, currentPermutation+strings.ToLower(string(word[index])), index+1, results)
+	generateCasingPermutations(word, currentPermutation+strings.ToUpper(string(word[index])), index+1, results)
+}
+
+func AllCasingPermutations(word string) []string {
+	results := make([]string, 0)
+	generateCasingPermutations(word, "", 0, &results)
+	return results
 }
