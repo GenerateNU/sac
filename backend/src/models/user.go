@@ -57,12 +57,13 @@ type User struct {
 	Waitlist          []Event   `gorm:"many2many:user_event_waitlists;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 }
 
+// TODO: Should we change error message for missing required fields?
 type CreateUserRequestBody struct {
-	NUID      string `json:"nuid" validate:"number,len=9"`
-	FirstName string `json:"first_name" validate:"max=255"`
-	LastName  string `json:"last_name" validate:"max=255"`
-	Email     string `json:"email" validate:"email"`
-	Password  string `json:"password" validate:"password"`
-	College   string `json:"college" validate:"oneof=CAMD DMSB KCCS CE BCHS SL CPS CS CSSH"`
-	Year      uint   `json:"year" validate:"min=1,max=6"`
+	NUID      string `json:"nuid" validate:"required,number,len=9"`
+	FirstName string `json:"first_name" validate:"required,max=255"`
+	LastName  string `json:"last_name" validate:"required,max=255"`
+	Email     string `json:"email" validate:"required,neu_email"`
+	Password  string `json:"password" validate:"required,password"`
+	College   string `json:"college" validate:"required,oneof=CAMD DMSB KCCS CE BCHS SL CPS CS CSSH"`
+	Year      uint   `json:"year" validate:"required,min=1,max=6"`
 }

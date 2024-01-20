@@ -2,7 +2,7 @@ package transactions
 
 import (
 	"github.com/GenerateNU/sac/backend/src/models"
-
+	"errors"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
@@ -17,7 +17,39 @@ func GetAllUsers(db *gorm.DB) ([]models.User, error) {
 	return users, nil
 }
 
+func GetUser(db *gorm.DB, id uint) (*models.User, error) {
+	var user models.User
+	if err := db.First(&user, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fiber.NewError(fiber.StatusNotFound, err.Error())
+		}
+
+		return nil, fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+
+	return &user, nil
+}
+
 func CreateUser(db *gorm.DB, user *models.User) (*models.User, error) {
+	
+	var existing models.User
+
+	if err := db.Where("email = ?", user.Email).First(&existing).Error; err != nil {
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fiber.NewError(fiber.StatusInternalServerError, "failed to create user")
+		}
+	} else {
+		return nil, fiber.NewError(fiber.StatusBadRequest, "user with that email already exists")
+	}
+
+	if err := db.Where("nuid = ?", user.NUID).First(&existing).Error; err != nil {
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fiber.NewError(fiber.StatusInternalServerError, "failed to create user")
+		}
+	} else {
+		return nil, fiber.NewError(fiber.StatusBadRequest, "user with that nuid already exists")
+	}
+	
 	if err := db.Create(user).Error; err != nil {
 		return nil, fiber.NewError(fiber.StatusInternalServerError, "failed to create user")
 	}

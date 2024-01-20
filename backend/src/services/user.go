@@ -4,6 +4,7 @@ import (
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
 	"github.com/GenerateNU/sac/backend/src/utilities"
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
@@ -25,8 +26,12 @@ func (u *UserService) GetAllUsers() ([]models.User, error) {
 // temporary
 func createUserFromRequestBody(userBody models.CreateUserRequestBody) (models.User, error) {
 	// TL DAVID -- some validation still needs to be done but depends on design
-	if err := utilities.ValidateData(userBody); err != nil {
-		return models.User{}, fiber.NewError(fiber.StatusBadRequest, "failed to validate the data")
+
+	validate := validator.New()
+	validate.RegisterValidation("neu_email", utilities.ValidateEmail)
+	validate.RegisterValidation("password", utilities.ValidatePassword)
+	if err := validate.Struct(userBody); err != nil {
+		return models.User{}, fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
 	var user models.User
