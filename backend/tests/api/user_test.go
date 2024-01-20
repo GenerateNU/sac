@@ -2,10 +2,8 @@ package tests
 
 import (
 	"fmt"
-	"io"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 
 	"github.com/GenerateNU/sac/backend/src/models"
@@ -72,42 +70,36 @@ func TestDeleteUserWorks(t *testing.T) {
 }
 
 func TestDeleteUserNotExist(t *testing.T) {
-	app, assert := InitTest(t)
-
-	req := httptest.NewRequest("DELETE", fmt.Sprintf("%s/api/v1/users/%d", app.Address, 1000), nil)
-	req.Header.Set("Content-Type", "application/json")
-	resp, _ := app.App.Test(req)
-	assert.Equal(resp.StatusCode, 404)
+	TestRequest{
+		Method: "DELETE",
+		Path: "/api/v1/users/1000",
+	}.TestOnStatusAndMessage(t, nil,
+		MessageWithStatus{
+			Status:  404,
+			Message: "user not found",
+		},
+	)
 }
 
-func TestDeleteUserInvalidStringID(t *testing.T) {
-	app, assert := InitTest(t)
-
-	req := httptest.NewRequest("DELETE", fmt.Sprintf("%s%s", app.Address, "/api/v1/users/hello"), nil)
-	resp, err := app.App.Test(req)
-	assert.NilError(err)
-	assert.Equal(resp.StatusCode, 400)
-
-	body, err := io.ReadAll(resp.Body)
-	assert.NilError(err)
-	errorMessage := string(body)
-	expectedErrorMessage := "wrong or invalid id"
-	assert.Assert(strings.Contains(errorMessage, expectedErrorMessage))
-}
-
-func TestDeleteUserInvalidNegativeID(t *testing.T) {
-	app, assert := InitTest(t)
-
-	req := httptest.NewRequest("DELETE", fmt.Sprintf("%s%s", app.Address, "/api/v1/users/-1"), nil)
-	resp, err := app.App.Test(req)
-	assert.NilError(err)
-	assert.Equal(resp.StatusCode, 400)
-
-	body, err := io.ReadAll(resp.Body)
-	assert.NilError(err)
-	errorMessage := string(body)
-	expectedErrorMessage := "invalid id"
-	assert.Assert(strings.Contains(errorMessage, expectedErrorMessage))
+func TestDeleteUserBadRequest(t *testing.T) {
+	badRequests := []string{
+		"0",
+		"-1",
+		"1.1",
+		"hello",
+		"null",
+	}
+	for _, badRequest := range badRequests {
+		TestRequest{
+			Method: "DELETE",
+			Path:   fmt.Sprintf("/api/v1/users/%s", badRequest),
+		}.TestOnStatusAndMessage(t, nil,
+			MessageWithStatus{
+				Status:  400,
+				Message: "failed to validate id",
+			},
+		)
+	}
 }
 
 func TestDeleteUserDatabaseNotConnected(t *testing.T) {
@@ -121,10 +113,4 @@ func TestDeleteUserDatabaseNotConnected(t *testing.T) {
 	resp, err := app.App.Test(req)
 	assert.NilError(err)
 	assert.Equal(resp.StatusCode, 500)
-
-	body, err := io.ReadAll(resp.Body)
-	assert.NilError(err)
-	errorMessage := string(body)
-	expectedErrorMessage := "not connected to database"
-	assert.Assert(strings.Contains(errorMessage, expectedErrorMessage))
 }

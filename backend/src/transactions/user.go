@@ -26,7 +26,7 @@ func DeleteUser(db *gorm.DB, id uint) error {
 	if result.RowsAffected == 0 {
 		err := db.Where("id = ?", id).First(&deletedUser)
 		if errors.Is(err.Error, gorm.ErrRecordNotFound) {
-			return fiber.NewError(fiber.StatusNotFound, "cannot delete since user does not exist")
+			return fiber.NewError(fiber.StatusNotFound, "user not found")
 		} else {
 			return fiber.NewError(fiber.StatusInternalServerError, "not connected to database")
 		}
