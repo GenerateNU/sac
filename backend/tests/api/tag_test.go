@@ -12,8 +12,14 @@ import (
 	"github.com/goccy/go-json"
 )
 
-func CreateSampleTag(t *testing.T, tagName string, categoryName string) ExistingAppAssert {
-	existingAppAssert := CreateSampleCategory(t, categoryName)
+func CreateSampleTag(t *testing.T, tagName string, categoryName string, existingAppAssert *ExistingAppAssert) ExistingAppAssert {
+	var appAssert ExistingAppAssert
+
+	if existingAppAssert == nil {
+		appAssert = CreateSampleCategory(t, categoryName, existingAppAssert)
+	} else {
+		appAssert = CreateSampleCategory(t, categoryName, existingAppAssert)
+	}
 	return TestRequest{
 		Method: "POST",
 		Path:   "/api/v1/tags/",
@@ -21,7 +27,7 @@ func CreateSampleTag(t *testing.T, tagName string, categoryName string) Existing
 			"name":        tagName,
 			"category_id": 1,
 		},
-	}.TestOnStatusAndDBKeepDB(t, &existingAppAssert,
+	}.TestOnStatusAndDBKeepDB(t, &appAssert,
 		DBTesterWithStatus{
 			Status: 201,
 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
@@ -42,7 +48,7 @@ func CreateSampleTag(t *testing.T, tagName string, categoryName string) Existing
 }
 
 func TestCreateTagWorks(t *testing.T) {
-	appAssert := CreateSampleTag(t, "Generate", "Science")
+	appAssert := CreateSampleTag(t, "Generate", "Science", nil)
 	appAssert.App.DropDB()
 }
 
@@ -114,7 +120,7 @@ func TestCreateTagFailsValidation(t *testing.T) {
 }
 
 func TestGetTagWorks(t *testing.T) {
-	existingAppAssert := CreateSampleTag(t, "Generate", "Science")
+	existingAppAssert := CreateSampleTag(t, "Generate", "Science", nil)
 
 	TestRequest{
 		Method: "GET",
@@ -175,8 +181,124 @@ func TestGetTagFailsNotFound(t *testing.T) {
 	)
 }
 
+func TestUpdateTagWorksUpdateName(t *testing.T) {
+	existingAppAssert := CreateSampleTag(t, "Generate", "Science", nil)
+
+	TestRequest{
+		Method: "PATCH",
+		Path:   "/api/v1/tags/1",
+		Body: &map[string]interface{}{
+			"name":        "GenerateNU",
+			"category_id": 1,
+		},
+	}.TestOnStatusAndDB(t, &existingAppAssert,
+		DBTesterWithStatus{
+			Status: 204,
+			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+				var dbTag models.Tag
+
+				err := app.Conn.First(&dbTag).Error
+
+				assert.NilError(err)
+
+				assert.Equal("GenerateNU", dbTag.Name)
+			},
+		},
+	)
+
+	existingAppAssert.App.DropDB()
+}
+
+func TestUpdateTagWorksUpdateCategory(t *testing.T) {
+	existingAppAssert := CreateSampleTag(t, "Generate", "Science", nil)
+	existingAppAssert = CreateSampleCategory(t, "Technology", &existingAppAssert)
+
+	TestRequest{
+		Method: "PATCH",
+		Path:   "/api/v1/tags/1",
+		Body: &map[string]interface{}{
+			"name":        "Generate",
+			"category_id": 2,
+		},
+	}.TestOnStatusAndDB(t, &existingAppAssert,
+		DBTesterWithStatus{
+			Status: 204,
+			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+				var dbTag models.Tag
+
+				err := app.Conn.First(&dbTag).Error
+
+				assert.NilError(err)
+
+				assert.Equal("Generate", dbTag.Name)
+				assert.Equal(uint(2), dbTag.CategoryID)
+			},
+		},
+	)
+
+	existingAppAssert.App.DropDB()
+}
+
+func TestUpdateTagWorksWithSameDetails(t *testing.T) {
+	existingAppAssert := CreateSampleTag(t, "Generate", "Science", nil)
+
+	TestRequest{
+		Method: "PATCH",
+		Path:   "/api/v1/tags/1",
+		Body: &map[string]interface{}{
+			"name":        "Generate",
+			"category_id": 1,
+		},
+	}.TestOnStatusAndDB(t, &existingAppAssert,
+		DBTesterWithStatus{
+			Status: 204,
+			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+				var dbTag models.Tag
+
+				err := app.Conn.First(&dbTag).Error
+
+				assert.NilError(err)
+
+				assert.Equal("Generate", dbTag.Name)
+				assert.Equal(uint(1), dbTag.CategoryID)
+			},
+		},
+	)
+
+	existingAppAssert.App.DropDB()
+}
+
+func TestUpdateTagFailsBadRequest(t *testing.T) {
+	badBodys := []map[string]interface{}{
+		{
+			"name":        "Generate",
+			"category_id": "1",
+		},
+		{
+			"name":        1,
+			"category_id": 1,
+		},
+	}
+
+	for _, badBody := range badBodys {
+		TestRequest{
+			Method: "PATCH",
+			Path:   "/api/v1/tags/1",
+			Body:   &badBody,
+		}.TestOnStatusMessageAndDB(t, nil,
+			StatusMessageDBTester{
+				MessageWithStatus: MessageWithStatus{
+					Status:  400,
+					Message: "failed to process the request",
+				},
+				DBTester: AssertNoTags,
+			},
+		)
+	}
+}
+
 func TestDeleteTagWorks(t *testing.T) {
-	existingAppAssert := CreateSampleTag(t, "Generate", "Science")
+	existingAppAssert := CreateSampleTag(t, "Generate", "Science", nil)
 
 	TestRequest{
 		Method: "DELETE",
