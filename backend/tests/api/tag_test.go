@@ -19,9 +19,6 @@ var AssertRespTagSameAsDBTag = func(app TestApp, assert *assert.A, resp *http.Re
 
 	assert.NilError(err)
 
-	fmt.Printf("respTag: %+v\n", respTag)
-	fmt.Printf("respTag.ID: %+v\n", respTag.ID)
-
 	dbTag, err := transactions.GetTag(app.Conn, respTag.ID)
 
 	assert.NilError(err)
