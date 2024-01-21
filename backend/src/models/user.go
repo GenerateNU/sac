@@ -43,7 +43,7 @@ type User struct {
 	FirstName    string   `gorm:"type:varchar(255)" json:"first_name" validate:"required,max=255"`
 	LastName     string   `gorm:"type:varchar(255)" json:"last_name" validate:"required,max=255"`
 	Email        string   `gorm:"type:varchar(255);unique" json:"email" validate:"required,email,max=255"`
-	PasswordHash string   `gorm:"type:text" json:"-" validate:"required"`
+	PasswordHash string   `gorm:"type:varchar(97)" json:"-" validate:"required,len=97"`
 	College      College  `gorm:"type:varchar(255)" json:"college" validate:"required,max=255"`
 	Year         Year     `gorm:"type:smallint" json:"year" validate:"required,min=1,max=6"`
 
