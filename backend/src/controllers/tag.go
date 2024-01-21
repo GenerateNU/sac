@@ -78,6 +78,11 @@ func (t *TagController) GetTag(c *fiber.Ctx) error {
 // @Param		id	path	int	true	"Tag ID"
 // @Success		204
 // @Failure     400   {string}    string "failed to process the request"
+// @Failure     400   {string}    string "failed to validate id"
+// @Failure     400   {string}    string "failed to validate the data"
+// @Failure     404   {string}    string "failed to find tag"
+// @Failure     500   {string}    string "failed to update tag"
+// @Router		/api/v1/tags/{id}  [patch]
 func (t *TagController) UpdateTag(c *fiber.Ctx) error {
 	var tagBody models.UpdateTagRequestBody
 

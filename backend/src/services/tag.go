@@ -9,9 +9,9 @@ import (
 )
 
 type TagServiceInterface interface {
-	CreateTag(partialTag models.CreateTagRequestBody) (*models.Tag, error)
+	CreateTag(tagBody models.CreateTagRequestBody) (*models.Tag, error)
 	GetTag(id string) (*models.Tag, error)
-	UpdateTag(id string, partialTag models.UpdateTagRequestBody) error
+	UpdateTag(id string, tagBody models.UpdateTagRequestBody) error
 	DeleteTag(id string) error
 }
 
@@ -19,10 +19,10 @@ type TagService struct {
 	DB *gorm.DB
 }
 
-func (t *TagService) CreateTag(partialTag models.CreateTagRequestBody) (*models.Tag, error) {
+func (t *TagService) CreateTag(tagBody models.CreateTagRequestBody) (*models.Tag, error) {
 	tag := models.Tag{
-		Name:       partialTag.Name,
-		CategoryID: partialTag.CategoryID,
+		Name:       tagBody.Name,
+		CategoryID: tagBody.CategoryID,
 	}
 
 	if err := utilities.ValidateData(tag); err != nil {
@@ -42,7 +42,7 @@ func (t *TagService) GetTag(id string) (*models.Tag, error) {
 	return transactions.GetTag(t.DB, *idAsUint)
 }
 
-func (t *TagService) UpdateTag(id string, partialTag models.UpdateTagRequestBody) error {
+func (t *TagService) UpdateTag(id string, tagBody models.UpdateTagRequestBody) error {
 	idAsUint, err := utilities.ValidateID(id)
 
 	if err != nil {
@@ -50,8 +50,8 @@ func (t *TagService) UpdateTag(id string, partialTag models.UpdateTagRequestBody
 	}
 
 	tag := models.Tag{
-		Name:       partialTag.Name,
-		CategoryID: partialTag.CategoryID,
+		Name:       tagBody.Name,
+		CategoryID: tagBody.CategoryID,
 	}
 
 	if err := utilities.ValidateData(tag); err != nil {
