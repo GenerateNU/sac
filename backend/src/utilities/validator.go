@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/gofiber/fiber/v2"
 )
 
 // Validate the data sent to the server if the data is invalid, return an error otherwise, return nil

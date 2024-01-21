@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/GenerateNU/sac/backend/src/controllers"
 	"github.com/GenerateNU/sac/backend/src/middleware"
+	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
 
 	"github.com/goccy/go-json"
@@ -68,7 +69,7 @@ func userRoutes(router fiber.Router, userService services.UserServiceInterface) 
 	users := router.Group("/users")
 
 	users.Get("/", userController.GetAllUsers)
-	users.Get("/:id", userController.GetUser) // middleware.Authorize([]models.Permission{models.UserRead}),
+	users.Get("/:id", middleware.Authorize([]models.Permission{models.UserRead}), userController.GetUser) 
 	users.Post("/auth/register", userController.Register)
 	users.Get("/auth/refresh", userController.Refresh)
 	users.Get("/auth/logout", userController.Logout)

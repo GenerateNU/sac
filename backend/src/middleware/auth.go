@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	"backend/src/auth"
-	"backend/src/models"
-	"backend/src/types"
+	"github.com/GenerateNU/sac/backend/src/auth"
+	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/GenerateNU/sac/backend/src/types"
 
 	"github.com/gofiber/fiber/v2"
 )

@@ -1,9 +1,10 @@
 package auth
 
 import (
-	"backend/src/config"
-	"backend/src/types"
 	"time"
+
+	"github.com/GenerateNU/sac/backend/src/config"
+	"github.com/GenerateNU/sac/backend/src/types"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
