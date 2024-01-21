@@ -117,7 +117,9 @@
    go vet ./... // lint code
    ```
 
-### Others (WIP)
+### SAC CLI
+
+   To install use `./install.sh` and then run `sac-cli` to see all commands.
 
    ```bash
    sac-cli migrate // run migrations
