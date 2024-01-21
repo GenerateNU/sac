@@ -6,18 +6,14 @@ require (
 	github.com/go-playground/validator/v10 v10.16.0
 	github.com/gofiber/fiber/v2 v2.52.0
 	github.com/gofiber/swagger v0.1.14
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/spf13/viper v1.18.2
 	github.com/swaggo/swag v1.16.2
 	gorm.io/driver/postgres v1.5.4
 	gorm.io/gorm v1.25.5
 )
 
-require (
-	github.com/clerkinc/clerk-sdk-go v1.49.0 // indirect
-	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
-	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
-)
+require github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
