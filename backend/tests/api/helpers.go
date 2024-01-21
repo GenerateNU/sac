@@ -78,8 +78,9 @@ func generateRandomInt(max int64) int64 {
 }
 
 func generateRandomDBName() string {
+	prefix := "sac_test_"
 	letterBytes := "abcdefghijklmnopqrstuvwxyz"
-	length := 36
+	length := len(prefix) + 36
 	result := make([]byte, length)
 	for i := 0; i < length; i++ {
 		result[i] = letterBytes[generateRandomInt(int64(len(letterBytes)))]
@@ -228,6 +229,7 @@ type DBTesterWithStatus struct {
 	Status int
 	DBTester
 }
+
 
 func (request TestRequest) TestOnStatusAndDB(t *testing.T, existingAppAssert *ExistingAppAssert, dbTesterStatus DBTesterWithStatus) ExistingAppAssert {
 	appAssert, resp := request.TestWithJSONBody(t, existingAppAssert)

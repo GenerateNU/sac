@@ -43,3 +43,26 @@ func (t *TagController) CreateTag(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusCreated).JSON(&dbTag)
 }
+
+// GetTag godoc
+//
+// @Summary		Gets a tag
+// @Description	Returns a tag
+// @ID			get-tag
+// @Tags      	tag
+// @Produce		json
+// @Param		id	path	int	true	"Tag ID"
+// @Success		200	  {object}    models.Tag
+// @Failure     400   {string}    string "failed to validate id"
+// @Failure     404   {string}    string "faied to find tag"
+// @Failure     500   {string}    string "failed to retrieve tag"
+// @Router		/api/v1/tags/{id}  [get]
+func (t *TagController) GetTag(c *fiber.Ctx) error {
+	tag, err := t.tagService.GetTag(c.Params("id"))
+
+	if err != nil {
+		return err
+	}
+
+	return c.Status(fiber.StatusOK).JSON(&tag)
+}

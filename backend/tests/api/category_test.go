@@ -12,14 +12,14 @@ import (
 	"github.com/goccy/go-json"
 )
 
-func CreateSampleCategory(t *testing.T, categoryName string) ExistingAppAssert {
+func CreateSampleCategory(t *testing.T, categoryName string, existingAppAssert *ExistingAppAssert) ExistingAppAssert {
 	return TestRequest{
 		Method: "POST",
 		Path:   "/api/v1/categories/",
 		Body: &map[string]interface{}{
 			"category_name": categoryName,
 		},
-	}.TestOnStatusAndDB(t, nil,
+	}.TestOnStatusAndDB(t, existingAppAssert,
 		DBTesterWithStatus{
 			Status: 201,
 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
@@ -41,7 +41,7 @@ func CreateSampleCategory(t *testing.T, categoryName string) ExistingAppAssert {
 }
 
 func TestCreateCategoryWorks(t *testing.T) {
-	CreateSampleCategory(t, "Science")
+	CreateSampleCategory(t, "Science", nil)
 }
 
 func TestCreateCategoryIgnoresid(t *testing.T) {
@@ -121,9 +121,9 @@ func TestCreateCategoryFailsIfNameIsMissing(t *testing.T) {
 }
 
 func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
-	categoryName := "Science"
+	categoryName := "foo"
 
-	existingAppAssert := CreateSampleCategory(t, categoryName)
+	existingAppAssert := CreateSampleCategory(t, categoryName, nil)
 
 	var TestNumCategoriesRemainsAt1 = func(app TestApp, assert *assert.A, resp *http.Response) {
 		AssertNumCategoriesRemainsAtN(app, assert, resp, 1)

@@ -9,17 +9,18 @@ import (
 )
 
 type TagServiceInterface interface {
-	CreateTag(partialTag models.CreateTagRequestBody) (*models.Tag, error)
+	CreateTag(tagBody models.CreateTagRequestBody) (*models.Tag, error)
+	GetTag(id string) (*models.Tag, error)
 }
 
 type TagService struct {
 	DB *gorm.DB
 }
 
-func (t *TagService) CreateTag(partialTag models.CreateTagRequestBody) (*models.Tag, error) {
+func (t *TagService) CreateTag(tagBody models.CreateTagRequestBody) (*models.Tag, error) {
 	tag := models.Tag{
-		Name:       partialTag.Name,
-		CategoryID: partialTag.CategoryID,
+		Name:       tagBody.Name,
+		CategoryID: tagBody.CategoryID,
 	}
 
 	if err := utilities.ValidateData(tag); err != nil {
@@ -27,4 +28,14 @@ func (t *TagService) CreateTag(partialTag models.CreateTagRequestBody) (*models.
 	}
 
 	return transactions.CreateTag(t.DB, tag)
+}
+
+func (t *TagService) GetTag(id string) (*models.Tag, error) {
+	idAsUint, err := utilities.ValidateID(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return transactions.GetTag(t.DB, *idAsUint)
 }
