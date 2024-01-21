@@ -92,7 +92,7 @@ func (u *UserController) Register(c *fiber.Ctx) error {
 	user, err := u.userService.Register(userBody)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "failed to register user",
+			"message": err.Error(),
 		})
 	}
 
