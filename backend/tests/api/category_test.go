@@ -19,7 +19,7 @@ func CreateSampleCategory(t *testing.T, categoryName string) ExistingAppAssert {
 		Body: &map[string]interface{}{
 			"category_name": categoryName,
 		},
-	}.TestOnStatusAndDBKeepDB(t, nil,
+	}.TestOnStatusAndDB(t, nil,
 		DBTesterWithStatus{
 			Status: 201,
 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
@@ -137,7 +137,7 @@ func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
 			Body: &map[string]interface{}{
 				"category_name": permutation,
 			},
-		}.TestOnStatusMessageAndDBKeepDB(t, &existingAppAssert,
+		}.TestOnStatusMessageAndDB(t, &existingAppAssert,
 			StatusMessageDBTester{
 				MessageWithStatus: MessageWithStatus{
 					Status:  400,

@@ -192,11 +192,7 @@ type MessageWithStatus struct {
 	Message string
 }
 
-func (request TestRequest) TestOnStatusAndMessage(t *testing.T, existingAppAssert *ExistingAppAssert, messagedStatus MessageWithStatus) {
-	request.TestOnStatusAndMessageKeepDB(t, existingAppAssert, messagedStatus)
-}
-
-func (request TestRequest) TestOnStatusAndMessageKeepDB(t *testing.T, existingAppAssert *ExistingAppAssert, messagedStatus MessageWithStatus) ExistingAppAssert {
+func (request TestRequest) TestOnStatusAndMessage(t *testing.T, existingAppAssert *ExistingAppAssert, messagedStatus MessageWithStatus) ExistingAppAssert {
 	appAssert, resp := request.TestWithJSONBody(t, existingAppAssert)
 	assert := appAssert.Assert
 
@@ -220,12 +216,8 @@ type StatusMessageDBTester struct {
 	DBTester          DBTester
 }
 
-func (request TestRequest) TestOnStatusMessageAndDB(t *testing.T, existingAppAssert *ExistingAppAssert, statusMessageDBTester StatusMessageDBTester) {
-	request.TestOnStatusMessageAndDBKeepDB(t, existingAppAssert, statusMessageDBTester)
-}
-
-func (request TestRequest) TestOnStatusMessageAndDBKeepDB(t *testing.T, existingAppAssert *ExistingAppAssert, statusMessageDBTester StatusMessageDBTester) ExistingAppAssert {
-	appAssert := request.TestOnStatusAndMessageKeepDB(t, existingAppAssert, statusMessageDBTester.MessageWithStatus)
+func (request TestRequest) TestOnStatusMessageAndDB(t *testing.T, existingAppAssert *ExistingAppAssert, statusMessageDBTester StatusMessageDBTester) ExistingAppAssert {
+	appAssert := request.TestOnStatusAndMessage(t, existingAppAssert, statusMessageDBTester.MessageWithStatus)
 	statusMessageDBTester.DBTester(appAssert.App, appAssert.Assert, nil)
 	return appAssert
 }
@@ -237,11 +229,7 @@ type DBTesterWithStatus struct {
 	DBTester
 }
 
-func (request TestRequest) TestOnStatusAndDB(t *testing.T, existingAppAssert *ExistingAppAssert, dbTesterStatus DBTesterWithStatus) {
-	request.TestOnStatusAndDBKeepDB(t, existingAppAssert, dbTesterStatus)
-}
-
-func (request TestRequest) TestOnStatusAndDBKeepDB(t *testing.T, existingAppAssert *ExistingAppAssert, dbTesterStatus DBTesterWithStatus) ExistingAppAssert {
+func (request TestRequest) TestOnStatusAndDB(t *testing.T, existingAppAssert *ExistingAppAssert, dbTesterStatus DBTesterWithStatus) ExistingAppAssert {
 	appAssert, resp := request.TestWithJSONBody(t, existingAppAssert)
 	app, assert := appAssert.App, appAssert.Assert
 	defer resp.Body.Close()
