@@ -21,7 +21,6 @@ func (t *TagService) CreateTag(tagBody models.CreateTagRequestBody) (*models.Tag
 	tag := models.Tag{
 		Name:       tagBody.Name,
 		CategoryID: tagBody.CategoryID,
-	}
 
 	if err := utilities.ValidateData(tag); err != nil {
 		return nil, fiber.NewError(fiber.StatusBadRequest, "failed to validate the data")

@@ -12,16 +12,17 @@ import (
 	"github.com/goccy/go-json"
 )
 
-func CreateSampleTag(t *testing.T, tagName string, categoryName string) ExistingAppAssert {
-	existingAppAssert := CreateSampleCategory(t, categoryName)
-	return TestRequest{
+
+func TestCreateTagWorks(t *testing.T) {
+	existingAppAssert := CreateSampleCategory(t, "Science")
+	TestRequest{
 		Method: "POST",
 		Path:   "/api/v1/tags/",
 		Body: &map[string]interface{}{
-			"name":        tagName,
+			"name":        "Generate",
 			"category_id": 1,
 		},
-	}.TestOnStatusAndDBKeepDB(t, &existingAppAssert,
+	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
 			Status: 201,
 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
@@ -42,8 +43,7 @@ func CreateSampleTag(t *testing.T, tagName string, categoryName string) Existing
 }
 
 func TestCreateTagWorks(t *testing.T) {
-	appAssert := CreateSampleTag(t, "Generate", "Science")
-	appAssert.App.DropDB()
+	CreateSampleTag(t, "Generate", "Science")
 }
 
 var AssertNoTagCreation = func(app TestApp, assert *assert.A, resp *http.Response) {
@@ -171,4 +171,3 @@ func TestGetTagFailsNotFound(t *testing.T) {
 			Message: "failed to find tag",
 		},
 	)
-}
