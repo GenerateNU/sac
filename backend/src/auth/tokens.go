@@ -153,6 +153,5 @@ func GetRoleFromToken(tokenString string) (*string, error) {
 		return nil, jwt.ErrInvalidKey
 	}
 
-	// Now you can access the Role field from the custom claims
 	return &claims.Role, nil
 }
