@@ -1,6 +1,7 @@
 package transactions
 
 import (
+	"errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
@@ -16,16 +17,21 @@ func GetAllUsers(db *gorm.DB) ([]models.User, error) {
 	return users, nil
 }
 
-func UpdateUser(db *gorm.DB, id string, user models.User) (models.User, error) {
+func UpdateUser(db *gorm.DB, id string, user models.User) (*models.User, error) {
 	var existingUser models.User
 
-	if err := db.First(&existingUser, id).Error; err != nil {
-		return models.User{}, fiber.NewError(fiber.StatusNotFound, "User not found")
+	err := db.First(&existingUser, id).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fiber.NewError(fiber.StatusNotFound, "user not found")
+		} else {
+			return nil, fiber.NewError(fiber.StatusInternalServerError, "database error")
+		}
 	}
 
 	if err := db.Model(&existingUser).Updates(&user).Error; err != nil {
-		return models.User{}, fiber.NewError(fiber.StatusBadRequest, "Failed to update user")
+		return nil, fiber.NewError(fiber.StatusInternalServerError, "database error")
 	}
 
-	return existingUser, nil
+	return &existingUser, nil
 }
