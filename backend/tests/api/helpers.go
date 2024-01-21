@@ -116,24 +116,6 @@ func configureDatabase(config config.Settings) (*gorm.DB, error) {
 	return dbWithDB, nil
 }
 
-func (app TestApp) DropDB() {
-	db, err := app.Conn.DB()
-
-	if err != nil {
-		panic(err)
-	}
-
-	db.Close()
-
-	app.Conn, err = gorm.Open(gormPostgres.Open(app.Settings.Database.WithoutDb()), &gorm.Config{SkipDefaultTransaction: true})
-
-	if err != nil {
-		panic(err)
-	}
-
-	app.Conn.Exec(fmt.Sprintf("DROP DATABASE %s;", app.Settings.Database.DatabaseName))
-}
-
 type ExistingAppAssert struct {
 	App    TestApp
 	Assert *assert.A
@@ -188,10 +170,7 @@ func (request TestRequest) Test(t *testing.T, existingAppAssert *ExistingAppAsse
 
 func (request TestRequest) TestOnStatus(t *testing.T, existingAppAssert *ExistingAppAssert, status int) ExistingAppAssert {
 	appAssert, resp := request.Test(t, existingAppAssert)
-	app, assert := appAssert.App, appAssert.Assert
-	if existingAppAssert != nil {
-		defer app.DropDB()
-	}
+	_, assert := appAssert.App, appAssert.Assert
 
 	assert.Equal(status, resp.StatusCode)
 
@@ -214,12 +193,6 @@ type MessageWithStatus struct {
 }
 
 func (request TestRequest) TestOnStatusAndMessage(t *testing.T, existingAppAssert *ExistingAppAssert, messagedStatus MessageWithStatus) ExistingAppAssert {
-	appAssert := request.TestOnStatusAndMessageKeepDB(t, existingAppAssert, messagedStatus)
-	appAssert.App.DropDB()
-	return appAssert
-}
-
-func (request TestRequest) TestOnStatusAndMessageKeepDB(t *testing.T, existingAppAssert *ExistingAppAssert, messagedStatus MessageWithStatus) ExistingAppAssert {
 	appAssert, resp := request.TestWithJSONBody(t, existingAppAssert)
 	assert := appAssert.Assert
 
@@ -238,6 +211,17 @@ func (request TestRequest) TestOnStatusAndMessageKeepDB(t *testing.T, existingAp
 	return appAssert
 }
 
+type StatusMessageDBTester struct {
+	MessageWithStatus MessageWithStatus
+	DBTester          DBTester
+}
+
+func (request TestRequest) TestOnStatusMessageAndDB(t *testing.T, existingAppAssert *ExistingAppAssert, statusMessageDBTester StatusMessageDBTester) ExistingAppAssert {
+	appAssert := request.TestOnStatusAndMessage(t, existingAppAssert, statusMessageDBTester.MessageWithStatus)
+	statusMessageDBTester.DBTester(appAssert.App, appAssert.Assert, nil)
+	return appAssert
+}
+
 type DBTester func(app TestApp, assert *assert.A, resp *http.Response)
 
 type DBTesterWithStatus struct {
@@ -246,12 +230,6 @@ type DBTesterWithStatus struct {
 }
 
 func (request TestRequest) TestOnStatusAndDB(t *testing.T, existingAppAssert *ExistingAppAssert, dbTesterStatus DBTesterWithStatus) ExistingAppAssert {
-	appAssert := request.TestOnStatusAndDBKeepDB(t, existingAppAssert, dbTesterStatus)
-	appAssert.App.DropDB()
-	return appAssert
-}
-
-func (request TestRequest) TestOnStatusAndDBKeepDB(t *testing.T, existingAppAssert *ExistingAppAssert, dbTesterStatus DBTesterWithStatus) ExistingAppAssert {
 	appAssert, resp := request.TestWithJSONBody(t, existingAppAssert)
 	app, assert := appAssert.App, appAssert.Assert
 	defer resp.Body.Close()
