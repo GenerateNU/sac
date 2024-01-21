@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/GenerateNU/sac/backend/src/controllers"
 	"github.com/GenerateNU/sac/backend/src/middleware"
+	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
 	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/go-playground/validator/v10"
@@ -78,7 +79,7 @@ func userRoutes(router fiber.Router, userService services.UserServiceInterface) 
 	users.Patch("/:id", userController.UpdateUser)
 	users.Delete("/:id", userController.DeleteUser)
 	users.Get("/", userController.GetAllUsers)
-	users.Get("/:id", userController.GetUser) // middleware.Authorize([]models.Permission{models.UserRead}),
+	users.Get("/:id", middleware.Authorize([]models.Permission{models.UserRead}), userController.GetUser) 
 	users.Post("/auth/register", userController.Register)
 	users.Get("/auth/refresh", userController.Refresh)
 	users.Get("/auth/logout", userController.Logout)

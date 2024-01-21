@@ -8,6 +8,7 @@ import (
 	"github.com/mcnijman/go-emailaddress"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/gofiber/fiber/v2"
 )
 
 func RegisterCustomValidators(validate *validator.Validate) {
