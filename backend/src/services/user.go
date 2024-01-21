@@ -8,6 +8,7 @@ import (
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
 	"github.com/GenerateNU/sac/backend/src/utilities"
+	"github.com/gofiber/fiber/v2"
 
 	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
@@ -122,7 +123,7 @@ func (u *UserService) Register(userBody models.CreateUserResponseBody) (*models.
 		return nil, err
 	}
 
-	passwordHash, err := utilities.EncryptPassword(userBody.Password)
+	passwordHash, err := auth.ComputePasswordHash(userBody.Password)
 	if err != nil {
 		return nil, err
 	}
@@ -133,7 +134,7 @@ func (u *UserService) Register(userBody models.CreateUserResponseBody) (*models.
 		FirstName:    userBody.FirstName,
 		LastName:     userBody.LastName,
 		Email:        userBody.Email,
-		PasswordHash: passwordHash,
+		PasswordHash: *passwordHash,
 		College:      models.College(userBody.College),
 		Year:         models.Year(userBody.Year),
 	}
@@ -152,8 +153,14 @@ func (u *UserService) Login(userBody models.LoginUserResponseBody) (*models.User
 		return nil, err
 	}
 
-	if err = utilities.ValidatePassword(userBody.Password, user.PasswordHash); err != nil {
+	correct, err := auth.ComparePasswordAndHash(userBody.Password, user.PasswordHash)
+
+	if err != nil {
 		return nil, err
+	}
+
+	if !correct {
+		return nil, fiber.NewError(fiber.StatusUnauthorized, "incorrect password")
 	}
 
 	return user, nil

@@ -56,7 +56,7 @@ var (
 	ErrIncompatibleVersion = errors.New("incompatible version of argon2")
 )
 
-func ComparePasswordAndHash(password, encodedHash string) (bool, error) {
+func ComparePasswordAndHash(password string, encodedHash string) (bool, error) {
 	p, salt, hash, err := decodeHash(encodedHash)
 
 	if err != nil {
