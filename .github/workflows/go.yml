@@ -72,6 +72,6 @@ jobs:
         run: |
           cd backend/src && go run main.go --only-migrate
       - name: Run Tests with Coverage
-        run: cd backend && go test -p 2 -race -coverprofile=coverage.txt -covermode=atomic ./...
+        run: cd backend && go test -p 1 -benchmem -race -coverprofile=coverage.txt ./...
       - name: Print Coverage
         run: cd backend && go tool cover -func=coverage.txt
