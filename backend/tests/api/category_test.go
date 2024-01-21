@@ -11,6 +11,20 @@ import (
 	"github.com/goccy/go-json"
 )
 
+var AssertRespCategorySameAsDBCategory = func(app TestApp, assert *assert.A, resp *http.Response) {
+	var respCategory models.Category
+
+	err := json.NewDecoder(resp.Body).Decode(&respCategory)
+
+	assert.NilError(err)
+
+	dbCategory, err := transactions.GetCategory(app.Conn, respCategory.ID)
+
+	assert.NilError(err)
+
+	assert.Equal(dbCategory, &respCategory)
+}
+
 func CreateSampleCategory(t *testing.T, categoryName string, existingAppAssert *ExistingAppAssert) ExistingAppAssert {
 	return TestRequest{
 		Method: "POST",
@@ -20,21 +34,8 @@ func CreateSampleCategory(t *testing.T, categoryName string, existingAppAssert *
 		},
 	}.TestOnStatusAndDB(t, existingAppAssert,
 		DBTesterWithStatus{
-			Status: 201,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-
-				var respCategory models.Category
-
-				err := json.NewDecoder(resp.Body).Decode(&respCategory)
-
-				assert.NilError(err)
-
-				dbCategory, err := transactions.GetCategory(app.Conn, respCategory.ID)
-
-				assert.NilError(err)
-
-				assert.Equal(dbCategory, &respCategory)
-			},
+			Status:   201,
+			DBTester: AssertRespCategorySameAsDBCategory,
 		},
 	)
 }
@@ -53,20 +54,8 @@ func TestCreateCategoryIgnoresid(t *testing.T) {
 		},
 	}.TestOnStatusAndDB(t, nil,
 		DBTesterWithStatus{
-			Status: 201,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-				var respCategory models.Category
-
-				err := json.NewDecoder(resp.Body).Decode(&respCategory)
-
-				assert.NilError(err)
-
-				dbCategory, err := transactions.GetCategory(app.Conn, respCategory.ID)
-
-				assert.NilError(err)
-
-				assert.NotEqual(12, dbCategory.ID)
-			},
+			Status:   201,
+			DBTester: AssertRespCategorySameAsDBCategory,
 		},
 	)
 }

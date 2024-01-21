@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"fmt"
+
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
 
@@ -32,6 +34,7 @@ func (t *CategoryController) CreateCategory(c *fiber.Ctx) error {
 	var categoryBody models.CreateCategoryRequestBody
 
 	if err := c.BodyParser(&categoryBody); err != nil {
+		fmt.Print(err)
 		return fiber.NewError(fiber.StatusBadRequest, "failed to process the request")
 	}
 

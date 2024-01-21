@@ -152,10 +152,18 @@ func (request TestRequest) Test(t *testing.T, existingAppAssert *ExistingAppAsse
 
 		req = httptest.NewRequest(request.Method, address, bytes.NewBuffer(bodyBytes))
 
-		if request.Headers != nil {
-			for key, value := range *request.Headers {
-				req.Header.Set(key, value)
-			}
+		if request.Headers == nil {
+			request.Headers = &map[string]string{}
+		}
+
+		if _, ok := (*request.Headers)["Content-Type"]; !ok {
+			(*request.Headers)["Content-Type"] = "application/json"
+		}
+	}
+
+	if request.Headers != nil {
+		for key, value := range *request.Headers {
+			req.Header.Add(key, value)
 		}
 	}
 
@@ -171,21 +179,12 @@ func (request TestRequest) Test(t *testing.T, existingAppAssert *ExistingAppAsse
 
 func (request TestRequest) TestOnStatus(t *testing.T, existingAppAssert *ExistingAppAssert, status int) ExistingAppAssert {
 	appAssert, resp := request.Test(t, existingAppAssert)
+
 	_, assert := appAssert.App, appAssert.Assert
 
 	assert.Equal(status, resp.StatusCode)
 
 	return appAssert
-}
-
-func (request TestRequest) TestWithJSONBody(t *testing.T, existingAppAssert *ExistingAppAssert) (ExistingAppAssert, *http.Response) {
-	if request.Headers == nil {
-		request.Headers = &map[string]string{"Content-Type": "application/json"}
-	} else if _, ok := (*request.Headers)["Content-Type"]; !ok {
-		(*request.Headers)["Content-Type"] = "application/json"
-	}
-
-	return request.Test(t, existingAppAssert)
 }
 
 type MessageWithStatus struct {
@@ -194,7 +193,7 @@ type MessageWithStatus struct {
 }
 
 func (request TestRequest) TestOnStatusAndMessage(t *testing.T, existingAppAssert *ExistingAppAssert, messagedStatus MessageWithStatus) ExistingAppAssert {
-	appAssert, resp := request.TestWithJSONBody(t, existingAppAssert)
+	appAssert, resp := request.Test(t, existingAppAssert)
 	assert := appAssert.Assert
 
 	defer resp.Body.Close()
@@ -231,9 +230,8 @@ type DBTesterWithStatus struct {
 }
 
 func (request TestRequest) TestOnStatusAndDB(t *testing.T, existingAppAssert *ExistingAppAssert, dbTesterStatus DBTesterWithStatus) ExistingAppAssert {
-	appAssert, resp := request.TestWithJSONBody(t, existingAppAssert)
+	appAssert, resp := request.Test(t, existingAppAssert)
 	app, assert := appAssert.App, appAssert.Assert
-	defer resp.Body.Close()
 
 	assert.Equal(dbTesterStatus.Status, resp.StatusCode)
 
