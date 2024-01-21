@@ -1,6 +1,7 @@
 package utilities
 
 import (
+	"github.com/gofiber/fiber/v2"
 	"strconv"
 
 	"github.com/go-playground/validator/v10"

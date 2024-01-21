@@ -8,9 +8,10 @@ import (
 	"github.com/GenerateNU/sac/backend/src/transactions"
 	"github.com/huandu/go-assert"
 
+	"bytes"
+	"fmt"
 	"github.com/goccy/go-json"
 	"net/http/httptest"
-	"testing"
 )
 
 func TestGetAllUsersWorks(t *testing.T) {
