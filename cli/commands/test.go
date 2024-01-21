@@ -33,8 +33,7 @@ func TestCommand() *cli.Command {
 			if c.String("frontend") == "" && !c.Bool("backend") {
 				return cli.Exit("Must specify frontend or backend", 1)
 			}
-
-			fmt.Println("Frontend", c.String("frontend"))
+			
 			folder := c.String("frontend")
 			runFrontend := folder != ""
 			runBackend := c.Bool("backend")
@@ -75,7 +74,7 @@ func Test(folder string, runFrontend bool, runBackend bool) error {
 }
 
 func BackendTest() error {
-	cmd := exec.Command("go", "test", "./...", "&&")
+	cmd := exec.Command("go", "test", "./...")
 	cmd.Dir = BACKEND_DIR + "/.."
 
 	out, err := cmd.CombinedOutput()
@@ -85,6 +84,15 @@ func BackendTest() error {
 	}
 
 	fmt.Println(string(out))
+
+	cmd = exec.Command("./scripts/clean_old_test_dbs.sh")
+	cmd.Dir = ROOT_DIR
+
+	out, err = cmd.CombinedOutput()
+	if err != nil {
+		fmt.Println(string(out))
+		return cli.Exit("Failed to clean old test databases", 1)
+	}
 
 	return nil
 }

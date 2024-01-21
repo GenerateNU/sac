@@ -1,88 +1,21 @@
-basePath: /
+basePath: /api/v1
 definitions:
-  models.Club:
+  models.Category:
     properties:
-      application_link:
+      category_name:
+        maxLength: 255
         type: string
-      club_followers:
-        items:
-          $ref: '#/definitions/models.User'
-        type: array
-      club_intended_applicants:
-        items:
-          $ref: '#/definitions/models.User'
-        type: array
-      club_members:
-        description: User
-        items:
-          $ref: '#/definitions/models.User'
-        type: array
-      comments:
-        items:
-          $ref: '#/definitions/models.Comment'
-        type: array
-      contacts:
-        items:
-          $ref: '#/definitions/models.Contact'
-        type: array
       created_at:
         example: "2023-09-20T16:34:50Z"
         type: string
-      description:
-        description: MongoDB URI
-        type: string
-      events:
-        description: Event
-        items:
-          $ref: '#/definitions/models.Event'
-        type: array
       id:
         example: 1
         type: integer
-      is_recruiting:
-        type: boolean
-      logo:
-        description: S3 URI
-        type: string
-      name:
-        type: string
-      notifications:
-        items:
-          $ref: '#/definitions/models.Notification'
-        type: array
-      num_members:
-        type: integer
-      parent_club:
-        type: integer
-      point_of_contacts:
-        items:
-          $ref: '#/definitions/models.PointOfContact'
-        type: array
-      preview:
-        type: string
-      recruitment_cycle:
-        $ref: '#/definitions/models.RecruitmentCycle'
-      recruitment_type:
-        $ref: '#/definitions/models.RecruitmentType'
-      tags:
-        items:
-          $ref: '#/definitions/models.Tag'
-        type: array
       updated_at:
         example: "2023-09-20T16:34:50Z"
         type: string
     required:
-    - application_link
-    - club_members
-    - contacts
-    - description
-    - is_recruiting
-    - name
-    - num_members
-    - point_of_contacts
-    - preview
-    - recruitment_cycle
-    - recruitment_type
+    - category_name
     type: object
   models.College:
     enum:
@@ -116,318 +49,63 @@ definitions:
     - CPS
     - CS
     - CSSH
-  models.Comment:
-    properties:
-      answer:
-        type: string
-      answered_by:
-        $ref: '#/definitions/models.User'
-      asked_by:
-        $ref: '#/definitions/models.User'
-      asked_by_id:
-        type: integer
-      club:
-        $ref: '#/definitions/models.Club'
-      club_id:
-        type: integer
-      created_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-      id:
-        example: 1
-        type: integer
-      num_found_helpful:
-        type: integer
-      question:
-        type: string
-      updated_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-      user_id:
-        type: integer
-    required:
-    - question
-    type: object
-  models.Contact:
-    properties:
-      content:
-        description: media URI
-        type: string
-      created_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-      id:
-        example: 1
-        type: integer
-      type:
-        $ref: '#/definitions/models.Media'
-      updated_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-    required:
-    - content
-    - type
-    type: object
-  models.Event:
-    properties:
-      clubs:
-        items:
-          $ref: '#/definitions/models.Club'
-        type: array
-      content:
-        type: string
-      created_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-      end_time:
-        type: string
-      event_type:
-        $ref: '#/definitions/models.EventType'
-      id:
-        example: 1
-        type: integer
-      location:
-        type: string
-      name:
-        type: string
-      notifications:
-        items:
-          $ref: '#/definitions/models.Notification'
-        type: array
-      preview:
-        type: string
-      start_time:
-        type: string
-      tags:
-        items:
-          $ref: '#/definitions/models.Tag'
-        type: array
-      updated_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-      user_rsvps:
-        items:
-          $ref: '#/definitions/models.User'
-        type: array
-      user_waitlists:
-        items:
-          $ref: '#/definitions/models.User'
-        type: array
-    required:
-    - clubs
-    - content
-    - end_time
-    - event_type
-    - location
-    - name
-    - preview
-    - start_time
-    type: object
-  models.EventType:
-    enum:
-    - open
-    - membersOnly
-    type: string
-    x-enum-varnames:
-    - Open
-    - MembersOnly
-  models.Media:
-    enum:
-    - facebook
-    - instagram
-    - twitter
-    - linkedin
-    - youtube
-    - github
-    - custom
-    type: string
-    x-enum-varnames:
-    - Facebook
-    - Instagram
-    - Twitter
-    - LinkedIn
-    - YouTube
-    - GitHub
-    - Custom
-  models.Notification:
-    properties:
-      content:
-        type: string
-      created_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-      deep_link:
-        type: string
-      icon:
-        description: S3 URI
-        type: string
-      id:
-        example: 1
-        type: integer
-      reference_id:
-        type: integer
-      reference_type:
-        $ref: '#/definitions/models.NotificationType'
-      send_at:
-        type: string
-      title:
-        type: string
-      updated_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-    required:
-    - content
-    - deep_link
-    - icon
-    - reference_id
-    - reference_type
-    - send_at
-    - title
-    type: object
-  models.NotificationType:
-    enum:
-    - event
-    - club
-    type: string
-    x-enum-varnames:
-    - EventNotification
-    - ClubNotification
-  models.PointOfContact:
-    properties:
-      created_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-      email:
-        type: string
-      id:
-        example: 1
-        type: integer
-      name:
-        type: string
-      photo:
-        description: S3 URI, fallback to default logo if null
-        type: string
-      position:
-        type: string
-      updated_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-    required:
-    - email
-    - name
-    - position
-    type: object
-  models.RecruitmentCycle:
-    enum:
-    - fall
-    - spring
-    - fallSpring
-    - always
-    type: string
-    x-enum-varnames:
-    - Fall
-    - Spring
-    - FallSpring
-    - Always
-  models.RecruitmentType:
-    enum:
-    - unrestricted
-    - tryout
-    - application
-    type: string
-    x-enum-varnames:
-    - Unrestricted
-    - Tryout
-    - Application
   models.Tag:
     properties:
       category_id:
+        minimum: 1
         type: integer
-      clubs:
-        items:
-          $ref: '#/definitions/models.Club'
-        type: array
       created_at:
         example: "2023-09-20T16:34:50Z"
         type: string
-      events:
-        items:
-          $ref: '#/definitions/models.Event'
-        type: array
       id:
         example: 1
         type: integer
       name:
+        maxLength: 255
         type: string
       updated_at:
         example: "2023-09-20T16:34:50Z"
         type: string
-      users:
-        items:
-          $ref: '#/definitions/models.User'
-        type: array
     required:
+    - category_id
     - name
     type: object
   models.User:
     properties:
-      answered:
-        items:
-          $ref: '#/definitions/models.Comment'
-        type: array
-      club_followers:
-        items:
-          $ref: '#/definitions/models.Club'
-        type: array
-      club_intended_applicants:
-        items:
-          $ref: '#/definitions/models.Club'
-        type: array
-      club_members:
-        items:
-          $ref: '#/definitions/models.Club'
-        type: array
       college:
-        $ref: '#/definitions/models.College'
-      comments:
-        items:
-          $ref: '#/definitions/models.Comment'
-        type: array
+        allOf:
+        - $ref: '#/definitions/models.College'
+        maxLength: 255
       created_at:
         example: "2023-09-20T16:34:50Z"
         type: string
       email:
+        maxLength: 255
         type: string
-      event_rsvps:
-        items:
-          $ref: '#/definitions/models.Event'
-        type: array
-      event_waitlist:
-        items:
-          $ref: '#/definitions/models.Event'
-        type: array
       first_name:
+        maxLength: 255
         type: string
       id:
         example: 1
         type: integer
       last_name:
+        maxLength: 255
         type: string
       nuid:
         type: string
-      tags:
-        items:
-          $ref: '#/definitions/models.Tag'
-        type: array
       updated_at:
         example: "2023-09-20T16:34:50Z"
         type: string
       user_role:
-        $ref: '#/definitions/models.UserRole'
+        allOf:
+        - $ref: '#/definitions/models.UserRole'
+        maxLength: 255
       year:
-        $ref: '#/definitions/models.Year'
+        allOf:
+        - $ref: '#/definitions/models.Year'
+        maximum: 6
+        minimum: 1
     required:
-    - club_members
     - college
     - email
     - first_name
@@ -471,6 +149,144 @@ info:
   title: SAC API
   version: "1.0"
 paths:
+  /api/v1/category/:
+    post:
+      description: Creates a category that is used to group tags
+      operationId: create-category
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Category'
+        "400":
+          description: category with that name already exists
+          schema:
+            type: string
+        "500":
+          description: failed to create category
+          schema:
+            type: string
+      summary: Create a category
+      tags:
+      - category
+  /api/v1/tags/:
+    post:
+      consumes:
+      - application/json
+      description: Creates a tag
+      operationId: create-tag
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Tag'
+        "400":
+          description: failed to validate the data
+          schema:
+            type: string
+        "500":
+          description: failed to create tag
+          schema:
+            type: string
+      summary: Creates a tag
+      tags:
+      - tag
+  /api/v1/tags/{id}:
+    delete:
+      description: Deletes a tag
+      operationId: delete-tag
+      parameters:
+      - description: Tag ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: failed to validate id
+          schema:
+            type: string
+        "404":
+          description: failed to find tag
+          schema:
+            type: string
+        "500":
+          description: failed to delete tag
+          schema:
+            type: string
+      summary: Deletes a tag
+      tags:
+      - tag
+    get:
+      description: Returns a tag
+      operationId: get-tag
+      parameters:
+      - description: Tag ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Tag'
+        "400":
+          description: failed to validate id
+          schema:
+            type: string
+        "404":
+          description: faied to find tag
+          schema:
+            type: string
+        "500":
+          description: failed to retrieve tag
+          schema:
+            type: string
+      summary: Gets a tag
+      tags:
+      - tag
+    patch:
+      consumes:
+      - application/json
+      description: Updates a tag
+      operationId: update-tag
+      parameters:
+      - description: Tag ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Tag'
+        "400":
+          description: failed to validate the data
+          schema:
+            type: string
+        "404":
+          description: failed to find tag
+          schema:
+            type: string
+        "500":
+          description: failed to update tag
+          schema:
+            type: string
+      summary: Updates a tag
+      tags:
+      - tag
   /api/v1/users/:
     get:
       description: Returns all users
@@ -485,7 +301,7 @@ paths:
               $ref: '#/definitions/models.User'
             type: array
         "500":
-          description: Failed to fetch users
+          description: failed to get all users
           schema:
             type: string
       summary: Gets all users
