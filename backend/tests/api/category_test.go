@@ -41,8 +41,7 @@ func CreateSampleCategory(t *testing.T, categoryName string) ExistingAppAssert {
 }
 
 func TestCreateCategoryWorks(t *testing.T) {
-	appAssert := CreateSampleCategory(t, "Science")
-	appAssert.App.DropDB()
+	CreateSampleCategory(t, "Science")
 }
 
 func TestCreateCategoryIgnoresid(t *testing.T) {
@@ -148,6 +147,4 @@ func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
 			},
 		)
 	}
-
-	existingAppAssert.App.DropDB()
 }
