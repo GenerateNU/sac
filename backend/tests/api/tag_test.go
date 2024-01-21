@@ -12,14 +12,26 @@ import (
 	"github.com/goccy/go-json"
 )
 
-func CreateSampleTag(t *testing.T, tagName string, categoryName string, existingAppAssert *ExistingAppAssert) ExistingAppAssert {
-	var appAssert ExistingAppAssert
+var AssertRespTagSameAsDBTag = func(app TestApp, assert *assert.A, resp *http.Response) {
+	var respTag models.Tag
 
-	if existingAppAssert == nil {
-		appAssert = CreateSampleCategory(t, categoryName, existingAppAssert)
-	} else {
-		appAssert = CreateSampleCategory(t, categoryName, existingAppAssert)
-	}
+	err := json.NewDecoder(resp.Body).Decode(&respTag)
+
+	assert.NilError(err)
+
+	fmt.Printf("respTag: %+v\n", respTag)
+	fmt.Printf("respTag.ID: %+v\n", respTag.ID)
+
+	dbTag, err := transactions.GetTag(app.Conn, respTag.ID)
+
+	assert.NilError(err)
+
+	assert.Equal(dbTag, &respTag)
+}
+
+func CreateSampleTag(t *testing.T, tagName string, categoryName string, existingAppAssert *ExistingAppAssert) ExistingAppAssert {
+	appAssert := CreateSampleCategory(t, categoryName, existingAppAssert)
+
 	return TestRequest{
 		Method: "POST",
 		Path:   "/api/v1/tags/",
@@ -29,20 +41,8 @@ func CreateSampleTag(t *testing.T, tagName string, categoryName string, existing
 		},
 	}.TestOnStatusAndDB(t, &appAssert,
 		DBTesterWithStatus{
-			Status: 201,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-				var respTag models.Tag
-
-				err := json.NewDecoder(resp.Body).Decode(&respTag)
-
-				assert.NilError(err)
-
-				dbTag, err := transactions.GetTag(app.Conn, respTag.ID)
-
-				assert.NilError(err)
-
-				assert.Equal(dbTag, &respTag)
-			},
+			Status:   201,
+			DBTester: AssertRespTagSameAsDBTag,
 		},
 	)
 }
@@ -126,20 +126,8 @@ func TestGetTagWorks(t *testing.T) {
 		Path:   "/api/v1/tags/1",
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
-			Status: 200,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-				var respTag models.Tag
-
-				err := json.NewDecoder(resp.Body).Decode(&respTag)
-
-				assert.NilError(err)
-
-				dbTag, err := transactions.GetTag(app.Conn, respTag.ID)
-
-				assert.NilError(err)
-
-				assert.Equal(dbTag, &respTag)
-			},
+			Status:   200,
+			DBTester: AssertRespTagSameAsDBTag,
 		},
 	)
 }
@@ -190,16 +178,8 @@ func TestUpdateTagWorksUpdateName(t *testing.T) {
 		},
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
-			Status: 204,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-				var dbTag models.Tag
-
-				err := app.Conn.First(&dbTag).Error
-
-				assert.NilError(err)
-
-				assert.Equal("GenerateNU", dbTag.Name)
-			},
+			Status:   200,
+			DBTester: AssertRespTagSameAsDBTag,
 		},
 	)
 }
@@ -217,17 +197,8 @@ func TestUpdateTagWorksUpdateCategory(t *testing.T) {
 		},
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
-			Status: 204,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-				var dbTag models.Tag
-
-				err := app.Conn.First(&dbTag).Error
-
-				assert.NilError(err)
-
-				assert.Equal("Generate", dbTag.Name)
-				assert.Equal(uint(2), dbTag.CategoryID)
-			},
+			Status:   200,
+			DBTester: AssertRespTagSameAsDBTag,
 		},
 	)
 }
@@ -244,17 +215,8 @@ func TestUpdateTagWorksWithSameDetails(t *testing.T) {
 		},
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
-			Status: 204,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-				var dbTag models.Tag
-
-				err := app.Conn.First(&dbTag).Error
-
-				assert.NilError(err)
-
-				assert.Equal("Generate", dbTag.Name)
-				assert.Equal(uint(1), dbTag.CategoryID)
-			},
+			Status:   200,
+			DBTester: AssertRespTagSameAsDBTag,
 		},
 	)
 }

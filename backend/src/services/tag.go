@@ -11,7 +11,7 @@ import (
 type TagServiceInterface interface {
 	CreateTag(tagBody models.CreateTagRequestBody) (*models.Tag, error)
 	GetTag(id string) (*models.Tag, error)
-	UpdateTag(id string, tagBody models.UpdateTagRequestBody) error
+	UpdateTag(id string, tagBody models.UpdateTagRequestBody) (*models.Tag, error)
 	DeleteTag(id string) error
 }
 
@@ -42,11 +42,11 @@ func (t *TagService) GetTag(id string) (*models.Tag, error) {
 	return transactions.GetTag(t.DB, *idAsUint)
 }
 
-func (t *TagService) UpdateTag(id string, tagBody models.UpdateTagRequestBody) error {
+func (t *TagService) UpdateTag(id string, tagBody models.UpdateTagRequestBody) (*models.Tag, error) {
 	idAsUint, err := utilities.ValidateID(id)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	tag := models.Tag{
@@ -55,7 +55,7 @@ func (t *TagService) UpdateTag(id string, tagBody models.UpdateTagRequestBody) e
 	}
 
 	if err := utilities.ValidateData(tag); err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "failed to validate the data")
+		return nil, fiber.NewError(fiber.StatusBadRequest, "failed to validate the data")
 	}
 
 	return transactions.UpdateTag(t.DB, *idAsUint, tag)

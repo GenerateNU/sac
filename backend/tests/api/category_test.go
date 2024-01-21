@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"fmt"
 	"net/http"
 	"testing"
 
@@ -130,7 +129,6 @@ func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
 	}
 
 	for _, permutation := range AllCasingPermutations(categoryName) {
-		fmt.Println(permutation)
 		TestRequest{
 			Method: "POST",
 			Path:   "/api/v1/categories/",

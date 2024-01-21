@@ -76,7 +76,7 @@ func (t *TagController) GetTag(c *fiber.Ctx) error {
 // @Accept		json
 // @Produce		json
 // @Param		id	path	int	true	"Tag ID"
-// @Success		204
+// @Success		200	  {object}    models.Tag
 // @Failure     400   {string}    string "failed to process the request"
 // @Failure     400   {string}    string "failed to validate id"
 // @Failure     400   {string}    string "failed to validate the data"
@@ -90,13 +90,13 @@ func (t *TagController) UpdateTag(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "failed to process the request")
 	}
 
-	err := t.tagService.UpdateTag(c.Params("id"), tagBody)
+	tag, err := t.tagService.UpdateTag(c.Params("id"), tagBody)
 
 	if err != nil {
 		return err
 	}
 
-	return c.SendStatus(fiber.StatusNoContent)
+	return c.Status(fiber.StatusOK).JSON(&tag)
 }
 
 // DeleteTag godoc
