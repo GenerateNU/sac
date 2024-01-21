@@ -155,6 +155,7 @@ func TestCreateUserFailsIfCategoryWithNUIDAlreadyExists(t *testing.T) {
 }
 
 func CreateInvalidUser(t *testing.T, body map[string]interface{}, expectedMessage string) ExistingAppAssert {
+	// To use for testing invalid users that should fail to be created
 	return TestRequest{
 		Method: "POST",
 		Path:   "/api/v1/users/",
@@ -168,6 +169,10 @@ func CreateInvalidUser(t *testing.T, body map[string]interface{}, expectedMessag
 }
 
 func TestCreateUserFailsOnInvalidNUID(t *testing.T) {
+	// tests that:
+	// 		 if nuid is not 9 digits, the Post Request should fail and return a 400
+	// 		 if nuid is not a number, the Post Request should fail and return a 400
+
 	first := "Jermaine"
 	last := "Cole"
 	goodEmail := "test@northeastern.edu"
@@ -201,6 +206,8 @@ func TestCreateUserFailsOnInvalidNUID(t *testing.T) {
 }
 
 func TestCreateUserFailsOnInvalidEmail(t *testing.T) {
+	// tests that:
+	// 		 if email is not a northeastern email (ends in @northeastern.edu), the Post Request should fail and return a 400
 	first := "Jermaine"
 	last := "Cole"
 	badEmail := "test@gmail.com"
@@ -226,6 +233,9 @@ func TestCreateUserFailsOnInvalidEmail(t *testing.T) {
 }
 
 func TestCreateUserFailsOnInvalidPassword(t *testing.T) {
+	// tests that:
+	// 		 if password is not at least 10 characters, the Post Request should fail and return a 400
+	// 		 TODO create better password requirements
 	badPassword := "123"
 	first := "Jermaine"
 	last := "Cole"
@@ -250,6 +260,8 @@ func TestCreateUserFailsOnInvalidPassword(t *testing.T) {
 }
 
 func TestCreateUserFailsOnInvalidYear(t *testing.T) {
+	// tests that:
+	// 		 if year is not within range [1,6], the Post Request should fail and return a 400
 	goodPassword := "123456789"
 	first := "Jermaine"
 	last := "Cole"
@@ -274,6 +286,9 @@ func TestCreateUserFailsOnInvalidYear(t *testing.T) {
 }
 
 func TestCreateUserFailsOnInvalidCollege(t *testing.T) {
+	// tests that:
+	// 		 if college is not one of CAMD DMSB KCCS CE BCHS SL CPS CS CSSH, the Post Request should fail and return a 400
+
 	goodPassword := "123456789"
 	first := "Jermaine"
 	last := "Cole"
@@ -300,8 +315,8 @@ func TestCreateUserFailsOnInvalidCollege(t *testing.T) {
 func TestCreateUserFailsOnMissingField(t *testing.T) {
 
 	// tests that:
-	//		 if a field is missing, the body parser should fail and return a 400
-	// 		 if a field is present but empty, the body parser should fail and return a 400
+	//		 if a field is missing, the Post Request should fail and return a 400
+	// 		 if a field is present but empty, the Post Request should fail and return a 400
 
 	password := "123456789"
 	first := "Jermaine"
@@ -310,7 +325,6 @@ func TestCreateUserFailsOnMissingField(t *testing.T) {
 	college := "CS"
 	year := 6
 	nuid := "001159263"
-	expectedMessage := "Key: 'CreateUserRequestBody.FirstName' Error:Field validation for 'FirstName' failed on the 'required' tag"
 
 	body := map[string]interface{}{
 		"first_name": first,
@@ -322,12 +336,64 @@ func TestCreateUserFailsOnMissingField(t *testing.T) {
 		"nuid":       nuid,
 	}
 
-	delete(body, "first_name")
+	// map from json field name to struct field name
+	fields := map[string]string{"first_name":"FirstName", "last_name":"LastName", "email":"Email", "password":"Password", "college":"College", "year":"Year", "nuid":"NUID"}
 
-	appAssert := CreateInvalidUser(t, body, expectedMessage)
-	appAssert.App.DropDB()
 
-	//TODO loop through all fields
+	//loops through each field and removes it from the body then tests that the post fails and returns a 400
+	for structKey, jsonKey := range fields {
+		// Create a copy of the body without the current field
+		updatedBody := make(map[string]interface{})
+		for key, value := range body {
+			if key != structKey {
+				updatedBody[key] = value
+			}
+		}
+
+		expectedMesage := "Key: 'CreateUserRequestBody." +jsonKey + "' Error:Field validation for '" + jsonKey + "' failed on the 'required' tag" 
+
+		appAssert := CreateInvalidUser(t, updatedBody, expectedMesage)
+		appAssert.App.DropDB()
+	}
+
 }
 
-// TODO test extra fields
+/*
+
+Dear TLs David, Garret,
+
+I can not for the life of me figure out how to do this test. It has become the bane of me
+I also have not touched nor smelled the notion of "grass" in the last 27 hours
+Please forgive me. I am but a humble student
+- Olivier
+
+*/
+func TestCreateUserFailsOnExtraFields(t *testing.T) {
+	// tests that:
+	// 		 if extra fields are present, the Post Request should fail and return a 400
+
+	password := "123456789"
+	first := "Jermaine"
+	last := "Cole"
+	email := "jermaine@northeastern.edu"
+	college := "CS"
+	year := 6
+	nuid := "001159263"
+	someField := "someField"
+
+	body := map[string]interface{}{
+		"first_name": first,
+		"last_name":  last,
+		"email":      email,
+		"password":   password,
+		"college":    college,
+		"year":       year,
+		"nuid":       nuid,
+		// foreign fields should not be allowed
+		"extra": someField,
+	}
+
+	appAssert := CreateInvalidUser(t, body, "expectedMessage")
+	appAssert.App.DropDB()
+
+}
