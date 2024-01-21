@@ -29,3 +29,15 @@ func GetTag(db *gorm.DB, id uint) (*models.Tag, error) {
 
 	return &tag, nil
 }
+
+func DeleteTag(db *gorm.DB, id uint) error {
+	if result := db.Delete(&models.Tag{}, id); result.RowsAffected == 0 {
+		if result.Error != nil {
+			return fiber.NewError(fiber.StatusInternalServerError, "failed to delete tag")
+		} else {
+			return fiber.NewError(fiber.StatusNotFound, "failed to find tag")
+		}
+	}
+
+	return nil
+}

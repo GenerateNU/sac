@@ -86,7 +86,7 @@ func generateRandomDBName() string {
 		result[i] = letterBytes[generateRandomInt(int64(len(letterBytes)))]
 	}
 
-	return string(result)
+	return fmt.Sprintf("%s%s", prefix, string(result))
 }
 
 func configureDatabase(config config.Settings) (*gorm.DB, error) {
@@ -229,7 +229,6 @@ type DBTesterWithStatus struct {
 	Status int
 	DBTester
 }
-
 
 func (request TestRequest) TestOnStatusAndDB(t *testing.T, existingAppAssert *ExistingAppAssert, dbTesterStatus DBTesterWithStatus) ExistingAppAssert {
 	appAssert, resp := request.TestWithJSONBody(t, existingAppAssert)
