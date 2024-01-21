@@ -124,7 +124,7 @@ func GetConfiguration(path string) (Settings, error) {
 
 		return Settings{
 			Application: ApplicationSettings{
-				Port:    prodSettings.Application.Port,
+				Port:    uint16(portInt),
 				Host:    prodSettings.Application.Host,
 				BaseUrl: os.Getenv(fmt.Sprintf("%sBASE_URL", applicationPrefix)),
 			},
