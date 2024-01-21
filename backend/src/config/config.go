@@ -81,12 +81,18 @@ func GetConfiguration(path string) (Settings, error) {
 
 	v := viper.New()
 	v.SetConfigType("yaml")
+	fmt.Println("Path:", path)
 	v.AddConfigPath(path)
+
+	fmt.Println("Environment:", environment)
+	fmt.Println("Config file:", v.ConfigFileUsed())
 
 	if environment == EnvironmentLocal {
 		var settings Settings
 
 		v.SetConfigName(string(environment))
+
+		fmt.Println("Reading config from", v.ConfigFileUsed())
 
 		if err := v.ReadInConfig(); err != nil {
 			return settings, fmt.Errorf("failed to read %s configuration: %w", string(environment), err)
