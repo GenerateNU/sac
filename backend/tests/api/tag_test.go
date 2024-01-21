@@ -48,7 +48,7 @@ func CreateSampleTag(t *testing.T, tagName string, categoryName string, existing
 }
 
 func TestCreateTagWorks(t *testing.T) {
-	appAssert := CreateSampleTag(t, "Generate", "Science", nil)
+	CreateSampleTag(t, "Generate", "Science", nil)
 }
 
 var AssertNoTags = func(app TestApp, assert *assert.A, resp *http.Response) {
@@ -202,8 +202,6 @@ func TestUpdateTagWorksUpdateName(t *testing.T) {
 			},
 		},
 	)
-
-	existingAppAssert.App.DropDB()
 }
 
 func TestUpdateTagWorksUpdateCategory(t *testing.T) {
@@ -232,8 +230,6 @@ func TestUpdateTagWorksUpdateCategory(t *testing.T) {
 			},
 		},
 	)
-
-	existingAppAssert.App.DropDB()
 }
 
 func TestUpdateTagWorksWithSameDetails(t *testing.T) {
@@ -261,8 +257,6 @@ func TestUpdateTagWorksWithSameDetails(t *testing.T) {
 			},
 		},
 	)
-
-	existingAppAssert.App.DropDB()
 }
 
 func TestUpdateTagFailsBadRequest(t *testing.T) {
