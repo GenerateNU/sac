@@ -3,11 +3,6 @@ package models
 type Permission string
 
 const (
-	// ReadAll Permission = "read:all"
-	// WriteAll Permission = "write:all"
-	// DeleteAll Permission = "delete:all"
-	// CreateAll Permission = "create:all"
-
 	UserRead  Permission = "user:read"
 	UserWrite Permission = "user:write"
 	UserDelete Permission = "user:delete"

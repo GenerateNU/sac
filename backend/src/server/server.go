@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/GenerateNU/sac/backend/src/controllers"
+	"github.com/GenerateNU/sac/backend/src/middleware"
 	"github.com/GenerateNU/sac/backend/src/services"
 
 	"github.com/goccy/go-json"
@@ -27,7 +28,7 @@ func Init(db *gorm.DB) *fiber.App {
 
 	utilityRoutes(app)
 
-	apiv1 := app.Group("/api/v1")
+	apiv1 := app.Group("/api/v1", middleware.Authenticate)
 
 	userRoutes(apiv1, &services.UserService{DB: db})
 	categoryRoutes(apiv1, &services.CategoryService{DB: db})
@@ -43,6 +44,7 @@ func newFiberApp() *fiber.App {
 	})
 
 	app.Use(cors.New(cors.Config{
+		AllowOrigins:     "*",
 		AllowCredentials: true,
 	}))
 	app.Use(requestid.New())
@@ -66,11 +68,11 @@ func userRoutes(router fiber.Router, userService services.UserServiceInterface) 
 	users := router.Group("/users")
 
 	users.Get("/", userController.GetAllUsers)
-	users.Get("/:id", userController.GetUser)
-	users.Get("/current", userController.CurrentUser)
-	users.Post("/register", userController.Register)
-	users.Post("/login", userController.Login)
-	users.Get("/logout", userController.Logout)
+	users.Get("/:id", userController.GetUser) // middleware.Authorize([]models.Permission{models.UserRead}),
+	users.Post("/auth/register", userController.Register)
+	users.Get("/auth/refresh", userController.Refresh)
+	users.Post("/auth/login", userController.Login)
+	users.Get("/auth/logout", userController.Logout)
 }
 
 func categoryRoutes(router fiber.Router, categoryService services.CategoryServiceInterface) {
