@@ -116,7 +116,7 @@ func GetConfiguration(path string) (Settings, error) {
 		superUserPrefix := fmt.Sprintf("%sSUPERUSER__", appPrefix)
 
 		portStr := os.Getenv(fmt.Sprintf("%sPORT", appPrefix))
-		portInt, err := strconv.Atoi(portStr)
+		portInt, err := strconv.ParseUint(portStr, 10, 16)
 
 		if err != nil {
 			return Settings{}, fmt.Errorf("failed to parse port: %w", err)
