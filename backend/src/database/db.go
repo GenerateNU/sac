@@ -1,6 +1,7 @@
 package database
 
 import (
+	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/models"
 
@@ -55,9 +56,16 @@ func MigrateDB(settings config.Settings, db *gorm.DB) error {
 		return err
 	}
 
+
 	tx := db.Begin()
 
 	if err := tx.Error; err != nil {
+		return err
+	}
+
+	passwordHash, err := auth.ComputePasswordHash(settings.SuperUser.Password)
+
+	if err != nil {
 		return err
 	}
 
@@ -65,7 +73,7 @@ func MigrateDB(settings config.Settings, db *gorm.DB) error {
 		Role:         models.Super,
 		NUID:         "000000000",
 		Email:        "generatesac@gmail.com",
-		PasswordHash: settings.SuperUser.Password, // TODO: hash this
+		PasswordHash: *passwordHash,
 		FirstName:    "SAC",
 		LastName:     "Super",
 		College:      models.KCCS,
@@ -74,7 +82,13 @@ func MigrateDB(settings config.Settings, db *gorm.DB) error {
 
 	var user models.User
 
-	if err := tx.Where("nuid = ?", superUser.NUID).First(&user).Error; err != nil {
+	if err := db.Where("nuid = ?", superUser.NUID).First(&user).Error; err != nil {
+		tx := db.Begin()
+
+		if err := tx.Error; err != nil {
+			return err
+		}
+
 		if err := tx.Create(&superUser).Error; err != nil {
 			tx.Rollback()
 			return err
@@ -99,7 +113,9 @@ func MigrateDB(settings config.Settings, db *gorm.DB) error {
 			tx.Rollback()
 			return err
 		}
-	}
 
-	return tx.Commit().Error
+		return tx.Commit().Error
+
+	}
+	return nil
 }
