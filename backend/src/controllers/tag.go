@@ -67,6 +67,38 @@ func (t *TagController) GetTag(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(&tag)
 }
 
+// UpdateTag godoc
+//
+// @Summary		Updates a tag
+// @Description	Updates a tag
+// @ID			update-tag
+// @Tags      	tag
+// @Accept		json
+// @Produce		json
+// @Param		id	path	int	true	"Tag ID"
+// @Success		200	  {object}    models.Tag
+// @Failure     400   {string}    string "failed to process the request"
+// @Failure     400   {string}    string "failed to validate id"
+// @Failure     400   {string}    string "failed to validate the data"
+// @Failure     404   {string}    string "failed to find tag"
+// @Failure     500   {string}    string "failed to update tag"
+// @Router		/api/v1/tags/{id}  [patch]
+func (t *TagController) UpdateTag(c *fiber.Ctx) error {
+	var tagBody models.UpdateTagRequestBody
+
+	if err := c.BodyParser(&tagBody); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, "failed to process the request")
+	}
+
+	tag, err := t.tagService.UpdateTag(c.Params("id"), tagBody)
+
+	if err != nil {
+		return err
+	}
+
+	return c.Status(fiber.StatusOK).JSON(&tag)
+}
+
 // DeleteTag godoc
 //
 // @Summary		Deletes a tag
@@ -74,7 +106,7 @@ func (t *TagController) GetTag(c *fiber.Ctx) error {
 // @ID			delete-tag
 // @Tags      	tag
 // @Param		id	path	int	true	"Tag ID"
-// @Success		204	  {string}    string "No Content"
+// @Success     204
 // @Failure     400   {string}    string "failed to validate id"
 // @Failure     404   {string}    string "failed to find tag"
 // @Failure     500   {string}    string "failed to delete tag"

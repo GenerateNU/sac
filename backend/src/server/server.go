@@ -82,5 +82,6 @@ func tagRoutes(router fiber.Router, tagService services.TagServiceInterface) {
 
 	tags.Post("/", tagController.CreateTag)
 	tags.Get("/:id", tagController.GetTag)
+	tags.Patch("/:id", tagController.UpdateTag)
 	tags.Delete("/:id", tagController.DeleteTag)
 }

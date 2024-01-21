@@ -17,6 +17,7 @@ func ValidateData(model interface{}) error {
 	return nil
 }
 
+// Validates that an id follows postgres uint format, returns a uint otherwise returns an error
 func ValidateID(id string) (*uint, error) {
 	idAsInt, err := strconv.Atoi(id)
 

@@ -12,14 +12,26 @@ import (
 	"github.com/goccy/go-json"
 )
 
-func CreateSampleTag(t *testing.T, tagName string, categoryName string, existingAppAssert *ExistingAppAssert) ExistingAppAssert {
-	var appAssert ExistingAppAssert
+var AssertRespTagSameAsDBTag = func(app TestApp, assert *assert.A, resp *http.Response) {
+	var respTag models.Tag
 
-	if existingAppAssert == nil {
-		appAssert = CreateSampleCategory(t, categoryName, existingAppAssert)
-	} else {
-		appAssert = CreateSampleCategory(t, categoryName, existingAppAssert)
-	}
+	err := json.NewDecoder(resp.Body).Decode(&respTag)
+
+	assert.NilError(err)
+
+	fmt.Printf("respTag: %+v\n", respTag)
+	fmt.Printf("respTag.ID: %+v\n", respTag.ID)
+
+	dbTag, err := transactions.GetTag(app.Conn, respTag.ID)
+
+	assert.NilError(err)
+
+	assert.Equal(dbTag, &respTag)
+}
+
+func CreateSampleTag(t *testing.T, tagName string, categoryName string, existingAppAssert *ExistingAppAssert) ExistingAppAssert {
+	appAssert := CreateSampleCategory(t, categoryName, existingAppAssert)
+
 	return TestRequest{
 		Method: "POST",
 		Path:   "/api/v1/tags/",
@@ -29,26 +41,17 @@ func CreateSampleTag(t *testing.T, tagName string, categoryName string, existing
 		},
 	}.TestOnStatusAndDB(t, &appAssert,
 		DBTesterWithStatus{
-			Status: 201,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-				var respTag models.Tag
-
-				err := json.NewDecoder(resp.Body).Decode(&respTag)
-
-				assert.NilError(err)
-
-				dbTag, err := transactions.GetTag(app.Conn, respTag.ID)
-
-				assert.NilError(err)
-
-				assert.Equal(dbTag, &respTag)
-			},
+			Status:   201,
+			DBTester: AssertRespTagSameAsDBTag,
 		},
 	)
 }
 
-var AssertNoTags = func(app TestApp, assert *assert.A, resp *http.Response) {
+func TestCreateTagWorks(t *testing.T) {
+	CreateSampleTag(t, "Generate", "Science", nil)
+}
 
+var AssertNoTags = func(app TestApp, assert *assert.A, resp *http.Response) {
 	var tags []models.Tag
 
 	err := app.Conn.Find(&tags).Error
@@ -123,20 +126,8 @@ func TestGetTagWorks(t *testing.T) {
 		Path:   "/api/v1/tags/1",
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
-			Status: 200,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-				var respTag models.Tag
-
-				err := json.NewDecoder(resp.Body).Decode(&respTag)
-
-				assert.NilError(err)
-
-				dbTag, err := transactions.GetTag(app.Conn, respTag.ID)
-
-				assert.NilError(err)
-
-				assert.Equal(dbTag, &respTag)
-			},
+			Status:   200,
+			DBTester: AssertRespTagSameAsDBTag,
 		},
 	)
 }
@@ -174,6 +165,91 @@ func TestGetTagFailsNotFound(t *testing.T) {
 		},
 	)
 }
+
+func TestUpdateTagWorksUpdateName(t *testing.T) {
+	existingAppAssert := CreateSampleTag(t, "Generate", "Science", nil)
+
+	TestRequest{
+		Method: "PATCH",
+		Path:   "/api/v1/tags/1",
+		Body: &map[string]interface{}{
+			"name":        "GenerateNU",
+			"category_id": 1,
+		},
+	}.TestOnStatusAndDB(t, &existingAppAssert,
+		DBTesterWithStatus{
+			Status:   200,
+			DBTester: AssertRespTagSameAsDBTag,
+		},
+	)
+}
+
+func TestUpdateTagWorksUpdateCategory(t *testing.T) {
+	existingAppAssert := CreateSampleTag(t, "Generate", "Science", nil)
+	existingAppAssert = CreateSampleCategory(t, "Technology", &existingAppAssert)
+
+	TestRequest{
+		Method: "PATCH",
+		Path:   "/api/v1/tags/1",
+		Body: &map[string]interface{}{
+			"name":        "Generate",
+			"category_id": 2,
+		},
+	}.TestOnStatusAndDB(t, &existingAppAssert,
+		DBTesterWithStatus{
+			Status:   200,
+			DBTester: AssertRespTagSameAsDBTag,
+		},
+	)
+}
+
+func TestUpdateTagWorksWithSameDetails(t *testing.T) {
+	existingAppAssert := CreateSampleTag(t, "Generate", "Science", nil)
+
+	TestRequest{
+		Method: "PATCH",
+		Path:   "/api/v1/tags/1",
+		Body: &map[string]interface{}{
+			"name":        "Generate",
+			"category_id": 1,
+		},
+	}.TestOnStatusAndDB(t, &existingAppAssert,
+		DBTesterWithStatus{
+			Status:   200,
+			DBTester: AssertRespTagSameAsDBTag,
+		},
+	)
+}
+
+func TestUpdateTagFailsBadRequest(t *testing.T) {
+	badBodys := []map[string]interface{}{
+		{
+			"name":        "Generate",
+			"category_id": "1",
+		},
+		{
+			"name":        1,
+			"category_id": 1,
+		},
+	}
+
+	for _, badBody := range badBodys {
+		TestRequest{
+			Method: "PATCH",
+			Path:   "/api/v1/tags/1",
+			Body:   &badBody,
+		}.TestOnStatusMessageAndDB(t, nil,
+			StatusMessageDBTester{
+				MessageWithStatus: MessageWithStatus{
+					Status:  400,
+					Message: "failed to process the request",
+				},
+				DBTester: AssertNoTags,
+			},
+		)
+	}
+}
+
 func TestDeleteTagWorks(t *testing.T) {
 	existingAppAssert := CreateSampleTag(t, "Generate", "Science", nil)
 

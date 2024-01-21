@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"fmt"
 	"net/http"
 	"testing"
 
@@ -72,7 +71,7 @@ func TestCreateCategoryIgnoresid(t *testing.T) {
 	)
 }
 
-func AssertNoCategoryCreation(app TestApp, assert *assert.A, resp *http.Response) {
+func AssertNoCategories(app TestApp, assert *assert.A, resp *http.Response) {
 	AssertNumCategoriesRemainsAtN(app, assert, resp, 0)
 }
 
@@ -99,7 +98,7 @@ func TestCreateCategoryFailsIfNameIsNotString(t *testing.T) {
 				Status:  400,
 				Message: "failed to process the request",
 			},
-			DBTester: AssertNoCategoryCreation,
+			DBTester: AssertNoCategories,
 		},
 	)
 }
@@ -115,7 +114,7 @@ func TestCreateCategoryFailsIfNameIsMissing(t *testing.T) {
 				Status:  400,
 				Message: "failed to validate the data",
 			},
-			DBTester: AssertNoCategoryCreation,
+			DBTester: AssertNoCategories,
 		},
 	)
 }
@@ -130,7 +129,6 @@ func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
 	}
 
 	for _, permutation := range AllCasingPermutations(categoryName) {
-		fmt.Println(permutation)
 		TestRequest{
 			Method: "POST",
 			Path:   "/api/v1/categories/",
