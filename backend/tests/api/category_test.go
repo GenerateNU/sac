@@ -1,23 +1,17 @@
 package tests
 
 import (
-	"io"
+	"net/http"
 	"testing"
 
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
+	"github.com/huandu/go-assert"
 
 	"github.com/goccy/go-json"
 )
 
-func TestCreateCategoryWorks(t *testing.T) {
-	app, assert, resp := RequestTesterWithJSONBody(t, "POST", "/api/v1/categories/", &map[string]interface{}{
-		"category_name": "Science",
-	}, nil, nil, nil)
-	defer app.DropDB()
-
-	assert.Equal(201, resp.StatusCode)
-
+var AssertRespCategorySameAsDBCategory = func(app TestApp, assert *assert.A, resp *http.Response) {
 	var respCategory models.Category
 
 	err := json.NewDecoder(resp.Body).Decode(&respCategory)
@@ -29,99 +23,115 @@ func TestCreateCategoryWorks(t *testing.T) {
 	assert.NilError(err)
 
 	assert.Equal(dbCategory, &respCategory)
+}
+
+func CreateSampleCategory(t *testing.T, categoryName string, existingAppAssert *ExistingAppAssert) ExistingAppAssert {
+	return TestRequest{
+		Method: "POST",
+		Path:   "/api/v1/categories/",
+		Body: &map[string]interface{}{
+			"category_name": categoryName,
+		},
+	}.TestOnStatusAndDB(t, existingAppAssert,
+		DBTesterWithStatus{
+			Status:   201,
+			DBTester: AssertRespCategorySameAsDBCategory,
+		},
+	)
+}
+
+func TestCreateCategoryWorks(t *testing.T) {
+	CreateSampleCategory(t, "Science", nil)
 }
 
 func TestCreateCategoryIgnoresid(t *testing.T) {
-	app, assert, resp := RequestTesterWithJSONBody(t, "POST", "/api/v1/categories/", &map[string]interface{}{
-		"id":            12,
-		"category_name": "Science",
-	}, nil, nil, nil)
-	defer app.DropDB()
+	TestRequest{
+		Method: "POST",
+		Path:   "/api/v1/categories/",
+		Body: &map[string]interface{}{
+			"id":            12,
+			"category_name": "Science",
+		},
+	}.TestOnStatusAndDB(t, nil,
+		DBTesterWithStatus{
+			Status:   201,
+			DBTester: AssertRespCategorySameAsDBCategory,
+		},
+	)
+}
 
-	var respCategory models.Category
+func AssertNoCategories(app TestApp, assert *assert.A, resp *http.Response) {
+	AssertNumCategoriesRemainsAtN(app, assert, resp, 0)
+}
 
-	err := json.NewDecoder(resp.Body).Decode(&respCategory)
+func AssertNumCategoriesRemainsAtN(app TestApp, assert *assert.A, resp *http.Response, n int) {
+	var categories []models.Category
+
+	err := app.Conn.Find(&categories).Error
 
 	assert.NilError(err)
 
-	dbCategory, err := transactions.GetCategory(app.Conn, respCategory.ID)
-
-	assert.NilError(err)
-
-	assert.NotEqual(12, dbCategory.ID)
+	assert.Equal(n, len(categories))
 }
 
 func TestCreateCategoryFailsIfNameIsNotString(t *testing.T) {
-	app, assert, resp := RequestTesterWithJSONBody(t, "POST", "/api/v1/categories/", &map[string]interface{}{
-		"category_name": 1231,
-	}, nil, nil, nil)
-	defer app.DropDB()
-
-	defer resp.Body.Close()
-
-	bodyBytes, err := io.ReadAll(resp.Body)
-
-	assert.NilError(err)
-
-	msg := string(bodyBytes)
-
-	assert.Equal("failed to process the request", msg)
-
-	assert.Equal(400, resp.StatusCode)
+	TestRequest{
+		Method: "POST",
+		Path:   "/api/v1/categories/",
+		Body: &map[string]interface{}{
+			"category_name": 1231,
+		},
+	}.TestOnStatusMessageAndDB(t, nil,
+		StatusMessageDBTester{
+			MessageWithStatus: MessageWithStatus{
+				Status:  400,
+				Message: "failed to process the request",
+			},
+			DBTester: AssertNoCategories,
+		},
+	)
 }
 
 func TestCreateCategoryFailsIfNameIsMissing(t *testing.T) {
-	app, assert, resp := RequestTesterWithJSONBody(t, "POST", "/api/v1/categories/", &map[string]interface{}{}, nil, nil, nil)
-	defer app.DropDB()
-
-	defer resp.Body.Close()
-
-	bodyBytes, err := io.ReadAll(resp.Body)
-
-	assert.NilError(err)
-
-	msg := string(bodyBytes)
-
-	assert.Equal("failed to validate the data", msg)
-
-	assert.Equal(400, resp.StatusCode)
+	TestRequest{
+		Method: "POST",
+		Path:   "/api/v1/categories/",
+		Body:   &map[string]interface{}{},
+	}.TestOnStatusMessageAndDB(t, nil,
+		StatusMessageDBTester{
+			MessageWithStatus: MessageWithStatus{
+				Status:  400,
+				Message: "failed to validate the data",
+			},
+			DBTester: AssertNoCategories,
+		},
+	)
 }
 
 func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
-	categoryName := "Science"
-	app, assert, resp := RequestTesterWithJSONBody(t, "POST", "/api/v1/categories/", &map[string]interface{}{
-		"category_name": categoryName,
-	}, nil, nil, nil)
+	categoryName := "foo"
 
-	assert.Equal(201, resp.StatusCode)
+	existingAppAssert := CreateSampleCategory(t, categoryName, nil)
 
-	var respCategory models.Category
-
-	err := json.NewDecoder(resp.Body).Decode(&respCategory)
-
-	assert.NilError(err)
-
-	dbCategory, err := transactions.GetCategory(app.Conn, respCategory.ID)
-
-	assert.NilError(err)
-
-	assert.Equal(dbCategory, &respCategory)
+	var TestNumCategoriesRemainsAt1 = func(app TestApp, assert *assert.A, resp *http.Response) {
+		AssertNumCategoriesRemainsAtN(app, assert, resp, 1)
+	}
 
 	for _, permutation := range AllCasingPermutations(categoryName) {
-		_, _, resp = RequestTesterWithJSONBody(t, "POST", "/api/v1/categories/", &map[string]interface{}{
-			"category_name": permutation,
-		}, nil, &app, assert)
-
-		defer resp.Body.Close()
-
-		bodyBytes, err := io.ReadAll(resp.Body)
-
-		assert.NilError(err)
-
-		msg := string(bodyBytes)
-
-		assert.Equal("category with that name already exists", msg)
-
-		assert.Equal(400, resp.StatusCode)
+		TestRequest{
+			Method: "POST",
+			Path:   "/api/v1/categories/",
+			Body: &map[string]interface{}{
+				"category_name": permutation,
+			},
+		}.TestOnStatusMessageAndDB(t, &existingAppAssert,
+			StatusMessageDBTester{
+				MessageWithStatus: MessageWithStatus{
+					Status:  400,
+					Message: "category with that name already exists",
+				},
+				DBTester: TestNumCategoriesRemainsAt1,
+			},
+		)
 	}
 }

@@ -1,6 +1,8 @@
 package utilities
 
 import (
+	"strconv"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/mcnijman/go-emailaddress"
 )
@@ -35,4 +37,23 @@ func ValidateData(model interface{}) error {
 	}
 
 	return nil
+}
+
+// Validates that an id follows postgres uint format, returns a uint otherwise returns an error
+func ValidateID(id string) (*uint, error) {
+	idAsInt, err := strconv.Atoi(id)
+
+	errMsg := "failed to validate id"
+
+	if err != nil {
+		return nil, fiber.NewError(fiber.StatusBadRequest, errMsg)
+	}
+
+	if idAsInt < 1 { // postgres ids start at 1
+		return nil, fiber.NewError(fiber.StatusBadRequest, errMsg)
+	}
+
+	idAsUint := uint(idAsInt)
+
+	return &idAsUint, nil
 }

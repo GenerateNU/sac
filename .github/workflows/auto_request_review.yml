@@ -6,7 +6,6 @@ on:
 
 jobs:
   auto-request-review:
-    name: Auto Request Review
     runs-on: ubuntu-latest
     steps:
       - name: Request review from the TLs and 1 random team member
