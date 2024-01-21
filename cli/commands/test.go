@@ -8,7 +8,6 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-
 func TestCommand(backendDir string, frontendDir string) *cli.Command {
 	command := cli.Command{
 		Name:  "test",
@@ -36,7 +35,7 @@ func TestCommand(backendDir string, frontendDir string) *cli.Command {
 			}
 
 			fmt.Println("Frontend", c.String("frontend"))
-			
+
 			folder := c.String("frontend")
 			runFrontend := folder != ""
 			runBackend := c.Bool("backend")
@@ -49,7 +48,6 @@ func TestCommand(backendDir string, frontendDir string) *cli.Command {
 
 	return &command
 }
-
 
 func Test(backendDir string, frontendDir string, folder string, runFrontend bool, runBackend bool) error {
 	var wg sync.WaitGroup
@@ -106,4 +104,3 @@ func FrontendTest(frontendDir string, folder string) error {
 
 	return nil
 }
-

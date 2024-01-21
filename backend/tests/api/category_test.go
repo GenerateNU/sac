@@ -41,7 +41,7 @@ func CreateSampleCategory(t *testing.T, categoryName string, existingAppAssert *
 }
 
 func TestCreateCategoryWorks(t *testing.T) {
-	CreateSampleCategory(t, "Science", nil)
+	CreateSampleCategory(t, "Science", nil).Close()
 }
 
 func TestCreateCategoryIgnoresid(t *testing.T) {
@@ -57,7 +57,7 @@ func TestCreateCategoryIgnoresid(t *testing.T) {
 			Status:   201,
 			DBTester: AssertRespCategorySameAsDBCategory,
 		},
-	)
+	).Close()
 }
 
 func AssertNoCategories(app TestApp, assert *assert.A, resp *http.Response) {
@@ -89,7 +89,7 @@ func TestCreateCategoryFailsIfNameIsNotString(t *testing.T) {
 			},
 			DBTester: AssertNoCategories,
 		},
-	)
+	).Close()
 }
 
 func TestCreateCategoryFailsIfNameIsMissing(t *testing.T) {
@@ -105,7 +105,7 @@ func TestCreateCategoryFailsIfNameIsMissing(t *testing.T) {
 			},
 			DBTester: AssertNoCategories,
 		},
-	)
+	).Close()
 }
 
 func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
@@ -134,4 +134,6 @@ func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
 			},
 		)
 	}
+
+	existingAppAssert.Close()
 }
