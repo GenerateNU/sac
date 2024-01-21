@@ -106,7 +106,7 @@ func (t *TagController) UpdateTag(c *fiber.Ctx) error {
 // @ID			delete-tag
 // @Tags      	tag
 // @Param		id	path	int	true	"Tag ID"
-// @Success		204
+// @Success     204
 // @Failure     400   {string}    string "failed to validate id"
 // @Failure     404   {string}    string "failed to find tag"
 // @Failure     500   {string}    string "failed to delete tag"

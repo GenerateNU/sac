@@ -27,7 +27,7 @@ func CreateSampleTag(t *testing.T, tagName string, categoryName string, existing
 			"name":        tagName,
 			"category_id": 1,
 		},
-	}.TestOnStatusAndDBKeepDB(t, &appAssert,
+	}.TestOnStatusAndDB(t, &appAssert,
 		DBTesterWithStatus{
 			Status: 201,
 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
@@ -49,7 +49,6 @@ func CreateSampleTag(t *testing.T, tagName string, categoryName string, existing
 
 func TestCreateTagWorks(t *testing.T) {
 	appAssert := CreateSampleTag(t, "Generate", "Science", nil)
-	appAssert.App.DropDB()
 }
 
 var AssertNoTags = func(app TestApp, assert *assert.A, resp *http.Response) {
@@ -143,8 +142,6 @@ func TestGetTagWorks(t *testing.T) {
 			},
 		},
 	)
-
-	existingAppAssert.App.DropDB()
 }
 
 func TestGetTagFailsBadRequest(t *testing.T) {
@@ -309,8 +306,6 @@ func TestDeleteTagWorks(t *testing.T) {
 			DBTester: AssertNoTags,
 		},
 	)
-
-	existingAppAssert.App.DropDB()
 }
 
 func TestDeleteTagFailsBadRequest(t *testing.T) {
