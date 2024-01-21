@@ -2,9 +2,7 @@ package tests
 
 import (
 	"fmt"
-	"io"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/GenerateNU/sac/backend/src/models"
@@ -49,98 +47,68 @@ func TestGetAllUsersWorks(t *testing.T) {
 	)
 }
 
-func TestGetUserHappyPath(t *testing.T) {
-	// initialize the test
-	app, assert := InitTest(t)
+var AssertRespUserSameAsDBUser = func(app TestApp, assert *assert.A, resp *http.Response) {
+	var respUser models.User
 
-	// create a GET request to the APP/api/v1/users/:id endpoint
-	req := httptest.NewRequest("GET", fmt.Sprintf("%s/api/v1/users/1", app.Address), nil)
-
-	// send the request to the app
-	resp, err := app.App.Test(req)
+	err := json.NewDecoder(resp.Body).Decode(&respUser)
 
 	assert.NilError(err)
 
-	assert.Equal(200, resp.StatusCode)
-
-	// decode the response body into a slice of users
-	var user *models.User
-
-	err = json.NewDecoder(resp.Body).Decode(&user)
+	dbUser, err := transactions.GetUser(app.Conn, respUser.ID)
 
 	assert.NilError(err)
 
-	dbUser, err := transactions.GetUser(app.Conn, "1")
-
-	assert.NilError(err)
-
-	assert.Equal(dbUser.Email, user.Email)
-	assert.Equal(user.Email, "generatesac@gmail.com")
+	assert.Equal(dbUser.Role, respUser.Role)
+	assert.Equal(dbUser.NUID, respUser.NUID)
+	assert.Equal(dbUser.FirstName, respUser.FirstName)
+	assert.Equal(dbUser.LastName, respUser.LastName)
+	assert.Equal(dbUser.Email, respUser.Email)
+	assert.Equal(dbUser.College, respUser.College)
+	assert.Equal(dbUser.Year, respUser.Year)
 }
 
-func TestGetUserBadRequestStringID(t *testing.T) {
-	app, assert := InitTest(t)
-	// create a GET request to the APP/api/v1/users/:id endpoint
-	req := httptest.NewRequest("GET", fmt.Sprintf("%s/api/v1/users/letters", app.Address), nil)
-	resp, err := app.App.Test(req)
-	assert.NilError(err)
-	defer resp.Body.Close()
-	bodyBytes, io_err := io.ReadAll(resp.Body)
-	assert.NilError(io_err)
-	msg := string(bodyBytes)
-	assert.Equal("id must be a positive integer", msg)
-	assert.Equal(400, resp.StatusCode)
+func TestGetUserWorks(t *testing.T) {
+	TestRequest{
+		Method: "GET",
+		Path:   "/api/v1/users/1",
+	}.TestOnStatusAndDB(t, nil,
+		DBTesterWithStatus{
+			Status:   200,
+			DBTester: AssertRespUserSameAsDBUser,
+		},
+	)
 }
 
-func TestGetUserBadRequestNullID(t *testing.T) {
-	app, assert := InitTest(t)
-	// create a GET request to the APP/api/v1/users/:id endpoint
-	req2 := httptest.NewRequest("GET", fmt.Sprintf("%s/api/v1/users/null", app.Address), nil)
-	resp2, err2 := app.App.Test(req2)
-	assert.NilError(err2)
-	defer resp2.Body.Close()
-	bodyBytes2, io_err2 := io.ReadAll(resp2.Body)
-	assert.NilError(io_err2)
-	msg2 := string(bodyBytes2)
-	assert.Equal("id must be a positive integer", msg2)
-	assert.Equal(400, resp2.StatusCode)
-}
-func TestGetUserBadRequestNegativeID(t *testing.T) {
-	app, assert := InitTest(t)
-	// create a GET request to the APP/api/v1/users/:id endpoint
-	req1 := httptest.NewRequest("GET", fmt.Sprintf("%s/api/v1/users/-1", app.Address), nil)
-	resp1, err1 := app.App.Test(req1)
-	assert.NilError(err1)
-	defer resp1.Body.Close()
-	bodyBytes1, err1 := io.ReadAll(resp1.Body)
-	msg1 := string(bodyBytes1)
-	assert.Equal("id must be a positive integer", msg1)
-	assert.Equal(400, resp1.StatusCode)
+func TestGetUserFailsBadRequest(t *testing.T) {
+	badRequests := []string{
+		"0",
+		"-1",
+		"1.1",
+		"foo",
+		"null",
+	}
+
+	for _, badRequest := range badRequests {
+		TestRequest{
+			Method: "GET",
+			Path:   fmt.Sprintf("/api/v1/tags/%s", badRequest),
+		}.TestOnStatusAndMessage(t, nil,
+			MessageWithStatus{
+				Status:  400,
+				Message: "failed to validate id",
+			},
+		)
+	}
 }
 
-func TestGetUserBadRequestZeroID(t *testing.T) {
-	app, assert := InitTest(t)
-	// create a GET request to the APP/api/v1/users/:id endpoint
-	req2 := httptest.NewRequest("GET", fmt.Sprintf("%s/api/v1/users/0", app.Address), nil)
-	resp2, err2 := app.App.Test(req2)
-	assert.NilError(err2)
-	defer resp2.Body.Close()
-	bodyBytes2, io_err2 := io.ReadAll(resp2.Body)
-	assert.NilError(io_err2)
-	msg2 := string(bodyBytes2)
-	assert.Equal("id must be a positive integer", msg2)
-	assert.Equal(400, resp2.StatusCode)
-}
-func TestGetUserNotFound(t *testing.T) {
-	app, assert := InitTest(t)
-	// create a GET request to the APP/api/v1/users/:id endpoint
-	req := httptest.NewRequest("GET", fmt.Sprintf("%s/api/v1/users/100", app.Address), nil)
-	resp, err := app.App.Test(req)
-	assert.NilError(err)
-	defer resp.Body.Close()
-	bodyBytes, io_err := io.ReadAll(resp.Body)
-	assert.NilError(io_err)
-	msg := string(bodyBytes)
-	assert.Equal("record not found", msg)
-	assert.Equal(404, resp.StatusCode)
+func TestGetUserFailsNotFound(t *testing.T) {
+	TestRequest{
+		Method: "GET",
+		Path:   "/api/v1/users/69",
+	}.TestOnStatusAndMessage(t, nil,
+		MessageWithStatus{
+			Status:  404,
+			Message: "failed to find tag",
+		},
+	)
 }

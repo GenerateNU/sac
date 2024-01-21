@@ -42,14 +42,12 @@ func (u *UserController) GetAllUsers(c *fiber.Ctx) error {
 // @Tags      	user
 // @Produce		json
 // @Success		200	  {object}	  models.User
-// @Failure     400   {string}    string "id must be a positive number"
-// @Failure     404   {string}    string "record not found"
+// @Failure     400   {string}    string "failed to validate id"
+// @Failure     404   {string}    string "failed to find user"
 // @Failure     500   {string}    string
 // @Router		/api/v1/users/  [get]
 func (u *UserController) GetUser(c *fiber.Ctx) error {
-	userID := c.Params("id")
-
-	user, err := u.userService.GetUser(userID)
+	user, err := u.userService.GetUser(c.Params("id"))
 	if err != nil {
 		return err
 	}
