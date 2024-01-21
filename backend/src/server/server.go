@@ -71,8 +71,8 @@ func userRoutes(router fiber.Router, userService services.UserServiceInterface) 
 	users.Get("/:id", userController.GetUser) // middleware.Authorize([]models.Permission{models.UserRead}),
 	users.Post("/auth/register", userController.Register)
 	users.Get("/auth/refresh", userController.Refresh)
-	users.Post("/auth/login", userController.Login)
 	users.Get("/auth/logout", userController.Logout)
+	users.Post("/auth/login", userController.Login)
 }
 
 func categoryRoutes(router fiber.Router, categoryService services.CategoryServiceInterface) {
