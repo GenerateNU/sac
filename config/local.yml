@@ -11,3 +11,6 @@ database:
   requiressl: false
 superuser:
   password: password
+authsecret:
+  accesstoken: g(r|##*?>\Qp}h37e+,T2
+  refreshtoken: amk*2!gG}1i"8D9RwJS$p
