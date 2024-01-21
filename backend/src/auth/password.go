@@ -29,6 +29,7 @@ func ComputePasswordHash(password string) (*string, error) {
 	}
 
 	salt := make([]byte, p.saltLength)
+
 	if _, err := rand.Read(salt); err != nil {
 		return nil, err
 	}
@@ -42,6 +43,7 @@ func ComputePasswordHash(password string) (*string, error) {
 	)
 
 	b64Salt := base64.RawStdEncoding.EncodeToString(salt)
+
 	b64Hash := base64.RawStdEncoding.EncodeToString(hash)
 
 	encodedHash := fmt.Sprintf("$argon2id$v=%d$m=%d,t=%d,p=%d$%s$%s", argon2.Version, p.memory, p.iterations, p.parallelism, b64Salt, b64Hash)
@@ -56,6 +58,7 @@ var (
 
 func ComparePasswordAndHash(password, encodedHash string) (bool, error) {
 	p, salt, hash, err := decodeHash(encodedHash)
+
 	if err != nil {
 		return false, err
 	}
@@ -65,6 +68,7 @@ func ComparePasswordAndHash(password, encodedHash string) (bool, error) {
 	if subtle.ConstantTimeCompare(hash, otherHash) == 1 {
 		return true, nil
 	}
+
 	return false, nil
 }
 
