@@ -44,7 +44,7 @@ func TestGetAllUsersWorks(t *testing.T) {
 				assert.Equal(dbUser, respUser)
 			},
 		},
-	)
+	).Close()
 }
 
 var AssertRespUserSameAsDBUser = func(app TestApp, assert *assert.A, resp *http.Response) {
@@ -76,7 +76,7 @@ func TestGetUserWorks(t *testing.T) {
 			Status:   200,
 			DBTester: AssertRespUserSameAsDBUser,
 		},
-	)
+	).Close()
 }
 
 func TestGetUserFailsBadRequest(t *testing.T) {
@@ -97,7 +97,7 @@ func TestGetUserFailsBadRequest(t *testing.T) {
 				Status:  400,
 				Message: "failed to validate id",
 			},
-		)
+		).Close()
 	}
 }
 
@@ -110,5 +110,5 @@ func TestGetUserFailsNotFound(t *testing.T) {
 			Status:  404,
 			Message: "failed to find tag",
 		},
-	)
+	).Close()
 }

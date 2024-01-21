@@ -45,7 +45,7 @@ func CreateSampleTag(t *testing.T, tagName string, categoryName string, existing
 }
 
 func TestCreateTagWorks(t *testing.T) {
-	CreateSampleTag(t, "Generate", "Science", nil)
+	CreateSampleTag(t, "Generate", "Science", nil).Close()
 }
 
 var AssertNoTags = func(app TestApp, assert *assert.A, resp *http.Response) {
@@ -83,7 +83,7 @@ func TestCreateTagFailsBadRequest(t *testing.T) {
 				},
 				DBTester: AssertNoTags,
 			},
-		)
+		).Close()
 	}
 }
 
@@ -111,7 +111,7 @@ func TestCreateTagFailsValidation(t *testing.T) {
 				},
 				DBTester: AssertNoTags,
 			},
-		)
+		).Close()
 	}
 }
 
@@ -126,7 +126,7 @@ func TestGetTagWorks(t *testing.T) {
 			Status:   200,
 			DBTester: AssertRespTagSameAsDBTag,
 		},
-	)
+	).Close()
 }
 
 func TestGetTagFailsBadRequest(t *testing.T) {
@@ -147,7 +147,7 @@ func TestGetTagFailsBadRequest(t *testing.T) {
 				Status:  400,
 				Message: "failed to validate id",
 			},
-		)
+		).Close()
 	}
 }
 
@@ -160,7 +160,7 @@ func TestGetTagFailsNotFound(t *testing.T) {
 			Status:  404,
 			Message: "failed to find tag",
 		},
-	)
+	).Close()
 }
 
 func TestUpdateTagWorksUpdateName(t *testing.T) {
@@ -178,7 +178,7 @@ func TestUpdateTagWorksUpdateName(t *testing.T) {
 			Status:   200,
 			DBTester: AssertRespTagSameAsDBTag,
 		},
-	)
+	).Close()
 }
 
 func TestUpdateTagWorksUpdateCategory(t *testing.T) {
@@ -197,7 +197,7 @@ func TestUpdateTagWorksUpdateCategory(t *testing.T) {
 			Status:   200,
 			DBTester: AssertRespTagSameAsDBTag,
 		},
-	)
+	).Close()
 }
 
 func TestUpdateTagWorksWithSameDetails(t *testing.T) {
@@ -215,7 +215,7 @@ func TestUpdateTagWorksWithSameDetails(t *testing.T) {
 			Status:   200,
 			DBTester: AssertRespTagSameAsDBTag,
 		},
-	)
+	).Close()
 }
 
 func TestUpdateTagFailsBadRequest(t *testing.T) {
@@ -243,7 +243,7 @@ func TestUpdateTagFailsBadRequest(t *testing.T) {
 				},
 				DBTester: AssertNoTags,
 			},
-		)
+		).Close()
 	}
 }
 
@@ -258,7 +258,7 @@ func TestDeleteTagWorks(t *testing.T) {
 			Status:   204,
 			DBTester: AssertNoTags,
 		},
-	)
+	).Close()
 }
 
 func TestDeleteTagFailsBadRequest(t *testing.T) {
@@ -279,7 +279,7 @@ func TestDeleteTagFailsBadRequest(t *testing.T) {
 				Status:  400,
 				Message: "failed to validate id",
 			},
-		)
+		).Close()
 	}
 }
 
@@ -292,5 +292,5 @@ func TestDeleteTagFailsNotFound(t *testing.T) {
 			Status:  404,
 			Message: "failed to find tag",
 		},
-	)
+	).Close()
 }
