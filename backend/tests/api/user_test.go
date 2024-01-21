@@ -9,7 +9,6 @@ import (
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
 	"github.com/huandu/go-assert"
-
 	"github.com/goccy/go-json"
 )
 
@@ -128,10 +127,10 @@ func TestCreateUserFailsIfCategoryWithEmailAlreadyExists(t *testing.T) {
 	existingAppAssert.App.DropDB()
 }
 
-
 func TestCreateUserFailsIfCategoryWithNUIDAlreadyExists(t *testing.T) {
+	nuid := "001159263"
 
-	existingAppAssert := CreateSampleUser(t, "test@northeastern.edu", "001159263")
+	existingAppAssert := CreateSampleUser(t, "test@northeastern.edu", nuid)
 
 	TestRequest{
 		Method: "POST",
@@ -141,7 +140,7 @@ func TestCreateUserFailsIfCategoryWithNUIDAlreadyExists(t *testing.T) {
 			"last_name":  "TestY",
 			"email":      "test2@northeastern.edu",
 			"password":   "1234567890",
-			"nuid":       "001159263",
+			"nuid":       nuid,
 			"college":    "CAMD",
 			"year":       3,
 		},
@@ -154,3 +153,181 @@ func TestCreateUserFailsIfCategoryWithNUIDAlreadyExists(t *testing.T) {
 
 	existingAppAssert.App.DropDB()
 }
+
+func CreateInvalidUser(t *testing.T, body map[string]interface{}, expectedMessage string) ExistingAppAssert {
+	return TestRequest{
+		Method: "POST",
+		Path:   "/api/v1/users/",
+		Body:   &body,
+	}.TestOnStatusAndMessageKeepDB(t, nil,
+		MessageWithStatus{
+			Status:  400,
+			Message: expectedMessage,
+		},
+	)
+}
+
+func TestCreateUserFailsOnInvalidNUID(t *testing.T) {
+	first := "Jermaine"
+	last := "Cole"
+	goodEmail := "test@northeastern.edu"
+	goodPassword := "1234567890"
+	goodCollege := "CAMD"
+	goodYear := 3
+
+	body := map[string]interface{}{
+		"first_name": first,
+		"last_name":  last,
+		"email":      goodEmail,
+		"password":   goodPassword,
+		"college":    goodCollege,
+		"year":       goodYear,
+	}
+
+	// test that it fails on <9 digits
+	badNUIDLen := "012"
+	body["nuid"] = badNUIDLen
+	//TODO change error messages to be more readable
+	expectedMessageLen := "Key: 'CreateUserRequestBody.NUID' Error:Field validation for 'NUID' failed on the 'len' tag"
+	appAssertLen := CreateInvalidUser(t, body, expectedMessageLen)
+	appAssertLen.App.DropDB()
+
+	// test that it fails on non-numbers
+	badNUIDNumber := "01234578a"
+	body["nuid"] = badNUIDNumber
+	expectedMessageNumber := "Key: 'CreateUserRequestBody.NUID' Error:Field validation for 'NUID' failed on the 'number' tag"
+	appAssertNumber := CreateInvalidUser(t, body, expectedMessageNumber)
+	appAssertNumber.App.DropDB()
+}
+
+func TestCreateUserFailsOnInvalidEmail(t *testing.T) {
+	first := "Jermaine"
+	last := "Cole"
+	badEmail := "test@gmail.com"
+	goodPassword := "1234567890"
+	goodCollege := "CAMD"
+	goodYear := 3
+	goodNUID := "001159263"
+
+	body := map[string]interface{}{
+		"first_name": first,
+		"last_name":  last,
+		"email":      badEmail,
+		"password":   goodPassword,
+		"college":    goodCollege,
+		"year":       goodYear,
+		"nuid":       goodNUID,
+	}
+
+	expectedMessage := "Key: 'CreateUserRequestBody.Email' Error:Field validation for 'Email' failed on the 'neu_email' tag"
+
+	appAssert := CreateInvalidUser(t, body, expectedMessage)
+	appAssert.App.DropDB()
+}
+
+func TestCreateUserFailsOnInvalidPassword(t *testing.T) {
+	badPassword := "123"
+	first := "Jermaine"
+	last := "Cole"
+	goodEmail := "test@northeastern.edu"
+	goodCollege := "CAMD"
+	goodYear := 3
+	goodNUID := "001159263"
+	expectedMessage := "Key: 'CreateUserRequestBody.Password' Error:Field validation for 'Password' failed on the 'password' tag"
+
+	body := map[string]interface{}{
+		"first_name": first,
+		"last_name":  last,
+		"email":      goodEmail,
+		"password":   badPassword,
+		"college":    goodCollege,
+		"year":       goodYear,
+		"nuid":       goodNUID,
+	}
+
+	appAssert := CreateInvalidUser(t, body, expectedMessage)
+	appAssert.App.DropDB()
+}
+
+func TestCreateUserFailsOnInvalidYear(t *testing.T) {
+	goodPassword := "123456789"
+	first := "Jermaine"
+	last := "Cole"
+	goodEmail := "test@northeastern.edu"
+	goodCollege := "CAMD"
+	badYear := 7
+	goodNUID := "001159263"
+	expectedMessage := "Key: 'CreateUserRequestBody.Year' Error:Field validation for 'Year' failed on the 'max' tag"
+
+	body := map[string]interface{}{
+		"first_name": first,
+		"last_name":  last,
+		"email":      goodEmail,
+		"password":   goodPassword,
+		"college":    goodCollege,
+		"year":       badYear,
+		"nuid":       goodNUID,
+	}
+
+	appAssert := CreateInvalidUser(t, body, expectedMessage)
+	appAssert.App.DropDB()
+}
+
+func TestCreateUserFailsOnInvalidCollege(t *testing.T) {
+	goodPassword := "123456789"
+	first := "Jermaine"
+	last := "Cole"
+	goodEmail := "test@northeastern.edu"
+	badCollege := "oopsies"
+	goodYear := 6
+	goodNUID := "001159263"
+	expectedMessage := "Key: 'CreateUserRequestBody.College' Error:Field validation for 'College' failed on the 'oneof' tag"
+
+	body := map[string]interface{}{
+		"first_name": first,
+		"last_name":  last,
+		"email":      goodEmail,
+		"password":   goodPassword,
+		"college":    badCollege,
+		"year":       goodYear,
+		"nuid":       goodNUID,
+	}
+
+	appAssert := CreateInvalidUser(t, body, expectedMessage)
+	appAssert.App.DropDB()
+}
+
+func TestCreateUserFailsOnMissingField(t *testing.T) {
+
+	// tests that:
+	//		 if a field is missing, the body parser should fail and return a 400
+	// 		 if a field is present but empty, the body parser should fail and return a 400
+
+	password := "123456789"
+	first := "Jermaine"
+	last := "Cole"
+	email := "test@northeastern.edu"
+	college := "CS"
+	year := 6
+	nuid := "001159263"
+	expectedMessage := "Key: 'CreateUserRequestBody.FirstName' Error:Field validation for 'FirstName' failed on the 'required' tag"
+
+	body := map[string]interface{}{
+		"first_name": first,
+		"last_name":  last,
+		"email":      email,
+		"password":   password,
+		"college":    college,
+		"year":       year,
+		"nuid":       nuid,
+	}
+
+	delete(body, "first_name")
+
+	appAssert := CreateInvalidUser(t, body, expectedMessage)
+	appAssert.App.DropDB()
+
+	//TODO loop through all fields
+}
+
+// TODO test extra fields
