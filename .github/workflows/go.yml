@@ -69,14 +69,8 @@ jobs:
       - name: Install Dependencies
         run: cd backend && go get ./...
       - name: Migrate DB
-        run: |
-          cd backend/src && go run main.go --only-migrate
+        run: cd backend/src && go run main.go --only-migrate
       - name: Run Tests with Coverage
-        run: |
-          cd backend
-          for file in $(find . -name "*_test.go"); do
-            base=$(basename $file _test.go)
-            go test -failfast -benchmem -race -coverprofile="${base}_coverage.txt" $file
-          done
+        run: cd backend && go test -failfast -benchmem -race -coverprofile=coverage.txt ./...
       - name: Print Coverage
         run: cd backend && go tool cover -func=coverage.txt
