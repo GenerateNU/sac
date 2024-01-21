@@ -31,7 +31,7 @@ func GetTag(db *gorm.DB, id uint) (*models.Tag, error) {
 }
 
 func UpdateTag(db *gorm.DB, id uint, tag models.Tag) (*models.Tag, error) {
-	if err := db.Model(&models.Tag{}).Where("id = ?", id).Updates(tag).First(&tag).Error; err != nil {
+	if err := db.Model(&models.Tag{}).Where("id = ?", id).Updates(tag).First(&tag, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, fiber.NewError(fiber.StatusNotFound, "failed to find tag")
 		} else {
