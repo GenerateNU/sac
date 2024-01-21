@@ -12,14 +12,14 @@ import (
 	"github.com/goccy/go-json"
 )
 
-func CreateSampleCategory(t *testing.T, categoryName string) ExistingAppAssert {
+func CreateSampleCategory(t *testing.T, categoryName string, existingAppAssert *ExistingAppAssert) ExistingAppAssert {
 	return TestRequest{
 		Method: "POST",
 		Path:   "/api/v1/categories/",
 		Body: &map[string]interface{}{
 			"category_name": categoryName,
 		},
-	}.TestOnStatusAndDBKeepDB(t, nil,
+	}.TestOnStatusAndDB(t, existingAppAssert,
 		DBTesterWithStatus{
 			Status: 201,
 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
@@ -41,8 +41,7 @@ func CreateSampleCategory(t *testing.T, categoryName string) ExistingAppAssert {
 }
 
 func TestCreateCategoryWorks(t *testing.T) {
-	appAssert := CreateSampleCategory(t, "Science")
-	appAssert.App.DropDB()
+	CreateSampleCategory(t, "Science", nil)
 }
 
 func TestCreateCategoryIgnoresid(t *testing.T) {
@@ -124,7 +123,11 @@ func TestCreateCategoryFailsIfNameIsMissing(t *testing.T) {
 func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
 	categoryName := "foo"
 
-	existingAppAssert := CreateSampleCategory(t, categoryName)
+	existingAppAssert := CreateSampleCategory(t, categoryName, nil)
+
+	var TestNumCategoriesRemainsAt1 = func(app TestApp, assert *assert.A, resp *http.Response) {
+		AssertNumCategoriesRemainsAtN(app, assert, resp, 1)
+	}
 
 	var TestNumCategoriesRemainsAt1 = func(app TestApp, assert *assert.A, resp *http.Response) {
 		AssertNumCategoriesRemainsAtN(app, assert, resp, 1)
@@ -138,7 +141,7 @@ func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
 			Body: &map[string]interface{}{
 				"category_name": permutation,
 			},
-		}.TestOnStatusMessageAndDBKeepDB(t, &existingAppAssert,
+		}.TestOnStatusMessageAndDB(t, &existingAppAssert,
 			StatusMessageDBTester{
 				MessageWithStatus: MessageWithStatus{
 					Status:  400,
@@ -148,6 +151,4 @@ func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
 			},
 		)
 	}
-
-	existingAppAssert.App.DropDB()
 }

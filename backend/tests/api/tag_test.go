@@ -12,8 +12,14 @@ import (
 	"github.com/goccy/go-json"
 )
 
-func CreateSampleTag(t *testing.T, tagName string, categoryName string) ExistingAppAssert {
-	existingAppAssert := CreateSampleCategory(t, categoryName)
+func CreateSampleTag(t *testing.T, tagName string, categoryName string, existingAppAssert *ExistingAppAssert) ExistingAppAssert {
+	var appAssert ExistingAppAssert
+
+	if existingAppAssert == nil {
+		appAssert = CreateSampleCategory(t, categoryName, existingAppAssert)
+	} else {
+		appAssert = CreateSampleCategory(t, categoryName, existingAppAssert)
+	}
 	return TestRequest{
 		Method: "POST",
 		Path:   "/api/v1/tags/",
@@ -21,7 +27,7 @@ func CreateSampleTag(t *testing.T, tagName string, categoryName string) Existing
 			"name":        tagName,
 			"category_id": 1,
 		},
-	}.TestOnStatusAndDBKeepDB(t, &existingAppAssert,
+	}.TestOnStatusAndDB(t, &appAssert,
 		DBTesterWithStatus{
 			Status: 201,
 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
@@ -41,12 +47,8 @@ func CreateSampleTag(t *testing.T, tagName string, categoryName string) Existing
 	)
 }
 
-func TestCreateTagWorks(t *testing.T) {
-	appAssert := CreateSampleTag(t, "Generate", "Science")
-	appAssert.App.DropDB()
-}
-
 var AssertNoTags = func(app TestApp, assert *assert.A, resp *http.Response) {
+
 	var tags []models.Tag
 
 	err := app.Conn.Find(&tags).Error
@@ -114,7 +116,7 @@ func TestCreateTagFailsValidation(t *testing.T) {
 }
 
 func TestGetTagWorks(t *testing.T) {
-	existingAppAssert := CreateSampleTag(t, "Generate", "Science")
+	existingAppAssert := CreateSampleTag(t, "Generate", "Science", nil)
 
 	TestRequest{
 		Method: "GET",
@@ -137,8 +139,6 @@ func TestGetTagWorks(t *testing.T) {
 			},
 		},
 	)
-
-	existingAppAssert.App.DropDB()
 }
 
 func TestGetTagFailsBadRequest(t *testing.T) {
@@ -174,7 +174,6 @@ func TestGetTagFailsNotFound(t *testing.T) {
 		},
 	)
 }
-
 func TestDeleteTagWorks(t *testing.T) {
 	existingAppAssert := CreateSampleTag(t, "Generate", "Science")
 
