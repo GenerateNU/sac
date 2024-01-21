@@ -1,9 +1,9 @@
 package services
 
 import (
+	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
-	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -12,7 +12,6 @@ import (
 )
 
 type UserServiceInterface interface {
-	CreateUserFromParams(params types.UserParams) (models.User, error)
 	GetAllUsers() ([]models.User, error)
 	GetUser(id string) (*models.User, error)
 	UpdateUser(id string, params types.UserParams) (models.User, error)
@@ -21,29 +20,6 @@ type UserServiceInterface interface {
 type UserService struct {
 	DB       *gorm.DB
 	Validate *validator.Validate
-}
-
-// Creates a models.User from params. This *does not* interact with the database at all; the value will need to be
-// passed to gorm.Db.Create(interface{}) for it to be persisted.
-func (u *UserService) CreateUserFromParams(params types.UserParams) (models.User, error) {
-	validate := validator.New()
-	validate.RegisterValidation("neu_email", utilities.ValidateEmail)
-	validate.RegisterValidation("password", utilities.ValidatePassword)
-	if err := validate.Struct(params); err != nil {
-		return models.User{}, fiber.NewError(fiber.StatusBadRequest, err.Error())
-	}
-
-	var user models.User
-	user.NUID = params.NUID
-	user.FirstName = params.FirstName
-	user.LastName = params.LastName
-	user.Email = params.Email
-	// TODO: hash
-	user.PasswordHash = params.Password
-	user.College = models.College(params.College)
-	user.Year = models.Year(params.Year)
-
-	return user, nil
 }
 
 // Gets all users (including soft deleted users) for testing
@@ -62,10 +38,27 @@ func (u *UserService) GetUser(userID string) (*models.User, error) {
 }
 
 // Updates a user
-func (u *UserService) UpdateUser(id string, params types.UserParams) (models.User, error) {
-	user, err := u.CreateUserFromParams(params)
+func (u *UserService) UpdateUser(id string, params models.UpdateUserRequestBody) (*models.User, error) {
+	validate := validator.New()
+	validate.RegisterValidation("neu_email", utilities.ValidateEmail)
+	validate.RegisterValidation("password", utilities.ValidatePassword)
+	if err := validate.Struct(params); err != nil {
+		return nil, fiber.NewError(fiber.StatusBadRequest, "invalid request body")
+	}
+
+	passwordHash, err := auth.ComputePasswordHash(params.Password)
 	if err != nil {
-		return models.User{}, err
+		return nil, fiber.NewError(fiber.StatusInternalServerError, "failed to hash password")
+	}
+
+	user := models.User{
+		NUID:         params.NUID,
+		FirstName:    params.FirstName,
+		LastName:     params.LastName,
+		Email:        params.Email,
+		PasswordHash: *passwordHash,
+		College:      models.College(params.College),
+		Year:         models.Year(params.Year),
 	}
 
 	return transactions.UpdateUser(u.DB, id, user)

@@ -2,6 +2,7 @@ package utilities
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"regexp"
 	"strconv"
 
 	"github.com/go-playground/validator/v10"
@@ -22,12 +23,12 @@ func ValidateEmail(fl validator.FieldLevel) bool {
 }
 
 func ValidatePassword(fl validator.FieldLevel) bool {
-	// TODO: we need to think of validation rules
-	if len(fl.Field().String()) < 6 {
+	if len(fl.Field().String()) < 8 {
 		return false
 	}
-
-	return true
+	specialCharactersMatch, _ := regexp.MatchString("[@#%&*+]", fl.Field().String())
+	numbersMatch, _ := regexp.MatchString("[0-9]", fl.Field().String())
+	return specialCharactersMatch && numbersMatch
 }
 
 // Validate the data sent to the server if the data is invalid, return an error otherwise, return nil
