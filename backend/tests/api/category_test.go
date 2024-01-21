@@ -129,10 +129,6 @@ func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
 		AssertNumCategoriesRemainsAtN(app, assert, resp, 1)
 	}
 
-	var TestNumCategoriesRemainsAt1 = func(app TestApp, assert *assert.A, resp *http.Response) {
-		AssertNumCategoriesRemainsAtN(app, assert, resp, 1)
-	}
-
 	for _, permutation := range AllCasingPermutations(categoryName) {
 		fmt.Println(permutation)
 		TestRequest{

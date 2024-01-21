@@ -175,7 +175,7 @@ func TestGetTagFailsNotFound(t *testing.T) {
 	)
 }
 func TestDeleteTagWorks(t *testing.T) {
-	existingAppAssert := CreateSampleTag(t, "Generate", "Science")
+	existingAppAssert := CreateSampleTag(t, "Generate", "Science", nil)
 
 	TestRequest{
 		Method: "DELETE",
@@ -186,8 +186,6 @@ func TestDeleteTagWorks(t *testing.T) {
 			DBTester: AssertNoTags,
 		},
 	)
-
-	existingAppAssert.App.DropDB()
 }
 
 func TestDeleteTagFailsBadRequest(t *testing.T) {
