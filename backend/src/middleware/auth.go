@@ -15,6 +15,7 @@ const (
 )
 
 func Authenticate(c *fiber.Ctx) error {
+	// TODO: use a contains function instead of this
 	if c.Path() == AuthLoginPath || c.Path() == AuthRefreshPath || c.Path() == AuthLogoutPath {
         return c.Next()
     }
