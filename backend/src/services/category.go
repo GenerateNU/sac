@@ -3,16 +3,17 @@ package services
 import (
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
-	"github.com/go-playground/validator/v10"
-
-	"github.com/gofiber/fiber/v2"
+	"github.com/GenerateNU/sac/backend/src/utilities"
+	"github.com/go-playground/validator"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
+
+	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
 
 type CategoryServiceInterface interface {
-	CreateCategory(category models.Category) (*models.Category, error)
+	CreateCategory(categoryBody models.CategoryRequestBody) (*models.Category, error)
 }
 
 type CategoryService struct {
@@ -20,12 +21,17 @@ type CategoryService struct {
 	Validate *validator.Validate
 }
 
-func (c *CategoryService) CreateCategory(category models.Category) (*models.Category, error) {
-	if err := c.Validate.Struct(category); err != nil {
-		return nil, fiber.NewError(fiber.StatusBadRequest, "failed to validate the data")
+func (c *CategoryService) CreateCategory(categoryBody models.CategoryRequestBody) (*models.Category, error) {
+	if err := utilities.ValidateData(categoryBody); err != nil {
+		return nil, fiber.ErrBadRequest
+	}
+
+	category, err := utilities.MapResponseToModel(categoryBody, &models.Category{})
+	if err != nil {
+		return nil, fiber.ErrInternalServerError
 	}
 
 	category.Name = cases.Title(language.English).String(category.Name)
 
-	return transactions.CreateCategory(c.DB, category)
+	return transactions.CreateCategory(c.DB, *category)
 }

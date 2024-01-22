@@ -1,13 +1,21 @@
 package utilities
 
 import (
-	"github.com/gofiber/fiber/v2"
 	"regexp"
 	"strconv"
+
+	"github.com/gofiber/fiber/v2"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/mcnijman/go-emailaddress"
 )
+
+var Validate = validator.New(validator.WithRequiredStructEnabled())
+
+func InitValidators() {
+	Validate.RegisterValidation("neu_email", ValidateEmail)
+	Validate.RegisterValidation("password", ValidatePassword)
+}
 
 func ValidateEmail(fl validator.FieldLevel) bool {
 	email, err := emailaddress.Parse(fl.Field().String())
@@ -32,9 +40,8 @@ func ValidatePassword(fl validator.FieldLevel) bool {
 }
 
 // Validate the data sent to the server if the data is invalid, return an error otherwise, return nil
-func ValidateData(model interface{}) error {
-	validate := validator.New(validator.WithRequiredStructEnabled())
-	if err := validate.Struct(model); err != nil {
+func ValidateData[T any](model T) error {
+	if err := Validate.Struct(model); err != nil {
 		return err
 	}
 

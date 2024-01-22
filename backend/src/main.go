@@ -7,6 +7,7 @@ import (
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/database"
 	"github.com/GenerateNU/sac/backend/src/server"
+	"github.com/GenerateNU/sac/backend/src/utilities"
 )
 
 // @title SAC API
@@ -41,6 +42,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	utilities.InitValidators()
 
 	app := server.Init(db)
 

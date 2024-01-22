@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
+	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -26,9 +27,8 @@ func NewUserController(userService services.UserServiceInterface) *UserControlle
 // @Router		/api/v1/users/  [get]
 func (u *UserController) GetAllUsers(c *fiber.Ctx) error {
 	users, err := u.userService.GetAllUsers()
-
 	if err != nil {
-		return err
+		return utilities.Error(c, fiber.StatusInternalServerError, err.Error())
 	}
 
 	return c.Status(fiber.StatusOK).JSON(users)
@@ -49,18 +49,15 @@ func (u *UserController) GetAllUsers(c *fiber.Ctx) error {
 // @Failure		500   {string} 	  string "failed to hash password"
 // @Router		/api/v1/users/:id  [patch]
 func (u *UserController) UpdateUser(c *fiber.Ctx) error {
-	var user models.UpdateUserRequestBody
+	var user models.UserRequestBody
 
 	if err := c.BodyParser(&user); err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "invalid request body")
+		return utilities.Error(c, fiber.StatusBadRequest, "invalid request body")
 	}
 
-	userID := c.Params("id")
-
-	updatedUser, err := u.userService.UpdateUser(userID, user)
-
+	updatedUser, err := u.userService.UpdateUser(c.Params("id"), user)
 	if err != nil {
-		return err
+		return utilities.Error(c, fiber.StatusInternalServerError, err.Error())
 	}
 
 	// Return the updated user details

@@ -5,7 +5,7 @@ import (
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
 	"github.com/GenerateNU/sac/backend/src/utilities"
-	"github.com/go-playground/validator/v10"
+	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
 
 	"gorm.io/gorm"
@@ -13,8 +13,7 @@ import (
 
 type UserServiceInterface interface {
 	GetAllUsers() ([]models.User, error)
-	GetUser(id string) (*models.User, error)
-	UpdateUser(id string, params types.UserParams) (models.User, error)
+	UpdateUser(id string, userBody models.UserRequestBody) (*models.User, error)
 }
 
 type UserService struct {
@@ -38,30 +37,22 @@ func (u *UserService) GetUser(userID string) (*models.User, error) {
 }
 
 // Updates a user
-func (u *UserService) UpdateUser(id string, params models.UpdateUserRequestBody) (*models.User, error) {
-	idAsUint, err := utilities.ValidateID(id)
-	if err != nil {
-		return nil, err
+func (u *UserService) UpdateUser(id string, userBody models.UserRequestBody) (*models.User, error) {
+	if err := utilities.ValidateData(userBody); err != nil {
+		return nil, fiber.ErrBadRequest
 	}
 
-	validate := validator.New()
-	validate.RegisterValidation("neu_email", utilities.ValidateEmail)
-	validate.RegisterValidation("password", utilities.ValidatePassword)
-	if err := validate.Struct(params); err != nil {
-		return nil, fiber.NewError(fiber.StatusBadRequest, "invalid request body")
+	passwordHash, err := auth.ComputePasswordHash(userBody.Password)
+	if err != nil {
+		return nil, fiber.ErrInternalServerError
 	}
 
-	passwordHash, err := auth.ComputePasswordHash(params.Password)
+	user, err := utilities.MapResponseToModel(userBody, &models.User{})
 	if err != nil {
-		return nil, fiber.NewError(fiber.StatusInternalServerError, "failed to hash password")
-	}
-
-	user, err := utilities.MapResponseToModel(params, &models.User{})
-	if err != nil {
-		return nil, err
+		return nil, fiber.ErrInternalServerError
 	}
 
 	user.PasswordHash = *passwordHash
 
-	return transactions.UpdateUser(u.DB, *idAsUint, *user)
+	return transactions.UpdateUser(u.DB, *user)
 }

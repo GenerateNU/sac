@@ -11,8 +11,9 @@ import (
 
 func CreateTag(db *gorm.DB, tag models.Tag) (*models.Tag, error) {
 	if err := db.Create(&tag).Error; err != nil {
-		return nil, fiber.NewError(fiber.StatusInternalServerError, "failed to create tag")
+		return nil, fiber.ErrInternalServerError
 	}
+	
 	return &tag, nil
 }
 
@@ -21,9 +22,9 @@ func GetTag(db *gorm.DB, id uint) (*models.Tag, error) {
 
 	if err := db.First(&tag, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, fiber.NewError(fiber.StatusNotFound, "failed to find tag")
+			return nil, fiber.ErrNotFound
 		} else {
-			return nil, fiber.NewError(fiber.StatusInternalServerError, "failed to retrieve tag")
+			return nil, fiber.ErrInternalServerError
 		}
 	}
 
@@ -33,9 +34,9 @@ func GetTag(db *gorm.DB, id uint) (*models.Tag, error) {
 func UpdateTag(db *gorm.DB, id uint, tag models.Tag) (*models.Tag, error) {
 	if err := db.Model(&models.Tag{}).Where("id = ?", id).Updates(tag).First(&tag, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, fiber.NewError(fiber.StatusNotFound, "failed to find tag")
+			return nil, fiber.ErrNotFound
 		} else {
-			return nil, fiber.NewError(fiber.StatusInternalServerError, "failed to update tag")
+			return nil, fiber.ErrInternalServerError
 		}
 	}
 
@@ -46,9 +47,9 @@ func UpdateTag(db *gorm.DB, id uint, tag models.Tag) (*models.Tag, error) {
 func DeleteTag(db *gorm.DB, id uint) error {
 	if result := db.Delete(&models.Tag{}, id); result.RowsAffected == 0 {
 		if result.Error != nil {
-			return fiber.NewError(fiber.StatusInternalServerError, "failed to delete tag")
+			return fiber.ErrInternalServerError
 		} else {
-			return fiber.NewError(fiber.StatusNotFound, "failed to find tag")
+			return fiber.ErrNotFound
 		}
 	}
 
