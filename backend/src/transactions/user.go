@@ -1,7 +1,7 @@
 package transactions
 
 import (
-	"errors"
+	// "errors"
 
 	"github.com/GenerateNU/sac/backend/src/models"
 
@@ -57,11 +57,10 @@ func DeleteUser(db *gorm.DB, id string) error {
 
 	result := db.Where("id = ?", id).Delete(&deletedUser)
 	if result.RowsAffected == 0 {
-		err := db.Where("id = ?", id).First(&deletedUser)
-		if errors.Is(err.Error, gorm.ErrRecordNotFound) {
+		if result.Error == nil {
 			return fiber.NewError(fiber.StatusNotFound, "user not found")
 		} else {
-			return fiber.NewError(fiber.StatusInternalServerError, "not connected to database")
+			return fiber.NewError(fiber.StatusInternalServerError, "internal server error")
 		}
 	}
 	return nil

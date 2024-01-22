@@ -251,7 +251,7 @@ func TestDeleteUserWorks(t *testing.T) {
 	req := httptest.NewRequest("DELETE", fmt.Sprintf("%s/api/v1/users/%d", app.Address, user.ID), nil)
 	req.Header.Set("Content-Type", "application/json")
 	resp, _ := app.App.Test(req)
-	assert.Equal(resp.StatusCode, 200)
+	assert.Equal(resp.StatusCode, 204)
 }
 
 func TestDeleteUserNotExist(t *testing.T) {

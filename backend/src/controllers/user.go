@@ -93,7 +93,7 @@ func (u *UserController) UpdateUser(c *fiber.Ctx) error {
 // @ID			delete-user
 // @Tags      	user
 // @Produce		json
-// @Success		200
+// @Success		204   {string}     string "No Content"
 // @Failure     500   {string}     string "failed to get all users"
 // @Router		/api/v1/users/:id  [delete]
 func (u *UserController) DeleteUser(c *fiber.Ctx) error {
@@ -102,5 +102,5 @@ func (u *UserController) DeleteUser(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	return nil
+	return c.SendStatus(fiber.StatusNoContent)
 }
