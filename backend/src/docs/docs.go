@@ -18,29 +18,244 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/category/": {
+            "post": {
+                "description": "Creates a category that is used to group tags",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "category"
+                ],
+                "summary": "Create a category",
+                "operationId": "create-category",
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Category"
+                        }
+                    },
+                    "400": {
+                        "description": "category with that name already exists",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "failed to create category",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/tags/": {
+            "post": {
+                "description": "Creates a tag",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tag"
+                ],
+                "summary": "Creates a tag",
+                "operationId": "create-tag",
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Tag"
+                        }
+                    },
+                    "400": {
+                        "description": "failed to validate the data",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "failed to create tag",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/tags/{id}": {
+            "get": {
+                "description": "Returns a tag",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tag"
+                ],
+                "summary": "Gets a tag",
+                "operationId": "get-tag",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Tag ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Tag"
+                        }
+                    },
+                    "400": {
+                        "description": "failed to validate id",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "faied to find tag",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "failed to retrieve tag",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes a tag",
+                "tags": [
+                    "tag"
+                ],
+                "summary": "Deletes a tag",
+                "operationId": "delete-tag",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Tag ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "failed to validate id",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "failed to find tag",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "failed to delete tag",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Updates a tag",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tag"
+                ],
+                "summary": "Updates a tag",
+                "operationId": "update-tag",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Tag ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Tag"
+                        }
+                    },
+                    "400": {
+                        "description": "failed to validate the data",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "failed to find tag",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "failed to update tag",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/users/": {
             "get": {
-                "description": "Returns all users",
+                "description": "Returns specific user",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "user"
                 ],
-                "summary": "Gets all users",
-                "operationId": "get-all-users",
+                "summary": "Gets specific user",
+                "operationId": "get-user",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.User"
-                            }
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "failed to validate id",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "failed to find user",
+                        "schema": {
+                            "type": "string"
                         }
                     },
                     "500": {
-                        "description": "Failed to fetch users",
+                        "description": "Internal Server Error",
                         "schema": {
                             "type": "string"
                         }
@@ -50,117 +265,23 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.Club": {
+        "models.Category": {
             "type": "object",
             "required": [
-                "application_link",
-                "club_members",
-                "contacts",
-                "description",
-                "is_recruiting",
-                "name",
-                "num_members",
-                "point_of_contacts",
-                "preview",
-                "recruitment_cycle",
-                "recruitment_type"
+                "category_name"
             ],
             "properties": {
-                "application_link": {
-                    "type": "string"
-                },
-                "club_followers": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.User"
-                    }
-                },
-                "club_intended_applicants": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.User"
-                    }
-                },
-                "club_members": {
-                    "description": "User",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.User"
-                    }
-                },
-                "comments": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Comment"
-                    }
-                },
-                "contacts": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Contact"
-                    }
+                "category_name": {
+                    "type": "string",
+                    "maxLength": 255
                 },
                 "created_at": {
                     "type": "string",
                     "example": "2023-09-20T16:34:50Z"
                 },
-                "description": {
-                    "description": "MongoDB URI",
-                    "type": "string"
-                },
-                "events": {
-                    "description": "Event",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Event"
-                    }
-                },
                 "id": {
                     "type": "integer",
                     "example": 1
-                },
-                "is_recruiting": {
-                    "type": "boolean"
-                },
-                "logo": {
-                    "description": "S3 URI",
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "notifications": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Notification"
-                    }
-                },
-                "num_members": {
-                    "type": "integer"
-                },
-                "parent_club": {
-                    "type": "integer"
-                },
-                "point_of_contacts": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.PointOfContact"
-                    }
-                },
-                "preview": {
-                    "type": "string"
-                },
-                "recruitment_cycle": {
-                    "$ref": "#/definitions/models.RecruitmentCycle"
-                },
-                "recruitment_type": {
-                    "$ref": "#/definitions/models.RecruitmentType"
-                },
-                "tags": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Tag"
-                    }
                 },
                 "updated_at": {
                     "type": "string",
@@ -204,361 +325,38 @@ const docTemplate = `{
                 "CSSH"
             ]
         },
-        "models.Comment": {
-            "type": "object",
-            "required": [
-                "question"
-            ],
-            "properties": {
-                "answer": {
-                    "type": "string"
-                },
-                "answered_by": {
-                    "$ref": "#/definitions/models.User"
-                },
-                "asked_by": {
-                    "$ref": "#/definitions/models.User"
-                },
-                "asked_by_id": {
-                    "type": "integer"
-                },
-                "club": {
-                    "$ref": "#/definitions/models.Club"
-                },
-                "club_id": {
-                    "type": "integer"
-                },
-                "created_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "num_found_helpful": {
-                    "type": "integer"
-                },
-                "question": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                },
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "models.Contact": {
-            "type": "object",
-            "required": [
-                "content",
-                "type"
-            ],
-            "properties": {
-                "content": {
-                    "description": "media URI",
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "type": {
-                    "$ref": "#/definitions/models.Media"
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                }
-            }
-        },
-        "models.Event": {
-            "type": "object",
-            "required": [
-                "clubs",
-                "content",
-                "end_time",
-                "event_type",
-                "location",
-                "name",
-                "preview",
-                "start_time"
-            ],
-            "properties": {
-                "clubs": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Club"
-                    }
-                },
-                "content": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                },
-                "end_time": {
-                    "type": "string"
-                },
-                "event_type": {
-                    "$ref": "#/definitions/models.EventType"
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "location": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "notifications": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Notification"
-                    }
-                },
-                "preview": {
-                    "type": "string"
-                },
-                "start_time": {
-                    "type": "string"
-                },
-                "tags": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Tag"
-                    }
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                },
-                "user_rsvps": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.User"
-                    }
-                },
-                "user_waitlists": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.User"
-                    }
-                }
-            }
-        },
-        "models.EventType": {
-            "type": "string",
-            "enum": [
-                "open",
-                "membersOnly"
-            ],
-            "x-enum-varnames": [
-                "Open",
-                "MembersOnly"
-            ]
-        },
-        "models.Media": {
-            "type": "string",
-            "enum": [
-                "facebook",
-                "instagram",
-                "twitter",
-                "linkedin",
-                "youtube",
-                "github",
-                "custom"
-            ],
-            "x-enum-varnames": [
-                "Facebook",
-                "Instagram",
-                "Twitter",
-                "LinkedIn",
-                "YouTube",
-                "GitHub",
-                "Custom"
-            ]
-        },
-        "models.Notification": {
-            "type": "object",
-            "required": [
-                "content",
-                "deep_link",
-                "icon",
-                "reference_id",
-                "reference_type",
-                "send_at",
-                "title"
-            ],
-            "properties": {
-                "content": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                },
-                "deep_link": {
-                    "type": "string"
-                },
-                "icon": {
-                    "description": "S3 URI",
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "reference_id": {
-                    "type": "integer"
-                },
-                "reference_type": {
-                    "$ref": "#/definitions/models.NotificationType"
-                },
-                "send_at": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                }
-            }
-        },
-        "models.NotificationType": {
-            "type": "string",
-            "enum": [
-                "event",
-                "club"
-            ],
-            "x-enum-varnames": [
-                "EventNotification",
-                "ClubNotification"
-            ]
-        },
-        "models.PointOfContact": {
-            "type": "object",
-            "required": [
-                "email",
-                "name",
-                "position"
-            ],
-            "properties": {
-                "created_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "name": {
-                    "type": "string"
-                },
-                "photo": {
-                    "description": "S3 URI, fallback to default logo if null",
-                    "type": "string"
-                },
-                "position": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                }
-            }
-        },
-        "models.RecruitmentCycle": {
-            "type": "string",
-            "enum": [
-                "fall",
-                "spring",
-                "fallSpring",
-                "always"
-            ],
-            "x-enum-varnames": [
-                "Fall",
-                "Spring",
-                "FallSpring",
-                "Always"
-            ]
-        },
-        "models.RecruitmentType": {
-            "type": "string",
-            "enum": [
-                "unrestricted",
-                "tryout",
-                "application"
-            ],
-            "x-enum-varnames": [
-                "Unrestricted",
-                "Tryout",
-                "Application"
-            ]
-        },
         "models.Tag": {
             "type": "object",
             "required": [
+                "category_id",
                 "name"
             ],
             "properties": {
                 "category_id": {
-                    "type": "integer"
-                },
-                "clubs": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Club"
-                    }
+                    "type": "integer",
+                    "minimum": 1
                 },
                 "created_at": {
                     "type": "string",
                     "example": "2023-09-20T16:34:50Z"
-                },
-                "events": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Event"
-                    }
                 },
                 "id": {
                     "type": "integer",
                     "example": 1
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255
                 },
                 "updated_at": {
                     "type": "string",
                     "example": "2023-09-20T16:34:50Z"
-                },
-                "users": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.User"
-                    }
                 }
             }
         },
         "models.User": {
             "type": "object",
             "required": [
-                "club_members",
                 "college",
                 "email",
                 "first_name",
@@ -568,86 +366,57 @@ const docTemplate = `{
                 "year"
             ],
             "properties": {
-                "answered": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Comment"
-                    }
-                },
-                "club_followers": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Club"
-                    }
-                },
-                "club_intended_applicants": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Club"
-                    }
-                },
-                "club_members": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Club"
-                    }
-                },
                 "college": {
-                    "$ref": "#/definitions/models.College"
-                },
-                "comments": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Comment"
-                    }
+                    "maxLength": 255,
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.College"
+                        }
+                    ]
                 },
                 "created_at": {
                     "type": "string",
                     "example": "2023-09-20T16:34:50Z"
                 },
                 "email": {
-                    "type": "string"
-                },
-                "event_rsvps": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Event"
-                    }
-                },
-                "event_waitlist": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Event"
-                    }
+                    "type": "string",
+                    "maxLength": 255
                 },
                 "first_name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255
                 },
                 "id": {
                     "type": "integer",
                     "example": 1
                 },
                 "last_name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255
                 },
                 "nuid": {
                     "type": "string"
-                },
-                "tags": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Tag"
-                    }
                 },
                 "updated_at": {
                     "type": "string",
                     "example": "2023-09-20T16:34:50Z"
                 },
                 "user_role": {
-                    "$ref": "#/definitions/models.UserRole"
+                    "maxLength": 255,
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.UserRole"
+                        }
+                    ]
                 },
                 "year": {
-                    "$ref": "#/definitions/models.Year"
+                    "maximum": 6,
+                    "minimum": 1,
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Year"
+                        }
+                    ]
                 }
             }
         },
@@ -690,7 +459,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "127.0.0.1:8080",
-	BasePath:         "/",
+	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "SAC API",
 	Description:      "Backend Server for SAC App",

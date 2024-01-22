@@ -7,16 +7,16 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func SwaggerCommand() *cli.Command {
+func ClearDBCommand() *cli.Command {
 	command := cli.Command{
-		Name:  "swagger",
-		Usage: "Updates the swagger documentation",
+		Name:  "clean",
+		Usage: "Remove databases used for testing",
 		Action: func(c *cli.Context) error {
 			if c.Args().Len() > 0 {
 				return cli.Exit("Invalid arguments", 1)
 			}
 
-			Swagger()
+			ClearDB()
 			return nil
 		},
 	}
@@ -24,16 +24,20 @@ func SwaggerCommand() *cli.Command {
 	return &command
 }
 
-func Swagger() error {
-	cmd := exec.Command("swag", "init")
-	cmd.Dir = BACKEND_DIR
+func ClearDB() error { 
+
+	fmt.Println("Clearing databases")
+
+	cmd := exec.Command("./scripts/clean_old_test_dbs.sh")
+	cmd.Dir = ROOT_DIR
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		fmt.Println(string(out))
-		return cli.Exit("Failed to generate swagger.json", 1)
+		return cli.Exit("Failed to clean old test databases", 1)
 	}
 
-	fmt.Println(string(out))
+	fmt.Println("Databases cleared")
+	
 	return nil
 }

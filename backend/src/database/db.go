@@ -56,7 +56,18 @@ func MigrateDB(settings config.Settings, db *gorm.DB) error {
 		return err
 	}
 
+	// Check if the database already has a super user
+	var superUser models.User
+	if err := db.Where("role = ?", models.Super).First(&superUser).Error; err != nil {
+		if err := createSuperUser(settings, db); err != nil {
+			return err
+		}
+	}
 
+	return nil
+}
+
+func createSuperUser(settings config.Settings, db *gorm.DB) error {
 	tx := db.Begin()
 
 	if err := tx.Error; err != nil {
