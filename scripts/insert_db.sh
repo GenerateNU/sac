@@ -18,6 +18,7 @@ if psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d "$PGDATABASE" -t -c "$CHECK_TA
 else
   echo "Error: Database $PGDATABASE does not exist or has no tables. Running database migration."
   go run ../backend/src/main.go --only-migrate
+fi
 
 # Insert data from data.sql
 if psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d "$PGDATABASE" -a -f "$INSERTSQL" > /dev/null 2>&1; then

@@ -289,22 +289,28 @@ paths:
       - tag
   /api/v1/users/:
     get:
-      description: Returns all users
-      operationId: get-all-users
+      description: Returns specific user
+      operationId: get-user
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/models.User'
-            type: array
-        "500":
-          description: failed to get all users
+            $ref: '#/definitions/models.User'
+        "400":
+          description: failed to validate id
           schema:
             type: string
-      summary: Gets all users
+        "404":
+          description: failed to find user
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Gets specific user
       tags:
       - user
 swagger: "2.0"

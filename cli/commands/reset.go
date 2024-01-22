@@ -30,7 +30,7 @@ func ResetDB() error {
 	DropDB()
 
 	cmd := exec.Command("sleep", "1")
-	cmd.Dir = BACKEND_DIR
+	cmd.Dir = BACKEND_DIR 
 
 	err := cmd.Run()
 	if err != nil {

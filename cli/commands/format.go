@@ -2,9 +2,8 @@ package commands
 
 import (
 	"fmt"
-	"os"
 	"os/exec"
-	"path/filepath"
+	"sync"
 
 	"github.com/urfave/cli/v2"
 )
@@ -12,87 +11,84 @@ import (
 func FormatCommand() *cli.Command {
 	command := cli.Command{
 		Name:  "format",
-		Usage: "Runs formatter",
+		Usage: "Runs formatting tools",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "frontend",
 				Aliases: []string{"f"},
-				Usage:   "Runs frontend formatter",
 				Value:   "",
+				Usage:   "Formats a specific frontend folder",
 			},
 			&cli.BoolFlag{
 				Name:    "backend",
 				Aliases: []string{"b"},
-				Usage:   "Runs backend formatter",
+				Usage:   "Formats the backend",
 			},
 		},
-		Action: Format,
+		Action: func(c *cli.Context) error {
+			if c.Args().Len() > 0 {
+				return cli.Exit("Invalid arguments", 1)
+			}
+
+			if c.String("frontend") == "" && !c.Bool("backend") {
+				return cli.Exit("Must specify frontend or backend", 1)
+			}
+
+			folder := c.String("frontend")
+			runFrontend := folder != ""
+			runBackend := c.Bool("backend")
+
+			Format(folder, runFrontend, runBackend)
+
+			return nil
+		},
 	}
 
 	return &command
 }
 
-func Format(c *cli.Context) error {
-	if c.Args().Len() > 0 {
-		return cli.Exit("Invalid arguments", 1)
+func Format(folder string, runFrontend bool, runBackend bool) error {
+	var wg sync.WaitGroup
+
+	// Start the backend if specified
+	if runBackend {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			BackendFormat()
+		}()
 	}
 
-	currentDir, err := os.Getwd()
-	if err != nil {
-		return cli.Exit("Error getting current directory", 1)
+	// Start the frontend if specified
+	if runFrontend {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			FrontendFormat(folder)
+		}()
 	}
 
-	frontendDir := filepath.Join(currentDir, "frontend/")
-	backendDir := filepath.Join(currentDir, "github.com/GenerateNU/sac/backend/")
-	list, err := os.ReadDir(frontendDir)
-	if err != nil {
-		return cli.Exit("Error reading frontend directory", 1)
-	}
-
-	if !c.IsSet("frontend") && !c.IsSet("backend") {
-		formatBackend(backendDir)
-		for _, f := range list {
-			if f.IsDir() {
-				formatFrontend(frontendDir, f.Name())
-			}
-		}
-	}
-
-	if c.IsSet("frontend") && c.IsSet("backend") {
-		formatFrontend(frontendDir, c.String("frontend"))
-		formatBackend(backendDir)
-	}
-
-	if c.IsSet("frontend") {
-		formatFrontend(frontendDir, c.String("frontend"))
-	}
-	if c.IsSet("backend") {
-		formatBackend(backendDir)
-	}
+	wg.Wait()
 
 	return nil
 }
 
-func formatFrontend(frontendDir string, folder string) {
-	cmd := exec.Command("yarn", "format")
-	cmd.Dir = filepath.Join(frontendDir, folder)
+func BackendFormat() error {
+	fmt.Println("Formatting backend")
+
+	cmd := exec.Command("go", "fmt", "./...")
+	cmd.Dir = BACKEND_DIR
 
 	err := cmd.Run()
 	if err != nil {
-		fmt.Println("Error formatting frontend, run yarn format in frontend folder")
+		return cli.Exit("Failed to format backend", 1)
 	}
 
-	fmt.Println("frontend", cmd.Dir) // remove
+	fmt.Println("Backend formatted")
+	return nil
 }
 
-func formatBackend(backendDir string) {
-	cmd := exec.Command("go", "fmt", "./...")
-	cmd.Dir = filepath.Join(backendDir)
-
-	err := cmd.Run()
-	if err != nil {
-		fmt.Println("Error formatting backend, run go fmt ./... in backend folder")
-	}
-
-	fmt.Println("backend", cmd.Dir) // remove
+func FrontendFormat(folder string) error {
+	fmt.Println("UNIMPLEMENTED")
+	return nil 
 }

@@ -14,10 +14,13 @@ func main() {
 		Usage: "CLI for SAC",
 		Commands: []*cli.Command{
 			commands.SwaggerCommand(),
+			commands.ClearDBCommand(),
 			commands.MigrateCommand(),
 			commands.ResetDBCommand(),
 			commands.DropDBCommand(),
 			commands.TestCommand(), // TODO: frontend tests
+			commands.FormatCommand(), // TODO: frontend format
+			commands.LintCommand(), // TODO: frontend lint
 		},
 	}
 
