@@ -17,7 +17,7 @@ func GetAllUsers(db *gorm.DB) ([]models.User, error) {
 	return users, nil
 }
 
-func UpdateUser(db *gorm.DB, id string, user models.User) (*models.User, error) {
+func UpdateUser(db *gorm.DB, id uint, user models.User) (*models.User, error) {
 	var existingUser models.User
 
 	err := db.First(&existingUser, id).Error

@@ -26,6 +26,11 @@ func (u *UserService) GetAllUsers() ([]models.User, error) {
 
 // Updates a user
 func (u *UserService) UpdateUser(id string, params models.UpdateUserRequestBody) (*models.User, error) {
+	idAsUint, err := utilities.ValidateID(id)
+	if err != nil {
+		return nil, err
+	}
+
 	validate := validator.New()
 	validate.RegisterValidation("neu_email", utilities.ValidateEmail)
 	validate.RegisterValidation("password", utilities.ValidatePassword)
@@ -45,5 +50,5 @@ func (u *UserService) UpdateUser(id string, params models.UpdateUserRequestBody)
 
 	user.PasswordHash = *passwordHash
 
-	return transactions.UpdateUser(u.DB, id, *user)
+	return transactions.UpdateUser(u.DB, *idAsUint, *user)
 }
