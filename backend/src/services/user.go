@@ -27,16 +27,6 @@ func (u *UserService) GetAllUsers() ([]models.User, error) {
 	return transactions.GetAllUsers(u.DB)
 }
 
-// Delete user with a specific id
-func (u *UserService) DeleteUser(id string) error {
-	idAsInt, err := utilities.ValidateID(id)
-	if err != nil {
-		return fiber.ErrInternalServerError
-	}
-
-	return transactions.DeleteUser(u.DB, *idAsInt)
-}
-
 func (u *UserService) GetUser(userID string) (*models.User, error) {
 	idAsUint, err := utilities.ValidateID(userID)
 	if err != nil {
@@ -70,4 +60,14 @@ func (u *UserService) UpdateUser(id string, userBody models.UserRequestBody) (*m
 	user.PasswordHash = *passwordHash
 
 	return transactions.UpdateUser(u.DB, *idAsUint, *user)
+}
+
+// Delete user with a specific id
+func (u *UserService) DeleteUser(id string) error {
+	idAsInt, err := utilities.ValidateID(id)
+	if err != nil {
+		return fiber.ErrInternalServerError
+	}
+
+	return transactions.DeleteUser(u.DB, *idAsInt)
 }
