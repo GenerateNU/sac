@@ -3,12 +3,12 @@ package services
 import (
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
-	"github.com/GenerateNU/sac/backend/src/utilities"
-
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 	"gorm.io/gorm"
+	"github.com/GenerateNU/sac/backend/src/utilities"
+
 )
 
 type CategoryServiceInterface interface {
