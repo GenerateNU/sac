@@ -41,15 +41,17 @@ func (u *UserController) GetAllUsers(c *fiber.Ctx) error {
 // @ID			delete-user
 // @Tags      	user
 // @Produce		json
-// @Success		204   {string}     string "No Content"
+// @Success		204   {string}     string "no content"
 // @Failure     500   {string}     string "failed to get all users"
 // @Router		/api/v1/users/:id  [delete]
 func (u * UserController) DeleteUser(c *fiber.Ctx) error {
 	userID := c.Params("id")
+	
 	err := u.userService.DeleteUser(userID)
 	if err != nil {
-		return err
+		return fiber.ErrInternalServerError
 	}
+
 	return c.SendStatus(fiber.StatusNoContent)
 }
 
