@@ -60,10 +60,23 @@ func DeleteUser(db *gorm.DB, id uint) error {
 	result := db.Where("id = ?", id).Delete(&deletedUser)
 	if result.RowsAffected == 0 {
 		if result.Error == nil {
-			return fiber.NewError(fiber.StatusNotFound, "user not found")
+			return fiber.ErrNotFound
 		} else {
-			return fiber.NewError(fiber.StatusInternalServerError, "internal server error")
+			return fiber.ErrInternalServerError
 		}
 	}
 	return nil
+}
+
+func GetUser(db *gorm.DB, id uint) (*models.User, error) {
+	var user models.User
+
+	if err := db.Omit("password_hash").First(&user, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fiber.ErrNotFound
+		}
+		return nil, fiber.ErrInternalServerError
+	}
+
+	return &user, nil
 }
