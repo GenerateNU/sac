@@ -4,6 +4,7 @@ import (
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
 	"github.com/GenerateNU/sac/backend/src/utilities"
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
@@ -16,7 +17,8 @@ type TagServiceInterface interface {
 }
 
 type TagService struct {
-	DB *gorm.DB
+	DB       *gorm.DB
+	Validate *validator.Validate
 }
 
 func (t *TagService) CreateTag(tagBody models.CreateTagRequestBody) (*models.Tag, error) {
