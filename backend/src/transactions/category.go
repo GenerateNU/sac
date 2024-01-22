@@ -10,7 +10,7 @@ import (
 )
 
 func CreateCategory(db *gorm.DB, category models.Category) (*models.Category, error) {
-	if err := db.Where("name = ?", category.Name).First(models.Category{}).Error; err != nil {
+	if err := db.Where("name = ?", category.Name).First(&models.Category{}).Error; err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, fiber.NewError(fiber.StatusInternalServerError, "failed to create category")
 		}

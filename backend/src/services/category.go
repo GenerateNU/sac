@@ -12,10 +12,10 @@ import (
 )
 
 type CategoryServiceInterface interface {
-	CreateCategory(category models.CreateUpdateCategoryRequestBody) (*models.Category, error)
+	CreateCategory(params models.CreateCategoryRequestBody) (*models.Category, error)
 	GetCategories() (*[]models.Category, error)
 	GetCategory(id string) (*models.Category, error)
-	UpdateCategory(id string, params models.CreateUpdateCategoryRequestBody) (*models.Category, error)
+	UpdateCategory(id string, params models.UpdateCategoryRequestBody) (*models.Category, error)
 	DeleteCategory(id string) error
  }
 
@@ -23,7 +23,7 @@ type CategoryService struct {
 	DB *gorm.DB
 }
 
-func (c *CategoryService) CreateCategory(params models.CreateUpdateCategoryRequestBody) (*models.Category, error) {
+func (c *CategoryService) CreateCategory(params models.CreateCategoryRequestBody) (*models.Category, error) {
 	if err := utilities.ValidateData(params); err != nil {
 		return nil, fiber.NewError(fiber.StatusBadRequest, "failed to validate the data")
 	}
@@ -51,7 +51,7 @@ func (c *CategoryService) GetCategory(id string) (*models.Category, error) {
 	return transactions.GetCategory(c.DB, *uintId)
 }
 
-func (c *CategoryService) UpdateCategory(id string, params models.CreateUpdateCategoryRequestBody) (*models.Category, error) {
+func (c *CategoryService) UpdateCategory(id string, params models.UpdateCategoryRequestBody) (*models.Category, error) {
 	uintId, err := utilities.ValidateID(id)
 	if err != nil {
 		return nil, err
