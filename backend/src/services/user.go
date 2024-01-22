@@ -28,39 +28,22 @@ func (u *UserService) GetAllUsers() ([]models.User, error) {
 	return transactions.GetAllUsers(u.DB)
 }
 
-func createUserFromRequestBody(userBody models.UserRequestBody) (*models.User, error) {
-	validate := validator.New()
+func (u *UserService) CreateUser(userBody models.UserRequestBody) (*models.User, error) {
+	if err := u.Validate.Struct(userBody); err != nil {
+		return nil, fiber.ErrBadRequest
+	}
 
-	validate.RegisterValidation("neu_email", utilities.ValidateEmail)
-	validate.RegisterValidation("password", utilities.ValidatePassword)
-
-	if err := validate.Struct(userBody); err != nil {
-		return nil, fiber.NewError(fiber.StatusBadRequest, err.Error())
+	user, err := utilities.MapResponseToModel(userBody, &models.User{})
+	if err != nil {
+		return nil, fiber.ErrInternalServerError
 	}
 
 	passwordHash, err := auth.ComputePasswordHash(userBody.Password)
-
 	if err != nil {
-		return nil, fiber.NewError(fiber.StatusInternalServerError, err.Error())
+		return nil, fiber.ErrInternalServerError
 	}
 
-	var user models.User
-	user.NUID = userBody.NUID
-	user.FirstName = userBody.FirstName
-	user.LastName = userBody.LastName
-	user.Email = userBody.Email
 	user.PasswordHash = *passwordHash
-	user.College = models.College(userBody.College)
-	user.Year = models.Year(userBody.Year)
-
-	return &user, nil
-}
-
-func (u *UserService) CreateUser(userBody models.UserRequestBody) (*models.User, error) {
-	user, err := createUserFromRequestBody(userBody)
-	if err != nil {
-		return nil, err
-	}
 
 	return transactions.CreateUser(u.DB, user)
 }

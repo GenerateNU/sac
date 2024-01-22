@@ -32,27 +32,8 @@ func GetUser(db *gorm.DB, id uint) (*models.User, error) {
 }
 
 func CreateUser(db *gorm.DB, user *models.User) (*models.User, error) {
-
-	var existing models.User
-
-	if err := db.Where("email = ?", user.Email).First(&existing).Error; err != nil {
-		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, fiber.NewError(fiber.StatusInternalServerError, "failed to create user")
-		}
-	} else {
-		return nil, fiber.NewError(fiber.StatusBadRequest, "user with that email already exists")
-	}
-
-	if err := db.Where("nuid = ?", user.NUID).First(&existing).Error; err != nil {
-		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, fiber.NewError(fiber.StatusInternalServerError, "failed to create user")
-		}
-	} else {
-		return nil, fiber.NewError(fiber.StatusBadRequest, "user with that nuid already exists")
-	}
-
 	if err := db.Create(user).Error; err != nil {
-		return nil, fiber.NewError(fiber.StatusInternalServerError, "failed to create user")
+		return nil, fiber.ErrInternalServerError
 	}
 
 	return user, nil
