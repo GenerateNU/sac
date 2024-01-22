@@ -3,6 +3,8 @@ package transactions
 import (
 	// "errors"
 
+	"errors"
+
 	"github.com/GenerateNU/sac/backend/src/models"
 
 	"github.com/gofiber/fiber/v2"
@@ -52,7 +54,7 @@ func UpdateUser(db *gorm.DB, id uint, user models.User) (*models.User, error) {
 	return &existingUser, nil
 }
 
-func DeleteUser(db *gorm.DB, id string) error {
+func DeleteUser(db *gorm.DB, id uint) error {
 	var deletedUser models.User
 
 	result := db.Where("id = ?", id).Delete(&deletedUser)
