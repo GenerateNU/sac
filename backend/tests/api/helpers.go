@@ -122,6 +122,20 @@ type ExistingAppAssert struct {
 	Assert *assert.A
 }
 
+func (eaa ExistingAppAssert) Close() {
+	db, err := eaa.App.Conn.DB()
+
+	if err != nil {
+		panic(err)
+	}
+
+	err = db.Close()
+
+	if err != nil {
+		panic(err)
+	}
+}
+
 type TestRequest struct {
 	Method  string
 	Path    string

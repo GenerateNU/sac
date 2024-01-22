@@ -40,7 +40,7 @@ Say you want to test hitting the `[APP_ADDRESS]/health` endpoint with a GET requ
 TestRequest{
   Method: "GET",
   Path:   "/health",
- }.TestOnStatus(t, nil, 200)
+ }.TestOnStatus(t, nil, 200).Close()
 ```
 
 ## Testing that a Request Returns a XXX Status Code and Assert Something About the Database
@@ -59,7 +59,7 @@ TestRequest{
    Status:   201,
    DBTester: AssertRespCategorySameAsDBCategory,
   },
- )
+ ).Close()
 ```
 
 ### DBTesters
@@ -114,8 +114,12 @@ TestRequest{
    Status:   201,
    DBTester: AssertRespTagSameAsDBTag,
   },
- )
+ ).Close()
 ```
+
+### Why Close?
+
+This closes the connection to the database. This is important because if you don't close the connection, we will run out of available connections and the tests will fail. **Call this on the last test request of a test**
 
 ## Testing that a Request Returns a XXX Status Code, Assert Something About the Message, and Assert Something About the Database
 
@@ -136,5 +140,5 @@ TestRequest{
    },
    DBTester: AssertNoCategories,
   },
- )
+ ).Close()
 ```

@@ -33,7 +33,7 @@ func TestCommand() *cli.Command {
 			if c.String("frontend") == "" && !c.Bool("backend") {
 				return cli.Exit("Must specify frontend or backend", 1)
 			}
-			
+
 			folder := c.String("frontend")
 			runFrontend := folder != ""
 			runBackend := c.Bool("backend")
