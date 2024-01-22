@@ -39,9 +39,34 @@ func GetUser(db *gorm.DB, id uint) (*models.User, error) {
 	if err := db.Omit("password_hash").First(&user, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, fiber.ErrNotFound
+<<<<<<< HEAD
 		}
 		return nil, fiber.ErrInternalServerError
+=======
+		} else {
+			return nil, fiber.ErrInternalServerError
+		}
+>>>>>>> de0127b (SAC-5 Update User PATCH (#28))
 	}
 
 	return &user, nil
+}
+
+func UpdateUser(db *gorm.DB, id uint, user models.User) (*models.User, error) {
+	var existingUser models.User
+
+	err := db.First(&existingUser, id).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fiber.ErrNotFound
+		} else {
+			return nil, fiber.ErrInternalServerError
+		}
+	}
+
+	if err := db.Model(&existingUser).Updates(&user).Error; err != nil {
+		return nil, fiber.ErrInternalServerError
+	}
+
+	return &existingUser, nil
 }

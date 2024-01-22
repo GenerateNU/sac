@@ -9,6 +9,6 @@ type Category struct {
 	Tag  []Tag  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 }
 
-type CreateCategoryRequestBody struct {
+type CategoryRequestBody struct {
 	Name string `gorm:"type:varchar(255)" json:"category_name" validate:"required,max=255"`
 }

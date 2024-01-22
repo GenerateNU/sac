@@ -1,20 +1,40 @@
 package utilities
 
 import (
+	"regexp"
 	"strconv"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+
+	"github.com/go-playground/validator/v10"
+	"github.com/mcnijman/go-emailaddress"
 )
 
-// Validate the data sent to the server if the data is invalid, return an error otherwise, return nil
-func ValidateData(model interface{}) error {
-	validate := validator.New(validator.WithRequiredStructEnabled())
-	if err := validate.Struct(model); err != nil {
-		return err
+func RegisterCustomValidators(validate *validator.Validate) {
+	validate.RegisterValidation("neu_email", ValidateEmail)
+	validate.RegisterValidation("password", ValidatePassword)
+}
+
+func ValidateEmail(fl validator.FieldLevel) bool {
+	email, err := emailaddress.Parse(fl.Field().String())
+	if err != nil {
+		return false
 	}
 
-	return nil
+	if email.Domain != "northeastern.edu" {
+		return false
+	}
+
+	return true
+}
+
+func ValidatePassword(fl validator.FieldLevel) bool {
+	if len(fl.Field().String()) < 8 {
+		return false
+	}
+	specialCharactersMatch, _ := regexp.MatchString("[@#%&*+]", fl.Field().String())
+	numbersMatch, _ := regexp.MatchString("[0-9]", fl.Field().String())
+	return specialCharactersMatch && numbersMatch
 }
 
 // Validates that an id follows postgres uint format, returns a uint otherwise returns an error

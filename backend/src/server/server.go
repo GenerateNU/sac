@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/GenerateNU/sac/backend/src/controllers"
 	"github.com/GenerateNU/sac/backend/src/services"
+	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/go-playground/validator/v10"
 	"github.com/goccy/go-json"
 
@@ -27,7 +28,7 @@ func Init(db *gorm.DB) *fiber.App {
 
 	validate := validator.New(validator.WithRequiredStructEnabled())
 	// MARK: Custom validator tags can be registered here.
-	// validate.RegisterValidation("my_custom_validator", MyCustomValidatorFunc)
+	utilities.RegisterCustomValidators(validate)
 
 	utilityRoutes(app)
 
@@ -70,6 +71,7 @@ func userRoutes(router fiber.Router, userService services.UserServiceInterface) 
 	users.Get("/", userController.GetAllUsers)
 	users.Delete("/:id", userController.DeleteUser)
 	users.Get("/:id", userController.GetUser)
+	users.Patch("/:id", userController.UpdateUser)
 }
 
 func categoryRoutes(router fiber.Router, categoryService services.CategoryServiceInterface) {
@@ -85,8 +87,8 @@ func tagRoutes(router fiber.Router, tagService services.TagServiceInterface) {
 
 	tags := router.Group("/tags")
 
-	tags.Post("/", tagController.CreateTag)
 	tags.Get("/:id", tagController.GetTag)
+	tags.Post("/", tagController.CreateTag)
 	tags.Patch("/:id", tagController.UpdateTag)
 	tags.Delete("/:id", tagController.DeleteTag)
 }
