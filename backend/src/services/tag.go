@@ -27,7 +27,7 @@ func (t *TagService) CreateTag(tagBody models.CreateTagRequestBody) (*models.Tag
 		CategoryID: tagBody.CategoryID,
 	}
 
-	if err := utilities.ValidateData(tag); err != nil {
+	if err := t.Validate.Struct(tag); err != nil {
 		return nil, fiber.NewError(fiber.StatusBadRequest, "failed to validate the data")
 	}
 
@@ -56,7 +56,7 @@ func (t *TagService) UpdateTag(id string, tagBody models.UpdateTagRequestBody) (
 		CategoryID: tagBody.CategoryID,
 	}
 
-	if err := utilities.ValidateData(tag); err != nil {
+	if err := t.Validate.Struct(tag); err != nil {
 		return nil, fiber.NewError(fiber.StatusBadRequest, "failed to validate the data")
 	}
 

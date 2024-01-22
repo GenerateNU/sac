@@ -3,7 +3,6 @@ package services
 import (
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
-	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/go-playground/validator/v10"
 
 	"github.com/gofiber/fiber/v2"
@@ -22,7 +21,7 @@ type CategoryService struct {
 }
 
 func (c *CategoryService) CreateCategory(category models.Category) (*models.Category, error) {
-	if err := utilities.ValidateData(category); err != nil {
+	if err := c.Validate.Struct(category); err != nil {
 		return nil, fiber.NewError(fiber.StatusBadRequest, "failed to validate the data")
 	}
 
