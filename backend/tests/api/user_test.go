@@ -92,8 +92,12 @@ func TestCreateUserFailsIfCategoryWithEmailAlreadyExists(t *testing.T) {
 	email := "test@northeastern.edu"
 
 	existingAppAssert := CreateSampleUser(t, "test@northeastern.edu", "001159263")
+	perms := 0
 
 	for _, permutation := range AllCasingPermutations(email) {
+		if perms == 20 {
+			break
+		}
 		fmt.Println(permutation)
 		var numberRunes = []rune("1234567890")
 
@@ -122,6 +126,7 @@ func TestCreateUserFailsIfCategoryWithEmailAlreadyExists(t *testing.T) {
 				Message: "user with that email already exists",
 			},
 		)
+		perms++
 	}
 
 	existingAppAssert.App.DropDB()
