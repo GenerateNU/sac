@@ -23,4 +23,3 @@ type CreateCategoryRequestBody struct {
 type UpdateCategoryRequestBody struct {
 	PartialCategory
 }
-}
