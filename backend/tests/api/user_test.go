@@ -144,7 +144,7 @@ func TestDeleteUserNotExist(t *testing.T) {
 			Status:  404,
 			Message: "user not found",
 		},
-	)
+	).Close()
 }
 
 func TestDeleteUserBadRequest(t *testing.T) {
@@ -164,7 +164,7 @@ func TestDeleteUserBadRequest(t *testing.T) {
 				Status:  400,
 				Message: "failed to validate id",
 			},
-		)
+		).Close()
 	}
 }
 
