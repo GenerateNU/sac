@@ -112,3 +112,24 @@ func (u *UserController) UpdateUser(c *fiber.Ctx) error {
 	// Return the updated user details
 	return c.Status(fiber.StatusOK).JSON(updatedUser)
 }
+
+// DeleteUser godoc
+//
+// @Summary		Deletes the given userID
+// @Description	Returns nil
+// @ID			delete-user
+// @Tags      	user
+// @Produce		json
+// @Success		204   {string}     string "no content"
+// @Failure     500   {string}     string "failed to get all users"
+// @Router		/api/v1/users/:id  [delete]
+func (u *UserController) DeleteUser(c *fiber.Ctx) error {
+	userID := c.Params("id")
+
+	err := u.userService.DeleteUser(userID)
+	if err != nil {
+		return fiber.ErrInternalServerError
+	}
+
+	return c.SendStatus(fiber.StatusNoContent)
+}

@@ -234,6 +234,73 @@ func TestUpdateUserFailsOnInvalidId(t *testing.T) {
 	assert.Equal(resp.StatusCode, 404)
 }
 
+func TestDeleteUserWorks(t *testing.T) {
+	app, assert := InitTest(t)
+	user := models.User{
+		Role:         models.Student,
+		NUID:         "12345678",
+		FirstName:    "Bob",
+		LastName:     "Dylan",
+		Email:        "dylan.b@northeastern.edu",
+		PasswordHash: "music",
+		College:      models.CAMD,
+		Year:         models.Second,
+	}
+	err := app.Conn.Create(&user).Error
+	assert.NilError(err)
+
+	req := httptest.NewRequest("DELETE", fmt.Sprintf("%s/api/v1/users/%d", app.Address, user.ID), nil)
+	req.Header.Set("Content-Type", "application/json")
+	resp, _ := app.App.Test(req)
+	assert.Equal(resp.StatusCode, 204)
+}
+
+func TestDeleteUserNotExist(t *testing.T) {
+	TestRequest{
+		Method: "DELETE",
+		Path:   "/api/v1/users/1000",
+	}.TestOnStatusAndMessage(t, nil,
+		MessageWithStatus{
+			Status:  404,
+			Message: "user not found",
+		},
+	).Close()
+}
+
+func TestDeleteUserBadRequest(t *testing.T) {
+	badRequests := []string{
+		"0",
+		"-1",
+		"1.1",
+		"hello",
+		"null",
+	}
+	for _, badRequest := range badRequests {
+		TestRequest{
+			Method: "DELETE",
+			Path:   fmt.Sprintf("/api/v1/users/%s", badRequest),
+		}.TestOnStatusAndMessage(t, nil,
+			MessageWithStatus{
+				Status:  400,
+				Message: "failed to validate id",
+			},
+		).Close()
+	}
+}
+
+func TestDeleteUserDatabaseNotConnected(t *testing.T) {
+	app, assert := InitTest(t)
+
+	db, err := app.Conn.DB()
+	assert.NilError(err)
+	db.Close()
+
+	req := httptest.NewRequest("DELETE", fmt.Sprintf("%s%s", app.Address, "/api/v1/users/1"), nil)
+	resp, err := app.App.Test(req)
+	assert.NilError(err)
+	assert.Equal(resp.StatusCode, 500)
+}
+
 func CreateSampleUser(t *testing.T, email string, nuid string) ExistingAppAssert {
 	return TestRequest{
 		Method: "POST",
@@ -550,7 +617,7 @@ func TestCreateUserFailsOnMissingField(t *testing.T) {
 }
 
 /*
-Dear TLs David, Garret,
+Dear TLs David, Garrett,
 
 I can not for the life of me figure out how to do this test. It has become the bane of me
 I also have not touched nor smelled the notion of "grass" in the last 27 hours
