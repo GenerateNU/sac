@@ -16,15 +16,7 @@ type Tag struct {
 	Event []Event `gorm:"many2many:event_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 }
 
-type PartialTag struct {
+type TagRequestBody struct {
 	Name       string `json:"name" validate:"required,max=255"`
 	CategoryID uint   `json:"category_id" validate:"required,min=1"`
-}
-
-type CreateTagRequestBody struct {
-	PartialTag
-}
-
-type UpdateTagRequestBody struct {
-	PartialTag
 }
