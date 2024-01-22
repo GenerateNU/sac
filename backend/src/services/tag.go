@@ -9,9 +9,9 @@ import (
 )
 
 type TagServiceInterface interface {
-	CreateTag(tagBody models.CreateTagRequestBody) (*models.Tag, error)
+	CreateTag(tagBody models.TagRequestBody) (*models.Tag, error)
 	GetTag(id string) (*models.Tag, error)
-	UpdateTag(id string, tagBody models.UpdateTagRequestBody) (*models.Tag, error)
+	UpdateTag(id string, tagBody models.TagRequestBody) (*models.Tag, error)
 	DeleteTag(id string) error
 }
 
@@ -19,53 +19,50 @@ type TagService struct {
 	DB *gorm.DB
 }
 
-func (t *TagService) CreateTag(tagBody models.CreateTagRequestBody) (*models.Tag, error) {
-	tag := models.Tag{
-		Name:       tagBody.Name,
-		CategoryID: tagBody.CategoryID,
+func (t *TagService) CreateTag(tagBody models.TagRequestBody) (*models.Tag, error) {
+	if err := utilities.ValidateData(tagBody); err != nil {
+		return nil, fiber.ErrBadRequest
 	}
 
-	if err := utilities.ValidateData(tag); err != nil {
-		return nil, fiber.NewError(fiber.StatusBadRequest, "failed to validate the data")
+	tag, err := utilities.MapResponseToModel(tagBody, &models.Tag{})
+	if err != nil {
+		return nil, fiber.ErrInternalServerError
 	}
 
-	return transactions.CreateTag(t.DB, tag)
+	return transactions.CreateTag(t.DB, *tag)
 }
 
 func (t *TagService) GetTag(id string) (*models.Tag, error) {
 	idAsUint, err := utilities.ValidateID(id)
-
 	if err != nil {
-		return nil, err
+		return nil, fiber.ErrBadRequest
 	}
 
 	return transactions.GetTag(t.DB, *idAsUint)
 }
 
-func (t *TagService) UpdateTag(id string, tagBody models.UpdateTagRequestBody) (*models.Tag, error) {
+func (t *TagService) UpdateTag(id string, tagBody models.TagRequestBody) (*models.Tag, error) {
 	idAsUint, err := utilities.ValidateID(id)
-
 	if err != nil {
-		return nil, err
+		return nil, fiber.ErrBadRequest
 	}
 
-	tag := models.Tag{
-		Name:       tagBody.Name,
-		CategoryID: tagBody.CategoryID,
+	if err := utilities.ValidateData(tagBody); err != nil {
+		return nil, fiber.ErrBadRequest
 	}
 
-	if err := utilities.ValidateData(tag); err != nil {
-		return nil, fiber.NewError(fiber.StatusBadRequest, "failed to validate the data")
+	tag, err := utilities.MapResponseToModel(tagBody, &models.Tag{})
+	if err != nil {
+		return nil, fiber.ErrInternalServerError
 	}
 
-	return transactions.UpdateTag(t.DB, *idAsUint, tag)
+	return transactions.UpdateTag(t.DB, *idAsUint, *tag)
 }
 
 func (t *TagService) DeleteTag(id string) error {
 	idAsUint, err := utilities.ValidateID(id)
-
 	if err != nil {
-		return err
+		return fiber.ErrBadRequest
 	}
 
 	return transactions.DeleteTag(t.DB, *idAsUint)
