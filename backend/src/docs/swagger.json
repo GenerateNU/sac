@@ -220,27 +220,36 @@
         },
         "/api/v1/users/": {
             "get": {
-                "description": "Returns all users",
+                "description": "Returns specific user",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "user"
                 ],
-                "summary": "Gets all users",
-                "operationId": "get-all-users",
+                "summary": "Gets specific user",
+                "operationId": "get-user",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.User"
-                            }
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "failed to validate id",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "failed to find user",
+                        "schema": {
+                            "type": "string"
                         }
                     },
                     "500": {
-                        "description": "failed to get all users",
+                        "description": "Internal Server Error",
                         "schema": {
                             "type": "string"
                         }

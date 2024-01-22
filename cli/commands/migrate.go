@@ -25,15 +25,10 @@ func MigrateCommand() *cli.Command {
 }
 
 func Migrate() error {
-	// var wg sync.WaitGroup
-
 	fmt.Println("Migrating database")
 
 	goCmd := exec.Command("go", "run", "main.go", "--only-migrate")
 	goCmd.Dir = BACKEND_DIR
-
-	fmt.Println("Running main.go")
-	fmt.Println("Command:", goCmd.String())
 
 	output, err := goCmd.CombinedOutput()
 	if err != nil {
@@ -42,7 +37,8 @@ func Migrate() error {
 
 	fmt.Println(string(output))
 
-	fmt.Println("Running insert_db.sh")
+	fmt.Println("Inserting data into database")
+
 	scriptCmd := exec.Command("./scripts/insert_db.sh")
 	scriptCmd.Dir = ROOT_DIR
 
@@ -52,7 +48,6 @@ func Migrate() error {
 	}
 
 	fmt.Println(string(output))
-
 	fmt.Println("Done migrating database")
 
 	return nil

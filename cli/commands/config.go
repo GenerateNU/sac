@@ -1,10 +1,11 @@
 package commands
 
 import (
-	"os"
 	"path/filepath"
+
+	"github.com/GenerateNU/sac/cli/utils"
 )
 
-var ROOT_DIR, _ = os.Getwd()
+var ROOT_DIR, _ = utils.GetRootDir()
 var FRONTEND_DIR = filepath.Join(ROOT_DIR, "/frontend")
 var BACKEND_DIR = filepath.Join(ROOT_DIR, "/backend/src")

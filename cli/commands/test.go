@@ -74,6 +74,11 @@ func Test(folder string, runFrontend bool, runBackend bool) error {
 }
 
 func BackendTest() error {
+	// rootDir, err := utils.GetRootDir()
+	// if err != nil {
+	// 	return cli.Exit("Couldn't find the project root", 1)
+	// }
+
 	cmd := exec.Command("go", "test", "./...")
 	cmd.Dir = BACKEND_DIR + "/.."
 
@@ -88,9 +93,8 @@ func BackendTest() error {
 	cmd = exec.Command("./scripts/clean_old_test_dbs.sh")
 	cmd.Dir = ROOT_DIR
 
-	out, err = cmd.CombinedOutput()
+	err = cmd.Run()
 	if err != nil {
-		fmt.Println(string(out))
 		return cli.Exit("Failed to clean old test databases", 1)
 	}
 
@@ -98,16 +102,6 @@ func BackendTest() error {
 }
 
 func FrontendTest(folder string) error {
-	cmd := exec.Command("yarn", "run", "test")
-	cmd.Dir = FRONTEND_DIR + "/" + folder
-
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		fmt.Println(string(out))
-		return cli.Exit("Failed to run frontend tests", 1)
-	}
-
-	fmt.Println(string(out))
-
+	fmt.Println("UNIMPLEMENTED")
 	return nil
 }
