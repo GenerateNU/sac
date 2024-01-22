@@ -69,6 +69,7 @@ func userRoutes(router fiber.Router, userService services.UserServiceInterface) 
 	users := router.Group("/users")
 
 	users.Get("/", userController.GetAllUsers)
+	users.Delete("/:id", userController.DeleteUser)
 	users.Get("/:id", userController.GetUser)
 	users.Patch("/:id", userController.UpdateUser)
 	users.Delete("/:id", userController.DeleteUser)

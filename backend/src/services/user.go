@@ -7,7 +7,6 @@ import (
 	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
-
 	"gorm.io/gorm"
 )
 
@@ -26,6 +25,16 @@ type UserService struct {
 // Gets all users (including soft deleted users) for testing
 func (u *UserService) GetAllUsers() ([]models.User, error) {
 	return transactions.GetAllUsers(u.DB)
+}
+
+// Delete user with a specific id
+func (u *UserService) DeleteUser(id string) error {
+	idAsInt, err := utilities.ValidateID(id)
+	if err != nil {
+		return fiber.ErrInternalServerError
+	}
+
+	return transactions.DeleteUser(u.DB, *idAsInt)
 }
 
 func (u *UserService) GetUser(userID string) (*models.User, error) {
@@ -61,14 +70,4 @@ func (u *UserService) UpdateUser(id string, userBody models.UserRequestBody) (*m
 	user.PasswordHash = *passwordHash
 
 	return transactions.UpdateUser(u.DB, *idAsUint, *user)
-}
-
-// Delete user with a specific id
-func (u *UserService) DeleteUser(id string) error {
-	idAsInt, err := utilities.ValidateID(id)
-	if err != nil {
-		return fiber.ErrInternalServerError
-	}
-
-	return transactions.DeleteUser(u.DB, *idAsInt)
 }

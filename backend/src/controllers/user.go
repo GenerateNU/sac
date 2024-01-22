@@ -98,7 +98,7 @@ func (u *UserController) UpdateUser(c *fiber.Ctx) error {
 // @Router		/api/v1/users/:id  [delete]
 func (u *UserController) DeleteUser(c *fiber.Ctx) error {
 	userID := c.Params("id")
-	
+
 	err := u.userService.DeleteUser(userID)
 	if err != nil {
 		return fiber.ErrInternalServerError

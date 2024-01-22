@@ -257,7 +257,7 @@ func TestDeleteUserWorks(t *testing.T) {
 func TestDeleteUserNotExist(t *testing.T) {
 	TestRequest{
 		Method: "DELETE",
-		Path: "/api/v1/users/1000",
+		Path:   "/api/v1/users/1000",
 	}.TestOnStatusAndMessage(t, nil,
 		MessageWithStatus{
 			Status:  404,
