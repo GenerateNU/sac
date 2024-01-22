@@ -27,14 +27,13 @@ func (u *UserService) GetAllUsers() ([]models.User, error) {
 
 // Delete user with a specific id
 func (u *UserService) DeleteUser(id string) (error) {
-	idAsInt, err := strconv.Atoi(id)
-	if idAsInt < 1 {
-		return fiber.NewError(fiber.StatusBadRequest, "failed to validate id")
-	}
+	idAsInt, err := utilities.ValidateID(id);
+
 	if err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "failed to validate id")
+		return err
 	}
-	return transactions.DeleteUser(u.DB, uint(idAsInt))
+	
+	return transactions.DeleteUser(u.DB, uint(*idAsInt))
 }
 
 func (u *UserService) GetUser(userID string) (*models.User, error) {
