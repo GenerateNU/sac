@@ -29,16 +29,6 @@ func ValidateEmail(fl validator.FieldLevel) bool {
 }
 
 func ValidatePassword(fl validator.FieldLevel) bool {
-	// TODO: we need to think of validation rules
-	return len(fl.Field().String()) >= 6
-}
-
-// Validate the data sent to the server if the data is invalid, return an error otherwise, return nil
-func ValidateData(model interface{}) error {
-	validate := validator.New(validator.WithRequiredStructEnabled())
-	if err := validate.Struct(model); err != nil {
-		return err
-  }
 	if len(fl.Field().String()) < 8 {
 		return false
 	}

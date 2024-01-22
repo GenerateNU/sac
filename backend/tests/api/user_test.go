@@ -1,10 +1,9 @@
 package tests
 
 import (
-	"fmt"
-	"math/rand"
 	"bytes"
 	"fmt"
+	"math/rand"
 
 	"net/http"
 	"net/http/httptest"
@@ -12,8 +11,8 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
-	"github.com/huandu/go-assert"
 	"github.com/goccy/go-json"
+	"github.com/huandu/go-assert"
 )
 
 func TestGetAllUsersWorks(t *testing.T) {
@@ -530,8 +529,7 @@ func TestCreateUserFailsOnMissingField(t *testing.T) {
 	}
 
 	// map from json field name to struct field name
-	fields := map[string]string{"first_name":"FirstName", "last_name":"LastName", "email":"Email", "password":"Password", "college":"College", "year":"Year", "nuid":"NUID"}
-
+	fields := map[string]string{"first_name": "FirstName", "last_name": "LastName", "email": "Email", "password": "Password", "college": "College", "year": "Year", "nuid": "NUID"}
 
 	//loops through each field and removes it from the body then tests that the post fails and returns a 400
 	for structKey, jsonKey := range fields {
@@ -543,7 +541,7 @@ func TestCreateUserFailsOnMissingField(t *testing.T) {
 			}
 		}
 
-		expectedMesage := "Key: 'CreateUserRequestBody." +jsonKey + "' Error:Field validation for '" + jsonKey + "' failed on the 'required' tag" 
+		expectedMesage := "Key: 'CreateUserRequestBody." + jsonKey + "' Error:Field validation for '" + jsonKey + "' failed on the 'required' tag"
 
 		appAssert := CreateInvalidUser(t, updatedBody, expectedMesage)
 		appAssert.App.DropDB()
@@ -552,14 +550,12 @@ func TestCreateUserFailsOnMissingField(t *testing.T) {
 }
 
 /*
-
 Dear TLs David, Garret,
 
 I can not for the life of me figure out how to do this test. It has become the bane of me
 I also have not touched nor smelled the notion of "grass" in the last 27 hours
 Please forgive me. I am but a humble student
 - Olivier
-
 */
 func TestCreateUserFailsOnExtraFields(t *testing.T) {
 	// tests that:

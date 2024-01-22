@@ -13,7 +13,7 @@ import (
 
 type UserServiceInterface interface {
 	GetAllUsers() ([]models.User, error)
-	CreateUser(userBody models.CreateUserRequestBody) (*models.User, error)
+	CreateUser(userBody models.UserRequestBody) (*models.User, error)
 	GetUser(id string) (*models.User, error)
 	UpdateUser(id string, userBody models.UserRequestBody) (*models.User, error)
 }
@@ -28,15 +28,20 @@ func (u *UserService) GetAllUsers() ([]models.User, error) {
 	return transactions.GetAllUsers(u.DB)
 }
 
-// temporary
-func createUserFromRequestBody(userBody models.CreateUserRequestBody) (models.User, error) {
-	// TL DAVID -- some validation still needs to be done but depends on design
-
+func createUserFromRequestBody(userBody models.UserRequestBody) (*models.User, error) {
 	validate := validator.New()
+
 	validate.RegisterValidation("neu_email", utilities.ValidateEmail)
 	validate.RegisterValidation("password", utilities.ValidatePassword)
+
 	if err := validate.Struct(userBody); err != nil {
-		return models.User{}, fiber.NewError(fiber.StatusBadRequest, err.Error())
+		return nil, fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	passwordHash, err := auth.ComputePasswordHash(userBody.Password)
+
+	if err != nil {
+		return nil, fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
 	var user models.User
@@ -44,24 +49,23 @@ func createUserFromRequestBody(userBody models.CreateUserRequestBody) (models.Us
 	user.FirstName = userBody.FirstName
 	user.LastName = userBody.LastName
 	user.Email = userBody.Email
-	// TODO: hash
-	user.PasswordHash = userBody.Password
+	user.PasswordHash = *passwordHash
 	user.College = models.College(userBody.College)
 	user.Year = models.Year(userBody.Year)
 
-	return user, nil
+	return &user, nil
 }
 
-func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models.User, error) {
+func (u *UserService) CreateUser(userBody models.UserRequestBody) (*models.User, error) {
 	user, err := createUserFromRequestBody(userBody)
 	if err != nil {
 		return nil, err
 	}
 
-	return transactions.CreateUser(u.DB, &user)
+	return transactions.CreateUser(u.DB, user)
 }
-  
-  func (u *UserService) GetUser(id string) (*models.User, error) {
+
+func (u *UserService) GetUser(id string) (*models.User, error) {
 	idAsUint, err := utilities.ValidateID(id)
 	if err != nil {
 		return nil, fiber.ErrBadRequest
@@ -70,7 +74,6 @@ func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models
 	return transactions.GetUser(u.DB, *idAsUint)
 }
 
-// Updates a user
 func (u *UserService) UpdateUser(id string, userBody models.UserRequestBody) (*models.User, error) {
 	idAsUint, err := utilities.ValidateID(id)
 	if err != nil {

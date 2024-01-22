@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/GenerateNU/sac/backend/src/models"
-	"errors"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
@@ -33,7 +32,7 @@ func GetUser(db *gorm.DB, id uint) (*models.User, error) {
 }
 
 func CreateUser(db *gorm.DB, user *models.User) (*models.User, error) {
-	
+
 	var existing models.User
 
 	if err := db.Where("email = ?", user.Email).First(&existing).Error; err != nil {
@@ -51,7 +50,7 @@ func CreateUser(db *gorm.DB, user *models.User) (*models.User, error) {
 	} else {
 		return nil, fiber.NewError(fiber.StatusBadRequest, "user with that nuid already exists")
 	}
-	
+
 	if err := db.Create(user).Error; err != nil {
 		return nil, fiber.NewError(fiber.StatusInternalServerError, "failed to create user")
 	}
