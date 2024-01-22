@@ -51,15 +51,12 @@ func (u *UserService) UpdateUser(id string, params models.UpdateUserRequestBody)
 		return nil, fiber.NewError(fiber.StatusInternalServerError, "failed to hash password")
 	}
 
-	user := models.User{
-		NUID:         params.NUID,
-		FirstName:    params.FirstName,
-		LastName:     params.LastName,
-		Email:        params.Email,
-		PasswordHash: *passwordHash,
-		College:      models.College(params.College),
-		Year:         models.Year(params.Year),
+	user, err := utilities.MapResponseToModel(params, &models.User{})
+	if err != nil {
+		return nil, err
 	}
 
-	return transactions.UpdateUser(u.DB, id, user)
+	user.PasswordHash = *passwordHash
+
+	return transactions.UpdateUser(u.DB, id, *user)
 }
