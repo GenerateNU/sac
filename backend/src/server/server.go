@@ -3,7 +3,7 @@ package server
 import (
 	"github.com/GenerateNU/sac/backend/src/controllers"
 	"github.com/GenerateNU/sac/backend/src/services"
-
+	"github.com/go-playground/validator/v10"
 	"github.com/goccy/go-json"
 
 	"github.com/gofiber/fiber/v2"
@@ -25,13 +25,17 @@ import (
 func Init(db *gorm.DB) *fiber.App {
 	app := newFiberApp()
 
+	validate := validator.New(validator.WithRequiredStructEnabled())
+	// MARK: Custom validator tags can be registered here.
+	// validate.RegisterValidation("my_custom_validator", MyCustomValidatorFunc)
+
 	utilityRoutes(app)
 
 	apiv1 := app.Group("/api/v1")
 
-	userRoutes(apiv1, &services.UserService{DB: db})
-	categoryRoutes(apiv1, &services.CategoryService{DB: db})
-	tagRoutes(apiv1, &services.TagService{DB: db})
+	userRoutes(apiv1, &services.UserService{DB: db, Validate: validate})
+	categoryRoutes(apiv1, &services.CategoryService{DB: db, Validate: validate})
+	tagRoutes(apiv1, &services.TagService{DB: db, Validate: validate})
 
 	return app
 }

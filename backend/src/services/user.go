@@ -4,19 +4,20 @@ import (
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
 	"github.com/GenerateNU/sac/backend/src/utilities"
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
-
 	"gorm.io/gorm"
 )
 
 type UserServiceInterface interface {
 	GetAllUsers() ([]models.User, error)
-	DeleteUser(id string) (error)
+	DeleteUser(id string) error
 	GetUser(id string) (*models.User, error)
 }
 
 type UserService struct {
-	DB *gorm.DB
+	DB       *gorm.DB
+	Validate *validator.Validate
 }
 
 func (u *UserService) GetAllUsers() ([]models.User, error) {
@@ -24,8 +25,8 @@ func (u *UserService) GetAllUsers() ([]models.User, error) {
 }
 
 // Delete user with a specific id
-func (u *UserService) DeleteUser(id string) (error) {
-	idAsInt, err := utilities.ValidateID(id);
+func (u *UserService) DeleteUser(id string) error {
+	idAsInt, err := utilities.ValidateID(id)
 	if err != nil {
 		return fiber.ErrInternalServerError
 	}
