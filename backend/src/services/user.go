@@ -28,10 +28,11 @@ func (u *UserService) GetAllUsers() ([]models.User, error) {
 	return transactions.GetAllUsers(u.DB)
 }
 
-func (u *UserService) GetUser(id string) (*models.User, error) {
-	idAsUint, err := utilities.ValidateID(id)
+func (u *UserService) GetUser(userID string) (*models.User, error) {
+	idAsUint, err := utilities.ValidateID(userID)
+
 	if err != nil {
-		return nil, fiber.ErrBadRequest
+		return nil, err
 	}
 
 	return transactions.GetUser(u.DB, *idAsUint)
