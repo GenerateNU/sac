@@ -4,6 +4,7 @@ import (
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
 	"github.com/GenerateNU/sac/backend/src/utilities"
+	"github.com/go-playground/validator/v10"
 
 	"gorm.io/gorm"
 )
@@ -14,7 +15,8 @@ type UserServiceInterface interface {
 }
 
 type UserService struct {
-	DB *gorm.DB
+	DB       *gorm.DB
+	Validate *validator.Validate
 }
 
 func (u *UserService) GetAllUsers() ([]models.User, error) {
