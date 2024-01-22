@@ -19,19 +19,18 @@ import (
 // @BasePath /api/v1
 func main() {
 	onlyMigrate := flag.Bool("only-migrate", false, "Specify if you want to only perform the database migration")
+	configPath := flag.String("config", "../../config", "Specify the path to the config directory")
 
 	flag.Parse()
 
-	config, err := config.GetConfiguration("../../config")
-
+	config, err := config.GetConfiguration(*configPath)
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("Error getting configuration: %s", err.Error()))
 	}
 
 	db, err := database.ConfigureDB(config)
-
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("Error configuring database: %s", err.Error()))
 	}
 
 	if *onlyMigrate {
@@ -39,7 +38,6 @@ func main() {
 	}
 
 	err = database.ConnPooling(db)
-
 	if err != nil {
 		panic(err)
 	}

@@ -38,12 +38,12 @@ const (
 type User struct {
 	types.Model
 
-	Role         UserRole `gorm:"type:varchar(255);" json:"user_role" validate:"required,max=255"`
+	Role         UserRole `gorm:"type:varchar(255);" json:"user_role,omitempty" validate:"required,max=255"`
 	NUID         string   `gorm:"column:nuid;type:varchar(9);unique" json:"nuid" validate:"required,numeric,len=9"`
 	FirstName    string   `gorm:"type:varchar(255)" json:"first_name" validate:"required,max=255"`
 	LastName     string   `gorm:"type:varchar(255)" json:"last_name" validate:"required,max=255"`
 	Email        string   `gorm:"type:varchar(255);unique" json:"email" validate:"required,email,max=255"`
-	PasswordHash string   `gorm:"type:text" json:"-" validate:"required"`
+	PasswordHash string   `gorm:"type:varchar(97)" json:"-" validate:"required,len=97"`
 	College      College  `gorm:"type:varchar(255)" json:"college" validate:"required,max=255"`
 	Year         Year     `gorm:"type:smallint" json:"year" validate:"required,min=1,max=6"`
 
@@ -57,13 +57,12 @@ type User struct {
 	Waitlist          []Event   `gorm:"many2many:user_event_waitlists;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 }
 
-// TODO: Should we change error message for missing required fields?
-type CreateUserRequestBody struct {
-	NUID      string `json:"nuid" validate:"required,number,len=9"`
-	FirstName string `json:"first_name" validate:"required,max=255"`
-	LastName  string `json:"last_name" validate:"required,max=255"`
-	Email     string `json:"email" validate:"required,neu_email"`
-	Password  string `json:"password" validate:"required,password"`
-	College   string `json:"college" validate:"required,oneof=CAMD DMSB KCCS CE BCHS SL CPS CS CSSH"`
-	Year      uint   `json:"year" validate:"required,min=1,max=6"`
+type UserRequestBody struct {
+	NUID        string   `json:"nuid" validate:"required,len=9"`
+	FirstName   string   `json:"first_name" validate:"required,max=255"`
+	LastName    string   `json:"last_name" validate:"required,max=255"`
+	Email       string   `json:"email" validate:"required,email,neu_email,max=255"`
+	Password    string   `json:"password" validate:"required,password"`
+	College     College  `json:"college" validate:"required,oneof=CAMD DMSB KCCS CE BCHS SL CPS CS CSSH"`
+	Year        Year     `json:"year" validate:"required,min=1,max=6"`
 }

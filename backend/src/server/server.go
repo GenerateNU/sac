@@ -3,7 +3,8 @@ package server
 import (
 	"github.com/GenerateNU/sac/backend/src/controllers"
 	"github.com/GenerateNU/sac/backend/src/services"
-
+	"github.com/GenerateNU/sac/backend/src/utilities"
+	"github.com/go-playground/validator/v10"
 	"github.com/goccy/go-json"
 
 	"github.com/gofiber/fiber/v2"
@@ -22,16 +23,20 @@ import (
 // @contact.email	oduneye.d@northeastern.edu and ladley.g@northeastern.edu
 // @host 127.0.0.1:8080
 // @BasePath /
-
 func Init(db *gorm.DB) *fiber.App {
 	app := newFiberApp()
+
+	validate := validator.New(validator.WithRequiredStructEnabled())
+	// MARK: Custom validator tags can be registered here.
+	utilities.RegisterCustomValidators(validate)
 
 	utilityRoutes(app)
 
 	apiv1 := app.Group("/api/v1")
 
-	userRoutes(apiv1, &services.UserService{DB: db})
-	categoryRoutes(apiv1, &services.CategoryService{DB: db})
+	userRoutes(apiv1, &services.UserService{DB: db, Validate: validate})
+	categoryRoutes(apiv1, &services.CategoryService{DB: db, Validate: validate})
+	tagRoutes(apiv1, &services.TagService{DB: db, Validate: validate})
 
 	return app
 }
@@ -65,6 +70,8 @@ func userRoutes(router fiber.Router, userService services.UserServiceInterface) 
 
 	users.Get("/", userController.GetAllUsers)
 	users.Post("/", userController.CreateUser)
+	users.Get("/:id", userController.GetUser)
+	users.Patch("/:id", userController.UpdateUser)
 }
 
 func categoryRoutes(router fiber.Router, categoryService services.CategoryServiceInterface) {
@@ -73,4 +80,15 @@ func categoryRoutes(router fiber.Router, categoryService services.CategoryServic
 	categories := router.Group("/categories")
 
 	categories.Post("/", categoryController.CreateCategory)
+}
+
+func tagRoutes(router fiber.Router, tagService services.TagServiceInterface) {
+	tagController := controllers.NewTagController(tagService)
+
+	tags := router.Group("/tags")
+
+	tags.Get("/:id", tagController.GetTag)
+	tags.Post("/", tagController.CreateTag)
+	tags.Patch("/:id", tagController.UpdateTag)
+	tags.Delete("/:id", tagController.DeleteTag)
 }

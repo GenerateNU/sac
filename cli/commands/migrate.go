@@ -3,12 +3,11 @@ package commands
 import (
 	"fmt"
 	"os/exec"
-	"sync"
 
 	"github.com/urfave/cli/v2"
 )
 
-func MigrateCommand(backendDir string) *cli.Command {
+func MigrateCommand() *cli.Command {
 	command := cli.Command{
 		Name:  "migrate",
 		Usage: "Migrate the database",
@@ -17,7 +16,7 @@ func MigrateCommand(backendDir string) *cli.Command {
 				return cli.Exit("Invalid arguments", 1)
 			}
 
-			Migrate(backendDir)
+			Migrate()
 			return nil
 		},
 	}
@@ -25,35 +24,31 @@ func MigrateCommand(backendDir string) *cli.Command {
 	return &command
 }
 
-func Migrate(backendDir string) error {
-	var wg sync.WaitGroup
+func Migrate() error {
+	fmt.Println("Migrating database")
 
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
+	goCmd := exec.Command("go", "run", "main.go", "--only-migrate")
+	goCmd.Dir = BACKEND_DIR
 
-		cmd := exec.Command("go", "run", "main.go", "--only-migrate")
-		cmd.Dir = backendDir
+	output, err := goCmd.CombinedOutput()
+	if err != nil {
+		fmt.Println("Error running main.go:", err)
+	}
 
-		fmt.Println("Running main.go")
-		err := cmd.Run()
-		if err != nil {
-			fmt.Println("Error running main.go:", err)
-		}
-	}()
+	fmt.Println(string(output))
 
-	cmd := exec.Command("../../scripts/insert_db.sh")
-	cmd.Dir = backendDir
+	fmt.Println("Inserting data into database")
 
-	output, err := cmd.CombinedOutput()
+	scriptCmd := exec.Command("./scripts/insert_db.sh")
+	scriptCmd.Dir = ROOT_DIR
+
+	output, err = scriptCmd.CombinedOutput()
 	if err != nil {
 		return cli.Exit("Error running insert_db.sh", 1)
 	}
 
 	fmt.Println(string(output))
+	fmt.Println("Done migrating database")
 
-	wg.Wait()
-	fmt.Println("Insert_db.sh completed")
-	
 	return nil
 }

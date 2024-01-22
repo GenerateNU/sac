@@ -1,6 +1,8 @@
 package transactions
 
 import (
+	"errors"
+
 	"github.com/GenerateNU/sac/backend/src/models"
 	"errors"
 	"github.com/gofiber/fiber/v2"
@@ -10,8 +12,8 @@ import (
 func GetAllUsers(db *gorm.DB) ([]models.User, error) {
 	var users []models.User
 
-	if err := db.Unscoped().Omit("password_hash").Find(&users).Error; err != nil {
-		return nil, fiber.NewError(fiber.StatusInternalServerError, "failed to get all users")
+	if err := db.Omit("password_hash").Find(&users).Error; err != nil {
+		return nil, fiber.ErrInternalServerError
 	}
 
 	return users, nil
@@ -19,12 +21,12 @@ func GetAllUsers(db *gorm.DB) ([]models.User, error) {
 
 func GetUser(db *gorm.DB, id uint) (*models.User, error) {
 	var user models.User
-	if err := db.First(&user, id).Error; err != nil {
+	if err := db.Omit("password_hash").First(&user, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, fiber.NewError(fiber.StatusNotFound, err.Error())
+			return nil, fiber.ErrNotFound
+		} else {
+			return nil, fiber.ErrInternalServerError
 		}
-
-		return nil, fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
 	return &user, nil
@@ -55,4 +57,23 @@ func CreateUser(db *gorm.DB, user *models.User) (*models.User, error) {
 	}
 
 	return user, nil
+}
+
+func UpdateUser(db *gorm.DB, id uint, user models.User) (*models.User, error) {
+	var existingUser models.User
+
+	err := db.First(&existingUser, id).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fiber.ErrNotFound
+		} else {
+			return nil, fiber.ErrInternalServerError
+		}
+	}
+
+	if err := db.Model(&existingUser).Updates(&user).Error; err != nil {
+		return nil, fiber.ErrInternalServerError
+	}
+
+	return &existingUser, nil
 }
