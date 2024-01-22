@@ -1,8 +1,6 @@
 package transactions
 
 import (
-	// "errors"
-
 	"errors"
 
 	"github.com/GenerateNU/sac/backend/src/models"
@@ -66,17 +64,4 @@ func DeleteUser(db *gorm.DB, id uint) error {
 		}
 	}
 	return nil
-}
-
-func GetUser(db *gorm.DB, id uint) (*models.User, error) {
-	var user models.User
-
-	if err := db.Omit("password_hash").First(&user, id).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, fiber.ErrNotFound
-		}
-		return nil, fiber.ErrInternalServerError
-	}
-
-	return &user, nil
 }
