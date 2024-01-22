@@ -8,8 +8,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-
-func TestCommand(backendDir string, frontendDir string) *cli.Command {
+func TestCommand() *cli.Command {
 	command := cli.Command{
 		Name:  "test",
 		Usage: "Runs tests",
@@ -35,13 +34,11 @@ func TestCommand(backendDir string, frontendDir string) *cli.Command {
 				return cli.Exit("Must specify frontend or backend", 1)
 			}
 
-			fmt.Println("Frontend", c.String("frontend"))
-			
 			folder := c.String("frontend")
 			runFrontend := folder != ""
 			runBackend := c.Bool("backend")
 
-			Test(backendDir, frontendDir, folder, runFrontend, runBackend)
+			Test(folder, runFrontend, runBackend)
 
 			return nil
 		},
@@ -50,8 +47,7 @@ func TestCommand(backendDir string, frontendDir string) *cli.Command {
 	return &command
 }
 
-
-func Test(backendDir string, frontendDir string, folder string, runFrontend bool, runBackend bool) error {
+func Test(folder string, runFrontend bool, runBackend bool) error {
 	var wg sync.WaitGroup
 
 	// Start the backend if specified
@@ -59,7 +55,7 @@ func Test(backendDir string, frontendDir string, folder string, runFrontend bool
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			BackendTest(backendDir)
+			BackendTest()
 		}()
 	}
 
@@ -68,7 +64,7 @@ func Test(backendDir string, frontendDir string, folder string, runFrontend bool
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			FrontendTest(frontendDir, folder)
+			FrontendTest(folder)
 		}()
 	}
 
@@ -77,9 +73,9 @@ func Test(backendDir string, frontendDir string, folder string, runFrontend bool
 	return nil
 }
 
-func BackendTest(backendDir string) error {
+func BackendTest() error {
 	cmd := exec.Command("go", "test", "./...")
-	cmd.Dir = backendDir + "/.."
+	cmd.Dir = BACKEND_DIR + "/.."
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {
@@ -89,12 +85,21 @@ func BackendTest(backendDir string) error {
 
 	fmt.Println(string(out))
 
+	cmd = exec.Command("./scripts/clean_old_test_dbs.sh")
+	cmd.Dir = ROOT_DIR
+
+	out, err = cmd.CombinedOutput()
+	if err != nil {
+		fmt.Println(string(out))
+		return cli.Exit("Failed to clean old test databases", 1)
+	}
+
 	return nil
 }
 
-func FrontendTest(frontendDir string, folder string) error {
+func FrontendTest(folder string) error {
 	cmd := exec.Command("yarn", "run", "test")
-	cmd.Dir = frontendDir
+	cmd.Dir = FRONTEND_DIR + "/" + folder
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {
@@ -106,4 +111,3 @@ func FrontendTest(frontendDir string, folder string) error {
 
 	return nil
 }
-

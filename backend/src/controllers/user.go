@@ -52,3 +52,24 @@ func (u * UserController) DeleteUser(c *fiber.Ctx) error {
 	}
 	return c.SendStatus(fiber.StatusNoContent)
 }
+
+// GetUser godoc
+//
+// @Summary		Gets specific user
+// @Description	Returns specific user
+// @ID			get-user
+// @Tags      	user
+// @Produce		json
+// @Success		200	  {object}	  models.User
+// @Failure     400   {string}    string "failed to validate id"
+// @Failure     404   {string}    string "failed to find user"
+// @Failure     500   {string}    string
+// @Router		/api/v1/users/  [get]
+func (u *UserController) GetUser(c *fiber.Ctx) error {
+	user, err := u.userService.GetUser(c.Params("id"))
+	if err != nil {
+		return err
+	}
+
+	return c.Status(fiber.StatusOK).JSON(user)
+}

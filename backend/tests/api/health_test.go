@@ -10,5 +10,5 @@ func TestHealthWorks(t *testing.T) {
 		Path:   "/health",
 	}.TestOnStatus(t, nil,
 		200,
-	)
+	).Close()
 }

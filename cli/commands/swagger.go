@@ -7,7 +7,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func SwaggerCommand(backendDir string) *cli.Command {
+func SwaggerCommand() *cli.Command {
 	command := cli.Command{
 		Name:  "swagger",
 		Usage: "Updates the swagger documentation",
@@ -16,7 +16,7 @@ func SwaggerCommand(backendDir string) *cli.Command {
 				return cli.Exit("Invalid arguments", 1)
 			}
 
-			Swagger(backendDir)
+			Swagger()
 			return nil
 		},
 	}
@@ -24,10 +24,9 @@ func SwaggerCommand(backendDir string) *cli.Command {
 	return &command
 }
 
-
-func Swagger(backendDir string) error {
+func Swagger() error {
 	cmd := exec.Command("swag", "init")
-	cmd.Dir = backendDir 
+	cmd.Dir = BACKEND_DIR
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {

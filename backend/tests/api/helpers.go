@@ -78,14 +78,15 @@ func generateRandomInt(max int64) int64 {
 }
 
 func generateRandomDBName() string {
+	prefix := "sac_test_"
 	letterBytes := "abcdefghijklmnopqrstuvwxyz"
-	length := 36
+	length := len(prefix) + 36
 	result := make([]byte, length)
 	for i := 0; i < length; i++ {
 		result[i] = letterBytes[generateRandomInt(int64(len(letterBytes)))]
 	}
 
-	return string(result)
+	return fmt.Sprintf("%s%s", prefix, string(result))
 }
 
 func configureDatabase(config config.Settings) (*gorm.DB, error) {
@@ -116,27 +117,23 @@ func configureDatabase(config config.Settings) (*gorm.DB, error) {
 	return dbWithDB, nil
 }
 
-func (app TestApp) DropDB() {
-	db, err := app.Conn.DB()
-
-	if err != nil {
-		panic(err)
-	}
-
-	db.Close()
-
-	app.Conn, err = gorm.Open(gormPostgres.Open(app.Settings.Database.WithoutDb()), &gorm.Config{SkipDefaultTransaction: true})
-
-	if err != nil {
-		panic(err)
-	}
-
-	app.Conn.Exec(fmt.Sprintf("DROP DATABASE %s;", app.Settings.Database.DatabaseName))
-}
-
 type ExistingAppAssert struct {
 	App    TestApp
 	Assert *assert.A
+}
+
+func (eaa ExistingAppAssert) Close() {
+	db, err := eaa.App.Conn.DB()
+
+	if err != nil {
+		panic(err)
+	}
+
+	err = db.Close()
+
+	if err != nil {
+		panic(err)
+	}
 }
 
 type TestRequest struct {
@@ -169,10 +166,18 @@ func (request TestRequest) Test(t *testing.T, existingAppAssert *ExistingAppAsse
 
 		req = httptest.NewRequest(request.Method, address, bytes.NewBuffer(bodyBytes))
 
-		if request.Headers != nil {
-			for key, value := range *request.Headers {
-				req.Header.Set(key, value)
-			}
+		if request.Headers == nil {
+			request.Headers = &map[string]string{}
+		}
+
+		if _, ok := (*request.Headers)["Content-Type"]; !ok {
+			(*request.Headers)["Content-Type"] = "application/json"
+		}
+	}
+
+	if request.Headers != nil {
+		for key, value := range *request.Headers {
+			req.Header.Add(key, value)
 		}
 	}
 
@@ -188,24 +193,12 @@ func (request TestRequest) Test(t *testing.T, existingAppAssert *ExistingAppAsse
 
 func (request TestRequest) TestOnStatus(t *testing.T, existingAppAssert *ExistingAppAssert, status int) ExistingAppAssert {
 	appAssert, resp := request.Test(t, existingAppAssert)
-	app, assert := appAssert.App, appAssert.Assert
-	if existingAppAssert != nil {
-		defer app.DropDB()
-	}
+
+	_, assert := appAssert.App, appAssert.Assert
 
 	assert.Equal(status, resp.StatusCode)
 
 	return appAssert
-}
-
-func (request TestRequest) TestWithJSONBody(t *testing.T, existingAppAssert *ExistingAppAssert) (ExistingAppAssert, *http.Response) {
-	if request.Headers == nil {
-		request.Headers = &map[string]string{"Content-Type": "application/json"}
-	} else if _, ok := (*request.Headers)["Content-Type"]; !ok {
-		(*request.Headers)["Content-Type"] = "application/json"
-	}
-
-	return request.Test(t, existingAppAssert)
 }
 
 type MessageWithStatus struct {
@@ -214,13 +207,7 @@ type MessageWithStatus struct {
 }
 
 func (request TestRequest) TestOnStatusAndMessage(t *testing.T, existingAppAssert *ExistingAppAssert, messagedStatus MessageWithStatus) ExistingAppAssert {
-	appAssert := request.TestOnStatusAndMessageKeepDB(t, existingAppAssert, messagedStatus)
-	appAssert.App.DropDB()
-	return appAssert
-}
-
-func (request TestRequest) TestOnStatusAndMessageKeepDB(t *testing.T, existingAppAssert *ExistingAppAssert, messagedStatus MessageWithStatus) ExistingAppAssert {
-	appAssert, resp := request.TestWithJSONBody(t, existingAppAssert)
+	appAssert, resp := request.Test(t, existingAppAssert)
 	assert := appAssert.Assert
 
 	defer resp.Body.Close()
@@ -238,6 +225,17 @@ func (request TestRequest) TestOnStatusAndMessageKeepDB(t *testing.T, existingAp
 	return appAssert
 }
 
+type StatusMessageDBTester struct {
+	MessageWithStatus MessageWithStatus
+	DBTester          DBTester
+}
+
+func (request TestRequest) TestOnStatusMessageAndDB(t *testing.T, existingAppAssert *ExistingAppAssert, statusMessageDBTester StatusMessageDBTester) ExistingAppAssert {
+	appAssert := request.TestOnStatusAndMessage(t, existingAppAssert, statusMessageDBTester.MessageWithStatus)
+	statusMessageDBTester.DBTester(appAssert.App, appAssert.Assert, nil)
+	return appAssert
+}
+
 type DBTester func(app TestApp, assert *assert.A, resp *http.Response)
 
 type DBTesterWithStatus struct {
@@ -246,15 +244,8 @@ type DBTesterWithStatus struct {
 }
 
 func (request TestRequest) TestOnStatusAndDB(t *testing.T, existingAppAssert *ExistingAppAssert, dbTesterStatus DBTesterWithStatus) ExistingAppAssert {
-	appAssert := request.TestOnStatusAndDBKeepDB(t, existingAppAssert, dbTesterStatus)
-	appAssert.App.DropDB()
-	return appAssert
-}
-
-func (request TestRequest) TestOnStatusAndDBKeepDB(t *testing.T, existingAppAssert *ExistingAppAssert, dbTesterStatus DBTesterWithStatus) ExistingAppAssert {
-	appAssert, resp := request.TestWithJSONBody(t, existingAppAssert)
+	appAssert, resp := request.Test(t, existingAppAssert)
 	app, assert := appAssert.App, appAssert.Assert
-	defer resp.Body.Close()
 
 	assert.Equal(dbTesterStatus.Status, resp.StatusCode)
 
