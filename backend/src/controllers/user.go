@@ -44,6 +44,7 @@ func (u *UserController) GetAllUsers(c *fiber.Ctx) error {
 // @Success		200	  {object}	  models.User
 // @Failure     404   {string}    string "user not found"
 // @Failure 	400   {string}    string "invalid request body"
+// @Failure		400   {string}    string "failed to validate id"
 // @Failure		500   {string}	  string "database error"
 // @Failure		500   {string} 	  string "failed to hash password"
 // @Router		/api/v1/users/:id  [patch]
