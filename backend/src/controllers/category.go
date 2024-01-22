@@ -117,7 +117,7 @@ func (t* CategoryController) DeleteCategory(c *fiber.Ctx) error {
 // @Failure     500   {string}    string "failed to update category"
 // @Router		/api/v1/category/{id}  [patch]
 func (t* CategoryController) UpdateCategory(c *fiber.Ctx) error {
-	var category models.CreateUpdateCategoryRequestBody
+	var category models.UpdateCategoryRequestBody
 
 	if err := c.BodyParser(&category); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "failed to process the request")
