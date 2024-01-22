@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"fmt"
 	"net/http"
 	"testing"
 
