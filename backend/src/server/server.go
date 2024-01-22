@@ -74,6 +74,10 @@ func categoryRoutes(router fiber.Router, categoryService services.CategoryServic
 	categories := router.Group("/categories")
 
 	categories.Post("/", categoryController.CreateCategory)
+	categories.Get("/", categoryController.GetCategories)
+	categories.Get("/:id", categoryController.GetCategory)
+	categories.Delete("/:id", categoryController.DeleteCategory)
+	categories.Patch("/:id", categoryController.UpdateCategory)
 }
 
 func tagRoutes(router fiber.Router, tagService services.TagServiceInterface) {
