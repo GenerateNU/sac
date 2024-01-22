@@ -1,11 +1,8 @@
 package services
 
 import (
-	"strconv"
-
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
-	"github.com/gofiber/fiber/v2"
 	"github.com/GenerateNU/sac/backend/src/utilities"
 
 	"gorm.io/gorm"
@@ -32,7 +29,7 @@ func (u *UserService) DeleteUser(id string) (error) {
 	if err != nil {
 		return err
 	}
-	
+
 	return transactions.DeleteUser(u.DB, uint(*idAsInt))
 }
 
