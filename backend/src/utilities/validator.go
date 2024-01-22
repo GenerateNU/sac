@@ -10,11 +10,9 @@ import (
 	"github.com/mcnijman/go-emailaddress"
 )
 
-var Validate = validator.New(validator.WithRequiredStructEnabled())
-
-func InitValidators() {
-	Validate.RegisterValidation("neu_email", ValidateEmail)
-	Validate.RegisterValidation("password", ValidatePassword)
+func RegisterCustomValidators(validate *validator.Validate) {
+	validate.RegisterValidation("neu_email", ValidateEmail)
+	validate.RegisterValidation("password", ValidatePassword)
 }
 
 func ValidateEmail(fl validator.FieldLevel) bool {
@@ -37,15 +35,6 @@ func ValidatePassword(fl validator.FieldLevel) bool {
 	specialCharactersMatch, _ := regexp.MatchString("[@#%&*+]", fl.Field().String())
 	numbersMatch, _ := regexp.MatchString("[0-9]", fl.Field().String())
 	return specialCharactersMatch && numbersMatch
-}
-
-// Validate the data sent to the server if the data is invalid, return an error otherwise, return nil
-func ValidateData[T any](model T) error {
-	if err := Validate.Struct(model); err != nil {
-		return err
-	}
-
-	return nil
 }
 
 // Validates that an id follows postgres uint format, returns a uint otherwise returns an error

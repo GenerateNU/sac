@@ -34,6 +34,28 @@ func (u *UserController) GetAllUsers(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(users)
 }
 
+// GetUser godoc
+//
+// @Summary		Gets a user
+// @Description	Returns a user
+// @ID			get-user-by-id
+// @Tags      	user
+// @Produce		json
+// @Param		id	path	string	true	"User ID"
+// @Success		200	  {object}	  models.User
+// @Failure     404   {string}    string "user not found"
+// @Failure		400   {string}    string "failed to validate id"
+// @Failure     500   {string}    string "failed to get user"
+// @Router		/api/v1/users/:id  [get]
+func (u *UserController) GetUser(c *fiber.Ctx) error {
+	user, err := u.userService.GetUser(c.Params("id"))
+	if err != nil {
+		return utilities.Error(c, fiber.StatusInternalServerError, err.Error())
+	}
+
+	return c.Status(fiber.StatusOK).JSON(user)
+}
+
 // UpdateUser godoc
 //
 // @Summary		Updates a user

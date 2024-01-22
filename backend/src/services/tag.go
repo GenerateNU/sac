@@ -22,7 +22,7 @@ type TagService struct {
 }
 
 func (t *TagService) CreateTag(tagBody models.TagRequestBody) (*models.Tag, error) {
-	if err := utilities.ValidateData(tagBody); err != nil {
+	if err := t.Validate.Struct(tagBody); err != nil {
 		return nil, fiber.ErrBadRequest
 	}
 
@@ -49,7 +49,7 @@ func (t *TagService) UpdateTag(id string, tagBody models.TagRequestBody) (*model
 		return nil, fiber.ErrBadRequest
 	}
 
-	if err := utilities.ValidateData(tagBody); err != nil {
+	if err := t.Validate.Struct(tagBody); err != nil {
 		return nil, fiber.ErrBadRequest
 	}
 

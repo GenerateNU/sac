@@ -5,7 +5,7 @@ import (
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
 	"github.com/GenerateNU/sac/backend/src/utilities"
-	"github.com/go-playground/validator"
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 
 	"gorm.io/gorm"
@@ -13,6 +13,7 @@ import (
 
 type UserServiceInterface interface {
 	GetAllUsers() ([]models.User, error)
+	GetUser(id string) (*models.User, error)
 	UpdateUser(id string, userBody models.UserRequestBody) (*models.User, error)
 }
 
@@ -26,11 +27,10 @@ func (u *UserService) GetAllUsers() ([]models.User, error) {
 	return transactions.GetAllUsers(u.DB)
 }
 
-func (u *UserService) GetUser(userID string) (*models.User, error) {
-	idAsUint, err := utilities.ValidateID(userID)
-
+func (u *UserService) GetUser(id string) (*models.User, error) {
+	idAsUint, err := utilities.ValidateID(id)
 	if err != nil {
-		return nil, err
+		return nil, fiber.ErrBadRequest
 	}
 
 	return transactions.GetUser(u.DB, *idAsUint)
@@ -38,7 +38,12 @@ func (u *UserService) GetUser(userID string) (*models.User, error) {
 
 // Updates a user
 func (u *UserService) UpdateUser(id string, userBody models.UserRequestBody) (*models.User, error) {
-	if err := utilities.ValidateData(userBody); err != nil {
+	idAsUint, err := utilities.ValidateID(id)
+	if err != nil {
+		return nil, fiber.ErrBadRequest
+	}
+
+	if err := u.Validate.Struct(userBody); err != nil {
 		return nil, fiber.ErrBadRequest
 	}
 
@@ -54,5 +59,5 @@ func (u *UserService) UpdateUser(id string, userBody models.UserRequestBody) (*m
 
 	user.PasswordHash = *passwordHash
 
-	return transactions.UpdateUser(u.DB, *user)
+	return transactions.UpdateUser(u.DB, *idAsUint, *user)
 }

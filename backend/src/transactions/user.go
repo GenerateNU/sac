@@ -19,10 +19,24 @@ func GetAllUsers(db *gorm.DB) ([]models.User, error) {
 	return users, nil
 }
 
-func UpdateUser(db *gorm.DB, user models.User) (*models.User, error) {
+func GetUser(db *gorm.DB, id uint) (*models.User, error) {
+	var user models.User
+
+	if err := db.Omit("password_hash").First(&user, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fiber.ErrNotFound
+		} else {
+			return nil, fiber.ErrInternalServerError
+		}
+	}
+
+	return &user, nil
+}
+
+func UpdateUser(db *gorm.DB, id uint, user models.User) (*models.User, error) {
 	var existingUser models.User
 
-	err := db.First(&existingUser, user.ID).Error
+	err := db.First(&existingUser, id).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, fiber.ErrNotFound

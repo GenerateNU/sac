@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/GenerateNU/sac/backend/src/controllers"
 	"github.com/GenerateNU/sac/backend/src/services"
+	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/go-playground/validator/v10"
 	"github.com/goccy/go-json"
 
@@ -27,7 +28,7 @@ func Init(db *gorm.DB) *fiber.App {
 
 	validate := validator.New(validator.WithRequiredStructEnabled())
 	// MARK: Custom validator tags can be registered here.
-	// validate.RegisterValidation("my_custom_validator", MyCustomValidatorFunc)
+	utilities.RegisterCustomValidators(validate)
 
 	utilityRoutes(app)
 
