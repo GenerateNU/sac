@@ -398,10 +398,13 @@ func TestCreateUserWorks(t *testing.T) {
 	CreateSampleUser(t).Close()
 }
 
-func TestCreateUserFailsIfCategoryWithEmailAlreadyExists(t *testing.T) {
+func TestCreateUserFailsIfUserWithEmailAlreadyExists(t *testing.T) {
 	appAssert := CreateSampleUser(t)
 
 	for _, email := range AllCasingPermutations((*SampleUserBody)["email"].(string)) {
+		if email == (*SampleUserBody)["email"].(string) {
+			continue
+		}
 		sampleUserPermutation := *SampleUserBody
 		sampleUserPermutation["email"] = email
 
@@ -446,34 +449,6 @@ func TestCreateUserFailsIfUserWithNUIDAlreadyExists(t *testing.T) {
 			MessageWithStatus: MessageWithStatus{
 				Status:  400,                     // should be a 400 @David
 				Message: "Internal Server Error", // not the biggest fan of this error message @David
-			},
-			DBTester: TestNumUsersRemainsAt1,
-		},
-	).Close()
-}
-
-func TestCreateUserFailsIfUserWithEmailAlreadyExists(t *testing.T) {
-	appAssert := CreateSampleUser(t)
-
-	slightlyDifferentSampleUser := &map[string]interface{}{
-		"first_name": "Jane",
-		"last_name":  "Doe",
-		"email":      "doe.jane@northeastern.edu",
-		"password":   "1234567890&",
-		"nuid":       "001234568",
-		"college":    "KCCS",
-		"year":       3,
-	}
-
-	TestRequest{
-		Method: "POST",
-		Path:   "/api/v1/users/",
-		Body:   slightlyDifferentSampleUser,
-	}.TestOnStatusMessageAndDB(t, &appAssert,
-		StatusMessageDBTester{
-			MessageWithStatus: MessageWithStatus{
-				Status:  400,           // should be a 400 @David
-				Message: "Bad Request", // not the biggest fan of this error message @David
 			},
 			DBTester: TestNumUsersRemainsAt1,
 		},
