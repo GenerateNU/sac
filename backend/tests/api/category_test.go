@@ -111,10 +111,7 @@ func TestCreateCategoryFailsIfNameIsMissing(t *testing.T) {
 		Body:   &map[string]interface{}{},
 	}.TestOnStatusMessageAndDB(t, nil,
 		ErrorWithDBTester{
-			Error: errors.Error{
-				StatusCode: 400,
-				Message:    "failed to validate category",
-			},
+			Error:    errors.FailedToValidateCategory,
 			DBTester: AssertNoCategories,
 		},
 	).Close()
