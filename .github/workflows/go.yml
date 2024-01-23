@@ -74,7 +74,7 @@ jobs:
         run: |
           CONTAINER_ID=$(docker ps --filter "publish=5432" --format "{{.ID}}")
           docker exec $CONTAINER_ID bash -c "sed -i 's/^#max_connections = 100/max_connections = 200/' /var/lib/postgresql/data/postgresql.conf"
-          docker exec $CONTAINER_ID bash -c "pg_ctl reload"
+          docker exec --user postgres $CONTAINER_ID bash -c "pg_ctl reload"
       - name: Migrate DB
         run: cd backend/src && go run main.go --only-migrate
       - name: Run Tests with Coverage
