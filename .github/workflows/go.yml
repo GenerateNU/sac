@@ -75,14 +75,17 @@ jobs:
           CONTAINER_ID=$(docker ps --filter "publish=5432" --format "{{.ID}}")
           docker exec $CONTAINER_ID bash -c "sed -i 's/^#* *max_connections *= *[0-9]*/max_connections = 256/' /var/lib/postgresql/data/postgresql.conf"
           docker exec $CONTAINER_ID cat /var/lib/postgresql/data/postgresql.conf | grep max_connections
-          docker exec --user postgres $CONTAINER_ID bash -c "pg_ctl reload"
-      - name: Wait for PostgreSQL to become ready
-        run: until pg_isready -h 127.0.0.1 -p 5432 -U postgres; do sleep 1; done
+      - name: Restart PostgreSQL Container
+        run: |
+          CONTAINER_ID=$(docker ps --filter "publish=5432" --format "{{.ID}}")
+          docker restart $CONTAINER_ID
+      - name: Wait for PostgreSQL to become ready after restart
+        run: |
+          until pg_isready -h localhost -p 5432 -U postgres; do sleep 1; done
       - name: Verify max_connections Setting
         run: |
           # Connect to the PostgreSQL service and query the max_connections setting
           MAX_CONNECTIONS=$(psql -h localhost -p 5432 -U postgres -c "SHOW max_connections;" -tA)
-
           # Output the result
           echo "max_connections is set to: $MAX_CONNECTIONS"
         env:
