@@ -74,9 +74,7 @@ jobs:
           docker exec $CONTAINER_ID bash -c "sed -i 's/^#* *max_connections *= *[0-9]*/max_connections = 256/' /var/lib/postgresql/data/postgresql.conf"
           docker exec $CONTAINER_ID cat /var/lib/postgresql/data/postgresql.conf | grep max_connections
       - name: Restart PostgreSQL Container
-        run: |
-          CONTAINER_ID=$(docker ps --filter "publish=5432" --format "{{.ID}}")
-          docker restart $CONTAINER_ID
+        run: docker restart $(docker ps --filter "publish=5432" --format "{{.ID}}")
       - name: Migrate DB
         run: cd backend/src && go run main.go --only-migrate
       - name: Run Tests with Coverage
