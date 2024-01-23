@@ -12,11 +12,13 @@ import (
 	"github.com/goccy/go-json"
 )
 
-var SampleCategoryBody = &map[string]interface{}{
-	"category_name": "Science",
+func SampleCategoryFactory() *map[string]interface{} {
+	return &map[string]interface{}{
+		"category_name": "Science",
+	}
 }
 
-func AssertCategoryWithIDBodyRespDB(app TestApp, assert *assert.A, resp *http.Response, id uint) {
+func AssertCategoryWithIDBodyRespDB(app TestApp, assert *assert.A, resp *http.Response, id uint, body *map[string]interface{}) {
 	var respCategory models.Category
 
 	err := json.NewDecoder(resp.Body).Decode(&respCategory)
@@ -32,19 +34,19 @@ func AssertCategoryWithIDBodyRespDB(app TestApp, assert *assert.A, resp *http.Re
 	assert.Equal(dbCategory.ID, respCategory.ID)
 	assert.Equal(dbCategory.Name, respCategory.Name)
 
-	assert.Equal((*SampleCategoryBody)["category_name"].(string), dbCategory.Name)
+	assert.Equal((*body)["category_name"].(string), dbCategory.Name)
 
 }
 
 func AssertSampleCategoryBodyRespDB(app TestApp, assert *assert.A, resp *http.Response) {
-	AssertCategoryWithIDBodyRespDB(app, assert, resp, 1)
+	AssertCategoryWithIDBodyRespDB(app, assert, resp, 1, SampleCategoryFactory())
 }
 
 func CreateSampleCategory(t *testing.T) ExistingAppAssert {
 	return TestRequest{
 		Method: fiber.MethodPost,
 		Path:   "/api/v1/categories/",
-		Body:   SampleCategoryBody,
+		Body:   SampleCategoryFactory(),
 	}.TestOnStatusAndDB(t, nil,
 		DBTesterWithStatus{
 			Status:   201,
@@ -129,8 +131,8 @@ func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
 		AssertNumCategoriesRemainsAtN(app, assert, resp, 1)
 	}
 
-	for _, permutation := range AllCasingPermutations((*SampleCategoryBody)["category_name"].(string)) {
-		modifiedSampleCategoryBody := *SampleCategoryBody
+	for _, permutation := range AllCasingPermutations((*SampleCategoryFactory())["category_name"].(string)) {
+		modifiedSampleCategoryBody := *SampleCategoryFactory()
 		modifiedSampleCategoryBody["category_name"] = permutation
 
 		TestRequest{
