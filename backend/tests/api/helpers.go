@@ -4,7 +4,6 @@ import (
 	"bytes"
 	crand "crypto/rand"
 	"fmt"
-	"io"
 	"math/big"
 	"net"
 	"net/http"
@@ -91,7 +90,7 @@ func generateRandomDBName() string {
 
 func configureDatabase(config config.Settings) (*gorm.DB, error) {
 	dsnWithoutDB := config.Database.WithoutDb()
-	dbWithoutDB, err := gorm.Open(gormPostgres.Open(dsnWithoutDB), &gorm.Config{SkipDefaultTransaction: true})
+	dbWithoutDB, err := gorm.Open(gormPostgres.Open(dsnWithoutDB), &gorm.Config{SkipDefaultTransaction: true, TranslateError: true})
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +101,7 @@ func configureDatabase(config config.Settings) (*gorm.DB, error) {
 	}
 
 	dsnWithDB := config.Database.WithDb()
-	dbWithDB, err := gorm.Open(gormPostgres.Open(dsnWithDB), &gorm.Config{SkipDefaultTransaction: true})
+	dbWithDB, err := gorm.Open(gormPostgres.Open(dsnWithDB), &gorm.Config{SkipDefaultTransaction: true, TranslateError: true})
 
 	if err != nil {
 		return nil, err
@@ -210,15 +209,13 @@ func (request TestRequest) TestOnStatusAndMessage(t *testing.T, existingAppAsser
 	appAssert, resp := request.Test(t, existingAppAssert)
 	assert := appAssert.Assert
 
-	defer resp.Body.Close()
+	var respBody map[string]interface{}
 
-	bodyBytes, err := io.ReadAll(resp.Body)
+	err := json.NewDecoder(resp.Body).Decode(&respBody)
 
-	appAssert.Assert.NilError(err)
+	assert.NilError(err)
 
-	msg := string(bodyBytes)
-
-	assert.Equal(messagedStatus.Message, msg)
+	assert.Equal(messagedStatus.Message, respBody["error"].(string))
 
 	assert.Equal(messagedStatus.Status, resp.StatusCode)
 
