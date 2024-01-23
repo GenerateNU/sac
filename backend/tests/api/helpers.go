@@ -13,6 +13,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/database"
+	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/server"
 
 	"github.com/goccy/go-json"
@@ -200,12 +201,7 @@ func (request TestRequest) TestOnStatus(t *testing.T, existingAppAssert *Existin
 	return appAssert
 }
 
-type MessageWithStatus struct {
-	Status  int
-	Message string
-}
-
-func (request TestRequest) TestOnStatusAndMessage(t *testing.T, existingAppAssert *ExistingAppAssert, messagedStatus MessageWithStatus) ExistingAppAssert {
+func (request TestRequest) TestOnError(t *testing.T, existingAppAssert *ExistingAppAssert, expectedError errors.Error) ExistingAppAssert {
 	appAssert, resp := request.Test(t, existingAppAssert)
 	assert := appAssert.Assert
 
@@ -215,21 +211,21 @@ func (request TestRequest) TestOnStatusAndMessage(t *testing.T, existingAppAsser
 
 	assert.NilError(err)
 
-	assert.Equal(messagedStatus.Message, respBody["error"].(string))
+	assert.Equal(expectedError.Message, respBody["error"].(string))
 
-	assert.Equal(messagedStatus.Status, resp.StatusCode)
+	assert.Equal(expectedError.StatusCode, resp.StatusCode)
 
 	return appAssert
 }
 
-type StatusMessageDBTester struct {
-	MessageWithStatus MessageWithStatus
-	DBTester          DBTester
+type ErrorWithDBTester struct {
+	Error    errors.Error
+	DBTester DBTester
 }
 
-func (request TestRequest) TestOnStatusMessageAndDB(t *testing.T, existingAppAssert *ExistingAppAssert, statusMessageDBTester StatusMessageDBTester) ExistingAppAssert {
-	appAssert := request.TestOnStatusAndMessage(t, existingAppAssert, statusMessageDBTester.MessageWithStatus)
-	statusMessageDBTester.DBTester(appAssert.App, appAssert.Assert, nil)
+func (request TestRequest) TestOnStatusMessageAndDB(t *testing.T, existingAppAssert *ExistingAppAssert, errorWithDBTester ErrorWithDBTester) ExistingAppAssert {
+	appAssert := request.TestOnError(t, existingAppAssert, errorWithDBTester.Error)
+	errorWithDBTester.DBTester(appAssert.App, appAssert.Assert, nil)
 	return appAssert
 }
 

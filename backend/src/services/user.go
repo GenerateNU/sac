@@ -10,7 +10,6 @@ import (
 	"github.com/GenerateNU/sac/backend/src/utilities"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
 
@@ -34,17 +33,17 @@ func (u *UserService) GetAllUsers() ([]models.User, *errors.Error) {
 
 func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models.User, *errors.Error) {
 	if err := u.Validate.Struct(userBody); err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidateUser}
+		return nil, &errors.FailedToValidateUser
 	}
 
 	user, err := utilities.MapResponseToModel(userBody, &models.User{})
 	if err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusInternalServerError, Message: errors.FailedToMapResposeToModel}
+		return nil, &errors.FailedToMapResposeToModel
 	}
 
 	passwordHash, err := auth.ComputePasswordHash(userBody.Password)
 	if err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusInternalServerError, Message: errors.InternalServerError}
+		return nil, &errors.FailedToComputePasswordHash
 	}
 
 	user.Email = strings.ToLower(userBody.Email)
@@ -56,7 +55,7 @@ func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models
 func (u *UserService) GetUser(id string) (*models.User, *errors.Error) {
 	idAsUint, err := utilities.ValidateID(id)
 	if err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidateID}
+		return nil, &errors.FailedToValidateID
 	}
 
 	return transactions.GetUser(u.DB, *idAsUint)
@@ -65,21 +64,21 @@ func (u *UserService) GetUser(id string) (*models.User, *errors.Error) {
 func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBody) (*models.User, *errors.Error) {
 	idAsUint, err := utilities.ValidateID(id)
 	if err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidateID}
+		return nil, &errors.FailedToValidateID
 	}
 
 	if err := u.Validate.Struct(userBody); err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidateUser}
+		return nil, &errors.FailedToValidateUser
 	}
 
 	passwordHash, err := auth.ComputePasswordHash(userBody.Password)
 	if err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusInternalServerError, Message: errors.InternalServerError}
+		return nil, &errors.FailedToComputePasswordHash
 	}
 
 	user, err := utilities.MapResponseToModel(userBody, &models.User{})
 	if err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusInternalServerError, Message: errors.FailedToMapResposeToModel}
+		return nil, &errors.FailedToMapResposeToModel
 	}
 
 	user.PasswordHash = *passwordHash
@@ -91,7 +90,7 @@ func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBod
 func (u *UserService) DeleteUser(id string) *errors.Error {
 	idAsInt, err := utilities.ValidateID(id)
 	if err != nil {
-		return &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidateID}
+		return &errors.FailedToValidateID
 	}
 
 	return transactions.DeleteUser(u.DB, *idAsInt)

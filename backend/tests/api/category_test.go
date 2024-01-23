@@ -97,11 +97,8 @@ func TestCreateCategoryFailsIfNameIsNotString(t *testing.T) {
 			"category_name": 1231,
 		},
 	}.TestOnStatusMessageAndDB(t, nil,
-		StatusMessageDBTester{
-			MessageWithStatus: MessageWithStatus{
-				Status:  400,
-				Message: errors.FailedToParseRequestBody,
-			},
+		ErrorWithDBTester{
+			Error:    errors.FailedToParseRequestBody,
 			DBTester: AssertNoCategories,
 		},
 	).Close()
@@ -113,10 +110,10 @@ func TestCreateCategoryFailsIfNameIsMissing(t *testing.T) {
 		Path:   "/api/v1/categories/",
 		Body:   &map[string]interface{}{},
 	}.TestOnStatusMessageAndDB(t, nil,
-		StatusMessageDBTester{
-			MessageWithStatus: MessageWithStatus{
-				Status:  400,
-				Message: "failed to validate category",
+		ErrorWithDBTester{
+			Error: errors.Error{
+				StatusCode: 400,
+				Message:    "failed to validate category",
 			},
 			DBTester: AssertNoCategories,
 		},
@@ -140,11 +137,8 @@ func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
 			Path:   "/api/v1/categories/",
 			Body:   &modifiedSampleCategoryBody,
 		}.TestOnStatusMessageAndDB(t, &existingAppAssert,
-			StatusMessageDBTester{
-				MessageWithStatus: MessageWithStatus{
-					Status:  400,
-					Message: errors.CategoryAlreadyExists,
-				},
+			ErrorWithDBTester{
+				Error:    errors.CategoryAlreadyExists,
 				DBTester: TestNumCategoriesRemainsAt1,
 			},
 		)
