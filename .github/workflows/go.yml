@@ -73,6 +73,7 @@ jobs:
       - name: Increase max_connections in PostgreSQL
         run: |
           PG_CONFIG_FILE=$(psql -h 127.0.0.1 -p 5432 -U postgres -c "SHOW config_file;" -tA)
+          echo "Config file: $PG_CONFIG_FILE"
           sudo sed -i "s/^#max_connections = 100/max_connections = 200/" $PG_CONFIG_FILE
           sudo systemctl reload postgresql
         env:
