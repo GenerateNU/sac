@@ -7,16 +7,15 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/models"
 
-	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
 
 func CreateCategory(db *gorm.DB, category models.Category) (*models.Category, *errors.Error) {
 	if err := db.Create(&category).Error; err != nil {
 		if stdliberrors.Is(err, gorm.ErrDuplicatedKey) {
-			return nil, &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.CategoryAlreadyExists}
+			return nil, &errors.CategoryAlreadyExists
 		} else {
-			return nil, &errors.Error{StatusCode: fiber.StatusInternalServerError, Message: errors.FailedToCreateCategory}
+			return nil, &errors.FailedToCreateCategory
 		}
 	}
 
@@ -28,9 +27,9 @@ func GetCategory(db *gorm.DB, id uint) (*models.Category, *errors.Error) {
 
 	if err := db.First(&category, id).Error; err != nil {
 		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, &errors.Error{StatusCode: fiber.StatusNotFound, Message: errors.CategoryNotFound}
+			return nil, &errors.CategoryNotFound
 		} else {
-			return nil, &errors.Error{StatusCode: fiber.StatusInternalServerError, Message: errors.FailedToGetCategory}
+			return nil, &errors.FailedToGetCategory
 		}
 	}
 

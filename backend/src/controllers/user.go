@@ -51,7 +51,7 @@ func (u *UserController) CreateUser(c *fiber.Ctx) error {
 	var userBody models.CreateUserRequestBody
 
 	if err := c.BodyParser(&userBody); err != nil {
-		return errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToParseRequestBody}.FiberError(c)
+		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
 	user, err := u.userService.CreateUser(userBody)
@@ -102,7 +102,7 @@ func (u *UserController) UpdateUser(c *fiber.Ctx) error {
 	var user models.UpdateUserRequestBody
 
 	if err := c.BodyParser(&user); err != nil {
-		return errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToParseRequestBody}.FiberError(c)
+		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
 	updatedUser, err := u.userService.UpdateUser(c.Params("id"), user)

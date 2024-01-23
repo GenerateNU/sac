@@ -103,12 +103,7 @@ func TestGetUserFailsBadRequest(t *testing.T) {
 		TestRequest{
 			Method: fiber.MethodGet,
 			Path:   fmt.Sprintf("/api/v1/users/%s", badRequest),
-		}.TestOnStatusAndMessage(t, nil,
-			MessageWithStatus{
-				Status:  400,
-				Message: errors.FailedToValidateID,
-			},
-		).Close()
+		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
 	}
 }
 
@@ -119,11 +114,8 @@ func TestGetUserFailsNotExist(t *testing.T) {
 		Method: fiber.MethodGet,
 		Path:   fmt.Sprintf("/api/v1/users/%d", id),
 	}.TestOnStatusMessageAndDB(t, nil,
-		StatusMessageDBTester{
-			MessageWithStatus: MessageWithStatus{
-				Status:  404,
-				Message: errors.UserNotFound,
-			},
+		ErrorWithDBTester{
+			Error: errors.UserNotFound,
 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
 				var user models.User
 
@@ -199,11 +191,8 @@ func TestUpdateUserFailsOnInvalidBody(t *testing.T) {
 			Path:   "/api/v1/users/2",
 			Body:   &invalidData,
 		}.TestOnStatusMessageAndDB(t, &appAssert,
-			StatusMessageDBTester{
-				MessageWithStatus: MessageWithStatus{
-					Status:  400,
-					Message: errors.FailedToValidateUser,
-				},
+			ErrorWithDBTester{
+				Error:    errors.FailedToValidateUser,
 				DBTester: TestNumUsersRemainsAt2,
 			},
 		)
@@ -225,12 +214,7 @@ func TestUpdateUserFailsBadRequest(t *testing.T) {
 			Method: fiber.MethodPatch,
 			Path:   fmt.Sprintf("/api/v1/users/%s", badRequest),
 			Body:   SampleUserFactory(),
-		}.TestOnStatusAndMessage(t, nil,
-			MessageWithStatus{
-				Status:  400,
-				Message: errors.FailedToValidateID,
-			},
-		).Close()
+		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
 	}
 }
 
@@ -242,11 +226,8 @@ func TestUpdateUserFailsOnIdNotExist(t *testing.T) {
 		Path:   fmt.Sprintf("/api/v1/users/%d", id),
 		Body:   SampleUserFactory(),
 	}.TestOnStatusMessageAndDB(t, nil,
-		StatusMessageDBTester{
-			MessageWithStatus: MessageWithStatus{
-				Status:  404,
-				Message: errors.UserNotFound,
-			},
+		ErrorWithDBTester{
+			Error: errors.UserNotFound,
 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
 				var user models.User
 
@@ -279,11 +260,8 @@ func TestDeleteUserNotExist(t *testing.T) {
 		Method: fiber.MethodDelete,
 		Path:   fmt.Sprintf("/api/v1/users/%d", id),
 	}.TestOnStatusMessageAndDB(t, nil,
-		StatusMessageDBTester{
-			MessageWithStatus: MessageWithStatus{
-				Status:  404,
-				Message: errors.UserNotFound,
-			},
+		ErrorWithDBTester{
+			Error: errors.UserNotFound,
 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
 				var user models.User
 
@@ -308,12 +286,7 @@ func TestDeleteUserBadRequest(t *testing.T) {
 		TestRequest{
 			Method: fiber.MethodDelete,
 			Path:   fmt.Sprintf("/api/v1/users/%s", badRequest),
-		}.TestOnStatusAndMessage(t, nil,
-			MessageWithStatus{
-				Status:  400,
-				Message: errors.FailedToValidateID,
-			},
-		).Close()
+		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
 	}
 }
 
@@ -411,11 +384,8 @@ func TestCreateUserFailsIfUserWithEmailAlreadyExists(t *testing.T) {
 		Path:   "/api/v1/users/",
 		Body:   SampleUserFactory(),
 	}.TestOnStatusMessageAndDB(t, &appAssert,
-		StatusMessageDBTester{
-			MessageWithStatus: MessageWithStatus{
-				Status:  400,
-				Message: errors.UserAlreadyExists,
-			},
+		ErrorWithDBTester{
+			Error:    errors.UserAlreadyExists,
 			DBTester: TestNumUsersRemainsAt2,
 		},
 	)
@@ -441,11 +411,8 @@ func TestCreateUserFailsIfUserWithNUIDAlreadyExists(t *testing.T) {
 		Path:   "/api/v1/users/",
 		Body:   slightlyDifferentSampleUser,
 	}.TestOnStatusMessageAndDB(t, &appAssert,
-		StatusMessageDBTester{
-			MessageWithStatus: MessageWithStatus{
-				Status:  400,
-				Message: errors.UserAlreadyExists,
-			},
+		ErrorWithDBTester{
+			Error:    errors.UserAlreadyExists,
 			DBTester: TestNumUsersRemainsAt2,
 		},
 	).Close()
@@ -463,11 +430,8 @@ func AssertCreateBadDataFails(t *testing.T, jsonKey string, badValues []interfac
 			Path:   "/api/v1/users/",
 			Body:   &sampleUserPermutation,
 		}.TestOnStatusMessageAndDB(t, &appAssert,
-			StatusMessageDBTester{
-				MessageWithStatus: MessageWithStatus{
-					Status:  400,
-					Message: errors.FailedToValidateUser,
-				},
+			ErrorWithDBTester{
+				Error:    errors.FailedToValidateUser,
 				DBTester: TestNumUsersRemainsAt2,
 			},
 		)
@@ -556,11 +520,8 @@ func TestCreateUserFailsOnMissingFields(t *testing.T) {
 			Path:   "/api/v1/users/",
 			Body:   &sampleUserPermutation,
 		}.TestOnStatusMessageAndDB(t, &appAssert,
-			StatusMessageDBTester{
-				MessageWithStatus: MessageWithStatus{
-					Status:  400,
-					Message: errors.FailedToValidateUser,
-				},
+			ErrorWithDBTester{
+				Error:    errors.FailedToValidateUser,
 				DBTester: TestNumUsersRemainsAt2,
 			},
 		)

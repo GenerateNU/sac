@@ -33,7 +33,7 @@ func (t *TagController) CreateTag(c *fiber.Ctx) error {
 	var tagBody models.TagRequestBody
 
 	if err := c.BodyParser(&tagBody); err != nil {
-		return errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToParseRequestBody}.FiberError(c)
+		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
 	dbTag, err := t.tagService.CreateTag(tagBody)
@@ -87,7 +87,7 @@ func (t *TagController) UpdateTag(c *fiber.Ctx) error {
 	var tagBody models.TagRequestBody
 
 	if err := c.BodyParser(&tagBody); err != nil {
-		return errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToParseRequestBody}.FiberError(c)
+		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
 	tag, err := t.tagService.UpdateTag(c.Params("id"), tagBody)

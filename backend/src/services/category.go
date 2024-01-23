@@ -11,7 +11,6 @@ import (
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 
-	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
 
@@ -26,12 +25,12 @@ type CategoryService struct {
 
 func (c *CategoryService) CreateCategory(categoryBody models.CategoryRequestBody) (*models.Category, *errors.Error) {
 	if err := c.Validate.Struct(categoryBody); err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidateCategory}
+		return nil, &errors.FailedToValidateCategory
 	}
 
 	category, err := utilities.MapResponseToModel(categoryBody, &models.Category{})
 	if err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusInternalServerError, Message: errors.FailedToMapResposeToModel}
+		return nil, &errors.FailedToMapResposeToModel
 	}
 
 	category.Name = cases.Title(language.English).String(category.Name)

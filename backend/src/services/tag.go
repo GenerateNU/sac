@@ -6,7 +6,6 @@ import (
 	"github.com/GenerateNU/sac/backend/src/transactions"
 	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/go-playground/validator/v10"
-	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
 
@@ -24,12 +23,12 @@ type TagService struct {
 
 func (t *TagService) CreateTag(tagBody models.TagRequestBody) (*models.Tag, *errors.Error) {
 	if err := t.Validate.Struct(tagBody); err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidateTag}
+		return nil, &errors.FailedToValidateTag
 	}
 
 	tag, err := utilities.MapResponseToModel(tagBody, &models.Tag{})
 	if err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusInternalServerError, Message: errors.FailedToValidateTag}
+		return nil, &errors.FailedToMapResposeToModel
 	}
 
 	return transactions.CreateTag(t.DB, *tag)
@@ -38,7 +37,7 @@ func (t *TagService) CreateTag(tagBody models.TagRequestBody) (*models.Tag, *err
 func (t *TagService) GetTag(id string) (*models.Tag, *errors.Error) {
 	idAsUint, err := utilities.ValidateID(id)
 	if err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidateID}
+		return nil, &errors.FailedToValidateID
 	}
 
 	return transactions.GetTag(t.DB, *idAsUint)
@@ -47,16 +46,16 @@ func (t *TagService) GetTag(id string) (*models.Tag, *errors.Error) {
 func (t *TagService) UpdateTag(id string, tagBody models.TagRequestBody) (*models.Tag, *errors.Error) {
 	idAsUint, err := utilities.ValidateID(id)
 	if err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidateID}
+		return nil, &errors.FailedToValidateID
 	}
 
 	if err := t.Validate.Struct(tagBody); err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidateTag}
+		return nil, &errors.FailedToValidateTag
 	}
 
 	tag, err := utilities.MapResponseToModel(tagBody, &models.Tag{})
 	if err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusInternalServerError, Message: errors.FailedToUpdateTag}
+		return nil, &errors.FailedToMapResposeToModel
 	}
 
 	return transactions.UpdateTag(t.DB, *idAsUint, *tag)
@@ -65,7 +64,7 @@ func (t *TagService) UpdateTag(id string, tagBody models.TagRequestBody) (*model
 func (t *TagService) DeleteTag(id string) *errors.Error {
 	idAsUint, err := utilities.ValidateID(id)
 	if err != nil {
-		return &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidateID}
+		return &errors.FailedToValidateID
 	}
 
 	return transactions.DeleteTag(t.DB, *idAsUint)

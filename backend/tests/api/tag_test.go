@@ -92,11 +92,8 @@ func TestCreateTagFailsBadRequest(t *testing.T) {
 			Path:   "/api/v1/tags/",
 			Body:   &badBody,
 		}.TestOnStatusMessageAndDB(t, nil,
-			StatusMessageDBTester{
-				MessageWithStatus: MessageWithStatus{
-					Status:  400,
-					Message: errors.FailedToParseRequestBody,
-				},
+			ErrorWithDBTester{
+				Error:    errors.FailedToParseRequestBody,
 				DBTester: AssertNoTags,
 			},
 		).Close()
@@ -120,11 +117,8 @@ func TestCreateTagFailsValidation(t *testing.T) {
 			Path:   "/api/v1/tags/",
 			Body:   &badBody,
 		}.TestOnStatusMessageAndDB(t, nil,
-			StatusMessageDBTester{
-				MessageWithStatus: MessageWithStatus{
-					Status:  400,
-					Message: errors.FailedToValidateTag,
-				},
+			ErrorWithDBTester{
+				Error:    errors.FailedToValidateTag,
 				DBTester: AssertNoTags,
 			},
 		).Close()
@@ -158,12 +152,7 @@ func TestGetTagFailsBadRequest(t *testing.T) {
 		TestRequest{
 			Method: fiber.MethodGet,
 			Path:   fmt.Sprintf("/api/v1/tags/%s", badRequest),
-		}.TestOnStatusAndMessage(t, nil,
-			MessageWithStatus{
-				Status:  400,
-				Message: "failed to validate id",
-			},
-		).Close()
+		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
 	}
 }
 
@@ -171,12 +160,7 @@ func TestGetTagFailsNotFound(t *testing.T) {
 	TestRequest{
 		Method: fiber.MethodGet,
 		Path:   "/api/v1/tags/1",
-	}.TestOnStatusAndMessage(t, nil,
-		MessageWithStatus{
-			Status:  404,
-			Message: errors.TagNotFound,
-		},
-	).Close()
+	}.TestOnError(t, nil, errors.TagNotFound).Close()
 }
 
 func TestUpdateTagWorksUpdateName(t *testing.T) {
@@ -270,12 +254,7 @@ func TestUpdateTagFailsBadRequest(t *testing.T) {
 			Method: fiber.MethodPatch,
 			Path:   fmt.Sprintf("/api/v1/tags/%s", badRequest),
 			Body:   SampleTagFactory(),
-		}.TestOnStatusAndMessage(t, nil,
-			MessageWithStatus{
-				Status:  400,
-				Message: errors.FailedToValidateID,
-			},
-		).Close()
+		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
 	}
 }
 
@@ -306,12 +285,7 @@ func TestDeleteTagFailsBadRequest(t *testing.T) {
 		TestRequest{
 			Method: fiber.MethodDelete,
 			Path:   fmt.Sprintf("/api/v1/tags/%s", badRequest),
-		}.TestOnStatusAndMessage(t, nil,
-			MessageWithStatus{
-				Status:  400,
-				Message: errors.FailedToValidateID,
-			},
-		).Close()
+		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
 	}
 }
 
@@ -319,10 +293,5 @@ func TestDeleteTagFailsNotFound(t *testing.T) {
 	TestRequest{
 		Method: fiber.MethodDelete,
 		Path:   "/api/v1/tags/1",
-	}.TestOnStatusAndMessage(t, nil,
-		MessageWithStatus{
-			Status:  404,
-			Message: errors.TagNotFound,
-		},
-	).Close()
+	}.TestOnError(t, nil, errors.TagNotFound).Close()
 }
