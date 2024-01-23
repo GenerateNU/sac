@@ -47,15 +47,15 @@ func (u *UserController) GetAllUsers(c *fiber.Ctx) error {
 // @Failure     500   {string}    string "internal server error"
 // @Router		/api/v1/users/  [post]
 func (u *UserController) CreateUser(c *fiber.Ctx) error {
-	var userBody models.UserRequestBody
+	var userBody models.CreateUserRequestBody
 
 	if err := c.BodyParser(&userBody); err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "failed to process the request")
+		return utilities.Error(c, fiber.StatusBadRequest, err.Error())
 	}
 
 	user, err := u.userService.CreateUser(userBody)
 	if err != nil {
-		return err
+		return utilities.Error(c, fiber.StatusInternalServerError, err.Error())
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(user)
@@ -98,7 +98,7 @@ func (u *UserController) GetUser(c *fiber.Ctx) error {
 // @Failure		500   {string} 	  string "failed to hash password"
 // @Router		/api/v1/users/:id  [patch]
 func (u *UserController) UpdateUser(c *fiber.Ctx) error {
-	var user models.UserRequestBody
+	var user models.UpdateUserRequestBody
 
 	if err := c.BodyParser(&user); err != nil {
 		return utilities.Error(c, fiber.StatusBadRequest, "invalid request body")

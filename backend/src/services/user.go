@@ -1,6 +1,8 @@
 package services
 
 import (
+	"strings"
+
 	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
@@ -12,9 +14,9 @@ import (
 
 type UserServiceInterface interface {
 	GetAllUsers() ([]models.User, error)
-	CreateUser(userBody models.UserRequestBody) (*models.User, error)
+	CreateUser(userBody models.CreateUserRequestBody) (*models.User, error)
 	GetUser(id string) (*models.User, error)
-	UpdateUser(id string, userBody models.UserRequestBody) (*models.User, error)
+	UpdateUser(id string, userBody models.UpdateUserRequestBody) (*models.User, error)
 	DeleteUser(id string) error
 }
 
@@ -28,7 +30,7 @@ func (u *UserService) GetAllUsers() ([]models.User, error) {
 	return transactions.GetAllUsers(u.DB)
 }
 
-func (u *UserService) CreateUser(userBody models.UserRequestBody) (*models.User, error) {
+func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models.User, error) {
 	if err := u.Validate.Struct(userBody); err != nil {
 		return nil, fiber.ErrBadRequest
 	}
@@ -43,6 +45,7 @@ func (u *UserService) CreateUser(userBody models.UserRequestBody) (*models.User,
 		return nil, fiber.ErrInternalServerError
 	}
 
+	user.Email = strings.ToLower(userBody.Email)
 	user.PasswordHash = *passwordHash
 
 	return transactions.CreateUser(u.DB, user)
@@ -57,7 +60,7 @@ func (u *UserService) GetUser(id string) (*models.User, error) {
 	return transactions.GetUser(u.DB, *idAsUint)
 }
 
-func (u *UserService) UpdateUser(id string, userBody models.UserRequestBody) (*models.User, error) {
+func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBody) (*models.User, error) {
 	idAsUint, err := utilities.ValidateID(id)
 	if err != nil {
 		return nil, fiber.ErrBadRequest

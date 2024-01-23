@@ -57,12 +57,22 @@ type User struct {
 	Waitlist          []Event   `gorm:"many2many:user_event_waitlists;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 }
 
-type UserRequestBody struct {
-	NUID        string   `json:"nuid" validate:"required,len=9"`
-	FirstName   string   `json:"first_name" validate:"required,max=255"`
-	LastName    string   `json:"last_name" validate:"required,max=255"`
-	Email       string   `json:"email" validate:"required,email,neu_email,max=255"`
-	Password    string   `json:"password" validate:"required,password"`
-	College     College  `json:"college" validate:"required,oneof=CAMD DMSB KCCS CE BCHS SL CPS CS CSSH"`
-	Year        Year     `json:"year" validate:"required,min=1,max=6"`
+type CreateUserRequestBody struct {
+	NUID      string  `json:"nuid" validate:"required,len=9"`
+	FirstName string  `json:"first_name" validate:"required,max=255"`
+	LastName  string  `json:"last_name" validate:"required,max=255"`
+	Email     string  `json:"email" validate:"required,email,neu_email,max=255"`
+	Password  string  `json:"password" validate:"required,password"`
+	College   College `json:"college" validate:"required,oneof=CAMD DMSB KCCS CE BCHS SL CPS CS CSSH"`
+	Year      Year    `json:"year" validate:"required,min=1,max=6"`
+}
+
+type UpdateUserRequestBody struct {
+	NUID      string  `json:"nuid" validate:"omitempty,len=9"`
+	FirstName string  `json:"first_name" validate:"omitempty,max=255"`
+	LastName  string  `json:"last_name" validate:"omitempty,max=255"`
+	Email     string  `json:"email" validate:"omitempty,email,neu_email,max=255"`
+	Password  string  `json:"password" validate:"omitempty,password"`
+	College   College `json:"college" validate:"omitempty,oneof=CAMD DMSB KCCS CE BCHS SL CPS CS CSSH"`
+	Year      Year    `json:"year" validate:"omitempty,min=1,max=6"`
 }
