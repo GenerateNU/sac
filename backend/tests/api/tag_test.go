@@ -7,6 +7,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
+	"github.com/gofiber/fiber/v2"
 	"github.com/huandu/go-assert"
 
 	"github.com/goccy/go-json"
@@ -30,7 +31,7 @@ func CreateSampleTag(t *testing.T, tagName string, categoryName string, existing
 	appAssert := CreateSampleCategory(t, categoryName, existingAppAssert)
 
 	return TestRequest{
-		Method: "POST",
+		Method: fiber.MethodPost,
 		Path:   "/api/v1/tags/",
 		Body: &map[string]interface{}{
 			"name":        tagName,
@@ -72,7 +73,7 @@ func TestCreateTagFailsBadRequest(t *testing.T) {
 
 	for _, badBody := range badBodys {
 		TestRequest{
-			Method: "POST",
+			Method: fiber.MethodPost,
 			Path:   "/api/v1/tags/",
 			Body:   &badBody,
 		}.TestOnStatusMessageAndDB(t, nil,
@@ -100,7 +101,7 @@ func TestCreateTagFailsValidation(t *testing.T) {
 
 	for _, badBody := range badBodys {
 		TestRequest{
-			Method: "POST",
+			Method: fiber.MethodPost,
 			Path:   "/api/v1/tags/",
 			Body:   &badBody,
 		}.TestOnStatusMessageAndDB(t, nil,
@@ -119,7 +120,7 @@ func TestGetTagWorks(t *testing.T) {
 	existingAppAssert := CreateSampleTag(t, "Generate", "Science", nil)
 
 	TestRequest{
-		Method: "GET",
+		Method: fiber.MethodGet,
 		Path:   "/api/v1/tags/1",
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
@@ -140,7 +141,7 @@ func TestGetTagFailsBadRequest(t *testing.T) {
 
 	for _, badRequest := range badRequests {
 		TestRequest{
-			Method: "GET",
+			Method: fiber.MethodGet,
 			Path:   fmt.Sprintf("/api/v1/tags/%s", badRequest),
 		}.TestOnStatusAndMessage(t, nil,
 			MessageWithStatus{
@@ -153,7 +154,7 @@ func TestGetTagFailsBadRequest(t *testing.T) {
 
 func TestGetTagFailsNotFound(t *testing.T) {
 	TestRequest{
-		Method: "GET",
+		Method: fiber.MethodGet,
 		Path:   "/api/v1/tags/1",
 	}.TestOnStatusAndMessage(t, nil,
 		MessageWithStatus{
@@ -167,7 +168,7 @@ func TestUpdateTagWorksUpdateName(t *testing.T) {
 	existingAppAssert := CreateSampleTag(t, "Generate", "Science", nil)
 
 	TestRequest{
-		Method: "PATCH",
+		Method: fiber.MethodPatch,
 		Path:   "/api/v1/tags/1",
 		Body: &map[string]interface{}{
 			"name":        "GenerateNU",
@@ -186,7 +187,7 @@ func TestUpdateTagWorksUpdateCategory(t *testing.T) {
 	existingAppAssert = CreateSampleCategory(t, "Technology", &existingAppAssert)
 
 	TestRequest{
-		Method: "PATCH",
+		Method: fiber.MethodPatch,
 		Path:   "/api/v1/tags/1",
 		Body: &map[string]interface{}{
 			"name":        "Generate",
@@ -204,7 +205,7 @@ func TestUpdateTagWorksWithSameDetails(t *testing.T) {
 	existingAppAssert := CreateSampleTag(t, "Generate", "Science", nil)
 
 	TestRequest{
-		Method: "PATCH",
+		Method: fiber.MethodPatch,
 		Path:   "/api/v1/tags/1",
 		Body: &map[string]interface{}{
 			"name":        "Generate",
@@ -232,7 +233,7 @@ func TestUpdateTagFailsBadRequest(t *testing.T) {
 
 	for _, badBody := range badBodys {
 		TestRequest{
-			Method: "PATCH",
+			Method: fiber.MethodPatch,
 			Path:   "/api/v1/tags/1",
 			Body:   &badBody,
 		}.TestOnStatusMessageAndDB(t, nil,
@@ -251,7 +252,7 @@ func TestDeleteTagWorks(t *testing.T) {
 	existingAppAssert := CreateSampleTag(t, "Generate", "Science", nil)
 
 	TestRequest{
-		Method: "DELETE",
+		Method: fiber.MethodDelete,
 		Path:   "/api/v1/tags/1",
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
@@ -272,7 +273,7 @@ func TestDeleteTagFailsBadRequest(t *testing.T) {
 
 	for _, badRequest := range badRequests {
 		TestRequest{
-			Method: "DELETE",
+			Method: fiber.MethodDelete,
 			Path:   fmt.Sprintf("/api/v1/tags/%s", badRequest),
 		}.TestOnStatusAndMessage(t, nil,
 			MessageWithStatus{
@@ -285,7 +286,7 @@ func TestDeleteTagFailsBadRequest(t *testing.T) {
 
 func TestDeleteTagFailsNotFound(t *testing.T) {
 	TestRequest{
-		Method: "DELETE",
+		Method: fiber.MethodDelete,
 		Path:   "/api/v1/tags/1",
 	}.TestOnStatusAndMessage(t, nil,
 		MessageWithStatus{

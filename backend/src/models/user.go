@@ -58,7 +58,7 @@ type User struct {
 }
 
 type CreateUserRequestBody struct {
-	NUID      string  `json:"nuid" validate:"required,len=9"`
+	NUID      string  `json:"nuid" validate:"required,numeric,len=9"`
 	FirstName string  `json:"first_name" validate:"required,max=255"`
 	LastName  string  `json:"last_name" validate:"required,max=255"`
 	Email     string  `json:"email" validate:"required,email,neu_email,max=255"`
@@ -68,7 +68,7 @@ type CreateUserRequestBody struct {
 }
 
 type UpdateUserRequestBody struct {
-	NUID      string  `json:"nuid" validate:"omitempty,len=9"`
+	NUID      string  `json:"nuid" validate:"omitempty,numeric,len=9"`
 	FirstName string  `json:"first_name" validate:"omitempty,max=255"`
 	LastName  string  `json:"last_name" validate:"omitempty,max=255"`
 	Email     string  `json:"email" validate:"omitempty,email,neu_email,max=255"`

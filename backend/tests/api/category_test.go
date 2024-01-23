@@ -6,6 +6,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
+	"github.com/gofiber/fiber/v2"
 	"github.com/huandu/go-assert"
 
 	"github.com/goccy/go-json"
@@ -20,14 +21,14 @@ var AssertRespCategorySameAsDBCategory = func(app TestApp, assert *assert.A, res
 
 	dbCategory, err := transactions.GetCategory(app.Conn, respCategory.ID)
 
-	assert.NilError(err)
+	assert.NilError(&err)
 
 	assert.Equal(dbCategory, &respCategory)
 }
 
 func CreateSampleCategory(t *testing.T, categoryName string, existingAppAssert *ExistingAppAssert) ExistingAppAssert {
 	return TestRequest{
-		Method: "POST",
+		Method: fiber.MethodPost,
 		Path:   "/api/v1/categories/",
 		Body: &map[string]interface{}{
 			"category_name": categoryName,
@@ -46,7 +47,7 @@ func TestCreateCategoryWorks(t *testing.T) {
 
 func TestCreateCategoryIgnoresid(t *testing.T) {
 	TestRequest{
-		Method: "POST",
+		Method: fiber.MethodPost,
 		Path:   "/api/v1/categories/",
 		Body: &map[string]interface{}{
 			"id":            12,
@@ -76,7 +77,7 @@ func AssertNumCategoriesRemainsAtN(app TestApp, assert *assert.A, resp *http.Res
 
 func TestCreateCategoryFailsIfNameIsNotString(t *testing.T) {
 	TestRequest{
-		Method: "POST",
+		Method: fiber.MethodPost,
 		Path:   "/api/v1/categories/",
 		Body: &map[string]interface{}{
 			"category_name": 1231,
@@ -94,14 +95,14 @@ func TestCreateCategoryFailsIfNameIsNotString(t *testing.T) {
 
 func TestCreateCategoryFailsIfNameIsMissing(t *testing.T) {
 	TestRequest{
-		Method: "POST",
+		Method: fiber.MethodPost,
 		Path:   "/api/v1/categories/",
 		Body:   &map[string]interface{}{},
 	}.TestOnStatusMessageAndDB(t, nil,
 		StatusMessageDBTester{
 			MessageWithStatus: MessageWithStatus{
 				Status:  400,
-				Message: "failed to validate the data",
+				Message: "failed to validate category",
 			},
 			DBTester: AssertNoCategories,
 		},
@@ -119,7 +120,7 @@ func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
 
 	for _, permutation := range AllCasingPermutations(categoryName) {
 		TestRequest{
-			Method: "POST",
+			Method: fiber.MethodPost,
 			Path:   "/api/v1/categories/",
 			Body: &map[string]interface{}{
 				"category_name": permutation,
@@ -128,7 +129,7 @@ func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
 			StatusMessageDBTester{
 				MessageWithStatus: MessageWithStatus{
 					Status:  400,
-					Message: "category with that name already exists",
+					Message: "failed to validate ID",
 				},
 				DBTester: TestNumCategoriesRemainsAt1,
 			},

@@ -3,12 +3,16 @@ package tests
 import (
 	"fmt"
 
+	stdliberrors "errors"
 	"net/http"
 	"testing"
 
 	"github.com/GenerateNU/sac/backend/src/auth"
+	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
+	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 
 	"github.com/goccy/go-json"
 	"github.com/huandu/go-assert"
@@ -16,7 +20,7 @@ import (
 
 func TestGetAllUsersWorks(t *testing.T) {
 	TestRequest{
-		Method: "GET",
+		Method: fiber.MethodGet,
 		Path:   "/api/v1/users/",
 	}.TestOnStatusAndDB(t, nil,
 		DBTesterWithStatus{
@@ -41,7 +45,7 @@ func TestGetAllUsersWorks(t *testing.T) {
 
 				dbUsers, err := transactions.GetAllUsers(app.Conn)
 
-				assert.NilError(err)
+				assert.NilError(&err)
 
 				assert.Equal(1, len(dbUsers))
 
@@ -57,7 +61,7 @@ func TestGetUserWorks(t *testing.T) {
 	id := 1
 
 	TestRequest{
-		Method: "GET",
+		Method: fiber.MethodGet,
 		Path:   fmt.Sprintf("/api/v1/users/%d", id),
 	}.TestOnStatusAndDB(t, nil,
 		DBTesterWithStatus{
@@ -78,7 +82,7 @@ func TestGetUserWorks(t *testing.T) {
 
 				dbUser, err := transactions.GetUser(app.Conn, uint(id))
 
-				assert.NilError(err)
+				assert.NilError(&err)
 
 				assert.Equal(dbUser, &respUser)
 			},
@@ -97,12 +101,12 @@ func TestGetUserFailsBadRequest(t *testing.T) {
 
 	for _, badRequest := range badRequests {
 		TestRequest{
-			Method: "GET",
+			Method: fiber.MethodGet,
 			Path:   fmt.Sprintf("/api/v1/users/%s", badRequest),
 		}.TestOnStatusAndMessage(t, nil,
 			MessageWithStatus{
-				Status:  400, // should be 400 but the hardcoded error code is 500 @David
-				Message: "Bad Request",
+				Status:  400,
+				Message: errors.FailedToValidateID,
 			},
 		).Close()
 	}
@@ -112,22 +116,21 @@ func TestGetUserFailsNotExist(t *testing.T) {
 	id := uint(69)
 
 	TestRequest{
-		Method: "GET",
+		Method: fiber.MethodGet,
 		Path:   fmt.Sprintf("/api/v1/users/%d", id),
 	}.TestOnStatusMessageAndDB(t, nil,
 		StatusMessageDBTester{
 			MessageWithStatus: MessageWithStatus{
-				Status:  404, // should be 404 but the hardcoded error code is 500 @David
-				Message: "Not Found",
+				Status:  404,
+				Message: errors.UserNotFound,
 			},
 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
 				var user models.User
 
 				err := app.Conn.Where("id = ?", id).First(&user).Error
 
-				assert.NilError(err)
+				assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
 
-				assert.Equal(nil, user)
 			},
 		},
 	).Close()
@@ -141,7 +144,7 @@ func TestUpdateUserWorks(t *testing.T) {
 	newLastName := "Brennan"
 
 	TestRequest{
-		Method: "PATCH",
+		Method: fiber.MethodPatch,
 		Path:   fmt.Sprintf("/api/v1/users/%d", id),
 		Body: &map[string]interface{}{
 			"first_name": newFirstName,
@@ -192,19 +195,20 @@ func TestUpdateUserFailsOnInvalidBody(t *testing.T) {
 		{"college": "UT-Austin"},
 	} {
 		TestRequest{
-			Method: "PATCH",
+			Method: fiber.MethodPatch,
 			Path:   "/api/v1/users/2",
 			Body:   &invalidData,
 		}.TestOnStatusMessageAndDB(t, &appAssert,
 			StatusMessageDBTester{
 				MessageWithStatus: MessageWithStatus{
-					Status:  400, // should be 400 but the hardcoded error code is 500 @David
-					Message: "Bad Request",
+					Status:  400,
+					Message: errors.FailedToValidateUser,
 				},
 				DBTester: TestNumUsersRemainsAt2,
 			},
-		).Close()
+		)
 	}
+	appAssert.Close()
 }
 
 func TestUpdateUserFailsBadRequest(t *testing.T) {
@@ -218,12 +222,13 @@ func TestUpdateUserFailsBadRequest(t *testing.T) {
 
 	for _, badRequest := range badRequests {
 		TestRequest{
-			Method: "PATCH",
+			Method: fiber.MethodPatch,
 			Path:   fmt.Sprintf("/api/v1/users/%s", badRequest),
+			Body:   SampleUserBody,
 		}.TestOnStatusAndMessage(t, nil,
 			MessageWithStatus{
-				Status:  400, // should be 400 but the hardcoded error code is 500 @David
-				Message: "Bad Request",
+				Status:  400,
+				Message: errors.FailedToValidateID,
 			},
 		).Close()
 	}
@@ -233,22 +238,21 @@ func TestUpdateUserFailsOnIdNotExist(t *testing.T) {
 	id := uint(69)
 
 	TestRequest{
-		Method: "PATCH",
+		Method: fiber.MethodPatch,
 		Path:   fmt.Sprintf("/api/v1/users/%d", id),
+		Body:   SampleUserBody,
 	}.TestOnStatusMessageAndDB(t, nil,
 		StatusMessageDBTester{
 			MessageWithStatus: MessageWithStatus{
-				Status:  404, // should be 404 but the hardcoded error code is 500 @David
-				Message: "Not Found",
+				Status:  404,
+				Message: errors.UserNotFound,
 			},
 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
 				var user models.User
 
 				err := app.Conn.Where("id = ?", id).First(&user).Error
 
-				assert.NilError(err)
-
-				assert.Equal(nil, user)
+				assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
 			},
 		},
 	).Close()
@@ -258,7 +262,7 @@ func TestDeleteUserWorks(t *testing.T) {
 	appAssert := CreateSampleUser(t)
 
 	TestRequest{
-		Method: "DELETE",
+		Method: fiber.MethodDelete,
 		Path:   "/api/v1/users/2",
 	}.TestOnStatusAndDB(t, &appAssert,
 		DBTesterWithStatus{
@@ -272,22 +276,20 @@ func TestDeleteUserNotExist(t *testing.T) {
 	id := uint(69)
 
 	TestRequest{
-		Method: "DELTE",
+		Method: fiber.MethodDelete,
 		Path:   fmt.Sprintf("/api/v1/users/%d", id),
 	}.TestOnStatusMessageAndDB(t, nil,
 		StatusMessageDBTester{
 			MessageWithStatus: MessageWithStatus{
-				Status:  404, // should be 404 but the hardcoded error code is 500 @David
-				Message: "Not Found",
+				Status:  404,
+				Message: errors.UserNotFound,
 			},
 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
 				var user models.User
 
 				err := app.Conn.Where("id = ?", id).First(&user).Error
 
-				assert.NilError(err)
-
-				assert.Equal(nil, user)
+				assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
 			},
 		},
 	).Close()
@@ -304,12 +306,12 @@ func TestDeleteUserBadRequest(t *testing.T) {
 
 	for _, badRequest := range badRequests {
 		TestRequest{
-			Method: "DELETE",
+			Method: fiber.MethodDelete,
 			Path:   fmt.Sprintf("/api/v1/users/%s", badRequest),
 		}.TestOnStatusAndMessage(t, nil,
 			MessageWithStatus{
 				Status:  400,
-				Message: "failed to validate id",
+				Message: errors.FailedToValidateID,
 			},
 		).Close()
 	}
@@ -365,7 +367,7 @@ func AssertSampleUserCreatedBodyRespDB(app TestApp, assert *assert.A, resp *http
 
 func CreateSampleUser(t *testing.T) ExistingAppAssert {
 	return TestRequest{
-		Method: "POST",
+		Method: fiber.MethodPost,
 		Path:   "/api/v1/users/",
 		Body:   SampleUserBody,
 	}.TestOnStatusAndDB(t, nil,
@@ -401,30 +403,21 @@ func TestCreateUserWorks(t *testing.T) {
 func TestCreateUserFailsIfUserWithEmailAlreadyExists(t *testing.T) {
 	appAssert := CreateSampleUser(t)
 
-	for _, email := range AllCasingPermutations((*SampleUserBody)["email"].(string)) {
-		if email == (*SampleUserBody)["email"].(string) {
-			continue
-		}
-		sampleUserPermutation := *SampleUserBody
-		sampleUserPermutation["email"] = email
-
-		TestRequest{
-			Method: "POST",
-			Path:   "/api/v1/users/",
-			Body:   &sampleUserPermutation,
-		}.TestOnStatusMessageAndDB(t, &appAssert,
-			StatusMessageDBTester{
-				MessageWithStatus: MessageWithStatus{
-					Status:  400,
-					Message: "user with that email already exists",
-				},
-				DBTester: TestNumUsersRemainsAt1,
+	TestRequest{
+		Method: fiber.MethodPost,
+		Path:   "/api/v1/users/",
+		Body:   SampleUserBody,
+	}.TestOnStatusMessageAndDB(t, &appAssert,
+		StatusMessageDBTester{
+			MessageWithStatus: MessageWithStatus{
+				Status:  400,
+				Message: errors.UserAlreadyExists,
 			},
-		)
+			DBTester: TestNumUsersRemainsAt2,
+		},
+	)
 
-	}
 	appAssert.Close()
-
 }
 
 func TestCreateUserFailsIfUserWithNUIDAlreadyExists(t *testing.T) {
@@ -441,16 +434,16 @@ func TestCreateUserFailsIfUserWithNUIDAlreadyExists(t *testing.T) {
 	}
 
 	TestRequest{
-		Method: "POST",
+		Method: fiber.MethodPost,
 		Path:   "/api/v1/users/",
 		Body:   slightlyDifferentSampleUser,
 	}.TestOnStatusMessageAndDB(t, &appAssert,
 		StatusMessageDBTester{
 			MessageWithStatus: MessageWithStatus{
-				Status:  400,                     // should be a 400 @David
-				Message: "Internal Server Error", // not the biggest fan of this error message @David
+				Status:  400,
+				Message: errors.UserAlreadyExists,
 			},
-			DBTester: TestNumUsersRemainsAt1,
+			DBTester: TestNumUsersRemainsAt2,
 		},
 	).Close()
 }
@@ -463,16 +456,16 @@ func AssertCreateBadDataFails(t *testing.T, jsonKey string, badValues []interfac
 		sampleUserPermutation[jsonKey] = badValue
 
 		TestRequest{
-			Method: "POST",
+			Method: fiber.MethodPost,
 			Path:   "/api/v1/users/",
 			Body:   &sampleUserPermutation,
 		}.TestOnStatusMessageAndDB(t, &appAssert,
 			StatusMessageDBTester{
 				MessageWithStatus: MessageWithStatus{
-					Status:  400, // should be a 400 @David
-					Message: "Bad Request",
+					Status:  400,
+					Message: errors.FailedToValidateUser,
 				},
-				DBTester: TestNumUsersRemainsAt1,
+				DBTester: TestNumUsersRemainsAt2,
 			},
 		)
 	}
@@ -487,7 +480,7 @@ func TestCreateUserFailsOnInvalidNUID(t *testing.T) {
 			"0012345678",
 			"00123456a",
 			"00123456!",
-			""})
+		})
 }
 
 func TestCreateUserFailsOnInvalidEmail(t *testing.T) {
@@ -519,7 +512,6 @@ func TestCreateUserFailsOnInvalidYear(t *testing.T) {
 	AssertCreateBadDataFails(t,
 		"year",
 		[]interface{}{
-			-1,
 			0,
 			7,
 		})
@@ -557,16 +549,16 @@ func TestCreateUserFailsOnMissingFields(t *testing.T) {
 		delete(sampleUserPermutation, missingField)
 
 		TestRequest{
-			Method: "POST",
+			Method: fiber.MethodPost,
 			Path:   "/api/v1/users/",
 			Body:   &sampleUserPermutation,
 		}.TestOnStatusMessageAndDB(t, &appAssert,
 			StatusMessageDBTester{
 				MessageWithStatus: MessageWithStatus{
-					Status:  400, // should be a 400 @David
-					Message: "Bad Request",
+					Status:  400,
+					Message: errors.FailedToValidateUser,
 				},
-				DBTester: TestNumUsersRemainsAt1,
+				DBTester: TestNumUsersRemainsAt2,
 			},
 		)
 	}

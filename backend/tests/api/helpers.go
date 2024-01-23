@@ -90,7 +90,7 @@ func generateRandomDBName() string {
 
 func configureDatabase(config config.Settings) (*gorm.DB, error) {
 	dsnWithoutDB := config.Database.WithoutDb()
-	dbWithoutDB, err := gorm.Open(gormPostgres.Open(dsnWithoutDB), &gorm.Config{SkipDefaultTransaction: true})
+	dbWithoutDB, err := gorm.Open(gormPostgres.Open(dsnWithoutDB), &gorm.Config{SkipDefaultTransaction: true, TranslateError: true})
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +101,7 @@ func configureDatabase(config config.Settings) (*gorm.DB, error) {
 	}
 
 	dsnWithDB := config.Database.WithDb()
-	dbWithDB, err := gorm.Open(gormPostgres.Open(dsnWithDB), &gorm.Config{SkipDefaultTransaction: true})
+	dbWithDB, err := gorm.Open(gormPostgres.Open(dsnWithDB), &gorm.Config{SkipDefaultTransaction: true, TranslateError: true})
 
 	if err != nil {
 		return nil, err

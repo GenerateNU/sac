@@ -14,6 +14,7 @@ func ConfigureDB(settings config.Settings) (*gorm.DB, error) {
 	db, err := gorm.Open(postgres.Open(settings.Database.WithDb()), &gorm.Config{
 		Logger:                 logger.Default.LogMode(logger.Info),
 		SkipDefaultTransaction: true,
+		TranslateError:         true,
 	})
 
 	if err != nil {

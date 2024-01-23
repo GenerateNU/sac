@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
-	"github.com/GenerateNU/sac/backend/src/utilities"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -33,12 +33,12 @@ func (t *TagController) CreateTag(c *fiber.Ctx) error {
 	var tagBody models.TagRequestBody
 
 	if err := c.BodyParser(&tagBody); err != nil {
-		return utilities.Error(c, fiber.StatusBadRequest, "failed to process the request")
+		return errors.Error{StatusCode: fiber.StatusBadRequest, Message: "failed to process the request"}.FiberError(c)
 	}
 
 	dbTag, err := t.tagService.CreateTag(tagBody)
 	if err != nil {
-		return utilities.Error(c, fiber.StatusInternalServerError, err.Error())
+		return err.FiberError(c)
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(&dbTag)
@@ -61,7 +61,7 @@ func (t *TagController) GetTag(c *fiber.Ctx) error {
 	tag, err := t.tagService.GetTag(c.Params("id"))
 
 	if err != nil {
-		return utilities.Error(c, fiber.StatusInternalServerError, err.Error())
+		return err.FiberError(c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(&tag)
@@ -87,12 +87,12 @@ func (t *TagController) UpdateTag(c *fiber.Ctx) error {
 	var tagBody models.TagRequestBody
 
 	if err := c.BodyParser(&tagBody); err != nil {
-		return utilities.Error(c, fiber.StatusBadRequest, "failed to process the request")
+		return errors.Error{StatusCode: fiber.StatusBadRequest, Message: "failed to process the request"}.FiberError(c)
 	}
 
 	tag, err := t.tagService.UpdateTag(c.Params("id"), tagBody)
 	if err != nil {
-		return utilities.Error(c, fiber.StatusInternalServerError, err.Error())
+		return err.FiberError(c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(&tag)
@@ -113,7 +113,7 @@ func (t *TagController) UpdateTag(c *fiber.Ctx) error {
 func (t *TagController) DeleteTag(c *fiber.Ctx) error {
 	err := t.tagService.DeleteTag(c.Params("id"))
 	if err != nil {
-		return utilities.Error(c, fiber.StatusInternalServerError, err.Error())
+		return err.FiberError(c)
 	}
 
 	return c.SendStatus(fiber.StatusNoContent)
