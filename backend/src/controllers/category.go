@@ -33,7 +33,7 @@ func (t *CategoryController) CreateCategory(c *fiber.Ctx) error {
 	var categoryBody models.CategoryRequestBody
 
 	if err := c.BodyParser(&categoryBody); err != nil {
-		return errors.Error{StatusCode: fiber.StatusBadRequest, Message: "failed to process the request"}.FiberError(c)
+		return errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToParseRequestBody}.FiberError(c)
 	}
 
 	newCategory, err := t.categoryService.CreateCategory(categoryBody)

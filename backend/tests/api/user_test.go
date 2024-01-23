@@ -327,7 +327,7 @@ var SampleUserBody = &map[string]interface{}{
 	"year":       3,
 }
 
-func AssertUserWithIDCreatedBodyRespDB(app TestApp, assert *assert.A, resp *http.Response, id uint) {
+func AssertUserWithIDBodyRespDB(app TestApp, assert *assert.A, resp *http.Response, id uint) {
 	var respUser models.User
 
 	err := json.NewDecoder(resp.Body).Decode(&respUser)
@@ -361,8 +361,8 @@ func AssertUserWithIDCreatedBodyRespDB(app TestApp, assert *assert.A, resp *http
 	assert.Equal(models.Year((*SampleUserBody)["year"].(int)), dbUser.Year)
 }
 
-func AssertSampleUserCreatedBodyRespDB(app TestApp, assert *assert.A, resp *http.Response) {
-	AssertUserWithIDCreatedBodyRespDB(app, assert, resp, 2)
+func AssertSampleUserBodyRespDB(app TestApp, assert *assert.A, resp *http.Response) {
+	AssertUserWithIDBodyRespDB(app, assert, resp, 2)
 }
 
 func CreateSampleUser(t *testing.T) ExistingAppAssert {
@@ -373,7 +373,7 @@ func CreateSampleUser(t *testing.T) ExistingAppAssert {
 	}.TestOnStatusAndDB(t, nil,
 		DBTesterWithStatus{
 			Status:   201,
-			DBTester: AssertSampleUserCreatedBodyRespDB,
+			DBTester: AssertSampleUserBodyRespDB,
 		},
 	)
 }

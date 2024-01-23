@@ -2,7 +2,6 @@ package transactions
 
 import (
 	stdliberrors "errors"
-	"fmt"
 
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
@@ -36,7 +35,6 @@ func GetUser(db *gorm.DB, id uint) (*models.User, *errors.Error) {
 
 func CreateUser(db *gorm.DB, user *models.User) (*models.User, *errors.Error) {
 	if err := db.Create(user).Error; err != nil {
-		fmt.Print(err)
 		if stdliberrors.Is(err, gorm.ErrDuplicatedKey) {
 			return nil, &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.UserAlreadyExists}
 		} else {

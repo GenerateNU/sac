@@ -5,48 +5,61 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
-	"github.com/GenerateNU/sac/backend/src/transactions"
 	"github.com/gofiber/fiber/v2"
 	"github.com/huandu/go-assert"
 
 	"github.com/goccy/go-json"
 )
 
-var AssertRespTagSameAsDBTag = func(app TestApp, assert *assert.A, resp *http.Response) {
+var SampleTagBody = &map[string]interface{}{
+	"name":        "Generate",
+	"category_id": 1,
+}
+
+func AssertTagWithIDBodyRespDB(app TestApp, assert *assert.A, resp *http.Response, id uint) {
 	var respTag models.Tag
 
 	err := json.NewDecoder(resp.Body).Decode(&respTag)
 
 	assert.NilError(err)
 
-	dbTag, err := transactions.GetTag(app.Conn, respTag.ID)
+	var dbTag models.Tag
+
+	err = app.Conn.First(&dbTag, id).Error
 
 	assert.NilError(err)
 
-	assert.Equal(dbTag, &respTag)
+	assert.Equal(dbTag.ID, respTag.ID)
+	assert.Equal(dbTag.Name, respTag.Name)
+	assert.Equal(dbTag.CategoryID, respTag.CategoryID)
+
+	assert.Equal((*SampleTagBody)["name"].(string), dbTag.Name)
+	assert.Equal((*SampleTagBody)["category_id"].(int), int(dbTag.CategoryID))
 }
 
-func CreateSampleTag(t *testing.T, tagName string, categoryName string, existingAppAssert *ExistingAppAssert) ExistingAppAssert {
-	appAssert := CreateSampleCategory(t, categoryName, existingAppAssert)
+func AssertSampleTagBodyRespDB(app TestApp, assert *assert.A, resp *http.Response) {
+	AssertTagWithIDBodyRespDB(app, assert, resp, 1)
+}
+
+func CreateSampleTag(t *testing.T) ExistingAppAssert {
+	appAssert := CreateSampleCategory(t)
 
 	return TestRequest{
 		Method: fiber.MethodPost,
 		Path:   "/api/v1/tags/",
-		Body: &map[string]interface{}{
-			"name":        tagName,
-			"category_id": 1,
-		},
+		Body:   SampleTagBody,
 	}.TestOnStatusAndDB(t, &appAssert,
 		DBTesterWithStatus{
 			Status:   201,
-			DBTester: AssertRespTagSameAsDBTag,
+			DBTester: AssertSampleTagBodyRespDB,
 		},
 	)
 }
 
 func TestCreateTagWorks(t *testing.T) {
-	CreateSampleTag(t, "Generate", "Science", nil).Close()
+	CreateSampleTag(t).Close()
 }
 
 var AssertNoTags = func(app TestApp, assert *assert.A, resp *http.Response) {
@@ -80,7 +93,7 @@ func TestCreateTagFailsBadRequest(t *testing.T) {
 			StatusMessageDBTester{
 				MessageWithStatus: MessageWithStatus{
 					Status:  400,
-					Message: "failed to process the request",
+					Message: errors.FailedToParseRequestBody,
 				},
 				DBTester: AssertNoTags,
 			},
@@ -108,7 +121,7 @@ func TestCreateTagFailsValidation(t *testing.T) {
 			StatusMessageDBTester{
 				MessageWithStatus: MessageWithStatus{
 					Status:  400,
-					Message: "failed to validate the data",
+					Message: errors.FailedToValidateTag,
 				},
 				DBTester: AssertNoTags,
 			},
@@ -117,7 +130,7 @@ func TestCreateTagFailsValidation(t *testing.T) {
 }
 
 func TestGetTagWorks(t *testing.T) {
-	existingAppAssert := CreateSampleTag(t, "Generate", "Science", nil)
+	existingAppAssert := CreateSampleTag(t)
 
 	TestRequest{
 		Method: fiber.MethodGet,
@@ -125,7 +138,7 @@ func TestGetTagWorks(t *testing.T) {
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
 			Status:   200,
-			DBTester: AssertRespTagSameAsDBTag,
+			DBTester: AssertSampleTagBodyRespDB,
 		},
 	).Close()
 }
@@ -159,97 +172,102 @@ func TestGetTagFailsNotFound(t *testing.T) {
 	}.TestOnStatusAndMessage(t, nil,
 		MessageWithStatus{
 			Status:  404,
-			Message: "failed to find tag",
+			Message: errors.TagNotFound,
 		},
 	).Close()
 }
 
 func TestUpdateTagWorksUpdateName(t *testing.T) {
-	existingAppAssert := CreateSampleTag(t, "Generate", "Science", nil)
+	existingAppAssert := CreateSampleTag(t)
+
+	(*SampleTagBody)["name"] = "GenerateNU"
 
 	TestRequest{
 		Method: fiber.MethodPatch,
 		Path:   "/api/v1/tags/1",
-		Body: &map[string]interface{}{
-			"name":        "GenerateNU",
-			"category_id": 1,
-		},
+		Body:   SampleTagBody,
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
 			Status:   200,
-			DBTester: AssertRespTagSameAsDBTag,
+			DBTester: AssertSampleTagBodyRespDB,
 		},
 	).Close()
 }
 
 func TestUpdateTagWorksUpdateCategory(t *testing.T) {
-	existingAppAssert := CreateSampleTag(t, "Generate", "Science", nil)
-	existingAppAssert = CreateSampleCategory(t, "Technology", &existingAppAssert)
+	existingAppAssert := CreateSampleTag(t)
+
+	var AssertNewCategoryBodyRespDB = func(app TestApp, assert *assert.A, resp *http.Response) {
+		AssertCategoryWithIDBodyRespDB(app, assert, resp, 2)
+	}
+
+	(*SampleCategoryBody)["category_name"] = "Technology"
+
+	TestRequest{
+		Method: fiber.MethodPost,
+		Path:   "/api/v1/categories/",
+		Body:   SampleCategoryBody,
+	}.TestOnStatusAndDB(t, &existingAppAssert,
+		DBTesterWithStatus{
+			Status:   201,
+			DBTester: AssertNewCategoryBodyRespDB,
+		},
+	)
+
+	(*SampleTagBody)["category_id"] = 2
 
 	TestRequest{
 		Method: fiber.MethodPatch,
 		Path:   "/api/v1/tags/1",
-		Body: &map[string]interface{}{
-			"name":        "Generate",
-			"category_id": 2,
-		},
+		Body:   SampleTagBody,
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
 			Status:   200,
-			DBTester: AssertRespTagSameAsDBTag,
+			DBTester: AssertSampleTagBodyRespDB,
 		},
 	).Close()
 }
 
 func TestUpdateTagWorksWithSameDetails(t *testing.T) {
-	existingAppAssert := CreateSampleTag(t, "Generate", "Science", nil)
+	existingAppAssert := CreateSampleTag(t)
 
 	TestRequest{
 		Method: fiber.MethodPatch,
 		Path:   "/api/v1/tags/1",
-		Body: &map[string]interface{}{
-			"name":        "Generate",
-			"category_id": 1,
-		},
+		Body:   SampleTagBody,
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
 			Status:   200,
-			DBTester: AssertRespTagSameAsDBTag,
+			DBTester: AssertSampleTagBodyRespDB,
 		},
 	).Close()
 }
 
 func TestUpdateTagFailsBadRequest(t *testing.T) {
-	badBodys := []map[string]interface{}{
-		{
-			"name":        "Generate",
-			"category_id": "1",
-		},
-		{
-			"name":        1,
-			"category_id": 1,
-		},
+	badRequests := []string{
+		"0",
+		"-1",
+		"1.1",
+		"foo",
+		"null",
 	}
 
-	for _, badBody := range badBodys {
+	for _, badRequest := range badRequests {
 		TestRequest{
 			Method: fiber.MethodPatch,
-			Path:   "/api/v1/tags/1",
-			Body:   &badBody,
-		}.TestOnStatusMessageAndDB(t, nil,
-			StatusMessageDBTester{
-				MessageWithStatus: MessageWithStatus{
-					Status:  400,
-					Message: "failed to process the request",
-				},
-				DBTester: AssertNoTags,
+			Path:   fmt.Sprintf("/api/v1/tags/%s", badRequest),
+			Body:   SampleTagBody,
+		}.TestOnStatusAndMessage(t, nil,
+			MessageWithStatus{
+				Status:  400,
+				Message: errors.FailedToValidateID,
 			},
 		).Close()
 	}
 }
 
 func TestDeleteTagWorks(t *testing.T) {
-	existingAppAssert := CreateSampleTag(t, "Generate", "Science", nil)
+	existingAppAssert := CreateSampleTag(t)
 
 	TestRequest{
 		Method: fiber.MethodDelete,
@@ -278,7 +296,7 @@ func TestDeleteTagFailsBadRequest(t *testing.T) {
 		}.TestOnStatusAndMessage(t, nil,
 			MessageWithStatus{
 				Status:  400,
-				Message: "failed to validate id",
+				Message: errors.FailedToValidateID,
 			},
 		).Close()
 	}
@@ -291,7 +309,7 @@ func TestDeleteTagFailsNotFound(t *testing.T) {
 	}.TestOnStatusAndMessage(t, nil,
 		MessageWithStatus{
 			Status:  404,
-			Message: "failed to find tag",
+			Message: errors.TagNotFound,
 		},
 	).Close()
 }

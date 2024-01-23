@@ -26,12 +26,12 @@ type CategoryService struct {
 
 func (c *CategoryService) CreateCategory(categoryBody models.CategoryRequestBody) (*models.Category, *errors.Error) {
 	if err := c.Validate.Struct(categoryBody); err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusBadRequest, Message: "failed to validate category"}
+		return nil, &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidateCategory}
 	}
 
 	category, err := utilities.MapResponseToModel(categoryBody, &models.Category{})
 	if err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusInternalServerError, Message: "failed to create category"}
+		return nil, &errors.Error{StatusCode: fiber.StatusInternalServerError, Message: errors.FailedToMapResposeToModel}
 	}
 
 	category.Name = cases.Title(language.English).String(category.Name)
