@@ -14,7 +14,7 @@ import (
 
 func SampleCategoryFactory() *map[string]interface{} {
 	return &map[string]interface{}{
-		"category_name": "Science",
+		"category_name": "Foo",
 	}
 }
 
@@ -65,7 +65,7 @@ func TestCreateCategoryIgnoresid(t *testing.T) {
 		Path:   "/api/v1/categories/",
 		Body: &map[string]interface{}{
 			"id":            12,
-			"category_name": "Science",
+			"category_name": "Foo",
 		},
 	}.TestOnStatusAndDB(t, nil,
 		DBTesterWithStatus{
