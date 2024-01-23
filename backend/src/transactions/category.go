@@ -12,14 +12,14 @@ import (
 func CreateCategory(db *gorm.DB, category models.Category) (*models.Category, error) {
 	if err := db.Where("name = ?", category.Name).First(&models.Category{}).Error; err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, fiber.NewError(fiber.StatusInternalServerError, "failed to create category")
+			return nil, fiber.ErrInternalServerError
 		}
 	} else {
-		return nil, fiber.NewError(fiber.StatusBadRequest, "category with that name already exists")
+		return nil, fiber.ErrBadRequest
 	}
 
 	if err := db.Create(&category).Error; err != nil {
-		return nil, fiber.NewError(fiber.StatusInternalServerError, "failed to create category")
+		return nil, fiber.ErrInternalServerError
 	}
 
 	return &category, nil
@@ -40,9 +40,9 @@ func GetCategory(db *gorm.DB, id uint) (*models.Category, error) {
 
 	if err := db.First(&category, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, fiber.NewError(fiber.StatusNotFound, "invalid category id")
+			return nil, fiber.ErrNotFound
 		} else {
-			return nil, fiber.NewError(fiber.StatusInternalServerError, "unable to retrieve category")
+			return nil, fiber.ErrInternalServerError
 		}
 	}
 
