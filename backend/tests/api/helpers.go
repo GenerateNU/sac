@@ -113,6 +113,14 @@ func configureDatabase(config config.Settings) (*gorm.DB, error) {
 		return nil, err
 	}
 
+	sqlDB, err := dbWithDB.DB()
+
+	if err != nil {
+		return nil, err
+	}
+
+	sqlDB.SetMaxOpenConns(100)
+
 	return dbWithDB, nil
 }
 
