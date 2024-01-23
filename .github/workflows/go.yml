@@ -72,12 +72,9 @@ jobs:
         run: until pg_isready -h 127.0.0.1 -p 5432 -U postgres; do sleep 1; done
       - name: Increase max_connections in PostgreSQL
         run: |
-          PG_CONFIG_FILE=$(psql -h 127.0.0.1 -p 5432 -U postgres -c "SHOW config_file;" -tA)
-          echo "Config file: $PG_CONFIG_FILE"
-          sudo sed -i "s/^#max_connections = 100/max_connections = 200/" $PG_CONFIG_FILE
-          sudo systemctl reload postgresql
-        env:
-          PGPASSWORD: password
+          CONTAINER_ID=$(docker ps --filter "publish=5432" --format "{{.ID}}")
+          docker exec $CONTAINER_ID bash -c "sed -i 's/^#max_connections = 100/max_connections = 200/' /var/lib/postgresql/data/postgresql.conf"
+          docker exec $CONTAINER_ID bash -c "pg_ctl reload"
       - name: Migrate DB
         run: cd backend/src && go run main.go --only-migrate
       - name: Run Tests with Coverage
