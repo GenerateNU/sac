@@ -98,7 +98,7 @@ func TestCreateCategoryFailsIfNameIsNotString(t *testing.T) {
 		},
 	}.TestOnStatusMessageAndDB(t, nil,
 		ErrorWithDBTester{
-			Error:    errors.FailedToParseRequestBody,
+			Error:    errors.FailedToValidateCategory,
 			DBTester: AssertNoCategories,
 		},
 	).Close()
