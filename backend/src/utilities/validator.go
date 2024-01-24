@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strconv"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/GenerateNU/sac/backend/src/errors"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/mcnijman/go-emailaddress"
@@ -53,18 +53,12 @@ func validateID(fl validator.FieldLevel) bool {
 	return err == nil
 }
 
-// Validates that an id follows postgres uint format, returns a uint otherwise returns an error
-func ValidateID(id string) (*uint, error) {
+// Validates that an id follows postgres uint format, returns a *uint otherwise returns an *errors.Error
+func ValidateID(id string) (*uint, *errors.Error) {
 	idAsInt, err := strconv.Atoi(id)
 
-	errMsg := "failed to validate id"
-
-	if err != nil {
-		return nil, fiber.NewError(fiber.StatusBadRequest, errMsg)
-	}
-
-	if idAsInt < 1 { // postgres ids start at 1
-		return nil, fiber.NewError(fiber.StatusBadRequest, errMsg)
+	if err != nil || idAsInt < 1 { // postgres ids start at 1
+		return nil, &errors.FailedToValidateID
 	}
 
 	idAsUint := uint(idAsInt)
@@ -72,17 +66,12 @@ func ValidateID(id string) (*uint, error) {
 	return &idAsUint, nil
 }
 
-func ValidateNonNegative(value string) (*int, error) {
+
+func ValidateNonNegative(value string) (*int, *errors.Error) {
 	valueAsInt, err := strconv.Atoi(value)
 
-	errMsg := "failed to validate non-negative value"
-
-	if err != nil {
-		return nil, fiber.NewError(fiber.StatusBadRequest, errMsg)
-	}
-
-	if valueAsInt < 0 {
-		return nil, fiber.NewError(fiber.StatusBadRequest, errMsg)
+	if err != nil || valueAsInt < 0 {
+		return nil, &errors.FailedToValidateNonNegativeValue
 	}
 
 	return &valueAsInt, nil

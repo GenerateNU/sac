@@ -11,6 +11,6 @@ func TestHealthWorks(t *testing.T) {
 		Method: fiber.MethodGet,
 		Path:   "/health",
 	}.TestOnStatus(t, nil,
-		200,
+		fiber.StatusOK,
 	).Close()
 }

@@ -14,8 +14,8 @@ import (
 )
 
 type UserServiceInterface interface {
-	GetAllUsers() ([]models.User, *errors.Error)
 	CreateUser(userBody models.CreateUserRequestBody) (*models.User, *errors.Error)
+	GetUsers(limit string, page string) ([]models.User, *errors.Error)
 	GetUser(id string) (*models.User, *errors.Error)
 	UpdateUser(id string, userBody models.UpdateUserRequestBody) (*models.User, *errors.Error)
 	DeleteUser(id string) *errors.Error
@@ -26,11 +26,6 @@ type UserService struct {
 	Validate *validator.Validate
 }
 
-// Gets all users (including soft deleted users) for testing
-func (u *UserService) GetAllUsers() ([]models.User, *errors.Error) {
-	return transactions.GetAllUsers(u.DB)
-}
-
 func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models.User, *errors.Error) {
 	if err := u.Validate.Struct(userBody); err != nil {
 		return nil, &errors.FailedToValidateUser
@@ -38,7 +33,7 @@ func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models
 
 	user, err := utilities.MapRequestToModel(userBody, &models.User{})
 	if err != nil {
-		return nil, &errors.FailedToMapResposeToModel
+		return nil, &errors.FailedToMapRequestToModel
 	}
 
 	passwordHash, err := auth.ComputePasswordHash(userBody.Password)
@@ -52,6 +47,24 @@ func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models
 	return transactions.CreateUser(u.DB, user)
 }
 
+func (u *UserService) GetUsers(limit string, page string) ([]models.User, *errors.Error) {
+	limitAsInt, err := utilities.ValidateNonNegative(limit)
+
+	if err != nil {
+		return nil, &errors.FailedToValidateLimit
+	}
+
+	pageAsInt, err := utilities.ValidateNonNegative(page)
+
+	if err != nil {
+		return nil, &errors.FailedToValidatePage
+	}
+
+	offset := (*pageAsInt - 1) * *limitAsInt
+
+	return transactions.GetUsers(u.DB, *limitAsInt, offset)
+}
+
 func (u *UserService) GetUser(id string) (*models.User, *errors.Error) {
 	idAsUint, err := utilities.ValidateID(id)
 	if err != nil {
@@ -62,9 +75,9 @@ func (u *UserService) GetUser(id string) (*models.User, *errors.Error) {
 }
 
 func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBody) (*models.User, *errors.Error) {
-	idAsUint, err := utilities.ValidateID(id)
-	if err != nil {
-		return nil, &errors.FailedToValidateID
+	idAsUint, idErr := utilities.ValidateID(id)
+	if idErr != nil {
+		return nil, idErr
 	}
 
 	if err := u.Validate.Struct(userBody); err != nil {
@@ -78,7 +91,7 @@ func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBod
 
 	user, err := utilities.MapRequestToModel(userBody, &models.User{})
 	if err != nil {
-		return nil, &errors.FailedToMapResposeToModel
+		return nil, &errors.FailedToMapRequestToModel
 	}
 
 	user.PasswordHash = *passwordHash
@@ -86,11 +99,10 @@ func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBod
 	return transactions.UpdateUser(u.DB, *idAsUint, *user)
 }
 
-// Delete user with a specific id
 func (u *UserService) DeleteUser(id string) *errors.Error {
 	idAsInt, err := utilities.ValidateID(id)
 	if err != nil {
-		return &errors.FailedToValidateID
+		return err
 	}
 
 	return transactions.DeleteUser(u.DB, *idAsInt)

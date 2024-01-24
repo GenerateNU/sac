@@ -9,11 +9,23 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetAllUsers(db *gorm.DB) ([]models.User, *errors.Error) {
+func CreateUser(db *gorm.DB, user *models.User) (*models.User, *errors.Error) {
+	if err := db.Create(user).Error; err != nil {
+		if stdliberrors.Is(err, gorm.ErrDuplicatedKey) {
+			return nil, &errors.UserAlreadyExists
+		} else {
+			return nil, &errors.FailedToCreateUser
+		}
+	}
+
+	return user, nil
+}
+
+func GetUsers(db *gorm.DB, limit int, offset int) ([]models.User, *errors.Error) {
 	var users []models.User
 
-	if err := db.Omit("password_hash").Find(&users).Error; err != nil {
-		return nil, &errors.FailedToGetAllUsers
+	if err := db.Omit("password_hash").Limit(limit).Offset(offset).Find(&users).Error; err != nil {
+		return nil, &errors.FailedToGetUsers
 	}
 
 	return users, nil
@@ -30,18 +42,6 @@ func GetUser(db *gorm.DB, id uint) (*models.User, *errors.Error) {
 	}
 
 	return &user, nil
-}
-
-func CreateUser(db *gorm.DB, user *models.User) (*models.User, *errors.Error) {
-	if err := db.Create(user).Error; err != nil {
-		if stdliberrors.Is(err, gorm.ErrDuplicatedKey) {
-			return nil, &errors.UserAlreadyExists
-		} else {
-			return nil, &errors.FailedToCreateUser
-		}
-	}
-
-	return user, nil
 }
 
 func UpdateUser(db *gorm.DB, id uint, user models.User) (*models.User, *errors.Error) {
@@ -64,9 +64,7 @@ func UpdateUser(db *gorm.DB, id uint, user models.User) (*models.User, *errors.E
 }
 
 func DeleteUser(db *gorm.DB, id uint) *errors.Error {
-	var deletedUser models.User
-
-	result := db.Where("id = ?", id).Delete(&deletedUser)
+	result := db.Delete(&models.User{}, id)
 	if result.RowsAffected == 0 {
 		if result.Error == nil {
 			return &errors.UserNotFound

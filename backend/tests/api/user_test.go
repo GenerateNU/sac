@@ -18,13 +18,13 @@ import (
 	"github.com/huandu/go-assert"
 )
 
-func TestGetAllUsersWorks(t *testing.T) {
+func TestGetUsersWorks(t *testing.T) {
 	TestRequest{
 		Method: fiber.MethodGet,
 		Path:   "/api/v1/users/",
 	}.TestOnStatusAndDB(t, nil,
 		DBTesterWithStatus{
-			Status: 200,
+			Status: fiber.StatusOK,
 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
 				var users []models.User
 
@@ -43,7 +43,7 @@ func TestGetAllUsersWorks(t *testing.T) {
 				assert.Equal(models.College("KCCS"), respUser.College)
 				assert.Equal(models.Year(1), respUser.Year)
 
-				dbUsers, err := transactions.GetAllUsers(app.Conn)
+				dbUsers, err := transactions.GetUsers(app.Conn, 1, 0)
 
 				assert.NilError(&err)
 
@@ -65,7 +65,7 @@ func TestGetUserWorks(t *testing.T) {
 		Path:   fmt.Sprintf("/api/v1/users/%d", id),
 	}.TestOnStatusAndDB(t, nil,
 		DBTesterWithStatus{
-			Status: 200,
+			Status: fiber.StatusOK,
 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
 				var respUser models.User
 
@@ -144,7 +144,7 @@ func TestUpdateUserWorks(t *testing.T) {
 		},
 	}.TestOnStatusAndDB(t, &appAssert,
 		DBTesterWithStatus{
-			Status: 200,
+			Status: fiber.StatusOK,
 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
 				var respUser models.User
 
@@ -247,7 +247,7 @@ func TestDeleteUserWorks(t *testing.T) {
 		Path:   "/api/v1/users/2",
 	}.TestOnStatusAndDB(t, &appAssert,
 		DBTesterWithStatus{
-			Status:   204,
+			Status:   fiber.StatusNoContent,
 			DBTester: TestNumUsersRemainsAt1,
 		},
 	).Close()
@@ -348,7 +348,7 @@ func CreateSampleUser(t *testing.T) ExistingAppAssert {
 		Body:   SampleUserFactory(),
 	}.TestOnStatusAndDB(t, nil,
 		DBTesterWithStatus{
-			Status:   201,
+			Status:   fiber.StatusCreated,
 			DBTester: AssertSampleUserBodyRespDB,
 		},
 	)
