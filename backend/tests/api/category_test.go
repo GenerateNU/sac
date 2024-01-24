@@ -74,7 +74,7 @@ func TestCreateCategoryIgnoresid(t *testing.T) {
 		},
 	}.TestOnStatusAndDB(t, nil,
 		DBTesterWithStatus{
-			Status:   201,
+			Status:   fiber.StatusCreated,
 			DBTester: AssertSampleCategoryBodyRespDB,
 		},
 	).Close()
@@ -157,7 +157,7 @@ func TestGetCategoryWorks(t *testing.T) {
 		Path:   "/api/v1/categories/1",
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
-			Status:   200,
+			Status:   fiber.StatusOK,
 			DBTester: AssertSampleCategoryBodyRespDB,
 		},
 	).Close()
@@ -195,7 +195,7 @@ func TestGetCategoriesWorks(t *testing.T) {
 		Path:   "/api/v1/categories/",
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
-			Status: 200,
+			Status: fiber.StatusOK,
 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
 				var categories []models.Category
 
