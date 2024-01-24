@@ -38,7 +38,7 @@ func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models
 
 	user, err := utilities.MapRequestToModel(userBody, &models.User{})
 	if err != nil {
-		return nil, &errors.FailedToMapResposeToModel
+		return nil, &errors.FailedToMapRequestToModel
 	}
 
 	passwordHash, err := auth.ComputePasswordHash(userBody.Password)
@@ -78,7 +78,7 @@ func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBod
 
 	user, err := utilities.MapRequestToModel(userBody, &models.User{})
 	if err != nil {
-		return nil, &errors.FailedToMapResposeToModel
+		return nil, &errors.FailedToMapRequestToModel
 	}
 
 	user.PasswordHash = *passwordHash

@@ -35,12 +35,4 @@ var (
 		StatusCode: fiber.StatusNotFound,
 		Message:    "club not found",
 	}
-	FailedToValidateLimit = Error{
-		StatusCode: fiber.StatusBadRequest,
-		Message:    "failed to validate limit",
-	}
-	FailedToValidatePage = Error{
-		StatusCode: fiber.StatusBadRequest,
-		Message:    "failed to validate page",
-	}
 )

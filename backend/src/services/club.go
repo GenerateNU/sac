@@ -48,7 +48,7 @@ func (c *ClubService) CreateClub(clubBody models.CreateClubRequestBody) (*models
 
 	club, err := utilities.MapRequestToModel(clubBody, &models.Club{})
 	if err != nil {
-		return nil, &errors.FailedToMapResposeToModel
+		return nil, &errors.FailedToMapRequestToModel
 	}
 
 	return transactions.CreateClub(c.DB, clubBody.UserID, *club)
@@ -75,7 +75,7 @@ func (c *ClubService) UpdateClub(id string, clubBody models.UpdateClubRequestBod
 
 	club, err := utilities.MapRequestToModel(clubBody, &models.Club{})
 	if err != nil {
-		return nil, &errors.FailedToMapResposeToModel
+		return nil, &errors.FailedToMapRequestToModel
 	}
 
 	return transactions.UpdateClub(c.DB, *idAsUint, *club)

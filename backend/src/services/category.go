@@ -30,7 +30,7 @@ func (c *CategoryService) CreateCategory(categoryBody models.CategoryRequestBody
 
 	category, err := utilities.MapRequestToModel(categoryBody, &models.Category{})
 	if err != nil {
-		return nil, &errors.FailedToMapResposeToModel
+		return nil, &errors.FailedToMapRequestToModel
 	}
 
 	category.Name = cases.Title(language.English).String(category.Name)
