@@ -4,8 +4,8 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-// MapResponseToModel maps response data to a target model using mapstructure
-func MapResponseToModel[T any, U any](responseData T, targetModel *U) (*U, error) {
+// MapRequestToModel maps response data to a target model using mapstructure
+func MapRequestToModel[T any, U any](responseData T, targetModel *U) (*U, error) {
 	config := &mapstructure.DecoderConfig{
 		Result:  targetModel,
 		TagName: "json",

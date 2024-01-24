@@ -26,7 +26,7 @@ func (t *TagService) CreateTag(tagBody models.TagRequestBody) (*models.Tag, *err
 		return nil, &errors.FailedToValidateTag
 	}
 
-	tag, err := utilities.MapResponseToModel(tagBody, &models.Tag{})
+	tag, err := utilities.MapRequestToModel(tagBody, &models.Tag{})
 	if err != nil {
 		return nil, &errors.FailedToMapResposeToModel
 	}
@@ -53,7 +53,7 @@ func (t *TagService) UpdateTag(id string, tagBody models.TagRequestBody) (*model
 		return nil, &errors.FailedToValidateTag
 	}
 
-	tag, err := utilities.MapResponseToModel(tagBody, &models.Tag{})
+	tag, err := utilities.MapRequestToModel(tagBody, &models.Tag{})
 	if err != nil {
 		return nil, &errors.FailedToMapResposeToModel
 	}

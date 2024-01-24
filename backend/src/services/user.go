@@ -36,7 +36,7 @@ func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models
 		return nil, &errors.FailedToValidateUser
 	}
 
-	user, err := utilities.MapResponseToModel(userBody, &models.User{})
+	user, err := utilities.MapRequestToModel(userBody, &models.User{})
 	if err != nil {
 		return nil, &errors.FailedToMapResposeToModel
 	}
@@ -76,7 +76,7 @@ func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBod
 		return nil, &errors.FailedToComputePasswordHash
 	}
 
-	user, err := utilities.MapResponseToModel(userBody, &models.User{})
+	user, err := utilities.MapRequestToModel(userBody, &models.User{})
 	if err != nil {
 		return nil, &errors.FailedToMapResposeToModel
 	}

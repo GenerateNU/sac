@@ -28,7 +28,7 @@ func (c *CategoryService) CreateCategory(categoryBody models.CategoryRequestBody
 		return nil, &errors.FailedToValidateCategory
 	}
 
-	category, err := utilities.MapResponseToModel(categoryBody, &models.Category{})
+	category, err := utilities.MapRequestToModel(categoryBody, &models.Category{})
 	if err != nil {
 		return nil, &errors.FailedToMapResposeToModel
 	}
