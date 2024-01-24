@@ -4,7 +4,6 @@ import (
 	"bytes"
 	crand "crypto/rand"
 	"fmt"
-	"io"
 	"math/big"
 	"net"
 	"net/http"
@@ -14,6 +13,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/database"
+	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/server"
 
 	"github.com/goccy/go-json"
@@ -91,7 +91,7 @@ func generateRandomDBName() string {
 
 func configureDatabase(config config.Settings) (*gorm.DB, error) {
 	dsnWithoutDB := config.Database.WithoutDb()
-	dbWithoutDB, err := gorm.Open(gormPostgres.Open(dsnWithoutDB), &gorm.Config{SkipDefaultTransaction: true})
+	dbWithoutDB, err := gorm.Open(gormPostgres.Open(dsnWithoutDB), &gorm.Config{SkipDefaultTransaction: true, TranslateError: true})
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +102,7 @@ func configureDatabase(config config.Settings) (*gorm.DB, error) {
 	}
 
 	dsnWithDB := config.Database.WithDb()
-	dbWithDB, err := gorm.Open(gormPostgres.Open(dsnWithDB), &gorm.Config{SkipDefaultTransaction: true})
+	dbWithDB, err := gorm.Open(gormPostgres.Open(dsnWithDB), &gorm.Config{SkipDefaultTransaction: true, TranslateError: true})
 
 	if err != nil {
 		return nil, err
@@ -201,38 +201,31 @@ func (request TestRequest) TestOnStatus(t *testing.T, existingAppAssert *Existin
 	return appAssert
 }
 
-type MessageWithStatus struct {
-	Status  int
-	Message string
-}
-
-func (request TestRequest) TestOnStatusAndMessage(t *testing.T, existingAppAssert *ExistingAppAssert, messagedStatus MessageWithStatus) ExistingAppAssert {
+func (request TestRequest) TestOnError(t *testing.T, existingAppAssert *ExistingAppAssert, expectedError errors.Error) ExistingAppAssert {
 	appAssert, resp := request.Test(t, existingAppAssert)
 	assert := appAssert.Assert
 
-	defer resp.Body.Close()
+	var respBody map[string]interface{}
 
-	bodyBytes, err := io.ReadAll(resp.Body)
+	err := json.NewDecoder(resp.Body).Decode(&respBody)
 
-	appAssert.Assert.NilError(err)
+	assert.NilError(err)
 
-	msg := string(bodyBytes)
+	assert.Equal(expectedError.Message, respBody["error"].(string))
 
-	assert.Equal(messagedStatus.Message, msg)
-
-	assert.Equal(messagedStatus.Status, resp.StatusCode)
+	assert.Equal(expectedError.StatusCode, resp.StatusCode)
 
 	return appAssert
 }
 
-type StatusMessageDBTester struct {
-	MessageWithStatus MessageWithStatus
-	DBTester          DBTester
+type ErrorWithDBTester struct {
+	Error    errors.Error
+	DBTester DBTester
 }
 
-func (request TestRequest) TestOnStatusMessageAndDB(t *testing.T, existingAppAssert *ExistingAppAssert, statusMessageDBTester StatusMessageDBTester) ExistingAppAssert {
-	appAssert := request.TestOnStatusAndMessage(t, existingAppAssert, statusMessageDBTester.MessageWithStatus)
-	statusMessageDBTester.DBTester(appAssert.App, appAssert.Assert, nil)
+func (request TestRequest) TestOnStatusMessageAndDB(t *testing.T, existingAppAssert *ExistingAppAssert, errorWithDBTester ErrorWithDBTester) ExistingAppAssert {
+	appAssert := request.TestOnError(t, existingAppAssert, errorWithDBTester.Error)
+	errorWithDBTester.DBTester(appAssert.App, appAssert.Assert, nil)
 	return appAssert
 }
 

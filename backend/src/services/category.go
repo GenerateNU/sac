@@ -1,22 +1,23 @@
 package services
 
 import (
+	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
 	"github.com/GenerateNU/sac/backend/src/utilities"
+
 	"github.com/go-playground/validator/v10"
 
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 
-	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 	"github.com/GenerateNU/sac/backend/src/utilities"
 
 )
 
 type CategoryServiceInterface interface {
-	GetCategories() (*[]models.Category, error)
+	GetCategories() ([]models.Category, error)
 	GetCategory(id string) (*models.Category, error)
 	UpdateCategory(id string, params models.UpdateCategoryRequestBody) (*models.Category, error)
 	DeleteCategory(id string) error
@@ -31,12 +32,12 @@ type CategoryService struct {
 
 func (c *CategoryService) CreateCategory(categoryBody models.CategoryRequestBody) (*models.Category, error) {
 	if err := c.Validate.Struct(categoryBody); err != nil {
-		return nil, fiber.ErrBadRequest
+		return nil, &errors.FailedToValidateCategory
 	}
 
 	category, err := utilities.MapResponseToModel(categoryBody, &models.Category{})
 	if err != nil {
-		return nil, fiber.ErrInternalServerError
+		return nil, &errors.FailedToMapResposeToModel
 	}
 
 	category := models.Category{

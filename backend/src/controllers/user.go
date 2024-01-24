@@ -1,9 +1,10 @@
 package controllers
 
 import (
+	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
-	"github.com/GenerateNU/sac/backend/src/utilities"
+
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -28,7 +29,7 @@ func NewUserController(userService services.UserServiceInterface) *UserControlle
 func (u *UserController) GetAllUsers(c *fiber.Ctx) error {
 	users, err := u.userService.GetAllUsers()
 	if err != nil {
-		return utilities.Error(c, fiber.StatusInternalServerError, err.Error())
+		return err.FiberError(c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(users)
@@ -47,15 +48,15 @@ func (u *UserController) GetAllUsers(c *fiber.Ctx) error {
 // @Failure     500   {string}    string "internal server error"
 // @Router		/api/v1/users/  [post]
 func (u *UserController) CreateUser(c *fiber.Ctx) error {
-	var userBody models.UserRequestBody
+	var userBody models.CreateUserRequestBody
 
 	if err := c.BodyParser(&userBody); err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "failed to process the request")
+		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
 	user, err := u.userService.CreateUser(userBody)
 	if err != nil {
-		return err
+		return err.FiberError(c)
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(user)
@@ -77,7 +78,7 @@ func (u *UserController) CreateUser(c *fiber.Ctx) error {
 func (u *UserController) GetUser(c *fiber.Ctx) error {
 	user, err := u.userService.GetUser(c.Params("id"))
 	if err != nil {
-		return utilities.Error(c, fiber.StatusInternalServerError, err.Error())
+		return err.FiberError(c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(user)
@@ -98,15 +99,15 @@ func (u *UserController) GetUser(c *fiber.Ctx) error {
 // @Failure		500   {string} 	  string "failed to hash password"
 // @Router		/api/v1/users/:id  [patch]
 func (u *UserController) UpdateUser(c *fiber.Ctx) error {
-	var user models.UserRequestBody
+	var user models.UpdateUserRequestBody
 
 	if err := c.BodyParser(&user); err != nil {
-		return utilities.Error(c, fiber.StatusBadRequest, "invalid request body")
+		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
 	updatedUser, err := u.userService.UpdateUser(c.Params("id"), user)
 	if err != nil {
-		return utilities.Error(c, fiber.StatusInternalServerError, err.Error())
+		return err.FiberError(c)
 	}
 
 	// Return the updated user details
@@ -124,11 +125,9 @@ func (u *UserController) UpdateUser(c *fiber.Ctx) error {
 // @Failure     500   {string}     string "failed to get all users"
 // @Router		/api/v1/users/:id  [delete]
 func (u *UserController) DeleteUser(c *fiber.Ctx) error {
-	userID := c.Params("id")
-
-	err := u.userService.DeleteUser(userID)
+	err := u.userService.DeleteUser(c.Params("id"))
 	if err != nil {
-		return fiber.ErrInternalServerError
+		return err.FiberError(c)
 	}
 
 	return c.SendStatus(fiber.StatusNoContent)

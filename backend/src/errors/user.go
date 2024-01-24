@@ -1,0 +1,42 @@
+package errors
+
+import "github.com/gofiber/fiber/v2"
+
+var (
+	FailedToValidateUser = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "failed to validate user",
+	}
+	FailedToGetAllUsers = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get all users",
+	}
+	FailedToGetUser = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get user",
+	}
+	FailedToCreateUser = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to create user",
+	}
+	FailedToUpdateUser = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to update user",
+	}
+	FailedToDeleteUser = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to delete user",
+	}
+	UserAlreadyExists = Error{
+		StatusCode: fiber.StatusConflict,
+		Message:    "user already exists",
+	}
+	UserNotFound = Error{
+		StatusCode: fiber.StatusNotFound,
+		Message:    "user not found",
+	}
+	FailedToComputePasswordHash = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to compute password hash",
+	}
+)

@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
-	"github.com/GenerateNU/sac/backend/src/utilities"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -33,13 +33,13 @@ func (t *CategoryController) CreateCategory(c *fiber.Ctx) error {
 	var categoryBody models.CategoryRequestBody
 
 	if err := c.BodyParser(&categoryBody); err != nil {
-		return utilities.Error(c, fiber.StatusBadRequest, "failed to process the request")
+		return errors.FailedToValidateCategory.FiberError(c)
 	}
 
 	newCategory, err := t.categoryService.CreateCategory(categoryBody)
-  
+
 	if err != nil {
-		return utilities.Error(c, fiber.StatusInternalServerError, err.Error())
+		return err.FiberError(c)
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(newCategory)
