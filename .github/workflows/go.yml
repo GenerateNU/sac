@@ -7,7 +7,6 @@ on:
   pull_request:
     paths:
       - "backend/**"
-      - "scripts/init_db.sh"
       - ".github/workflows/go.yml"
 
 concurrency:
