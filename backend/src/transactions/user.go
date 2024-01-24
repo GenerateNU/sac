@@ -64,9 +64,7 @@ func UpdateUser(db *gorm.DB, id uint, user models.User) (*models.User, *errors.E
 }
 
 func DeleteUser(db *gorm.DB, id uint) *errors.Error {
-	var deletedUser models.User
-
-	result := db.Where("id = ?", id).Delete(&deletedUser)
+	result := db.Delete(&models.User{}, id)
 	if result.RowsAffected == 0 {
 		if result.Error == nil {
 			return &errors.UserNotFound

@@ -2,6 +2,7 @@ package tests
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"testing"
 
@@ -9,13 +10,15 @@ import (
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/gofiber/fiber/v2"
 	"github.com/huandu/go-assert"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 
 	"github.com/goccy/go-json"
 )
 
 func SampleCategoryFactory() *map[string]interface{} {
 	return &map[string]interface{}{
-		"category_name": "Foo",
+		"name": "Foo",
 	}
 }
 
@@ -31,11 +34,12 @@ func AssertCategoryWithIDBodyRespDB(app TestApp, assert *assert.A, resp *http.Re
 	err = app.Conn.First(&dbCategory, id).Error
 
 	assert.NilError(err)
-
+	x, _ := io.ReadAll(resp.Body)
+	fmt.Println(string(x))
 	assert.Equal(dbCategory.ID, respCategory.ID)
 	assert.Equal(dbCategory.Name, respCategory.Name)
 
-	assert.Equal((*body)["category_name"].(string), dbCategory.Name)
+	assert.Equal((*body)["name"].(string), dbCategory.Name)
 
 }
 
@@ -50,7 +54,7 @@ func CreateSampleCategory(t *testing.T) ExistingAppAssert {
 		Body:   SampleCategoryFactory(),
 	}.TestOnStatusAndDB(t, nil,
 		DBTesterWithStatus{
-			Status:   201,
+			Status:   fiber.StatusCreated,
 			DBTester: AssertSampleCategoryBodyRespDB,
 		},
 	)
@@ -65,8 +69,8 @@ func TestCreateCategoryIgnoresid(t *testing.T) {
 		Method: fiber.MethodPost,
 		Path:   "/api/v1/categories/",
 		Body: &map[string]interface{}{
-			"id":            12,
-			"category_name": "Foo",
+			"id":   12,
+			"name": "Foo",
 		},
 	}.TestOnStatusAndDB(t, nil,
 		DBTesterWithStatus{
@@ -95,11 +99,11 @@ func TestCreateCategoryFailsIfNameIsNotString(t *testing.T) {
 		Method: fiber.MethodPost,
 		Path:   "/api/v1/categories/",
 		Body: &map[string]interface{}{
-			"category_name": 1231,
+			"name": 1231,
 		},
 	}.TestOnStatusMessageAndDB(t, nil,
 		ErrorWithDBTester{
-			Error:    errors.FailedToValidateCategory,
+			Error:    errors.FailedToParseRequestBody,
 			DBTester: AssertNoCategories,
 		},
 	).Close()
@@ -126,9 +130,9 @@ func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
 		AssertNumCategoriesRemainsAtN(app, assert, resp, 1)
 	}
 
-	for _, permutation := range AllCasingPermutations((*SampleCategoryFactory())["category_name"].(string)) {
+	for _, permutation := range AllCasingPermutations((*SampleCategoryFactory())["name"].(string)) {
 		modifiedSampleCategoryBody := *SampleCategoryFactory()
-		modifiedSampleCategoryBody["category_name"] = permutation
+		modifiedSampleCategoryBody["name"] = permutation
 
 		TestRequest{
 			Method: fiber.MethodPost,
@@ -146,7 +150,7 @@ func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
 }
 
 func TestGetCategoryWorks(t *testing.T) {
-	existingAppAssert := CreateSampleCategory(t, "Science", nil)
+	existingAppAssert := CreateSampleCategory(t)
 
 	TestRequest{
 		Method: "GET",
@@ -154,7 +158,7 @@ func TestGetCategoryWorks(t *testing.T) {
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
 			Status:   200,
-			DBTester: AssertRespCategorySameAsDBCategory,
+			DBTester: AssertSampleCategoryBodyRespDB,
 		},
 	).Close()
 }
@@ -172,148 +176,117 @@ func TestGetCategoryFailsBadRequest(t *testing.T) {
 		TestRequest{
 			Method: "GET",
 			Path:   fmt.Sprintf("/api/v1/categories/%s", badRequest),
-		}.TestOnStatusAndMessage(t, nil,
-			MessageWithStatus{
-				Status:  400,
-				Message: "failed to validate id",
-			},
-		).Close()
+		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
 	}
 }
 
 func TestGetCategoryFailsNotFound(t *testing.T) {
 	TestRequest{
 		Method: "GET",
-		Path:   "/api/v1/tags/1",
-	}.TestOnStatusAndMessage(t, nil,
-		MessageWithStatus{
-			Status:  404,
-			Message: "failed to find tag",
-		},
-	).Close()
+		Path:   "/api/v1/categories/1",
+	}.TestOnError(t, nil, errors.CategoryNotFound).Close()
 }
 
-func TestGetCategoriesWork(t *testing.T) {
-	existingAppAssert := CreateSampleCategory(t, "Science", nil)
+func TestGetCategoriesWorks(t *testing.T) {
+	existingAppAssert := CreateSampleCategory(t)
 
 	TestRequest{
 		Method: "GET",
-		Path:   "/api/v1/categories/1",
-	}.TestOnStatusAndDB(t, &existingAppAssert,
-		DBTesterWithStatus{
-			Status:   200,
-			DBTester: AssertRespCategorySameAsDBCategory,
-		},
-	).Close()
-}
-
-func TestUpdateCategoryWorksUpdateName(t *testing.T) {
-	existingAppAssert := CreateSampleCategory(t, "Science", nil)
-
-	TestRequest{
-		Method: "PATCH",
-		Path:   "/api/v1/categories/1",
-		Body: &map[string]interface{}{
-			"category_name": "History",
-		},
+		Path:   "/api/v1/categories/",
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
 			Status: 200,
 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-				var category models.Category
+				var categories []models.Category
 
-				err := json.NewDecoder(resp.Body).Decode(&category)
-
-				assert.NilError(err)
-
-				// get the user directly from
-				dbCategory, err := transactions.GetCategory(app.Conn, category.ID)
+				err := app.Conn.Find(&categories).Error
 
 				assert.NilError(err)
 
-				// assert that the user returned from the database is the same as the user returned from the API
-				assert.Equal(dbCategory.Name, category.Name)
+				var respCategories []models.Category
+
+				err = json.NewDecoder(resp.Body).Decode(&respCategories)
+
+				assert.NilError(err)
+
+				assert.Equal(1, len(respCategories))
+				assert.Equal(1, len(categories))
+
+				assert.Equal(categories[0].ID, respCategories[0].ID)
+
+				assert.Equal(categories[0].Name, respCategories[0].Name)
+
+				assert.Equal((*SampleCategoryFactory())["name"].(string), categories[0].Name)
 			},
+		},
+	).Close()
+}
+
+func TestUpdateCategoryWorks(t *testing.T) {
+	existingAppAssert := CreateSampleCategory(t)
+
+	generateNUCategory := *SampleCategoryFactory()
+	generateNUCategory["name"] = cases.Title(language.English).String("GenerateNU")
+
+	var AssertUpdatedCategoryBodyRespDB = func(app TestApp, assert *assert.A, resp *http.Response) {
+		AssertCategoryWithIDBodyRespDB(app, assert, resp, 1, &generateNUCategory)
+	}
+
+	TestRequest{
+		Method: fiber.MethodPatch,
+		Path:   "/api/v1/categories/1",
+		Body:   &generateNUCategory,
+	}.TestOnStatusAndDB(t, &existingAppAssert,
+		DBTesterWithStatus{
+			Status:   fiber.StatusOK,
+			DBTester: AssertUpdatedCategoryBodyRespDB,
 		},
 	).Close()
 }
 
 func TestUpdateCategoryWorksWithSameDetails(t *testing.T) {
-	existingAppAssert := CreateSampleCategory(t, "Science", nil)
+	existingAppAssert := CreateSampleCategory(t)
 
 	TestRequest{
-		Method: "PATCH",
+		Method: fiber.MethodPatch,
 		Path:   "/api/v1/categories/1",
-		Body: &map[string]interface{}{
-			"category_name": "Science",
-		},
+		Body:   SampleCategoryFactory(),
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
-			Status:   200,
-			DBTester: AssertRespCategorySameAsDBCategory,
+			Status:   fiber.StatusOK,
+			DBTester: AssertSampleCategoryBodyRespDB,
 		},
 	).Close()
 }
 
-func TestUpdateCategoryFailsWithExistingName(t *testing.T) {
-	existingAppAssert := CreateSampleCategory(t, "Science", nil)
-	CreateSampleCategory(t, "History", &existingAppAssert)
-
-	TestRequest{
-		Method: "PATCH",
-		Path:   "/api/v1/categories/1",
-		Body: &map[string]interface{}{
-			"category_name": "History",
-		},
-	}.TestOnStatusAndMessage(t, &existingAppAssert,
-		MessageWithStatus{
-			Status:  400,
-			Message: "category with that name already exists",
-		},
-	).Close()
-}
-
-func TestUpdateCategoryBadRequest(t *testing.T) {
-	existingAppAssert := CreateSampleCategory(t, "Science", nil)
-
-	badBodys := []map[string]interface{}{
-		{
-			"name": 1,
-		},
-		{
-			"name": models.Category{},
-		},
+func TestUpdateCategoryFailsBadRequest(t *testing.T) {
+	badRequests := []string{
+		"0",
+		"-1",
+		"1.1",
+		"foo",
+		"null",
 	}
 
-	for _, badBody := range badBodys {
+	for _, badRequest := range badRequests {
 		TestRequest{
-			Method: "PATCH",
-			Path:   "/api/v1/categories/1",
-			Body:   &badBody,
-		}.TestOnStatusMessageAndDB(t, &existingAppAssert,
-			StatusMessageDBTester{
-				MessageWithStatus: MessageWithStatus{
-					Status:  400,
-					Message: "failed to validate the data",
-				},
-				DBTester: AssertNoTags,
-			},
-		)
+			Method: fiber.MethodPatch,
+			Path:   fmt.Sprintf("/api/v1/tags/%s", badRequest),
+			Body:   SampleTagFactory(),
+		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
 	}
-
-	existingAppAssert.Close()
 }
 
 func TestDeleteCategoryWorks(t *testing.T) {
-	existingAppAssert := CreateSampleCategory(t, "Science", nil)
+	existingAppAssert := CreateSampleCategory(t)
 
 	TestRequest{
-		Method: "DELETE",
+		Method: fiber.MethodDelete,
 		Path:   "/api/v1/categories/1",
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
-			Status:   204,
-			DBTester: AssertNoTags,
+			Status:   fiber.StatusNoContent,
+			DBTester: AssertNoCategories,
 		},
 	).Close()
 }
@@ -329,25 +302,15 @@ func TestDeleteCategoryFailsBadRequest(t *testing.T) {
 
 	for _, badRequest := range badRequests {
 		TestRequest{
-			Method: "DELETE",
+			Method: fiber.MethodDelete,
 			Path:   fmt.Sprintf("/api/v1/categories/%s", badRequest),
-		}.TestOnStatusAndMessage(t, nil,
-			MessageWithStatus{
-				Status:  400,
-				Message: "failed to validate id",
-			},
-		).Close()
+		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
 	}
 }
 
 func TestDeleteCategoryFailsNotFound(t *testing.T) {
 	TestRequest{
-		Method: "DELETE",
+		Method: fiber.MethodDelete,
 		Path:   "/api/v1/categories/1",
-	}.TestOnStatusAndMessage(t, nil,
-		MessageWithStatus{
-			Status:  404,
-			Message: "failed to find category",
-		},
-	).Close()
+	}.TestOnError(t, nil, errors.CategoryNotFound).Close()
 }

@@ -11,12 +11,24 @@ var (
 		StatusCode: fiber.StatusBadRequest,
 		Message:    "failed to validate id",
 	}
-	FailedToMapResposeToModel = Error{
+	FailedToValidateNonNegativeValue = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "failed to validate non-negative value",
+	}
+	FailedToMapRequestToModel = Error{
 		StatusCode: fiber.StatusInternalServerError,
-		Message:    "failed to map response to model",
+		Message:    "failed to map request to model",
 	}
 	InternalServerError = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "internal server error",
+	}
+	FailedToValidateLimit = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "failed to validate limit",
+	}
+	FailedToValidatePage = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "failed to validate page",
 	}
 )

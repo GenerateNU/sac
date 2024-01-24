@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"strconv"
+
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
@@ -33,7 +35,7 @@ func (t *CategoryController) CreateCategory(c *fiber.Ctx) error {
 	var categoryBody models.CategoryRequestBody
 
 	if err := c.BodyParser(&categoryBody); err != nil {
-		return errors.FailedToValidateCategory.FiberError(c)
+		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
 	newCategory, err := t.categoryService.CreateCategory(categoryBody)
@@ -56,9 +58,12 @@ func (t *CategoryController) CreateCategory(c *fiber.Ctx) error {
 // @Failure     500   {string}    string "unable to retrieve categories"
 // @Router		/api/v1/category/  [get]
 func (t *CategoryController) GetCategories(c *fiber.Ctx) error {
-	categories, err := t.categoryService.GetCategories()
+	defaultLimit := 10
+	defaultPage := 1
+
+	categories, err := t.categoryService.GetCategories(c.Query("limit", strconv.Itoa(defaultLimit)), c.Query("page", strconv.Itoa(defaultPage)))
 	if err != nil {
-		return err
+		return err.FiberError(c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(&categories)
@@ -79,7 +84,7 @@ func (t *CategoryController) GetCategories(c *fiber.Ctx) error {
 func (t *CategoryController) GetCategory(c *fiber.Ctx) error {
 	category, err := t.categoryService.GetCategory(c.Params("id"))
 	if err != nil {
-		return err
+		return err.FiberError(c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(&category)
@@ -97,9 +102,9 @@ func (t *CategoryController) GetCategory(c *fiber.Ctx) error {
 // @Failure     404   {string}    string "failed to find category"
 // @Failure     500   {string}    string "failed to delete category"
 // @Router		/api/v1/category/{id}  [delete]
-func (t* CategoryController) DeleteCategory(c *fiber.Ctx) error {
+func (t *CategoryController) DeleteCategory(c *fiber.Ctx) error {
 	if err := t.categoryService.DeleteCategory(c.Params("id")); err != nil {
-		return err
+		return err.FiberError(c)
 	}
 
 	return c.SendStatus(fiber.StatusNoContent)
@@ -117,17 +122,17 @@ func (t* CategoryController) DeleteCategory(c *fiber.Ctx) error {
 // @Failure     404   {string}    string "failed to find category"
 // @Failure     500   {string}    string "failed to update category"
 // @Router		/api/v1/category/{id}  [patch]
-func (t* CategoryController) UpdateCategory(c *fiber.Ctx) error {
-	var category models.UpdateCategoryRequestBody
+func (t *CategoryController) UpdateCategory(c *fiber.Ctx) error {
+	var category models.CategoryRequestBody
 
 	if err := c.BodyParser(&category); err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "failed to process the request")
+		return errors.FailedToValidateCategory.FiberError(c)
 	}
 
 	updatedCategory, err := t.categoryService.UpdateCategory(c.Params("id"), category)
 
 	if err != nil {
-		return err
+		return err.FiberError(c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(updatedCategory)
