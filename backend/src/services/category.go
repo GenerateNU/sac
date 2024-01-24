@@ -16,8 +16,8 @@ import (
 
 type CategoryServiceInterface interface {
 	CreateCategory(categoryBody models.CategoryRequestBody) (*models.Category, *errors.Error)
-	GetCategory(id string) (*models.Category, *errors.Error)
 	GetCategories(limit string, page string) ([]models.Category, *errors.Error)
+	GetCategory(id string) (*models.Category, *errors.Error)
 	UpdateCategory(id string, params models.CategoryRequestBody) (*models.Category, *errors.Error)
 	DeleteCategory(id string) *errors.Error
 }

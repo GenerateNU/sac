@@ -11,13 +11,13 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to create category",
 	}
-	FailedToGetCategory = Error{
-		StatusCode: fiber.StatusInternalServerError,
-		Message:    "failed to get category",
-	}
 	FailedToGetCategories = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to get categories",
+	}
+	FailedToGetCategory = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get category",
 	}
 	FailedToUpdateCategory = Error{
 		StatusCode: fiber.StatusInternalServerError,
