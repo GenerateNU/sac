@@ -42,7 +42,6 @@ func UpdateTag(db *gorm.DB, id uint, tag models.Tag) (*models.Tag, *errors.Error
 	}
 
 	return &tag, nil
-
 }
 
 func DeleteTag(db *gorm.DB, id uint) *errors.Error {

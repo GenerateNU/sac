@@ -36,9 +36,9 @@ func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models
 		return nil, &errors.FailedToValidateUser
 	}
 
-	user, err := utilities.MapResponseToModel(userBody, &models.User{})
+	user, err := utilities.MapRequestToModel(userBody, &models.User{})
 	if err != nil {
-		return nil, &errors.FailedToMapResposeToModel
+		return nil, &errors.FailedToMapRequestToModel
 	}
 
 	passwordHash, err := auth.ComputePasswordHash(userBody.Password)
@@ -62,9 +62,9 @@ func (u *UserService) GetUser(id string) (*models.User, *errors.Error) {
 }
 
 func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBody) (*models.User, *errors.Error) {
-	idAsUint, err := utilities.ValidateID(id)
-	if err != nil {
-		return nil, &errors.FailedToValidateID
+	idAsUint, idErr := utilities.ValidateID(id)
+	if idErr != nil {
+		return nil, idErr
 	}
 
 	if err := u.Validate.Struct(userBody); err != nil {
@@ -76,9 +76,9 @@ func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBod
 		return nil, &errors.FailedToComputePasswordHash
 	}
 
-	user, err := utilities.MapResponseToModel(userBody, &models.User{})
+	user, err := utilities.MapRequestToModel(userBody, &models.User{})
 	if err != nil {
-		return nil, &errors.FailedToMapResposeToModel
+		return nil, &errors.FailedToMapRequestToModel
 	}
 
 	user.PasswordHash = *passwordHash
@@ -86,11 +86,10 @@ func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBod
 	return transactions.UpdateUser(u.DB, *idAsUint, *user)
 }
 
-// Delete user with a specific id
 func (u *UserService) DeleteUser(id string) *errors.Error {
 	idAsInt, err := utilities.ValidateID(id)
 	if err != nil {
-		return &errors.FailedToValidateID
+		return err
 	}
 
 	return transactions.DeleteUser(u.DB, *idAsInt)
