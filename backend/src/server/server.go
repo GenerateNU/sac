@@ -69,8 +69,8 @@ func userRoutes(router fiber.Router, userService services.UserServiceInterface) 
 
 	users := router.Group("/users")
 
-	users.Get("/", userController.GetAllUsers)
 	users.Post("/", userController.CreateUser)
+	users.Get("/", userController.GetUsers)
 	users.Get("/:id", userController.GetUser)
 	users.Patch("/:id", userController.UpdateUser)
 	users.Delete("/:id", userController.DeleteUser)
@@ -94,6 +94,10 @@ func categoryRoutes(router fiber.Router, categoryService services.CategoryServic
 	categories := router.Group("/categories")
 
 	categories.Post("/", categoryController.CreateCategory)
+	categories.Get("/", categoryController.GetCategories)
+	categories.Get("/:id", categoryController.GetCategory)
+	categories.Delete("/:id", categoryController.DeleteCategory)
+	categories.Patch("/:id", categoryController.UpdateCategory)
 }
 
 func tagRoutes(router fiber.Router, tagService services.TagServiceInterface) {

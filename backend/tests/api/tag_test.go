@@ -54,7 +54,7 @@ func CreateSampleTag(t *testing.T) ExistingAppAssert {
 		Body:   SampleTagFactory(),
 	}.TestOnStatusAndDB(t, &appAssert,
 		DBTesterWithStatus{
-			Status:   201,
+			Status:   fiber.StatusCreated,
 			DBTester: AssertSampleTagBodyRespDB,
 		},
 	)
@@ -133,7 +133,7 @@ func TestGetTagWorks(t *testing.T) {
 		Path:   "/api/v1/tags/1",
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
-			Status:   200,
+			Status:   fiber.StatusOK,
 			DBTester: AssertSampleTagBodyRespDB,
 		},
 	).Close()
@@ -179,7 +179,7 @@ func TestUpdateTagWorksUpdateName(t *testing.T) {
 		Body:   &generateNUTag,
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
-			Status:   200,
+			Status:   fiber.StatusOK,
 			DBTester: AssertUpdatedTagBodyRespDB,
 		},
 	).Close()
@@ -189,7 +189,7 @@ func TestUpdateTagWorksUpdateCategory(t *testing.T) {
 	existingAppAssert := CreateSampleTag(t)
 
 	technologyCategory := *SampleCategoryFactory()
-	technologyCategory["category_name"] = "Technology"
+	technologyCategory["name"] = "Technology"
 
 	var AssertNewCategoryBodyRespDB = func(app TestApp, assert *assert.A, resp *http.Response) {
 		AssertCategoryWithIDBodyRespDB(app, assert, resp, 2, &technologyCategory)
@@ -201,7 +201,7 @@ func TestUpdateTagWorksUpdateCategory(t *testing.T) {
 		Body:   &technologyCategory,
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
-			Status:   201,
+			Status:   fiber.StatusCreated,
 			DBTester: AssertNewCategoryBodyRespDB,
 		},
 	)
@@ -219,7 +219,7 @@ func TestUpdateTagWorksUpdateCategory(t *testing.T) {
 		Body:   &technologyTag,
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
-			Status:   200,
+			Status:   fiber.StatusOK,
 			DBTester: AssertUpdatedTagBodyRespDB,
 		},
 	).Close()
@@ -234,7 +234,7 @@ func TestUpdateTagWorksWithSameDetails(t *testing.T) {
 		Body:   SampleTagFactory(),
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
-			Status:   200,
+			Status:   fiber.StatusOK,
 			DBTester: AssertSampleTagBodyRespDB,
 		},
 	).Close()
@@ -266,7 +266,7 @@ func TestDeleteTagWorks(t *testing.T) {
 		Path:   "/api/v1/tags/1",
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
-			Status:   204,
+			Status:   fiber.StatusNoContent,
 			DBTester: AssertNoTags,
 		},
 	).Close()
