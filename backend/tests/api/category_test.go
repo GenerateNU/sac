@@ -2,7 +2,6 @@ package tests
 
 import (
 	"fmt"
-	"io"
 	"net/http"
 	"testing"
 
@@ -34,13 +33,11 @@ func AssertCategoryWithIDBodyRespDB(app TestApp, assert *assert.A, resp *http.Re
 	err = app.Conn.First(&dbCategory, id).Error
 
 	assert.NilError(err)
-	x, _ := io.ReadAll(resp.Body)
-	fmt.Println(string(x))
+
 	assert.Equal(dbCategory.ID, respCategory.ID)
 	assert.Equal(dbCategory.Name, respCategory.Name)
 
 	assert.Equal((*body)["name"].(string), dbCategory.Name)
-
 }
 
 func AssertSampleCategoryBodyRespDB(app TestApp, assert *assert.A, resp *http.Response) {
