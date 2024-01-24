@@ -22,6 +22,16 @@ func CreateCategory(db *gorm.DB, category models.Category) (*models.Category, *e
 	return &category, nil
 }
 
+func GetCategories(db *gorm.DB, limit int, offset int) ([]models.Category, *errors.Error) {
+	var categories []models.Category
+
+	if err := db.Limit(limit).Offset(offset).Find(&categories).Error; err != nil {
+		return nil, &errors.FailedToGetCategories
+	}
+
+	return categories, nil
+}
+
 func GetCategory(db *gorm.DB, id uint) (*models.Category, *errors.Error) {
 	var category models.Category
 
@@ -34,16 +44,6 @@ func GetCategory(db *gorm.DB, id uint) (*models.Category, *errors.Error) {
 	}
 
 	return &category, nil
-}
-
-func GetCategories(db *gorm.DB, limit int, offset int) ([]models.Category, *errors.Error) {
-	var categories []models.Category
-
-	if err := db.Limit(limit).Offset(offset).Find(&categories).Error; err != nil {
-		return nil, &errors.FailedToGetCategories
-	}
-
-	return categories, nil
 }
 
 func UpdateCategory(db *gorm.DB, id uint, category models.Category) (*models.Category, *errors.Error) {

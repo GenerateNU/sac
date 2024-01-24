@@ -7,14 +7,6 @@ var (
 		StatusCode: fiber.StatusBadRequest,
 		Message:    "failed to validate user",
 	}
-	FailedToGetAllUsers = Error{
-		StatusCode: fiber.StatusInternalServerError,
-		Message:    "failed to get all users",
-	}
-	FailedToGetUser = Error{
-		StatusCode: fiber.StatusInternalServerError,
-		Message:    "failed to get user",
-	}
 	FailedToCreateUser = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to create user",
@@ -22,6 +14,14 @@ var (
 	FailedToUpdateUser = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to update user",
+	}
+	FailedToGetUsers = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get users",
+	}
+	FailedToGetUser = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get user",
 	}
 	FailedToDeleteUser = Error{
 		StatusCode: fiber.StatusInternalServerError,

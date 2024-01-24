@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"strconv"
+
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
@@ -14,25 +16,6 @@ type UserController struct {
 
 func NewUserController(userService services.UserServiceInterface) *UserController {
 	return &UserController{userService: userService}
-}
-
-// GetAllUsers godoc
-//
-// @Summary		Gets all users
-// @Description	Returns all users
-// @ID			get-all-users
-// @Tags      	user
-// @Produce		json
-// @Success		200	  {object}	  []models.User
-// @Failure     500   {string}    string "failed to get all users"
-// @Router		/api/v1/users/  [get]
-func (u *UserController) GetAllUsers(c *fiber.Ctx) error {
-	users, err := u.userService.GetAllUsers()
-	if err != nil {
-		return err.FiberError(c)
-	}
-
-	return c.Status(fiber.StatusOK).JSON(users)
 }
 
 // Create User godoc
@@ -60,6 +43,28 @@ func (u *UserController) CreateUser(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(user)
+}
+
+// GetAllUsers godoc
+//
+// @Summary		Gets all users
+// @Description	Returns all users
+// @ID			get-all-users
+// @Tags      	user
+// @Produce		json
+// @Success		200	  {object}	  []models.User
+// @Failure     500   {string}    string "failed to get all users"
+// @Router		/api/v1/users/  [get]
+func (u *UserController) GetUsers(c *fiber.Ctx) error {
+	defaultLimit := 10
+	defaultPage := 1
+
+	categories, err := u.userService.GetUsers(c.Query("limit", strconv.Itoa(defaultLimit)), c.Query("page", strconv.Itoa(defaultPage)))
+	if err != nil {
+		return err.FiberError(c)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(&categories)
 }
 
 // GetUser godoc

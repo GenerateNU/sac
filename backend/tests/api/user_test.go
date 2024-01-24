@@ -18,7 +18,7 @@ import (
 	"github.com/huandu/go-assert"
 )
 
-func TestGetAllUsersWorks(t *testing.T) {
+func TestGetUsersWorks(t *testing.T) {
 	TestRequest{
 		Method: fiber.MethodGet,
 		Path:   "/api/v1/users/",
@@ -43,7 +43,7 @@ func TestGetAllUsersWorks(t *testing.T) {
 				assert.Equal(models.College("KCCS"), respUser.College)
 				assert.Equal(models.Year(1), respUser.Year)
 
-				dbUsers, err := transactions.GetAllUsers(app.Conn)
+				dbUsers, err := transactions.GetUsers(app.Conn, 1, 0)
 
 				assert.NilError(&err)
 
