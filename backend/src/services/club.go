@@ -64,9 +64,9 @@ func (c *ClubService) GetClub(id string) (*models.Club, *errors.Error) {
 }
 
 func (c *ClubService) UpdateClub(id string, clubBody models.UpdateClubRequestBody) (*models.Club, *errors.Error) {
-	idAsUint, err := utilities.ValidateID(id)
-	if err != nil {
-		return nil, &errors.FailedToValidateID
+	idAsUint, idErr := utilities.ValidateID(id)
+	if idErr != nil {
+		return nil, idErr
 	}
 
 	if err := c.Validate.Struct(clubBody); err != nil {
