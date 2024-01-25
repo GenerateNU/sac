@@ -60,17 +60,6 @@ var rolePermissions = map[UserRole][]Permission{
 		CategoryRead, CategoryCreate, CategoryWrite, CategoryDelete,
 		NotificationRead, NotificationCreate, NotificationWrite, NotificationDelete,
 	},
-	ClubAdmin: {
-		UserRead, UserWrite,
-		TagRead, TagCreate, TagWrite, TagDelete,
-		ClubRead, ClubCreate, ClubWrite, ClubDelete,
-		PointOfContactRead, PointOfContactCreate, PointOfContactWrite, PointOfContactDelete,
-		CommentRead, CommentCreate, CommentWrite, CommentDelete,
-		EventRead, EventCreate, EventWrite, EventDelete,
-		ContactRead, ContactCreate, ContactWrite, ContactDelete,
-		CategoryRead, CategoryCreate, CategoryWrite, CategoryDelete,
-		NotificationRead, NotificationCreate, NotificationWrite, NotificationDelete,
-	},
 	Student: {
 		UserRead,
 		TagRead,

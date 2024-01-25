@@ -31,4 +31,24 @@ var (
 		StatusCode: fiber.StatusBadRequest,
 		Message:    "failed to validate page",
 	}
+	Unauthorized = Error{
+		StatusCode: fiber.StatusUnauthorized,
+		Message:    "unauthorized",
+	}
+	FailedToSignToken = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to sign token",
+	}
+	FailedToCreateAccessToken = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to create access token",
+	}
+	FailedToParseRefreshToken = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "failed to parse refresh token",
+	}
+	FailedToParseAccessToken = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to parse access token",
+	}
 )

@@ -27,6 +27,10 @@ type CategoryService struct {
 	Validate *validator.Validate
 }
 
+func NewCategoryService(db *gorm.DB, validate *validator.Validate) *CategoryService {
+	return &CategoryService{DB: db, Validate: validate}
+}
+
 func (c *CategoryService) CreateCategory(categoryBody models.CategoryRequestBody) (*models.Category, *errors.Error) {
 	if err := c.Validate.Struct(categoryBody); err != nil {
 		return nil, &errors.FailedToValidateCategory

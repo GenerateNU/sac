@@ -14,7 +14,7 @@ const (
 	AuthRegisterPath = "/api/v1/users/auth/register"
 )
 
-func Authenticate(c *fiber.Ctx) error {
+func (m *MiddlewareService) Authenticate(c *fiber.Ctx) error {
 	// TODO: use a contains function instead of this
 	if c.Path() == AuthLoginPath || c.Path() == AuthRefreshPath || c.Path() == AuthRegisterPath {
         return c.Next()
@@ -39,7 +39,7 @@ func Authenticate(c *fiber.Ctx) error {
 }
 
 // Authorize is a middleware that checks if the user has the required permissions
-func Authorize(requiredPermissions []models.Permission) fiber.Handler {
+func (m *MiddlewareService) Authorize(requiredPermissions ...models.Permission) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 		// Get user role from the token
 		role, err := auth.GetRoleFromToken(c.Cookies("access_token"))

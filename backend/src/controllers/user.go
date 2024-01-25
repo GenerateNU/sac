@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 
@@ -141,68 +140,6 @@ func (u *UserController) DeleteUser(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusNoContent)
 }
 
-// GetUser godoc
-//
-// @Summary		Gets a user
-// @Description	Returns a user
-// @ID			get-user
-// @Tags      	user
-// @Produce		json
-// @Param		id	path	int	true	"User ID"
-// @Success		200	  {object}	  models.User
-// @Failure     400   {string}    string "Invalid user id"
-// @Failure     500   {string}    string "Failed to fetch user"
-// @Router		/api/v1/users/{id}  [get]
-func (u *UserController) GetUser(c *fiber.Ctx) error {
-	fmt.Println("GetAllParams", c.AllParams())
-	id, err := strconv.Atoi(c.Params("id"))
-	if err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "invalid user id")
-	}
-
-	userID := uint(id)
-
-	user, err := u.userService.GetUser(userID)
-	if err != nil {
-		return err
-	}
-
-	return c.Status(fiber.StatusOK).JSON(user)
-}
-
-// Register godoc
-//
-// @Summary		Registers a user
-// @Description	Registers a user
-// @ID			register-user
-// @Tags      	user
-// @Accept		json
-// @Produce		json
-// @Param		userBody	body	[]string	true	"User Body"
-// @Success		201	  {object}	  models.User
-// @Failure     400   {string}    string "failed to parse body"
-// @Failure     400   {string}    string "failed to register user"
-// @Router		/api/v1/users/auth/register  [post]
-func (u *UserController) Register(c *fiber.Ctx) error {
-	var userBody models.CreateUserResponseBody
-
-	if err := c.BodyParser(&userBody); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "failed to parse body",
-		})
-	}
-
-	user, err := u.userService.Register(userBody)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": err.Error(),
-		})
-	}
-
-	// TODO: Should we login the user after registering?
-	return c.Status(fiber.StatusOK).JSON(user)
-}
-
 // Login godoc
 //
 // @Summary		Logs in a user
@@ -219,38 +156,31 @@ func (u *UserController) Register(c *fiber.Ctx) error {
 func (u *UserController) Login(c *fiber.Ctx) error {
 	var userBody models.LoginUserResponseBody
 
+
 	if err := c.BodyParser(&userBody); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "failed to parse body",
-		})
+		errors.FailedToParseRequestBody.FiberError(c)
 	}
 
 	user, err := u.userService.Login(userBody)
 	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"message": err.Error(),
-		})
+		return err.FiberError(c)
 	}
 
 	accessToken, err := auth.CreateAccessToken(strconv.Itoa(int(user.ID)), string(user.Role))
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": err.Error(),
-		})
+		return err.FiberError(c)
 	}
 
 	refreshToken, err := auth.CreateRefreshToken()
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": err.Error(),
-		})
+		return err.FiberError(c)
 	}
 
-	// Set the tokens in the response
+	// Set the tokens in the response/
 	c.Cookie(auth.CreateCookie("access_token", *accessToken, time.Now().Add(time.Minute*15)))
 	c.Cookie(auth.CreateCookie("refresh_token", *refreshToken, time.Now().Add(time.Hour*24*30)))
 
-	return c.JSON(fiber.Map{
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "success",
 	})
 }

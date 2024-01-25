@@ -6,7 +6,6 @@ type UserRole string
 
 const (
 	Super     UserRole = "super"
-	ClubAdmin UserRole = "clubAdmin"
 	Student   UserRole = "student"
 )
 
@@ -78,6 +77,6 @@ type UpdateUserRequestBody struct {
 }
 
 type LoginUserResponseBody struct {
-	Email    string `json:"email" validate:"email"`
+	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"min=8,max=255"`
 }

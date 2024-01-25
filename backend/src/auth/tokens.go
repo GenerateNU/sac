@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/GenerateNU/sac/backend/src/config"
+	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/types"
 
 	"github.com/gofiber/fiber/v2"
@@ -11,7 +12,7 @@ import (
 )
 
 // CreateAccessToken creates a new access token for the user
-func CreateAccessToken(id string, role string) (*string, error) {
+func CreateAccessToken(id string, role string) (*string, *errors.Error) {
 	var settings config.Settings
 
 	accessTokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, &types.CustomClaims{
@@ -32,7 +33,7 @@ func CreateAccessToken(id string, role string) (*string, error) {
 }
 
 // CreateRefreshToken creates a new refresh token for the user
-func CreateRefreshToken() (*string, error) {
+func CreateRefreshToken() (*string, *errors.Error) {
 	var settings config.Settings
 
 	refreshTokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, &types.CustomClaims{
@@ -50,10 +51,10 @@ func CreateRefreshToken() (*string, error) {
 	return refreshToken, nil
 }
 
-func SignToken(token *jwt.Token, secret string) (*string, error) {
+func SignToken(token *jwt.Token, secret string) (*string, *errors.Error) {
 	tokenString, err := token.SignedString([]byte(secret))
 	if err != nil {
-		return nil, err
+		return nil, &errors.FailedToSignToken
 	}
 	return &tokenString, nil
 }
@@ -79,18 +80,18 @@ func ExpireCookie(name string) *fiber.Cookie {
 }
 
 // RefreshAccessToken refreshes the access token
-func RefreshAccessToken(accessCookie, refreshCookie string) (*string, error) {
+func RefreshAccessToken(accessCookie, refreshCookie string) (*string, *errors.Error) {
 	var settings config.Settings
 	// Parse the access token
 	accessToken, err := ParseAccessToken(accessCookie)
 	if err != nil {
-		return nil, err
+		return nil, &errors.FailedToParseAccessToken
 	}
 
 	// Parse the refresh token
 	refreshToken, err := ParseRefreshToken(refreshCookie)
 	if err != nil {
-		return nil, err
+		return nil, &errors.FailedToParseRefreshToken
 	}
 
 	// Check if the access token is valid
@@ -106,7 +107,7 @@ func RefreshAccessToken(accessCookie, refreshCookie string) (*string, error) {
 	// Check if the refresh token is valid
 	if _, ok := refreshToken.Claims.(*jwt.StandardClaims); !ok || !refreshToken.Valid {
 		// Refresh token is invalid, return unauthorized
-		return nil, jwt.ErrInvalidKey
+		return nil, &errors.Unauthorized
 	}
 
 	// Refresh the access token
@@ -115,7 +116,7 @@ func RefreshAccessToken(accessCookie, refreshCookie string) (*string, error) {
 	// Create Access Token with Custom Claims
 	newAccessToken, err := CreateAccessToken(claims.Issuer, claims.Role)
 	if err != nil {
-		return nil, err
+		return nil, &errors.FailedToCreateAccessToken
 	}
 
 	return newAccessToken, nil
@@ -150,7 +151,7 @@ func GetRoleFromToken(tokenString string) (*string, error) {
 
 	claims, ok := token.Claims.(*types.CustomClaims)
 	if !ok || !token.Valid {
-		return nil, jwt.ErrInvalidKey
+		return nil, &errors.Unauthorized
 	}
 
 	return &claims.Role, nil

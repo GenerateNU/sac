@@ -34,12 +34,14 @@ func Init(db *gorm.DB) *fiber.App {
 
 	utilityRoutes(app)
 
+	middlewareService := middleware.NewMiddlewareService(db, validate)
+	
 	apiv1 := app.Group("/api/v1")
-	apiv1.Use(middleware.Authenticate)
-
-	userRoutes(apiv1, &services.UserService{DB: db, Validate: validate})
-	categoryRoutes(apiv1, &services.CategoryService{DB: db, Validate: validate})
-	tagRoutes(apiv1, &services.TagService{DB: db, Validate: validate})
+	apiv1.Use(middlewareService.Authenticate)
+	
+	userRoutes(apiv1, services.NewUserService(db, validate), middlewareService)
+	categoryRoutes(apiv1, services.NewCategoryService(db, validate))
+	tagRoutes(apiv1, services.NewTagService(db, validate))
 
 	return app
 }
@@ -69,27 +71,25 @@ func utilityRoutes(router fiber.Router) {
 	})
 }
 
-func userRoutes(router fiber.Router, userService services.UserServiceInterface) {
-	userController := controllers.NewUserController(userService)
+func userRoutes(router fiber.Router, userService services.UserServiceInterface, middlewareService middleware.MiddlewareInterface) {
+    userController := controllers.NewUserController(userService)
 
-	users := router.Group("/users")
+    // api/v1/users/*
+    users := router.Group("/users")
+    users.Post("/", userController.CreateUser)
+    users.Get("/", userController.GetUsers)
 
-	users.Post("/", userController.CreateUser)
-	users.Get("/", userController.GetUsers)
-	users.Get("/:id", userController.GetUser)
-	users.Patch("/:id", userController.UpdateUser)
-	users.Delete("/:id", userController.DeleteUser)
-	usersID := users.Group("/:id")
-	usersID.Use(middleware.UserAuthorizeById)
+    // api/v1/users/:id/*
+    // usersID := users.Group("/:id")
+    // users.Use(middlewareService.UserAuthorizeById)
+    users.Get("/:id", middlewareService.UserAuthorizeById, middlewareService.Authorize(models.UserRead), userController.GetUser)
+    users.Patch("/:id", middlewareService.UserAuthorizeById, middlewareService.Authorize(models.UserWrite), userController.UpdateUser)
+    users.Delete("/:id", middlewareService.UserAuthorizeById, middlewareService.Authorize(models.UserDelete), userController.DeleteUser)
 
-	users.Get("/", userController.GetAllUsers)
-	users.Post("/auth/register", userController.Register)
-	users.Get("/auth/refresh", userController.Refresh)
-	users.Get("/auth/logout", userController.Logout)
-	users.Post("/auth/login", userController.Login)
-
-	// api/v1/users/:id/*
-	usersID.Get("/", middleware.Authorize([]models.Permission{models.UserRead}), userController.GetUser)
+    // api/v1/auth/*
+    users.Get("/auth/logout", userController.Logout)
+    users.Get("/auth/refresh", userController.Refresh)
+    users.Post("/auth/login", userController.Login)
 }
 
 func categoryRoutes(router fiber.Router, categoryService services.CategoryServiceInterface) {

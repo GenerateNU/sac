@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/GenerateNU/sac/backend/src/auth"
@@ -8,7 +9,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func UserAuthorizeById(c *fiber.Ctx) error {
+func (m *MiddlewareService) UserAuthorizeById(c *fiber.Ctx) error {
+	fmt.Println("UserAuthorizeById")
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
 		return fiber.ErrBadRequest

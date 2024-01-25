@@ -21,6 +21,10 @@ type TagService struct {
 	Validate *validator.Validate
 }
 
+func NewTagService(db *gorm.DB, validate *validator.Validate) *TagService {
+	return &TagService{DB: db, Validate: validate}
+}
+
 func (t *TagService) CreateTag(tagBody models.TagRequestBody) (*models.Tag, *errors.Error) {
 	if err := t.Validate.Struct(tagBody); err != nil {
 		return nil, &errors.FailedToValidateTag
