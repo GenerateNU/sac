@@ -28,6 +28,7 @@ func ValidateEmail(fl validator.FieldLevel) bool {
 	return true
 }
 
+
 func ValidatePassword(fl validator.FieldLevel) bool {
 	if len(fl.Field().String()) < 8 {
 		return false

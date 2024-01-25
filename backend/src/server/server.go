@@ -37,7 +37,7 @@ func Init(db *gorm.DB) *fiber.App {
 	userRoutes(apiv1, &services.UserService{DB: db, Validate: validate})
 	categoryRoutes(apiv1, &services.CategoryService{DB: db, Validate: validate})
 	tagRoutes(apiv1, &services.TagService{DB: db, Validate: validate})
-
+	clubRoutes(apiv1, &services.ClubService{DB: db, Validate: validate})
 	return app
 }
 
@@ -92,4 +92,14 @@ func tagRoutes(router fiber.Router, tagService services.TagServiceInterface) {
 	tags.Post("/", tagController.CreateTag)
 	tags.Patch("/:id", tagController.UpdateTag)
 	tags.Delete("/:id", tagController.DeleteTag)
+}
+
+func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface) {
+	clubController := controllers.NewClubController(clubService)
+
+	pointOfContact := router.Group("/clubs/:id/poc/")
+
+	pointOfContact.Get("/:email", clubController.GetPointOfContact)
+	pointOfContact.Put("/:email", clubController.UpsertPointOfContact)
+	pointOfContact.Delete("/:email", clubController.DeletePointOfContact)
 }
