@@ -11,12 +11,12 @@ import (
 const (
 	AuthLoginPath = "/api/v1/users/auth/login"
 	AuthRefreshPath = "/api/v1/users/auth/refresh"
-	AuthLogoutPath = "/api/v1/users/auth/logout"
+	AuthRegisterPath = "/api/v1/users/auth/register"
 )
 
 func Authenticate(c *fiber.Ctx) error {
 	// TODO: use a contains function instead of this
-	if c.Path() == AuthLoginPath || c.Path() == AuthRefreshPath || c.Path() == AuthLogoutPath {
+	if c.Path() == AuthLoginPath || c.Path() == AuthRefreshPath || c.Path() == AuthRegisterPath {
         return c.Next()
     }
 
@@ -33,6 +33,7 @@ func Authenticate(c *fiber.Ctx) error {
 			"message": "unauthorized",
 		})
 	}
+
 
 	return c.Next()
 }

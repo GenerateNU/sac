@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -31,7 +32,6 @@ func NewUserController(userService services.UserServiceInterface) *UserControlle
 // @Router		/api/v1/users/  [get]
 func (u *UserController) GetAllUsers(c *fiber.Ctx) error {
 	users, err := u.userService.GetAllUsers()
-
 	if err != nil {
 		return err
 	}
@@ -52,6 +52,7 @@ func (u *UserController) GetAllUsers(c *fiber.Ctx) error {
 // @Failure     500   {string}    string "Failed to fetch user"
 // @Router		/api/v1/users/{id}  [get]
 func (u *UserController) GetUser(c *fiber.Ctx) error {
+	fmt.Println("GetAllParams", c.AllParams())
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid user id")
