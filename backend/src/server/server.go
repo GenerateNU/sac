@@ -34,7 +34,8 @@ func Init(db *gorm.DB) *fiber.App {
 
 	utilityRoutes(app)
 
-	apiv1 := app.Group("/api/v1", middleware.Authenticate)
+	apiv1 := app.Group("/api/v1")
+	apiv1.Use(middleware.Authenticate)
 
 	userRoutes(apiv1, &services.UserService{DB: db, Validate: validate})
 	categoryRoutes(apiv1, &services.CategoryService{DB: db, Validate: validate})
@@ -78,12 +79,17 @@ func userRoutes(router fiber.Router, userService services.UserServiceInterface) 
 	users.Get("/:id", userController.GetUser)
 	users.Patch("/:id", userController.UpdateUser)
 	users.Delete("/:id", userController.DeleteUser)
+	usersID := users.Group("/:id")
+	usersID.Use(middleware.UserAuthorizeById)
+
 	users.Get("/", userController.GetAllUsers)
-	users.Get("/:id", middleware.Authorize([]models.Permission{models.UserRead}), userController.GetUser) 
 	users.Post("/auth/register", userController.Register)
 	users.Get("/auth/refresh", userController.Refresh)
 	users.Get("/auth/logout", userController.Logout)
 	users.Post("/auth/login", userController.Login)
+
+	// api/v1/users/:id/*
+	usersID.Get("/", middleware.Authorize([]models.Permission{models.UserRead}), userController.GetUser)
 }
 
 func categoryRoutes(router fiber.Router, categoryService services.CategoryServiceInterface) {

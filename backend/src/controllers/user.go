@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -153,6 +154,7 @@ func (u *UserController) DeleteUser(c *fiber.Ctx) error {
 // @Failure     500   {string}    string "Failed to fetch user"
 // @Router		/api/v1/users/{id}  [get]
 func (u *UserController) GetUser(c *fiber.Ctx) error {
+	fmt.Println("GetAllParams", c.AllParams())
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid user id")
