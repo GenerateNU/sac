@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -48,7 +49,7 @@ func spawnApp() (TestApp, error) {
 		return TestApp{}, err
 	}
 
-	configuration, err := config.GetConfiguration("../../../config")
+	configuration, err := config.GetConfiguration(filepath.Join("..", "..", "config"))
 
 	if err != nil {
 		return TestApp{}, err

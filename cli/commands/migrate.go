@@ -37,17 +37,6 @@ func Migrate() error {
 
 	fmt.Println(string(output))
 
-	fmt.Println("Inserting data into database")
-
-	scriptCmd := exec.Command("./scripts/insert_db.sh")
-	scriptCmd.Dir = ROOT_DIR
-
-	output, err = scriptCmd.CombinedOutput()
-	if err != nil {
-		return cli.Exit("Error running insert_db.sh", 1)
-	}
-
-	fmt.Println(string(output))
 	fmt.Println("Done migrating database")
 
 	return nil
