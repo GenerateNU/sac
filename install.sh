@@ -5,8 +5,6 @@ set -o pipefail
 # Get the absolute path to the current script
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# /Users/davidoduneye/northeastern/org-generate/sac
-
 # Build the Go CLI tool
 go build -o "sac-cli" "cli/main.go"
 
