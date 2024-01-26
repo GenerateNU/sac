@@ -55,3 +55,15 @@ func DeleteTag(db *gorm.DB, id uint) *errors.Error {
 
 	return nil
 }
+
+func GetTagsByIDs(db *gorm.DB, selectedTagIDs []uint) ([]models.Tag, *errors.Error) {
+	if len(selectedTagIDs) != 0 {
+		var tags []models.Tag
+		if err := db.Model(models.Tag{}).Where("id IN ?", selectedTagIDs).Find(&tags).Error; err != nil {
+			return nil, &errors.FailedToGetTag
+		}
+		
+		return tags, nil
+	}
+	return []models.Tag{}, nil
+}

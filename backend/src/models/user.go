@@ -1,6 +1,8 @@
 package models
 
-import "github.com/GenerateNU/sac/backend/src/types"
+import (
+	"github.com/GenerateNU/sac/backend/src/types"
+)
 
 type UserRole string
 
@@ -75,4 +77,8 @@ type UpdateUserRequestBody struct {
 	Password  string  `json:"password" validate:"omitempty,password"`
 	College   College `json:"college" validate:"omitempty,oneof=CAMD DMSB KCCS CE BCHS SL CPS CS CSSH"`
 	Year      Year    `json:"year" validate:"omitempty,min=1,max=6"`
+}
+
+type CreateUserTagsBody struct {
+	Tags      []uint  `json:"tags" validate:"required"`
 }

@@ -19,6 +19,8 @@ type UserServiceInterface interface {
 	GetUser(id string) (*models.User, *errors.Error)
 	UpdateUser(id string, userBody models.UpdateUserRequestBody) (*models.User, *errors.Error)
 	DeleteUser(id string) *errors.Error
+	GetUserTags(id string) ([]models.Tag, *errors.Error)
+	CreateUserTags(id string, tagIDs []uint) ([]models.Tag, *errors.Error)
 }
 
 type UserService struct {
@@ -106,4 +108,27 @@ func (u *UserService) DeleteUser(id string) *errors.Error {
 	}
 
 	return transactions.DeleteUser(u.DB, *idAsInt)
+}
+
+func (u *UserService) GetUserTags(id string) ([]models.Tag, *errors.Error) {
+	idAsInt, err := utilities.ValidateID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return transactions.GetUserTags(u.DB, *idAsInt)
+}
+
+func (u *UserService) CreateUserTags(id string, tagIDs []uint) ([]models.Tag, *errors.Error) {
+	// Validate the id:
+	idAsInt, err := utilities.ValidateID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrieve a list of valid tags from the ids:
+	tags, err := transactions.GetTagsByIDs(u.DB, tagIDs)
+
+	// Update the user to reflect the new tags:
+	return transactions.CreateUserTags(u.DB, *idAsInt, tags)
 }
