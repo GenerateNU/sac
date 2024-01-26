@@ -25,6 +25,7 @@ func ClearDBCommand() *cli.Command {
 			if err != nil {
 				return cli.Exit(err.Error(), 1)
 			}
+
 			return nil
 		},
 	}
@@ -33,6 +34,8 @@ func ClearDBCommand() *cli.Command {
 }
 
 func CleanTestDBs() error {
+	fmt.Println("Cleaning test databases")
+
 	db, err := sql.Open("postgres", CONFIG.Database.WithDb())
 
 	if err != nil {

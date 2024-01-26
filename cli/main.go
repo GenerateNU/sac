@@ -17,10 +17,12 @@ func main() {
 			commands.ClearDBCommand(),
 			commands.MigrateCommand(),
 			commands.ResetDBCommand(),
+			commands.InsertDBCommand(),
 			commands.DropDBCommand(),
-			commands.TestCommand(), // TODO: frontend tests
+			commands.RunBackendCommand(),
+			commands.TestCommand(),   // TODO: frontend tests
 			commands.FormatCommand(), // TODO: frontend format
-			commands.LintCommand(), // TODO: frontend lint
+			commands.LintCommand(),   // TODO: frontend lint
 		},
 	}
 
