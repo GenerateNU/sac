@@ -74,29 +74,19 @@ func Test(folder string, runFrontend bool, runBackend bool) error {
 }
 
 func BackendTest() error {
-	// rootDir, err := utils.GetRootDir()
-	// if err != nil {
-	// 	return cli.Exit("Couldn't find the project root", 1)
-	// }
-
 	cmd := exec.Command("go", "test", "./...")
-	cmd.Dir = BACKEND_DIR + "/.."
+	cmd.Dir = fmt.Sprintf("%s/..", BACKEND_DIR)
+
+	defer CleanTestDBs()
 
 	out, err := cmd.CombinedOutput()
+
 	if err != nil {
 		fmt.Println(string(out))
 		return cli.Exit("Failed to run backend tests", 1)
 	}
 
 	fmt.Println(string(out))
-
-	cmd = exec.Command("./scripts/clean_old_test_dbs.sh")
-	cmd.Dir = ROOT_DIR
-
-	err = cmd.Run()
-	if err != nil {
-		return cli.Exit("Failed to clean old test databases", 1)
-	}
 
 	return nil
 }

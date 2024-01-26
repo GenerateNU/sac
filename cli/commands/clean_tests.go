@@ -1,9 +1,13 @@
 package commands
 
 import (
-	"fmt"
-	"os/exec"
+	"database/sql"
+	"os/user"
 
+	"fmt"
+	"sync"
+
+	_ "github.com/lib/pq"
 	"github.com/urfave/cli/v2"
 )
 
@@ -16,7 +20,11 @@ func ClearDBCommand() *cli.Command {
 				return cli.Exit("Invalid arguments", 1)
 			}
 
-			ClearDB()
+			err := CleanTestDBs()
+
+			if err != nil {
+				return cli.Exit(err.Error(), 1)
+			}
 			return nil
 		},
 	}
@@ -24,20 +32,58 @@ func ClearDBCommand() *cli.Command {
 	return &command
 }
 
-func ClearDB() error { 
+func CleanTestDBs() error {
+	db, err := sql.Open("postgres", CONFIG.Database.WithDb())
 
-	fmt.Println("Clearing databases")
-
-	cmd := exec.Command("./scripts/clean_old_test_dbs.sh")
-	cmd.Dir = ROOT_DIR
-
-	out, err := cmd.CombinedOutput()
 	if err != nil {
-		fmt.Println(string(out))
-		return cli.Exit("Failed to clean old test databases", 1)
+		return err
 	}
 
-	fmt.Println("Databases cleared")
-	
+	defer db.Close()
+
+	currentUser, err := user.Current()
+
+	if err != nil {
+		return fmt.Errorf("failed to get current user: %w", err)
+	}
+
+	rows, err := db.Query("SELECT datname FROM pg_database WHERE datistemplate = false AND datname != 'postgres' AND datname != $1 AND datname != $2", currentUser.Username, CONFIG.Database.DatabaseName)
+
+	if err != nil {
+		return err
+	}
+
+	defer rows.Close()
+
+	var wg sync.WaitGroup
+
+	for rows.Next() {
+		var dbName string
+
+		if err := rows.Scan(&dbName); err != nil {
+			return err
+		}
+
+		wg.Add(1)
+
+		go func(dbName string) {
+
+			defer wg.Done()
+
+			fmt.Printf("Dropping database %s\n", dbName)
+
+			if _, err := db.Exec(fmt.Sprintf("DROP DATABASE %s", dbName)); err != nil {
+				fmt.Printf("Failed to drop database %s: %v\n", dbName, err)
+			}
+
+		}(dbName)
+	}
+
+	if err := rows.Err(); err != nil {
+		return err
+	}
+
+	wg.Wait()
+
 	return nil
 }
