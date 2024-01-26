@@ -49,7 +49,7 @@ func spawnApp() (TestApp, error) {
 		return TestApp{}, err
 	}
 
-	configuration, err := config.GetConfiguration(filepath.Join("..", "..", "config"))
+	configuration, err := config.GetConfiguration(filepath.Join("..", "..", "..", "config"))
 
 	if err != nil {
 		return TestApp{}, err
