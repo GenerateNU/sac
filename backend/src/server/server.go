@@ -97,9 +97,8 @@ func tagRoutes(router fiber.Router, tagService services.TagServiceInterface) {
 func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface) {
 	clubController := controllers.NewClubController(clubService)
 
-	pointOfContact := router.Group("/clubs/:id/poc/")
-
-	pointOfContact.Get("/:email", clubController.GetPointOfContact)
-	pointOfContact.Put("/:email", clubController.UpsertPointOfContact)
+	pointOfContact := router.Group("/clubs/:id/poc")
+	pointOfContact.Get("/", clubController.GetAllPointOfContact)
+	pointOfContact.Put("/", clubController.UpsertPointOfContact)
 	pointOfContact.Delete("/:email", clubController.DeletePointOfContact)
 }

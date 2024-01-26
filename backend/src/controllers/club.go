@@ -1,8 +1,7 @@
 package controllers
 
 import (
-	"strconv"
-
+	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
 	"github.com/gofiber/fiber/v2"
@@ -30,11 +29,11 @@ func NewClubController(clubService services.ClubServiceInterface) *ClubControlle
 // @Failure     500   {string}    string "internal server error"
 // @Router		api/v1/clubs/:id/poc/:email  [put]
 func (u *ClubController) UpsertPointOfContact(c *fiber.Ctx) error {
-	var pointOfContactBody models.PointOfContact
+	var pointOfContactBody models.CreatePointOfContactBody
 	if err := c.BodyParser(&pointOfContactBody); err != nil {
-		return c.Status(fiber.StatusBadRequest).SendString("Failed to Parse Request Body")
+		return errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToParseRequestBody}.FiberError(c)
 	}
-	pointOfContact, err := u.clubService.CreateOrUpdatePointOfContact(pointOfContactBody)
+	pointOfContact, err := u.clubService.UpsertPointOfContact(pointOfContactBody)
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -54,20 +53,13 @@ func (u *ClubController) UpsertPointOfContact(c *fiber.Ctx) error {
 // @Failure		400   {string}    string "failed to validate point of contact"
 // @Failure     500   {string}    string "failed to get point of contact"
 // @Router		api/v1/clubs/:id/poc/:email [get]
-func (u *ClubController) GetPointOfContact(c *fiber.Ctx) error {
-	clubId, err := strconv.ParseUint(c.Params("id"), 10, 64)
+func (u *ClubController) GetAllPointOfContact(c *fiber.Ctx) error {
+	clubId := c.Params("id")
+	pointOfContact, err := u.clubService.GetAllPointOfContacts(clubId)
 	if err != nil {
-		return err
+		return err.FiberError(c)
 	}
-
-	pointOfContact, err := u.clubService.GetPointOfContact(c.Params("email"), uint(clubId))
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
-	}
-	if pointOfContact == nil {
-		return c.Status(fiber.StatusNotFound).SendString("Point of Contact Not Found")
-	}
-	return c.SendStatus(fiber.StatusNoContent)
+	return c.Status(fiber.StatusOK).JSON(pointOfContact)
 }
 
 // DeletePointOfContact godoc
@@ -86,7 +78,7 @@ func (u *ClubController) DeletePointOfContact(c *fiber.Ctx) error {
 	email := c.Params("email")
 	err := u.clubService.DeletePointOfContact(email, clubId)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
+		return err.FiberError(c)
 	}
 	return c.SendStatus(fiber.StatusNoContent)
 }

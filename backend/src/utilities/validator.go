@@ -28,6 +28,11 @@ func ValidateEmail(fl validator.FieldLevel) bool {
 	return true
 }
 
+func ValidateGenericEmail(email string) bool {
+	_, err := emailaddress.Parse(email)
+	return err == nil
+}
+
 
 func ValidatePassword(fl validator.FieldLevel) bool {
 	if len(fl.Field().String()) < 8 {

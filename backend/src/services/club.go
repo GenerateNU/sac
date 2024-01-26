@@ -11,9 +11,9 @@ import (
 )
 
 type ClubServiceInterface interface {
-	CreateOrUpdatePointOfContact(pointOfContactBody models.PointOfContact) (*models.PointOfContact, *errors.Error)
-	GetPointOfContact(email string, club_id string) (*models.PointOfContact, *errors.Error)
-	DeletePointOfContact(email string, club_id string) *errors.Error
+	UpsertPointOfContact(pointOfContactBody models.CreatePointOfContactBody) (*models.PointOfContact, *errors.Error)
+	GetAllPointOfContacts(clubId string) ([]models.PointOfContact, *errors.Error)
+	DeletePointOfContact(email string, clubId string) *errors.Error
 }
 
 type ClubService struct {
@@ -21,29 +21,35 @@ type ClubService struct {
 	Validate *validator.Validate
 }
 
-// Point of Contact
-// Create or Update Point of Contact 
-func (u *ClubService) CreateOrUpdatePointOfContact(pointOfContact models.PointOfContact) (*models.PointOfContact, *errors.Error) {
-	if err := u.Validate.Struct(pointOfContact); err != nil {
+// Upsert A Point of Contact
+func (u *ClubService) UpsertPointOfContact(pointOfContactBody models.CreatePointOfContactBody) (*models.PointOfContact, *errors.Error) {
+	if err := u.Validate.Struct(pointOfContactBody); err != nil {
 		return nil, &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidatePointOfContact}
 	}
-	return transactions.CreateorUpdatePointOfContact(u.DB, &pointOfContact)
+	pointOfContact, err := utilities.MapResponseToModel(pointOfContactBody, &models.PointOfContact{})
+	if err != nil {
+		return nil, &errors.Error{StatusCode: fiber.StatusInternalServerError, Message: errors.FailedToMapResposeToModel}
+	}
+	return transactions.UpsertPointOfContact(u.DB, pointOfContact)
 }
 
-// Get Point of Contact 
-func (u *ClubService) GetPointOfContact(email string, club_id string) (*models.PointOfContact, *errors.Error) {
-	club_idAsInt, err := utilities.ValidateID(club_id)
+// Get All Point of Contact
+func (u *ClubService) GetAllPointOfContacts(clubId string) ([]models.PointOfContact, *errors.Error) {
+	clubIdAsUint, err := utilities.ValidateID(clubId)
 	if err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidatePointOfContact}
+		return nil, &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidateClubId}
 	}
-	return transactions.GetPointOfContact(u.DB, email, *club_idAsInt)
+	return transactions.GetAllPointOfContacts(u.DB, *clubIdAsUint)
 }
 
-// Delete Point of Contact 
-func (u *ClubService) DeletePointOfContact(email string, club_id string) *errors.Error {
-	club_idAsInt, err := utilities.ValidateID(club_id)
-	if err != nil {
-		return &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidatePointOfContact}
+// Delete A Point of Contact with Specific Email
+func (u *ClubService) DeletePointOfContact(email string, clubId string) *errors.Error {
+	clubIdAsUint, errID := utilities.ValidateID(clubId)
+	if errID != nil {
+		return &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidateClubId}
 	}
-	return transactions.DeletePointOfContact(u.DB, email, *club_idAsInt)
+	if !utilities.ValidateGenericEmail(email) {
+		return &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidateEmail}
+	}
+	return transactions.DeletePointOfContact(u.DB, email, *clubIdAsUint)
 }
