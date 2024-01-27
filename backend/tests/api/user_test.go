@@ -759,7 +759,29 @@ func TestCreateUserTagsFailsOnNonExistentUser(t *testing.T) {
 func TestCreateUserTagsWorks(t *testing.T) {
 	appAssert, uuid := CreateSampleUser(t, nil)
 
-	// Confirm adding non-existent tags does nothing:
+	// Create a set of tags:
+	tagUUIDs := CreateSetOfTags(t, appAssert)
+
+	// Confirm adding real tags adds them to the user:
+	TestRequest{
+		Method: fiber.MethodPost,
+		Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid),
+		Body:   SampleTagIDsFactory(&tagUUIDs),
+	}.TestOnStatusAndDB(t, &appAssert,
+		DBTesterWithStatus{
+			Status:   fiber.StatusCreated,
+			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+				AssertSampleUserTagsRespDB(app, assert, resp, uuid)
+			},
+		},
+	)
+
+	appAssert.Close()
+}
+
+func TestCreateUserTagsNoneAddedIfInvalid(t *testing.T) {
+	appAssert, uuid := CreateSampleUser(t, nil)
+	
 	TestRequest{
 		Method: fiber.MethodPost,
 		Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid),
@@ -775,23 +797,6 @@ func TestCreateUserTagsWorks(t *testing.T) {
 				assert.NilError(err)
 
 				assert.Equal(len(respTags), 0)
-			},
-		},
-	)
-
-	// Create a set of tags:
-	tagUUIDs := CreateSetOfTags(t, appAssert)
-
-	// Confirm adding real tags adds them to the user:
-	TestRequest{
-		Method: fiber.MethodPost,
-		Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid),
-		Body:   SampleTagIDsFactory(&tagUUIDs),
-	}.TestOnStatusAndDB(t, &appAssert,
-		DBTesterWithStatus{
-			Status:   fiber.StatusCreated,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-				AssertSampleUserTagsRespDB(app, assert, resp, uuid)
 			},
 		},
 	)
