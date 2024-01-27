@@ -2,8 +2,6 @@ package models
 
 import (
 	"time"
-
-	"github.com/GenerateNU/sac/backend/src/types"
 )
 
 type EventType string
@@ -14,7 +12,7 @@ const (
 )
 
 type Event struct {
-	types.Model
+	Model
 
 	Name      string    `gorm:"type:varchar(255)" json:"name" validate:"required,max=255"`
 	Preview   string    `gorm:"type:varchar(255)" json:"preview" validate:"required,max=255"`
