@@ -55,16 +55,16 @@ func (c *ClubService) CreateClub(clubBody models.CreateClubRequestBody) (*models
 }
 
 func (c *ClubService) GetClub(id string) (*models.Club, *errors.Error) {
-	idAsUint, err := utilities.ValidateID(id)
+	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return nil, &errors.FailedToValidateID
 	}
 
-	return transactions.GetClub(c.DB, *idAsUint)
+	return transactions.GetClub(c.DB, *idAsUUID)
 }
 
 func (c *ClubService) UpdateClub(id string, clubBody models.UpdateClubRequestBody) (*models.Club, *errors.Error) {
-	idAsUint, idErr := utilities.ValidateID(id)
+	idAsUUID, idErr := utilities.ValidateID(id)
 	if idErr != nil {
 		return nil, idErr
 	}
@@ -78,14 +78,14 @@ func (c *ClubService) UpdateClub(id string, clubBody models.UpdateClubRequestBod
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	return transactions.UpdateClub(c.DB, *idAsUint, *club)
+	return transactions.UpdateClub(c.DB, *idAsUUID, *club)
 }
 
 func (c *ClubService) DeleteClub(id string) *errors.Error {
-	idAsUint, err := utilities.ValidateID(id)
+	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return &errors.FailedToValidateID
 	}
 
-	return transactions.DeleteClub(c.DB, *idAsUint)
+	return transactions.DeleteClub(c.DB, *idAsUUID)
 }

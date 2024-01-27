@@ -228,7 +228,7 @@ type ErrorWithDBTester struct {
 	DBTester DBTester
 }
 
-func (request TestRequest) TestOnStatusMessageAndDB(t *testing.T, existingAppAssert *ExistingAppAssert, errorWithDBTester ErrorWithDBTester) ExistingAppAssert {
+func (request TestRequest) TestOnErrorAndDB(t *testing.T, existingAppAssert *ExistingAppAssert, errorWithDBTester ErrorWithDBTester) ExistingAppAssert {
 	appAssert := request.TestOnError(t, existingAppAssert, errorWithDBTester.Error)
 	errorWithDBTester.DBTester(appAssert.App, appAssert.Assert, nil)
 	return appAssert

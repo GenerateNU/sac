@@ -5,6 +5,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/google/uuid"
 
 	"gorm.io/gorm"
 )
@@ -19,7 +20,7 @@ func GetClubs(db *gorm.DB, limit int, offset int) ([]models.Club, *errors.Error)
 	return clubs, nil
 }
 
-func CreateClub(db *gorm.DB, userId uint, club models.Club) (*models.Club, *errors.Error) {
+func CreateClub(db *gorm.DB, userId uuid.UUID, club models.Club) (*models.Club, *errors.Error) {
 	user, err := GetUser(db, userId)
 	if err != nil {
 		return nil, &errors.UserNotFound
@@ -45,7 +46,7 @@ func CreateClub(db *gorm.DB, userId uint, club models.Club) (*models.Club, *erro
 	return &club, nil
 }
 
-func GetClub(db *gorm.DB, id uint) (*models.Club, *errors.Error) {
+func GetClub(db *gorm.DB, id uuid.UUID) (*models.Club, *errors.Error) {
 	var club models.Club
 	if err := db.First(&club, id).Error; err != nil {
 		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
@@ -58,19 +59,40 @@ func GetClub(db *gorm.DB, id uint) (*models.Club, *errors.Error) {
 	return &club, nil
 }
 
-func UpdateClub(db *gorm.DB, id uint, club models.Club) (*models.Club, *errors.Error) {
-	result := db.Model(&club).Where("id = ?", id).Updates(club)
+func UpdateClub(db *gorm.DB, id uuid.UUID, club models.Club) (*models.Club, *errors.Error) {
+	result := db.Model(&models.User{}).Where("id = ?", id).Updates(club)
 	if result.Error != nil {
-		return nil, &errors.FailedToUpdateClub
+		if stdliberrors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, &errors.UserNotFound
+		} else {
+			return nil, &errors.FailedToUpdateClub
+		}
+	}
+	var existingClub models.Club
+
+	err := db.First(&existingClub, id).Error
+	if err != nil {
+		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, &errors.ClubNotFound
+		} else {
+			return nil, &errors.FailedToCreateClub
+		}
 	}
 
-	return &club, nil
+	if err := db.Model(&existingClub).Updates(&club).Error; err != nil {
+		return nil, &errors.FailedToUpdateUser
+	}
+
+	return &existingClub, nil
 }
 
-func DeleteClub(db *gorm.DB, id uint) *errors.Error {
-	result := db.Delete(&models.Club{}, id)
-	if result.Error != nil {
-		return &errors.FailedToDeleteClub
+func DeleteClub(db *gorm.DB, id uuid.UUID) *errors.Error {
+	if result := db.Delete(&models.Club{}, id); result.RowsAffected == 0 {
+		if result.Error == nil {
+			return &errors.ClubNotFound
+		} else {
+			return &errors.FailedToDeleteClub
+		}
 	}
 
 	return nil
