@@ -70,7 +70,7 @@ func (u *ClubService) DeletePointOfContact(pocId string, clubId string) *errors.
 	}
 	pocIdAsUint, err := utilities.ValidateID(pocId)
 	if err != nil {
-		return &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidateEmail}
+		return &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidatePointOfContactId}
 	}
 	return transactions.DeletePointOfContact(u.DB, *pocIdAsUint, *clubIdAsUint)
 }
