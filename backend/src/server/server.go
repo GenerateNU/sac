@@ -81,11 +81,25 @@ func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface) 
 
 	clubs := router.Group("/clubs")
 
+	// club-specific routes
 	clubs.Get("/", clubController.GetAllClubs)
 	clubs.Post("/", clubController.CreateClub)
 	clubs.Get("/:id", clubController.GetClub)
 	clubs.Patch("/:id", clubController.UpdateClub)
 	clubs.Delete("/:id", clubController.DeleteClub)
+
+	// club-dependent contact routes
+	clubs.Get("/:id/clubs", clubController.GetClubContacts)
+	clubs.Put("/:id/clubs", clubController.PutContact)
+}
+
+func contactRoutes(router fiber.Router, clubService services.ClubServiceInterface) {
+	clubController := controllers.NewClubController(clubService)
+
+	contacts := router.Group("/contacts")
+
+	contacts.Get("/", clubController.GetContacts)
+	contacts.Delete("/:id", clubController.DeleteContact)
 }
 
 func categoryRoutes(router fiber.Router, categoryService services.CategoryServiceInterface) {

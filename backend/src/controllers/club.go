@@ -75,3 +75,48 @@ func (l *ClubController) DeleteClub(c *fiber.Ctx) error {
 
 	return c.SendStatus(fiber.StatusNoContent)
 }
+
+func (l *ClubController) GetContacts(c *fiber.Ctx) error {
+	defaultLimit := 10
+	defaultPage := 1
+
+	contacts, err := l.clubService.GetContacts(c.Query("limit", strconv.Itoa(defaultLimit)), c.Query("page", strconv.Itoa(defaultPage)))
+	if err != nil {
+		return err.FiberError(c)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(contacts)
+}
+
+func (l *ClubController) GetClubContacts(c *fiber.Ctx) error {
+	contacts, err := l.clubService.GetClubContacts(c.Params("id"))
+	if err != nil {
+		return err.FiberError(c)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(contacts)
+}
+
+func (l *ClubController) PutContact(c *fiber.Ctx) error {
+	var contactBody models.PutContactRequestBody
+
+	if err := c.BodyParser(&contactBody); err != nil {
+		return errors.FailedToParseRequestBody.FiberError(c)
+	}
+
+	contact, err := l.clubService.PutContact(c.Params("id"), contactBody)
+	if err != nil {
+		return err.FiberError(c)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(contact)
+}
+
+func (l *ClubController) DeleteContact(c *fiber.Ctx) error {
+	err := l.clubService.DeleteContact(c.Params("id"))
+	if err != nil {
+		return err.FiberError(c)
+	}
+
+	return c.SendStatus(fiber.StatusNoContent)
+}

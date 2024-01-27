@@ -35,4 +35,24 @@ var (
 		StatusCode: fiber.StatusNotFound,
 		Message:    "club not found",
 	}
+	FailedToGetContacts = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get contacts",
+	}
+	FailedToCreateContact = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to create contact",
+	}
+	FailedToUpdateContact = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to update contact",
+	}
+	FailedToDeleteContact = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to delete contact",
+	}
+	FailedToValidateContact = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "failed to validate contact",
+	}
 )
