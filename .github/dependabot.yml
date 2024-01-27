@@ -4,11 +4,11 @@ updates:
     directory: ./
     schedule:
       interval: weekly
-  - package-ecosystem: yarn
+  - package-ecosystem: npm
     directory: ./frontend/sac-mobile
     schedule:
       interval: weekly
-  - package-ecosystem: yarn
+  - package-ecosystem: npm
     directory: ./frontend/sac-web
     schedule:
       interval: weekly

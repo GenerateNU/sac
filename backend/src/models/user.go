@@ -1,5 +1,7 @@
 package models
 
+import "github.com/google/uuid"
+
 type UserRole string
 
 const (
@@ -73,4 +75,8 @@ type UpdateUserRequestBody struct {
 	Password  string  `json:"password" validate:"omitempty,password"`
 	College   College `json:"college" validate:"omitempty,oneof=CAMD DMSB KCCS CE BCHS SL CPS CS CSSH"`
 	Year      Year    `json:"year" validate:"omitempty,min=1,max=6"`
+}
+
+type CreateUserTagsBody struct {
+	Tags      []uuid.UUID  `json:"tags" validate:"required"`
 }
