@@ -109,6 +109,11 @@ func configureDatabase(config config.Settings) (*gorm.DB, error) {
 		return nil, err
 	}
 
+	err = dbWithDB.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"").Error
+
+	if err != nil {
+		return nil, err
+	}
 	err = database.MigrateDB(config, dbWithDB)
 
 	if err != nil {
@@ -212,7 +217,6 @@ func (request TestRequest) TestOnError(t *testing.T, existingAppAssert *Existing
 	err := json.NewDecoder(resp.Body).Decode(&respBody)
 
 	assert.NilError(err)
-
 	assert.Equal(expectedError.Message, respBody["error"].(string))
 
 	assert.Equal(expectedError.StatusCode, resp.StatusCode)
