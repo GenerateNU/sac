@@ -116,6 +116,10 @@ func TestCreateCategoryIgnoresid(t *testing.T) {
 	).Close()
 }
 
+func Assert1Category(app TestApp, assert *assert.A, resp *http.Response) {
+	AssertNumCategoriesRemainsAtN(app, assert, resp, 1)
+}
+
 func AssertNoCategories(app TestApp, assert *assert.A, resp *http.Response) {
 	AssertNumCategoriesRemainsAtN(app, assert, resp, 0)
 }
@@ -137,7 +141,7 @@ func TestCreateCategoryFailsIfNameIsNotString(t *testing.T) {
 		Body: &map[string]interface{}{
 			"name": 1231,
 		},
-	}.TestOnStatusMessageAndDB(t, nil,
+	}.TestOnErrorAndDB(t, nil,
 		ErrorWithDBTester{
 			Error:    errors.FailedToParseRequestBody,
 			DBTester: AssertNoCategories,
@@ -150,7 +154,7 @@ func TestCreateCategoryFailsIfNameIsMissing(t *testing.T) {
 		Method: fiber.MethodPost,
 		Path:   "/api/v1/categories/",
 		Body:   &map[string]interface{}{},
-	}.TestOnStatusMessageAndDB(t, nil,
+	}.TestOnErrorAndDB(t, nil,
 		ErrorWithDBTester{
 			Error:    errors.FailedToValidateCategory,
 			DBTester: AssertNoCategories,
@@ -173,7 +177,7 @@ func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
 			Method: fiber.MethodPost,
 			Path:   "/api/v1/categories/",
 			Body:   &modifiedSampleCategoryBody,
-		}.TestOnStatusMessageAndDB(t, &existingAppAssert,
+		}.TestOnErrorAndDB(t, &existingAppAssert,
 			ErrorWithDBTester{
 				Error:    errors.CategoryAlreadyExists,
 				DBTester: TestNumCategoriesRemainsAt1,
@@ -362,6 +366,8 @@ func TestDeleteCategoryWorks(t *testing.T) {
 }
 
 func TestDeleteCategoryFailsBadRequest(t *testing.T) {
+	existingAppAssert, _ := CreateSampleCategory(t, nil)
+
 	badRequests := []string{
 		"0",
 		"-1",
@@ -374,13 +380,27 @@ func TestDeleteCategoryFailsBadRequest(t *testing.T) {
 		TestRequest{
 			Method: fiber.MethodDelete,
 			Path:   fmt.Sprintf("/api/v1/categories/%s", badRequest),
-		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
+		}.TestOnErrorAndDB(t, &existingAppAssert,
+			ErrorWithDBTester{
+				Error:    errors.FailedToValidateID,
+				DBTester: Assert1Category,
+			},
+		)
 	}
+
+	existingAppAssert.Close()
 }
 
 func TestDeleteCategoryFailsNotFound(t *testing.T) {
+	existingAppAssert, _ := CreateSampleCategory(t, nil)
+
 	TestRequest{
 		Method: fiber.MethodDelete,
 		Path:   fmt.Sprintf("/api/v1/categories/%s", uuid.New()),
-	}.TestOnError(t, nil, errors.CategoryNotFound).Close()
+	}.TestOnErrorAndDB(t, &existingAppAssert,
+		ErrorWithDBTester{
+			Error:    errors.CategoryNotFound,
+			DBTester: Assert1Category,
+		},
+	).Close()
 }

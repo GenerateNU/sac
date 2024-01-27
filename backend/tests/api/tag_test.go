@@ -76,14 +76,22 @@ func TestCreateTagWorks(t *testing.T) {
 	appAssert.Close()
 }
 
-var AssertNoTags = func(app TestApp, assert *assert.A, resp *http.Response) {
+func AssertNumTagsRemainsAtN(app TestApp, assert *assert.A, resp *http.Response, n int) {
 	var tags []models.Tag
 
 	err := app.Conn.Find(&tags).Error
 
 	assert.NilError(err)
 
-	assert.Equal(0, len(tags))
+	assert.Equal(n, len(tags))
+}
+
+func AssertNoTags(app TestApp, assert *assert.A, resp *http.Response) {
+	AssertNumTagsRemainsAtN(app, assert, resp, 0)
+}
+
+func Assert1Tag(app TestApp, assert *assert.A, resp *http.Response) {
+	AssertNumTagsRemainsAtN(app, assert, resp, 1)
 }
 
 func TestCreateTagFailsBadRequest(t *testing.T) {
@@ -103,7 +111,7 @@ func TestCreateTagFailsBadRequest(t *testing.T) {
 			Method: fiber.MethodPost,
 			Path:   "/api/v1/tags/",
 			Body:   &badBody,
-		}.TestOnStatusMessageAndDB(t, nil,
+		}.TestOnErrorAndDB(t, nil,
 			ErrorWithDBTester{
 				Error:    errors.FailedToParseRequestBody,
 				DBTester: AssertNoTags,
@@ -128,7 +136,7 @@ func TestCreateTagFailsValidation(t *testing.T) {
 			Method: fiber.MethodPost,
 			Path:   "/api/v1/tags/",
 			Body:   &badBody,
-		}.TestOnStatusMessageAndDB(t, nil,
+		}.TestOnErrorAndDB(t, nil,
 			ErrorWithDBTester{
 				Error:    errors.FailedToValidateTag,
 				DBTester: AssertNoTags,
@@ -292,6 +300,8 @@ func TestDeleteTagWorks(t *testing.T) {
 }
 
 func TestDeleteTagFailsBadRequest(t *testing.T) {
+	appAssert, _, _ := CreateSampleTag(t)
+
 	badRequests := []string{
 		"0",
 		"-1",
@@ -304,13 +314,27 @@ func TestDeleteTagFailsBadRequest(t *testing.T) {
 		TestRequest{
 			Method: fiber.MethodDelete,
 			Path:   fmt.Sprintf("/api/v1/tags/%s", badRequest),
-		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
+		}.TestOnErrorAndDB(t, &appAssert,
+			ErrorWithDBTester{
+				Error:    errors.FailedToValidateID,
+				DBTester: Assert1Tag,
+			},
+		)
 	}
+
+	appAssert.Close()
 }
 
 func TestDeleteTagFailsNotFound(t *testing.T) {
+	appAssert, _, _ := CreateSampleTag(t)
+
 	TestRequest{
 		Method: fiber.MethodDelete,
 		Path:   fmt.Sprintf("/api/v1/tags/%s", uuid.New()),
-	}.TestOnError(t, nil, errors.TagNotFound).Close()
+	}.TestOnErrorAndDB(t, &appAssert,
+		ErrorWithDBTester{
+			Error:    errors.TagNotFound,
+			DBTester: Assert1Tag,
+		},
+	).Close()
 }

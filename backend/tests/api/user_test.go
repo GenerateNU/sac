@@ -116,7 +116,7 @@ func TestGetUserFailsNotExist(t *testing.T) {
 	TestRequest{
 		Method: fiber.MethodGet,
 		Path:   fmt.Sprintf("/api/v1/users/%s", uuid),
-	}.TestOnStatusMessageAndDB(t, nil,
+	}.TestOnErrorAndDB(t, nil,
 		ErrorWithDBTester{
 			Error: errors.UserNotFound,
 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
@@ -192,7 +192,7 @@ func TestUpdateUserFailsOnInvalidBody(t *testing.T) {
 			Method: fiber.MethodPatch,
 			Path:   fmt.Sprintf("/api/v1/users/%s", uuid),
 			Body:   &invalidData,
-		}.TestOnStatusMessageAndDB(t, &appAssert,
+		}.TestOnErrorAndDB(t, &appAssert,
 			ErrorWithDBTester{
 				Error:    errors.FailedToValidateUser,
 				DBTester: TestNumUsersRemainsAt2,
@@ -227,7 +227,7 @@ func TestUpdateUserFailsOnIdNotExist(t *testing.T) {
 		Method: fiber.MethodPatch,
 		Path:   fmt.Sprintf("/api/v1/users/%s", uuid),
 		Body:   SampleUserFactory(),
-	}.TestOnStatusMessageAndDB(t, nil,
+	}.TestOnErrorAndDB(t, nil,
 		ErrorWithDBTester{
 			Error: errors.UserNotFound,
 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
@@ -260,7 +260,7 @@ func TestDeleteUserNotExist(t *testing.T) {
 	TestRequest{
 		Method: fiber.MethodDelete,
 		Path:   fmt.Sprintf("/api/v1/users/%s", uuid),
-	}.TestOnStatusMessageAndDB(t, nil,
+	}.TestOnErrorAndDB(t, nil,
 		ErrorWithDBTester{
 			Error: errors.UserNotFound,
 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
@@ -269,6 +269,8 @@ func TestDeleteUserNotExist(t *testing.T) {
 				err := app.Conn.Where("id = ?", uuid).First(&user).Error
 
 				assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
+
+				TestNumUsersRemainsAt1(app, assert, resp)
 			},
 		},
 	).Close()
@@ -287,7 +289,12 @@ func TestDeleteUserBadRequest(t *testing.T) {
 		TestRequest{
 			Method: fiber.MethodDelete,
 			Path:   fmt.Sprintf("/api/v1/users/%s", badRequest),
-		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
+		}.TestOnErrorAndDB(t, nil,
+			ErrorWithDBTester{
+				Error:    errors.FailedToValidateID,
+				DBTester: TestNumUsersRemainsAt1,
+			},
+		)
 	}
 }
 
@@ -401,7 +408,7 @@ func TestCreateUserFailsIfUserWithEmailAlreadyExists(t *testing.T) {
 		Method: fiber.MethodPost,
 		Path:   "/api/v1/users/",
 		Body:   SampleUserFactory(),
-	}.TestOnStatusMessageAndDB(t, &appAssert,
+	}.TestOnErrorAndDB(t, &appAssert,
 		ErrorWithDBTester{
 			Error:    errors.UserAlreadyExists,
 			DBTester: TestNumUsersRemainsAt2,
@@ -428,7 +435,7 @@ func TestCreateUserFailsIfUserWithNUIDAlreadyExists(t *testing.T) {
 		Method: fiber.MethodPost,
 		Path:   "/api/v1/users/",
 		Body:   slightlyDifferentSampleUser,
-	}.TestOnStatusMessageAndDB(t, &appAssert,
+	}.TestOnErrorAndDB(t, &appAssert,
 		ErrorWithDBTester{
 			Error:    errors.UserAlreadyExists,
 			DBTester: TestNumUsersRemainsAt2,
@@ -447,7 +454,7 @@ func AssertCreateBadDataFails(t *testing.T, jsonKey string, badValues []interfac
 			Method: fiber.MethodPost,
 			Path:   "/api/v1/users/",
 			Body:   &sampleUserPermutation,
-		}.TestOnStatusMessageAndDB(t, &appAssert,
+		}.TestOnErrorAndDB(t, &appAssert,
 			ErrorWithDBTester{
 				Error:    errors.FailedToValidateUser,
 				DBTester: TestNumUsersRemainsAt2,
@@ -537,7 +544,7 @@ func TestCreateUserFailsOnMissingFields(t *testing.T) {
 			Method: fiber.MethodPost,
 			Path:   "/api/v1/users/",
 			Body:   &sampleUserPermutation,
-		}.TestOnStatusMessageAndDB(t, &appAssert,
+		}.TestOnErrorAndDB(t, &appAssert,
 			ErrorWithDBTester{
 				Error:    errors.FailedToValidateUser,
 				DBTester: TestNumUsersRemainsAt2,
