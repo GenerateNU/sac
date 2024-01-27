@@ -25,7 +25,7 @@ TestRequest{
   Path:   "/api/v1/tags/",
   Body: &map[string]interface{}{
    "name":        tagName,
-   "category_id": 1,
+   "category_id": uuid.New(),
   },
 }
 ```
@@ -92,32 +92,6 @@ func AssertCategoryWithIDBodyRespDB(app TestApp, assert *assert.A, resp *http.Re
 ### Existing App Asserts
 
 Since the test suite creates a new database for each test, we can have a deterministic database state for each test. However, what if we have a multi step test that depends on the previous steps database state? That is where `ExistingAppAssert` comes in! This will allow us to keep using the database from a previous step in the test.
-
-Consider this example, to create a tag, we need to create a category first. This is a multi step test, so we need to use `ExistingAppAssert` to keep the database state from the previous step.
-
-```go
-TestRequest{
-  Method: fiber.MethodPost,
-  Path:   "/api/v1/categories/",
-  Body: SampleCategoryFactory(),
- }.TestOnStatusAndDB(t, nil,
-  DBTesterWithStatus{
-   Status:   fiber.StatusCreated,
-   DBTester: AssertSampleCategoryBodyRespDB,
-  },
- )
-
-TestRequest{
-  Method: fiber.MethodPost,
-  Path:   "/api/v1/tags/",
-  Body: SampleTagFactory(),
- }.TestOnStatusAndDB(t, &appAssert,
-  DBTesterWithStatus{
-   Status:   fiber.StatusCreated,
-   DBTester: AssertSampleTagBodyRespDB,
-  },
- ).Close()
-```
 
 ### Why Close?
 
