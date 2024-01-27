@@ -623,7 +623,6 @@ func CreateSetOfTags(t *testing.T, appAssert ExistingAppAssert) []uuid.UUID {
 
 	tags := SampleTagsFactory(categoryIDs)
 
-	fmt.Printf("\n\n\n\nTAGS: %s \n\n\n\n\n", tags)
 
 	tagIDs := []uuid.UUID{}
 	for _, tag := range *tags {
