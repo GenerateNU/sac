@@ -1,6 +1,14 @@
 version: 2
 updates:
   - package-ecosystem: gomod
-    directory: /
+    directory: ./
+    schedule:
+      interval: weekly
+  - package-ecosystem: yarn
+    directory: ./frontend/sac-mobile
+    schedule:
+      interval: weekly
+  - package-ecosystem: yarn
+    directory: ./frontend/sac-web
     schedule:
       interval: weekly
