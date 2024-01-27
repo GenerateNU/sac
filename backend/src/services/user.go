@@ -121,7 +121,7 @@ func (u *UserService) GetUserTags(id string) ([]models.Tag, *errors.Error) {
 
 func (u *UserService) CreateUserTags(id string, tagIDs models.CreateUserTagsBody) ([]models.Tag, *errors.Error) {
 	// Validate the id:
-	idAsInt, err := utilities.ValidateID(id)
+	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return nil, err
 	}
