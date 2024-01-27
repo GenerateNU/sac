@@ -316,7 +316,7 @@ func TestDeleteTagFailsBadRequest(t *testing.T) {
 			Path:   fmt.Sprintf("/api/v1/tags/%s", badRequest),
 		}.TestOnErrorAndDB(t, &appAssert,
 			ErrorWithDBTester{
-				Error:    errors.TagNotFound,
+				Error:    errors.FailedToValidateID,
 				DBTester: Assert1Tag,
 			},
 		)
