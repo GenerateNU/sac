@@ -152,7 +152,7 @@ func (u *UserController) CreateUserTags(c *fiber.Ctx) error {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
-	tags, err := u.userService.CreateUserTags(c.Params("uid"), requestBody.Tags)
+	tags, err := u.userService.CreateUserTags(c.Params("uid"), requestBody)
 	if err != nil {
 		return err.FiberError(c)
 	}
