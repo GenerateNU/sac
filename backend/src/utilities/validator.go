@@ -12,11 +12,13 @@ import (
 )
 
 func RegisterCustomValidators(validate *validator.Validate) {
-	validate.RegisterValidation("neu_email", ValidateEmail)
-	validate.RegisterValidation("password", ValidatePassword)
+	validate.RegisterValidation("neu_email", validateEmail)
+	validate.RegisterValidation("password", validatePassword)
+	validate.RegisterValidation("mongo_url", validateMongoURL)
+	validate.RegisterValidation("s3_url", validateS3URL)
 }
 
-func ValidateEmail(fl validator.FieldLevel) bool {
+func validateEmail(fl validator.FieldLevel) bool {
 	email, err := emailaddress.Parse(fl.Field().String())
 	if err != nil {
 		return false
@@ -29,7 +31,7 @@ func ValidateEmail(fl validator.FieldLevel) bool {
 	return true
 }
 
-func ValidatePassword(fl validator.FieldLevel) bool {
+func validatePassword(fl validator.FieldLevel) bool {
 	if len(fl.Field().String()) < 8 {
 		return false
 	}
@@ -38,7 +40,14 @@ func ValidatePassword(fl validator.FieldLevel) bool {
 	return specialCharactersMatch && numbersMatch
 }
 
-// Validates that an id follows postgres uint format, returns a uint otherwise returns an error
+func validateMongoURL(fl validator.FieldLevel) bool {
+	return true
+}
+
+func validateS3URL(fl validator.FieldLevel) bool {
+	return true
+}
+
 func ValidateID(id string) (*uuid.UUID, *errors.Error) {
 	idAsUUID, err := uuid.Parse(id)
 
@@ -48,6 +57,7 @@ func ValidateID(id string) (*uuid.UUID, *errors.Error) {
 
 	return &idAsUUID, nil
 }
+
 
 func ValidateNonNegative(value string) (*int, *errors.Error) {
 	valueAsInt, err := strconv.Atoi(value)
