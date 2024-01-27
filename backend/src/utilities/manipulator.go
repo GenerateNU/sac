@@ -4,6 +4,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
+
 // MapRequestToModel maps request data to a target model using mapstructure
 func MapRequestToModel[T any, U any](responseData T, targetModel *U) (*U, error) {
 	config := &mapstructure.DecoderConfig{

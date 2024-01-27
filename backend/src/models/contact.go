@@ -18,7 +18,7 @@ type Contact struct {
 	Model
 
 	Type    Media  `gorm:"type:varchar(255)" json:"type" validate:"required,max=255"`
-	Content string `gorm:"type:varchar(255)" json:"content" validate:"required,url,max=255"` // media URL
+	Content string `gorm:"type:varchar(255)" json:"content" validate:"required,http_url,max=255"` // media URL
 
 	ClubID uuid.UUID `gorm:"foreignKey:ClubID" json:"-" validate:"uuid4"`
 }
