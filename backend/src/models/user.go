@@ -1,9 +1,5 @@
 package models
 
-import (
-	"github.com/GenerateNU/sac/backend/src/types"
-)
-
 type UserRole string
 
 const (
@@ -38,7 +34,7 @@ const (
 )
 
 type User struct {
-	types.Model
+	Model
 
 	Role         UserRole `gorm:"type:varchar(255);" json:"user_role,omitempty" validate:"required,max=255"`
 	NUID         string   `gorm:"column:nuid;type:varchar(9);unique" json:"nuid" validate:"required,numeric,len=9"`

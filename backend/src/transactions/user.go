@@ -5,6 +5,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/google/uuid"
 
 	"gorm.io/gorm"
 )
@@ -31,7 +32,7 @@ func GetUsers(db *gorm.DB, limit int, offset int) ([]models.User, *errors.Error)
 	return users, nil
 }
 
-func GetUser(db *gorm.DB, id uint) (*models.User, *errors.Error) {
+func GetUser(db *gorm.DB, id uuid.UUID) (*models.User, *errors.Error) {
 	var user models.User
 	if err := db.Omit("password_hash").First(&user, id).Error; err != nil {
 		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
@@ -44,7 +45,7 @@ func GetUser(db *gorm.DB, id uint) (*models.User, *errors.Error) {
 	return &user, nil
 }
 
-func UpdateUser(db *gorm.DB, id uint, user models.User) (*models.User, *errors.Error) {
+func UpdateUser(db *gorm.DB, id uuid.UUID, user models.User) (*models.User, *errors.Error) {
 	var existingUser models.User
 
 	err := db.First(&existingUser, id).Error
@@ -63,7 +64,7 @@ func UpdateUser(db *gorm.DB, id uint, user models.User) (*models.User, *errors.E
 	return &existingUser, nil
 }
 
-func DeleteUser(db *gorm.DB, id uint) *errors.Error {
+func DeleteUser(db *gorm.DB, id uuid.UUID) *errors.Error {
 	result := db.Delete(&models.User{}, id)
 	if result.RowsAffected == 0 {
 		if result.Error == nil {

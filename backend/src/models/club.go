@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/GenerateNU/sac/backend/src/types"
+	"github.com/google/uuid"
 )
 
 type RecruitmentCycle string
@@ -24,7 +24,7 @@ const (
 )
 
 type Club struct {
-	types.Model
+	Model
 
 	SoftDeletedAt time.Time `gorm:"type:timestamptz;default:NULL" json:"-" validate:"-"`
 
@@ -38,8 +38,8 @@ type Club struct {
 	ApplicationLink  string           `gorm:"type:varchar(255);default:NULL" json:"application_link" validate:"required,max=255"`
 	Logo             string           `gorm:"type:varchar(255);default:NULL" json:"logo" validate:"url,max=255"` // S3 URL
 
-	Parent *uint `gorm:"foreignKey:Parent" json:"-" validate:"min=1"`
-	Tag    []Tag `gorm:"many2many:club_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
+	Parent *uuid.UUID `gorm:"foreignKey:Parent" json:"-" validate:"uuid4"`
+	Tag    []Tag      `gorm:"many2many:club_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	// User
 	Member            []User           `gorm:"many2many:user_club_members;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"required"`
 	Follower          []User           `gorm:"many2many:user_club_followers;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`

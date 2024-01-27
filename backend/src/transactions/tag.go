@@ -4,6 +4,7 @@ import (
 	stdliberrors "errors"
 
 	"github.com/GenerateNU/sac/backend/src/errors"
+	"github.com/google/uuid"
 
 	"github.com/GenerateNU/sac/backend/src/models"
 
@@ -18,7 +19,7 @@ func CreateTag(db *gorm.DB, tag models.Tag) (*models.Tag, *errors.Error) {
 	return &tag, nil
 }
 
-func GetTag(db *gorm.DB, id uint) (*models.Tag, *errors.Error) {
+func GetTag(db *gorm.DB, id uuid.UUID) (*models.Tag, *errors.Error) {
 	var tag models.Tag
 
 	if err := db.First(&tag, id).Error; err != nil {
@@ -32,7 +33,7 @@ func GetTag(db *gorm.DB, id uint) (*models.Tag, *errors.Error) {
 	return &tag, nil
 }
 
-func UpdateTag(db *gorm.DB, id uint, tag models.Tag) (*models.Tag, *errors.Error) {
+func UpdateTag(db *gorm.DB, id uuid.UUID, tag models.Tag) (*models.Tag, *errors.Error) {
 	if err := db.Model(&models.Tag{}).Where("id = ?", id).Updates(tag).First(&tag, id).Error; err != nil {
 		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &errors.TagNotFound
@@ -44,7 +45,7 @@ func UpdateTag(db *gorm.DB, id uint, tag models.Tag) (*models.Tag, *errors.Error
 	return &tag, nil
 }
 
-func DeleteTag(db *gorm.DB, id uint) *errors.Error {
+func DeleteTag(db *gorm.DB, id uuid.UUID) *errors.Error {
 	if result := db.Delete(&models.Tag{}, id); result.RowsAffected == 0 {
 		if result.Error == nil {
 			return &errors.TagNotFound

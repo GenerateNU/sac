@@ -68,16 +68,16 @@ func (u *UserService) GetUsers(limit string, page string) ([]models.User, *error
 }
 
 func (u *UserService) GetUser(id string) (*models.User, *errors.Error) {
-	idAsUint, err := utilities.ValidateID(id)
+	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return nil, &errors.FailedToValidateID
 	}
 
-	return transactions.GetUser(u.DB, *idAsUint)
+	return transactions.GetUser(u.DB, *idAsUUID)
 }
 
 func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBody) (*models.User, *errors.Error) {
-	idAsUint, idErr := utilities.ValidateID(id)
+	idAsUUID, idErr := utilities.ValidateID(id)
 	if idErr != nil {
 		return nil, idErr
 	}
@@ -98,16 +98,16 @@ func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBod
 
 	user.PasswordHash = *passwordHash
 
-	return transactions.UpdateUser(u.DB, *idAsUint, *user)
+	return transactions.UpdateUser(u.DB, *idAsUUID, *user)
 }
 
 func (u *UserService) DeleteUser(id string) *errors.Error {
-	idAsInt, err := utilities.ValidateID(id)
+	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return err
 	}
 
-	return transactions.DeleteUser(u.DB, *idAsInt)
+	return transactions.DeleteUser(u.DB, *idAsUUID)
 }
 
 func (u *UserService) GetUserTags(id string) ([]models.Tag, *errors.Error) {
