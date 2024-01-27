@@ -25,9 +25,12 @@ func NewClubController(clubService services.ClubServiceInterface) *ClubControlle
 // @Accept      json
 // @Produce		json
 // @Success		201	  {object}	  models.PointOfContact
-// @Failure     400   {string}    string "failed to create or update point of contact"
-// @Failure     500   {string}    string "internal server error"
-// @Router		api/v1/clubs/:id/poc/:email  [put]
+// @Failure     400   {string}    string "failed to validate point of contact"
+// @Failure     400   {string}    string "failed to validate club id"
+// @Failure     500   {string}    string "failed to map response to model"
+// @Failure     500   {string}    string "failed to upsert point of contact"
+// @Router		api/v1/clubs/:id/poc/:pocId  [put]
+
 func (u *ClubController) UpsertPointOfContact(c *fiber.Ctx) error {
 	var pointOfContactBody models.CreatePointOfContactBody
 	if err := c.BodyParser(&pointOfContactBody); err != nil {
@@ -40,19 +43,21 @@ func (u *ClubController) UpsertPointOfContact(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(pointOfContact)
 }
 
-// GetPointOfContact godoc
+
+// GetAllPointOfContact godoc
 //
-// @Summary		Gets a user
-// @Description	Returns a user
-// @ID			get-point-of-contact
+// @Summary		Gets all point of contact
+// @Description	Returns all point of contact
+// @ID			get-all-point-of-contact
 // @Tags      	club
 // @Produce		json
-// @Param		id	path	string	true	"User ID"
-// @Success		200	  {object}	  models.PointOfContact
+// @Param		"Club ID"
+// @Success		200	  {object}	  []models.PointOfContact
 // @Failure     404   {string}    string "point of contact not found"
 // @Failure		400   {string}    string "failed to validate point of contact"
 // @Failure     500   {string}    string "failed to get point of contact"
-// @Router		api/v1/clubs/:id/poc/:email [get]
+// @Router		api/v1/clubs/:id/poc/:pocId [get]
+
 func (u *ClubController) GetAllPointOfContact(c *fiber.Ctx) error {
 	clubId := c.Params("id")
 	pointOfContact, err := u.clubService.GetAllPointOfContacts(clubId)
@@ -61,6 +66,20 @@ func (u *ClubController) GetAllPointOfContact(c *fiber.Ctx) error {
 	}
 	return c.Status(fiber.StatusOK).JSON(pointOfContact)
 }
+
+
+// GetPointOfContact godoc
+//
+// @Summary		Gets a user
+// @Description	Returns a user
+// @ID			get-point-of-contact
+// @Tags      	club
+// @Produce		json
+// @Success		200	  {object}	  models.PointOfContact
+// @Failure     404   {string}    string "point of contact not found"
+// @Failure		400   {string}    string "failed to validate point of contact"
+// @Failure     500   {string}    string "failed to get point of contact"
+// @Router		api/v1/clubs/:id/poc/:pocId [get]
 
 func (u *ClubController) GetPointOfContact(c *fiber.Ctx) error {
 	clubId := c.Params("id")
@@ -72,16 +91,17 @@ func (u *ClubController) GetPointOfContact(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(pointOfContact)
 }
 
+
 // DeletePointOfContact godoc
 //
-// @Summary		Deletes the given clubID and userID
+// @Summary		Deletes the given clubID and pocId
 // @Description	Returns nil
 // @ID			delete-point-of-contact
 // @Tags      	club
 // @Produce		json
 // @Success		204    {string}        {no content}
 // @Failure     500    {string}        {fail to delete point of contact}
-// @Router		api/v1/clubs/:id/poc/:email [delete]
+// @Router		api/v1/clubs/:id/poc/:pocId [delete]
 
 func (u *ClubController) DeletePointOfContact(c *fiber.Ctx) error {
 	clubId := c.Params("id")

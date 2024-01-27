@@ -34,7 +34,7 @@ func (u *ClubService) UpsertPointOfContact(clubId string, pointOfContactBody mod
 	clubIdAsUInt, err := utilities.ValidateID(clubId)
 	pointOfContact.ClubID = *clubIdAsUInt
 	if err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidateID}
+		return nil, &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidateClubId}
 	}
     return transactions.UpsertPointOfContact(u.DB, pointOfContact)
 }
