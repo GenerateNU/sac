@@ -7,4 +7,6 @@ const (
 	FailedToDeletePointOfContact = "failed to delete point of contact"
 	FailedToValidatePointOfContact = "failed to validate point of contact"
 	FailedToValidateEmail = "failed to validate email"
+	FailedToMapResponseToModel = "failed to map response to model"
+	FailedToGetAPointOfContact = "failed to get a point of contact"
 )

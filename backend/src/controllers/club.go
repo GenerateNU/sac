@@ -33,7 +33,7 @@ func (u *ClubController) UpsertPointOfContact(c *fiber.Ctx) error {
 	if err := c.BodyParser(&pointOfContactBody); err != nil {
 		return errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToParseRequestBody}.FiberError(c)
 	}
-	pointOfContact, err := u.clubService.UpsertPointOfContact(pointOfContactBody)
+	pointOfContact, err := u.clubService.UpsertPointOfContact(c.Params("id"), pointOfContactBody)
 	if err != nil {
 		return err.FiberError(c)
 	}
