@@ -134,5 +134,5 @@ func (u *UserService) CreateUserTags(id string, tagIDs models.CreateUserTagsBody
 	tags, err := transactions.GetTagsByIDs(u.DB, tagIDs.Tags)
 
 	// Update the user to reflect the new tags:
-	return transactions.CreateUserTags(u.DB, *idAsInt, tags)
+	return transactions.CreateUserTags(u.DB, *idAsUUID, tags)
 }
