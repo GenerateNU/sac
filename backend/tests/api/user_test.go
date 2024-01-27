@@ -845,7 +845,7 @@ func TestGetUserTagsReturnsCorrectList(t *testing.T) {
 		Method: fiber.MethodPost,
 		Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid),
 		Body:   SampleTagIDsFactory(&tagUUIDs),
-	}.TestOnStatus(t, &appAssert, 201)
+	}.TestOnStatus(t, &appAssert, fiber.StatusOK)
 
 	// Get the tags:
 	TestRequest{
