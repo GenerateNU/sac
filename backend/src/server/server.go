@@ -99,7 +99,7 @@ func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface) 
 
 	pointOfContact := router.Group("/clubs/:id/poc")
 	pointOfContact.Get("/", clubController.GetAllPointOfContact)
-	// pointOfContact.Get("/", clubController.GetPointOfContact)
+	pointOfContact.Get("/:pocId", clubController.GetPointOfContact)
 	pointOfContact.Put("/", clubController.UpsertPointOfContact)
-	pointOfContact.Delete("/:email", clubController.DeletePointOfContact)
+	pointOfContact.Delete("/:pocId", clubController.DeletePointOfContact)
 }

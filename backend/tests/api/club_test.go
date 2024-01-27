@@ -39,7 +39,7 @@ func AssertPOCWithBodyRespDB(app TestApp, assert *assert.A, resp *http.Response,
 
 	var dbPOC models.PointOfContact
 
-	err = app.Conn.Where("email = ?", respPOC.Email).First(&dbPOC).Error
+	err = app.Conn.Where("id = ?", respPOC.ID).First(&dbPOC).Error
 	assert.NilError(err)
 
 	assert.Equal(dbPOC.Name, respPOC.Name)
@@ -240,13 +240,87 @@ func TestGetAllPOCClubNotFound(t *testing.T) {
 	).Close()
 }
 
+func TestGetPOCWorks(t *testing.T) {
+	appAssert := CreateSamplePOC(t)
+	id := 1
+
+	TestRequest{
+		Method: fiber.MethodGet,
+		Path:   fmt.Sprintf("/api/v1/clubs/1/poc/%d", id),
+	}.TestOnStatusAndDB(t, &appAssert,
+		DBTesterWithStatus{
+			Status: 200,
+			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+				var respPOC models.PointOfContact
+
+				err := json.NewDecoder(resp.Body).Decode(&respPOC)
+
+				assert.NilError(err)
+
+				assert.Equal("Jane", respPOC.Name)
+				assert.Equal("president", respPOC.Position)
+				assert.Equal("doe.jane@northeastern.edu", respPOC.Email)
+
+				dbPOC, err := transactions.GetPointOfContact(app.Conn, uint(id), uint(1))
+
+				assert.NilError(&err)
+
+				assert.Equal(dbPOC, &respPOC)
+			},
+		},
+	).Close()
+}
+
+func TestGetPOCFailsBadRequest(t *testing.T) {
+	badRequests := []string{
+		"0",
+		"-1",
+		"1.1",
+		"foo",
+		"null",
+	}
+
+	for _, badRequest := range badRequests {
+		TestRequest{
+			Method: fiber.MethodGet,
+			Path:   fmt.Sprintf("/api/v1/clubs/1/poc/%s", badRequest),
+		}.TestOnStatusAndMessage(t, nil,
+			MessageWithStatus{
+				Status:  400,
+				Message: errors.FailedToValidatePointOfContactId,
+			},
+		).Close()
+	}
+}
+
+func TestGetPOCFailsNotExist(t *testing.T) {
+	id := uint(42)
+
+	TestRequest{
+		Method: fiber.MethodGet,
+		Path:   fmt.Sprintf("/api/v1/clubs/1/poc/%d", id),
+	}.TestOnStatusMessageAndDB(t, nil,
+		StatusMessageDBTester{
+			MessageWithStatus: MessageWithStatus{
+				Status:  404,
+				Message: errors.PointOfContactNotFound,
+			},
+			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+				var pointOfContact models.PointOfContact
+				err := app.Conn.Where("id = ?", id).First(&pointOfContact).Error
+				assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
+			},
+		},
+	).Close()
+}
+
 // DELETE TEST CASES
 func TestDeletePointOfContactWorks(t *testing.T) {
 	appAssert := CreateSamplePOC(t)
 
 	TestRequest{
 		Method: fiber.MethodDelete,
-		Path:   "/api/v1/clubs/1/poc/doe.jane@northeastern.edu",
+		Path:   "/api/v1/clubs/1/poc/1",
 	}.TestOnStatusAndDB(t, &appAssert,
 		DBTesterWithStatus{
 			Status:   204,
@@ -277,12 +351,12 @@ func TestDeletePOCClubIDBadRequest(t *testing.T) {
 	}
 }
 
-func TestDeletePOCEmailBadRequest(t *testing.T) {
+func TestDeletePOCBadRequest(t *testing.T) {
 	badRequests := []string{
-		"1",
-		"hello@gmail",
-		"hello",
+		"0",
+		"-1",
 		"1.1",
+		"hello",
 		"null",
 	}
 
@@ -293,18 +367,18 @@ func TestDeletePOCEmailBadRequest(t *testing.T) {
 		}.TestOnStatusAndMessage(t, nil,
 			MessageWithStatus{
 				Status:  400,
-				Message: errors.FailedToValidateEmail,
+				Message: errors.FailedToValidatePointOfContactId,
 			},
 		).Close()
 	}
 }
 
 func TestDeletePOCClubNotExist(t *testing.T) {
-	email := "doe.jane@northeastern.edu"
+	pocId := 1
 
 	TestRequest{
 		Method: fiber.MethodDelete,
-		Path:   fmt.Sprintf("/api/v1/clubs/3/poc/%s", email),
+		Path:   fmt.Sprintf("/api/v1/clubs/3/poc/%d", pocId),
 	}.TestOnStatusMessageAndDB(t, nil,
 		StatusMessageDBTester{
 			MessageWithStatus: MessageWithStatus{
@@ -314,7 +388,7 @@ func TestDeletePOCClubNotExist(t *testing.T) {
 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
 				var pointOfContact models.PointOfContact
 
-				err := app.Conn.Where("email = ?", email).First(&pointOfContact).Error
+				err := app.Conn.Where("id = ?", pocId).First(&pointOfContact).Error
 
 				assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
 			},
@@ -323,11 +397,11 @@ func TestDeletePOCClubNotExist(t *testing.T) {
 }
 
 func TestDeletePOCNotExist(t *testing.T) {
-	email := "doe.john@northeastern.edu"
+	pocId := 6
 
 	TestRequest{
 		Method: fiber.MethodDelete,
-		Path:   fmt.Sprintf("/api/v1/clubs/1/poc/%s", email),
+		Path:   fmt.Sprintf("/api/v1/clubs/1/poc/%d", pocId),
 	}.TestOnStatusMessageAndDB(t, nil,
 		StatusMessageDBTester{
 			MessageWithStatus: MessageWithStatus{
@@ -337,7 +411,7 @@ func TestDeletePOCNotExist(t *testing.T) {
 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
 				var pointOfContact models.PointOfContact
 
-				err := app.Conn.Where("email = ?", email).First(&pointOfContact).Error
+				err := app.Conn.Where("id = ?", pocId).First(&pointOfContact).Error
 
 				assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
 			},

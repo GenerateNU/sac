@@ -9,4 +9,5 @@ const (
 	FailedToValidateEmail = "failed to validate email"
 	FailedToMapResponseToModel = "failed to map response to model"
 	FailedToGetAPointOfContact = "failed to get a point of contact"
+	FailedToValidatePointOfContactId = "failed to validate point of contact id"
 )

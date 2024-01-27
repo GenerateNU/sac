@@ -62,6 +62,16 @@ func (u *ClubController) GetAllPointOfContact(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(pointOfContact)
 }
 
+func (u *ClubController) GetPointOfContact(c *fiber.Ctx) error {
+	clubId := c.Params("id")
+	pocId := c.Params("pocId")
+	pointOfContact, err := u.clubService.GetPointOfContact(pocId, clubId)
+	if err != nil {
+		return err.FiberError(c)
+	}
+	return c.Status(fiber.StatusOK).JSON(pointOfContact)
+}
+
 // DeletePointOfContact godoc
 //
 // @Summary		Deletes the given clubID and userID
@@ -75,8 +85,8 @@ func (u *ClubController) GetAllPointOfContact(c *fiber.Ctx) error {
 
 func (u *ClubController) DeletePointOfContact(c *fiber.Ctx) error {
 	clubId := c.Params("id")
-	email := c.Params("email")
-	err := u.clubService.DeletePointOfContact(email, clubId)
+	pocId := c.Params("pocId")
+	err := u.clubService.DeletePointOfContact(pocId, clubId)
 	if err != nil {
 		return err.FiberError(c)
 	}
