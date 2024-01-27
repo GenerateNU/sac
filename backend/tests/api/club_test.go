@@ -215,6 +215,9 @@ func TestGetAllPOCWorks(t *testing.T) {
 				dbPointOfContacts, err := transactions.GetAllPointOfContacts(app.Conn, 1)
 				assert.NilError(&err)
 				assert.Equal(1, len(dbPointOfContacts))
+				dbPOC := dbPointOfContacts[0]
+
+				assert.Equal(dbPOC, respPointOfContact)
 			},
 		},
 	).Close()
