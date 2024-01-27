@@ -159,6 +159,7 @@ func (request TestRequest) Test(t *testing.T, existingAppAssert *ExistingAppAsse
 	var req *http.Request
 
 	if request.Body == nil {
+		t.Log("NO REQUEST BODY!")
 		req = httptest.NewRequest(request.Method, address, nil)
 	} else {
 		bodyBytes, err := json.Marshal(request.Body)

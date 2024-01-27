@@ -528,3 +528,266 @@ func TestCreateUserFailsOnMissingFields(t *testing.T) {
 	}
 	appAssert.Close()
 }
+
+// Test add user tags:
+// Test invalid body:
+// - Invalid array data type (non-uint)
+// - Invalid key
+// Test invalid user:
+// - Invalid id
+// - Invalid id type
+// Test works:
+// - Only adds valid IDs
+
+func SampleCategoriesFactory() *[]map[string]interface{} {
+	return &[]map[string]interface{}{
+		{
+			"name": "Business",
+		},
+		{
+			"name": "STEM",
+		},
+	}
+}
+
+func SampleTagsFactory() *[]map[string]interface{} {
+	return &[]map[string]interface{}{
+		{
+			"name":        "Computer Science",
+			"category_id": 2,
+		},
+		{
+			"name":        "Mechanical Engineering",
+			"category_id": 2,
+		},
+		{
+			"name":        "Finance",
+			"category_id": 1,
+		},
+	}
+}
+
+func SampleTagIDsFactory() *map[string]interface{} {
+	return &map[string]interface{}{
+		"tags": []uint{1, 2, 3},
+	}
+}
+
+func CreateSetOfTags(t *testing.T, appAssert ExistingAppAssert) {
+	categories := SampleCategoriesFactory()
+	tags := SampleTagsFactory()
+
+	for _, category := range *categories {
+		TestRequest{
+			Method: fiber.MethodPost,
+			Path:   "/api/v1/categories/",
+			Body:   &category,
+		}.TestOnStatus(t, &appAssert, 201)
+	}
+
+	for _, tag := range *tags {
+		TestRequest{
+			Method: fiber.MethodPost,
+			Path:   "/api/v1/tags/",
+			Body:   &tag,
+		}.TestOnStatus(t, &appAssert, 201)
+	}
+}
+
+func AssertUserTagsRespDB(app TestApp, assert *assert.A, resp *http.Response, id uint) {
+	var respTags []models.Tag
+
+	// Retrieve the tags from the response:
+	err := json.NewDecoder(resp.Body).Decode(&respTags)
+
+	assert.NilError(err)
+
+	// Retrieve the user connected to the tags:
+	var dbUser models.User
+	err = app.Conn.First(&dbUser, id).Error
+
+	assert.NilError(err)
+
+	// Retrieve the tags in the bridge table associated with the user:
+	var dbTags []models.Tag
+	err = app.Conn.Model(&dbUser).Association("Tag").Find(&dbTags)
+
+	assert.NilError(err)
+
+	// Confirm all the resp tags are equal to the db tags:
+	for i, respTag := range respTags {
+		assert.Equal(respTag.ID, dbTags[i].ID)
+		assert.Equal(respTag.Name, dbTags[i].Name)
+		assert.Equal(respTag.CategoryID, dbTags[i].CategoryID)
+	}
+}
+
+func AssertSampleUserTagsRespDB(app TestApp, assert *assert.A, resp *http.Response) {
+	AssertUserTagsRespDB(app, assert, resp, 2)
+}
+
+func TestCreateUserTagsFailsOnInvalidDataType(t *testing.T) {
+	// Invalid tag data types:
+	invalidTags := []interface{}{
+		[]string{"1", "2", "34"},
+		[]models.Tag{{Name: "Test", CategoryID: 1}, {Name: "Test2", CategoryID: 2}},
+		[]float32{1.32, 23.5, 35.1},
+	}
+
+	// Test each of the invalid tags:
+	for _, tag := range invalidTags {
+		malformedTag := *SampleTagIDsFactory()
+		malformedTag["tags"] = tag
+
+		TestRequest{
+			Method: fiber.MethodPost,
+			Path:   "/api/v1/users/1/tags/",
+			Body:   &malformedTag,
+		}.TestOnError(t, nil, errors.FailedToParseRequestBody).Close()
+	}
+}
+
+func TestCreateUserTagsFailsOnInvalidUserID(t *testing.T) {
+	badRequests := []string{
+		"0",
+		"-1",
+		"1.1",
+		"foo",
+		"null",
+	}
+
+	for _, badRequest := range badRequests {
+		TestRequest{
+			Method: fiber.MethodPost,
+			Path:   fmt.Sprintf("/api/v1/users/%s/tags", badRequest),
+			Body: 	SampleTagIDsFactory(),
+		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
+	}
+}
+
+func TestCreateUserTagsFailsOnInvalidKey(t *testing.T) {
+	appAssert := CreateSampleUser(t)
+	
+	invalidBody := []map[string]interface{}{
+		{
+			"tag": []uint{1, 2, 3},
+		},
+		{
+			"tagIDs": []uint{1, 2, 3},
+		},
+	}
+	
+	for _, body := range invalidBody {
+		TestRequest{
+			Method: fiber.MethodPost,
+			Path:   "/api/v1/users/2/tags/",
+			Body:   &body,
+		}.TestOnError(t, &appAssert, errors.FailedToValidateUserTags)
+	}
+
+	appAssert.Close()
+}
+
+func TestCreateUserTagsFailsOnNonExistentUser(t *testing.T) {
+	TestRequest{
+		Method: fiber.MethodPost,
+		Path:   "/api/v1/users/20/tags",
+		Body: 	SampleTagIDsFactory(),
+	}.TestOnError(t, nil, errors.UserNotFound).Close()
+}
+
+func TestCreateUserTagsWorks(t *testing.T) {
+	appAssert := CreateSampleUser(t)
+
+	// Confirm adding non-existent tags does nothing:
+	TestRequest{
+		Method: fiber.MethodPost,
+		Path:   "/api/v1/users/2/tags/",
+		Body:   SampleTagIDsFactory(),
+	}.TestOnStatusAndDB(t, &appAssert,
+		DBTesterWithStatus{
+			Status: fiber.StatusCreated,
+			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+				var respTags []models.Tag
+
+				err := json.NewDecoder(resp.Body).Decode(&respTags)
+
+				assert.NilError(err)
+
+				assert.Equal(len(respTags), 0)
+			},
+		},
+	)
+
+	// Create a set of tags:
+	CreateSetOfTags(t, appAssert)
+
+	// Confirm adding real tags adds them to the user:
+	TestRequest{
+		Method: fiber.MethodPost,
+		Path:   "/api/v1/users/2/tags/",
+		Body:   SampleTagIDsFactory(),
+	}.TestOnStatusAndDB(t, &appAssert,
+		DBTesterWithStatus{
+			Status: fiber.StatusCreated,
+			DBTester: AssertSampleUserTagsRespDB,
+		},
+	)
+
+	appAssert.Close()
+}
+
+func TestGetUserTagsFailsOnNonExistentUser(t *testing.T) {
+	TestRequest{
+		Method: fiber.MethodGet,
+		Path: "/api/v1/users/2/tags/",
+	}.TestOnError(t, nil, errors.UserNotFound)
+}
+
+func TestGetUserTagsReturnsEmptyListWhenNoneAdded(t *testing.T) {
+	appAssert := CreateSampleUser(t)
+
+	TestRequest{
+		Method: fiber.MethodGet,
+		Path: "/api/v1/users/2/tags/",
+	}.TestOnStatusAndDB(t, &appAssert,
+		DBTesterWithStatus{
+			Status: 200,
+			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+				var respTags []models.Tag
+
+				err := json.NewDecoder(resp.Body).Decode(&respTags)
+
+				assert.NilError(err)
+
+				assert.Equal(len(respTags), 0)
+			},
+		},
+	)
+}
+
+func TestGetUserTagsReturnsCorrectList(t *testing.T) {
+	appAssert := CreateSampleUser(t)
+
+	// Create a set of tags:
+	CreateSetOfTags(t, appAssert)
+
+	// Add the tags:
+	TestRequest{
+		Method: fiber.MethodPost,
+		Path:   "/api/v1/users/2/tags/",
+		Body:   SampleTagIDsFactory(),
+	}.TestOnStatus(t, &appAssert, 201)
+
+	// Get the tags:
+	TestRequest{
+		Method: fiber.MethodGet,
+		Path:   "/api/v1/users/2/tags/",
+	}.TestOnStatusAndDB(t, &appAssert,
+		DBTesterWithStatus{
+			Status: fiber.StatusOK,
+			DBTester: AssertSampleUserTagsRespDB,
+		},
+	)
+}
+
