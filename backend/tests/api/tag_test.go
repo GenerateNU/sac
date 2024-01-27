@@ -203,13 +203,15 @@ func TestUpdateTagWorksUpdateName(t *testing.T) {
 }
 
 func TestUpdateTagWorksUpdateCategory(t *testing.T) {
-	existingAppAssert, categoryUUID, tagUUID := CreateSampleTag(t)
+	existingAppAssert, _, tagUUID := CreateSampleTag(t)
 
 	technologyCategory := *SampleCategoryFactory()
 	technologyCategory["name"] = "Technology"
 
+	var technologyCategoryUUID uuid.UUID
+
 	var AssertNewCategoryBodyRespDB = func(app TestApp, assert *assert.A, resp *http.Response) {
-		AssertCategoryWithBodyRespDBMostRecent(app, assert, resp, &technologyCategory)
+		technologyCategoryUUID = AssertCategoryWithBodyRespDBMostRecent(app, assert, resp, &technologyCategory)
 	}
 
 	TestRequest{
@@ -223,7 +225,7 @@ func TestUpdateTagWorksUpdateCategory(t *testing.T) {
 		},
 	)
 
-	technologyTag := *SampleTagFactory(categoryUUID)
+	technologyTag := *SampleTagFactory(technologyCategoryUUID)
 
 	var AssertUpdatedTagBodyRespDB = func(app TestApp, assert *assert.A, resp *http.Response) {
 		AssertTagWithBodyRespDB(app, assert, resp, &technologyTag)
