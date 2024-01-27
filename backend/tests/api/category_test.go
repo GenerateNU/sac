@@ -54,7 +54,7 @@ func AssertCategoryWithBodyRespDBMostRecent(app TestApp, assert *assert.A, resp 
 
 	var dbCategory models.Category
 
-	err = app.Conn.Last(&dbCategory).Error
+	err = app.Conn.Order("created_at desc").First(&dbCategory).Error
 
 	assert.NilError(err)
 

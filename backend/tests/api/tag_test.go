@@ -30,12 +30,9 @@ func AssertTagWithBodyRespDB(app TestApp, assert *assert.A, resp *http.Response,
 
 	var dbTag models.Tag
 
-	err = app.Conn.Last(&dbTag).Error
+	err = app.Conn.First(&dbTag).Error
 
 	assert.NilError(err)
-
-	fmt.Println(dbTag.ID)
-	fmt.Println(respTag.ID)
 
 	assert.Equal(dbTag.ID, respTag.ID)
 	assert.Equal(dbTag.Name, respTag.Name)
