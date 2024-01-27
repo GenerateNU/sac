@@ -1,8 +1,9 @@
 package models
 
 import (
-	"github.com/GenerateNU/sac/backend/src/types"
-	"gorm.io/gorm"
+	"time"
+
+	"github.com/google/uuid"
 )
 
 type RecruitmentCycle string
@@ -23,7 +24,7 @@ const (
 )
 
 type Club struct {
-	types.Model
+	Model
 
 	SoftDeletedAt gorm.DeletedAt `gorm:"type:timestamptz;default:NULL" json:"-" validate:"-"`
 
@@ -37,8 +38,8 @@ type Club struct {
 	ApplicationLink  string           `gorm:"type:varchar(255);default:NULL" json:"application_link" validate:"required,max=255,http_url"`
 	Logo             string           `gorm:"type:varchar(255);default:NULL" json:"logo" validate:"omitempty,url,max=255"` // S3 URL
 
-	Parent *uint `gorm:"foreignKey:Parent" json:"-" validate:"min=1"`
-	Tag    []Tag `gorm:"many2many:club_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
+	Parent *uuid.UUID `gorm:"foreignKey:Parent" json:"-" validate:"uuid4"`
+	Tag    []Tag      `gorm:"many2many:club_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	// User
 	Admin             []User           `gorm:"many2many:user_club_admins;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"required"`
 	Member            []User           `gorm:"many2many:user_club_members;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"required"`

@@ -21,6 +21,12 @@ func ConfigureDB(settings config.Settings) (*gorm.DB, error) {
 		return nil, err
 	}
 
+	err = db.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"").Error
+
+	if err != nil {
+		return nil, err
+	}
+
 	if err := MigrateDB(settings, db); err != nil {
 		return nil, err
 	}
