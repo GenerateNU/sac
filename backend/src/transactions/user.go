@@ -76,7 +76,7 @@ func DeleteUser(db *gorm.DB, id uuid.UUID) *errors.Error {
 	return nil
 }
 
-func GetUserTags(db *gorm.DB, id uint) ([]models.Tag, *errors.Error) {
+func GetUserTags(db *gorm.DB, id uuid.UUID) ([]models.Tag, *errors.Error) {
 	var tags []models.Tag
 
 	user, err := GetUser(db, id)
@@ -90,7 +90,7 @@ func GetUserTags(db *gorm.DB, id uint) ([]models.Tag, *errors.Error) {
 	return tags, nil
 }
 
-func CreateUserTags(db *gorm.DB, id uint, tags []models.Tag) ([]models.Tag, *errors.Error) {
+func CreateUserTags(db *gorm.DB, id uuid.UUID, tags []models.Tag) ([]models.Tag, *errors.Error) {
 	user, err := GetUser(db, id)
 	if err != nil {
 		return nil, &errors.UserNotFound

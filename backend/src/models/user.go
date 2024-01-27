@@ -1,5 +1,7 @@
 package models
 
+import "github.com/google/uuid"
+
 type UserRole string
 
 const (
@@ -76,5 +78,5 @@ type UpdateUserRequestBody struct {
 }
 
 type CreateUserTagsBody struct {
-	Tags      []uint  `json:"tags" validate:"required"`
+	Tags      []uuid.UUID  `json:"tags" validate:"required"`
 }

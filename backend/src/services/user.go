@@ -111,12 +111,12 @@ func (u *UserService) DeleteUser(id string) *errors.Error {
 }
 
 func (u *UserService) GetUserTags(id string) ([]models.Tag, *errors.Error) {
-	idAsInt, err := utilities.ValidateID(id)
+	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return nil, err
 	}
 
-	return transactions.GetUserTags(u.DB, *idAsInt)
+	return transactions.GetUserTags(u.DB, *idAsUUID)
 }
 
 func (u *UserService) CreateUserTags(id string, tagIDs models.CreateUserTagsBody) ([]models.Tag, *errors.Error) {
