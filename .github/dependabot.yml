@@ -1,7 +1,11 @@
 version: 2
 updates:
   - package-ecosystem: gomod
-    directory: ./
+    directory: ./backend/
+    schedule:
+      interval: weekly
+  - package-ecosystem: gomod
+    directory: ./cli/
     schedule:
       interval: weekly
   - package-ecosystem: npm
