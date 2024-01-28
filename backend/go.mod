@@ -9,7 +9,7 @@ require (
 	github.com/spf13/viper v1.18.2
 	github.com/swaggo/swag v1.16.2
 	gorm.io/driver/postgres v1.5.4
-	gorm.io/gorm v1.25.5
+	gorm.io/gorm v1.25.6
 )
 
 require (
