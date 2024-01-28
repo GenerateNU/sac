@@ -117,8 +117,8 @@ func PutContact(db *gorm.DB, clubID uint, contact models.Contact) (*models.Conta
 		}
 	}
 
-	// determines if the inputted contact type
-	// exists for the current club
+	// determines if the inputted contact type exists for the current club
+	// if it exists, save the contactID so we can update it
 	contacts := club.Contact
 	alreadyExists := false
 	var contactID uint = 0

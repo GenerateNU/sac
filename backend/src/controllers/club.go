@@ -113,7 +113,7 @@ func (l *ClubController) PutContact(c *fiber.Ctx) error {
 }
 
 func (l *ClubController) DeleteContact(c *fiber.Ctx) error {
-	err := l.clubService.DeleteContact(c.Params("id"))
+	err := l.clubService.DeleteContact(c.Params("contactID"))
 	if err != nil {
 		return err.FiberError(c)
 	}

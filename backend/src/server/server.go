@@ -89,8 +89,9 @@ func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface) 
 	clubs.Delete("/:id", clubController.DeleteClub)
 
 	// club-dependent contact routes
-	clubs.Get("/:id/clubs", clubController.GetClubContacts)
-	clubs.Put("/:id/clubs", clubController.PutContact)
+	clubs.Get("/:id/contacts", clubController.GetClubContacts)
+	clubs.Put("/:id/contacts", clubController.PutContact) // contact to be updated is identified in the body media type
+	clubs.Delete("/:clubID/contacts/:contactID", clubController.DeleteContact)
 }
 
 func contactRoutes(router fiber.Router, clubService services.ClubServiceInterface) {
@@ -99,7 +100,6 @@ func contactRoutes(router fiber.Router, clubService services.ClubServiceInterfac
 	contacts := router.Group("/contacts")
 
 	contacts.Get("/", clubController.GetContacts)
-	contacts.Delete("/:id", clubController.DeleteContact)
 }
 
 func categoryRoutes(router fiber.Router, categoryService services.CategoryServiceInterface) {
