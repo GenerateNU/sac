@@ -43,7 +43,7 @@ jobs:
           category: "/language:javascript-typescript"
 
   analyze-backend-go:
-    name: Analyze Go
+    name: Analyze Backend Go
     runs-on: ubuntu-latest
     if: (github.event_name == 'push' && contains(github.event.head_commit.modified, 'backend/')) || (github.event_name == 'pull_request' && contains(github.event.pull_request.changed_files, 'backend/'))
     permissions:
@@ -71,7 +71,7 @@ jobs:
           category: "/language:go"
 
   analyze-cli-go:
-    name: Analyze Go
+    name: Analyze CLI Go
     runs-on: ubuntu-latest
     if: (github.event_name == 'push' && contains(github.event.head_commit.modified, 'cli/')) || (github.event_name == 'pull_request' && contains(github.event.pull_request.changed_files, 'cli/'))
     permissions:
