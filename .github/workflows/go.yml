@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "backend/**"
+      - ".github/workflows/go.yml"
   pull_request:
     paths:
       - "backend/**"
