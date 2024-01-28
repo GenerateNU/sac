@@ -3,7 +3,7 @@ module github.com/GenerateNU/sac/backend
 go 1.21.1
 
 require (
-	github.com/go-playground/validator/v10 v10.16.0
+	github.com/go-playground/validator/v10 v10.17.0
 	github.com/gofiber/fiber/v2 v2.52.0
 	github.com/gofiber/swagger v0.1.14
 	github.com/spf13/viper v1.18.2
