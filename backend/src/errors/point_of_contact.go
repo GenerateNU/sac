@@ -10,4 +10,7 @@ const (
 	FailedToMapResponseToModel = "failed to map response to model"
 	FailedToGetAPointOfContact = "failed to get a point of contact"
 	FailedToValidatePointOfContactId = "failed to validate point of contact id"
+	FailedToValidateClubId = "failed to validate club id"
+	ClubNotFound = "club not found"
+	FailedToGetClub = "failed to get club"
 )
