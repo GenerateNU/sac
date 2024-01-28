@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: ["main"]
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 0 * * 1"
 
 jobs:
   analyze:
@@ -34,7 +34,7 @@ jobs:
         run: |
           cd ./backend/ && go build -o backend src/main.go
           cd ../
-          cd ./cli/ && go build -o cli src/main.go
+          cd ./cli/ && go build -o cli main.go
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
