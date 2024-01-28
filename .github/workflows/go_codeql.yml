@@ -1,0 +1,46 @@
+name: Go CodeQL
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "backend/**"
+      - "cli/**"
+      - ".github/workflows/go_codeql.yml"
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "backend/**"
+      - "cli/**"
+      - ".github/workflows/go_codeql.yml"
+  schedule:
+    - cron: "0 0 * * 1"
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: "ubuntu-latest"
+    permissions:
+      security-events: write
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.21
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: "go"
+      - name: Build Backend and CLI
+        run: |
+          cd ./backend/ && go build -o backend src/main.go
+          cd ../
+          cd ./cli/ && go build -o cli main.go
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: /language:go
