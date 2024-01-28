@@ -12,7 +12,6 @@ jobs:
   analyze:
     name: Analyze
     runs-on: "ubuntu-latest"
-    timeout-minutes: 360
     permissions:
       security-events: write
     strategy:
@@ -26,11 +25,11 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
+      - name: Autobuild JavaScript/TypeScript
         if: matrix.language == 'javascript-typescript'
-      - name: Autobuild
         uses: github/codeql-action/autobuild@v3
+      - name: Build Backend and CLI for Go
         if: matrix.language == 'go'
-      - name: Build Backend and CLI
         run: |
           cd ./backend/ && go build -o backend src/main.go
           cd ../
