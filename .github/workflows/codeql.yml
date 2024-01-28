@@ -3,49 +3,97 @@ name: CodeQL
 on:
   push:
     branches: ["main"]
-    paths-ignore:
-      - "**/*.md"
+    paths:
+      - "backend/**"
+      - "cli/**"
+      - "frontend/**"
+      - ".github/workflows/codeql.yml"
   pull_request:
     branches: ["main"]
-    paths-ignore:
-      - "**/*.md"
+    paths:
+      - "backend/**"
+      - "cli/**"
+      - "frontend/**"
+      - ".github/workflows/codeql.yml"
   schedule:
     - cron: "0 0 * * 1"
 
 jobs:
-  analyze:
-    name: Analyze
+  analyze-js-ts:
+    name: Analyze JavaScript and TypeScript
     runs-on: ubuntu-latest
-    timeout-minutes: 360
+    if: (github.event_name == 'push' && contains(github.event.head_commit.modified, 'frontend/')) || (github.event_name == 'pull_request' && contains(github.event.pull_request.changed_files, 'frontend/'))
     permissions:
       security-events: write
     strategy:
       fail-fast: false
-      matrix:
-        language: ["go", "javascript-typescript"]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: "javascript-typescript"
+          queries: security-and-quality
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:javascript-typescript"
+
+  analyze-backend-go:
+    name: Analyze Backend Go
+    runs-on: ubuntu-latest
+    if: (github.event_name == 'push' && contains(github.event.head_commit.modified, 'backend/')) || (github.event_name == 'pull_request' && contains(github.event.pull_request.changed_files, 'backend/'))
+    permissions:
+      security-events: write
+    strategy:
+      fail-fast: false
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Set up Go
-        if: matrix.language == 'go'
         uses: actions/setup-go@v3
         with:
           go-version: "1.21"
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: ${{ matrix.language }}
+          languages: "go"
           queries: security-and-quality
-      - name: Autobuild
-        if: matrix.language == 'javascript-typescript'
-        uses: github/codeql-action/autobuild@v3
       - name: Build
-        if: matrix.language == 'go'
         run: |
           cd ./backend/ && go build -o backend src/main.go
-          cd ../
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:go"
+
+  analyze-cli-go:
+    name: Analyze CLI Go
+    runs-on: ubuntu-latest
+    if: (github.event_name == 'push' && contains(github.event.head_commit.modified, 'cli/')) || (github.event_name == 'pull_request' && contains(github.event.pull_request.changed_files, 'cli/'))
+    permissions:
+      security-events: write
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: "1.21"
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: "go"
+          queries: security-and-quality
+      - name: Build
+        run: |
           cd ./cli/ && go build -o cli main.go
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
-          category: "/language:${{ matrix.language }}"
+          category: "/language:go"
