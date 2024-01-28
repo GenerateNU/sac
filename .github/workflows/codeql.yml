@@ -22,7 +22,7 @@ jobs:
   analyze-js-ts:
     name: Analyze JavaScript and TypeScript
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && contains(github.event.head_commit.modified, 'frontend/')) || (github.event_name == 'pull_request' && contains(github.event.pull_request.changed_files, 'frontend/')) || (github.event_name == 'push' && contains(github.event.head_commit.modified, '.github/workflows/codeql.yml/')) || (github.event_name == 'pull_request' && contains(github.event.pull_request.changed_files, '.github/workflows/codeql.yml/'))
+    if: (github.event_name == 'push' && contains(github.event.head_commit.modified, 'frontend/')) || (github.event_name == 'pull_request' && contains(github.event.pull_request.changed_files, 'frontend/'))
     permissions:
       security-events: write
     strategy:
@@ -45,7 +45,7 @@ jobs:
   analyze-backend-go:
     name: Analyze Go
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && contains(github.event.head_commit.modified, 'backend/')) || (github.event_name == 'pull_request' && contains(github.event.pull_request.changed_files, 'backend/')) || (github.event_name == 'push' && contains(github.event.head_commit.modified, '.github/workflows/codeql.yml/')) || (github.event_name == 'pull_request' && contains(github.event.pull_request.changed_files, '.github/workflows/codeql.yml/'))
+    if: (github.event_name == 'push' && contains(github.event.head_commit.modified, 'backend/')) || (github.event_name == 'pull_request' && contains(github.event.pull_request.changed_files, 'backend/'))
     permissions:
       security-events: write
     strategy:
@@ -73,7 +73,7 @@ jobs:
   analyze-cli-go:
     name: Analyze Go
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && contains(github.event.head_commit.modified, 'cli/')) || (github.event_name == 'pull_request' && contains(github.event.pull_request.changed_files, 'cli/')) || (github.event_name == 'push' && contains(github.event.head_commit.modified, '.github/workflows/codeql.yml/')) || (github.event_name == 'pull_request' && contains(github.event.pull_request.changed_files, '.github/workflows/codeql.yml/'))
+    if: (github.event_name == 'push' && contains(github.event.head_commit.modified, 'cli/')) || (github.event_name == 'pull_request' && contains(github.event.pull_request.changed_files, 'cli/'))
     permissions:
       security-events: write
     strategy:
