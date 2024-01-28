@@ -4840,6 +4840,13 @@ expo-file-system@~15.4.0, expo-file-system@~15.4.5:
   dependencies:
     uuid "^3.4.0"
 
+expo-font@~11.10.2:
+  version "11.10.2"
+  resolved "https://registry.yarnpkg.com/expo-font/-/expo-font-11.10.2.tgz#233195c4fa0321763bd89bd7919bf7271a439c3f"
+  integrity sha512-AE0Q0LiWiVosQ/jlKUPoWoob7p3GwYM2xmLoUkuopO9RYh9NL1hZKHiMKcWBZyDG8Gww1GtBQwh7ZREST8+jjQ==
+  dependencies:
+    fontfaceobserver "^2.1.0"
+
 expo-font@~11.4.0:
   version "11.4.0"
   resolved "https://registry.yarnpkg.com/expo-font/-/expo-font-11.4.0.tgz#e2d31c0bb76ba3c37c2d84703a49aeafc3afef28"
