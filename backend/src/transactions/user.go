@@ -21,7 +21,6 @@ func CreateUser(db *gorm.DB, user *models.User) (*models.User, *errors.Error) {
 	return user, nil
 }
 
-
 func GetUserByEmail(db *gorm.DB, email string) (*models.User, *errors.Error) {
 	var user models.User
 

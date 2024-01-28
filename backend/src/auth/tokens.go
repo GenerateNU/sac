@@ -26,7 +26,7 @@ func CreateAccessToken(id string, role string) (*string, *errors.Error) {
 
 	accessToken, err := SignToken(accessTokenClaims, settings.AuthSecret.AccessToken)
 	if err != nil {
-		return nil, err
+		return nil, &errors.FailedToSignToken
 	}
 
 	return accessToken, nil
@@ -85,7 +85,7 @@ func RefreshAccessToken(accessCookie, refreshCookie string) (*string, *errors.Er
 	// Parse the access token
 	accessToken, err := ParseAccessToken(accessCookie)
 	if err != nil {
-		return nil, &errors.FailedToParseAccessToken
+		return nil, &errors.CategoryAlreadyExists
 	}
 
 	// Parse the refresh token
@@ -122,7 +122,6 @@ func RefreshAccessToken(accessCookie, refreshCookie string) (*string, *errors.Er
 	return newAccessToken, nil
 }
 
-
 // ParseAccessToken parses the access token
 func ParseAccessToken(cookie string) (*jwt.Token, error) {
 	var settings config.Settings
@@ -138,9 +137,8 @@ func ParseRefreshToken(cookie string) (*jwt.Token, error) {
 
 	return jwt.ParseWithClaims(cookie, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(settings.AuthSecret.RefreshToken), nil
-	})	
+	})
 }
-
 
 // GetRoleFromToken gets the role from the custom claims
 func GetRoleFromToken(tokenString string) (*string, error) {

@@ -9,16 +9,16 @@ import (
 )
 
 const (
-	AuthLoginPath = "/api/v1/users/auth/login"
-	AuthRefreshPath = "/api/v1/users/auth/refresh"
+	AuthLoginPath    = "/api/v1/users/auth/login"
+	AuthRefreshPath  = "/api/v1/users/auth/refresh"
 	AuthRegisterPath = "/api/v1/users/auth/register"
 )
 
 func (m *MiddlewareService) Authenticate(c *fiber.Ctx) error {
 	// TODO: use a contains function instead of this
 	if c.Path() == AuthLoginPath || c.Path() == AuthRefreshPath || c.Path() == AuthRegisterPath {
-        return c.Next()
-    }
+		return c.Next()
+	}
 
 	token, err := auth.ParseAccessToken(c.Cookies("access_token"))
 	if err != nil {
@@ -33,7 +33,6 @@ func (m *MiddlewareService) Authenticate(c *fiber.Ctx) error {
 			"message": "unauthorized",
 		})
 	}
-
 
 	return c.Next()
 }
@@ -57,7 +56,7 @@ func (m *MiddlewareService) Authorize(requiredPermissions ...models.Permission) 
 			if !containsPermission(userPermissions, requiredPermission) {
 				return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
 					"message": "forbidden",
-				})	
+				})
 			}
 		}
 

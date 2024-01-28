@@ -5,8 +5,8 @@ import "github.com/GenerateNU/sac/backend/src/types"
 type UserRole string
 
 const (
-	Super     UserRole = "super"
-	Student   UserRole = "student"
+	Super   UserRole = "super"
+	Student UserRole = "student"
 )
 
 type College string

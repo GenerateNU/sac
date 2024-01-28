@@ -40,7 +40,6 @@ func (m *MiddlewareService) UserAuthorizeById(c *fiber.Ctx) error {
 	if issuerID == id {
 		return c.Next()
 	}
-	
 
 	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 		"message": "unauthorized",

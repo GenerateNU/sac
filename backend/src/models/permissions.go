@@ -3,47 +3,47 @@ package models
 type Permission string
 
 const (
-	UserRead  Permission = "user:read"
-	UserWrite Permission = "user:write"
+	UserRead   Permission = "user:read"
+	UserWrite  Permission = "user:write"
 	UserDelete Permission = "user:delete"
 
-	TagRead Permission = "tag:read"
-	TagWrite Permission = "tag:write"
+	TagRead   Permission = "tag:read"
+	TagWrite  Permission = "tag:write"
 	TagCreate Permission = "tag:create"
 	TagDelete Permission = "tag:delete"
 
-	ClubRead Permission = "club:read"
-	ClubWrite Permission = "club:write"
+	ClubRead   Permission = "club:read"
+	ClubWrite  Permission = "club:write"
 	ClubCreate Permission = "club:create"
 	ClubDelete Permission = "club:delete"
 
-	PointOfContactRead Permission = "pointOfContact:read"
+	PointOfContactRead   Permission = "pointOfContact:read"
 	PointOfContactCreate Permission = "pointOfContact:create"
-	PointOfContactWrite Permission = "pointOfContact:write"
+	PointOfContactWrite  Permission = "pointOfContact:write"
 	PointOfContactDelete Permission = "pointOfContact:delete"
 
-	CommentRead Permission = "comment:read"
+	CommentRead   Permission = "comment:read"
 	CommentCreate Permission = "comment:create"
-	CommentWrite Permission = "comment:write"
+	CommentWrite  Permission = "comment:write"
 	CommentDelete Permission = "comment:delete"
 
-	EventRead Permission = "event:read"	
-	EventWrite Permission = "event:write"
+	EventRead   Permission = "event:read"
+	EventWrite  Permission = "event:write"
 	EventCreate Permission = "event:create"
 	EventDelete Permission = "event:delete"
 
-	ContactRead Permission = "contact:read"
-	ContactWrite Permission = "contact:write"
+	ContactRead   Permission = "contact:read"
+	ContactWrite  Permission = "contact:write"
 	ContactCreate Permission = "contact:create"
 	ContactDelete Permission = "contact:delete"
 
-	CategoryRead Permission = "category:read"
-	CategoryWrite Permission = "category:write"
+	CategoryRead   Permission = "category:read"
+	CategoryWrite  Permission = "category:write"
 	CategoryCreate Permission = "category:create"
 	CategoryDelete Permission = "category:delete"
 
-	NotificationRead Permission = "notification:read"
-	NotificationWrite Permission = "notification:write"
+	NotificationRead   Permission = "notification:read"
+	NotificationWrite  Permission = "notification:write"
 	NotificationCreate Permission = "notification:create"
 	NotificationDelete Permission = "notification:delete"
 )
