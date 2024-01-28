@@ -3,8 +3,6 @@ name: CodeQL
 on:
   push:
     branches: ["main"]
-    paths-ignore:
-      - "**/*.md"
     paths:
       - "backend/**"
       - "cli/**"
@@ -12,8 +10,6 @@ on:
       - ".github/workflows/codeql.yml"
   pull_request:
     branches: ["main"]
-    paths-ignore:
-      - "**/*.md"
     paths:
       - "backend/**"
       - "cli/**"
