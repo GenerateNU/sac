@@ -21,9 +21,9 @@
     "@tanstack/react-query": "^5.17.9",
     "clsx": "^2.1.0",
     "eslint-config-prettier": "^9.1.0",
-    "expo": "~49.0.18",
+    "expo": "~49.0.22",
     "expo-auth-session": "~5.0.2",
-    "expo-font": "~11.4.0",
+    "expo-font": "~11.10.2",
     "expo-linking": "~5.0.2",
     "expo-router": "^2.0.0",
     "expo-splash-screen": "~0.20.5",
@@ -43,7 +43,7 @@
     "zustand": "^4.4.7"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0",
+    "@babel/core": "^7.23.9",
     "@react-native-community/eslint-config": "^3.2.0",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/react": "~18.2.14",
