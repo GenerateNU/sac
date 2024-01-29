@@ -42,7 +42,7 @@ func main() {
 		panic(err)
 	}
 
-	app := server.Init(db)
+	app := server.Init(db, config)
 
 	app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
 }

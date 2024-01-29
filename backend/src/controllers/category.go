@@ -4,7 +4,6 @@ import (
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
-
 	"github.com/gofiber/fiber/v2"
 )
 

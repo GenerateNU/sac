@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
 
@@ -12,6 +13,7 @@ type Settings struct {
 	Application ApplicationSettings `yaml:"application"`
 	Database    DatabaseSettings    `yaml:"database"`
 	SuperUser   SuperUserSettings   `yaml:"superuser"`
+	AWS         AWSSettings
 }
 
 type ProductionSettings struct {
@@ -63,6 +65,22 @@ type SuperUserSettings struct {
 	Password string `yaml:"password"`
 }
 
+type AWSSettings struct {
+	BUCKET_NAME string
+	ID          string
+	SECRET      string
+}
+
+func configAWS() AWSSettings {
+	if err := godotenv.Load(); err != nil {
+		panic(err)
+	}
+	return AWSSettings{
+		BUCKET_NAME: os.Getenv("BUCKET_NAME"),
+		ID:          os.Getenv("AWS_ID"),
+		SECRET:      os.Getenv("AWS_SECRET")}
+}
+
 type Environment string
 
 const (
@@ -82,7 +100,7 @@ func GetConfiguration(path string) (Settings, error) {
 	v := viper.New()
 	v.SetConfigType("yaml")
 	v.AddConfigPath(path)
-
+	AWSSettings := configAWS()
 	if environment == EnvironmentLocal {
 		var settings Settings
 
@@ -95,7 +113,7 @@ func GetConfiguration(path string) (Settings, error) {
 		if err := v.Unmarshal(&settings); err != nil {
 			return settings, fmt.Errorf("failed to unmarshal configuration: %w", err)
 		}
-
+		settings.AWS = AWSSettings
 		return settings, nil
 	} else {
 		var prodSettings ProductionSettings
@@ -139,6 +157,7 @@ func GetConfiguration(path string) (Settings, error) {
 			SuperUser: SuperUserSettings{
 				Password: os.Getenv(fmt.Sprintf("%sPASSWORD", superUserPrefix)),
 			},
+			AWS: AWSSettings,
 		}, nil
 	}
 }

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/controllers"
 	"github.com/GenerateNU/sac/backend/src/services"
 	"github.com/GenerateNU/sac/backend/src/utilities"
@@ -23,7 +24,7 @@ import (
 // @contact.email	oduneye.d@northeastern.edu and ladley.g@northeastern.edu
 // @host 127.0.0.1:8080
 // @BasePath /
-func Init(db *gorm.DB) *fiber.App {
+func Init(db *gorm.DB, config config.Settings) *fiber.App {
 	app := newFiberApp()
 
 	validate := validator.New(validator.WithRequiredStructEnabled())
@@ -38,6 +39,7 @@ func Init(db *gorm.DB) *fiber.App {
 	categoryRoutes(apiv1, &services.CategoryService{DB: db, Validate: validate})
 	tagRoutes(apiv1, &services.TagService{DB: db, Validate: validate})
 	clubRoutes(apiv1, &services.ClubService{DB: db, Validate: validate})
+	fileRoutes(apiv1, &services.FileService{DB: db, Settings: config.AWS})
 	return app
 }
 
@@ -102,4 +104,11 @@ func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface) 
 	pointOfContact.Get("/:pocId", clubController.GetPointOfContact)
 	pointOfContact.Put("/", clubController.UpsertPointOfContact)
 	pointOfContact.Delete("/:pocId", clubController.DeletePointOfContact)
+}
+
+func fileRoutes(router fiber.Router, fileService services.FileServiceInterface) {
+	fileController := controllers.NewFileController(fileService)
+
+	file := router.Group("/file")
+	file.Post("/", fileController.CreateFile)
 }
