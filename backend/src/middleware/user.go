@@ -1,47 +1,38 @@
 package middleware
 
 import (
-	"fmt"
-	"strconv"
-
 	"github.com/GenerateNU/sac/backend/src/auth"
+	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/types"
+	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/gofiber/fiber/v2"
 )
 
 func (m *MiddlewareService) UserAuthorizeById(c *fiber.Ctx) error {
-	fmt.Println("UserAuthorizeById")
-	id, err := strconv.Atoi(c.Params("id"))
+	idAsUint, err := utilities.ValidateID(c.Params("id"))
 	if err != nil {
-		return fiber.ErrBadRequest
+		return err
 	}
 
-	token, err := auth.ParseAccessToken(c.Cookies("access_token"))
-	if err != nil {
-		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
-			"message": "internal server error",
-		})
+	token, tokenErr := auth.ParseAccessToken(c.Cookies("access_token"))
+	if tokenErr != nil {
+		return err
 	}
 
+	
 	claims, ok := token.Claims.(*types.CustomClaims)
 	if !ok || !token.Valid {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"message": "unauthorized",
-		})
+		return errors.FailedToValidateAccessToken.FiberError(c)
 	}
-
-	issuerID, err := strconv.Atoi(claims.Issuer)
+	
+	issuerIDAsUint, err := utilities.ValidateID(claims.Issuer)
 	if err != nil {
-		return c.Status(fiber.ErrInternalServerError.Code).JSON(fiber.Map{
-			"message": "internal server error",
-		})
+		return err
 	}
 
-	if issuerID == id {
+	if issuerIDAsUint == idAsUint {
 		return c.Next()
 	}
 
-	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-		"message": "unauthorized",
-	})
+	return errors.Unauthorized.FiberError(c)
 }

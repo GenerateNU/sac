@@ -6,7 +6,6 @@ import (
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
 	"github.com/GenerateNU/sac/backend/src/utilities"
-	"github.com/go-playground/validator/v10"
 	"github.com/goccy/go-json"
 
 	"github.com/gofiber/fiber/v2"
@@ -28,17 +27,14 @@ import (
 func Init(db *gorm.DB) *fiber.App {
 	app := newFiberApp()
 
-	validate := validator.New(validator.WithRequiredStructEnabled())
-	// MARK: Custom validator tags can be registered here.
-	utilities.RegisterCustomValidators(validate)
-
-	utilityRoutes(app)
-
+	validate := utilities.RegisterCustomValidators()
 	middlewareService := middleware.NewMiddlewareService(db, validate)
-
+	
 	apiv1 := app.Group("/api/v1")
 	apiv1.Use(middlewareService.Authenticate)
-
+	
+	utilityRoutes(app)
+	authRoutes(apiv1, services.NewAuthService(db, validate))
 	userRoutes(apiv1, services.NewUserService(db, validate), middlewareService)
 	categoryRoutes(apiv1, services.NewCategoryService(db, validate))
 	tagRoutes(apiv1, services.NewTagService(db, validate))
@@ -77,20 +73,28 @@ func userRoutes(router fiber.Router, userService services.UserServiceInterface, 
 	// api/v1/users/*
 	users := router.Group("/users")
 	users.Post("/", userController.CreateUser)
-	users.Get("/", userController.GetUsers)
+	users.Get("/", middlewareService.Authorize(models.UserReadAll), userController.GetUsers)
 
 	// api/v1/users/:id/*
-	// usersID := users.Group("/:id")
-	// users.Use(middlewareService.UserAuthorizeById)
-	users.Get("/:id", middlewareService.UserAuthorizeById, middlewareService.Authorize(models.UserRead), userController.GetUser)
-	users.Patch("/:id", middlewareService.UserAuthorizeById, middlewareService.Authorize(models.UserWrite), userController.UpdateUser)
-	users.Delete("/:id", middlewareService.UserAuthorizeById, middlewareService.Authorize(models.UserDelete), userController.DeleteUser)
+	usersID := users.Group("/:id")
+	usersID.Use(middlewareService.UserAuthorizeById)
+
+	usersID.Get("/", middlewareService.Authorize(models.UserRead), userController.GetUser)
+	usersID.Patch("/", middlewareService.Authorize(models.UserWrite), userController.UpdateUser)
+	usersID.Delete("/", middlewareService.Authorize(models.UserDelete), userController.DeleteUser)
+}
+
+func authRoutes(router fiber.Router, authService services.AuthServiceInterface) {
+	authController := controllers.NewAuthController(authService)
 
 	// api/v1/auth/*
-	users.Get("/auth/logout", userController.Logout)
-	users.Get("/auth/refresh", userController.Refresh)
-	users.Post("/auth/login", userController.Login)
+	auth := router.Group("/auth")	
+	auth.Post("/login", authController.Login)
+	auth.Get("/logout", authController.Logout)
+	auth.Get("/refresh", authController.Refresh)
+	auth.Get("/me", authController.Me)
 }
+
 
 func categoryRoutes(router fiber.Router, categoryService services.CategoryServiceInterface) {
 	categoryController := controllers.NewCategoryController(categoryService)

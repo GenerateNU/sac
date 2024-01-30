@@ -10,9 +10,13 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-func RegisterCustomValidators(validate *validator.Validate) {
+func RegisterCustomValidators() *validator.Validate {
+	validate := validator.New(validator.WithRequiredStructEnabled())
+
 	validate.RegisterValidation("neu_email", ValidateEmail)
 	validate.RegisterValidation("password", ValidatePassword)
+
+	return validate
 }
 
 func ValidateEmail(fl validator.FieldLevel) bool {

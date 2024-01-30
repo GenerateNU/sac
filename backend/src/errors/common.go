@@ -51,4 +51,12 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to parse access token",
 	}
+	FailedToValidateRefreshToken = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "failed to validate refresh token",
+	}
+	FailedToValidateAccessToken = Error{
+		StatusCode: fiber.StatusUnauthorized,
+		Message:    "failed to validate access token",
+	}
 )

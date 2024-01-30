@@ -11,6 +11,20 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
+func CreateTokenPair(id string, role string) (*string, *string, *errors.Error) {
+	accessToken, catErr := CreateAccessToken(id, role)
+	if catErr != nil {
+		return nil, nil, catErr
+	}
+
+	refreshToken, crtErr := CreateRefreshToken(id)
+	if crtErr != nil {
+		return nil, nil, crtErr
+	}
+
+	return accessToken, refreshToken, nil
+}
+
 // CreateAccessToken creates a new access token for the user
 func CreateAccessToken(id string, role string) (*string, *errors.Error) {
 	var settings config.Settings
@@ -26,21 +40,20 @@ func CreateAccessToken(id string, role string) (*string, *errors.Error) {
 
 	accessToken, err := SignToken(accessTokenClaims, settings.AuthSecret.AccessToken)
 	if err != nil {
-		return nil, &errors.FailedToSignToken
+		return nil, err
 	}
 
 	return accessToken, nil
 }
 
 // CreateRefreshToken creates a new refresh token for the user
-func CreateRefreshToken() (*string, *errors.Error) {
+func CreateRefreshToken(id string) (*string, *errors.Error) {
 	var settings config.Settings
 
-	refreshTokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, &types.CustomClaims{
-		StandardClaims: jwt.StandardClaims{
-			IssuedAt:  time.Now().Unix(),
-			ExpiresAt: time.Now().Add(time.Hour * 24 * 30).Unix(),
-		},
+	refreshTokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, &jwt.StandardClaims{
+		IssuedAt:  time.Now().Unix(),
+		Issuer:    id,
+		ExpiresAt: time.Now().Add(time.Hour * 24 * 30).Unix(),
 	})
 
 	refreshToken, err := SignToken(refreshTokenClaims, settings.AuthSecret.RefreshToken)
@@ -80,46 +93,26 @@ func ExpireCookie(name string) *fiber.Cookie {
 }
 
 // RefreshAccessToken refreshes the access token
-func RefreshAccessToken(accessCookie, refreshCookie string) (*string, *errors.Error) {
-	var settings config.Settings
-	// Parse the access token
-	accessToken, err := ParseAccessToken(accessCookie)
-	if err != nil {
-		return nil, &errors.CategoryAlreadyExists
-	}
-
+func RefreshAccessToken(refreshCookie string, role string) (*string, *errors.Error) {
 	// Parse the refresh token
 	refreshToken, err := ParseRefreshToken(refreshCookie)
 	if err != nil {
 		return nil, &errors.FailedToParseRefreshToken
 	}
 
-	// Check if the access token is valid
-	if _, ok := accessToken.Claims.(*types.CustomClaims); ok && accessToken.Valid {
-		// Access token is already valid, no need for refresh return current access token
-		tokenString, err := SignToken(accessToken, settings.AuthSecret.AccessToken)
-		if err != nil {
-			return nil, err
-		}
-		return tokenString, nil
+	// Extract the claims from the refresh token
+	claims, ok := refreshToken.Claims.(*jwt.StandardClaims)
+	if !ok || !refreshToken.Valid {
+		return nil, &errors.FailedToValidateRefreshToken
 	}
 
-	// Check if the refresh token is valid
-	if _, ok := refreshToken.Claims.(*jwt.StandardClaims); !ok || !refreshToken.Valid {
-		// Refresh token is invalid, return unauthorized
-		return nil, &errors.Unauthorized
-	}
-
-	// Refresh the access token
-	claims := refreshToken.Claims.(*types.CustomClaims)
-
-	// Create Access Token with Custom Claims
-	newAccessToken, err := CreateAccessToken(claims.Issuer, claims.Role)
-	if err != nil {
+	// Create a new access token
+	accessToken, catErr := CreateAccessToken(claims.Issuer, role)
+	if catErr != nil {
 		return nil, &errors.FailedToCreateAccessToken
 	}
 
-	return newAccessToken, nil
+	return accessToken, nil
 }
 
 // ParseAccessToken parses the access token
@@ -149,8 +142,38 @@ func GetRoleFromToken(tokenString string) (*string, error) {
 
 	claims, ok := token.Claims.(*types.CustomClaims)
 	if !ok || !token.Valid {
-		return nil, &errors.Unauthorized
+		return nil, &errors.FailedToValidateAccessToken
+	}
+	
+	return &claims.Role, nil
+}
+
+// ExtractClaims extracts the claims from the token
+func ExtractAccessClaims(tokenString string) (*types.CustomClaims, *errors.Error) {
+	token, err := ParseAccessToken(tokenString)
+	if err != nil {
+		return nil, &errors.FailedToParseAccessToken
 	}
 
-	return &claims.Role, nil
+	claims, ok := token.Claims.(*types.CustomClaims)
+	if !ok || !token.Valid {
+		return nil, &errors.FailedToValidateAccessToken
+	}
+
+	return claims, nil
+}
+
+// ExtractClaims extracts the claims from the token
+func ExtractRefreshClaims(tokenString string) (*jwt.StandardClaims, *errors.Error) {
+	token, err := ParseRefreshToken(tokenString)
+	if err != nil {
+		return nil, &errors.FailedToParseRefreshToken
+	}
+
+	claims, ok := token.Claims.(*jwt.StandardClaims)
+	if !ok || !token.Valid {
+		return nil, &errors.FailedToValidateRefreshToken
+	}
+
+	return claims, nil
 }

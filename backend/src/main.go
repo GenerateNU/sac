@@ -19,7 +19,7 @@ import (
 // @BasePath /api/v1
 func main() {
 	onlyMigrate := flag.Bool("only-migrate", false, "Specify if you want to only perform the database migration")
-	configPath := flag.String("config", "../../config", "Specify the path to the config directory")
+	configPath := flag.CommandLine.String("config", "../../config", "Specify the path to the config directory")
 
 	flag.Parse()
 

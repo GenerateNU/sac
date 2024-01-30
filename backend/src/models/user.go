@@ -37,7 +37,7 @@ const (
 type User struct {
 	types.Model
 
-	Role         UserRole `gorm:"type:varchar(255);" json:"user_role,omitempty" validate:"required,max=255"`
+	Role         UserRole `gorm:"type:varchar(255);default:'student'" json:"role" validate:"required,oneof=super student"`
 	NUID         string   `gorm:"column:nuid;type:varchar(9);unique" json:"nuid" validate:"required,numeric,len=9"`
 	FirstName    string   `gorm:"type:varchar(255)" json:"first_name" validate:"required,max=255"`
 	LastName     string   `gorm:"type:varchar(255)" json:"last_name" validate:"required,max=255"`

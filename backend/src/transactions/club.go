@@ -8,11 +8,11 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetAdminIDs(db *gorm.DB, clubID int) ([]int, *errors.Error) {
+func GetAdminIDs(db *gorm.DB, clubID uint) ([]int, *errors.Error) {
 	var adminIDs []models.Membership
 
 	if err := db.Where("club_id = ? AND membership_type = ?", clubID, models.MembershipTypeAdmin).Find(&adminIDs).Error; err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusInternalServerError, Message: "failed to get admin for club"}
+		return nil, &errors.Error{StatusCode: fiber.StatusInternalServerError, Message: "failed to get admin IDs"}
 	}
 
 	var adminIDsInt []int
