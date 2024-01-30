@@ -5,8 +5,10 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/gofiber/fiber"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func GetClubs(db *gorm.DB, limit int, offset int) ([]models.Club, *errors.Error) {
@@ -104,51 +106,14 @@ func GetClubContacts(db *gorm.DB, id uint) ([]models.Contact, *errors.Error) {
 }
 
 func PutContact(db *gorm.DB, clubID uint, contact models.Contact) (*models.Contact, *errors.Error) {
-	if clubID != contact.ClubID {
-		return nil, &errors.FailedToUpdateContact
+	err := db.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "type"}},
+		DoUpdates: clause.AssignmentColumns([]string{"content"}),
+	}).Create(&contact).Error
+	if err != nil {
+		return nil, &errors.Error{StatusCode: fiber.StatusInternalServerError, Message: errors.FailedToUpdateContact.Message}
 	}
-
-	var club models.Club
-	if err := db.Preload("Contact").First(&club, clubID).Error; err != nil {
-		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, &errors.ClubNotFound
-		} else {
-			return nil, &errors.FailedToGetContacts
-		}
-	}
-
-	// determines if the inputted contact type exists for the current club
-	// if it exists, save the contactID so we can update it
-	contacts := club.Contact
-	alreadyExists := false
-	var contactID uint = 0
-	for _, c := range contacts {
-		if c.Type == contact.Type {
-			contactID = c.ID
-			alreadyExists = true
-		}
-	}
-
-	if alreadyExists {
-		// update
-		result := db.Model(&contact).Where("id = ?", contactID).Updates(contact)
-		if result.Error != nil {
-			return nil, &errors.FailedToUpdateContact
-		}
-		return &contact, nil
-	} else {
-		// create
-		tx := db.Begin()
-		if err := tx.Create(&contact).Error; err != nil {
-			tx.Rollback()
-			return nil, &errors.FailedToCreateContact
-		}
-		if err := tx.Commit().Error; err != nil {
-			tx.Rollback()
-			return nil, &errors.FailedToCreateContact
-		}
-		return &contact, nil
-	}
+	return &contact, nil
 }
 
 func DeleteContact(db *gorm.DB, id uint) *errors.Error {

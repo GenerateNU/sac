@@ -136,6 +136,10 @@ func (c *ClubService) PutContact(clubID string, contactBody models.PutContactReq
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
+	if *idAsUint != contact.ClubID {
+		return nil, &errors.FailedToUpdateContact
+	}
+
 	return transactions.PutContact(c.DB, *idAsUint, *contact)
 }
 
