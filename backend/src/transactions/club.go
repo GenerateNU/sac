@@ -72,7 +72,7 @@ func GetContacts(db *gorm.DB, limit int, offset int) ([]models.Contact, *errors.
 	return contacts, nil
 }
 
-func GetClubContacts(db *gorm.DB, id uint) ([]models.Contact, *errors.Error) {
+func GetClubContacts(db *gorm.DB, id uuid.UUID) ([]models.Contact, *errors.Error) {
 	var club models.Club
 	if err := db.Preload("Contact").First(&club, id).Error; err != nil {
 		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
@@ -89,7 +89,7 @@ func GetClubContacts(db *gorm.DB, id uint) ([]models.Contact, *errors.Error) {
 	return club.Contact, nil
 }
 
-func PutContact(db *gorm.DB, clubID uint, contact models.Contact) (*models.Contact, *errors.Error) {
+func PutContact(db *gorm.DB, clubID uuid.UUID, contact models.Contact) (*models.Contact, *errors.Error) {
 	err := db.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "type"}},
 		DoUpdates: clause.AssignmentColumns([]string{"content"}),
@@ -100,7 +100,7 @@ func PutContact(db *gorm.DB, clubID uint, contact models.Contact) (*models.Conta
 	return &contact, nil
 }
 
-func DeleteContact(db *gorm.DB, id uint) *errors.Error {
+func DeleteContact(db *gorm.DB, id uuid.UUID) *errors.Error {
 	result := db.Delete(&models.Contact{}, id)
 	if result.Error != nil {
 		return &errors.FailedToDeleteClub	}
