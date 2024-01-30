@@ -1,9 +1,8 @@
 package tests
 
 import (
+	"slices"
 	"testing"
-
-	"github.com/GenerateNU/sac/backend/src/utilities"
 
 	"github.com/huandu/go-assert"
 )
@@ -16,6 +15,6 @@ func TestThatAllCasingPermutationsWorks(t *testing.T) {
 	acutalPermutations := AllCasingPermutations("foo")
 
 	for _, permutation := range expectedPermutations {
-		assert.Assert(utilities.Contains(acutalPermutations, permutation))
+		assert.Assert(slices.Contains(acutalPermutations, permutation))
 	}
 }

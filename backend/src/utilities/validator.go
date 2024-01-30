@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/GenerateNU/sac/backend/src/errors"
+	"github.com/google/uuid"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/mcnijman/go-emailaddress"
@@ -15,7 +16,6 @@ func RegisterCustomValidators(validate *validator.Validate) {
 	validate.RegisterValidation("password", validatePassword)
 	validate.RegisterValidation("mongo_url", validateMongoURL)
 	validate.RegisterValidation("s3_url", validateS3URL)
-	validate.RegisterValidation("id", validateID)
 }
 
 func validateEmail(fl validator.FieldLevel) bool {
@@ -48,22 +48,14 @@ func validateS3URL(fl validator.FieldLevel) bool {
 	return true
 }
 
-func validateID(fl validator.FieldLevel) bool {
-	_, err := ValidateID(fl.Field().String())
-	return err == nil
-}
+func ValidateID(id string) (*uuid.UUID, *errors.Error) {
+	idAsUUID, err := uuid.Parse(id)
 
-// Validates that an id follows postgres uint format, returns a *uint otherwise returns an *errors.Error
-func ValidateID(id string) (*uint, *errors.Error) {
-	idAsInt, err := strconv.Atoi(id)
-
-	if err != nil || idAsInt < 1 { // postgres ids start at 1
+	if err != nil {
 		return nil, &errors.FailedToValidateID
 	}
 
-	idAsUint := uint(idAsInt)
-
-	return &idAsUint, nil
+	return &idAsUUID, nil
 }
 
 

@@ -59,16 +59,16 @@ func (c *ClubService) CreateClub(clubBody models.CreateClubRequestBody) (*models
 }
 
 func (c *ClubService) GetClub(id string) (*models.Club, *errors.Error) {
-	idAsUint, err := utilities.ValidateID(id)
+	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return nil, &errors.FailedToValidateID
 	}
 
-	return transactions.GetClub(c.DB, *idAsUint)
+	return transactions.GetClub(c.DB, *idAsUUID)
 }
 
 func (c *ClubService) UpdateClub(id string, clubBody models.UpdateClubRequestBody) (*models.Club, *errors.Error) {
-	idAsUint, idErr := utilities.ValidateID(id)
+	idAsUUID, idErr := utilities.ValidateID(id)
 	if idErr != nil {
 		return nil, idErr
 	}
@@ -82,16 +82,16 @@ func (c *ClubService) UpdateClub(id string, clubBody models.UpdateClubRequestBod
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	return transactions.UpdateClub(c.DB, *idAsUint, *club)
+	return transactions.UpdateClub(c.DB, *idAsUUID, *club)
 }
 
 func (c *ClubService) DeleteClub(id string) *errors.Error {
-	idAsUint, err := utilities.ValidateID(id)
+	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return &errors.FailedToValidateID
 	}
 
-	return transactions.DeleteClub(c.DB, *idAsUint)
+return transactions.DeleteClub(c.DB, *idAsUUID)
 }
 
 func (c *ClubService) GetContacts(limit string, page string) ([]models.Contact, *errors.Error) {
@@ -113,16 +113,16 @@ func (c *ClubService) GetContacts(limit string, page string) ([]models.Contact, 
 }
 
 func (c *ClubService) GetClubContacts(id string) ([]models.Contact, *errors.Error) {
-	idAsUint, err := utilities.ValidateID(id)
+	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return nil, &errors.FailedToValidateID
 	}
 
-	return transactions.GetClubContacts(c.DB, *idAsUint)
+	return transactions.GetClubContacts(c.DB, *idAsUUID)
 }
 
 func (c *ClubService) PutContact(clubID string, contactBody models.PutContactRequestBody) (*models.Contact, *errors.Error) {
-	idAsUint, idErr := utilities.ValidateID(clubID)
+	idAsUUID, idErr := utilities.ValidateID(clubID)
 	if idErr != nil {
 		return nil, idErr
 	}
@@ -136,18 +136,18 @@ func (c *ClubService) PutContact(clubID string, contactBody models.PutContactReq
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	if *idAsUint != contact.ClubID {
+	if *idAsUUID != contact.ClubID {
 		return nil, &errors.FailedToUpdateContact
 	}
 
-	return transactions.PutContact(c.DB, *idAsUint, *contact)
+	return transactions.PutContact(c.DB, *idAsUUID, *contact)
 }
 
 func (c *ClubService) DeleteContact(id string) *errors.Error {
-	idAsUint, err := utilities.ValidateID(id)
+	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return &errors.FailedToValidateID
 	}
 
-	return transactions.DeleteContact(c.DB, *idAsUint)
+	return transactions.DeleteContact(c.DB, *idAsUUID)
 }

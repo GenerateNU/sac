@@ -21,6 +21,12 @@ func ConfigureDB(settings config.Settings) (*gorm.DB, error) {
 		return nil, err
 	}
 
+	err = db.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"").Error
+
+	if err != nil {
+		return nil, err
+	}
+
 	if err := MigrateDB(settings, db); err != nil {
 		return nil, err
 	}
@@ -107,9 +113,16 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 		}
 
 		superClub := models.Club{
-			Name:        "SAC",
-			Preview:     "SAC",
-			Description: "SAC",
+			Name:             "SAC",
+			Preview:          "SAC",
+			Description:      "SAC",
+			NumMembers:       0,
+			IsRecruiting:     true,
+			RecruitmentCycle: models.RecruitmentCycle(models.Always),
+			RecruitmentType:  models.Application,
+			ApplicationLink:  "https://generatenu.com/apply",
+			Logo:             "https://aws.amazon.com/s3",
+			Admin:            []models.User{superUser},
 		}
 		if err := tx.Create(&superClub).Error; err != nil {
 			tx.Rollback()
