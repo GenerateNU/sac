@@ -1,7 +1,6 @@
 package models
 
 import (
-	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
