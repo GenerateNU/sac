@@ -1,22 +1,20 @@
 package models
 
-import (
-	"github.com/GenerateNU/sac/backend/src/types"
-)
+import "github.com/google/uuid"
 
 type Comment struct {
-	types.Model
+	Model
 
 	Question        string `gorm:"type:varchar(255)" json:"question" validate:"required,max=255"`
 	Answer          string `gorm:"type:varchar(255)" json:"answer" validate:",max=255"`
 	NumFoundHelpful uint   `gorm:"type:int;default:0" json:"num_found_helpful" validate:"min=0"`
 
-	AskedByID uint `gorm:"type:uuid" json:"-" validate:"min=1"`
-	AskedBy   User `gorm:"foreignKey:AskedByID" json:"-" validate:"-"`
+	AskedByID uuid.UUID `gorm:"type:uuid" json:"-" validate:"uuid4"`
+	AskedBy   User      `gorm:"foreignKey:AskedByID" json:"-" validate:"-"`
 
-	ClubID uint `gorm:"type:uuid" json:"-" validate:"min=1"`
-	Club   Club `gorm:"foreignKey:ClubID" json:"-" validate:"-"`
+	ClubID uuid.UUID `gorm:"type:uuid" json:"-" validate:"uuid4"`
+	Club   Club      `gorm:"foreignKey:ClubID" json:"-" validate:"-"`
 
-	AnsweredByID *uint `gorm:"type:uuid" json:"-" validate:"min=1"`
-	AnsweredBy   *User `gorm:"foreignKey:AnsweredBy" json:"-" validate:"-"`
+	AnsweredByID *uuid.UUID `gorm:"type:uuid" json:"-" validate:"uuid4"`
+	AnsweredBy   *User      `gorm:"foreignKey:AnsweredBy" json:"-" validate:"-"`
 }

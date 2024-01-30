@@ -7,6 +7,10 @@ var (
 		StatusCode: fiber.StatusBadRequest,
 		Message:    "failed to validate user",
 	}
+	FailedToValidateUserTags = Error {
+		StatusCode: fiber.StatusBadRequest,
+		Message: "failed to validate user tags",
+	}
 	FailedToCreateUser = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to create user",

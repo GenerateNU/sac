@@ -4,6 +4,7 @@ import (
 	stdliberrors "errors"
 
 	"github.com/GenerateNU/sac/backend/src/errors"
+	"github.com/google/uuid"
 
 	"github.com/GenerateNU/sac/backend/src/models"
 
@@ -32,7 +33,7 @@ func GetCategories(db *gorm.DB, limit int, offset int) ([]models.Category, *erro
 	return categories, nil
 }
 
-func GetCategory(db *gorm.DB, id uint) (*models.Category, *errors.Error) {
+func GetCategory(db *gorm.DB, id uuid.UUID) (*models.Category, *errors.Error) {
 	var category models.Category
 
 	if err := db.First(&category, id).Error; err != nil {
@@ -46,7 +47,7 @@ func GetCategory(db *gorm.DB, id uint) (*models.Category, *errors.Error) {
 	return &category, nil
 }
 
-func UpdateCategory(db *gorm.DB, id uint, category models.Category) (*models.Category, *errors.Error) {
+func UpdateCategory(db *gorm.DB, id uuid.UUID, category models.Category) (*models.Category, *errors.Error) {
 	if err := db.Model(&models.Category{}).Where("id = ?", id).Updates(category).First(&category, id).Error; err != nil {
 		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &errors.TagNotFound
@@ -58,7 +59,7 @@ func UpdateCategory(db *gorm.DB, id uint, category models.Category) (*models.Cat
 	return &category, nil
 }
 
-func DeleteCategory(db *gorm.DB, id uint) *errors.Error {
+func DeleteCategory(db *gorm.DB, id uuid.UUID) *errors.Error {
 	if result := db.Delete(&models.Category{}, id); result.RowsAffected == 0 {
 		if result.Error == nil {
 			return &errors.CategoryNotFound

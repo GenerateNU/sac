@@ -65,17 +65,17 @@ func (c *CategoryService) GetCategories(limit string, page string) ([]models.Cat
 }
 
 func (c *CategoryService) GetCategory(id string) (*models.Category, *errors.Error) {
-	uintId, err := utilities.ValidateID(id)
+	idAsUUID, err := utilities.ValidateID(id)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return transactions.GetCategory(c.DB, *uintId)
+	return transactions.GetCategory(c.DB, *idAsUUID)
 }
 
 func (c *CategoryService) UpdateCategory(id string, categoryBody models.CategoryRequestBody) (*models.Category, *errors.Error) {
-	idAsUint, idErr := utilities.ValidateID(id)
+	idAsUUID, idErr := utilities.ValidateID(id)
 	if idErr != nil {
 		return nil, idErr
 	}
@@ -91,14 +91,14 @@ func (c *CategoryService) UpdateCategory(id string, categoryBody models.Category
 
 	category.Name = cases.Title(language.English).String(category.Name)
 
-	return transactions.UpdateCategory(c.DB, *idAsUint, *category)
+	return transactions.UpdateCategory(c.DB, *idAsUUID, *category)
 }
 
 func (c *CategoryService) DeleteCategory(id string) *errors.Error {
-	idAsUInt, err := utilities.ValidateID(id)
+	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return err
 	}
 
-	return transactions.DeleteCategory(c.DB, *idAsUInt)
+	return transactions.DeleteCategory(c.DB, *idAsUUID)
 }

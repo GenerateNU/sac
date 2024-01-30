@@ -19,6 +19,8 @@ type UserServiceInterface interface {
 	CreateUser(userBody models.CreateUserRequestBody) (*models.User, *errors.Error)
 	UpdateUser(id string, userBody models.UpdateUserRequestBody) (*models.User, *errors.Error)
 	DeleteUser(id string) *errors.Error
+	GetUserTags(id string) ([]models.Tag, *errors.Error)
+	CreateUserTags(id string, tagIDs models.CreateUserTagsBody) ([]models.Tag, *errors.Error)
 }
 
 type UserService struct {
@@ -68,16 +70,16 @@ func (u *UserService) GetUsers(limit string, page string) ([]models.User, *error
 }
 
 func (u *UserService) GetUser(id string) (*models.User, *errors.Error) {
-	idAsUint, err := utilities.ValidateID(id)
+	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return nil, &errors.FailedToValidateID
 	}
 
-	return transactions.GetUser(u.DB, *idAsUint)
+	return transactions.GetUser(u.DB, *idAsUUID)
 }
 
 func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBody) (*models.User, *errors.Error) {
-	idAsUint, idErr := utilities.ValidateID(id)
+	idAsUUID, idErr := utilities.ValidateID(id)
 	if idErr != nil {
 		return nil, idErr
 	}
@@ -98,14 +100,45 @@ func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBod
 
 	user.PasswordHash = *passwordHash
 
-	return transactions.UpdateUser(u.DB, *idAsUint, *user)
+	return transactions.UpdateUser(u.DB, *idAsUUID, *user)
 }
 
 func (u *UserService) DeleteUser(id string) *errors.Error {
-	idAsInt, err := utilities.ValidateID(id)
+	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return err
 	}
 
-	return transactions.DeleteUser(u.DB, *idAsInt)
+	return transactions.DeleteUser(u.DB, *idAsUUID)
+}
+
+func (u *UserService) GetUserTags(id string) ([]models.Tag, *errors.Error) {
+	idAsUUID, err := utilities.ValidateID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return transactions.GetUserTags(u.DB, *idAsUUID)
+}
+
+func (u *UserService) CreateUserTags(id string, tagIDs models.CreateUserTagsBody) ([]models.Tag, *errors.Error) {
+	// Validate the id:
+	idAsUUID, err := utilities.ValidateID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := u.Validate.Struct(tagIDs); err != nil {
+		return nil, &errors.FailedToValidateUserTags
+	}
+
+	// Retrieve a list of valid tags from the ids:
+	tags, err := transactions.GetTagsByIDs(u.DB, tagIDs.Tags)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Update the user to reflect the new tags:
+	return transactions.CreateUserTags(u.DB, *idAsUUID, tags)
 }

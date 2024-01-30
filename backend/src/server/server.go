@@ -29,13 +29,14 @@ func Init(db *gorm.DB) *fiber.App {
 
 	validate := utilities.RegisterCustomValidators()
 	middlewareService := middleware.NewMiddlewareService(db, validate)
-	
+
 	apiv1 := app.Group("/api/v1")
 	apiv1.Use(middlewareService.Authenticate)
-	
+
 	utilityRoutes(app)
 	authRoutes(apiv1, services.NewAuthService(db, validate))
 	userRoutes(apiv1, services.NewUserService(db, validate), middlewareService)
+	clubRoutes(apiv1, services.NewClubService{DB: db, Validate: validate}, middlewareService)
 	categoryRoutes(apiv1, services.NewCategoryService(db, validate))
 	tagRoutes(apiv1, services.NewTagService(db, validate))
 
@@ -82,19 +83,38 @@ func userRoutes(router fiber.Router, userService services.UserServiceInterface, 
 	usersID.Get("/", middlewareService.Authorize(models.UserRead), userController.GetUser)
 	usersID.Patch("/", middlewareService.Authorize(models.UserWrite), userController.UpdateUser)
 	usersID.Delete("/", middlewareService.Authorize(models.UserDelete), userController.DeleteUser)
+
+	usersID.Post("/tags", userController.CreateUserTags)
+	usersID.Get("/tags", userController.GetUserTags)
+}
+
+func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface, middlewareService middleware.MiddlewareInterface) {
+	clubController := controllers.NewClubController(clubService)
+
+	clubs := router.Group("/clubs")
+
+	clubs.Get("/", clubController.GetAllClubs)
+	clubs.Post("/", clubController.CreateClub)
+
+	// api/v1/clubs/:id/*
+	clubsID := clubs.Group("/:id")
+	clubsID.Use(middlewareService.ClubAuthorizeById)
+
+	clubsID.Get("/", clubController.GetClub) // TODO: Should you be able to get a club without being logged in? (yes)
+	clubsID.Patch("/", clubController.UpdateClub)
+	clubsID.Delete("/", clubController.DeleteClub)
 }
 
 func authRoutes(router fiber.Router, authService services.AuthServiceInterface) {
 	authController := controllers.NewAuthController(authService)
 
 	// api/v1/auth/*
-	auth := router.Group("/auth")	
+	auth := router.Group("/auth")
 	auth.Post("/login", authController.Login)
 	auth.Get("/logout", authController.Logout)
 	auth.Get("/refresh", authController.Refresh)
 	auth.Get("/me", authController.Me)
 }
-
 
 func categoryRoutes(router fiber.Router, categoryService services.CategoryServiceInterface) {
 	categoryController := controllers.NewCategoryController(categoryService)

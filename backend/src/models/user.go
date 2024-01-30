@@ -1,6 +1,6 @@
 package models
 
-import "github.com/GenerateNU/sac/backend/src/types"
+import "github.com/google/uuid"
 
 type UserRole string
 
@@ -35,7 +35,7 @@ const (
 )
 
 type User struct {
-	types.Model
+	Model
 
 	Role         UserRole `gorm:"type:varchar(255);default:'student'" json:"role" validate:"required,oneof=super student"`
 	NUID         string   `gorm:"column:nuid;type:varchar(9);unique" json:"nuid" validate:"required,numeric,len=9"`
@@ -79,4 +79,8 @@ type UpdateUserRequestBody struct {
 type LoginUserResponseBody struct {
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"min=8,max=255"`
+}
+
+type CreateUserTagsBody struct {
+	Tags []uuid.UUID `json:"tags" validate:"required"`
 }

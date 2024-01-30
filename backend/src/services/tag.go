@@ -39,16 +39,16 @@ func (t *TagService) CreateTag(tagBody models.TagRequestBody) (*models.Tag, *err
 }
 
 func (t *TagService) GetTag(id string) (*models.Tag, *errors.Error) {
-	idAsUint, err := utilities.ValidateID(id)
+	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return nil, err
 	}
 
-	return transactions.GetTag(t.DB, *idAsUint)
+	return transactions.GetTag(t.DB, *idAsUUID)
 }
 
 func (t *TagService) UpdateTag(id string, tagBody models.TagRequestBody) (*models.Tag, *errors.Error) {
-	idAsUint, idErr := utilities.ValidateID(id)
+	idAsUUID, idErr := utilities.ValidateID(id)
 	if idErr != nil {
 		return nil, idErr
 	}
@@ -62,14 +62,14 @@ func (t *TagService) UpdateTag(id string, tagBody models.TagRequestBody) (*model
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	return transactions.UpdateTag(t.DB, *idAsUint, *tag)
+	return transactions.UpdateTag(t.DB, *idAsUUID, *tag)
 }
 
 func (t *TagService) DeleteTag(id string) *errors.Error {
-	idAsUint, err := utilities.ValidateID(id)
+	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return &errors.FailedToValidateID
 	}
 
-	return transactions.DeleteTag(t.DB, *idAsUint)
+	return transactions.DeleteTag(t.DB, *idAsUUID)
 }

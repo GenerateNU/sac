@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -48,7 +49,7 @@ func spawnApp() (TestApp, error) {
 		return TestApp{}, err
 	}
 
-	configuration, err := config.GetConfiguration("../../../config")
+	configuration, err := config.GetConfiguration(filepath.Join("..", "..", "..", "config"))
 
 	if err != nil {
 		return TestApp{}, err
@@ -108,6 +109,11 @@ func configureDatabase(config config.Settings) (*gorm.DB, error) {
 		return nil, err
 	}
 
+	err = dbWithDB.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"").Error
+
+	if err != nil {
+		return nil, err
+	}
 	err = database.MigrateDB(config, dbWithDB)
 
 	if err != nil {
@@ -210,7 +216,6 @@ func (request TestRequest) TestOnError(t *testing.T, existingAppAssert *Existing
 	err := json.NewDecoder(resp.Body).Decode(&respBody)
 
 	assert.NilError(err)
-
 	assert.Equal(expectedError.Message, respBody["error"].(string))
 
 	assert.Equal(expectedError.StatusCode, resp.StatusCode)
@@ -223,7 +228,7 @@ type ErrorWithDBTester struct {
 	DBTester DBTester
 }
 
-func (request TestRequest) TestOnStatusMessageAndDB(t *testing.T, existingAppAssert *ExistingAppAssert, errorWithDBTester ErrorWithDBTester) ExistingAppAssert {
+func (request TestRequest) TestOnErrorAndDB(t *testing.T, existingAppAssert *ExistingAppAssert, errorWithDBTester ErrorWithDBTester) ExistingAppAssert {
 	appAssert := request.TestOnError(t, existingAppAssert, errorWithDBTester.Error)
 	errorWithDBTester.DBTester(appAssert.App, appAssert.Assert, nil)
 	return appAssert
