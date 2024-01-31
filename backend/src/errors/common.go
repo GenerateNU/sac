@@ -43,6 +43,10 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to create access token",
 	}
+	FailedToCreateRefreshToken = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to create refresh token",
+	}
 	FailedToParseRefreshToken = Error{
 		StatusCode: fiber.StatusBadRequest,
 		Message:    "failed to parse refresh token",

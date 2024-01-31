@@ -27,6 +27,10 @@ func CreateTokenPair(id string, role string) (*string, *string, *errors.Error) {
 
 // CreateAccessToken creates a new access token for the user
 func CreateAccessToken(id string, role string) (*string, *errors.Error) {
+	if id == "" || role == "" {
+		return nil, &errors.FailedToCreateAccessToken
+	}
+
 	var settings config.Settings
 
 	accessTokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, &types.CustomClaims{
@@ -48,6 +52,10 @@ func CreateAccessToken(id string, role string) (*string, *errors.Error) {
 
 // CreateRefreshToken creates a new refresh token for the user
 func CreateRefreshToken(id string) (*string, *errors.Error) {
+	if id == "" {
+		return nil, &errors.FailedToCreateRefreshToken
+	}
+
 	var settings config.Settings
 
 	refreshTokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, &jwt.StandardClaims{
