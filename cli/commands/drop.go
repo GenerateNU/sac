@@ -9,6 +9,8 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+var dbMutex sync.Mutex
+
 func DropDBCommand() *cli.Command {
 	command := cli.Command{
 		Name:  "drop",
@@ -33,6 +35,9 @@ func DropDBCommand() *cli.Command {
 
 func DropDB() error {
 	fmt.Println("Dropping database")
+
+	dbMutex.Lock()
+	defer dbMutex.Unlock()
 
 	db, err := sql.Open("postgres", CONFIG.Database.WithDb())
 
@@ -65,33 +70,26 @@ func DropDB() error {
 
 	defer rows.Close()
 
-	var wg sync.WaitGroup
-
 	fmt.Println("Dropping tables...")
 
 	for rows.Next() {
 		var tablename string
 		if err := rows.Scan(&tablename); err != nil {
-			return fmt.Errorf("error reading table name: %w", err)
-		}
-
-		wg.Add(1)
-		go func(table string) {
-			defer wg.Done()
-			dropStmt := fmt.Sprintf("DROP TABLE IF EXISTS \"%s\" CASCADE", table)
-			if _, err := db.Exec(dropStmt); err != nil {
-				fmt.Printf("Error dropping table %s: %v\n", table, err)
-			} else {
-				fmt.Printf("Dropped table %s\n", table)
+				return fmt.Errorf("error reading table name: %w", err)
 			}
-		}(tablename)
+	
+		dropStmt := fmt.Sprintf("DROP TABLE IF EXISTS \"%s\" CASCADE", tablename)
+		if _, err := db.Exec(dropStmt); err != nil {
+			fmt.Printf("Error dropping table %s: %v\n", tablename, err)
+		} else {
+			fmt.Printf("Dropped table %s\n", tablename)
+		}
 	}
-
+	
 	if err := rows.Err(); err != nil {
 		return fmt.Errorf("error in rows handling: %w", err)
 	}
-
-	wg.Wait()
+	
 	fmt.Println("All tables dropped successfully.")
 	return nil
 }

@@ -1,4 +1,6 @@
-package models
+package types
+
+import "github.com/GenerateNU/sac/backend/src/models"
 
 type Permission string
 
@@ -57,8 +59,8 @@ const (
 	NotificationDelete Permission = "notification:delete"
 )
 
-var rolePermissions = map[UserRole][]Permission{
-	Super: {
+var rolePermissions = map[models.UserRole][]Permission{
+	models.Super: {
 		UserRead, UserWrite, UserDelete,
 		TagRead, TagCreate, TagWrite, TagDelete,
 		ClubRead, ClubCreate, ClubWrite, ClubDelete,
@@ -70,7 +72,7 @@ var rolePermissions = map[UserRole][]Permission{
 		NotificationRead, NotificationCreate, NotificationWrite, NotificationDelete,
 		UserReadAll, TagReadAll, ClubReadAll, PointOfContactReadAll, CommentReadAll, EventReadAll, ContactReadAll, CategoryReadAll, NotificationReadAll,
 	},
-	Student: {
+	models.Student: {
 		UserRead,
 		TagRead,
 		ClubRead,
@@ -84,6 +86,6 @@ var rolePermissions = map[UserRole][]Permission{
 }
 
 // Returns the permissions for a given role
-func GetPermissions(role UserRole) []Permission {
+func GetPermissions(role models.UserRole) []Permission {
 	return rolePermissions[role]
 }

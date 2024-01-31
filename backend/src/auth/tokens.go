@@ -177,3 +177,7 @@ func ExtractRefreshClaims(tokenString string) (*jwt.StandardClaims, *errors.Erro
 
 	return claims, nil
 }
+
+func IsBlacklisted(token string) bool {
+	return false
+}

@@ -138,6 +138,7 @@ func (u *UserController) DeleteUser(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusNoContent)
 }
 
+
 func (u *UserController) GetUserTags(c *fiber.Ctx) error {
 	tags, err := u.userService.GetUserTags(c.Params("uid"))
 	if err != nil {

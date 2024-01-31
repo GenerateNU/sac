@@ -1,8 +1,6 @@
 package models
 
-import (
-	"github.com/GenerateNU/sac/backend/src/types"
-)
+import "github.com/google/uuid"
 
 type MembershipType string
 
@@ -20,10 +18,10 @@ func (Membership) TableName() string {
 }
 
 type Membership struct {
-	types.Model
+	Model
 
-	ClubID uint `gorm:"primaryKey" json:"club_id" validate:"required,min=1"`
-	UserID uint `gorm:"primaryKey" json:"user_id" validate:"required,min=1"`
+	ClubID uuid.UUID `gorm:"primaryKey" json:"club_id" validate:"required,min=1"`
+	UserID uuid.UUID `gorm:"primaryKey" json:"user_id" validate:"required,min=1"`
 	Type MembershipType `gorm:"type:varchar(255);default:member" json:"membership_type" validate:"required,max=255"`
 
 	Club *Club `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`

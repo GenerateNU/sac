@@ -110,7 +110,7 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 		if err := tx.Create(&superUser).Error; err != nil {
 			tx.Rollback()
 			return err
-		}
+		}	
 
 		superClub := models.Club{
 			Name:             "SAC",
@@ -122,19 +122,20 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 			RecruitmentType:  models.Application,
 			ApplicationLink:  "https://generatenu.com/apply",
 			Logo:             "https://aws.amazon.com/s3",
-			Admin:            []models.User{superUser},
 		}
+
 		if err := tx.Create(&superClub).Error; err != nil {
 			tx.Rollback()
 			return err
 		}
 
-		if err := tx.Model(&superClub).Association("Member").Append(&superUser); err != nil {
-			tx.Rollback()
-			return err
+		membership := models.Membership{
+			ClubID: superClub.ID,
+			UserID: superUser.ID,
+			Type:   models.MembershipTypeAdmin,
 		}
 
-		if err := tx.Model(&superClub).Update("num_members", gorm.Expr("num_members + ?", 1)).Error; err != nil {
+		if err := tx.Create(&membership).Error; err != nil {
 			tx.Rollback()
 			return err
 		}

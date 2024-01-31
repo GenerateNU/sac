@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"strconv"
 	"time"
 
 	"github.com/GenerateNU/sac/backend/src/auth"
@@ -14,10 +13,11 @@ import (
 
 type AuthController struct {
 	authService services.AuthServiceInterface
+	blacklist   []string
 }
 
 func NewAuthController(authService services.AuthServiceInterface) *AuthController {
-	return &AuthController{authService: authService}
+	return &AuthController{authService: authService, blacklist: []string{}}
 }
 
 // Me godoc
@@ -72,7 +72,7 @@ func (a *AuthController) Login(c *fiber.Ctx) error {
 		return err.FiberError(c)
 	}
 
-	accessToken, refreshToken, err := auth.CreateTokenPair(strconv.Itoa(int(user.ID)), string(user.Role))
+	accessToken, refreshToken, err := auth.CreateTokenPair(user.ID.String(), string(user.Role))
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -133,14 +133,13 @@ func (a *AuthController) Refresh(c *fiber.Ctx) error {
 // @Failure     401   {string}    string "failed to logout user"
 // @Router		/api/v1/auth/logout  [get]
 func (a *AuthController) Logout(c *fiber.Ctx) error {
-	// var blacklist []string
 	// Extract token values from cookies
-	// accessTokenValue := c.Cookies("access_token")
-	// refreshTokenValue := c.Cookies("refresh_token")
+	accessTokenValue := c.Cookies("access_token")
+	refreshTokenValue := c.Cookies("refresh_token")
 
-	// TODO: Implement blacklist, ideally with Redis
-	// blacklist = append(blacklist, accessTokenValue)
-	// blacklist = append(blacklist, refreshTokenValue)
+	// TODO: Redis
+	a.blacklist = append(a.blacklist, accessTokenValue)
+	a.blacklist = append(a.blacklist, refreshTokenValue)
 	
 	// Expire and clear the cookies
 	c.Cookie(auth.ExpireCookie("access_token"))

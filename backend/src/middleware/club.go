@@ -1,21 +1,19 @@
 package middleware
 
 import (
-	"slices"
-	"strconv"
-
 	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/transactions"
 	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 func (m *MiddlewareService) ClubAuthorizeById(c *fiber.Ctx) error {
-	clubIdAsUint, err := utilities.ValidateID(c.Params("id"))
+	clubUUID, err := utilities.ValidateID(c.Params("id"))
 	if err != nil {
-		return err
+		return errors.FailedToParseUUID.FiberError(c)
 	}
 
 	token, tokenErr := auth.ParseAccessToken(c.Cookies("access_token"))
@@ -28,21 +26,30 @@ func (m *MiddlewareService) ClubAuthorizeById(c *fiber.Ctx) error {
 		return errors.FailedToValidateAccessToken.FiberError(c)
 	}
 
-	issuerID, issueErr := strconv.Atoi(claims.Issuer)
+	issuerUUID, issueErr := utilities.ValidateID(claims.Issuer)
 	if issueErr != nil {
 		return errors.FailedToParseAccessToken.FiberError(c)
 	}
 
 	// use club_id to get the list of admin for a certain club
-	clubAdmin, clubErr := transactions.GetAdminIDs(m.DB, *clubIdAsUint)
+	clubAdmin, clubErr := transactions.GetAdminIDs(m.DB, *clubUUID)
 	if clubErr != nil {
 		return err
 	}
 
 	// check issuerID against the list of admin for the certain club
-	if slices.Contains(clubAdmin, issuerID) {
+	if ContainsUUID(clubAdmin, *issuerUUID) {
 		return c.Next()
 	}
 
 	return errors.Unauthorized.FiberError(c)
+}
+
+func ContainsUUID(uuids []uuid.UUID, targetUUID uuid.UUID) bool {
+	for _, uuid := range uuids {
+		if uuid.String() == targetUUID.String() {
+			return true
+		}
+	}
+	return false
 }

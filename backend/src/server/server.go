@@ -3,8 +3,8 @@ package server
 import (
 	"github.com/GenerateNU/sac/backend/src/controllers"
 	"github.com/GenerateNU/sac/backend/src/middleware"
-	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
+	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/goccy/go-json"
 
@@ -36,7 +36,7 @@ func Init(db *gorm.DB) *fiber.App {
 	utilityRoutes(app)
 	authRoutes(apiv1, services.NewAuthService(db, validate))
 	userRoutes(apiv1, services.NewUserService(db, validate), middlewareService)
-	clubRoutes(apiv1, services.NewClubService{DB: db, Validate: validate}, middlewareService)
+	clubRoutes(apiv1, services.NewClubService(db, validate), middlewareService)
 	categoryRoutes(apiv1, services.NewCategoryService(db, validate))
 	tagRoutes(apiv1, services.NewTagService(db, validate))
 
@@ -74,15 +74,15 @@ func userRoutes(router fiber.Router, userService services.UserServiceInterface, 
 	// api/v1/users/*
 	users := router.Group("/users")
 	users.Post("/", userController.CreateUser)
-	users.Get("/", middlewareService.Authorize(models.UserReadAll), userController.GetUsers)
+	users.Get("/", middlewareService.Authorize(types.UserReadAll), userController.GetUsers)
 
 	// api/v1/users/:id/*
 	usersID := users.Group("/:id")
 	usersID.Use(middlewareService.UserAuthorizeById)
 
-	usersID.Get("/", middlewareService.Authorize(models.UserRead), userController.GetUser)
-	usersID.Patch("/", middlewareService.Authorize(models.UserWrite), userController.UpdateUser)
-	usersID.Delete("/", middlewareService.Authorize(models.UserDelete), userController.DeleteUser)
+	usersID.Get("/", middlewareService.Authorize(types.UserRead), userController.GetUser)
+	usersID.Patch("/", middlewareService.Authorize(types.UserWrite), userController.UpdateUser)
+	usersID.Delete("/", middlewareService.Authorize(types.UserDelete), userController.DeleteUser)
 
 	usersID.Post("/tags", userController.CreateUserTags)
 	usersID.Get("/tags", userController.GetUserTags)
@@ -93,16 +93,16 @@ func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface, 
 
 	clubs := router.Group("/clubs")
 
-	clubs.Get("/", clubController.GetAllClubs)
+	clubs.Get("/", middlewareService.Authorize(types.ClubReadAll), clubController.GetAllClubs)
 	clubs.Post("/", clubController.CreateClub)
 
 	// api/v1/clubs/:id/*
 	clubsID := clubs.Group("/:id")
 	clubsID.Use(middlewareService.ClubAuthorizeById)
 
-	clubsID.Get("/", clubController.GetClub) // TODO: Should you be able to get a club without being logged in? (yes)
-	clubsID.Patch("/", clubController.UpdateClub)
-	clubsID.Delete("/", clubController.DeleteClub)
+	clubsID.Get("/", middlewareService.Authorize(types.ClubRead), clubController.GetClub) // TODO: Should you be able to get a club without being logged in? (yes)
+	clubsID.Patch("/", middlewareService.Authorize(types.ClubWrite), clubController.UpdateClub)
+	clubsID.Delete("/", middlewareService.Authorize(types.ClubDelete), clubController.DeleteClub)
 }
 
 func authRoutes(router fiber.Router, authService services.AuthServiceInterface) {

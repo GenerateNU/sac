@@ -11,19 +11,19 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetAdminIDs(db *gorm.DB, clubID uint) ([]int, *errors.Error) {
+func GetAdminIDs(db *gorm.DB, clubID uuid.UUID) ([]uuid.UUID, *errors.Error) {
 	var adminIDs []models.Membership
 
 	if err := db.Where("club_id = ? AND membership_type = ?", clubID, models.MembershipTypeAdmin).Find(&adminIDs).Error; err != nil {
 		return nil, &errors.Error{StatusCode: fiber.StatusInternalServerError, Message: "failed to get admin IDs"}
 	}
 
-	var adminIDsInt []int
-	for _, admin := range adminIDs {
-		adminIDsInt = append(adminIDsInt, int(admin.UserID))
+	var adminUUIDs []uuid.UUID
+	for _, adminID := range adminIDs {
+		adminUUIDs = append(adminUUIDs, adminID.ClubID)
 	}
 
-	return adminIDsInt, nil
+	return adminUUIDs, nil
 }
 
 func GetClubs(db *gorm.DB, limit int, offset int) ([]models.Club, *errors.Error) {

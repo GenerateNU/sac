@@ -59,4 +59,8 @@ var (
 		StatusCode: fiber.StatusUnauthorized,
 		Message:    "failed to validate access token",
 	}
+	FailedToParseUUID = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "failed to parse uuid",
+	}
 )
