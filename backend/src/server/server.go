@@ -36,8 +36,8 @@ func Init(db *gorm.DB) *fiber.App {
 
 	userRoutes(apiv1, &services.UserService{DB: db, Validate: validate})
 	clubRoutes(apiv1, &services.ClubService{DB: db, Validate: validate})
-	categoryRoutes(apiv1, &services.CategoryService{DB: db, Validate: validate})
-	tagRoutes(apiv1, &services.TagService{DB: db, Validate: validate})
+	categoryRouter := categoryRoutes(apiv1, &services.CategoryService{DB: db, Validate: validate})
+	tagRoutes(categoryRouter, &services.TagService{DB: db, Validate: validate})
 
 	return app
 }
@@ -76,7 +76,7 @@ func userRoutes(router fiber.Router, userService services.UserServiceInterface) 
 	users.Delete("/:id", userController.DeleteUser)
 
 	userTags := users.Group("/:uid/tags")
-	
+
 	userTags.Post("/", userController.CreateUserTags)
 	userTags.Get("/", userController.GetUserTags)
 }
@@ -93,7 +93,7 @@ func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface) 
 	clubs.Delete("/:id", clubController.DeleteClub)
 }
 
-func categoryRoutes(router fiber.Router, categoryService services.CategoryServiceInterface) {
+func categoryRoutes(router fiber.Router, categoryService services.CategoryServiceInterface) fiber.Router {
 	categoryController := controllers.NewCategoryController(categoryService)
 
 	categories := router.Group("/categories")
@@ -103,15 +103,17 @@ func categoryRoutes(router fiber.Router, categoryService services.CategoryServic
 	categories.Get("/:id", categoryController.GetCategory)
 	categories.Delete("/:id", categoryController.DeleteCategory)
 	categories.Patch("/:id", categoryController.UpdateCategory)
+
+	return categories
 }
 
 func tagRoutes(router fiber.Router, tagService services.TagServiceInterface) {
 	tagController := controllers.NewTagController(tagService)
 
-	tags := router.Group("/tags")
+	tags := router.Group("/:categoryID/tags")
 
-	tags.Get("/:id", tagController.GetTag)
+	tags.Get("/", tagController.GetTag)
 	tags.Post("/", tagController.CreateTag)
-	tags.Patch("/:id", tagController.UpdateTag)
-	tags.Delete("/:id", tagController.DeleteTag)
+	tags.Patch("/:tagID", tagController.UpdateTag)
+	tags.Delete("/:tagID", tagController.DeleteTag)
 }

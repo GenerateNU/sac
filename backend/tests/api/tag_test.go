@@ -14,10 +14,10 @@ import (
 	"github.com/goccy/go-json"
 )
 
-func SampleTagFactory(categoryID uuid.UUID) *map[string]interface{} {
+func SampleTagFactory[T any](categoryUUID T) *map[string]interface{} {
 	return &map[string]interface{}{
 		"name":        "Generate",
-		"category_id": categoryID,
+		"category_id": categoryUUID,
 	}
 }
 
@@ -59,7 +59,7 @@ func CreateSampleTag(t *testing.T) (appAssert ExistingAppAssert, categoryUUID uu
 
 	TestRequest{
 		Method: fiber.MethodPost,
-		Path:   "/api/v1/tags/",
+		Path:   fmt.Sprintf("/api/v1/categories/%s/tags", categoryUUID),
 		Body:   SampleTagFactory(categoryUUID),
 	}.TestOnStatusAndDB(t, &appAssert,
 		DBTesterWithStatus{
@@ -95,6 +95,8 @@ func Assert1Tag(app TestApp, assert *assert.A, resp *http.Response) {
 }
 
 func TestCreateTagFailsBadRequest(t *testing.T) {
+	appAssert, categoryUUID := CreateSampleCategory(t, nil)
+
 	badBodys := []map[string]interface{}{
 		{
 			"name":        "Generate",
@@ -109,9 +111,9 @@ func TestCreateTagFailsBadRequest(t *testing.T) {
 	for _, badBody := range badBodys {
 		TestRequest{
 			Method: fiber.MethodPost,
-			Path:   "/api/v1/tags/",
+			Path:   fmt.Sprintf("/api/v1/categories/%s/tags", categoryUUID),
 			Body:   &badBody,
-		}.TestOnErrorAndDB(t, nil,
+		}.TestOnErrorAndDB(t, &appAssert,
 			ErrorWithDBTester{
 				Error:    errors.FailedToParseRequestBody,
 				DBTester: AssertNoTags,
@@ -120,7 +122,23 @@ func TestCreateTagFailsBadRequest(t *testing.T) {
 	}
 }
 
+func TestCreateTagFailsCategoryNotFound(t *testing.T) {
+	uuid := uuid.New()
+	TestRequest{
+		Method: fiber.MethodPost,
+		Path:   fmt.Sprintf("/api/v1/categories/%s/tags", uuid),
+		Body:   SampleTagFactory(uuid),
+	}.TestOnErrorAndDB(t, nil,
+		ErrorWithDBTester{
+			Error:    errors.FailedToParseRequestBody,
+			DBTester: AssertNoTags,
+		},
+	).Close()
+}
+
 func TestCreateTagFailsValidation(t *testing.T) {
+	appAssert, categoryUUID := CreateSampleCategory(t, nil)
+
 	badBodys := []map[string]interface{}{
 		{
 			"name": "Generate",
@@ -134,9 +152,9 @@ func TestCreateTagFailsValidation(t *testing.T) {
 	for _, badBody := range badBodys {
 		TestRequest{
 			Method: fiber.MethodPost,
-			Path:   "/api/v1/tags/",
+			Path:   fmt.Sprintf("/api/v1/categories/%s/tags", categoryUUID),
 			Body:   &badBody,
-		}.TestOnErrorAndDB(t, nil,
+		}.TestOnErrorAndDB(t, &appAssert,
 			ErrorWithDBTester{
 				Error:    errors.FailedToValidateTag,
 				DBTester: AssertNoTags,
@@ -150,7 +168,7 @@ func TestGetTagWorks(t *testing.T) {
 
 	TestRequest{
 		Method: fiber.MethodGet,
-		Path:   fmt.Sprintf("/api/v1/tags/%s", tagUUID),
+		Path:   fmt.Sprintf("/api/v1/categories/%s/tags/%s", categoryUUID, tagUUID),
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
 			Status: fiber.StatusOK,
@@ -161,7 +179,9 @@ func TestGetTagWorks(t *testing.T) {
 	).Close()
 }
 
-func TestGetTagFailsBadRequest(t *testing.T) {
+func TestGetTagFailsCategoryBadRequest(t *testing.T) {
+	appAssert, _, tagUUID := CreateSampleTag(t)
+
 	badRequests := []string{
 		"0",
 		"-1",
@@ -173,16 +193,46 @@ func TestGetTagFailsBadRequest(t *testing.T) {
 	for _, badRequest := range badRequests {
 		TestRequest{
 			Method: fiber.MethodGet,
-			Path:   fmt.Sprintf("/api/v1/tags/%s", badRequest),
-		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
+			Path:   fmt.Sprintf("/api/v1/categories/%s/tags/%s", badRequest, tagUUID),
+		}.TestOnError(t, &appAssert, errors.FailedToValidateID).Close()
 	}
 }
 
-func TestGetTagFailsNotFound(t *testing.T) {
+func TestGetTagFailsTagBadRequest(t *testing.T) {
+	appAssert, categoryUUID := CreateSampleCategory(t, nil)
+
+	badRequests := []string{
+		"0",
+		"-1",
+		"1.1",
+		"foo",
+		"null",
+	}
+
+	for _, badRequest := range badRequests {
+		TestRequest{
+			Method: fiber.MethodGet,
+			Path:   fmt.Sprintf("/api/v1/categories/%s/tags/%s", categoryUUID, badRequest),
+		}.TestOnError(t, &appAssert, errors.FailedToValidateID).Close()
+	}
+}
+
+func TestGetTagFailsCategoryNotFound(t *testing.T) {
+	appAssert, _, tagUUID := CreateSampleTag(t)
+
 	TestRequest{
 		Method: fiber.MethodGet,
-		Path:   fmt.Sprintf("/api/v1/tags/%s", uuid.New()),
-	}.TestOnError(t, nil, errors.TagNotFound).Close()
+		Path:   fmt.Sprintf("/api/v1/categories/%s/tags/%s", uuid.New(), tagUUID),
+	}.TestOnError(t, &appAssert, errors.TagNotFound).Close()
+}
+
+func TestGetTagFailsTagNotFound(t *testing.T) {
+	appAssert, categoryUUID := CreateSampleCategory(t, nil)
+
+	TestRequest{
+		Method: fiber.MethodGet,
+		Path:   fmt.Sprintf("/api/v1/categories/%s/tags/%s", categoryUUID, uuid.New()),
+	}.TestOnError(t, &appAssert, errors.TagNotFound).Close()
 }
 
 func TestUpdateTagWorksUpdateName(t *testing.T) {
@@ -197,7 +247,7 @@ func TestUpdateTagWorksUpdateName(t *testing.T) {
 
 	TestRequest{
 		Method: fiber.MethodPatch,
-		Path:   fmt.Sprintf("/api/v1/tags/%s", tagUUID),
+		Path:   fmt.Sprintf("/api/v1/categories/%s/tags/%s", categoryUUID, tagUUID),
 		Body:   &generateNUTag,
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
@@ -208,7 +258,7 @@ func TestUpdateTagWorksUpdateName(t *testing.T) {
 }
 
 func TestUpdateTagWorksUpdateCategory(t *testing.T) {
-	existingAppAssert, _, tagUUID := CreateSampleTag(t)
+	existingAppAssert, categoryUUID, tagUUID := CreateSampleTag(t)
 
 	technologyCategory := *SampleCategoryFactory()
 	technologyCategory["name"] = "Technology"
@@ -238,7 +288,7 @@ func TestUpdateTagWorksUpdateCategory(t *testing.T) {
 
 	TestRequest{
 		Method: fiber.MethodPatch,
-		Path:   fmt.Sprintf("/api/v1/tags/%s", tagUUID),
+		Path:   fmt.Sprintf("/api/v1/categories/%s/tags/%s", categoryUUID, tagUUID),
 		Body:   &technologyTag,
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
@@ -253,7 +303,7 @@ func TestUpdateTagWorksWithSameDetails(t *testing.T) {
 
 	TestRequest{
 		Method: fiber.MethodPatch,
-		Path:   fmt.Sprintf("/api/v1/tags/%s", tagUUID),
+		Path:   fmt.Sprintf("/api/v1/categories/%s/tags/%s", categoryUUID, tagUUID),
 		Body:   SampleTagFactory(categoryUUID),
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
@@ -265,8 +315,8 @@ func TestUpdateTagWorksWithSameDetails(t *testing.T) {
 	).Close()
 }
 
-func TestUpdateTagFailsBadRequest(t *testing.T) {
-	appAssert, uuid := CreateSampleCategory(t, nil)
+func TestUpdateTagFailsCategoryBadRequest(t *testing.T) {
+	appAssert, _, tagUUID := CreateSampleTag(t)
 
 	badRequests := []string{
 		"0",
@@ -279,18 +329,38 @@ func TestUpdateTagFailsBadRequest(t *testing.T) {
 	for _, badRequest := range badRequests {
 		TestRequest{
 			Method: fiber.MethodPatch,
-			Path:   fmt.Sprintf("/api/v1/tags/%s", badRequest),
-			Body:   SampleTagFactory(uuid),
+			Path:   fmt.Sprintf("/api/v1/categories/%s/tags/%s", badRequest, tagUUID),
+			Body:   SampleTagFactory(badRequest),
+		}.TestOnError(t, &appAssert, errors.FailedToValidateID).Close()
+	}
+}
+
+func TestUpdateTagFailsTagBadRequest(t *testing.T) {
+	appAssert, categoryUUID := CreateSampleCategory(t, nil)
+
+	badRequests := []string{
+		"0",
+		"-1",
+		"1.1",
+		"foo",
+		"null",
+	}
+
+	for _, badRequest := range badRequests {
+		TestRequest{
+			Method: fiber.MethodPatch,
+			Path:   fmt.Sprintf("/api/v1/categories/%s/tags/%s", categoryUUID, badRequest),
+			Body:   SampleTagFactory(categoryUUID),
 		}.TestOnError(t, &appAssert, errors.FailedToValidateID).Close()
 	}
 }
 
 func TestDeleteTagWorks(t *testing.T) {
-	existingAppAssert, _, tagUUID := CreateSampleTag(t)
+	existingAppAssert, categoryUUID, tagUUID := CreateSampleTag(t)
 
 	TestRequest{
 		Method: fiber.MethodDelete,
-		Path:   fmt.Sprintf("/api/v1/tags/%s", tagUUID),
+		Path:   fmt.Sprintf("/api/v1/categories/%s/tags/%s", categoryUUID, tagUUID),
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		DBTesterWithStatus{
 			Status:   fiber.StatusNoContent,
@@ -299,8 +369,8 @@ func TestDeleteTagWorks(t *testing.T) {
 	).Close()
 }
 
-func TestDeleteTagFailsBadRequest(t *testing.T) {
-	appAssert, _, _ := CreateSampleTag(t)
+func TestDeleteTagFailsCategoryBadRequest(t *testing.T) {
+	appAssert, _, tagUUID := CreateSampleTag(t)
 
 	badRequests := []string{
 		"0",
@@ -313,7 +383,7 @@ func TestDeleteTagFailsBadRequest(t *testing.T) {
 	for _, badRequest := range badRequests {
 		TestRequest{
 			Method: fiber.MethodDelete,
-			Path:   fmt.Sprintf("/api/v1/tags/%s", badRequest),
+			Path:   fmt.Sprintf("/api/v1/categories/%s/tags/%s", badRequest, tagUUID),
 		}.TestOnErrorAndDB(t, &appAssert,
 			ErrorWithDBTester{
 				Error:    errors.FailedToValidateID,
@@ -325,12 +395,52 @@ func TestDeleteTagFailsBadRequest(t *testing.T) {
 	appAssert.Close()
 }
 
-func TestDeleteTagFailsNotFound(t *testing.T) {
-	appAssert, _, _ := CreateSampleTag(t)
+func TestDeleteTagFailsTagBadRequest(t *testing.T) {
+	appAssert, categoryUUID, _ := CreateSampleTag(t)
+
+	badRequests := []string{
+		"0",
+		"-1",
+		"1.1",
+		"foo",
+		"null",
+	}
+
+	for _, badRequest := range badRequests {
+		TestRequest{
+			Method: fiber.MethodDelete,
+			Path:   fmt.Sprintf("/api/v1/categories/%s/tags/%s", categoryUUID, badRequest),
+		}.TestOnErrorAndDB(t, &appAssert,
+			ErrorWithDBTester{
+				Error:    errors.FailedToValidateID,
+				DBTester: Assert1Tag,
+			},
+		)
+	}
+
+	appAssert.Close()
+}
+
+func TestDeleteTagFailsCategoryNotFound(t *testing.T) {
+	appAssert, _, tagUUID := CreateSampleTag(t)
 
 	TestRequest{
 		Method: fiber.MethodDelete,
-		Path:   fmt.Sprintf("/api/v1/tags/%s", uuid.New()),
+		Path:   fmt.Sprintf("/api/v1/categories/%s/tags/%s", uuid.New(), tagUUID),
+	}.TestOnErrorAndDB(t, &appAssert,
+		ErrorWithDBTester{
+			Error:    errors.TagNotFound,
+			DBTester: Assert1Tag,
+		},
+	).Close()
+}
+
+func TestDeleteTagFailsTagNotFound(t *testing.T) {
+	appAssert, categoryUUID, _ := CreateSampleTag(t)
+
+	TestRequest{
+		Method: fiber.MethodDelete,
+		Path:   fmt.Sprintf("/api/v1/categories/%s/tags/%s", categoryUUID, uuid.New()),
 	}.TestOnErrorAndDB(t, &appAssert,
 		ErrorWithDBTester{
 			Error:    errors.TagNotFound,
