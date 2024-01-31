@@ -71,12 +71,12 @@ func userRoutes(router fiber.Router, userService services.UserServiceInterface) 
 
 	users.Post("/", userController.CreateUser)
 	users.Get("/", userController.GetUsers)
-	users.Get("/:id", userController.GetUser)
-	users.Patch("/:id", userController.UpdateUser)
-	users.Delete("/:id", userController.DeleteUser)
+	users.Get("/:id<guid>", userController.GetUser)
+	users.Patch("/:id<guid>", userController.UpdateUser)
+	users.Delete("/:id<guid>", userController.DeleteUser)
 
 	userTags := users.Group("/:uid/tags")
-	
+
 	userTags.Post("/", userController.CreateUserTags)
 	userTags.Get("/", userController.GetUserTags)
 }
@@ -88,9 +88,9 @@ func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface) 
 
 	clubs.Get("/", clubController.GetAllClubs)
 	clubs.Post("/", clubController.CreateClub)
-	clubs.Get("/:id", clubController.GetClub)
-	clubs.Patch("/:id", clubController.UpdateClub)
-	clubs.Delete("/:id", clubController.DeleteClub)
+	clubs.Get("/:id<guid>", clubController.GetClub)
+	clubs.Patch("/:id<guid>", clubController.UpdateClub)
+	clubs.Delete("/:id<guid>", clubController.DeleteClub)
 }
 
 func categoryRoutes(router fiber.Router, categoryService services.CategoryServiceInterface) {
@@ -100,9 +100,9 @@ func categoryRoutes(router fiber.Router, categoryService services.CategoryServic
 
 	categories.Post("/", categoryController.CreateCategory)
 	categories.Get("/", categoryController.GetCategories)
-	categories.Get("/:id", categoryController.GetCategory)
-	categories.Delete("/:id", categoryController.DeleteCategory)
-	categories.Patch("/:id", categoryController.UpdateCategory)
+	categories.Get("/:id<guid>", categoryController.GetCategory)
+	categories.Delete("/:id<guid>", categoryController.DeleteCategory)
+	categories.Patch("/:id<guid>", categoryController.UpdateCategory)
 }
 
 func tagRoutes(router fiber.Router, tagService services.TagServiceInterface) {
@@ -110,8 +110,8 @@ func tagRoutes(router fiber.Router, tagService services.TagServiceInterface) {
 
 	tags := router.Group("/tags")
 
-	tags.Get("/:id", tagController.GetTag)
+	tags.Get("/:id<guid>", tagController.GetTag)
 	tags.Post("/", tagController.CreateTag)
-	tags.Patch("/:id", tagController.UpdateTag)
-	tags.Delete("/:id", tagController.DeleteTag)
+	tags.Patch("/:id<guid>", tagController.UpdateTag)
+	tags.Delete("/:id<guid>", tagController.DeleteTag)
 }
