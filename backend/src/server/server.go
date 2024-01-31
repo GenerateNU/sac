@@ -112,7 +112,7 @@ func tagRoutes(router fiber.Router, tagService services.TagServiceInterface) {
 
 	tags := router.Group("/:categoryID/tags")
 
-	tags.Get("/", tagController.GetTag)
+	tags.Get("/:tagID", tagController.GetTag)
 	tags.Post("/", tagController.CreateTag)
 	tags.Patch("/:tagID", tagController.UpdateTag)
 	tags.Delete("/:tagID", tagController.DeleteTag)
