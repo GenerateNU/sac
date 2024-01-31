@@ -118,8 +118,10 @@ func TestCreateTagFailsBadRequest(t *testing.T) {
 				Error:    errors.FailedToParseRequestBody,
 				DBTester: AssertNoTags,
 			},
-		).Close()
+		)
 	}
+
+	appAssert.Close()
 }
 
 func TestCreateTagFailsCategoryNotFound(t *testing.T) {
@@ -159,8 +161,10 @@ func TestCreateTagFailsValidation(t *testing.T) {
 				Error:    errors.FailedToValidateTag,
 				DBTester: AssertNoTags,
 			},
-		).Close()
+		)
 	}
+
+	appAssert.Close()
 }
 
 func TestGetTagWorks(t *testing.T) {
@@ -194,8 +198,10 @@ func TestGetTagFailsCategoryBadRequest(t *testing.T) {
 		TestRequest{
 			Method: fiber.MethodGet,
 			Path:   fmt.Sprintf("/api/v1/categories/%s/tags/%s", badRequest, tagUUID),
-		}.TestOnError(t, &appAssert, errors.FailedToValidateID).Close()
+		}.TestOnError(t, &appAssert, errors.FailedToValidateID)
 	}
+
+	appAssert.Close()
 }
 
 func TestGetTagFailsTagBadRequest(t *testing.T) {
@@ -213,8 +219,10 @@ func TestGetTagFailsTagBadRequest(t *testing.T) {
 		TestRequest{
 			Method: fiber.MethodGet,
 			Path:   fmt.Sprintf("/api/v1/categories/%s/tags/%s", categoryUUID, badRequest),
-		}.TestOnError(t, &appAssert, errors.FailedToValidateID).Close()
+		}.TestOnError(t, &appAssert, errors.FailedToValidateID)
 	}
+
+	appAssert.Close()
 }
 
 func TestGetTagFailsCategoryNotFound(t *testing.T) {
@@ -331,8 +339,10 @@ func TestUpdateTagFailsCategoryBadRequest(t *testing.T) {
 			Method: fiber.MethodPatch,
 			Path:   fmt.Sprintf("/api/v1/categories/%s/tags/%s", badRequest, tagUUID),
 			Body:   SampleTagFactory(badRequest),
-		}.TestOnError(t, &appAssert, errors.FailedToValidateID).Close()
+		}.TestOnError(t, &appAssert, errors.FailedToValidateID)
 	}
+
+	appAssert.Close()
 }
 
 func TestUpdateTagFailsTagBadRequest(t *testing.T) {
@@ -351,8 +361,10 @@ func TestUpdateTagFailsTagBadRequest(t *testing.T) {
 			Method: fiber.MethodPatch,
 			Path:   fmt.Sprintf("/api/v1/categories/%s/tags/%s", categoryUUID, badRequest),
 			Body:   SampleTagFactory(categoryUUID),
-		}.TestOnError(t, &appAssert, errors.FailedToValidateID).Close()
+		}.TestOnError(t, &appAssert, errors.FailedToValidateID)
 	}
+
+	appAssert.Close()
 }
 
 func TestDeleteTagWorks(t *testing.T) {
