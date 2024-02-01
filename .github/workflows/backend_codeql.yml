@@ -2,12 +2,11 @@ name: Backend CodeQL
 
 on:
   push:
-    branches: ["main"]
     paths:
       - "backend/**"
       - ".github/workflows/backend_codeql.yml"
   pull_request:
-    branches: ["main"]
+    types: opened
     paths:
       - "backend/**"
       - ".github/workflows/backend_codeql.yml"

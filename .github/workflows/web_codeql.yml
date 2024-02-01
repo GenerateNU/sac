@@ -2,12 +2,11 @@ name: Web CodeQL
 
 on:
   push:
-    branches: ["main"]
     paths:
       - "frontend/sac-web/**"
       - ".github/workflows/mweb_codeql.yml"
   pull_request:
-    branches: ["main"]
+    types: opened
     paths:
       - "frontend/sac-web/**"
       - ".github/workflows/web_codeql.yml"

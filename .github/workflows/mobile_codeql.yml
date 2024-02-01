@@ -2,12 +2,11 @@ name: Mobile CodeQL
 
 on:
   push:
-    branches: ["main"]
     paths:
       - "frontend/sac-mobile/**"
       - ".github/workflows/mobile_codeql.yml"
   pull_request:
-    branches: ["main"]
+    types: opened
     paths:
       - "frontend/sac-mobile/**"
       - ".github/workflows/mobile_codeql.yml"

@@ -2,12 +2,11 @@ name: CLI CodeQL
 
 on:
   push:
-    branches: ["main"]
     paths:
       - "cli/**"
       - ".github/workflows/cli_codeql.yml"
   pull_request:
-    branches: ["main"]
+    types: opened
     paths:
       - "cli/**"
       - ".github/workflows/cli_codeql.yml"
