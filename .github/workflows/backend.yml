@@ -27,15 +27,15 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version: "1.21"
+      - name: Install gofumpt
+        run: go install mvdan.cc/gofumpt@latest
       - name: Check code formatting
         run: |
-          go install mvdan.cc/gofumpt@latest
           unformatted_files=$(gofumpt -l ./backend/ 2>/dev/null | grep ".go$")
-          echo "$unformatted_files"
           if [ -n "$unformatted_files" ]; then
             echo "Files not formatted:"
             echo "$unformatted_files"
-            exit 0
+            exit 1
           fi
 
   lint:
