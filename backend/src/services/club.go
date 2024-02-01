@@ -16,6 +16,9 @@ type ClubServiceInterface interface {
 	CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, *errors.Error)
 	UpdateClub(id string, clubBody models.UpdateClubRequestBody) (*models.Club, *errors.Error)
 	DeleteClub(id string) *errors.Error
+	CreateClubTags(id string, clubTagsBody models.CreateClubTagsRequestBody) ([]models.Tag, *errors.Error)
+	GetClubTags(id string) ([]models.Tag, *errors.Error)
+	DeleteClubTag(id string, tagId string) *errors.Error
 }
 
 type ClubService struct {
@@ -88,4 +91,49 @@ func (c *ClubService) DeleteClub(id string) *errors.Error {
 	}
 
 	return transactions.DeleteClub(c.DB, *idAsUUID)
+}
+
+func (c *ClubService) CreateClubTags(id string, clubTagsBody models.CreateClubTagsRequestBody) ([]models.Tag, *errors.Error) {
+	// Validate the id:
+	idAsUUID, err := utilities.ValidateID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := c.Validate.Struct(clubTagsBody); err != nil {
+		return nil, &errors.FailedToValidateClubTags
+	}
+
+	// Retrieve a list of valid tags from the ids:
+	tags, err := transactions.GetTagsByIDs(c.DB, clubTagsBody.Tags)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Update the club to reflect the new tags:
+	return transactions.CreateClubTags(c.DB, *idAsUUID, tags)
+}
+
+func (c *ClubService) GetClubTags(id string) ([]models.Tag, *errors.Error) {
+	idAsUUID, err := utilities.ValidateID(id)
+	if err != nil {
+		return nil, &errors.FailedToValidateID
+	}
+
+	return transactions.GetClubTags(c.DB, *idAsUUID)
+}
+
+func (c *ClubService) DeleteClubTag(id string, tagId string) *errors.Error {
+	idAsUUID, err := utilities.ValidateID(id)
+	if err != nil {
+		return &errors.FailedToValidateID
+	}
+
+	tagIdAsUUID, err := utilities.ValidateID(tagId)
+	if err != nil {
+		return &errors.FailedToValidateID
+	}
+
+	return transactions.DeleteClubTag(c.DB, *idAsUUID, *tagIdAsUUID)
 }

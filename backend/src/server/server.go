@@ -91,6 +91,12 @@ func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface) 
 	clubs.Get("/:id", clubController.GetClub)
 	clubs.Patch("/:id", clubController.UpdateClub)
 	clubs.Delete("/:id", clubController.DeleteClub)
+
+	clubsTags := router.Group("/clubs/:id/tags")
+
+	clubsTags.Get("/", clubController.GetClubTags)
+	clubsTags.Post("/", clubController.CreateClubTags)
+	clubsTags.Delete("/:tagId", clubController.DeleteClubTag)
 }
 
 func categoryRoutes(router fiber.Router, categoryService services.CategoryServiceInterface) {
@@ -114,4 +120,6 @@ func tagRoutes(router fiber.Router, tagService services.TagServiceInterface) {
 	tags.Post("/", tagController.CreateTag)
 	tags.Patch("/:id", tagController.UpdateTag)
 	tags.Delete("/:id", tagController.DeleteTag)
+
+	tags.Get("/:id/clubs", tagController.GetTagClubs)
 }

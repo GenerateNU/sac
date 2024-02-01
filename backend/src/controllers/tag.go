@@ -118,3 +118,13 @@ func (t *TagController) DeleteTag(c *fiber.Ctx) error {
 
 	return c.SendStatus(fiber.StatusNoContent)
 }
+
+func (t *TagController) GetTagClubs(c *fiber.Ctx) error {
+	tag, err := t.tagService.GetTagClubs(c.Params("id"))
+
+	if err != nil {
+		return err.FiberError(c)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(&tag)
+}

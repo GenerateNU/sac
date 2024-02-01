@@ -14,6 +14,7 @@ type TagServiceInterface interface {
 	GetTag(id string) (*models.Tag, *errors.Error)
 	UpdateTag(id string, tagBody models.TagRequestBody) (*models.Tag, *errors.Error)
 	DeleteTag(id string) *errors.Error
+	GetTagClubs(id string) ([]models.Club, *errors.Error)
 }
 
 type TagService struct {
@@ -68,4 +69,13 @@ func (t *TagService) DeleteTag(id string) *errors.Error {
 	}
 
 	return transactions.DeleteTag(t.DB, *idAsUUID)
+}
+
+func (t *TagService) GetTagClubs(id string) ([]models.Club, *errors.Error) {
+	idAsUUID, err := utilities.ValidateID(id)
+	if err != nil {
+		return nil, &errors.FailedToValidateID
+	}
+
+	return transactions.GetTagClubs(t.DB, *idAsUUID)
 }
