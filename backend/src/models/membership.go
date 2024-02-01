@@ -20,9 +20,9 @@ func (Membership) TableName() string {
 type Membership struct {
 	Model
 
-	ClubID uuid.UUID      `gorm:"primaryKey" json:"club_id" validate:"required,uuid4`
-	UserID uuid.UUID      `gorm:"primaryKey" json:"user_id" validate:"required,uuid4"`
-	Type   MembershipType `gorm:"type:varchar(255);default:member" json:"membership_type" validate:"required,max=255"`
+	UserID         uuid.UUID       `gorm:"type:uuid;not null" json:"user_id" validate:"required,uuid4"`
+	ClubID         uuid.UUID       `gorm:"type:uuid;not null" json:"club_id" validate:"required,uuid4"`
+	MembershipType MembershipType `gorm:"type:varchar(255);not null;default:member" json:"membership_type" validate:"required,oneof=member admin"`
 
 	Club *Club `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	User *User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
