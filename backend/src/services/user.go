@@ -17,7 +17,6 @@ type UserServiceInterface interface {
 	CreateUser(userBody models.CreateUserRequestBody) (*models.User, *errors.Error)
 	GetUsers(limit string, page string) ([]models.User, *errors.Error)
 	GetUser(id string) (*models.User, *errors.Error)
-	CreateUser(userBody models.CreateUserRequestBody) (*models.User, *errors.Error)
 	UpdateUser(id string, userBody models.UpdateUserRequestBody) (*models.User, *errors.Error)
 	DeleteUser(id string) *errors.Error
 	GetUserTags(id string) ([]models.Tag, *errors.Error)
