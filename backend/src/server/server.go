@@ -100,7 +100,7 @@ func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface, 
 	clubsID := clubs.Group("/:id")
 	clubsID.Use(middlewareService.ClubAuthorizeById)
 
-	clubsID.Get("/", middlewareService.Authorize(types.ClubRead), clubController.GetClub) // TODO: Should you be able to get a club without being logged in? (yes)
+	clubsID.Get("/", clubController.GetClub) 
 	clubsID.Patch("/", middlewareService.Authorize(types.ClubWrite), clubController.UpdateClub)
 	clubsID.Delete("/", middlewareService.Authorize(types.ClubDelete), clubController.DeleteClub)
 }
