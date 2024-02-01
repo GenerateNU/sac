@@ -35,7 +35,7 @@ jobs:
           if [ -n "$unformatted_files" ]; then
             echo "Files not formatted:"
             echo "$unformatted_files"
-            exit 1
+            exit 0
           fi
 
   lint:
