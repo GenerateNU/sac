@@ -2,12 +2,11 @@ name: CLI
 
 on:
   push:
-    branches:
-      - main
     paths:
       - "cli/**"
       - ".github/workflows/cli.yml"
   pull_request:
+    types: opened
     paths:
       - "cli/**"
       - ".github/workflows/cli.yml"
