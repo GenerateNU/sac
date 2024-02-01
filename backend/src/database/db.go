@@ -16,13 +16,11 @@ func ConfigureDB(settings config.Settings) (*gorm.DB, error) {
 		SkipDefaultTransaction: true,
 		TranslateError:         true,
 	})
-
 	if err != nil {
 		return nil, err
 	}
 
 	err = db.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"").Error
-
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +34,6 @@ func ConfigureDB(settings config.Settings) (*gorm.DB, error) {
 
 func ConnPooling(db *gorm.DB) error {
 	sqlDB, err := db.DB()
-
 	if err != nil {
 		return err
 	}
@@ -58,7 +55,6 @@ func MigrateDB(settings config.Settings, db *gorm.DB) error {
 		&models.Tag{},
 		&models.User{},
 	)
-
 	if err != nil {
 		return err
 	}
@@ -82,7 +78,6 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 	}
 
 	passwordHash, err := auth.ComputePasswordHash(settings.SuperUser.Password)
-
 	if err != nil {
 		return err
 	}

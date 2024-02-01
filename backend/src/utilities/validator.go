@@ -70,7 +70,6 @@ func validateContactPointer(validate *validator.Validate, fl validator.FieldLeve
 
 func ValidateID(id string) (*uuid.UUID, *errors.Error) {
 	idAsUUID, err := uuid.Parse(id)
-
 	if err != nil {
 		return nil, &errors.FailedToValidateID
 	}

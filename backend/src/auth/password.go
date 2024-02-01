@@ -58,7 +58,6 @@ var (
 
 func ComparePasswordAndHash(password, encodedHash string) (bool, error) {
 	p, salt, hash, err := decodeHash(encodedHash)
-
 	if err != nil {
 		return false, err
 	}

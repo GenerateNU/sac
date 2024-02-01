@@ -84,7 +84,7 @@ func GetUserTags(db *gorm.DB, id uuid.UUID) ([]models.Tag, *errors.Error) {
 		return nil, &errors.UserNotFound
 	}
 
-	if err := db.Model(&user).Association("Tag").Find(&tags) ; err != nil {
+	if err := db.Model(&user).Association("Tag").Find(&tags); err != nil {
 		return nil, &errors.FailedToGetTag
 	}
 	return tags, nil

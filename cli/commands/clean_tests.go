@@ -2,9 +2,8 @@ package commands
 
 import (
 	"database/sql"
-	"os/user"
-
 	"fmt"
+	"os/user"
 	"sync"
 
 	_ "github.com/lib/pq"
@@ -21,7 +20,6 @@ func ClearDBCommand() *cli.Command {
 			}
 
 			err := CleanTestDBs()
-
 			if err != nil {
 				return cli.Exit(err.Error(), 1)
 			}
@@ -37,7 +35,6 @@ func CleanTestDBs() error {
 	fmt.Println("Cleaning test databases")
 
 	db, err := sql.Open("postgres", CONFIG.Database.WithDb())
-
 	if err != nil {
 		return err
 	}
@@ -45,13 +42,11 @@ func CleanTestDBs() error {
 	defer db.Close()
 
 	currentUser, err := user.Current()
-
 	if err != nil {
 		return fmt.Errorf("failed to get current user: %w", err)
 	}
 
 	rows, err := db.Query("SELECT datname FROM pg_database WHERE datistemplate = false AND datname != 'postgres' AND datname != $1 AND datname != $2", currentUser.Username, CONFIG.Database.DatabaseName)
-
 	if err != nil {
 		return err
 	}
@@ -70,7 +65,6 @@ func CleanTestDBs() error {
 		wg.Add(1)
 
 		go func(dbName string) {
-
 			defer wg.Done()
 
 			fmt.Printf("Dropping database %s\n", dbName)
@@ -78,7 +72,6 @@ func CleanTestDBs() error {
 			if _, err := db.Exec(fmt.Sprintf("DROP DATABASE %s", dbName)); err != nil {
 				fmt.Printf("Failed to drop database %s: %v\n", dbName, err)
 			}
-
 		}(dbName)
 	}
 

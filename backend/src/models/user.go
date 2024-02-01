@@ -78,5 +78,5 @@ type UpdateUserRequestBody struct {
 }
 
 type CreateUserTagsBody struct {
-	Tags      []uuid.UUID  `json:"tags" validate:"required"`
+	Tags []uuid.UUID `json:"tags" validate:"required"`
 }

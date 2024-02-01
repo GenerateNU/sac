@@ -43,15 +43,17 @@ func AssertTagWithBodyRespDB(app TestApp, assert *assert.A, resp *http.Response,
 }
 
 func AssertSampleTagBodyRespDB(t *testing.T, app TestApp, assert *assert.A, resp *http.Response) uuid.UUID {
-	appAssert, _ := CreateSampleCategory(t, &ExistingAppAssert{App: app,
-		Assert: assert})
+	appAssert, _ := CreateSampleCategory(t, &ExistingAppAssert{
+		App:    app,
+		Assert: assert,
+	})
 	return AssertTagWithBodyRespDB(appAssert.App, appAssert.Assert, resp, SampleTagFactory())
 }
 
 func CreateSampleTag(t *testing.T) (appAssert ExistingAppAssert, categoryUUID uuid.UUID, tagUUID uuid.UUID) {
 	appAssert, categoryUUID = CreateSampleCategory(t, nil)
 
-	var AssertSampleTagBodyRespDB = func(app TestApp, assert *assert.A, resp *http.Response) {
+	AssertSampleTagBodyRespDB := func(app TestApp, assert *assert.A, resp *http.Response) {
 		tagUUID = AssertTagWithBodyRespDB(app, assert, resp, SampleTagFactory())
 	}
 
@@ -236,7 +238,7 @@ func TestUpdateTagWorksUpdateName(t *testing.T) {
 	generateNUTag := *SampleTagFactory()
 	generateNUTag["name"] = "GenerateNU"
 
-	var AssertUpdatedTagBodyRespDB = func(app TestApp, assert *assert.A, resp *http.Response) {
+	AssertUpdatedTagBodyRespDB := func(app TestApp, assert *assert.A, resp *http.Response) {
 		tagUUID = AssertTagWithBodyRespDB(app, assert, resp, &generateNUTag)
 	}
 
@@ -258,7 +260,7 @@ func TestUpdateTagWorksUpdateCategory(t *testing.T) {
 	technologyCategory := *SampleCategoryFactory()
 	technologyCategory["name"] = "Technology"
 
-	var AssertNewCategoryBodyRespDB = func(app TestApp, assert *assert.A, resp *http.Response) {
+	AssertNewCategoryBodyRespDB := func(app TestApp, assert *assert.A, resp *http.Response) {
 		AssertCategoryWithBodyRespDBMostRecent(app, assert, resp, &technologyCategory)
 	}
 
@@ -275,7 +277,7 @@ func TestUpdateTagWorksUpdateCategory(t *testing.T) {
 
 	technologyTag := *SampleTagFactory()
 
-	var AssertUpdatedTagBodyRespDB = func(app TestApp, assert *assert.A, resp *http.Response) {
+	AssertUpdatedTagBodyRespDB := func(app TestApp, assert *assert.A, resp *http.Response) {
 		AssertTagWithBodyRespDB(app, assert, resp, &technologyTag)
 	}
 

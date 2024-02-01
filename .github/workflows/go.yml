@@ -27,8 +27,15 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version: "1.21"
-      - name: Enforce formatting
-        run: gofmt -l ./backend/ | grep ".go$" | xargs -r echo "Files not formatted:"
+      - name: Check code formatting
+        run: |
+          go install mvdan.cc/gofumpt@latest
+          unformatted_files=$(gofumpt -l ./backend/ | grep ".go$")
+          if [ -n "$unformatted_files" ]; then
+            echo "Files not formatted:"
+            echo "$unformatted_files"
+            exit 1  # Exit with a non-zero status code to indicate failure
+          fi
 
   lint:
     name: Lint

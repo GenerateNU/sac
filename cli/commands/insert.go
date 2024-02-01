@@ -20,7 +20,6 @@ func InsertDBCommand() *cli.Command {
 			}
 
 			err := InsertDB()
-
 			if err != nil {
 				return cli.Exit(err.Error(), 1)
 			}
@@ -34,7 +33,6 @@ func InsertDBCommand() *cli.Command {
 
 func InsertDB() error {
 	db, err := sql.Open("postgres", CONFIG.Database.WithDb())
-
 	if err != nil {
 		return err
 	}
@@ -44,7 +42,6 @@ func InsertDB() error {
 	var exists bool
 
 	err = db.QueryRow("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' LIMIT 1);").Scan(&exists)
-
 	if err != nil {
 		return err
 	}

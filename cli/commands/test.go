@@ -80,7 +80,6 @@ func BackendTest() error {
 	defer CleanTestDBs()
 
 	out, err := cmd.CombinedOutput()
-
 	if err != nil {
 		fmt.Println(string(out))
 		return cli.Exit("Failed to run backend tests", 1)

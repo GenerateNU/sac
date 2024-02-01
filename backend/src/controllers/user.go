@@ -146,7 +146,7 @@ func (u *UserController) GetUserTags(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(&tags)
 }
 
-func (u *UserController) CreateUserTags(c *fiber.Ctx) error {	
+func (u *UserController) CreateUserTags(c *fiber.Ctx) error {
 	var requestBody models.CreateUserTagsBody
 	if err := c.BodyParser(&requestBody); err != nil {
 		return errors.FailedToParseRequestBody.FiberError(c)
@@ -156,6 +156,6 @@ func (u *UserController) CreateUserTags(c *fiber.Ctx) error {
 	if err != nil {
 		return err.FiberError(c)
 	}
-	
+
 	return c.Status(fiber.StatusCreated).JSON(&tags)
 }

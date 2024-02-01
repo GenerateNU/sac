@@ -90,5 +90,5 @@ func BackendFormat() error {
 
 func FrontendFormat(folder string) error {
 	fmt.Println("UNIMPLEMENTED")
-	return nil 
+	return nil
 }
