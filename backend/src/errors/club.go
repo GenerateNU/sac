@@ -35,4 +35,8 @@ var (
 		StatusCode: fiber.StatusNotFound,
 		Message:    "club not found",
 	}
+	FailedtoGetAdminIDs = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get admin ids",
+	}
 )
