@@ -115,3 +115,15 @@ func tagRoutes(router fiber.Router, tagService services.TagServiceInterface) {
 	tags.Patch("/:id", tagController.UpdateTag)
 	tags.Delete("/:id", tagController.DeleteTag)
 }
+
+func eventRoutes(router fiber.Router, tagService services.EventServiceInterface) {
+	eventController := controllers.NewEventController(eventService)
+
+	tags := router.Group("/tags")
+
+	tags.Get("/:id", eventController.GetEvent)
+	tags.Get("/:id", eventController.GetEvents)
+	tags.Post("/", eventController.CreateEvent)
+	tags.Patch("/:id", eventController.UpdateEvent)
+	tags.Delete("/:id", eventController.DeleteEvent)
+}
