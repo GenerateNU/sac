@@ -31,13 +31,12 @@ jobs:
         run: go install mvdan.cc/gofumpt@latest
       - name: Check code formatting
         run: |
-          gofumpt -l ./backend/
-          # unformatted_files=$(gofumpt -l ./backend/ 2>/dev/null | grep ".go$")
-          # if [ -n "$unformatted_files" ]; then
-          #   echo "Files not formatted:"
-          #   echo "$unformatted_files"
-          #   exit 1
-          # fi
+          unformatted_files=$(gofumpt -l ./backend/)
+          if [ -n "$unformatted_files" ]; then
+            echo "Files not formatted:"
+            echo "$unformatted_files"
+            exit 1
+          fi
 
   lint:
     name: Lint
