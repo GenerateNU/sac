@@ -38,7 +38,7 @@ jobs:
         run: go install mvdan.cc/gofumpt@latest
       - name: Check code formatting
         run: |
-          unformatted_files=$(gofumpt -l ./backend/)
+          unformatted_files=$(gofumpt -l ./cli/)
           if [ -n "$unformatted_files" ]; then
             echo "Files not formatted:"
             echo "$unformatted_files"
