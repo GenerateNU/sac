@@ -44,7 +44,6 @@ jobs:
             echo "$unformatted_files"
             exit 1
           fi
-
   lint:
     name: Lint
     runs-on: ubuntu-latest
@@ -63,7 +62,6 @@ jobs:
             echo "::error::Linting issues found"
             exit 1
           fi
-
   test:
     name: Test
     runs-on: ubuntu-latest
