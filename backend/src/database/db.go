@@ -132,7 +132,7 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 		membership := models.Membership{
 			ClubID: superClub.ID,
 			UserID: superUser.ID,
-			Type:   models.MembershipTypeAdmin,
+			MembershipType:   models.MembershipTypeAdmin,
 		}
 
 		if err := tx.Create(&membership).Error; err != nil {
