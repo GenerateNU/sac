@@ -47,7 +47,6 @@ func (a *AuthService) Login(userBody models.LoginUserResponseBody) (*models.User
 		return nil, &errors.FailedToValidateUser
 	}
 
-	// check if user exists
 	user, err := transactions.GetUserByEmail(a.DB, userBody.Email)
 	if err != nil {
 		return nil, &errors.UserNotFound
