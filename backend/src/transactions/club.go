@@ -7,7 +7,6 @@ import (
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/google/uuid"
 
-	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
 
@@ -15,7 +14,7 @@ func GetAdminIDs(db *gorm.DB, clubID uuid.UUID) ([]uuid.UUID, *errors.Error) {
 	var adminIDs []models.Membership
 
 	if err := db.Where("club_id = ? AND membership_type = ?", clubID, models.MembershipTypeAdmin).Find(&adminIDs).Error; err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusInternalServerError, Message: "failed to get admin IDs"}
+		return nil, &errors.FailedtoGetAdminIDs
 	}
 
 	var adminUUIDs []uuid.UUID

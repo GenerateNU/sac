@@ -33,7 +33,6 @@ func (m *MiddlewareService) Authenticate(c *fiber.Ctx) error {
 		return errors.FailedToValidateAccessToken.FiberError(c)
 	}
 
-	// check if token is blacklisted
 	if auth.IsBlacklisted(c.Cookies("access_token")) {
 		return errors.Unauthorized.FiberError(c)
 	}
@@ -51,20 +50,11 @@ func (m *MiddlewareService) Authorize(requiredPermissions ...types.Permission) f
 		userPermissions := types.GetPermissions(models.UserRole(*role))
 
 		for _, requiredPermission := range requiredPermissions {
-			if !containsPermission(userPermissions, requiredPermission) {
+			if !slices.Contains(userPermissions, requiredPermission) {
 				return errors.Unauthorized.FiberError(c)
 			}
 		}
 
 		return c.Next()
 	}
-}
-
-func containsPermission(permissions []types.Permission, targetPermission types.Permission) bool {
-	for _, permission := range permissions {
-		if permission == targetPermission {
-			return true
-		}
-	}
-	return false
 }
