@@ -59,7 +59,6 @@ func (t *TagController) CreateTag(c *fiber.Ctx) error {
 // @Router		/api/v1/tags/{id}  [get]
 func (t *TagController) GetTag(c *fiber.Ctx) error {
 	tag, err := t.tagService.GetTag(c.Params("categoryID"), c.Params("tagID"))
-
 	if err != nil {
 		return err.FiberError(c)
 	}

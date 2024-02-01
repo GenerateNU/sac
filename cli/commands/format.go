@@ -76,7 +76,7 @@ func Format(folder string, runFrontend bool, runBackend bool) error {
 func BackendFormat() error {
 	fmt.Println("Formatting backend")
 
-	cmd := exec.Command("go", "fmt", "./...")
+	cmd := exec.Command("gofumpt", "-l", "-w", ".")
 	cmd.Dir = BACKEND_DIR
 
 	err := cmd.Run()
@@ -90,5 +90,5 @@ func BackendFormat() error {
 
 func FrontendFormat(folder string) error {
 	fmt.Println("UNIMPLEMENTED")
-	return nil 
+	return nil
 }

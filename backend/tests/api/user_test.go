@@ -2,10 +2,10 @@ package tests
 
 import (
 	"fmt"
-
-	stdliberrors "errors"
 	"net/http"
 	"testing"
+
+	stdliberrors "errors"
 
 	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/errors"
@@ -125,7 +125,6 @@ func TestGetUserFailsNotExist(t *testing.T) {
 				err := app.Conn.Where("id = ?", uuid).First(&user).Error
 
 				assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
-
 			},
 		},
 	).Close()
@@ -300,7 +299,6 @@ func TestDeleteUserBadRequest(t *testing.T) {
 
 func SampleUserFactory() *map[string]interface{} {
 	return &map[string]interface{}{
-
 		"first_name": "Jane",
 		"last_name":  "Doe",
 		"email":      "doe.jane@northeastern.edu",
@@ -517,7 +515,6 @@ func TestCreateUserFailsOnInvalidCollege(t *testing.T) {
 		if permutation != khouryAbbreviation {
 			permutationsWithoutKhoury = append(permutationsWithoutKhoury, permutation)
 		}
-
 	}
 
 	AssertCreateBadDataFails(t,

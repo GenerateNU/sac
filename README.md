@@ -4,9 +4,9 @@
 
 <div align="center">
   <!-- Github Actions -->
-  <a href="https://github.com/GenerateNU/sac/actions/workflows/go.yml">
-    <img src="https://github.com/GenerateNU/sac/actions/workflows/go.yml/badge.svg"
-      alt="Go Workflow Status" />
+  <a href="https://github.com/GenerateNU/sac/actions/workflows/backend.yml">
+    <img src="https://github.com/GenerateNU/sac/actions/workflows/backend.yml/badge.svg"
+      alt="Backend Workflow Status" />
   </a>
 </div>
 

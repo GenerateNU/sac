@@ -19,7 +19,6 @@ func DropDBCommand() *cli.Command {
 			}
 
 			err := DropDB()
-
 			if err != nil {
 				return cli.Exit(err.Error(), 1)
 			}
@@ -35,7 +34,6 @@ func DropDB() error {
 	fmt.Println("Dropping database")
 
 	db, err := sql.Open("postgres", CONFIG.Database.WithDb())
-
 	if err != nil {
 		return err
 	}
@@ -45,7 +43,6 @@ func DropDB() error {
 	var tableCount int
 
 	err = db.QueryRow("SELECT COUNT(*) FROM pg_tables WHERE schemaname = 'public'").Scan(&tableCount)
-
 	if err != nil {
 		return fmt.Errorf("error checking tables: %w", err)
 	}
@@ -58,7 +55,6 @@ func DropDB() error {
 	fmt.Println("Generating DROP TABLE statements...")
 
 	rows, err := db.Query("SELECT tablename FROM pg_tables WHERE schemaname = 'public'")
-
 	if err != nil {
 		return fmt.Errorf("error generating DROP TABLE statements: %w", err)
 	}

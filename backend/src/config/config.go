@@ -71,7 +71,6 @@ const (
 )
 
 func GetConfiguration(path string) (Settings, error) {
-
 	var environment Environment
 	if env := os.Getenv("APP_ENVIRONMENT"); env != "" {
 		environment = Environment(env)
@@ -117,7 +116,6 @@ func GetConfiguration(path string) (Settings, error) {
 
 		portStr := os.Getenv(fmt.Sprintf("%sPORT", appPrefix))
 		portInt, err := strconv.ParseUint(portStr, 10, 16)
-
 		if err != nil {
 			return Settings{}, fmt.Errorf("failed to parse port: %w", err)
 		}

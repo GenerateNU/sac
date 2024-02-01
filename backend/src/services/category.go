@@ -44,13 +44,11 @@ func (c *CategoryService) CreateCategory(categoryBody models.CategoryRequestBody
 
 func (c *CategoryService) GetCategories(limit string, page string) ([]models.Category, *errors.Error) {
 	limitAsInt, err := utilities.ValidateNonNegative(limit)
-
 	if err != nil {
 		return nil, &errors.FailedToValidateLimit
 	}
 
 	pageAsInt, err := utilities.ValidateNonNegative(page)
-
 	if err != nil {
 		return nil, &errors.FailedToValidatePage
 	}
@@ -62,7 +60,6 @@ func (c *CategoryService) GetCategories(limit string, page string) ([]models.Cat
 
 func (c *CategoryService) GetCategory(id string) (*models.Category, *errors.Error) {
 	idAsUUID, err := utilities.ValidateID(id)
-
 	if err != nil {
 		return nil, err
 	}
