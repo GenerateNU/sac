@@ -37,12 +37,12 @@ func CreateAccessToken(id string, role string) (*string, *errors.Error) {
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  time.Now().Unix(),
 			Issuer:    id,
-			ExpiresAt: time.Now().Add(time.Minute * 15).Unix(),
+			ExpiresAt: time.Now().Add(time.Minute * time.Duration(settings.Auth.AcessTokenExpiry)).Unix(),
 		},
 		Role: role,
 	})
 
-	accessToken, err := SignToken(accessTokenClaims, settings.AuthSecret.AccessToken)
+	accessToken, err := SignToken(accessTokenClaims, settings.Auth.AccessToken)
 	if err != nil {
 		return nil, err
 	}
@@ -61,10 +61,10 @@ func CreateRefreshToken(id string) (*string, *errors.Error) {
 	refreshTokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, &jwt.StandardClaims{
 		IssuedAt:  time.Now().Unix(),
 		Issuer:    id,
-		ExpiresAt: time.Now().Add(time.Hour * 24 * 30).Unix(),
+		ExpiresAt: time.Now().Add(time.Hour * 24 * time.Duration(settings.Auth.RefreshTokenExpiry)).Unix(),
 	})
 
-	refreshToken, err := SignToken(refreshTokenClaims, settings.AuthSecret.RefreshToken)
+	refreshToken, err := SignToken(refreshTokenClaims, settings.Auth.RefreshToken)
 	if err != nil {
 		return nil, err
 	}
@@ -128,7 +128,7 @@ func ParseAccessToken(cookie string) (*jwt.Token, error) {
 	var settings config.Settings
 
 	return jwt.ParseWithClaims(cookie, &types.CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(settings.AuthSecret.AccessToken), nil
+		return []byte(settings.Auth.AccessToken), nil
 	})
 }
 
@@ -137,7 +137,7 @@ func ParseRefreshToken(cookie string) (*jwt.Token, error) {
 	var settings config.Settings
 
 	return jwt.ParseWithClaims(cookie, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(settings.AuthSecret.RefreshToken), nil
+		return []byte(settings.Auth.RefreshToken), nil
 	})
 }
 

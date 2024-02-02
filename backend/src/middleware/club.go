@@ -1,13 +1,14 @@
 package middleware
 
 import (
+	"slices"
+
 	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/transactions"
 	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
 )
 
 func (m *MiddlewareService) ClubAuthorizeById(c *fiber.Ctx) error {
@@ -38,18 +39,9 @@ func (m *MiddlewareService) ClubAuthorizeById(c *fiber.Ctx) error {
 	}
 
 	// check issuerID against the list of admin for the certain club
-	if ContainsUUID(clubAdmin, *issuerUUID) {
+	if slices.Contains(clubAdmin, *issuerUUID) {
 		return c.Next()
 	}
 
 	return errors.Unauthorized.FiberError(c)
-}
-
-func ContainsUUID(uuids []uuid.UUID, targetUUID uuid.UUID) bool {
-	for _, uuid := range uuids {
-		if uuid.String() == targetUUID.String() {
-			return true
-		}
-	}
-	return false
 }
