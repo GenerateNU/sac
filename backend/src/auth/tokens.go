@@ -11,13 +11,13 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-func CreateTokenPair(id string, role string) (*string, *string, *errors.Error) {
-	accessToken, catErr := CreateAccessToken(id, role)
+func CreateTokenPair(id string, role string, accessExpiresAfter uint, refreshExpiresAfter uint) (*string, *string, *errors.Error) {
+	accessToken, catErr := CreateAccessToken(id, role, accessExpiresAfter)
 	if catErr != nil {
 		return nil, nil, catErr
 	}
 
-	refreshToken, crtErr := CreateRefreshToken(id)
+	refreshToken, crtErr := CreateRefreshToken(id, refreshExpiresAfter)
 	if crtErr != nil {
 		return nil, nil, crtErr
 	}
@@ -26,7 +26,7 @@ func CreateTokenPair(id string, role string) (*string, *string, *errors.Error) {
 }
 
 // CreateAccessToken creates a new access token for the user
-func CreateAccessToken(id string, role string) (*string, *errors.Error) {
+func CreateAccessToken(id string, role string, accessExpiresAfter uint) (*string, *errors.Error) {
 	if id == "" || role == "" {
 		return nil, &errors.FailedToCreateAccessToken
 	}
@@ -37,7 +37,7 @@ func CreateAccessToken(id string, role string) (*string, *errors.Error) {
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  time.Now().Unix(),
 			Issuer:    id,
-			ExpiresAt: time.Now().Add(time.Minute * time.Duration(settings.Auth.AcessTokenExpiry)).Unix(),
+			ExpiresAt: time.Now().Add(time.Duration(accessExpiresAfter)).Unix(),
 		},
 		Role: role,
 	})
@@ -51,7 +51,7 @@ func CreateAccessToken(id string, role string) (*string, *errors.Error) {
 }
 
 // CreateRefreshToken creates a new refresh token for the user
-func CreateRefreshToken(id string) (*string, *errors.Error) {
+func CreateRefreshToken(id string, refreshExpiresAfter uint) (*string, *errors.Error) {
 	if id == "" {
 		return nil, &errors.FailedToCreateRefreshToken
 	}
@@ -61,7 +61,7 @@ func CreateRefreshToken(id string) (*string, *errors.Error) {
 	refreshTokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, &jwt.StandardClaims{
 		IssuedAt:  time.Now().Unix(),
 		Issuer:    id,
-		ExpiresAt: time.Now().Add(time.Hour * 24 * time.Duration(settings.Auth.RefreshTokenExpiry)).Unix(),
+		ExpiresAt: time.Now().Add(time.Hour * 24 * time.Duration(refreshExpiresAfter)).Unix(),
 	})
 
 	refreshToken, err := SignToken(refreshTokenClaims, settings.Auth.RefreshToken)
@@ -76,7 +76,7 @@ func SignToken(token *jwt.Token, secret string) (*string, *errors.Error) {
 	if token == nil || secret == "" {
 		return nil, &errors.FailedToSignToken
 	}
-	
+
 	tokenString, err := token.SignedString([]byte(secret))
 	if err != nil {
 		return nil, &errors.FailedToSignToken
@@ -105,7 +105,7 @@ func ExpireCookie(name string) *fiber.Cookie {
 }
 
 // RefreshAccessToken refreshes the access token
-func RefreshAccessToken(refreshCookie string, role string) (*string, *errors.Error) {
+func RefreshAccessToken(refreshCookie string, role string, accessExpiresAfter uint) (*string, *errors.Error) {
 	// Parse the refresh token
 	refreshToken, err := ParseRefreshToken(refreshCookie)
 	if err != nil {
@@ -119,7 +119,7 @@ func RefreshAccessToken(refreshCookie string, role string) (*string, *errors.Err
 	}
 
 	// Create a new access token
-	accessToken, catErr := CreateAccessToken(claims.Issuer, role)
+	accessToken, catErr := CreateAccessToken(claims.Issuer, role, accessExpiresAfter)
 	if catErr != nil {
 		return nil, &errors.FailedToCreateAccessToken
 	}

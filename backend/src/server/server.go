@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/controllers"
 	"github.com/GenerateNU/sac/backend/src/middleware"
 	"github.com/GenerateNU/sac/backend/src/services"
@@ -24,7 +25,7 @@ import (
 // @contact.email	oduneye.d@northeastern.edu and ladley.g@northeastern.edu
 // @host 127.0.0.1:8080
 // @BasePath /
-func Init(db *gorm.DB) *fiber.App {
+func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 	app := newFiberApp()
 
 	validate := utilities.RegisterCustomValidators()
@@ -34,7 +35,7 @@ func Init(db *gorm.DB) *fiber.App {
 	apiv1.Use(middlewareService.Authenticate)
 
 	utilityRoutes(app)
-	authRoutes(apiv1, services.NewAuthService(db, validate))
+	authRoutes(apiv1, services.NewAuthService(db, validate), settings.Auth)
 	userRoutes(apiv1, services.NewUserService(db, validate), middlewareService)
 	clubRoutes(apiv1, services.NewClubService(db, validate), middlewareService)
 	categoryRoutes(apiv1, services.NewCategoryService(db, validate))
@@ -105,8 +106,8 @@ func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface, 
 	clubsID.Delete("/", middlewareService.Authorize(types.ClubDelete), clubController.DeleteClub)
 }
 
-func authRoutes(router fiber.Router, authService services.AuthServiceInterface) {
-	authController := controllers.NewAuthController(authService)
+func authRoutes(router fiber.Router, authService services.AuthServiceInterface, authSettings config.AuthSettings) {
+	authController := controllers.NewAuthController(authService, authSettings)
 
 	// api/v1/auth/*
 	auth := router.Group("/auth")

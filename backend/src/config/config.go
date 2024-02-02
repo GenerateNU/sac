@@ -67,7 +67,7 @@ type SuperUserSettings struct {
 type AuthSettings struct {
 	AccessToken        string `yaml:"accesstoken"`
 	RefreshToken       string `yaml:"refreshtoken"`
-	AcessTokenExpiry   uint   `yaml:"accesstokenexpiry"`
+	AccessTokenExpiry  uint   `yaml:"accesstokenexpiry"`
 	RefreshTokenExpiry uint   `yaml:"refreshtokenexpiry"`
 }
 
@@ -162,7 +162,7 @@ func GetConfiguration(path string) (Settings, error) {
 			Auth: AuthSettings{
 				AccessToken:        os.Getenv(fmt.Sprintf("%sACCESS_TOKEN", authSecretPrefix)),
 				RefreshToken:       os.Getenv(fmt.Sprintf("%sREFRESH_TOKEN", authSecretPrefix)),
-				AcessTokenExpiry:   uint(authAccessExpiryInt),
+				AccessTokenExpiry:  uint(authAccessExpiryInt),
 				RefreshTokenExpiry: uint(authRefreshExpiryInt),
 			},
 		}, nil

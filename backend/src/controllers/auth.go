@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/GenerateNU/sac/backend/src/auth"
+	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
@@ -12,12 +13,13 @@ import (
 )
 
 type AuthController struct {
-	authService services.AuthServiceInterface
-	blacklist   []string
+	authService  services.AuthServiceInterface
+	blacklist    []string
+	AuthSettings config.AuthSettings
 }
 
-func NewAuthController(authService services.AuthServiceInterface) *AuthController {
-	return &AuthController{authService: authService, blacklist: []string{}}
+func NewAuthController(authService services.AuthServiceInterface, authSettings config.AuthSettings) *AuthController {
+	return &AuthController{authService: authService, blacklist: []string{}, AuthSettings: authSettings}
 }
 
 // Me godoc
@@ -72,7 +74,7 @@ func (a *AuthController) Login(c *fiber.Ctx) error {
 		return err.FiberError(c)
 	}
 
-	accessToken, refreshToken, err := auth.CreateTokenPair(user.ID.String(), string(user.Role))
+	accessToken, refreshToken, err := auth.CreateTokenPair(user.ID.String(), string(user.Role), a.AuthSettings.AccessTokenExpiry, a.AuthSettings.RefreshTokenExpiry)
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -110,7 +112,7 @@ func (a *AuthController) Refresh(c *fiber.Ctx) error {
 		return err.FiberError(c)
 	}
 
-	accessToken, err := auth.RefreshAccessToken(refreshTokenValue, string(*role))
+	accessToken, err := auth.RefreshAccessToken(refreshTokenValue, string(*role), a.AuthSettings.AccessTokenExpiry)
 	if err != nil {
 		return err.FiberError(c)
 	}
