@@ -162,5 +162,6 @@ func categoryTagRoutes(router fiber.Router, categoryTagService services.Category
 
 	categoryTags := router.Group("/:categoryID/tags")
 
+	categoryTags.Get("/", categoryTagController.GetTagsByCategory)
 	categoryTags.Get("/:tagID", categoryTagController.GetTagByCategory)
 }
