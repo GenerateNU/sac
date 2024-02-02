@@ -59,14 +59,6 @@ func (t *TagService) GetTag(categoryID string, tagID string) (*models.Tag, *erro
 		return nil, idErr
 	}
 
-	}
-
-	tagIDAsUUID, idErr := utilities.ValidateID(tagID)
-
-	if idErr != nil {
-		return nil, idErr
-	}
-
 	return transactions.GetTag(t.DB, *categoryIDAsUUID, *tagIDAsUUID)
 }
 
