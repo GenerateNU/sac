@@ -39,7 +39,6 @@ func (t *CategoryController) CreateCategory(c *fiber.Ctx) error {
 	}
 
 	newCategory, err := t.categoryService.CreateCategory(categoryBody)
-
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -130,7 +129,6 @@ func (t *CategoryController) UpdateCategory(c *fiber.Ctx) error {
 	}
 
 	updatedCategory, err := t.categoryService.UpdateCategory(c.Params("id"), category)
-
 	if err != nil {
 		return err.FiberError(c)
 	}

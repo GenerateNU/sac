@@ -29,13 +29,11 @@ func NewClubService(db *gorm.DB, validate *validator.Validate) *ClubService {
 
 func (c *ClubService) GetClubs(limit string, page string) ([]models.Club, *errors.Error) {
 	limitAsInt, err := utilities.ValidateNonNegative(limit)
-
 	if err != nil {
 		return nil, &errors.FailedToValidateLimit
 	}
 
 	pageAsInt, err := utilities.ValidateNonNegative(page)
-
 	if err != nil {
 		return nil, &errors.FailedToValidatePage
 	}

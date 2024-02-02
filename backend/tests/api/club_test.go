@@ -283,7 +283,6 @@ func TestCreateClubFailsOnInvalidRecruitmentType(t *testing.T) {
 			"https://google.com",
 		},
 	)
-
 }
 
 func TestCreateClubFailsOnInvalidApplicationLink(t *testing.T) {
@@ -294,7 +293,6 @@ func TestCreateClubFailsOnInvalidApplicationLink(t *testing.T) {
 			"@#139081#$Ad_Axf",
 		},
 	)
-
 }
 
 func TestCreateClubFailsOnInvalidLogo(t *testing.T) {

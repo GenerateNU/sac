@@ -165,7 +165,7 @@ func TestCreateCategoryFailsIfNameIsMissing(t *testing.T) {
 func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
 	existingAppAssert, _ := CreateSampleCategory(t, nil)
 
-	var TestNumCategoriesRemainsAt1 = func(app TestApp, assert *assert.A, resp *http.Response) {
+	TestNumCategoriesRemainsAt1 := func(app TestApp, assert *assert.A, resp *http.Response) {
 		AssertNumCategoriesRemainsAtN(app, assert, resp, 1)
 	}
 
@@ -295,7 +295,7 @@ func TestUpdateCategoryWorks(t *testing.T) {
 		"name": "Arts & Crafts",
 	}
 
-	var AssertUpdatedCategoryBodyRespDB = func(app TestApp, assert *assert.A, resp *http.Response) {
+	AssertUpdatedCategoryBodyRespDB := func(app TestApp, assert *assert.A, resp *http.Response) {
 		AssertUpdatedCategoryBodyRespDB(app, assert, resp, &category)
 	}
 
@@ -317,7 +317,7 @@ func TestUpdateCategoryWorksWithSameDetails(t *testing.T) {
 	category := *SampleCategoryFactory()
 	category["id"] = uuid
 
-	var AssertSampleCategoryBodyRespDB = func(app TestApp, assert *assert.A, resp *http.Response) {
+	AssertSampleCategoryBodyRespDB := func(app TestApp, assert *assert.A, resp *http.Response) {
 		AssertUpdatedCategoryBodyRespDB(app, assert, resp, &category)
 	}
 

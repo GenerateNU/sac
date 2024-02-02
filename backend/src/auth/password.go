@@ -58,7 +58,6 @@ var (
 
 func ComparePasswordAndHash(password string, encodedHash string) (bool, error) {
 	p, salt, hash, err := decodeHash(encodedHash)
-
 	if err != nil {
 		return false, err
 	}
@@ -82,7 +81,6 @@ func decodeHash(encodedHash string) (p *params, salt []byte, hash []byte, err er
 	var version int
 
 	_, err = fmt.Sscanf(vals[2], "v=%d", &version)
-
 	if err != nil {
 		return nil, nil, nil, err
 	}
@@ -94,13 +92,11 @@ func decodeHash(encodedHash string) (p *params, salt []byte, hash []byte, err er
 	p = &params{}
 
 	_, err = fmt.Sscanf(vals[3], "m=%d,t=%d,p=%d", &p.memory, &p.iterations, &p.parallelism)
-
 	if err != nil {
 		return nil, nil, nil, err
 	}
 
 	salt, err = base64.RawStdEncoding.Strict().DecodeString(vals[4])
-
 	if err != nil {
 		return nil, nil, nil, err
 	}
@@ -108,7 +104,6 @@ func decodeHash(encodedHash string) (p *params, salt []byte, hash []byte, err er
 	p.saltLength = uint32(len(salt))
 
 	hash, err = base64.RawStdEncoding.Strict().DecodeString(vals[5])
-
 	if err != nil {
 		return nil, nil, nil, err
 	}

@@ -7,8 +7,10 @@ import (
 	"github.com/GenerateNU/sac/cli/utils"
 )
 
-var ROOT_DIR, _ = utils.GetRootDir()
-var FRONTEND_DIR = filepath.Join(ROOT_DIR, "/frontend")
-var BACKEND_DIR = filepath.Join(ROOT_DIR, "/backend/src")
-var CONFIG, _ = config.GetConfiguration(filepath.Join(ROOT_DIR, "/config"))
-var MIGRATION_FILE = filepath.Join(BACKEND_DIR, "/migrations/data.sql")
+var (
+	ROOT_DIR, _    = utils.GetRootDir()
+	FRONTEND_DIR   = filepath.Join(ROOT_DIR, "/frontend")
+	BACKEND_DIR    = filepath.Join(ROOT_DIR, "/backend/src")
+	CONFIG, _      = config.GetConfiguration(filepath.Join(ROOT_DIR, "/config"))
+	MIGRATION_FILE = filepath.Join(BACKEND_DIR, "/migrations/data.sql")
+)

@@ -5,6 +5,8 @@ import (
 	"strconv"
 
 	"github.com/GenerateNU/sac/backend/src/errors"
+	"github.com/GenerateNU/sac/backend/src/models"
+
 	"github.com/google/uuid"
 	"github.com/mcnijman/go-emailaddress"
 
@@ -18,6 +20,9 @@ func RegisterCustomValidators() *validator.Validate {
 	validate.RegisterValidation("password", validatePassword)
 	validate.RegisterValidation("mongo_url", validateMongoURL)
 	validate.RegisterValidation("s3_url", validateS3URL)
+	validate.RegisterValidation("contact_pointer", func(fl validator.FieldLevel) bool {
+		return validateContactPointer(validate, fl)
+	})
 
 	return validate
 }
@@ -52,9 +57,23 @@ func validateS3URL(fl validator.FieldLevel) bool {
 	return true
 }
 
+func validateContactPointer(validate *validator.Validate, fl validator.FieldLevel) bool {
+	contact, ok := fl.Parent().Interface().(models.Contact)
+
+	if !ok {
+		return false
+	}
+
+	switch contact.Type {
+	case models.Email:
+		return validate.Var(contact.Content, "email") == nil
+	default:
+		return validate.Var(contact.Content, "http_url") == nil
+	}
+}
+
 func ValidateID(id string) (*uuid.UUID, *errors.Error) {
 	idAsUUID, err := uuid.Parse(id)
-
 	if err != nil {
 		return nil, &errors.FailedToValidateID
 	}

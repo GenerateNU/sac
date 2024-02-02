@@ -13,17 +13,18 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func InsertDBCommand() *cli.Command {
+func InsertCommand() *cli.Command {
 	command := cli.Command{
-		Name:  "insert",
-		Usage: "Inserts mock data into the database",
+		Name:     "insert",
+		Category: "Database Operations",
+		Aliases:  []string{"i"},
+		Usage:    "Inserts mock data into the database",
 		Action: func(c *cli.Context) error {
 			if c.Args().Len() > 0 {
 				return cli.Exit("Invalid arguments", 1)
 			}
 
 			err := InsertDB()
-
 			if err != nil {
 				return cli.Exit(err.Error(), 1)
 			}
@@ -37,7 +38,6 @@ func InsertDBCommand() *cli.Command {
 
 func InsertDB() error {
 	db, err := sql.Open("postgres", CONFIG.Database.WithDb())
-
 	if err != nil {
 		return err
 	}
@@ -47,7 +47,6 @@ func InsertDB() error {
 	var exists bool
 
 	err = db.QueryRow("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' LIMIT 1);").Scan(&exists)
-
 	if err != nil {
 		return err
 	}

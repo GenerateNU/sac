@@ -134,7 +134,6 @@ func (u *UserService) CreateUserTags(id string, tagIDs models.CreateUserTagsBody
 
 	// Retrieve a list of valid tags from the ids:
 	tags, err := transactions.GetTagsByIDs(u.DB, tagIDs.Tags)
-
 	if err != nil {
 		return nil, err
 	}

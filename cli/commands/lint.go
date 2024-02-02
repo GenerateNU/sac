@@ -10,8 +10,9 @@ import (
 
 func LintCommand() *cli.Command {
 	command := cli.Command{
-		Name:  "lint",
-		Usage: "Runs linting tools",
+		Name:    "lint",
+		Aliases: []string{"l"},
+		Usage:   "Runs linting tools",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "frontend",

@@ -36,7 +36,7 @@ func (t *TagController) CreateTag(c *fiber.Ctx) error {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
-	dbTag, err := t.tagService.CreateTag(tagBody)
+	dbTag, err := t.tagService.CreateTag(c.Params("categoryID"), tagBody)
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -58,8 +58,7 @@ func (t *TagController) CreateTag(c *fiber.Ctx) error {
 // @Failure     500   {string}    string "failed to retrieve tag"
 // @Router		/api/v1/tags/{id}  [get]
 func (t *TagController) GetTag(c *fiber.Ctx) error {
-	tag, err := t.tagService.GetTag(c.Params("id"))
-
+	tag, err := t.tagService.GetTag(c.Params("categoryID"), c.Params("tagID"))
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -90,7 +89,7 @@ func (t *TagController) UpdateTag(c *fiber.Ctx) error {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
-	tag, err := t.tagService.UpdateTag(c.Params("id"), tagBody)
+	tag, err := t.tagService.UpdateTag(c.Params("categoryID"), c.Params("tagID"), tagBody)
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -111,7 +110,7 @@ func (t *TagController) UpdateTag(c *fiber.Ctx) error {
 // @Failure     500   {string}    string "failed to delete tag"
 // @Router		/api/v1/tags/{id}  [delete]
 func (t *TagController) DeleteTag(c *fiber.Ctx) error {
-	err := t.tagService.DeleteTag(c.Params("id"))
+	err := t.tagService.DeleteTag(c.Params("categoryID"), c.Params("tagID"))
 	if err != nil {
 		return err.FiberError(c)
 	}

@@ -79,7 +79,6 @@ const (
 )
 
 func GetConfiguration(path string) (Settings, error) {
-
 	var environment Environment
 	if env := os.Getenv("APP_ENVIRONMENT"); env != "" {
 		environment = Environment(env)

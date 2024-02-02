@@ -1,0 +1,63 @@
+name: CLI
+
+on:
+  push:
+    paths:
+      - "cli/**"
+      - ".github/workflows/cli.yml"
+  pull_request:
+    types: opened
+    paths:
+      - "cli/**"
+      - ".github/workflows/cli.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  format:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: "1.21"
+      - name: Cache Go Modules
+        uses: actions/cache@v3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Install gofumpt
+        run: go install mvdan.cc/gofumpt@latest
+      - name: Check code formatting
+        run: |
+          unformatted_files=$(gofumpt -l ./cli/)
+          if [ -n "$unformatted_files" ]; then
+            echo "Files not formatted:"
+            echo "$unformatted_files"
+            exit 1
+          fi
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: "1.21"
+      - name: Enforce linting
+        run: |
+          cd ./cli/ && lint_output=$(go vet ./...)
+          if [[ -n "$lint_output" ]]; then
+            echo "$lint_output"
+            echo "::error::Linting issues found"
+            exit 1
+          fi

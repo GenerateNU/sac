@@ -100,7 +100,7 @@ func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface, 
 	clubsID := clubs.Group("/:id")
 	clubsID.Use(middlewareService.ClubAuthorizeById)
 
-	clubsID.Get("/", clubController.GetClub) 
+	clubsID.Get("/", clubController.GetClub)
 	clubsID.Patch("/", middlewareService.Authorize(types.ClubWrite), clubController.UpdateClub)
 	clubsID.Delete("/", middlewareService.Authorize(types.ClubDelete), clubController.DeleteClub)
 }
@@ -116,7 +116,7 @@ func authRoutes(router fiber.Router, authService services.AuthServiceInterface) 
 	auth.Get("/me", authController.Me)
 }
 
-func categoryRoutes(router fiber.Router, categoryService services.CategoryServiceInterface) {
+func categoryRoutes(router fiber.Router, categoryService services.CategoryServiceInterface) fiber.Router {
 	categoryController := controllers.NewCategoryController(categoryService)
 
 	categories := router.Group("/categories")
@@ -126,15 +126,17 @@ func categoryRoutes(router fiber.Router, categoryService services.CategoryServic
 	categories.Get("/:id", categoryController.GetCategory)
 	categories.Delete("/:id", categoryController.DeleteCategory)
 	categories.Patch("/:id", categoryController.UpdateCategory)
+
+	return categories
 }
 
 func tagRoutes(router fiber.Router, tagService services.TagServiceInterface) {
 	tagController := controllers.NewTagController(tagService)
 
-	tags := router.Group("/tags")
+	tags := router.Group("/:categoryID/tags")
 
-	tags.Get("/:id", tagController.GetTag)
+	tags.Get("/:tagID", tagController.GetTag)
 	tags.Post("/", tagController.CreateTag)
-	tags.Patch("/:id", tagController.UpdateTag)
-	tags.Delete("/:id", tagController.DeleteTag)
+	tags.Patch("/:tagID", tagController.UpdateTag)
+	tags.Delete("/:tagID", tagController.DeleteTag)
 }
