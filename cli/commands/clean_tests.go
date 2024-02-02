@@ -12,10 +12,10 @@ import (
 
 func ClearDBCommand() *cli.Command {
 	command := cli.Command{
-		Name:  "clean",
+		Name:     "clean",
 		Category: "Database Operations",
-		Aliases: []string{"c"},
-		Usage: "Remove databases used for testing",
+		Aliases:  []string{"c"},
+		Usage:    "Remove databases used for testing",
 		Action: func(c *cli.Context) error {
 			if c.Args().Len() > 0 {
 				return cli.Exit("Invalid arguments", 1)

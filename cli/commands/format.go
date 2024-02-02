@@ -10,8 +10,8 @@ import (
 
 func FormatCommand() *cli.Command {
 	command := cli.Command{
-		Name:  "format",
-		Usage: "Runs formatting tools",
+		Name:    "format",
+		Usage:   "Runs formatting tools",
 		Aliases: []string{"f"},
 		Flags: []cli.Flag{
 			&cli.StringFlag{

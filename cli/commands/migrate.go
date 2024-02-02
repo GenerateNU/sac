@@ -9,8 +9,8 @@ import (
 
 func MigrateCommand() *cli.Command {
 	command := cli.Command{
-		Name:  "migrate",
-		Usage: "Migrate the database, creating tables and relationships",
+		Name:     "migrate",
+		Usage:    "Migrate the database, creating tables and relationships",
 		Category: "Database Operations",
 		Action: func(c *cli.Context) error {
 			if c.Args().Len() > 0 {

@@ -10,9 +10,9 @@ import (
 
 func TestCommand() *cli.Command {
 	command := cli.Command{
-		Name:  "test",
+		Name:    "test",
 		Aliases: []string{"t"},
-		Usage: "Runs tests",
+		Usage:   "Runs tests",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "frontend",
