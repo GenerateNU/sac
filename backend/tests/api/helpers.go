@@ -63,7 +63,7 @@ func spawnApp() (TestApp, error) {
 	}
 
 	return TestApp{
-		App:           server.Init(connectionWithDB),
+		App:           server.Init(connectionWithDB, configuration),
 		Address:       fmt.Sprintf("http://%s", listener.Addr().String()),
 		Conn:          connectionWithDB,
 		Settings:      configuration,

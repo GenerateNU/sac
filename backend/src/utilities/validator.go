@@ -8,12 +8,14 @@ import (
 	"github.com/GenerateNU/sac/backend/src/models"
 
 	"github.com/google/uuid"
+	"github.com/mcnijman/go-emailaddress"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/mcnijman/go-emailaddress"
 )
 
-func RegisterCustomValidators(validate *validator.Validate) {
+func RegisterCustomValidators() *validator.Validate {
+	validate := validator.New(validator.WithRequiredStructEnabled())
+
 	validate.RegisterValidation("neu_email", validateEmail)
 	validate.RegisterValidation("password", validatePassword)
 	validate.RegisterValidation("mongo_url", validateMongoURL)
@@ -21,6 +23,8 @@ func RegisterCustomValidators(validate *validator.Validate) {
 	validate.RegisterValidation("contact_pointer", func(fl validator.FieldLevel) bool {
 		return validateContactPointer(validate, fl)
 	})
+
+	return validate
 }
 
 func validateEmail(fl validator.FieldLevel) bool {

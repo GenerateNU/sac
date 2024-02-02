@@ -10,6 +10,21 @@ import (
 	"gorm.io/gorm"
 )
 
+func GetAdminIDs(db *gorm.DB, clubID uuid.UUID) ([]uuid.UUID, *errors.Error) {
+	var adminIDs []models.Membership
+
+	if err := db.Where("club_id = ? AND membership_type = ?", clubID, models.MembershipTypeAdmin).Find(&adminIDs).Error; err != nil {
+		return nil, &errors.FailedtoGetAdminIDs
+	}
+
+	var adminUUIDs []uuid.UUID
+	for _, adminID := range adminIDs {
+		adminUUIDs = append(adminUUIDs, adminID.ClubID)
+	}
+
+	return adminUUIDs, nil
+}
+
 func GetClubs(db *gorm.DB, limit int, offset int) ([]models.Club, *errors.Error) {
 	var clubs []models.Club
 	result := db.Limit(limit).Offset(offset).Find(&clubs)

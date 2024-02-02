@@ -28,6 +28,10 @@ type UserService struct {
 	Validate *validator.Validate
 }
 
+func NewUserService(db *gorm.DB, validate *validator.Validate) *UserService {
+	return &UserService{DB: db, Validate: validate}
+}
+
 func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models.User, *errors.Error) {
 	if err := u.Validate.Struct(userBody); err != nil {
 		return nil, &errors.FailedToValidateUser

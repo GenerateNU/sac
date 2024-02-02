@@ -1,10 +1,12 @@
 package server
 
 import (
+	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/controllers"
+	"github.com/GenerateNU/sac/backend/src/middleware"
 	"github.com/GenerateNU/sac/backend/src/services"
+	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
-	"github.com/go-playground/validator/v10"
 	"github.com/goccy/go-json"
 
 	"github.com/gofiber/fiber/v2"
@@ -23,21 +25,21 @@ import (
 // @contact.email	oduneye.d@northeastern.edu and ladley.g@northeastern.edu
 // @host 127.0.0.1:8080
 // @BasePath /
-func Init(db *gorm.DB) *fiber.App {
+func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 	app := newFiberApp()
 
-	validate := validator.New(validator.WithRequiredStructEnabled())
-	// MARK: Custom validator tags can be registered here.
-	utilities.RegisterCustomValidators(validate)
-
-	utilityRoutes(app)
+	validate := utilities.RegisterCustomValidators()
+	middlewareService := middleware.NewMiddlewareService(db, validate)
 
 	apiv1 := app.Group("/api/v1")
+	apiv1.Use(middlewareService.Authenticate)
 
-	userRoutes(apiv1, &services.UserService{DB: db, Validate: validate})
-	clubRoutes(apiv1, &services.ClubService{DB: db, Validate: validate})
-	categoryRouter := categoryRoutes(apiv1, &services.CategoryService{DB: db, Validate: validate})
-	tagRoutes(categoryRouter, &services.TagService{DB: db, Validate: validate})
+	utilityRoutes(app)
+	authRoutes(apiv1, services.NewAuthService(db, validate), settings.Auth)
+	userRoutes(apiv1, services.NewUserService(db, validate), middlewareService)
+	clubRoutes(apiv1, services.NewClubService(db, validate), middlewareService)
+	categoryRouter := categoryRoutes(apiv1, services.NewCategoryService(db, validate))
+	tagRoutes(categoryRouter, services.NewTagService(db, validate))
 
 	return app
 }
@@ -48,7 +50,10 @@ func newFiberApp() *fiber.App {
 		JSONDecoder: json.Unmarshal,
 	})
 
-	app.Use(cors.New())
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     "*",
+		AllowCredentials: true,
+	}))
 	app.Use(requestid.New())
 	app.Use(logger.New(logger.Config{
 		Format: "[${time}] ${ip}:${port} ${pid} ${locals:requestid} ${status} - ${latency} ${method} ${path}\n",
@@ -64,12 +69,24 @@ func utilityRoutes(router fiber.Router) {
 	})
 }
 
-func userRoutes(router fiber.Router, userService services.UserServiceInterface) {
+func userRoutes(router fiber.Router, userService services.UserServiceInterface, middlewareService middleware.MiddlewareInterface) {
 	userController := controllers.NewUserController(userService)
 
+	// api/v1/users/*
 	users := router.Group("/users")
-
 	users.Post("/", userController.CreateUser)
+	users.Get("/", middlewareService.Authorize(types.UserReadAll), userController.GetUsers)
+
+	// api/v1/users/:id/*
+	usersID := users.Group("/:id")
+	usersID.Use(middlewareService.UserAuthorizeById)
+
+	usersID.Get("/", middlewareService.Authorize(types.UserRead), userController.GetUser)
+	usersID.Patch("/", middlewareService.Authorize(types.UserWrite), userController.UpdateUser)
+	usersID.Delete("/", middlewareService.Authorize(types.UserDelete), userController.DeleteUser)
+
+	usersID.Post("/tags", userController.CreateUserTags)
+	usersID.Get("/tags", userController.GetUserTags)
 	users.Get("/", userController.GetUsers)
 	users.Get("/:id", userController.GetUser)
 	users.Patch("/:id", userController.UpdateUser)
@@ -81,16 +98,32 @@ func userRoutes(router fiber.Router, userService services.UserServiceInterface) 
 	userTags.Get("/", userController.GetUserTags)
 }
 
-func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface) {
+func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface, middlewareService middleware.MiddlewareInterface) {
 	clubController := controllers.NewClubController(clubService)
 
 	clubs := router.Group("/clubs")
 
-	clubs.Get("/", clubController.GetAllClubs)
+	clubs.Get("/", middlewareService.Authorize(types.ClubReadAll), clubController.GetAllClubs)
 	clubs.Post("/", clubController.CreateClub)
-	clubs.Get("/:id", clubController.GetClub)
-	clubs.Patch("/:id", clubController.UpdateClub)
-	clubs.Delete("/:id", clubController.DeleteClub)
+
+	// api/v1/clubs/:id/*
+	clubsID := clubs.Group("/:id")
+	clubsID.Use(middlewareService.ClubAuthorizeById)
+
+	clubsID.Get("/", clubController.GetClub)
+	clubsID.Patch("/", middlewareService.Authorize(types.ClubWrite), clubController.UpdateClub)
+	clubsID.Delete("/", middlewareService.Authorize(types.ClubDelete), clubController.DeleteClub)
+}
+
+func authRoutes(router fiber.Router, authService services.AuthServiceInterface, authSettings config.AuthSettings) {
+	authController := controllers.NewAuthController(authService, authSettings)
+
+	// api/v1/auth/*
+	auth := router.Group("/auth")
+	auth.Post("/login", authController.Login)
+	auth.Get("/logout", authController.Logout)
+	auth.Get("/refresh", authController.Refresh)
+	auth.Get("/me", authController.Me)
 }
 
 func categoryRoutes(router fiber.Router, categoryService services.CategoryServiceInterface) fiber.Router {

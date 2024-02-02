@@ -12,6 +12,7 @@ type Settings struct {
 	Application ApplicationSettings `yaml:"application"`
 	Database    DatabaseSettings    `yaml:"database"`
 	SuperUser   SuperUserSettings   `yaml:"superuser"`
+	Auth        AuthSettings        `yaml:"authsecret"`
 }
 
 type ProductionSettings struct {
@@ -61,6 +62,13 @@ func (s *DatabaseSettings) WithDb() string {
 
 type SuperUserSettings struct {
 	Password string `yaml:"password"`
+}
+
+type AuthSettings struct {
+	AccessToken        string `yaml:"accesstoken"`
+	RefreshToken       string `yaml:"refreshtoken"`
+	AccessTokenExpiry  uint   `yaml:"accesstokenexpiry"`
+	RefreshTokenExpiry uint   `yaml:"refreshtokenexpiry"`
 }
 
 type Environment string
@@ -113,6 +121,20 @@ func GetConfiguration(path string) (Settings, error) {
 		applicationPrefix := fmt.Sprintf("%sAPPLICATION__", appPrefix)
 		dbPrefix := fmt.Sprintf("%sDATABASE__", appPrefix)
 		superUserPrefix := fmt.Sprintf("%sSUPERUSER__", appPrefix)
+		authSecretPrefix := fmt.Sprintf("%sAUTHSECRET__", appPrefix)
+
+		authAccessExpiry := os.Getenv(fmt.Sprintf("%sACCESS_TOKEN_EXPIRY", authSecretPrefix))
+		authRefreshExpiry := os.Getenv(fmt.Sprintf("%sREFRESH_TOKEN_EXPIRY", authSecretPrefix))
+
+		authAccessExpiryInt, err := strconv.ParseUint(authAccessExpiry, 10, 16)
+		if err != nil {
+			return Settings{}, fmt.Errorf("failed to parse access token expiry: %w", err)
+		}
+
+		authRefreshExpiryInt, err := strconv.ParseUint(authRefreshExpiry, 10, 16)
+		if err != nil {
+			return Settings{}, fmt.Errorf("failed to parse refresh token expiry: %w", err)
+		}
 
 		portStr := os.Getenv(fmt.Sprintf("%sPORT", appPrefix))
 		portInt, err := strconv.ParseUint(portStr, 10, 16)
@@ -136,6 +158,12 @@ func GetConfiguration(path string) (Settings, error) {
 			},
 			SuperUser: SuperUserSettings{
 				Password: os.Getenv(fmt.Sprintf("%sPASSWORD", superUserPrefix)),
+			},
+			Auth: AuthSettings{
+				AccessToken:        os.Getenv(fmt.Sprintf("%sACCESS_TOKEN", authSecretPrefix)),
+				RefreshToken:       os.Getenv(fmt.Sprintf("%sREFRESH_TOKEN", authSecretPrefix)),
+				AccessTokenExpiry:  uint(authAccessExpiryInt),
+				RefreshTokenExpiry: uint(authRefreshExpiryInt),
 			},
 		}, nil
 	}

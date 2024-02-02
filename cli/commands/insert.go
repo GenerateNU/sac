@@ -1,10 +1,13 @@
 package commands
 
 import (
+	"bytes"
 	"database/sql"
+	"errors"
 	"fmt"
 	"os/exec"
 	"strconv"
+	"strings"
 
 	_ "github.com/lib/pq"
 	"github.com/urfave/cli/v2"
@@ -64,9 +67,16 @@ func InsertDB() error {
 
 	insertCmd := exec.Command("psql", "-h", CONFIG.Database.Host, "-p", strconv.Itoa(int(CONFIG.Database.Port)), "-U", CONFIG.Database.Username, "-d", CONFIG.Database.DatabaseName, "-a", "-f", MIGRATION_FILE)
 
+	var output bytes.Buffer
+	insertCmd.Stdout = &output
+	insertCmd.Stderr = &output
+
 	if err := insertCmd.Run(); err != nil {
-		fmt.Println(insertCmd.String())
 		return fmt.Errorf("error inserting data: %w", err)
+	}
+
+	if strings.Contains(output.String(), "ROLLBACK") {
+		return errors.New("insertion failed, rolling back")
 	}
 
 	fmt.Println("Data inserted successfully.")

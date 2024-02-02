@@ -23,6 +23,10 @@ type ClubService struct {
 	Validate *validator.Validate
 }
 
+func NewClubService(db *gorm.DB, validate *validator.Validate) *ClubService {
+	return &ClubService{DB: db, Validate: validate}
+}
+
 func (c *ClubService) GetClubs(limit string, page string) ([]models.Club, *errors.Error) {
 	limitAsInt, err := utilities.ValidateNonNegative(limit)
 	if err != nil {
