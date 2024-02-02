@@ -35,12 +35,18 @@ func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 	apiv1.Use(middlewareService.Authenticate)
 
 	utilityRoutes(app)
+
 	authRoutes(apiv1, services.NewAuthService(db, validate), settings.Auth)
+
 	userRouter := userRoutes(apiv1, services.NewUserService(db, validate), middlewareService)
-	userTagRouter(userRouter, services.NewUserTagService(db, validate))
-	clubRoutes(apiv1, services.NewClubService(db, validate), middlewareService)
-	categoryRouter := categoryRoutes(apiv1, services.NewCategoryService(db, validate))
+	userTagRoutes(userRouter, services.NewUserTagService(db, validate))
+	userFollowerRoutes(userRouter, services.NewUserFollowerService(db, validate))
+
+	clubRouter := clubRoutes(apiv1, services.NewClubService(db, validate), middlewareService)
+	clubFollowerRoutes(clubRouter, services.NewClubFollowerService(db, validate))
+
 	tagRoutes(apiv1, services.NewTagService(db, validate))
+	categoryRouter := categoryRoutes(apiv1, services.NewCategoryService(db, validate))
 	categoryTagRoutes(categoryRouter, services.NewCategoryTagService(db, validate))
 
 	return app
@@ -92,18 +98,20 @@ func userRoutes(router fiber.Router, userService services.UserServiceInterface, 
 	users.Patch("/:id", userController.UpdateUser)
 	users.Delete("/:id", userController.DeleteUser)
 
-	users.Put("/:user_id/follower/:club_id", userController.CreateFollowing)
-	users.Delete("/:user_id/follower/:club_id", userController.DeleteFollowing)
-	users.Get("/:user_id/follower", userController.GetAllFollowing)
-
-	userTags := users.Group("/:uid/tags")
-
-	userTags.Post("/", userController.CreateUserTags)
-	userTags.Get("/", userController.GetUserTags)
 	return users
 }
 
-func userTagRouter(router fiber.Router, userTagService services.UserTagServiceInterface) {
+func userFollowerRoutes(router fiber.Router, userFollowerService services.UserFollowerServiceInterface) {
+	userFollowerController := controllers.NewUserFollowerController(userFollowerService)
+
+	userFollower := router.Group("/:userID/follower")
+
+	userFollower.Put("/:clubID", userFollowerController.CreateFollowing)
+	userFollower.Delete("/:clubID", userFollowerController.DeleteFollowing)
+	userFollower.Get("/", userFollowerController.GetAllFollowing)
+}
+
+func userTagRoutes(router fiber.Router, userTagService services.UserTagServiceInterface) {
 	userTagController := controllers.NewUserTagController(userTagService)
 
 	userTags := router.Group("/:userID/tags")
@@ -112,7 +120,7 @@ func userTagRouter(router fiber.Router, userTagService services.UserTagServiceIn
 	userTags.Get("/", userTagController.GetUserTags)
 }
 
-func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface, middlewareService middleware.MiddlewareInterface) {
+func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface, middlewareService middleware.MiddlewareInterface) fiber.Router {
 	clubController := controllers.NewClubController(clubService)
 
 	clubs := router.Group("/clubs")
@@ -130,7 +138,14 @@ func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface, 
 	clubs.Get("/:id", clubController.GetClub)
 	clubs.Patch("/:id", clubController.UpdateClub)
 	clubs.Delete("/:id", clubController.DeleteClub)
-	clubs.Get("/:id/follower", clubController.GetUserFollowersForClub)
+
+	return clubs
+}
+
+func clubFollowerRoutes(router fiber.Router, clubFollowerService services.ClubFollowerServiceInterface) {
+	clubFollowerController := controllers.NewClubFollowerController(clubFollowerService)
+
+	router.Get("/:userID/follower", clubFollowerController.GetUserFollowingClubs)
 }
 
 func authRoutes(router fiber.Router, authService services.AuthServiceInterface, authSettings config.AuthSettings) {

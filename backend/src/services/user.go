@@ -21,9 +21,6 @@ type UserServiceInterface interface {
 	DeleteUser(id string) *errors.Error
 	GetUserTags(id string) ([]models.Tag, *errors.Error)
 	CreateUserTags(id string, tagIDs models.CreateUserTagsBody) ([]models.Tag, *errors.Error)
-	CreateFollowing(userId string, clubId string) *errors.Error
-	DeleteFollowing(userId string, clubId string) *errors.Error
-	GetFollowing(userId string) ([]models.Club, *errors.Error)
 }
 
 type UserService struct {
@@ -137,44 +134,10 @@ func (u *UserService) CreateUserTags(id string, tagIDs models.CreateUserTagsBody
 
 	// Retrieve a list of valid tags from the ids:
 	tags, err := transactions.GetTagsByIDs(u.DB, tagIDs.Tags)
-
 	if err != nil {
 		return nil, err
 	}
 
 	// Update the user to reflect the new tags:
 	return transactions.CreateUserTags(u.DB, *idAsUUID, tags)
-}
-
-func (u *UserService) CreateFollowing(userId string, clubId string) *errors.Error {
-	userIdAsUUID, err := utilities.ValidateID(userId)
-	if err != nil {
-		return err
-	}
-	clubIdAsUUID, err := utilities.ValidateID(clubId)
-	if err != nil {
-		return err
-	}
-	return transactions.CreateFollowing(u.DB, *userIdAsUUID, *clubIdAsUUID)
-}
-
-func (u *UserService) DeleteFollowing(userId string, clubId string) *errors.Error {
-	userIdAsUUID, err := utilities.ValidateID(userId)
-	if err != nil {
-		return err
-	}
-	clubIdAsUUID, err := utilities.ValidateID(clubId)
-	if err != nil {
-		return err
-	}
-	return transactions.DeleteFollowing(u.DB, *userIdAsUUID, *clubIdAsUUID)
-}
-
-func (u *UserService) GetFollowing(userId string) ([]models.Club, *errors.Error) {
-	userIdAsUUID, err := utilities.ValidateID(userId)
-	if err != nil {
-		return nil, err
-	}
-
-	return transactions.GetClubFollowing(u.DB, *userIdAsUUID)
 }
