@@ -19,6 +19,11 @@ type UserServiceInterface interface {
 	GetUser(id string) (*models.User, *errors.Error)
 	UpdateUser(id string, userBody models.UpdateUserRequestBody) (*models.User, *errors.Error)
 	DeleteUser(id string) *errors.Error
+	GetUserTags(id string) ([]models.Tag, *errors.Error)
+	CreateUserTags(id string, tagIDs models.CreateUserTagsBody) ([]models.Tag, *errors.Error)
+	CreateFollowing(userId string, clubId string) *errors.Error
+	DeleteFollowing(userId string, clubId string) *errors.Error
+	GetFollowing(userId string) ([]models.Club, *errors.Error)
 }
 
 type UserService struct {
@@ -108,4 +113,68 @@ func (u *UserService) DeleteUser(id string) *errors.Error {
 	}
 
 	return transactions.DeleteUser(u.DB, *idAsUUID)
+}
+
+func (u *UserService) GetUserTags(id string) ([]models.Tag, *errors.Error) {
+	idAsUUID, err := utilities.ValidateID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return transactions.GetUserTags(u.DB, *idAsUUID)
+}
+
+func (u *UserService) CreateUserTags(id string, tagIDs models.CreateUserTagsBody) ([]models.Tag, *errors.Error) {
+	// Validate the id:
+	idAsUUID, err := utilities.ValidateID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := u.Validate.Struct(tagIDs); err != nil {
+		return nil, &errors.FailedToValidateUserTags
+	}
+
+	// Retrieve a list of valid tags from the ids:
+	tags, err := transactions.GetTagsByIDs(u.DB, tagIDs.Tags)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Update the user to reflect the new tags:
+	return transactions.CreateUserTags(u.DB, *idAsUUID, tags)
+}
+
+func (u *UserService) CreateFollowing(userId string, clubId string) *errors.Error {
+	userIdAsUUID, err := utilities.ValidateID(userId)
+	if err != nil {
+		return err
+	}
+	clubIdAsUUID, err := utilities.ValidateID(clubId)
+	if err != nil {
+		return err
+	}
+	return transactions.CreateFollowing(u.DB, *userIdAsUUID, *clubIdAsUUID)
+}
+
+func (u *UserService) DeleteFollowing(userId string, clubId string) *errors.Error {
+	userIdAsUUID, err := utilities.ValidateID(userId)
+	if err != nil {
+		return err
+	}
+	clubIdAsUUID, err := utilities.ValidateID(clubId)
+	if err != nil {
+		return err
+	}
+	return transactions.DeleteFollowing(u.DB, *userIdAsUUID, *clubIdAsUUID)
+}
+
+func (u *UserService) GetFollowing(userId string) ([]models.Club, *errors.Error) {
+	userIdAsUUID, err := utilities.ValidateID(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	return transactions.GetClubFollowing(u.DB, *userIdAsUUID)
 }

@@ -43,4 +43,8 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to compute password hash",
 	}
+	FailedToGetUserFollowing = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get user following",
+	}
 )

@@ -92,6 +92,14 @@ func userRoutes(router fiber.Router, userService services.UserServiceInterface, 
 	users.Patch("/:id", userController.UpdateUser)
 	users.Delete("/:id", userController.DeleteUser)
 
+	users.Put("/:user_id/follower/:club_id", userController.CreateFollowing)
+	users.Delete("/:user_id/follower/:club_id", userController.DeleteFollowing)
+	users.Get("/:user_id/follower", userController.GetAllFollowing)
+
+	userTags := users.Group("/:uid/tags")
+
+	userTags.Post("/", userController.CreateUserTags)
+	userTags.Get("/", userController.GetUserTags)
 	return users
 }
 
@@ -119,6 +127,10 @@ func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface, 
 	clubsID.Get("/", clubController.GetClub)
 	clubsID.Patch("/", middlewareService.Authorize(types.ClubWrite), clubController.UpdateClub)
 	clubsID.Delete("/", middlewareService.Authorize(types.ClubDelete), clubController.DeleteClub)
+	clubs.Get("/:id", clubController.GetClub)
+	clubs.Patch("/:id", clubController.UpdateClub)
+	clubs.Delete("/:id", clubController.DeleteClub)
+	clubs.Get("/:id/follower", clubController.GetUserFollowersForClub)
 }
 
 func authRoutes(router fiber.Router, authService services.AuthServiceInterface, authSettings config.AuthSettings) {

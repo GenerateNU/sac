@@ -75,3 +75,13 @@ func (l *ClubController) DeleteClub(c *fiber.Ctx) error {
 
 	return c.SendStatus(fiber.StatusNoContent)
 }
+
+func (l *ClubController) GetUserFollowersForClub(c *fiber.Ctx) error {
+
+	clubs, err := l.clubService.GetUserFollowersForClub(c.Params("id"))
+	if err != nil {
+		return err.FiberError(c)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(&clubs)
+}
