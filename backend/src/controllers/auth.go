@@ -74,7 +74,7 @@ func (a *AuthController) Login(c *fiber.Ctx) error {
 		return err.FiberError(c)
 	}
 
-	accessToken, refreshToken, err := auth.CreateTokenPair(user.ID.String(), string(user.Role), a.AuthSettings.AccessTokenExpiry, a.AuthSettings.RefreshTokenExpiry)
+	accessToken, refreshToken, err := auth.CreateTokenPair(user.ID.String(), string(user.Role), a.AuthSettings)
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -112,7 +112,7 @@ func (a *AuthController) Refresh(c *fiber.Ctx) error {
 		return err.FiberError(c)
 	}
 
-	accessToken, err := auth.RefreshAccessToken(refreshTokenValue, string(*role), a.AuthSettings.AccessTokenExpiry)
+	accessToken, err := auth.RefreshAccessToken(refreshTokenValue, string(*role), a.AuthSettings.AccessTokenExpiry, a.AuthSettings.AccessToken)
 	if err != nil {
 		return err.FiberError(c)
 	}

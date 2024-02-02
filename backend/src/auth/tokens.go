@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/GenerateNU/sac/backend/src/config"
@@ -11,13 +12,13 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-func CreateTokenPair(id string, role string, accessExpiresAfter uint, refreshExpiresAfter uint) (*string, *string, *errors.Error) {
-	accessToken, catErr := CreateAccessToken(id, role, accessExpiresAfter)
+func CreateTokenPair(id string, role string, authSettings config.AuthSettings) (*string, *string, *errors.Error) {
+	accessToken, catErr := CreateAccessToken(id, role, authSettings.AccessTokenExpiry, authSettings.AccessToken)
 	if catErr != nil {
 		return nil, nil, catErr
 	}
 
-	refreshToken, crtErr := CreateRefreshToken(id, refreshExpiresAfter)
+	refreshToken, crtErr := CreateRefreshToken(id, authSettings.RefreshTokenExpiry, authSettings.RefreshToken)
 	if crtErr != nil {
 		return nil, nil, crtErr
 	}
@@ -26,12 +27,10 @@ func CreateTokenPair(id string, role string, accessExpiresAfter uint, refreshExp
 }
 
 // CreateAccessToken creates a new access token for the user
-func CreateAccessToken(id string, role string, accessExpiresAfter uint) (*string, *errors.Error) {
+func CreateAccessToken(id string, role string, accessExpiresAfter uint, accessTokenSecret string) (*string, *errors.Error) {
 	if id == "" || role == "" {
 		return nil, &errors.FailedToCreateAccessToken
 	}
-
-	var settings config.Settings
 
 	accessTokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, &types.CustomClaims{
 		StandardClaims: jwt.StandardClaims{
@@ -42,7 +41,7 @@ func CreateAccessToken(id string, role string, accessExpiresAfter uint) (*string
 		Role: role,
 	})
 
-	accessToken, err := SignToken(accessTokenClaims, settings.Auth.AccessToken)
+	accessToken, err := SignToken(accessTokenClaims, accessTokenSecret)
 	if err != nil {
 		return nil, err
 	}
@@ -51,12 +50,10 @@ func CreateAccessToken(id string, role string, accessExpiresAfter uint) (*string
 }
 
 // CreateRefreshToken creates a new refresh token for the user
-func CreateRefreshToken(id string, refreshExpiresAfter uint) (*string, *errors.Error) {
+func CreateRefreshToken(id string, refreshExpiresAfter uint, refreshTokenSecret string) (*string, *errors.Error) {
 	if id == "" {
 		return nil, &errors.FailedToCreateRefreshToken
 	}
-
-	var settings config.Settings
 
 	refreshTokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, &jwt.StandardClaims{
 		IssuedAt:  time.Now().Unix(),
@@ -64,7 +61,7 @@ func CreateRefreshToken(id string, refreshExpiresAfter uint) (*string, *errors.E
 		ExpiresAt: time.Now().Add(time.Hour * 24 * time.Duration(refreshExpiresAfter)).Unix(),
 	})
 
-	refreshToken, err := SignToken(refreshTokenClaims, settings.Auth.RefreshToken)
+	refreshToken, err := SignToken(refreshTokenClaims, refreshTokenSecret)
 	if err != nil {
 		return nil, err
 	}
@@ -74,6 +71,7 @@ func CreateRefreshToken(id string, refreshExpiresAfter uint) (*string, *errors.E
 
 func SignToken(token *jwt.Token, secret string) (*string, *errors.Error) {
 	if token == nil || secret == "" {
+		fmt.Println(token)
 		return nil, &errors.FailedToSignToken
 	}
 
@@ -105,7 +103,7 @@ func ExpireCookie(name string) *fiber.Cookie {
 }
 
 // RefreshAccessToken refreshes the access token
-func RefreshAccessToken(refreshCookie string, role string, accessExpiresAfter uint) (*string, *errors.Error) {
+func RefreshAccessToken(refreshCookie string, role string, accessExpiresAfter uint, accessTokenSecret string) (*string, *errors.Error) {
 	// Parse the refresh token
 	refreshToken, err := ParseRefreshToken(refreshCookie)
 	if err != nil {
@@ -119,7 +117,7 @@ func RefreshAccessToken(refreshCookie string, role string, accessExpiresAfter ui
 	}
 
 	// Create a new access token
-	accessToken, catErr := CreateAccessToken(claims.Issuer, role, accessExpiresAfter)
+	accessToken, catErr := CreateAccessToken(claims.Issuer, role, accessExpiresAfter, accessTokenSecret)
 	if catErr != nil {
 		return nil, &errors.FailedToCreateAccessToken
 	}
