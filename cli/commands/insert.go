@@ -10,9 +10,11 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func InsertDBCommand() *cli.Command {
+func InsertCommand() *cli.Command {
 	command := cli.Command{
 		Name:  "insert",
+		Category: "Database Operations",
+		Aliases: []string{"i"},
 		Usage: "Inserts mock data into the database",
 		Action: func(c *cli.Context) error {
 			if c.Args().Len() > 0 {

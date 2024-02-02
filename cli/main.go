@@ -7,7 +7,6 @@ import (
 	"github.com/GenerateNU/sac/cli/commands"
 	"github.com/urfave/cli/v2"
 )
-
 func main() {
 	app := &cli.App{
 		Name:  "sac-cli",
@@ -16,16 +15,17 @@ func main() {
 			commands.SwaggerCommand(),
 			commands.ClearDBCommand(),
 			commands.MigrateCommand(),
-			commands.ResetDBCommand(),
-			commands.InsertDBCommand(),
-			commands.DropDBCommand(),
+			commands.ResetCommand(),
+			commands.InsertCommand(),
+			commands.DropCommand(),
+			commands.ResetCommand(),
+			commands.DropCommand(),
 			commands.RunBackendCommand(),
 			commands.TestCommand(),   // TODO: frontend tests
 			commands.FormatCommand(), // TODO: frontend format
 			commands.LintCommand(),   // TODO: frontend lint
 		},
 	}
-
 	err := app.Run(os.Args)
 	if err != nil {
 		log.Fatal(err)

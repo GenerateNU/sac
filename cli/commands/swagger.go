@@ -10,6 +10,7 @@ import (
 func SwaggerCommand() *cli.Command {
 	command := cli.Command{
 		Name:  "swagger",
+		Aliases: []string{"swag"},
 		Usage: "Updates the swagger documentation",
 		Action: func(c *cli.Context) error {
 			if c.Args().Len() > 0 {
