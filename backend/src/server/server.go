@@ -38,8 +38,8 @@ func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 	authRoutes(apiv1, services.NewAuthService(db, validate), settings.Auth)
 	userRoutes(apiv1, services.NewUserService(db, validate), middlewareService)
 	clubRoutes(apiv1, services.NewClubService(db, validate), middlewareService)
-	categoryRoutes(apiv1, services.NewCategoryService(db, validate))
-	tagRoutes(apiv1, services.NewTagService(db, validate))
+	categoryRouter := categoryRoutes(apiv1, services.NewCategoryService(db, validate))
+	tagRoutes(categoryRouter, services.NewTagService(db, validate))
 
 	return app
 }
@@ -87,6 +87,15 @@ func userRoutes(router fiber.Router, userService services.UserServiceInterface, 
 
 	usersID.Post("/tags", userController.CreateUserTags)
 	usersID.Get("/tags", userController.GetUserTags)
+	users.Get("/", userController.GetUsers)
+	users.Get("/:id", userController.GetUser)
+	users.Patch("/:id", userController.UpdateUser)
+	users.Delete("/:id", userController.DeleteUser)
+
+	userTags := users.Group("/:uid/tags")
+
+	userTags.Post("/", userController.CreateUserTags)
+	userTags.Get("/", userController.GetUserTags)
 }
 
 func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface, middlewareService middleware.MiddlewareInterface) {
