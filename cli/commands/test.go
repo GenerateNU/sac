@@ -10,8 +10,9 @@ import (
 
 func TestCommand() *cli.Command {
 	command := cli.Command{
-		Name:  "test",
-		Usage: "Runs tests",
+		Name:    "test",
+		Aliases: []string{"t"},
+		Usage:   "Runs tests",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "frontend",
@@ -37,13 +38,10 @@ func TestCommand() *cli.Command {
 			folder := c.String("frontend")
 			runFrontend := folder != ""
 			runBackend := c.Bool("backend")
-
 			Test(folder, runFrontend, runBackend)
-
 			return nil
 		},
 	}
-
 	return &command
 }
 
@@ -69,7 +67,6 @@ func Test(folder string, runFrontend bool, runBackend bool) error {
 	}
 
 	wg.Wait()
-
 	return nil
 }
 
@@ -86,7 +83,6 @@ func BackendTest() error {
 	}
 
 	fmt.Println(string(out))
-
 	return nil
 }
 

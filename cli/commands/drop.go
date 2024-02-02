@@ -5,22 +5,38 @@ import (
 	"fmt"
 	"sync"
 
-	_ "github.com/lib/pq"
 	"github.com/urfave/cli/v2"
 )
 
-func DropDBCommand() *cli.Command {
+var dbMutex sync.Mutex
+
+func DropCommand() *cli.Command {
 	command := cli.Command{
-		Name:  "drop",
-		Usage: "Drops the database",
+		Name:     "drop",
+		Aliases:  []string{"d"},
+		Usage:    "Drop data with a migration or drops the entire database",
+		Category: "Database Operations",
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:  "data",
+				Usage: "Drop only data, not the entire database",
+			},
+		},
 		Action: func(c *cli.Context) error {
 			if c.Args().Len() > 0 {
 				return cli.Exit("Invalid arguments", 1)
 			}
 
-			err := DropDB()
-			if err != nil {
-				return cli.Exit(err.Error(), 1)
+			if c.Bool("data") {
+				err := DropData()
+				if err != nil {
+					return cli.Exit(err.Error(), 1)
+				}
+			} else {
+				err := DropDB()
+				if err != nil {
+					return cli.Exit(err.Error(), 1)
+				}
 			}
 
 			return nil
@@ -30,8 +46,53 @@ func DropDBCommand() *cli.Command {
 	return &command
 }
 
+func DropData() error {
+	fmt.Println("Clearing database")
+
+	dbMutex.Lock()
+	defer dbMutex.Unlock()
+
+	db, err := sql.Open("postgres", CONFIG.Database.WithDb())
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	rows, err := db.Query("SELECT tablename FROM pg_tables WHERE schemaname = 'public'")
+	if err != nil {
+		return fmt.Errorf("error retrieving tables: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var tablename string
+		if err := rows.Scan(&tablename); err != nil {
+			return fmt.Errorf("error scanning table name: %w", err)
+		}
+
+		deleteStmt := fmt.Sprintf("DELETE FROM \"%s\"", tablename)
+		_, err := db.Exec(deleteStmt)
+		if err != nil {
+			return fmt.Errorf("error deleting rows from table %s: %w", tablename, err)
+		}
+		fmt.Printf("Removed all rows from table %s\n", tablename)
+	}
+
+	if err := rows.Err(); err != nil {
+		return fmt.Errorf("error in rows handling: %w", err)
+	}
+
+	Migrate()
+
+	fmt.Println("All rows removed successfully.")
+	return nil
+}
+
 func DropDB() error {
 	fmt.Println("Dropping database")
+
+	dbMutex.Lock()
+	defer dbMutex.Unlock()
 
 	db, err := sql.Open("postgres", CONFIG.Database.WithDb())
 	if err != nil {
@@ -61,8 +122,6 @@ func DropDB() error {
 
 	defer rows.Close()
 
-	var wg sync.WaitGroup
-
 	fmt.Println("Dropping tables...")
 
 	for rows.Next() {
@@ -71,23 +130,18 @@ func DropDB() error {
 			return fmt.Errorf("error reading table name: %w", err)
 		}
 
-		wg.Add(1)
-		go func(table string) {
-			defer wg.Done()
-			dropStmt := fmt.Sprintf("DROP TABLE IF EXISTS \"%s\" CASCADE", table)
-			if _, err := db.Exec(dropStmt); err != nil {
-				fmt.Printf("Error dropping table %s: %v\n", table, err)
-			} else {
-				fmt.Printf("Dropped table %s\n", table)
-			}
-		}(tablename)
+		dropStmt := fmt.Sprintf("DROP TABLE IF EXISTS \"%s\" CASCADE", tablename)
+		if _, err := db.Exec(dropStmt); err != nil {
+			fmt.Printf("Error dropping table %s: %v\n", tablename, err)
+		} else {
+			fmt.Printf("Dropped table %s\n", tablename)
+		}
 	}
 
 	if err := rows.Err(); err != nil {
 		return fmt.Errorf("error in rows handling: %w", err)
 	}
 
-	wg.Wait()
 	fmt.Println("All tables dropped successfully.")
 	return nil
 }
