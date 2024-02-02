@@ -46,12 +46,11 @@ func (c *EventService) CreateEvent(eventBody models.CreateEventRequestBody) (*mo
 		return nil, &errors.FailedToValidateEvent
 	}
 
-	event, err := utilities.MapRequestToModel(eventBody, &models.UpdateEventRequestBody{})
+	event, err := utilities.MapRequestToModel(eventBody, &models.Event{})
 	if err != nil {
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	//TODO convert event from type models.UpdateEventRequestBody to models.Event before passing to transactions.CreateEvent
 	return transactions.CreateEvent(c.DB, *event)
 }
 
@@ -90,3 +89,5 @@ func (c *EventService) DeleteEvent(id string) *errors.Error {
 
 	return transactions.DeleteEvent(c.DB, *idAsUUID)
 }
+
+//TODO: CreateEventSeries, GetEventSeries, DeleteEventSeries

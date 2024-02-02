@@ -38,6 +38,7 @@ func Init(db *gorm.DB) *fiber.App {
 	clubRoutes(apiv1, &services.ClubService{DB: db, Validate: validate})
 	categoryRoutes(apiv1, &services.CategoryService{DB: db, Validate: validate})
 	tagRoutes(apiv1, &services.TagService{DB: db, Validate: validate})
+	eventRoutes(apiv1, &services.EventService{DB: db, Validate: validate})
 
 	return app
 }

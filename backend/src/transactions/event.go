@@ -21,7 +21,6 @@ func GetEvents(db *gorm.DB, limit int, offset int) ([]models.Event, *errors.Erro
 }
 
 // TODO get events by club id
-
 func GetEvent(db *gorm.DB, id uuid.UUID) (*models.Event, *errors.Error) {
 	var event models.Event
 	if err := db.First(&event, id).Error; err != nil {
@@ -34,7 +33,6 @@ func GetEvent(db *gorm.DB, id uuid.UUID) (*models.Event, *errors.Error) {
 
 	return &event, nil
 }
-
 
 func CreateEvent(db *gorm.DB, event models.Event) (*models.Event, *errors.Error) {
 	tx := db.Begin()
