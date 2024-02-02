@@ -73,6 +73,10 @@ func CreateRefreshToken(id string) (*string, *errors.Error) {
 }
 
 func SignToken(token *jwt.Token, secret string) (*string, *errors.Error) {
+	if token == nil || secret == "" {
+		return nil, &errors.FailedToSignToken
+	}
+	
 	tokenString, err := token.SignedString([]byte(secret))
 	if err != nil {
 		return nil, &errors.FailedToSignToken

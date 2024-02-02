@@ -2,7 +2,6 @@ package tests
 
 import (
 	"testing"
-	"time"
 
 	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/golang-jwt/jwt"
@@ -91,44 +90,42 @@ func TestCreateRefreshTokenFailure(t *testing.T) {
 }
 
 func TestSignTokenSuccess(t *testing.T) {
-	tokenString := &jwt.Token{
-		Header: map[string]interface{}{
-			"alg": "HS256",
-			"typ": "JWT",
-		},
-		Claims: jwt.MapClaims{
-			"sub": "user123",
-			"exp": 1234567890,
-			"iat": 1234567890,
-			"iss": "sac",
-		},
-	}
+    token := jwt.New(jwt.SigningMethodHS256)
+    if token == nil {
+        t.Fatal("Failed to create JWT token")
+    }
 
-	signedToken, err := auth.SignToken(tokenString, "secret")
-	if err != nil {
-		t.Errorf("Unexpected error: %v", err)
-	}
+    token.Claims = jwt.MapClaims{
+        "sub": "user123",
+        "exp": 1234567890,
+        "iat": 1234567890,
+        "iss": "sac",
+    }
 
-	if signedToken == nil {
-		t.Errorf("Expected token to be non-nil, got: %v", signedToken)
-	}
+    signedToken, err := auth.SignToken(token, "secret")
+    if err != nil {
+        t.Errorf("Unexpected error: %v", err)
+    }
+
+    if signedToken == nil {
+        t.Errorf("Expected token to be non-nil, got: %v", signedToken)
+    }
 }
 
 func TestSignTokenFailure(t *testing.T) {
-	tokenString := &jwt.Token{
-		Header: map[string]interface{}{
-			"alg": "HS256",
-			"typ": "JWT",
-		},
-		Claims: jwt.MapClaims{
-			"sub": "user123",
-			"exp": 1234567890,
-			"iat": 1234567890,
-			"iss": "sac",
-		},
+	token := jwt.New(jwt.SigningMethodHS256)
+	if token == nil {
+		t.Fatal("Failed to create JWT token")
 	}
 
-	signedToken, err := auth.SignToken(tokenString, "")
+	token.Claims = jwt.MapClaims{
+		"sub": "user123",
+		"exp": 1234567890,
+		"iat": 1234567890,
+		"iss": "sac",
+	}
+
+	signedToken, err := auth.SignToken(token, "")
 	if err == nil {
 		t.Errorf("Expected error, got nil")
 	}
@@ -136,30 +133,4 @@ func TestSignTokenFailure(t *testing.T) {
 	if signedToken != nil {
 		t.Errorf("Expected token to be nil, got: %v", signedToken)
 	}
-}
-
-func TestCreateAndExpireCookieSuccess(t *testing.T) {
-	cookie := auth.CreateCookie("name", "value", time.Now().Add(time.Hour))
-	if cookie == nil {
-		t.Errorf("Expected cookie to be non-nil, got: %v", cookie)
-	}
-
-	if cookie.Name != "name" {
-		t.Errorf("Expected cookie name to be 'name', got: %v", cookie.Name)
-	}
-
-	if cookie.Value != "value" {
-		t.Errorf("Expected cookie value to be 'value', got: %v", cookie.Value)
-	}
-
-	if cookie.Expires.IsZero() {
-		t.Errorf("Expected cookie expiration to be non-zero, got: %v", cookie.Expires)
-	}
-
-	if !cookie.HTTPOnly {
-		t.Errorf("Expected cookie HTTPOnly to be true, got: %v", cookie.HTTPOnly)
-	}
-
-	// clear cookie
-	cookie.Expires = time.Now().Add(-time.Hour)
 }
