@@ -36,10 +36,12 @@ func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 
 	utilityRoutes(app)
 	authRoutes(apiv1, services.NewAuthService(db, validate), settings.Auth)
-	userRoutes(apiv1, services.NewUserService(db, validate), middlewareService)
+	userRouter := userRoutes(apiv1, services.NewUserService(db, validate), middlewareService)
+	userTagRouter(userRouter, services.NewUserTagService(db, validate))
 	clubRoutes(apiv1, services.NewClubService(db, validate), middlewareService)
 	categoryRouter := categoryRoutes(apiv1, services.NewCategoryService(db, validate))
-	tagRoutes(categoryRouter, services.NewTagService(db, validate))
+	tagRoutes(apiv1, services.NewTagService(db, validate))
+	categoryTagRoutes(categoryRouter, services.NewCategoryTagService(db, validate))
 
 	return app
 }
@@ -69,7 +71,7 @@ func utilityRoutes(router fiber.Router) {
 	})
 }
 
-func userRoutes(router fiber.Router, userService services.UserServiceInterface, middlewareService middleware.MiddlewareInterface) {
+func userRoutes(router fiber.Router, userService services.UserServiceInterface, middlewareService middleware.MiddlewareInterface) fiber.Router {
 	userController := controllers.NewUserController(userService)
 
 	// api/v1/users/*
@@ -85,17 +87,21 @@ func userRoutes(router fiber.Router, userService services.UserServiceInterface, 
 	usersID.Patch("/", middlewareService.Authorize(types.UserWrite), userController.UpdateUser)
 	usersID.Delete("/", middlewareService.Authorize(types.UserDelete), userController.DeleteUser)
 
-	usersID.Post("/tags", userController.CreateUserTags)
-	usersID.Get("/tags", userController.GetUserTags)
 	users.Get("/", userController.GetUsers)
 	users.Get("/:id", userController.GetUser)
 	users.Patch("/:id", userController.UpdateUser)
 	users.Delete("/:id", userController.DeleteUser)
 
-	userTags := users.Group("/:uid/tags")
+	return users
+}
 
-	userTags.Post("/", userController.CreateUserTags)
-	userTags.Get("/", userController.GetUserTags)
+func userTagRouter(router fiber.Router, userTagService services.UserTagServiceInterface) {
+	userTagController := controllers.NewUserTagController(userTagService)
+
+	userTags := router.Group("/:userID/tags")
+
+	userTags.Post("/", userTagController.CreateUserTags)
+	userTags.Get("/", userTagController.GetUserTags)
 }
 
 func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface, middlewareService middleware.MiddlewareInterface) {
@@ -143,10 +149,19 @@ func categoryRoutes(router fiber.Router, categoryService services.CategoryServic
 func tagRoutes(router fiber.Router, tagService services.TagServiceInterface) {
 	tagController := controllers.NewTagController(tagService)
 
-	tags := router.Group("/:categoryID/tags")
+	tags := router.Group("/tags")
 
 	tags.Get("/:tagID", tagController.GetTag)
 	tags.Post("/", tagController.CreateTag)
 	tags.Patch("/:tagID", tagController.UpdateTag)
 	tags.Delete("/:tagID", tagController.DeleteTag)
+}
+
+func categoryTagRoutes(router fiber.Router, categoryTagService services.CategoryTagServiceInterface) {
+	categoryTagController := controllers.NewCategoryTagController(categoryTagService)
+
+	categoryTags := router.Group("/:categoryID/tags")
+
+	categoryTags.Get("/", categoryTagController.GetTagsByCategory)
+	categoryTags.Get("/:tagID", categoryTagController.GetTagByCategory)
 }

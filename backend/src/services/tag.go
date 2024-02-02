@@ -10,10 +10,10 @@ import (
 )
 
 type TagServiceInterface interface {
-	CreateTag(categoryID string, tagBody models.TagRequestBody) (*models.Tag, *errors.Error)
-	GetTag(categoryID string, tagID string) (*models.Tag, *errors.Error)
-	UpdateTag(categoryID string, tagID string, tagBody models.TagRequestBody) (*models.Tag, *errors.Error)
-	DeleteTag(categoryID string, tagID string) *errors.Error
+	CreateTag(tagBody models.TagRequestBody) (*models.Tag, *errors.Error)
+	GetTag(tagID string) (*models.Tag, *errors.Error)
+	UpdateTag(tagID string, tagBody models.TagRequestBody) (*models.Tag, *errors.Error)
+	DeleteTag(tagID string) *errors.Error
 }
 
 type TagService struct {
@@ -25,13 +25,7 @@ func NewTagService(db *gorm.DB, validate *validator.Validate) *TagService {
 	return &TagService{DB: db, Validate: validate}
 }
 
-func (t *TagService) CreateTag(categoryID string, tagBody models.TagRequestBody) (*models.Tag, *errors.Error) {
-	categoryIDAsUUID, idErr := utilities.ValidateID(categoryID)
-
-	if idErr != nil {
-		return nil, idErr
-	}
-
+func (t *TagService) CreateTag(tagBody models.TagRequestBody) (*models.Tag, *errors.Error) {
 	if err := t.Validate.Struct(tagBody); err != nil {
 		return nil, &errors.FailedToValidateTag
 	}
@@ -40,35 +34,21 @@ func (t *TagService) CreateTag(categoryID string, tagBody models.TagRequestBody)
 	if err != nil {
 		return nil, &errors.FailedToMapRequestToModel
 	}
-
-	tag.CategoryID = *categoryIDAsUUID
 
 	return transactions.CreateTag(t.DB, *tag)
 }
 
-func (t *TagService) GetTag(categoryID string, tagID string) (*models.Tag, *errors.Error) {
-	categoryIDAsUUID, idErr := utilities.ValidateID(categoryID)
-
-	if idErr != nil {
-		return nil, idErr
-	}
-
+func (t *TagService) GetTag(tagID string) (*models.Tag, *errors.Error) {
 	tagIDAsUUID, idErr := utilities.ValidateID(tagID)
 
 	if idErr != nil {
 		return nil, idErr
 	}
 
-	return transactions.GetTag(t.DB, *categoryIDAsUUID, *tagIDAsUUID)
+	return transactions.GetTag(t.DB, *tagIDAsUUID)
 }
 
-func (t *TagService) UpdateTag(categoryID string, tagID string, tagBody models.TagRequestBody) (*models.Tag, *errors.Error) {
-	categoryIDAsUUID, idErr := utilities.ValidateID(categoryID)
-
-	if idErr != nil {
-		return nil, idErr
-	}
-
+func (t *TagService) UpdateTag(tagID string, tagBody models.TagRequestBody) (*models.Tag, *errors.Error) {
 	tagIDAsUUID, idErr := utilities.ValidateID(tagID)
 
 	if idErr != nil {
@@ -84,23 +64,15 @@ func (t *TagService) UpdateTag(categoryID string, tagID string, tagBody models.T
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	tag.CategoryID = *categoryIDAsUUID
-
 	return transactions.UpdateTag(t.DB, *tagIDAsUUID, *tag)
 }
 
-func (t *TagService) DeleteTag(categoryID string, tagID string) *errors.Error {
-	categoryIDAsUUID, idErr := utilities.ValidateID(categoryID)
-
-	if idErr != nil {
-		return idErr
-	}
-
+func (t *TagService) DeleteTag(tagID string) *errors.Error {
 	tagIDAsUUID, idErr := utilities.ValidateID(tagID)
 
 	if idErr != nil {
 		return idErr
 	}
 
-	return transactions.DeleteTag(t.DB, *categoryIDAsUUID, *tagIDAsUUID)
+	return transactions.DeleteTag(t.DB, *tagIDAsUUID)
 }
