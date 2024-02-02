@@ -18,7 +18,7 @@ type EventServiceInterface interface {
 	DeleteEvent(id string) *errors.Error
 }
 
-type EvenService struct {
+type EventService struct {
 	DB       *gorm.DB
 	Validate *validator.Validate
 }
@@ -46,12 +46,13 @@ func (c *EventService) CreateEvent(eventBody models.CreateEventRequestBody) (*mo
 		return nil, &errors.FailedToValidateEvent
 	}
 
-	event, err := utilities.MapRequestToModel(eventBody, &models.Event{})
+	event, err := utilities.MapRequestToModel(eventBody, &models.UpdateEventRequestBody{})
 	if err != nil {
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	return transactions.CreateEvent(c.DB, eventBody.UserID, *event)
+	//TODO convert event from type models.UpdateEventRequestBody to models.Event before passing to transactions.CreateEvent
+	return transactions.CreateEvent(c.DB, *event)
 }
 
 func (c *EventService) GetEvent(id string) (*models.Event, *errors.Error) {
@@ -73,7 +74,7 @@ func (c *EventService) UpdateEvent(id string, eventBody models.UpdateEventReques
 		return nil, &errors.FailedToValidateEvent
 	}
 
-	event, err := utilities.MapRequestToModel(eventBody, &models.Event{})
+	event, err := utilities.MapRequestToModel(eventBody, &models.UpdateEventRequestBody{})
 	if err != nil {
 		return nil, &errors.FailedToMapRequestToModel
 	}
