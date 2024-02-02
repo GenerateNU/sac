@@ -99,6 +99,6 @@ jobs:
       - name: Migrate DB
         run: cd ./backend/src && go run main.go --only-migrate
       - name: Run Tests with Coverage
-        run: cd ./backend/ && go test -failfast -benchmem -race -coverprofile=coverage.txt ./...
+        run: cd ./backend/ && go test -benchmem -race -coverprofile=coverage.txt ./...
       - name: Print Coverage
         run: cd ./backend/ && go tool cover -func=coverage.txt
