@@ -9,17 +9,17 @@ import (
 )
 
 func TestCreateTokenPairSuccess(t *testing.T) {
-    id := "user123"
-    role := "admin"
+	id := "user123"
+	role := "admin"
 
-    accessToken, refreshToken, err := auth.CreateTokenPair(id, role)
-    if err != nil {
-        t.Errorf("Unexpected error: %v", err)
-    }
+	accessToken, refreshToken, err := auth.CreateTokenPair(id, role)
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
 
-    if accessToken == nil || refreshToken == nil {
-        t.Errorf("Expected both tokens to be non-nil, got: %v, %v", accessToken, refreshToken)
-    }
+	if accessToken == nil || refreshToken == nil {
+		t.Errorf("Expected both tokens to be non-nil, got: %v, %v", accessToken, refreshToken)
+	}
 }
 
 func TestCreateTokenPairFailure(t *testing.T) {
@@ -90,7 +90,7 @@ func TestCreateRefreshTokenFailure(t *testing.T) {
 	}
 }
 
-func TestSignTokenSuccess(t *testing.T) {	
+func TestSignTokenSuccess(t *testing.T) {
 	tokenString := &jwt.Token{
 		Header: map[string]interface{}{
 			"alg": "HS256",

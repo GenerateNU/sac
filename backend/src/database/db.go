@@ -106,7 +106,7 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 		if err := tx.Create(&superUser).Error; err != nil {
 			tx.Rollback()
 			return err
-		}	
+		}
 
 		superClub := models.Club{
 			Name:             "SAC",
@@ -126,9 +126,9 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 		}
 
 		membership := models.Membership{
-			ClubID: superClub.ID,
-			UserID: superUser.ID,
-			MembershipType:   models.MembershipTypeAdmin,
+			ClubID:         superClub.ID,
+			UserID:         superUser.ID,
+			MembershipType: models.MembershipTypeAdmin,
 		}
 
 		if err := tx.Create(&membership).Error; err != nil {

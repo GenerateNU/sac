@@ -33,7 +33,7 @@ func (a *AuthService) Me(id string) (*models.User, *errors.Error) {
 	if idErr != nil {
 		return nil, idErr
 	}
-	
+
 	user, err := transactions.GetUser(a.DB, *idAsUint)
 	if err != nil {
 		return nil, &errors.UserNotFound

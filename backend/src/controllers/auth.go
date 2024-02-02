@@ -38,7 +38,7 @@ func (a *AuthController) Me(c *fiber.Ctx) error {
 	if err != nil {
 		return err.FiberError(c)
 	}
-	
+
 	user, err := a.authService.Me(claims.Issuer)
 	if err != nil {
 		return err.FiberError(c)
@@ -91,7 +91,7 @@ func (a *AuthController) Login(c *fiber.Ctx) error {
 // @ID			refresh-user
 // @Tags      	user
 // @Accept		json
-// @Produce		json  
+// @Produce		json
 // @Success		200	  {object}	  string "success"
 // @Failure     401   {string}    string "failed to refresh access token"
 // @Router		/api/v1/auth/refresh  [get]
@@ -140,7 +140,7 @@ func (a *AuthController) Logout(c *fiber.Ctx) error {
 	// TODO: Redis
 	a.blacklist = append(a.blacklist, accessTokenValue)
 	a.blacklist = append(a.blacklist, refreshTokenValue)
-	
+
 	// Expire and clear the cookies
 	c.Cookie(auth.ExpireCookie("access_token"))
 	c.Cookie(auth.ExpireCookie("refresh_token"))

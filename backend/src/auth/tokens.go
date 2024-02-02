@@ -152,7 +152,7 @@ func GetRoleFromToken(tokenString string) (*string, error) {
 	if !ok || !token.Valid {
 		return nil, &errors.FailedToValidateAccessToken
 	}
-	
+
 	return &claims.Role, nil
 }
 

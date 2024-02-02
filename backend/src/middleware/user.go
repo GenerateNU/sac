@@ -19,17 +19,16 @@ func (m *MiddlewareService) UserAuthorizeById(c *fiber.Ctx) error {
 		return err
 	}
 
-	
 	claims, ok := token.Claims.(*types.CustomClaims)
 	if !ok || !token.Valid {
 		return errors.FailedToValidateAccessToken.FiberError(c)
 	}
-	
+
 	issuerIDAsUUID, err := utilities.ValidateID(claims.Issuer)
 	if err != nil {
 		return errors.FailedToParseUUID.FiberError(c)
 	}
-	
+
 	if issuerIDAsUUID.String() == idAsUUID.String() {
 		return c.Next()
 	}

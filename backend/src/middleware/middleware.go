@@ -8,7 +8,7 @@ import (
 )
 
 type MiddlewareInterface interface {
-	ClubAuthorizeById(c *fiber.Ctx) error 
+	ClubAuthorizeById(c *fiber.Ctx) error
 	UserAuthorizeById(c *fiber.Ctx) error
 	Authenticate(c *fiber.Ctx) error
 	Authorize(requiredPermissions ...types.Permission) func(c *fiber.Ctx) error

@@ -12,7 +12,7 @@ type Settings struct {
 	Application ApplicationSettings `yaml:"application"`
 	Database    DatabaseSettings    `yaml:"database"`
 	SuperUser   SuperUserSettings   `yaml:"superuser"`
-	Auth  AuthSettings  `yaml:"authsecret"`
+	Auth        AuthSettings        `yaml:"authsecret"`
 }
 
 type ProductionSettings struct {
@@ -65,10 +65,10 @@ type SuperUserSettings struct {
 }
 
 type AuthSettings struct {
-	AccessToken string `yaml:"accesstoken"`
-	RefreshToken string `yaml:"refreshtoken"`
-	AcessTokenExpiry uint `yaml:"accesstokenexpiry"`
-	RefreshTokenExpiry uint `yaml:"refreshtokenexpiry"`
+	AccessToken        string `yaml:"accesstoken"`
+	RefreshToken       string `yaml:"refreshtoken"`
+	AcessTokenExpiry   uint   `yaml:"accesstokenexpiry"`
+	RefreshTokenExpiry uint   `yaml:"refreshtokenexpiry"`
 }
 
 type Environment string
@@ -160,9 +160,9 @@ func GetConfiguration(path string) (Settings, error) {
 				Password: os.Getenv(fmt.Sprintf("%sPASSWORD", superUserPrefix)),
 			},
 			Auth: AuthSettings{
-				AccessToken: os.Getenv(fmt.Sprintf("%sACCESS_TOKEN", authSecretPrefix)),
-				RefreshToken: os.Getenv(fmt.Sprintf("%sREFRESH_TOKEN", authSecretPrefix)),
-				AcessTokenExpiry: uint(authAccessExpiryInt),
+				AccessToken:        os.Getenv(fmt.Sprintf("%sACCESS_TOKEN", authSecretPrefix)),
+				RefreshToken:       os.Getenv(fmt.Sprintf("%sREFRESH_TOKEN", authSecretPrefix)),
+				AcessTokenExpiry:   uint(authAccessExpiryInt),
 				RefreshTokenExpiry: uint(authRefreshExpiryInt),
 			},
 		}, nil
