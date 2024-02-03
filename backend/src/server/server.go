@@ -29,7 +29,7 @@ func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 	app := newFiberApp()
 
 	validate := utilities.RegisterCustomValidators()
-	middlewareService := middleware.NewMiddlewareService(db, validate)
+	middlewareService := middleware.NewMiddlewareService(db, validate, settings.Auth)
 
 	apiv1 := app.Group("/api/v1")
 	apiv1.Use(middlewareService.Authenticate)

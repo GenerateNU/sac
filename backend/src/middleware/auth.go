@@ -23,7 +23,7 @@ func (m *MiddlewareService) Authenticate(c *fiber.Ctx) error {
 		return c.Next()
 	}
 
-	token, err := auth.ParseAccessToken(c.Cookies("access_token"))
+	token, err := auth.ParseAccessToken(c.Cookies("access_token"), m.AuthSettings.AccessToken)
 	if err != nil {
 		return errors.FailedToParseAccessToken.FiberError(c)
 	}
@@ -42,7 +42,7 @@ func (m *MiddlewareService) Authenticate(c *fiber.Ctx) error {
 
 func (m *MiddlewareService) Authorize(requiredPermissions ...types.Permission) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
-		role, err := auth.GetRoleFromToken(c.Cookies("access_token"))
+		role, err := auth.GetRoleFromToken(c.Cookies("access_token"), m.AuthSettings.AccessToken)
 		if err != nil {
 			return errors.FailedToParseAccessToken.FiberError(c)
 		}
