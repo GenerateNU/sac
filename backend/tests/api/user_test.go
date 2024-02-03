@@ -21,9 +21,9 @@ import (
 
 func TestGetUsersWorksForSuper(t *testing.T) {
 	TestRequest{
-		Method:    fiber.MethodGet,
-		Path:      "/api/v1/users/",
-		AuthLevel: &SuperUser,
+		Method: fiber.MethodGet,
+		Path:   "/api/v1/users/",
+		Role:   &models.Super,
 	}.TestOnStatusAndDB(t, nil,
 		DBTesterWithStatus{
 			Status: fiber.StatusOK,
@@ -61,9 +61,9 @@ func TestGetUsersWorksForSuper(t *testing.T) {
 
 func TestGetUsersFailsForStudent(t *testing.T) {
 	TestRequest{
-		Method:    fiber.MethodGet,
-		Path:      "/api/v1/users/",
-		AuthLevel: &StudentUser,
+		Method: fiber.MethodGet,
+		Path:   "/api/v1/users/",
+		Role:   &models.Student,
 	}.TestOnError(t, nil, errors.Unauthorized).Close()
 }
 

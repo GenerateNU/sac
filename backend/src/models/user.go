@@ -4,7 +4,7 @@ import "github.com/google/uuid"
 
 type UserRole string
 
-const (
+var (
 	Super   UserRole = "super"
 	Student UserRole = "student"
 )

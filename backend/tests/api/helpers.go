@@ -27,14 +27,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type AuthLevel string
-
-var (
-	SuperUser   AuthLevel = "super_user"
-	StudentUser AuthLevel = "sample_user"
-	LoggedOut   AuthLevel = "logged_out"
-)
-
 type TestUser struct {
 	Email        string
 	Password     string
@@ -76,8 +68,8 @@ func SampleStudentJSONFactory(sampleStudent models.User, rawPassword string) *ma
 	}
 }
 
-func (app *TestApp) Auth(level AuthLevel) {
-	if level == SuperUser {
+func (app *TestApp) Auth(role models.UserRole) {
+	if role == models.Super {
 		superUser, superUserErr := database.SuperUser(app.Settings.SuperUser)
 		if superUserErr != nil {
 			panic(superUserErr)
@@ -119,7 +111,7 @@ func (app *TestApp) Auth(level AuthLevel) {
 			AccessToken:  accessToken,
 			RefreshToken: refreshToken,
 		}
-	} else if level == StudentUser {
+	} else if role == models.Student {
 		studentUser, rawPassword := SampleStudentFactory()
 
 		_, err := app.Send(TestRequest{
@@ -275,11 +267,11 @@ func (eaa ExistingAppAssert) Close() {
 }
 
 type TestRequest struct {
-	Method    string
-	Path      string
-	Body      *map[string]interface{}
-	Headers   *map[string]string
-	AuthLevel *AuthLevel
+	Method  string
+	Path    string
+	Body    *map[string]interface{}
+	Headers *map[string]string
+	Role    *models.UserRole
 }
 
 func (app TestApp) Send(request TestRequest) (*http.Response, error) {
@@ -331,8 +323,8 @@ func (request TestRequest) Test(t *testing.T, existingAppAssert *ExistingAppAsse
 	if existingAppAssert == nil {
 		app, assert := InitTest(t)
 
-		if request.AuthLevel != nil {
-			app.Auth(*request.AuthLevel)
+		if request.Role != nil {
+			app.Auth(*request.Role)
 		}
 		existingAppAssert = &ExistingAppAssert{
 			App:    app,
