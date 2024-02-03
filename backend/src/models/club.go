@@ -76,3 +76,11 @@ type UpdateClubRequestBody struct {
 	ApplicationLink  string           `json:"application_link" validate:"omitempty,required,max=255,http_url"`
 	Logo             string           `json:"logo" validate:"omitempty,http_url,s3_url,max=255"` // S3 URL
 }
+
+type CreateMembershipsByEmailRequestBody struct {
+	Emails []string `json:"emails" validate:"-"`
+}
+
+type DeleteMembershipsByIdsRequestBody struct {
+	UserIDs []string `json:"userIDs" validate:"-"`
+}

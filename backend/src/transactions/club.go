@@ -97,3 +97,99 @@ func DeleteClub(db *gorm.DB, id uuid.UUID) *errors.Error {
 
 	return nil
 }
+
+func GetClubMembers(db *gorm.DB, clubID uuid.UUID) ([]models.User, *errors.Error) {
+	var users []models.User
+
+	club, err := GetClub(db, clubID)
+	if err != nil {
+		return nil, &errors.UserNotFound
+	}
+
+	if err := db.Model(&club).Association("Member").Find(&users); err != nil {
+		return nil, &errors.FailedToGetMembers
+	}
+	return users, nil
+}
+
+func CreateMembership(db *gorm.DB, clubID uuid.UUID, userID uuid.UUID) *errors.Error {
+	club, err := GetClub(db, clubID)
+	if err != nil {
+		return &errors.ClubNotFound
+	}
+
+	user, err := GetUserWithMemberships(db, userID)
+	if err != nil {
+		return &errors.UserNotFound
+	}
+
+	if err := db.Model(&club).Association("Member").Replace(append(user.Member, *club)); err != nil {
+		return &errors.FailedToUpdateUser
+	}
+
+	return nil
+}
+
+func CreateMembershipsByEmail(db *gorm.DB, clubID uuid.UUID, emails []string) *errors.Error {
+	club, err := GetClub(db, clubID)
+	if err != nil {
+		return &errors.ClubNotFound
+	}
+
+	var users []models.User
+	result := db.Where("Email IN ?", emails).Find(&users)
+	if result != nil {
+		return &errors.UserNotFound
+	}
+
+	// append all found users to the club's member list
+	currentMembers := club.Member
+	for _, user := range users {
+		currentMembers = append(currentMembers, user)
+	}
+
+	// update the association to use the newly calculated member list
+	if err := db.Model(&club).Association("Member").Replace(currentMembers); err != nil {
+		return &errors.FailedToUpdateClub
+	}
+
+	return nil
+}
+
+func DeleteMembership(db *gorm.DB, clubID uuid.UUID, userID uuid.UUID) *errors.Error {
+	user, err := GetUser(db, userID)
+	if err != nil {
+		return &errors.UserNotFound
+	}
+
+	club, err := GetClub(db, clubID)
+	if err != nil {
+		return &errors.ClubNotFound
+	}
+
+	if err := db.Model(&club).Association("Member").Delete(user); err != nil {
+		return &errors.FailedToUpdateClub
+	}
+	return nil
+}
+
+func DeleteMemberships(db *gorm.DB, clubID uuid.UUID, userIDs []uuid.UUID) *errors.Error {
+	club, err := GetClub(db, clubID)
+	if err != nil {
+		return &errors.ClubNotFound
+	}
+
+	var users []models.User
+	result := db.Where("ID IN ?", userIDs).Find(&users)
+
+	if result != nil {
+		return &errors.UserNotFound
+	}
+
+	for _, user := range users {
+		if err := db.Model(&club).Association("Member").Delete(user); err != nil {
+			return &errors.FailedToUpdateClub
+		}
+	}
+	return nil
+}

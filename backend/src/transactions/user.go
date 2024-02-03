@@ -45,6 +45,19 @@ func GetUser(db *gorm.DB, id uuid.UUID) (*models.User, *errors.Error) {
 	return &user, nil
 }
 
+func GetUserWithMemberships(db *gorm.DB, id uuid.UUID) (*models.User, *errors.Error) {
+	var user models.User
+	if err := db.Preload("Member").Omit("password_hash").First(&user, id).Error; err != nil {
+		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, &errors.UserNotFound
+		} else {
+			return nil, &errors.FailedToGetUser
+		}
+	}
+
+	return &user, nil
+}
+
 func UpdateUser(db *gorm.DB, id uuid.UUID, user models.User) (*models.User, *errors.Error) {
 	var existingUser models.User
 
@@ -84,7 +97,7 @@ func GetUserTags(db *gorm.DB, id uuid.UUID) ([]models.Tag, *errors.Error) {
 		return nil, &errors.UserNotFound
 	}
 
-	if err := db.Model(&user).Association("Tag").Find(&tags) ; err != nil {
+	if err := db.Model(&user).Association("Tag").Find(&tags); err != nil {
 		return nil, &errors.FailedToGetTag
 	}
 	return tags, nil
@@ -101,4 +114,18 @@ func CreateUserTags(db *gorm.DB, id uuid.UUID, tags []models.Tag) ([]models.Tag,
 	}
 
 	return tags, nil
+}
+
+func GetUserMemberships(db *gorm.DB, userID uuid.UUID) ([]models.Club, *errors.Error) {
+	var clubs []models.Club
+
+	user, err := GetUser(db, userID)
+	if err != nil {
+		return nil, &errors.UserNotFound
+	}
+
+	if err := db.Model(&user).Association("Member").Find(&clubs); err != nil {
+		return nil, &errors.FailedToGetMemberships
+	}
+	return clubs, nil
 }

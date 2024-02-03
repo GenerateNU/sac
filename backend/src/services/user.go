@@ -21,6 +21,7 @@ type UserServiceInterface interface {
 	DeleteUser(id string) *errors.Error
 	GetUserTags(id string) ([]models.Tag, *errors.Error)
 	CreateUserTags(id string, tagIDs models.CreateUserTagsBody) ([]models.Tag, *errors.Error)
+	GetUserMemberships(userID string) ([]models.Club, *errors.Error)
 }
 
 type UserService struct {
@@ -139,4 +140,13 @@ func (u *UserService) CreateUserTags(id string, tagIDs models.CreateUserTagsBody
 
 	// Update the user to reflect the new tags:
 	return transactions.CreateUserTags(u.DB, *idAsUUID, tags)
+}
+
+func (u *UserService) GetUserMemberships(userID string) ([]models.Club, *errors.Error) {
+	userIDAsUUID, err := utilities.ValidateID(userID)
+	if err != nil {
+		return nil, &errors.FailedToValidateID
+	}
+
+	return transactions.GetUserMemberships(u.DB, *userIDAsUUID)
 }

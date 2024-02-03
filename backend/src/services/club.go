@@ -6,6 +6,7 @@ import (
 	"github.com/GenerateNU/sac/backend/src/transactions"
 	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 
 	"gorm.io/gorm"
 )
@@ -16,6 +17,11 @@ type ClubServiceInterface interface {
 	CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, *errors.Error)
 	UpdateClub(id string, clubBody models.UpdateClubRequestBody) (*models.Club, *errors.Error)
 	DeleteClub(id string) *errors.Error
+	GetClubMembers(clubID string) ([]models.User, *errors.Error)
+	CreateMembership(clubID string, userID string) *errors.Error
+	CreateMembershipsByEmail(clubID string, emails []string) *errors.Error
+	DeleteMembership(clubID string, userID string) *errors.Error
+	DeleteMemberships(clubID string, userIDs []string) *errors.Error
 }
 
 type ClubService struct {
@@ -88,4 +94,68 @@ func (c *ClubService) DeleteClub(id string) *errors.Error {
 	}
 
 	return transactions.DeleteClub(c.DB, *idAsUUID)
+}
+
+func (c *ClubService) GetClubMembers(clubID string) ([]models.User, *errors.Error) {
+	idAsUUID, err := utilities.ValidateID(clubID)
+	if err != nil {
+		return nil, &errors.FailedToValidateID
+	}
+
+	return transactions.GetClubMembers(c.DB, *idAsUUID)
+}
+
+func (c *ClubService) CreateMembership(clubID string, userID string) *errors.Error {
+	clubIDAsUUID, err := utilities.ValidateID(clubID)
+	if err != nil {
+		return &errors.FailedToValidateID
+	}
+
+	userIDAsUUID, err := utilities.ValidateID(userID)
+	if err != nil {
+		return &errors.FailedToValidateID
+	}
+
+	return transactions.CreateMembership(c.DB, *clubIDAsUUID, *userIDAsUUID)
+}
+
+func (c *ClubService) CreateMembershipsByEmail(clubID string, emails []string) *errors.Error {
+	clubIDAsUUID, err := utilities.ValidateID(clubID)
+	if err != nil {
+		return &errors.FailedToValidateID
+	}
+
+	return transactions.CreateMembershipsByEmail(c.DB, *clubIDAsUUID, emails)
+}
+
+func (c *ClubService) DeleteMembership(clubID string, userID string) *errors.Error {
+	clubIDAsUUID, err := utilities.ValidateID(clubID)
+	if err != nil {
+		return &errors.FailedToValidateID
+	}
+
+	userIDAsUUID, err := utilities.ValidateID(userID)
+	if err != nil {
+		return &errors.FailedToValidateID
+	}
+
+	return transactions.DeleteMembership(c.DB, *clubIDAsUUID, *userIDAsUUID)
+}
+
+func (c *ClubService) DeleteMemberships(clubID string, userIDs []string) *errors.Error {
+	clubIDAsUUID, err := utilities.ValidateID(clubID)
+	if err != nil {
+		return &errors.FailedToValidateID
+	}
+
+	var userIDsAsUUIDs []uuid.UUID
+	for _, id := range userIDs {
+		userIDAsUUID, err := utilities.ValidateID(id)
+		if err != nil {
+			return &errors.FailedToValidateID
+		}
+		userIDsAsUUIDs = append(userIDsAsUUIDs, *userIDAsUUID)
+	}
+
+	return transactions.DeleteMemberships(c.DB, *clubIDAsUUID, userIDsAsUUIDs)
 }
