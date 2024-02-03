@@ -123,7 +123,7 @@ func CreateMembership(db *gorm.DB, clubID uuid.UUID, userID uuid.UUID) *errors.E
 		return &errors.UserNotFound
 	}
 
-	if err := db.Model(&club).Association("Member").Replace(append(user.Member, *club)); err != nil {
+	if err := db.Model(&club).Association("Member").Replace(append(club.Member, *user)); err != nil {
 		return &errors.FailedToUpdateUser
 	}
 
