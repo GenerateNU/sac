@@ -1,9 +1,8 @@
+import Colors from '@/constants/Colors';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
 
 import { useColorScheme } from 'react-native';
-
-import Colors from '@/constants/Colors';
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -30,7 +29,7 @@ const TabLayout = () => {
         name="index"
         options={{
           headerShown: false,
-          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />
         }}
       />
     </Tabs>
