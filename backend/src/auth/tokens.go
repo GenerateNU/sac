@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/GenerateNU/sac/backend/src/config"
@@ -71,7 +70,6 @@ func CreateRefreshToken(id string, refreshExpiresAfter uint, refreshTokenSecret 
 
 func SignToken(token *jwt.Token, secret string) (*string, *errors.Error) {
 	if token == nil || secret == "" {
-		fmt.Println(token)
 		return nil, &errors.FailedToSignToken
 	}
 

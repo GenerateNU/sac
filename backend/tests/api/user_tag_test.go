@@ -183,7 +183,7 @@ type UUIDSlice []uuid.UUID
 var testUUID = uuid.New()
 
 func TestCreateUserTagsFailsOnInvalidKey(t *testing.T) {
-	appAssert, uuid := CreateSampleUser(t, nil)
+	appAssert, uuid, _ := CreateSampleStudent(t, nil)
 
 	invalidBody := []map[string]interface{}{
 		{
@@ -214,7 +214,7 @@ func TestCreateUserTagsFailsOnNonExistentUser(t *testing.T) {
 }
 
 func TestCreateUserTagsWorks(t *testing.T) {
-	appAssert, uuid := CreateSampleUser(t, nil)
+	appAssert, uuid, _ := CreateSampleStudent(t, nil)
 
 	// Create a set of tags:
 	tagUUIDs := CreateSetOfTags(t, appAssert)
@@ -237,7 +237,7 @@ func TestCreateUserTagsWorks(t *testing.T) {
 }
 
 func TestCreateUserTagsNoneAddedIfInvalid(t *testing.T) {
-	appAssert, uuid := CreateSampleUser(t, nil)
+	appAssert, uuid, _ := CreateSampleStudent(t, nil)
 
 	TestRequest{
 		Method: fiber.MethodPost,
@@ -269,7 +269,7 @@ func TestGetUserTagsFailsOnNonExistentUser(t *testing.T) {
 }
 
 func TestGetUserTagsReturnsEmptyListWhenNoneAdded(t *testing.T) {
-	appAssert, uuid := CreateSampleUser(t, nil)
+	appAssert, uuid, _ := CreateSampleStudent(t, nil)
 
 	TestRequest{
 		Method: fiber.MethodGet,
@@ -293,7 +293,7 @@ func TestGetUserTagsReturnsEmptyListWhenNoneAdded(t *testing.T) {
 }
 
 func TestGetUserTagsReturnsCorrectList(t *testing.T) {
-	appAssert, uuid := CreateSampleUser(t, nil)
+	appAssert, uuid, _ := CreateSampleStudent(t, nil)
 
 	// Create a set of tags:
 	tagUUIDs := CreateSetOfTags(t, appAssert)

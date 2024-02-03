@@ -132,8 +132,8 @@ func AssertSampleClubBodyRespDB(app TestApp, assert *assert.A, resp *http.Respon
 	return AssertClubBodyRespDB(app, assert, resp, SampleClubFactory(userID))
 }
 
-func CreateSampleClub(t *testing.T, existingAppAssert *ExistingAppAssert) (eaa ExistingAppAssert, userUUID uuid.UUID, clubUUID uuid.UUID) {
-	appAssert, userID := CreateSampleUser(t, existingAppAssert)
+func CreateSampleClub(t *testing.T, existingAppAssert *ExistingAppAssert) (eaa ExistingAppAssert, studentUUID uuid.UUID, clubUUID uuid.UUID) {
+	appAssert, userID, _ := CreateSampleStudent(t, existingAppAssert)
 
 	var sampleClubUUID uuid.UUID
 
@@ -230,7 +230,7 @@ var TestNumClubsRemainsAt1 = func(app TestApp, assert *assert.A, resp *http.Resp
 }
 
 func AssertCreateBadClubDataFails(t *testing.T, jsonKey string, badValues []interface{}) {
-	appAssert, uuid := CreateSampleUser(t, nil)
+	appAssert, uuid, _ := CreateSampleStudent(t, nil)
 
 	for _, badValue := range badValues {
 		sampleClubPermutation := *SampleClubFactory(uuid)
@@ -307,9 +307,9 @@ func TestCreateClubFailsOnInvalidLogo(t *testing.T) {
 }
 
 func TestUpdateClubWorks(t *testing.T) {
-	appAssert, userUUID, clubUUID := CreateSampleClub(t, nil)
+	appAssert, studentUUID, clubUUID := CreateSampleClub(t, nil)
 
-	updatedClub := SampleClubFactory(userUUID)
+	updatedClub := SampleClubFactory(studentUUID)
 	(*updatedClub)["name"] = "Updated Name"
 	(*updatedClub)["preview"] = "Updated Preview"
 
@@ -328,9 +328,9 @@ func TestUpdateClubWorks(t *testing.T) {
 }
 
 func TestUpdateClubFailsOnInvalidBody(t *testing.T) {
-	appAssert, userUUID, clubUUID := CreateSampleClub(t, nil)
+	appAssert, studentUUID, clubUUID := CreateSampleClub(t, nil)
 
-	body := SampleClubFactory(userUUID)
+	body := SampleClubFactory(studentUUID)
 
 	for _, invalidData := range []map[string]interface{}{
 		{"description": "Not a URL"},
@@ -391,24 +391,26 @@ func TestUpdateClubFailsBadRequest(t *testing.T) {
 		"null",
 	}
 
+	sampleStudent, rawPassword := SampleStudentFactory()
+
 	for _, badRequest := range badRequests {
 		TestRequest{
 			Method: fiber.MethodPatch,
 			Path:   fmt.Sprintf("/api/v1/clubs/%s", badRequest),
-			Body:   SampleUserFactory(),
+			Body:   SampleStudentJSONFactory(sampleStudent, rawPassword),
 		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
 	}
 }
 
 func TestUpdateClubFailsOnClubIdNotExist(t *testing.T) {
-	appAssert, userUUID := CreateSampleUser(t, nil)
+	appAssert, studentUUID, _ := CreateSampleStudent(t, nil)
 
 	uuid := uuid.New()
 
 	TestRequest{
 		Method: fiber.MethodPatch,
 		Path:   fmt.Sprintf("/api/v1/clubs/%s", uuid),
-		Body:   SampleClubFactory(userUUID),
+		Body:   SampleClubFactory(studentUUID),
 	}.TestOnErrorAndDB(t, &appAssert,
 		ErrorWithDBTester{
 			Error: errors.ClubNotFound,
