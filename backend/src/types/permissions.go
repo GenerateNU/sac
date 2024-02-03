@@ -61,7 +61,7 @@ const (
 
 var rolePermissions = map[models.UserRole][]Permission{
 	models.Super: {
-		UserRead, UserWrite, UserDelete,
+		UserRead, UserReadAll, UserWrite, UserDelete,
 		TagRead, TagCreate, TagWrite, TagDelete,
 		ClubRead, ClubCreate, ClubWrite, ClubDelete,
 		PointOfContactRead, PointOfContactCreate, PointOfContactWrite, PointOfContactDelete,

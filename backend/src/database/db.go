@@ -1,7 +1,6 @@
 package database
 
 import (
-	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/models"
 
@@ -78,20 +77,10 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 		return err
 	}
 
-	passwordHash, err := auth.ComputePasswordHash(settings.SuperUser.Password)
+	superUser, err := SuperUser(settings.SuperUser)
 	if err != nil {
+		tx.Rollback()
 		return err
-	}
-
-	superUser := models.User{
-		Role:         models.Super,
-		NUID:         "000000000",
-		Email:        "generatesac@gmail.com",
-		PasswordHash: *passwordHash,
-		FirstName:    "SAC",
-		LastName:     "Super",
-		College:      models.KCCS,
-		Year:         models.First,
 	}
 
 	var user models.User
@@ -108,17 +97,7 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 			return err
 		}
 
-		superClub := models.Club{
-			Name:             "SAC",
-			Preview:          "SAC",
-			Description:      "SAC",
-			NumMembers:       0,
-			IsRecruiting:     true,
-			RecruitmentCycle: models.RecruitmentCycle(models.Always),
-			RecruitmentType:  models.Application,
-			ApplicationLink:  "https://generatenu.com/apply",
-			Logo:             "https://aws.amazon.com/s3",
-		}
+		superClub := SuperClub()
 
 		if err := tx.Create(&superClub).Error; err != nil {
 			tx.Rollback()

@@ -25,49 +25,106 @@ import (
 	"gorm.io/gorm"
 )
 
+type AuthLevel string
+
+var (
+	SuperUser AuthLevel = "super_user"
+	LoggedOut AuthLevel = "logged_out"
+)
+
+type TestUser struct {
+	Email        string
+	Password     string
+	AccessToken  string
+	RefreshToken string
+}
+
+func (app *TestApp) Auth(level AuthLevel) {
+	if level == SuperUser {
+		superUser, superUserErr := database.SuperUser(app.Settings.SuperUser)
+		if superUserErr != nil {
+			panic(superUserErr)
+		}
+
+		email := superUser.Email
+		password := app.Settings.SuperUser.Password
+
+		resp, err := app.Send(TestRequest{
+			Method: fiber.MethodPost,
+			Path:   "/api/v1/auth/login",
+			Body: &map[string]interface{}{
+				"email":    email,
+				"password": password,
+			},
+		})
+		if err != nil {
+			panic(err)
+		}
+
+		var accessToken string
+		var refreshToken string
+
+		for _, cookie := range resp.Cookies() {
+			if cookie.Name == "access_token" {
+				accessToken = cookie.Value
+			} else if cookie.Name == "refresh_token" {
+				refreshToken = cookie.Value
+			}
+		}
+
+		if accessToken == "" || refreshToken == "" {
+			panic("Failed to authenticate super user")
+		}
+
+		app.TestUser = &TestUser{
+			Email:        email,
+			Password:     password,
+			AccessToken:  accessToken,
+			RefreshToken: refreshToken,
+		}
+	}
+}
+
 func InitTest(t *testing.T) (TestApp, *assert.A) {
 	assert := assert.New(t)
 	app, err := spawnApp()
 
 	assert.NilError(err)
 
-	return app, assert
+	return *app, assert
 }
 
 type TestApp struct {
-	App           *fiber.App
-	Address       string
-	Conn          *gorm.DB
-	Settings      config.Settings
-	InitialDBName string
+	App      *fiber.App
+	Address  string
+	Conn     *gorm.DB
+	Settings config.Settings
+	TestUser *TestUser
 }
 
-func spawnApp() (TestApp, error) {
+func spawnApp() (*TestApp, error) {
 	listener, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
-		return TestApp{}, err
+		return nil, err
 	}
 
 	configuration, err := config.GetConfiguration(filepath.Join("..", "..", "..", "config"))
 	if err != nil {
-		return TestApp{}, err
+		return nil, err
 	}
-
-	initialDBName := configuration.Database.DatabaseName
 
 	configuration.Database.DatabaseName = generateRandomDBName()
 
 	connectionWithDB, err := configureDatabase(configuration)
 	if err != nil {
-		return TestApp{}, err
+		return nil, err
 	}
 
-	return TestApp{
-		App:           server.Init(connectionWithDB, configuration),
-		Address:       fmt.Sprintf("http://%s", listener.Addr().String()),
-		Conn:          connectionWithDB,
-		Settings:      configuration,
-		InitialDBName: initialDBName,
+	return &TestApp{
+		App:      server.Init(connectionWithDB, configuration),
+		Address:  fmt.Sprintf("http://%s", listener.Addr().String()),
+		Conn:     connectionWithDB,
+		Settings: configuration,
 	}, nil
 }
 
@@ -136,22 +193,14 @@ func (eaa ExistingAppAssert) Close() {
 }
 
 type TestRequest struct {
-	Method  string
-	Path    string
-	Body    *map[string]interface{}
-	Headers *map[string]string
+	Method    string
+	Path      string
+	Body      *map[string]interface{}
+	Headers   *map[string]string
+	AuthLevel *AuthLevel
 }
 
-func (request TestRequest) Test(t *testing.T, existingAppAssert *ExistingAppAssert) (ExistingAppAssert, *http.Response) {
-	var app TestApp
-	var assert *assert.A
-
-	if existingAppAssert == nil {
-		app, assert = InitTest(t)
-	} else {
-		app, assert = existingAppAssert.App, existingAppAssert.Assert
-	}
-
+func (app TestApp) Send(request TestRequest) (*http.Response, error) {
 	address := fmt.Sprintf("%s%s", app.Address, request.Path)
 
 	var req *http.Request
@@ -160,8 +209,9 @@ func (request TestRequest) Test(t *testing.T, existingAppAssert *ExistingAppAsse
 		req = httptest.NewRequest(request.Method, address, nil)
 	} else {
 		bodyBytes, err := json.Marshal(request.Body)
-
-		assert.NilError(err)
+		if err != nil {
+			return nil, err
+		}
 
 		req = httptest.NewRequest(request.Method, address, bytes.NewBuffer(bodyBytes))
 
@@ -180,14 +230,39 @@ func (request TestRequest) Test(t *testing.T, existingAppAssert *ExistingAppAsse
 		}
 	}
 
+	if app.TestUser != nil {
+		req.AddCookie(&http.Cookie{
+			Name:  "access_token",
+			Value: app.TestUser.AccessToken,
+		})
+	}
+
 	resp, err := app.App.Test(req)
+	if err != nil {
+		return nil, err
+	}
 
-	assert.NilError(err)
+	return resp, nil
+}
 
-	return ExistingAppAssert{
-		App:    app,
-		Assert: assert,
-	}, resp
+func (request TestRequest) Test(t *testing.T, existingAppAssert *ExistingAppAssert) (ExistingAppAssert, *http.Response) {
+	if existingAppAssert == nil {
+		app, assert := InitTest(t)
+
+		if request.AuthLevel != nil {
+			app.Auth(*request.AuthLevel)
+		}
+		existingAppAssert = &ExistingAppAssert{
+			App:    app,
+			Assert: assert,
+		}
+	}
+
+	resp, err := existingAppAssert.App.Send(request)
+
+	existingAppAssert.Assert.NilError(err)
+
+	return *existingAppAssert, resp
 }
 
 func (request TestRequest) TestOnStatus(t *testing.T, existingAppAssert *ExistingAppAssert, status int) ExistingAppAssert {
@@ -200,7 +275,7 @@ func (request TestRequest) TestOnStatus(t *testing.T, existingAppAssert *Existin
 	return appAssert
 }
 
-func (request TestRequest) TestOnError(t *testing.T, existingAppAssert *ExistingAppAssert, expectedError errors.Error) ExistingAppAssert {
+func (request *TestRequest) testOn(t *testing.T, existingAppAssert *ExistingAppAssert, status int, key string, value string) (ExistingAppAssert, *http.Response) {
 	appAssert, resp := request.Test(t, existingAppAssert)
 	assert := appAssert.Assert
 
@@ -209,11 +284,16 @@ func (request TestRequest) TestOnError(t *testing.T, existingAppAssert *Existing
 	err := json.NewDecoder(resp.Body).Decode(&respBody)
 
 	assert.NilError(err)
-	assert.Equal(expectedError.Message, respBody["error"].(string))
+	assert.Equal(value, respBody[key].(string))
 
-	assert.Equal(expectedError.StatusCode, resp.StatusCode)
+	assert.Equal(status, resp.StatusCode)
 
-	return appAssert
+	return appAssert, resp
+}
+
+func (request TestRequest) TestOnError(t *testing.T, existingAppAssert *ExistingAppAssert, expectedError errors.Error) ExistingAppAssert {
+	request.testOn(t, existingAppAssert, expectedError.StatusCode, "error", expectedError.Message)
+	return *existingAppAssert
 }
 
 type ErrorWithDBTester struct {
@@ -222,8 +302,19 @@ type ErrorWithDBTester struct {
 }
 
 func (request TestRequest) TestOnErrorAndDB(t *testing.T, existingAppAssert *ExistingAppAssert, errorWithDBTester ErrorWithDBTester) ExistingAppAssert {
-	appAssert := request.TestOnError(t, existingAppAssert, errorWithDBTester.Error)
-	errorWithDBTester.DBTester(appAssert.App, appAssert.Assert, nil)
+	appAssert, resp := request.testOn(t, existingAppAssert, errorWithDBTester.Error.StatusCode, "error", errorWithDBTester.Error.Message)
+	errorWithDBTester.DBTester(appAssert.App, appAssert.Assert, resp)
+	return appAssert
+}
+
+func (request TestRequest) TestOnMessage(t *testing.T, existingAppAssert *ExistingAppAssert, status int, message string) ExistingAppAssert {
+	request.testOn(t, existingAppAssert, status, "message", message)
+	return *existingAppAssert
+}
+
+func (request TestRequest) TestOnMessageAndDB(t *testing.T, existingAppAssert *ExistingAppAssert, status int, message string, dbTester DBTester) ExistingAppAssert {
+	appAssert, resp := request.testOn(t, existingAppAssert, status, "message", message)
+	dbTester(appAssert.App, appAssert.Assert, resp)
 	return appAssert
 }
 

@@ -21,8 +21,9 @@ import (
 
 func TestGetUsersWorks(t *testing.T) {
 	TestRequest{
-		Method: fiber.MethodGet,
-		Path:   "/api/v1/users/",
+		Method:    fiber.MethodGet,
+		Path:      "/api/v1/users/",
+		AuthLevel: &SuperUser,
 	}.TestOnStatusAndDB(t, nil,
 		DBTesterWithStatus{
 			Status: fiber.StatusOK,
