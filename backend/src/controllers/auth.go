@@ -66,7 +66,7 @@ func (a *AuthController) Login(c *fiber.Ctx) error {
 	var userBody models.LoginUserResponseBody
 
 	if err := c.BodyParser(&userBody); err != nil {
-		errors.FailedToParseRequestBody.FiberError(c)
+		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
 	user, err := a.authService.Login(userBody)
