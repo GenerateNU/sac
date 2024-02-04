@@ -46,16 +46,16 @@ func AssertTagWithBodyRespDB(app h.TestApp, assert *assert.A, resp *http.Respons
 }
 
 func AssertSampleTagBodyRespDB(t *testing.T, app h.TestApp, assert *assert.A, resp *http.Response) uuid.UUID {
-	appAssert, uuid := CreateSampleCategory(t,
-		&h.ExistingAppAssert{
+	appAssert, uuid := CreateSampleCategory(
+		h.ExistingAppAssert{
 			App:    app,
 			Assert: assert,
 		})
 	return AssertTagWithBodyRespDB(appAssert.App, appAssert.Assert, resp, SampleTagFactory(uuid))
 }
 
-func CreateSampleTag(t *testing.T) (appAssert h.ExistingAppAssert, categoryUUID uuid.UUID, tagUUID uuid.UUID) {
-	appAssert, categoryUUID = CreateSampleCategory(t, nil)
+func CreateSampleTag(appAssert h.ExistingAppAssert) (existingAppAssert h.ExistingAppAssert, categoryUUID uuid.UUID, tagUUID uuid.UUID) {
+	appAssert, categoryUUID = CreateSampleCategory(appAssert)
 
 	AssertSampleTagBodyRespDB := func(app h.TestApp, assert *assert.A, resp *http.Response) {
 		tagUUID = AssertTagWithBodyRespDB(app, assert, resp, SampleTagFactory(categoryUUID))
@@ -78,7 +78,7 @@ func CreateSampleTag(t *testing.T) (appAssert h.ExistingAppAssert, categoryUUID 
 }
 
 func TestCreateTagWorks(t *testing.T) {
-	appAssert, _, _ := CreateSampleTag(t)
+	appAssert, _, _ := CreateSampleTag(h.InitTest(t))
 	appAssert.Close()
 }
 
@@ -164,7 +164,7 @@ func TestCreateTagFailsValidation(t *testing.T) {
 }
 
 func TestGetTagWorks(t *testing.T) {
-	existingAppAssert, categoryUUID, tagUUID := CreateSampleTag(t)
+	existingAppAssert, categoryUUID, tagUUID := CreateSampleTag(h.InitTest(t))
 
 	existingAppAssert.TestOnStatusAndDB(
 		h.TestRequest{
@@ -218,7 +218,7 @@ func TestGetTagFailsNotFound(t *testing.T) {
 }
 
 func TestUpdateTagWorksUpdateName(t *testing.T) {
-	existingAppAssert, categoryUUID, tagUUID := CreateSampleTag(t)
+	existingAppAssert, categoryUUID, tagUUID := CreateSampleTag(h.InitTest(t))
 
 	generateNUTag := *SampleTagFactory(categoryUUID)
 	generateNUTag["name"] = "GenerateNU"
@@ -242,7 +242,7 @@ func TestUpdateTagWorksUpdateName(t *testing.T) {
 }
 
 func TestUpdateTagWorksUpdateCategory(t *testing.T) {
-	existingAppAssert, _, tagUUID := CreateSampleTag(t)
+	existingAppAssert, _, tagUUID := CreateSampleTag(h.InitTest(t))
 
 	technologyCategory := *SampleCategoryFactory()
 	technologyCategory["name"] = "Technology"
@@ -287,7 +287,7 @@ func TestUpdateTagWorksUpdateCategory(t *testing.T) {
 }
 
 func TestUpdateTagWorksWithSameDetails(t *testing.T) {
-	existingAppAssert, categoryUUID, tagUUID := CreateSampleTag(t)
+	existingAppAssert, categoryUUID, tagUUID := CreateSampleTag(h.InitTest(t))
 
 	existingAppAssert.TestOnStatusAndDB(
 		h.TestRequest{
@@ -306,7 +306,7 @@ func TestUpdateTagWorksWithSameDetails(t *testing.T) {
 }
 
 func TestUpdateTagFailsBadRequest(t *testing.T) {
-	appAssert, uuid := CreateSampleCategory(t, nil)
+	appAssert, uuid := CreateSampleCategory(h.InitTest(t))
 
 	badRequests := []string{
 		"0",
@@ -332,7 +332,7 @@ func TestUpdateTagFailsBadRequest(t *testing.T) {
 }
 
 func TestDeleteTagWorks(t *testing.T) {
-	existingAppAssert, _, tagUUID := CreateSampleTag(t)
+	existingAppAssert, _, tagUUID := CreateSampleTag(h.InitTest(t))
 
 	existingAppAssert.TestOnStatusAndDB(
 		h.TestRequest{
@@ -348,7 +348,7 @@ func TestDeleteTagWorks(t *testing.T) {
 }
 
 func TestDeleteTagFailsBadRequest(t *testing.T) {
-	appAssert, _, _ := CreateSampleTag(t)
+	appAssert, _, _ := CreateSampleTag(h.InitTest(t))
 
 	badRequests := []string{
 		"0",
@@ -376,7 +376,7 @@ func TestDeleteTagFailsBadRequest(t *testing.T) {
 }
 
 func TestDeleteTagFailsNotFound(t *testing.T) {
-	appAssert, _, _ := CreateSampleTag(t)
+	appAssert, _, _ := CreateSampleTag(h.InitTest(t))
 
 	appAssert.TestOnErrorAndDB(
 		h.TestRequest{

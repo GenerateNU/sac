@@ -150,8 +150,6 @@ func AssertSampleUserTagsRespDB(app h.TestApp, assert *assert.A, resp *http.Resp
 }
 
 func TestCreateUserTagsFailsOnInvalidDataType(t *testing.T) {
-	appAssert := h.InitTest(t)
-
 	// Invalid tag data types:
 	invalidTags := []interface{}{
 		[]string{"1", "2", "34"},
@@ -164,24 +162,20 @@ func TestCreateUserTagsFailsOnInvalidDataType(t *testing.T) {
 		malformedTag := *SampleTagIDsFactory(nil)
 		malformedTag["tags"] = tag
 
-		appAssert.TestOnError(
+		h.InitTest(t).TestOnError(
 			h.TestRequest{
 				Method:             fiber.MethodPost,
 				Path:               "/api/v1/users/:userID/tags/",
 				Body:               &malformedTag,
 				Role:               &models.Student,
-				TestUserIDRequired: h.BoolToPointer(true),
+				TestUserIDReplaces: h.StringToPointer(":userID"),
 			},
 			errors.FailedToParseRequestBody,
-		)
+		).Close()
 	}
-
-	appAssert.Close()
 }
 
 func TestCreateUserTagsFailsOnInvalidUserID(t *testing.T) {
-	appAssert := h.InitTest(t)
-
 	badRequests := []string{
 		"0",
 		"-1",
@@ -191,7 +185,7 @@ func TestCreateUserTagsFailsOnInvalidUserID(t *testing.T) {
 	}
 
 	for _, badRequest := range badRequests {
-		appAssert.TestOnError(
+		h.InitTest(t).TestOnError(
 			h.TestRequest{
 				Method: fiber.MethodPost,
 				Path:   fmt.Sprintf("/api/v1/users/%s/tags", badRequest),
@@ -199,10 +193,8 @@ func TestCreateUserTagsFailsOnInvalidUserID(t *testing.T) {
 				Role:   &models.Student,
 			},
 			errors.FailedToParseUUID,
-		)
+		).Close()
 	}
-
-	appAssert.Close()
 }
 
 type UUIDSlice []uuid.UUID
@@ -210,8 +202,6 @@ type UUIDSlice []uuid.UUID
 var testUUID = uuid.New()
 
 func TestCreateUserTagsFailsOnInvalidKey(t *testing.T) {
-	appAssert := h.InitTest(t)
-
 	invalidBody := []map[string]interface{}{
 		{
 			"tag": UUIDSlice{testUUID, testUUID},
@@ -222,19 +212,17 @@ func TestCreateUserTagsFailsOnInvalidKey(t *testing.T) {
 	}
 
 	for _, body := range invalidBody {
-		appAssert.TestOnError(
+		h.InitTest(t).TestOnError(
 			h.TestRequest{
 				Method:             fiber.MethodPost,
 				Path:               "/api/v1/users/:userID/tags/",
 				Body:               &body,
 				Role:               &models.Student,
-				TestUserIDRequired: h.BoolToPointer(true),
+				TestUserIDReplaces: h.StringToPointer(":userID"),
 			},
 			errors.FailedToValidateUserTags,
-		)
+		).Close()
 	}
-
-	appAssert.Close()
 }
 
 // TODO: should this be unauthorized or not found?
@@ -271,7 +259,7 @@ func TestCreateUserTagsWorks(t *testing.T) {
 			Path:               "/api/v1/users/:userID/tags/",
 			Body:               SampleTagIDsFactory(&tagUUIDs),
 			Role:               &models.Super,
-			TestUserIDRequired: h.BoolToPointer(true),
+			TestUserIDReplaces: h.StringToPointer(":userID"),
 		},
 		h.TesterWithStatus{
 			Status: fiber.StatusCreated,
@@ -291,7 +279,7 @@ func TestCreateUserTagsNoneAddedIfInvalid(t *testing.T) {
 			Path:               "/api/v1/users/:userID/tags/",
 			Body:               SampleTagIDsFactory(nil),
 			Role:               &models.Super,
-			TestUserIDRequired: h.BoolToPointer(true),
+			TestUserIDReplaces: h.StringToPointer(":userID"),
 		},
 		h.TesterWithStatus{
 			Status: fiber.StatusCreated,
@@ -325,7 +313,7 @@ func TestGetUserTagsReturnsEmptyListWhenNoneAdded(t *testing.T) {
 			Method:             fiber.MethodGet,
 			Path:               "/api/v1/users/:userID/tags/",
 			Role:               &models.Student,
-			TestUserIDRequired: h.BoolToPointer(true),
+			TestUserIDReplaces: h.StringToPointer(":userID"),
 		},
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
@@ -353,7 +341,7 @@ func TestGetUserTagsReturnsCorrectList(t *testing.T) {
 			Path:               "/api/v1/users/:userID/tags/",
 			Body:               SampleTagIDsFactory(&tagUUIDs),
 			Role:               &models.Student,
-			TestUserIDRequired: h.BoolToPointer(true),
+			TestUserIDReplaces: h.StringToPointer(":userID"),
 		},
 		fiber.StatusCreated,
 	).TestOnStatusAndDB(
@@ -361,7 +349,7 @@ func TestGetUserTagsReturnsCorrectList(t *testing.T) {
 			Method:             fiber.MethodGet,
 			Path:               "/api/v1/users/:userID/tags/",
 			Role:               &models.Student,
-			TestUserIDRequired: h.BoolToPointer(true),
+			TestUserIDReplaces: h.StringToPointer(":userID"),
 		},
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,

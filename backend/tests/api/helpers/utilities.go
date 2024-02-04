@@ -40,6 +40,6 @@ func AllCasingPermutations(word string) []string {
 	return results
 }
 
-func BoolToPointer(b bool) *bool {
-	return &b
+func StringToPointer(s string) *string {
+	return &s
 }

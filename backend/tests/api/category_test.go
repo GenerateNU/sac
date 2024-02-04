@@ -71,13 +71,8 @@ func AssertSampleCategoryBodyRespDB(app h.TestApp, assert *assert.A, resp *http.
 	return AssertCategoryBodyRespDB(app, assert, resp, SampleCategoryFactory())
 }
 
-func CreateSampleCategory(t *testing.T, existingAppAssert *h.ExistingAppAssert) (h.ExistingAppAssert, uuid.UUID) {
+func CreateSampleCategory(existingAppAssert h.ExistingAppAssert) (h.ExistingAppAssert, uuid.UUID) {
 	var sampleCategoryUUID uuid.UUID
-
-	if existingAppAssert == nil {
-		newAppAssert := h.InitTest(t)
-		existingAppAssert = &newAppAssert
-	}
 
 	existingAppAssert.TestOnStatusAndDB(
 		h.TestRequest{
@@ -94,11 +89,11 @@ func CreateSampleCategory(t *testing.T, existingAppAssert *h.ExistingAppAssert) 
 		},
 	)
 
-	return *existingAppAssert, sampleCategoryUUID
+	return existingAppAssert, sampleCategoryUUID
 }
 
 func TestCreateCategoryWorks(t *testing.T) {
-	existingAppAssert, _ := CreateSampleCategory(t, nil)
+	existingAppAssert, _ := CreateSampleCategory(h.InitTest(t))
 	existingAppAssert.Close()
 }
 
@@ -173,7 +168,7 @@ func TestCreateCategoryFailsIfNameIsMissing(t *testing.T) {
 }
 
 func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
-	existingAppAssert, _ := CreateSampleCategory(t, nil)
+	existingAppAssert, _ := CreateSampleCategory(h.InitTest(t))
 
 	TestNumCategoriesRemainsAt1 := func(app h.TestApp, assert *assert.A, resp *http.Response) {
 		AssertNumCategoriesRemainsAtN(app, assert, resp, 1)
@@ -201,7 +196,7 @@ func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
 }
 
 func TestGetCategoryWorks(t *testing.T) {
-	existingAppAssert, uuid := CreateSampleCategory(t, nil)
+	existingAppAssert, uuid := CreateSampleCategory(h.InitTest(t))
 
 	existingAppAssert.TestOnStatusAndDB(
 		h.TestRequest{
@@ -254,7 +249,7 @@ func TestGetCategoryFailsNotFound(t *testing.T) {
 }
 
 func TestGetCategoriesWorks(t *testing.T) {
-	existingAppAssert, _ := CreateSampleCategory(t, nil)
+	existingAppAssert, _ := CreateSampleCategory(h.InitTest(t))
 
 	existingAppAssert.TestOnStatusAndDB(
 		h.TestRequest{
@@ -315,7 +310,7 @@ func AssertUpdatedCategoryBodyRespDB(app h.TestApp, assert *assert.A, resp *http
 }
 
 func TestUpdateCategoryWorks(t *testing.T) {
-	existingAppAssert, uuid := CreateSampleCategory(t, nil)
+	existingAppAssert, uuid := CreateSampleCategory(h.InitTest(t))
 
 	category := map[string]interface{}{
 		"id":   uuid,
@@ -341,7 +336,7 @@ func TestUpdateCategoryWorks(t *testing.T) {
 }
 
 func TestUpdateCategoryWorksWithSameDetails(t *testing.T) {
-	existingAppAssert, uuid := CreateSampleCategory(t, nil)
+	existingAppAssert, uuid := CreateSampleCategory(h.InitTest(t))
 
 	category := *SampleCategoryFactory()
 	category["id"] = uuid
@@ -391,7 +386,7 @@ func TestUpdateCategoryFailsBadRequest(t *testing.T) {
 }
 
 func TestDeleteCategoryWorks(t *testing.T) {
-	existingAppAssert, uuid := CreateSampleCategory(t, nil)
+	existingAppAssert, uuid := CreateSampleCategory(h.InitTest(t))
 
 	existingAppAssert.TestOnStatusAndDB(
 		h.TestRequest{
@@ -407,7 +402,7 @@ func TestDeleteCategoryWorks(t *testing.T) {
 }
 
 func TestDeleteCategoryFailsBadRequest(t *testing.T) {
-	existingAppAssert, _ := CreateSampleCategory(t, nil)
+	existingAppAssert, _ := CreateSampleCategory(h.InitTest(t))
 
 	badRequests := []string{
 		"0",
@@ -435,7 +430,7 @@ func TestDeleteCategoryFailsBadRequest(t *testing.T) {
 }
 
 func TestDeleteCategoryFailsNotFound(t *testing.T) {
-	existingAppAssert, _ := CreateSampleCategory(t, nil)
+	existingAppAssert, _ := CreateSampleCategory(h.InitTest(t))
 
 	existingAppAssert.TestOnErrorAndDB(
 		h.TestRequest{

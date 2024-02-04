@@ -66,7 +66,7 @@ func AssertClubBodyRespDB(app h.TestApp, assert *assert.A, resp *http.Response, 
 
 	assert.Equal(1, len(dbAdmins))
 
-	assert.Equal((*body)["user_id"].(uuid.UUID), dbAdmins[0].ID)
+	assert.Equal(*(*body)["user_id"].(*uuid.UUID), dbAdmins[0].ID)
 	assert.Equal((*body)["name"].(string), dbClub.Name)
 	assert.Equal((*body)["preview"].(string), dbClub.Preview)
 	assert.Equal((*body)["description"].(string), dbClub.Description)
@@ -131,38 +131,34 @@ func AssertClubWithBodyRespDBMostRecent(app h.TestApp, assert *assert.A, resp *h
 func AssertSampleClubBodyRespDB(app h.TestApp, assert *assert.A, resp *http.Response, userID uuid.UUID) uuid.UUID {
 	sampleClub := SampleClubFactory(&userID)
 	(*sampleClub)["num_members"] = 1
+
 	return AssertClubBodyRespDB(app, assert, resp, sampleClub)
 }
 
-func CreateSampleClub(t *testing.T, existingAppAssert *h.ExistingAppAssert) (eaa h.ExistingAppAssert, studentUUID uuid.UUID, clubUUID uuid.UUID) {
-	appAssert, userID, _ := CreateSampleStudent(t, existingAppAssert)
-
+func CreateSampleClub(existingAppAssert h.ExistingAppAssert) (eaa h.ExistingAppAssert, studentUUID uuid.UUID, clubUUID uuid.UUID) {
 	var sampleClubUUID uuid.UUID
 
-	appAssert.TestOnStatusAndDB(
+	newAppAssert := existingAppAssert.TestOnStatusAndDB(
 		h.TestRequest{
-			Method: fiber.MethodPost,
-			Path:   "/api/v1/clubs/",
-			Body:   SampleClubFactory(&userID),
-			Role:   &models.Super,
+			Method:             fiber.MethodPost,
+			Path:               "/api/v1/clubs/",
+			Body:               SampleClubFactory(nil),
+			Role:               &models.Super,
+			TestUserIDReplaces: h.StringToPointer("user_id"),
 		},
 		h.TesterWithStatus{
 			Status: fiber.StatusCreated,
 			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
-				sampleClubUUID = AssertSampleClubBodyRespDB(app, assert, resp, userID)
+				sampleClubUUID = AssertSampleClubBodyRespDB(app, assert, resp, app.TestUser.UUID)
 			},
 		},
 	)
 
-	if existingAppAssert == nil {
-		return appAssert, userID, sampleClubUUID
-	} else {
-		return *existingAppAssert, userID, sampleClubUUID
-	}
+	return existingAppAssert, newAppAssert.App.TestUser.UUID, sampleClubUUID
 }
 
 func TestCreateClubWorks(t *testing.T) {
-	existingAppAssert, _, _ := CreateSampleClub(t, nil)
+	existingAppAssert, _, _ := CreateSampleClub(h.InitTest(t))
 	existingAppAssert.Close()
 }
 
@@ -315,7 +311,7 @@ func TestCreateClubFailsOnInvalidLogo(t *testing.T) {
 
 // TODO: need to be able to join the club
 func TestUpdateClubWorks(t *testing.T) {
-	appAssert, studentUUID, clubUUID := CreateSampleClub(t, nil)
+	appAssert, studentUUID, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	updatedClub := SampleClubFactory(&studentUUID)
 	(*updatedClub)["name"] = "Updated Name"
@@ -339,7 +335,7 @@ func TestUpdateClubWorks(t *testing.T) {
 
 // TODO: need to be able to join the club to try to update
 func TestUpdateClubFailsOnInvalidBody(t *testing.T) {
-	appAssert, studentUUID, clubUUID := CreateSampleClub(t, nil)
+	appAssert, studentUUID, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	body := SampleClubFactory(&studentUUID)
 
@@ -432,7 +428,7 @@ func TestUpdateClubFailsOnClubIdNotExist(t *testing.T) {
 		Path:               fmt.Sprintf("/api/v1/clubs/%s", uuid),
 		Body:               SampleClubFactory(nil),
 		Role:               &models.Student,
-		TestUserIDRequired: h.BoolToPointer(true),
+		TestUserIDReplaces: h.StringToPointer("user_id"),
 	},
 		h.ErrorWithTester{
 			Error: errors.ClubNotFound,
@@ -449,7 +445,7 @@ func TestUpdateClubFailsOnClubIdNotExist(t *testing.T) {
 
 // TODO: need to be able to join the club
 func TestDeleteClubWorks(t *testing.T) {
-	appAssert, _, clubUUID := CreateSampleClub(t, nil)
+	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	appAssert.TestOnStatusAndDB(
 		h.TestRequest{

@@ -45,7 +45,7 @@ func AssertTagsWithBodyRespDB(app h.TestApp, assert *assert.A, resp *http.Respon
 }
 
 func TestGetCategoryTagsWorks(t *testing.T) {
-	appAssert, categoryUUID, tagID := CreateSampleTag(t)
+	appAssert, categoryUUID, tagID := CreateSampleTag(h.InitTest(t))
 
 	body := SampleTagFactory(categoryUUID)
 	(*body)["id"] = tagID
@@ -66,7 +66,7 @@ func TestGetCategoryTagsWorks(t *testing.T) {
 }
 
 func TestGetCategoryTagsFailsCategoryBadRequest(t *testing.T) {
-	appAssert, _ := CreateSampleCategory(t, nil)
+	appAssert, _ := CreateSampleCategory(h.InitTest(t))
 
 	badRequests := []string{
 		"0",
@@ -91,7 +91,7 @@ func TestGetCategoryTagsFailsCategoryBadRequest(t *testing.T) {
 }
 
 func TestGetCategoryTagsFailsCategoryNotFound(t *testing.T) {
-	appAssert, _ := CreateSampleCategory(t, nil)
+	appAssert, _ := CreateSampleCategory(h.InitTest(t))
 
 	uuid := uuid.New()
 
@@ -112,7 +112,7 @@ func TestGetCategoryTagsFailsCategoryNotFound(t *testing.T) {
 }
 
 func TestGetCategoryTagWorks(t *testing.T) {
-	existingAppAssert, categoryUUID, tagUUID := CreateSampleTag(t)
+	existingAppAssert, categoryUUID, tagUUID := CreateSampleTag(h.InitTest(t))
 
 	existingAppAssert.TestOnStatusAndDB(
 		h.TestRequest{
@@ -130,7 +130,7 @@ func TestGetCategoryTagWorks(t *testing.T) {
 }
 
 func TestGetCategoryTagFailsCategoryBadRequest(t *testing.T) {
-	appAssert, _, tagUUID := CreateSampleTag(t)
+	appAssert, _, tagUUID := CreateSampleTag(h.InitTest(t))
 
 	badRequests := []string{
 		"0",
@@ -154,7 +154,7 @@ func TestGetCategoryTagFailsCategoryBadRequest(t *testing.T) {
 }
 
 func TestGetCategoryTagFailsTagBadRequest(t *testing.T) {
-	appAssert, categoryUUID := CreateSampleCategory(t, nil)
+	appAssert, categoryUUID := CreateSampleCategory(h.InitTest(t))
 
 	badRequests := []string{
 		"0",
@@ -178,7 +178,7 @@ func TestGetCategoryTagFailsTagBadRequest(t *testing.T) {
 }
 
 func TestGetCategoryTagFailsCategoryNotFound(t *testing.T) {
-	appAssert, _, tagUUID := CreateSampleTag(t)
+	appAssert, _, tagUUID := CreateSampleTag(h.InitTest(t))
 
 	appAssert.TestOnError(
 		h.TestRequest{
@@ -191,7 +191,7 @@ func TestGetCategoryTagFailsCategoryNotFound(t *testing.T) {
 }
 
 func TestGetCategoryTagFailsTagNotFound(t *testing.T) {
-	appAssert, categoryUUID := CreateSampleCategory(t, nil)
+	appAssert, categoryUUID := CreateSampleCategory(h.InitTest(t))
 
 	appAssert.TestOnError(
 		h.TestRequest{

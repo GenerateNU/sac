@@ -21,7 +21,7 @@ type TestRequest struct {
 	Body               *map[string]interface{}
 	Headers            *map[string]string
 	Role               *models.UserRole
-	TestUserIDRequired *bool
+	TestUserIDReplaces *string
 }
 
 func (app TestApp) Send(request TestRequest) (*http.Response, error) {
@@ -29,17 +29,21 @@ func (app TestApp) Send(request TestRequest) (*http.Response, error) {
 
 	var req *http.Request
 
-	if request.TestUserIDRequired != nil && *request.TestUserIDRequired {
-		request.Path = strings.Replace(request.Path, ":userID", app.TestUser.UUID.String(), 1)
-		address = fmt.Sprintf("%s%s", app.Address, request.Path)
+	if request.TestUserIDReplaces != nil {
+		if strings.Contains(request.Path, *request.TestUserIDReplaces) {
+			request.Path = strings.Replace(request.Path, *request.TestUserIDReplaces, app.TestUser.UUID.String(), 1)
+			address = fmt.Sprintf("%s%s", app.Address, request.Path)
+		}
+		if request.Body != nil {
+			if _, ok := (*request.Body)[*request.TestUserIDReplaces]; ok {
+				(*request.Body)[*request.TestUserIDReplaces] = app.TestUser.UUID.String()
+			}
+		}
 	}
+
 	if request.Body == nil {
 		req = httptest.NewRequest(request.Method, address, nil)
 	} else {
-		if app.TestUser != nil && request.TestUserIDRequired != nil && *request.TestUserIDRequired {
-			(*request.Body)["id"] = app.TestUser.UUID
-		}
-
 		bodyBytes, err := json.Marshal(request.Body)
 		if err != nil {
 			return nil, err
@@ -78,10 +82,6 @@ func (app TestApp) Send(request TestRequest) (*http.Response, error) {
 }
 
 func (request TestRequest) test(existingAppAssert ExistingAppAssert) (ExistingAppAssert, *http.Response) {
-	if request.Role != nil {
-		existingAppAssert.App.Auth(*request.Role)
-	}
-
 	if existingAppAssert.App.TestUser == nil && request.Role != nil {
 		existingAppAssert.App.Auth(*request.Role)
 	}

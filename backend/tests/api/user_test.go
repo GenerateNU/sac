@@ -66,7 +66,7 @@ func TestGetUsersFailsForStudent(t *testing.T) {
 		h.TestRequest{
 			Method: fiber.MethodGet,
 			Path:   "/api/v1/users/",
-			Role:   &models.Super,
+			Role:   &models.Student,
 		},
 		errors.Unauthorized,
 	).Close()
@@ -78,7 +78,7 @@ func TestGetUserWorks(t *testing.T) {
 			Method:             fiber.MethodGet,
 			Path:               "/api/v1/users/:userID",
 			Role:               &models.Student,
-			TestUserIDRequired: h.BoolToPointer(true),
+			TestUserIDReplaces: h.StringToPointer(":userID"),
 		},
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
@@ -172,7 +172,7 @@ func TestUpdateUserWorks(t *testing.T) {
 				"last_name":  newLastName,
 			},
 			Role:               &models.Student,
-			TestUserIDRequired: h.BoolToPointer(true),
+			TestUserIDReplaces: h.StringToPointer(":userID"),
 		},
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
@@ -228,7 +228,7 @@ func TestUpdateUserFailsOnInvalidBody(t *testing.T) {
 				Path:               "/api/v1/users/:userID",
 				Body:               &invalidData,
 				Role:               &models.Student,
-				TestUserIDRequired: h.BoolToPointer(true),
+				TestUserIDReplaces: h.StringToPointer(":userID"),
 			},
 			h.ErrorWithTester{
 				Error:  errors.FailedToValidateUser,
@@ -241,8 +241,6 @@ func TestUpdateUserFailsOnInvalidBody(t *testing.T) {
 }
 
 func TestUpdateUserFailsBadRequest(t *testing.T) {
-	appAssert := h.InitTest(t)
-
 	badRequests := []string{
 		"0",
 		"-1",
@@ -252,19 +250,19 @@ func TestUpdateUserFailsBadRequest(t *testing.T) {
 	}
 
 	sampleStudent, rawPassword := h.SampleStudentFactory()
+	slightlyDifferentSampleStudentJSON := h.SampleStudentJSONFactory(sampleStudent, rawPassword)
+	(*slightlyDifferentSampleStudentJSON)["first_name"] = "John"
 
 	for _, badRequest := range badRequests {
-		appAssert.TestOnError(h.TestRequest{
+		h.InitTest(t).TestOnError(h.TestRequest{
 			Method: fiber.MethodPatch,
 			Path:   fmt.Sprintf("/api/v1/users/%s", badRequest),
-			Body:   h.SampleStudentJSONFactory(sampleStudent, rawPassword),
+			Body:   slightlyDifferentSampleStudentJSON,
 			Role:   &models.Student,
 		},
 			errors.FailedToParseUUID,
-		)
+		).Close()
 	}
-
-	appAssert.Close()
 }
 
 // TODO: should this be unauthorized or not found?
@@ -300,7 +298,7 @@ func TestDeleteUserWorks(t *testing.T) {
 			Method:             fiber.MethodDelete,
 			Path:               "/api/v1/users/:userID",
 			Role:               &models.Student,
-			TestUserIDRequired: h.BoolToPointer(true),
+			TestUserIDReplaces: h.StringToPointer(":userID"),
 		},
 		h.TesterWithStatus{
 			Status: fiber.StatusNoContent,
@@ -314,10 +312,9 @@ func TestDeleteUserNotExist(t *testing.T) {
 	uuid := uuid.New()
 
 	h.InitTest(t).TestOnErrorAndDB(h.TestRequest{
-		Method:             fiber.MethodDelete,
-		Path:               fmt.Sprintf("/api/v1/users/%s", uuid),
-		Role:               &models.Super,
-		TestUserIDRequired: h.BoolToPointer(true),
+		Method: fiber.MethodDelete,
+		Path:   fmt.Sprintf("/api/v1/users/%s", uuid),
+		Role:   &models.Super,
 	},
 		h.ErrorWithTester{
 			Error: errors.UserNotFound,
