@@ -34,7 +34,11 @@ func NewAuthController(authService services.AuthServiceInterface, authSettings c
 // @Failure     401   {string}    string "failed to get current user"
 // @Router		/api/v1/auth/me  [get]
 func (a *AuthController) Me(c *fiber.Ctx) error {
-	user, err := a.authService.Me(types.From(c).Issuer)
+	claims, err := types.From(c)
+	if err != nil {
+		return err.FiberError(c)
+	}
+	user, err := a.authService.Me(claims.Issuer)
 	if err != nil {
 		return err.FiberError(c)
 	}
