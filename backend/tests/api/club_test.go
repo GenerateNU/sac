@@ -8,6 +8,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
+	h "github.com/GenerateNU/sac/backend/tests/api/helpers"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -30,7 +31,7 @@ func SampleClubFactory(userID uuid.UUID) *map[string]interface{} {
 	}
 }
 
-func AssertClubBodyRespDB(app TestApp, assert *assert.A, resp *http.Response, body *map[string]interface{}) uuid.UUID {
+func AssertClubBodyRespDB(app h.TestApp, assert *assert.A, resp *http.Response, body *map[string]interface{}) uuid.UUID {
 	var respClub models.Club
 
 	err := json.NewDecoder(resp.Body).Decode(&respClub)
@@ -80,7 +81,7 @@ func AssertClubBodyRespDB(app TestApp, assert *assert.A, resp *http.Response, bo
 	return dbClub.ID
 }
 
-func AssertClubWithBodyRespDBMostRecent(app TestApp, assert *assert.A, resp *http.Response, body *map[string]interface{}) uuid.UUID {
+func AssertClubWithBodyRespDBMostRecent(app h.TestApp, assert *assert.A, resp *http.Response, body *map[string]interface{}) uuid.UUID {
 	var respClub models.Club
 
 	err := json.NewDecoder(resp.Body).Decode(&respClub)
@@ -128,23 +129,23 @@ func AssertClubWithBodyRespDBMostRecent(app TestApp, assert *assert.A, resp *htt
 	return dbClub.ID
 }
 
-func AssertSampleClubBodyRespDB(app TestApp, assert *assert.A, resp *http.Response, userID uuid.UUID) uuid.UUID {
+func AssertSampleClubBodyRespDB(app h.TestApp, assert *assert.A, resp *http.Response, userID uuid.UUID) uuid.UUID {
 	return AssertClubBodyRespDB(app, assert, resp, SampleClubFactory(userID))
 }
 
-func CreateSampleClub(t *testing.T, existingAppAssert *ExistingAppAssert) (eaa ExistingAppAssert, studentUUID uuid.UUID, clubUUID uuid.UUID) {
+func CreateSampleClub(t *testing.T, existingAppAssert *h.ExistingAppAssert) (eaa h.ExistingAppAssert, studentUUID uuid.UUID, clubUUID uuid.UUID) {
 	appAssert, userID, _ := CreateSampleStudent(t, existingAppAssert)
 
 	var sampleClubUUID uuid.UUID
 
-	newAppAssert := TestRequest{
+	newAppAssert := h.TestRequest{
 		Method: fiber.MethodPost,
 		Path:   "/api/v1/clubs/",
 		Body:   SampleClubFactory(userID),
 	}.TestOnStatusAndDB(t, &appAssert,
-		DBTesterWithStatus{
+		h.TesterWithStatus{
 			Status: fiber.StatusCreated,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 				sampleClubUUID = AssertSampleClubBodyRespDB(app, assert, resp, userID)
 			},
 		},
@@ -163,13 +164,13 @@ func TestCreateClubWorks(t *testing.T) {
 }
 
 func TestGetClubsWorks(t *testing.T) {
-	TestRequest{
+	h.TestRequest{
 		Method: fiber.MethodGet,
 		Path:   "/api/v1/clubs/",
 	}.TestOnStatusAndDB(t, nil,
-		DBTesterWithStatus{
+		h.TesterWithStatus{
 			Status: fiber.StatusOK,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 				var respClubs []models.Club
 
 				err := json.NewDecoder(resp.Body).Decode(&respClubs)
@@ -215,7 +216,7 @@ func TestGetClubsWorks(t *testing.T) {
 	).Close()
 }
 
-func AssertNumClubsRemainsAtN(app TestApp, assert *assert.A, resp *http.Response, n int) {
+func AssertNumClubsRemainsAtN(app h.TestApp, assert *assert.A, resp *http.Response, n int) {
 	var dbClubs []models.Club
 
 	err := app.Conn.Order("created_at desc").Find(&dbClubs).Error
@@ -225,7 +226,7 @@ func AssertNumClubsRemainsAtN(app TestApp, assert *assert.A, resp *http.Response
 	assert.Equal(n, len(dbClubs))
 }
 
-var TestNumClubsRemainsAt1 = func(app TestApp, assert *assert.A, resp *http.Response) {
+var TestNumClubsRemainsAt1 = func(app h.TestApp, assert *assert.A, resp *http.Response) {
 	AssertNumClubsRemainsAtN(app, assert, resp, 1)
 }
 
@@ -236,14 +237,14 @@ func AssertCreateBadClubDataFails(t *testing.T, jsonKey string, badValues []inte
 		sampleClubPermutation := *SampleClubFactory(uuid)
 		sampleClubPermutation[jsonKey] = badValue
 
-		TestRequest{
+		h.TestRequest{
 			Method: fiber.MethodPost,
 			Path:   "/api/v1/clubs/",
 			Body:   &sampleClubPermutation,
 		}.TestOnErrorAndDB(t, &appAssert,
-			ErrorWithDBTester{
-				Error:    errors.FailedToValidateClub,
-				DBTester: TestNumClubsRemainsAt1,
+			h.ErrorWithTester{
+				Error:  errors.FailedToValidateClub,
+				Tester: TestNumClubsRemainsAt1,
 			},
 		)
 	}
@@ -313,14 +314,14 @@ func TestUpdateClubWorks(t *testing.T) {
 	(*updatedClub)["name"] = "Updated Name"
 	(*updatedClub)["preview"] = "Updated Preview"
 
-	TestRequest{
+	h.TestRequest{
 		Method: fiber.MethodPatch,
 		Path:   fmt.Sprintf("/api/v1/clubs/%s", clubUUID),
 		Body:   updatedClub,
 	}.TestOnStatusAndDB(t, &appAssert,
-		DBTesterWithStatus{
+		h.TesterWithStatus{
 			Status: fiber.StatusOK,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 				AssertClubBodyRespDB(app, assert, resp, updatedClub)
 			},
 		},
@@ -339,14 +340,14 @@ func TestUpdateClubFailsOnInvalidBody(t *testing.T) {
 		{"application_link": "Not an URL"},
 		{"logo": "@12394X_2"},
 	} {
-		TestRequest{
+		h.TestRequest{
 			Method: fiber.MethodPatch,
 			Path:   fmt.Sprintf("/api/v1/clubs/%s", clubUUID),
 			Body:   &invalidData,
 		}.TestOnErrorAndDB(t, &appAssert,
-			ErrorWithDBTester{
+			h.ErrorWithTester{
 				Error: errors.FailedToValidateClub,
-				DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+				Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 					var dbClubs []models.Club
 
 					err := app.Conn.Order("created_at desc").Find(&dbClubs).Error
@@ -391,13 +392,13 @@ func TestUpdateClubFailsBadRequest(t *testing.T) {
 		"null",
 	}
 
-	sampleStudent, rawPassword := SampleStudentFactory()
+	sampleStudent, rawPassword := h.SampleStudentFactory()
 
 	for _, badRequest := range badRequests {
-		TestRequest{
+		h.TestRequest{
 			Method: fiber.MethodPatch,
 			Path:   fmt.Sprintf("/api/v1/clubs/%s", badRequest),
-			Body:   SampleStudentJSONFactory(sampleStudent, rawPassword),
+			Body:   h.SampleStudentJSONFactory(sampleStudent, rawPassword),
 		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
 	}
 }
@@ -407,14 +408,14 @@ func TestUpdateClubFailsOnClubIdNotExist(t *testing.T) {
 
 	uuid := uuid.New()
 
-	TestRequest{
+	h.TestRequest{
 		Method: fiber.MethodPatch,
 		Path:   fmt.Sprintf("/api/v1/clubs/%s", uuid),
 		Body:   SampleClubFactory(studentUUID),
 	}.TestOnErrorAndDB(t, &appAssert,
-		ErrorWithDBTester{
+		h.ErrorWithTester{
 			Error: errors.ClubNotFound,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 				var club models.Club
 
 				err := app.Conn.Where("id = ?", uuid).First(&club).Error
@@ -428,26 +429,26 @@ func TestUpdateClubFailsOnClubIdNotExist(t *testing.T) {
 func TestDeleteClubWorks(t *testing.T) {
 	appAssert, _, clubUUID := CreateSampleClub(t, nil)
 
-	TestRequest{
+	h.TestRequest{
 		Method: fiber.MethodDelete,
 		Path:   fmt.Sprintf("/api/v1/clubs/%s", clubUUID),
 	}.TestOnStatusAndDB(t, &appAssert,
-		DBTesterWithStatus{
-			Status:   fiber.StatusNoContent,
-			DBTester: TestNumClubsRemainsAt1,
+		h.TesterWithStatus{
+			Status: fiber.StatusNoContent,
+			Tester: TestNumClubsRemainsAt1,
 		},
 	).Close()
 }
 
 func TestDeleteClubNotExist(t *testing.T) {
 	uuid := uuid.New()
-	TestRequest{
+	h.TestRequest{
 		Method: fiber.MethodDelete,
 		Path:   fmt.Sprintf("/api/v1/clubs/%s", uuid),
 	}.TestOnErrorAndDB(t, nil,
-		ErrorWithDBTester{
+		h.ErrorWithTester{
 			Error: errors.ClubNotFound,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 				var club models.Club
 
 				err := app.Conn.Where("id = ?", uuid).First(&club).Error
@@ -470,7 +471,7 @@ func TestDeleteClubBadRequest(t *testing.T) {
 	}
 
 	for _, badRequest := range badRequests {
-		TestRequest{
+		h.TestRequest{
 			Method: fiber.MethodDelete,
 			Path:   fmt.Sprintf("/api/v1/clubs/%s", badRequest),
 		}.TestOnError(t, nil, errors.FailedToValidateID).Close()

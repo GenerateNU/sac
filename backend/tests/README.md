@@ -53,7 +53,7 @@ TestRequest{
   Path:   "/api/v1/categories/",
   Body: SampleCategoryFactory(),
  }.TestOnStatusAndDB(t, nil,
-  DBTesterWithStatus{
+  TesterWithStatus{
    Status:   fiber.StatusCreated,
    DBTester: AssertSampleCategoryBodyRespDB,
   },
@@ -62,7 +62,7 @@ TestRequest{
 
 ### DBTesters
 
-Often times there are common assertions you want to make about the database, for example, if the object in the response is the same as the object in the database. We can create a lambda function that takes in the `TestApp`, `*assert.A`, and `*http.Response` and makes the assertions we want. We can then pass this function to the `DBTesterWithStatus` struct.
+Often times there are common assertions you want to make about the database, for example, if the object in the response is the same as the object in the database. We can create a lambda function that takes in the `TestApp`, `*assert.A`, and `*http.Response` and makes the assertions we want. We can then pass this function to the `TesterWithStatus` struct.
 
 ```go
 func AssertSampleCategoryBodyRespDB(app TestApp, assert *assert.A, resp *http.Response) {

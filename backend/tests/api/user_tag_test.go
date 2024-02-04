@@ -7,6 +7,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
+	h "github.com/GenerateNU/sac/backend/tests/api/helpers"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -55,19 +56,19 @@ func SampleTagIDsFactory(tagIDs *[]uuid.UUID) *map[string]interface{} {
 	}
 }
 
-func CreateSetOfTags(t *testing.T, appAssert ExistingAppAssert) []uuid.UUID {
+func CreateSetOfTags(t *testing.T, appAssert h.ExistingAppAssert) []uuid.UUID {
 	categories := SampleCategoriesFactory()
 
 	categoryIDs := []uuid.UUID{}
 	for _, category := range *categories {
-		TestRequest{
+		h.TestRequest{
 			Method: fiber.MethodPost,
 			Path:   "/api/v1/categories/",
 			Body:   &category,
 		}.TestOnStatusAndDB(t, &appAssert,
-			DBTesterWithStatus{
+			h.TesterWithStatus{
 				Status: fiber.StatusCreated,
-				DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+				Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 					var respCategory models.Category
 
 					err := json.NewDecoder(resp.Body).Decode(&respCategory)
@@ -84,14 +85,14 @@ func CreateSetOfTags(t *testing.T, appAssert ExistingAppAssert) []uuid.UUID {
 
 	tagIDs := []uuid.UUID{}
 	for _, tag := range *tags {
-		TestRequest{
+		h.TestRequest{
 			Method: fiber.MethodPost,
 			Path:   "/api/v1/tags/",
 			Body:   &tag,
 		}.TestOnStatusAndDB(t, &appAssert,
-			DBTesterWithStatus{
+			h.TesterWithStatus{
 				Status: fiber.StatusCreated,
-				DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+				Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 					var respTag models.Tag
 
 					err := json.NewDecoder(resp.Body).Decode(&respTag)
@@ -107,7 +108,7 @@ func CreateSetOfTags(t *testing.T, appAssert ExistingAppAssert) []uuid.UUID {
 	return tagIDs
 }
 
-func AssertUserTagsRespDB(app TestApp, assert *assert.A, resp *http.Response, id uuid.UUID) {
+func AssertUserTagsRespDB(app h.TestApp, assert *assert.A, resp *http.Response, id uuid.UUID) {
 	var respTags []models.Tag
 
 	// Retrieve the tags from the response:
@@ -135,7 +136,7 @@ func AssertUserTagsRespDB(app TestApp, assert *assert.A, resp *http.Response, id
 	}
 }
 
-func AssertSampleUserTagsRespDB(app TestApp, assert *assert.A, resp *http.Response, uuid uuid.UUID) {
+func AssertSampleUserTagsRespDB(app h.TestApp, assert *assert.A, resp *http.Response, uuid uuid.UUID) {
 	AssertUserTagsRespDB(app, assert, resp, uuid)
 }
 
@@ -152,7 +153,7 @@ func TestCreateUserTagsFailsOnInvalidDataType(t *testing.T) {
 		malformedTag := *SampleTagIDsFactory(nil)
 		malformedTag["tags"] = tag
 
-		TestRequest{
+		h.TestRequest{
 			Method: fiber.MethodPost,
 			Path:   "/api/v1/users/1/tags/",
 			Body:   &malformedTag,
@@ -170,7 +171,7 @@ func TestCreateUserTagsFailsOnInvalidUserID(t *testing.T) {
 	}
 
 	for _, badRequest := range badRequests {
-		TestRequest{
+		h.TestRequest{
 			Method: fiber.MethodPost,
 			Path:   fmt.Sprintf("/api/v1/users/%s/tags", badRequest),
 			Body:   SampleTagIDsFactory(nil),
@@ -195,7 +196,7 @@ func TestCreateUserTagsFailsOnInvalidKey(t *testing.T) {
 	}
 
 	for _, body := range invalidBody {
-		TestRequest{
+		h.TestRequest{
 			Method: fiber.MethodPost,
 			Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid),
 			Body:   &body,
@@ -206,7 +207,7 @@ func TestCreateUserTagsFailsOnInvalidKey(t *testing.T) {
 }
 
 func TestCreateUserTagsFailsOnNonExistentUser(t *testing.T) {
-	TestRequest{
+	h.TestRequest{
 		Method: fiber.MethodPost,
 		Path:   fmt.Sprintf("/api/v1/users/%s/tags", uuid.New()),
 		Body:   SampleTagIDsFactory(nil),
@@ -220,14 +221,14 @@ func TestCreateUserTagsWorks(t *testing.T) {
 	tagUUIDs := CreateSetOfTags(t, appAssert)
 
 	// Confirm adding real tags adds them to the user:
-	TestRequest{
+	h.TestRequest{
 		Method: fiber.MethodPost,
 		Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid),
 		Body:   SampleTagIDsFactory(&tagUUIDs),
 	}.TestOnStatusAndDB(t, &appAssert,
-		DBTesterWithStatus{
+		h.TesterWithStatus{
 			Status: fiber.StatusCreated,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 				AssertSampleUserTagsRespDB(app, assert, resp, uuid)
 			},
 		},
@@ -239,14 +240,14 @@ func TestCreateUserTagsWorks(t *testing.T) {
 func TestCreateUserTagsNoneAddedIfInvalid(t *testing.T) {
 	appAssert, uuid, _ := CreateSampleStudent(t, nil)
 
-	TestRequest{
+	h.TestRequest{
 		Method: fiber.MethodPost,
 		Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid),
 		Body:   SampleTagIDsFactory(nil),
 	}.TestOnStatusAndDB(t, &appAssert,
-		DBTesterWithStatus{
+		h.TesterWithStatus{
 			Status: fiber.StatusCreated,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 				var respTags []models.Tag
 
 				err := json.NewDecoder(resp.Body).Decode(&respTags)
@@ -262,7 +263,7 @@ func TestCreateUserTagsNoneAddedIfInvalid(t *testing.T) {
 }
 
 func TestGetUserTagsFailsOnNonExistentUser(t *testing.T) {
-	TestRequest{
+	h.TestRequest{
 		Method: fiber.MethodGet,
 		Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid.New()),
 	}.TestOnError(t, nil, errors.UserNotFound).Close()
@@ -271,13 +272,13 @@ func TestGetUserTagsFailsOnNonExistentUser(t *testing.T) {
 func TestGetUserTagsReturnsEmptyListWhenNoneAdded(t *testing.T) {
 	appAssert, uuid, _ := CreateSampleStudent(t, nil)
 
-	TestRequest{
+	h.TestRequest{
 		Method: fiber.MethodGet,
 		Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid),
 	}.TestOnStatusAndDB(t, &appAssert,
-		DBTesterWithStatus{
+		h.TesterWithStatus{
 			Status: 200,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 				var respTags []models.Tag
 
 				err := json.NewDecoder(resp.Body).Decode(&respTags)
@@ -299,20 +300,20 @@ func TestGetUserTagsReturnsCorrectList(t *testing.T) {
 	tagUUIDs := CreateSetOfTags(t, appAssert)
 
 	// Add the tags:
-	TestRequest{
+	h.TestRequest{
 		Method: fiber.MethodPost,
 		Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid),
 		Body:   SampleTagIDsFactory(&tagUUIDs),
 	}.TestOnStatus(t, &appAssert, fiber.StatusCreated)
 
 	// Get the tags:
-	TestRequest{
+	h.TestRequest{
 		Method: fiber.MethodGet,
 		Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid),
 	}.TestOnStatusAndDB(t, &appAssert,
-		DBTesterWithStatus{
+		h.TesterWithStatus{
 			Status: fiber.StatusOK,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 				AssertSampleUserTagsRespDB(app, assert, resp, uuid)
 			},
 		},
