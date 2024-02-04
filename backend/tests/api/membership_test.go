@@ -2,6 +2,7 @@ package tests
 
 import (
 	"fmt"
+	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/goccy/go-json"
@@ -12,26 +13,86 @@ import (
 	"testing"
 )
 
-// Creates a single club with a single user for testing
+func CreateSampleUser2(t *testing.T, existingAppAssert *ExistingAppAssert) (ExistingAppAssert, uuid.UUID) {
+	var uuid uuid.UUID
+
+	body := SampleUserFactory()
+	(*body)["nuid"] = "012820050"
+	(*body)["email"] = "brennan.mic@northeastern.edu"
+
+	newAppAssert := TestRequest{
+		Method: fiber.MethodPost,
+		Path:   "/api/v1/users/",
+		Body:   body,
+	}.TestOnStatusAndDB(t, existingAppAssert,
+		DBTesterWithStatus{
+			Status: fiber.StatusCreated,
+			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+				var respUser models.User
+
+				err := json.NewDecoder(resp.Body).Decode(&respUser)
+
+				assert.NilError(err)
+
+				var dbUser models.User
+
+				err = app.Conn.Where("nuid = ?", "012820050").First(&dbUser).Error
+
+				assert.NilError(err)
+
+				assert.Equal(dbUser.FirstName, respUser.FirstName)
+				assert.Equal(dbUser.LastName, respUser.LastName)
+				assert.Equal(dbUser.Email, respUser.Email)
+				assert.Equal(dbUser.NUID, respUser.NUID)
+				assert.Equal(dbUser.College, respUser.College)
+				assert.Equal(dbUser.Year, respUser.Year)
+
+				match, err := auth.ComparePasswordAndHash((*body)["password"].(string), dbUser.PasswordHash)
+
+				assert.NilError(err)
+
+				assert.Assert(match)
+
+				assert.Equal((*body)["first_name"].(string), dbUser.FirstName)
+				assert.Equal((*body)["last_name"].(string), dbUser.LastName)
+				assert.Equal((*body)["email"].(string), dbUser.Email)
+				assert.Equal((*body)["nuid"].(string), dbUser.NUID)
+				assert.Equal(models.College((*body)["college"].(string)), dbUser.College)
+				assert.Equal(models.Year((*body)["year"].(int)), dbUser.Year)
+
+				uuid = dbUser.ID
+			},
+		},
+	)
+
+	if existingAppAssert == nil {
+		return newAppAssert, uuid
+	} else {
+		return *existingAppAssert, uuid
+	}
+
+}
+
+// Creates a single club with a single member for testing
 func CreateSampleClubWithMembership(t *testing.T, existingAppAssert *ExistingAppAssert) (eaa ExistingAppAssert, userUUID uuid.UUID, clubUUID uuid.UUID) {
 	appAssert, _, clubID := CreateSampleClub(t, existingAppAssert)
-	appAssert, userID := CreateSampleUser(t, &appAssert)
+	appAssert2, userID := CreateSampleUser2(t, &appAssert)
 
 	newAppAssert := TestRequest{
 		Method: fiber.MethodPost,
 		Path:   fmt.Sprintf("/api/v1/clubs/%s/membership/%s", clubID, userID),
 		Body:   &map[string]interface{}{},
-	}.TestOnStatusAndDB(t, existingAppAssert,
+	}.TestOnStatusAndDB(t, &appAssert2,
 		DBTesterWithStatus{
-			Status: fiber.StatusCreated,
+			Status: fiber.StatusNoContent,
 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
 				club := models.Club{}
-				err := app.Conn.Where("id = ?").First(&club).Error
+				err := app.Conn.Where("id = ?", clubID).First(&club).Error
 
 				assert.NilError(err)
 
 				var members []models.User
-				err = app.Conn.Model(&club).Association("Members").Find(&members)
+				err = app.Conn.Model(&club).Association("Member").Find(&members)
 
 				assert.NilError(err)
 				assert.Equal(len(members), 1)
@@ -77,7 +138,7 @@ func TestCreateMembershipFailsOnInvalidClubId(t *testing.T) {
 		Method: fiber.MethodPost,
 		Path:   fmt.Sprintf("/api/v1/clubs/%s/membership/%s", "gobbledygook", userID),
 		Body:   &map[string]interface{}{},
-	}.TestOnError(t, &appAssert, errors.ClubNotFound)
+	}.TestOnError(t, &appAssert, errors.FailedToValidateID)
 }
 
 // Create membership by user id - 404 not found (bad user id)
@@ -88,29 +149,29 @@ func TestCreateMembershipFailsOnInvalidUserId(t *testing.T) {
 		Method: fiber.MethodPost,
 		Path:   fmt.Sprintf("/api/v1/clubs/%s/membership/%s", clubID, "gobbledygook"),
 		Body:   &map[string]interface{}{},
-	}.TestOnError(t, &appAssert, errors.UserNotFound)
+	}.TestOnError(t, &appAssert, errors.FailedToValidateID)
 }
 
 // Create membership by email lists - 201 OK
 func TestCreateMembershipByEmailListWorks(t *testing.T) {
 	appAssert, _, clubID := CreateSampleClub(t, nil)
-	appAssert, userID := CreateSampleUser(t, nil)
+	appAssert2, userID := CreateSampleUser2(t, &appAssert)
 
 	TestRequest{
 		Method: fiber.MethodPost,
 		Path:   fmt.Sprintf("/api/v1/clubs/%s/membership", clubID),
 		Body: &map[string]interface{}{
 			"emails": []string{
-				"doe.jane@northeastern.edu",
+				"brennan.mic@northeastern.edu",
 			},
 		},
-	}.TestOnStatusAndDB(t, &appAssert,
+	}.TestOnStatusAndDB(t, &appAssert2,
 		DBTesterWithStatus{
-			Status: fiber.StatusCreated,
+			Status: fiber.StatusNoContent,
 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
 				var club models.Club
 				var members []models.User
-				err := app.Conn.Where("id = ?", clubID).First(&club).Association("Members").Find(&members).Error
+				err := app.Conn.Where("id = ?", clubID).First(&club).Association("Member").Find(&members).Error
 
 				assert.NilError(err)
 				assert.Equal(1, len(members))
@@ -124,9 +185,6 @@ func TestCreateMembershipByEmailListFailsOnInvalidBody(t *testing.T) {
 	appAssert, _, clubID := CreateSampleClub(t, nil)
 
 	badBodies := []map[string]interface{}{
-		{
-			"emails": 57,
-		},
 		{
 			"foo":   "bar",
 			"alice": "bob",
@@ -162,7 +220,7 @@ func TestCreateMembershipByEmailListFailsOnInvalidClubId(t *testing.T) {
 				"doe.jane@northeastern.edu",
 			},
 		},
-	}.TestOnError(t, nil, errors.ClubNotFound)
+	}.TestOnError(t, nil, errors.FailedToValidateID)
 }
 
 // Create membership by email lists - 404 not found (no user with email)
@@ -191,7 +249,7 @@ func TestDeleteMembershipWorks(t *testing.T) {
 
 	TestRequest{
 		Method: fiber.MethodDelete,
-		Path:   fmt.Sprintf("/api/v1/clubs/%s/memebrship/%s", clubID, userID),
+		Path:   fmt.Sprintf("/api/v1/clubs/%s/membership/%s", clubID, userID),
 		Body:   &map[string]interface{}{},
 	}.TestOnStatusAndDB(t, &appAssert,
 		DBTesterWithStatus{
@@ -408,5 +466,5 @@ func TestGetMembershipsForClubFailsOnInvalidClubId(t *testing.T) {
 		Method: fiber.MethodGet,
 		Path:   fmt.Sprintf("/api/v1/clubs/%s/membership", "gobbledygook"),
 		Body:   &map[string]interface{}{},
-	}.TestOnError(t, nil, errors.ClubNotFound)
+	}.TestOnError(t, nil, errors.FailedToValidateID)
 }

@@ -96,9 +96,9 @@ func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface) 
 
 	memberships := clubs.Group("/:clubID/membership")
 
-	memberships.Get("/", clubController.GetClubMembers)          // good
-	memberships.Put("/:userID", clubController.CreateMembership) // good
-	memberships.Put("/", clubController.CreateMembershipsByEmail)
+	memberships.Get("/", clubController.GetClubMembers)           // good
+	memberships.Post("/:userID", clubController.CreateMembership) // good
+	memberships.Post("/", clubController.CreateMembershipsByEmail)
 	memberships.Delete("/:userID", clubController.DeleteMembership) // good
 	memberships.Delete("/", clubController.DeleteMemberships)
 }

@@ -134,7 +134,6 @@ func AssertSampleClubBodyRespDB(app TestApp, assert *assert.A, resp *http.Respon
 
 func CreateSampleClub(t *testing.T, existingAppAssert *ExistingAppAssert) (eaa ExistingAppAssert, userUUID uuid.UUID, clubUUID uuid.UUID) {
 	appAssert, userID := CreateSampleUser(t, existingAppAssert)
-
 	var sampleClubUUID uuid.UUID
 
 	newAppAssert := TestRequest{

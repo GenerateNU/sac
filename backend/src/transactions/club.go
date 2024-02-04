@@ -137,7 +137,7 @@ func CreateMembershipsByEmail(db *gorm.DB, clubID uuid.UUID, emails []string) *e
 	}
 
 	var users []models.User
-	result := db.Where("Email IN ?", emails).Find(&users)
+	result := db.Where("email IN ?", emails).Find(&users).Error
 	if result != nil {
 		return &errors.UserNotFound
 	}
