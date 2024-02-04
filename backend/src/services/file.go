@@ -6,7 +6,7 @@ import (
 	"mime/multipart"
 	"strings"
 
-    "github.com/GenerateNU/sac/backend/src/config"
+	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/aws/aws-sdk-go/aws"
@@ -18,8 +18,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
-
-
 
 type FileServiceInterface interface {
 	CreateFile(file models.File, data *multipart.FileHeader, reader io.Reader) (*models.File, *errors.Error)
@@ -37,11 +35,9 @@ func createAWSSession(settings config.AWSSettings) (*session.Session, error) {
 		Region:      aws.String("us-east-2"),
 		Credentials: credentials.NewStaticCredentials(settings.ID, settings.SECRET, ""),
 	})
-
 	if err != nil {
 		return nil, err
 	}
-
 	return sess, nil
 }
 
@@ -52,7 +48,6 @@ func (f *FileService) GetFile(id string) (*models.File, *errors.Error) {
 	if err := f.DB.First(&file, id).Error; err != nil {
 		return &models.File{}, &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToGetFile}
 	}
-
 	return &file, nil
 }
 
@@ -106,7 +101,10 @@ func (f *FileService) CreateFile(file models.File, data *multipart.FileHeader, r
 
 	// Create the file in the database
 	if err := f.DB.Create(&file).Error; err != nil {
-		f.DeleteFile(fmt.Sprint(file.ID), true) // delete file from s3 if it cant be made in database
+		err = f.DeleteFile(fmt.Sprint(file.ID), true) // delete file from s3 if it cant be made in database
+		if err != nil {
+			return nil, &errors.Error{StatusCode: fiber.StatusInternalServerError, Message: errors.FailedToDeleteFile}
+		}
 		return nil, &errors.Error{StatusCode: fiber.StatusInternalServerError, Message: errors.FailedToCreateFileInDB}
 	}
 	return &file, nil
@@ -151,6 +149,5 @@ func ValidateData(c *fiber.Ctx, model interface{}) error {
 	if err := validate.Struct(model); err != nil {
 		return err
 	}
-
 	return nil
 }

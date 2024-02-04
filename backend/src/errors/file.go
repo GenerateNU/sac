@@ -11,4 +11,5 @@ const (
 	FailedToValidatedData    = "failed to validate data"
 	FailedToOpenFile         = "failed to open file"
 	InvalidImageFormat       = "invalid image format"
+	FailedToDeleteFile       = "failed to delete file from database"
 )
