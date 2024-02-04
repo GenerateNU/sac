@@ -72,7 +72,6 @@ type UpdateUserRequestBody struct {
 	FirstName string  `json:"first_name" validate:"omitempty,max=255"`
 	LastName  string  `json:"last_name" validate:"omitempty,max=255"`
 	Email     string  `json:"email" validate:"omitempty,email,neu_email,max=255"`
-	Password  string  `json:"password" validate:"omitempty,password"`
 	College   College `json:"college" validate:"omitempty,oneof=CAMD DMSB KCCS CE BCHS SL CPS CS CSSH"`
 	Year      Year    `json:"year" validate:"omitempty,min=1,max=6"`
 }

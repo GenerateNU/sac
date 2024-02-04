@@ -14,7 +14,7 @@ import (
 func (m *MiddlewareService) ClubAuthorizeById(c *fiber.Ctx) error {
 	clubUUID, err := utilities.ValidateID(c.Params("id"))
 	if err != nil {
-		return errors.FailedToParseUUID.FiberError(c)
+		return errors.FailedToValidateID.FiberError(c)
 	}
 
 	token, tokenErr := auth.ParseAccessToken(c.Cookies("access_token"), m.AuthSettings.AccessToken)

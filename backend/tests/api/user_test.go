@@ -128,14 +128,13 @@ func TestGetUserFailsBadRequest(t *testing.T) {
 				Path:   fmt.Sprintf("/api/v1/users/%s", badRequest),
 				Role:   &models.Super,
 			},
-			errors.FailedToParseUUID,
+			errors.FailedToValidateID,
 		)
 	}
 
 	appAssert.Close()
 }
 
-// TODO: should this be not found or unauthorized?
 func TestGetUserFailsNotExist(t *testing.T) {
 	uuid := uuid.New()
 
@@ -158,7 +157,6 @@ func TestGetUserFailsNotExist(t *testing.T) {
 	).Close()
 }
 
-// TODO: should this be unathorized or be allowed?
 func TestUpdateUserWorks(t *testing.T) {
 	newFirstName := "Michael"
 	newLastName := "Brennan"
@@ -211,18 +209,14 @@ func TestUpdateUserWorks(t *testing.T) {
 	).Close()
 }
 
-// TODO: should this be unauthorized or fail on processing request
 func TestUpdateUserFailsOnInvalidBody(t *testing.T) {
-	appAssert := h.InitTest(t)
-
 	for _, invalidData := range []map[string]interface{}{
 		{"email": "not.northeastern@gmail.com"},
 		{"nuid": "1800-123-4567"},
-		{"password": "1234"},
 		{"year": 1963},
 		{"college": "UT-Austin"},
 	} {
-		appAssert.TestOnErrorAndDB(
+		h.InitTest(t).TestOnErrorAndDB(
 			h.TestRequest{
 				Method:             fiber.MethodPatch,
 				Path:               "/api/v1/users/:userID",
@@ -234,10 +228,8 @@ func TestUpdateUserFailsOnInvalidBody(t *testing.T) {
 				Error:  errors.FailedToValidateUser,
 				Tester: TestNumUsersRemainsAt2,
 			},
-		)
+		).Close()
 	}
-
-	appAssert.Close()
 }
 
 func TestUpdateUserFailsBadRequest(t *testing.T) {
@@ -260,12 +252,11 @@ func TestUpdateUserFailsBadRequest(t *testing.T) {
 			Body:   slightlyDifferentSampleStudentJSON,
 			Role:   &models.Student,
 		},
-			errors.FailedToParseUUID,
+			errors.FailedToValidateID,
 		).Close()
 	}
 }
 
-// TODO: should this be unauthorized or not found?
 func TestUpdateUserFailsOnIdNotExist(t *testing.T) {
 	uuid := uuid.New()
 
@@ -291,7 +282,6 @@ func TestUpdateUserFailsOnIdNotExist(t *testing.T) {
 	).Close()
 }
 
-// TODO: should this be unauthorized?
 func TestDeleteUserWorks(t *testing.T) {
 	h.InitTest(t).TestOnStatusAndDB(
 		h.TestRequest{
@@ -307,7 +297,6 @@ func TestDeleteUserWorks(t *testing.T) {
 	).Close()
 }
 
-// TODO: how should this work now?
 func TestDeleteUserNotExist(t *testing.T) {
 	uuid := uuid.New()
 
@@ -350,7 +339,7 @@ func TestDeleteUserBadRequest(t *testing.T) {
 				Role:   &models.Super,
 			},
 			h.ErrorWithTester{
-				Error:  errors.FailedToParseUUID,
+				Error:  errors.FailedToValidateID,
 				Tester: TestNumUsersRemainsAt1,
 			},
 		)

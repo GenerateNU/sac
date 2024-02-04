@@ -192,7 +192,7 @@ func TestCreateUserTagsFailsOnInvalidUserID(t *testing.T) {
 				Body:   SampleTagIDsFactory(nil),
 				Role:   &models.Student,
 			},
-			errors.FailedToParseUUID,
+			errors.FailedToValidateID,
 		).Close()
 	}
 }
@@ -225,7 +225,6 @@ func TestCreateUserTagsFailsOnInvalidKey(t *testing.T) {
 	}
 }
 
-// TODO: should this be unauthorized or not found?
 func TestCreateUserTagsFailsOnNonExistentUser(t *testing.T) {
 	uuid := uuid.New()
 
@@ -242,7 +241,7 @@ func TestCreateUserTagsFailsOnNonExistentUser(t *testing.T) {
 				var dbUser models.User
 				err := app.Conn.First(&dbUser, uuid).Error
 
-				assert.Error(err)
+				assert.Assert(err != nil)
 			},
 		},
 	).Close()
@@ -296,7 +295,6 @@ func TestCreateUserTagsNoneAddedIfInvalid(t *testing.T) {
 	).Close()
 }
 
-// TODO: should this be unauthorized or not found?
 func TestGetUserTagsFailsOnNonExistentUser(t *testing.T) {
 	h.InitTest(t).TestOnError(
 		h.TestRequest{

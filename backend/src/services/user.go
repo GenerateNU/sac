@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/GenerateNU/sac/backend/src/auth"
@@ -86,17 +87,12 @@ func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBod
 		return nil, &errors.FailedToValidateUser
 	}
 
-	passwordHash, err := auth.ComputePasswordHash(userBody.Password)
-	if err != nil {
-		return nil, &errors.FailedToComputePasswordHash
-	}
-
 	user, err := utilities.MapRequestToModel(userBody, &models.User{})
 	if err != nil {
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	user.PasswordHash = *passwordHash
+	fmt.Println(user)
 
 	return transactions.UpdateUser(u.DB, *idAsUUID, *user)
 }

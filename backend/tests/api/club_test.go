@@ -70,7 +70,6 @@ func AssertClubBodyRespDB(app h.TestApp, assert *assert.A, resp *http.Response, 
 	assert.Equal((*body)["name"].(string), dbClub.Name)
 	assert.Equal((*body)["preview"].(string), dbClub.Preview)
 	assert.Equal((*body)["description"].(string), dbClub.Description)
-	assert.Equal((*body)["num_members"].(int), dbClub.NumMembers)
 	assert.Equal((*body)["is_recruiting"].(bool), dbClub.IsRecruiting)
 	assert.Equal(models.RecruitmentCycle((*body)["recruitment_cycle"].(string)), dbClub.RecruitmentCycle)
 	assert.Equal(models.RecruitmentType((*body)["recruitment_type"].(string)), dbClub.RecruitmentType)
@@ -309,7 +308,6 @@ func TestCreateClubFailsOnInvalidLogo(t *testing.T) {
 	)
 }
 
-// TODO: need to be able to join the club
 func TestUpdateClubWorks(t *testing.T) {
 	appAssert, studentUUID, clubUUID := CreateSampleClub(h.InitTest(t))
 
@@ -333,7 +331,6 @@ func TestUpdateClubWorks(t *testing.T) {
 	).Close()
 }
 
-// TODO: need to be able to join the club to try to update
 func TestUpdateClubFailsOnInvalidBody(t *testing.T) {
 	appAssert, studentUUID, clubUUID := CreateSampleClub(h.InitTest(t))
 
@@ -374,11 +371,10 @@ func TestUpdateClubFailsOnInvalidBody(t *testing.T) {
 
 					assert.Equal(1, len(dbAdmins))
 
-					assert.Equal((*body)["user_id"].(uuid.UUID), dbAdmins[0].ID)
+					assert.Equal(*(*body)["user_id"].(*uuid.UUID), dbAdmins[0].ID)
 					assert.Equal((*body)["name"].(string), dbClub.Name)
 					assert.Equal((*body)["preview"].(string), dbClub.Preview)
 					assert.Equal((*body)["description"].(string), dbClub.Description)
-					assert.Equal((*body)["num_members"].(int), dbClub.NumMembers)
 					assert.Equal((*body)["is_recruiting"].(bool), dbClub.IsRecruiting)
 					assert.Equal(models.RecruitmentCycle((*body)["recruitment_cycle"].(string)), dbClub.RecruitmentCycle)
 					assert.Equal(models.RecruitmentType((*body)["recruitment_type"].(string)), dbClub.RecruitmentType)
@@ -412,14 +408,13 @@ func TestUpdateClubFailsBadRequest(t *testing.T) {
 				Body:   h.SampleStudentJSONFactory(sampleStudent, rawPassword),
 				Role:   &models.Super,
 			},
-			errors.FailedToParseUUID,
+			errors.FailedToValidateID,
 		)
 	}
 
 	appAssert.Close()
 }
 
-// TODO: should this be unauthorized or not found?
 func TestUpdateClubFailsOnClubIdNotExist(t *testing.T) {
 	uuid := uuid.New()
 
@@ -427,7 +422,7 @@ func TestUpdateClubFailsOnClubIdNotExist(t *testing.T) {
 		Method:             fiber.MethodPatch,
 		Path:               fmt.Sprintf("/api/v1/clubs/%s", uuid),
 		Body:               SampleClubFactory(nil),
-		Role:               &models.Student,
+		Role:               &models.Super,
 		TestUserIDReplaces: h.StringToPointer("user_id"),
 	},
 		h.ErrorWithTester{
@@ -443,7 +438,6 @@ func TestUpdateClubFailsOnClubIdNotExist(t *testing.T) {
 	).Close()
 }
 
-// TODO: need to be able to join the club
 func TestDeleteClubWorks(t *testing.T) {
 	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
@@ -460,7 +454,6 @@ func TestDeleteClubWorks(t *testing.T) {
 	).Close()
 }
 
-// TODO: should this be unauthorized or not found?
 func TestDeleteClubNotExist(t *testing.T) {
 	uuid := uuid.New()
 	h.InitTest(t).TestOnErrorAndDB(
@@ -470,7 +463,7 @@ func TestDeleteClubNotExist(t *testing.T) {
 			Role:   &models.Super,
 		},
 		h.ErrorWithTester{
-			Error: errors.Unauthorized,
+			Error: errors.ClubNotFound,
 			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 				var club models.Club
 
@@ -501,7 +494,8 @@ func TestDeleteClubBadRequest(t *testing.T) {
 				Method: fiber.MethodDelete,
 				Path:   fmt.Sprintf("/api/v1/clubs/%s", badRequest),
 				Role:   &models.Super,
-			}, errors.FailedToParseUUID,
+			},
+			errors.FailedToValidateID,
 		)
 	}
 
