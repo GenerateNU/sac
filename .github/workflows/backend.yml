@@ -96,8 +96,6 @@ jobs:
           docker exec $CONTAINER_ID cat /var/lib/postgresql/data/postgresql.conf | grep max_connections
       - name: Restart PostgreSQL Container
         run: docker restart $(docker ps --filter "publish=5432" --format "{{.ID}}")
-      - name: Migrate DB
-        run: cd ./backend/src && go run main.go --only-migrate
       - name: Run Tests with Coverage
         run: cd ./backend/ && go test -bench=. -benchmem -race -coverprofile=coverage.txt ./...
       - name: Print Coverage

@@ -14,10 +14,10 @@ var (
 	once     sync.Once
 )
 
-func RootConn(dbConfig config.DatabaseSettings) {
+func RootConn(dbSettings config.DatabaseSettings) {
 	once.Do(func() {
 		var err error
-		rootConn, err = database.EstablishConn(dbConfig.WithoutDb())
+		rootConn, err = database.EstablishConn(dbSettings.WithoutDb())
 		if err != nil {
 			panic(err)
 		}
