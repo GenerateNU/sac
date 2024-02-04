@@ -27,7 +27,7 @@ type Contact struct {
 }
 
 type PutContactRequestBody struct {
-	Type    Media  `gorm:"type:varchar(255)" json:"type" validate:"required,max=255"`
+	Type    ContactType  `gorm:"type:varchar(255)" json:"type" validate:"required,max=255"`
 	Content string `gorm:"type:varchar(255)" json:"content" validate:"required,url,max=255"`
 	ClubID  uint   `gorm:"foreignKey:ClubID" json:"-" validate:"min=1"`
 }
