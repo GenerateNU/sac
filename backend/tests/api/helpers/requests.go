@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/GenerateNU/sac/backend/src/errors"
@@ -16,11 +17,12 @@ import (
 )
 
 type TestRequest struct {
-	Method  string
-	Path    string
-	Body    *map[string]interface{}
-	Headers *map[string]string
-	Role    *models.UserRole
+	Method             string
+	Path               string
+	Body               *map[string]interface{}
+	Headers            *map[string]string
+	Role               *models.UserRole
+	TestUserIDRequired *bool
 }
 
 func (app TestApp) Send(request TestRequest) (*http.Response, error) {
@@ -28,9 +30,17 @@ func (app TestApp) Send(request TestRequest) (*http.Response, error) {
 
 	var req *http.Request
 
+	if request.TestUserIDRequired != nil && *request.TestUserIDRequired {
+		request.Path = strings.Replace(request.Path, ":userID", app.TestUser.UUID.String(), 1)
+		address = fmt.Sprintf("%s%s", app.Address, request.Path)
+	}
 	if request.Body == nil {
 		req = httptest.NewRequest(request.Method, address, nil)
 	} else {
+		if app.TestUser != nil && request.TestUserIDRequired != nil && *request.TestUserIDRequired {
+			(*request.Body)["id"] = app.TestUser.UUID
+		}
+
 		bodyBytes, err := json.Marshal(request.Body)
 		if err != nil {
 			return nil, err
@@ -75,9 +85,14 @@ func (request TestRequest) Test(t *testing.T, existingAppAssert *ExistingAppAsse
 		if request.Role != nil {
 			app.Auth(*request.Role)
 		}
+
 		existingAppAssert = &ExistingAppAssert{
 			App:    app,
 			Assert: assert,
+		}
+	} else {
+		if existingAppAssert.App.TestUser == nil && request.Role != nil {
+			existingAppAssert.App.Auth(*request.Role)
 		}
 	}
 
@@ -147,13 +162,13 @@ type TesterWithStatus struct {
 	Tester
 }
 
-func (request TestRequest) TestOnStatusAndDB(t *testing.T, existingAppAssert *ExistingAppAssert, dbTesterStatus TesterWithStatus) ExistingAppAssert {
+func (request TestRequest) TestOnStatusAndDB(t *testing.T, existingAppAssert *ExistingAppAssert, testerStatus TesterWithStatus) ExistingAppAssert {
 	appAssert, resp := request.Test(t, existingAppAssert)
 	app, assert := appAssert.App, appAssert.Assert
 
-	assert.Equal(dbTesterStatus.Status, resp.StatusCode)
+	assert.Equal(testerStatus.Status, resp.StatusCode)
 
-	dbTesterStatus.Tester(app, assert, resp)
+	testerStatus.Tester(app, assert, resp)
 
 	return appAssert
 }

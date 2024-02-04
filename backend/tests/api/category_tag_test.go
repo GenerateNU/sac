@@ -53,6 +53,7 @@ func TestGetCategoryTagsWorks(t *testing.T) {
 	h.TestRequest{
 		Method: fiber.MethodGet,
 		Path:   fmt.Sprintf("/api/v1/categories/%s/tags", categoryUUID),
+		Role:   &models.Super,
 	}.TestOnStatusAndDB(t, &appAssert,
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
@@ -78,6 +79,7 @@ func TestGetCategoryTagsFailsCategoryBadRequest(t *testing.T) {
 		h.TestRequest{
 			Method: fiber.MethodGet,
 			Path:   fmt.Sprintf("/api/v1/categories/%s/tags", badRequest),
+			Role:   &models.Super,
 		}.TestOnError(t, &appAssert, errors.FailedToValidateID)
 	}
 
@@ -92,17 +94,13 @@ func TestGetCategoryTagsFailsCategoryNotFound(t *testing.T) {
 	h.TestRequest{
 		Method: fiber.MethodGet,
 		Path:   fmt.Sprintf("/api/v1/categories/%s/tags", uuid),
+		Role:   &models.Super,
 	}.TestOnErrorAndDB(t, &appAssert, h.ErrorWithTester{
 		Error: errors.CategoryNotFound,
 		Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 			var category models.Category
 			err := app.Conn.Where("id = ?", uuid).First(&category).Error
-			assert.Error(err)
-
-			var respBody []map[string]interface{}
-			err = json.NewDecoder(resp.Body).Decode(&respBody)
-			assert.NilError(err)
-			assert.Equal(0, len(respBody))
+			assert.Assert(err != nil)
 		},
 	}).Close()
 }
@@ -113,6 +111,7 @@ func TestGetCategoryTagWorks(t *testing.T) {
 	h.TestRequest{
 		Method: fiber.MethodGet,
 		Path:   fmt.Sprintf("/api/v1/categories/%s/tags/%s", categoryUUID, tagUUID),
+		Role:   &models.Super,
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
@@ -138,6 +137,7 @@ func TestGetCategoryTagFailsCategoryBadRequest(t *testing.T) {
 		h.TestRequest{
 			Method: fiber.MethodGet,
 			Path:   fmt.Sprintf("/api/v1/categories/%s/tags/%s", badRequest, tagUUID),
+			Role:   &models.Super,
 		}.TestOnError(t, &appAssert, errors.FailedToValidateID)
 	}
 
@@ -159,6 +159,7 @@ func TestGetCategoryTagFailsTagBadRequest(t *testing.T) {
 		h.TestRequest{
 			Method: fiber.MethodGet,
 			Path:   fmt.Sprintf("/api/v1/categories/%s/tags/%s", categoryUUID, badRequest),
+			Role:   &models.Super,
 		}.TestOnError(t, &appAssert, errors.FailedToValidateID)
 	}
 
@@ -171,6 +172,7 @@ func TestGetCategoryTagFailsCategoryNotFound(t *testing.T) {
 	h.TestRequest{
 		Method: fiber.MethodGet,
 		Path:   fmt.Sprintf("/api/v1/categories/%s/tags/%s", uuid.New(), tagUUID),
+		Role:   &models.Super,
 	}.TestOnError(t, &appAssert, errors.TagNotFound).Close()
 }
 
@@ -180,5 +182,6 @@ func TestGetCategoryTagFailsTagNotFound(t *testing.T) {
 	h.TestRequest{
 		Method: fiber.MethodGet,
 		Path:   fmt.Sprintf("/api/v1/categories/%s/tags/%s", categoryUUID, uuid.New()),
+		Role:   &models.Super,
 	}.TestOnError(t, &appAssert, errors.TagNotFound).Close()
 }

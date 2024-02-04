@@ -4,10 +4,13 @@ import (
 	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/database"
 	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 type TestUser struct {
+	UUID         uuid.UUID
 	Email        string
 	Password     string
 	AccessToken  string
@@ -60,6 +63,7 @@ func (app *TestApp) authSuper() {
 	}
 
 	app.TestUser = &TestUser{
+		UUID:         database.SuperUserUUID,
 		Email:        email,
 		Password:     password,
 		AccessToken:  accessToken,
@@ -70,7 +74,7 @@ func (app *TestApp) authSuper() {
 func (app *TestApp) authStudent() {
 	studentUser, rawPassword := SampleStudentFactory()
 
-	_, err := app.Send(TestRequest{
+	resp, err := app.Send(TestRequest{
 		Method: fiber.MethodPost,
 		Path:   "/api/v1/users/",
 		Body:   SampleStudentJSONFactory(studentUser, rawPassword),
@@ -78,8 +82,20 @@ func (app *TestApp) authStudent() {
 	if err != nil {
 		panic(err)
 	}
+	var respBody map[string]interface{}
 
-	resp, err := app.Send(TestRequest{
+	err = json.NewDecoder(resp.Body).Decode(&respBody)
+	if err != nil {
+		panic(err)
+	}
+
+	rawStudentUserUUID := respBody["id"].(string)
+	studentUserUUID, err := uuid.Parse(rawStudentUserUUID)
+	if err != nil {
+		panic(err)
+	}
+
+	resp, err = app.Send(TestRequest{
 		Method: fiber.MethodPost,
 		Path:   "/api/v1/auth/login",
 		Body: &map[string]interface{}{
@@ -107,6 +123,7 @@ func (app *TestApp) authStudent() {
 	}
 
 	app.TestUser = &TestUser{
+		UUID:         studentUserUUID,
 		Email:        studentUser.Email,
 		Password:     rawPassword,
 		AccessToken:  accessToken,

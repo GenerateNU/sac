@@ -10,7 +10,7 @@ import (
 )
 
 func ConfigureDB(settings config.Settings) (*gorm.DB, error) {
-	db, err := EstablishConn(settings.Database.WithDb())
+	db, err := EstablishConn(settings.Database.WithDb(), WithLoggerInfo())
 	if err != nil {
 		return nil, err
 	}
@@ -22,12 +22,26 @@ func ConfigureDB(settings config.Settings) (*gorm.DB, error) {
 	return db, nil
 }
 
-func EstablishConn(dsn string) (*gorm.DB, error) {
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-		Logger:                 logger.Default.LogMode(logger.Info),
+type OptionalFunc func(gorm.Config) gorm.Config
+
+func WithLoggerInfo() OptionalFunc {
+	return func(gormConfig gorm.Config) gorm.Config {
+		gormConfig.Logger = logger.Default.LogMode(logger.Info)
+		return gormConfig
+	}
+}
+
+func EstablishConn(dsn string, opts ...OptionalFunc) (*gorm.DB, error) {
+	rootConfig := gorm.Config{
 		SkipDefaultTransaction: true,
 		TranslateError:         true,
-	})
+	}
+
+	for _, opt := range opts {
+		rootConfig = opt(rootConfig)
+	}
+
+	db, err := gorm.Open(postgres.Open(dsn), &rootConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -105,6 +119,8 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 			tx.Rollback()
 			return err
 		}
+
+		SuperUserUUID = superUser.ID
 
 		superClub := SuperClub()
 

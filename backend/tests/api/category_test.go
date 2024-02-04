@@ -78,6 +78,7 @@ func CreateSampleCategory(t *testing.T, existingAppAssert *h.ExistingAppAssert) 
 		Method: fiber.MethodPost,
 		Path:   "/api/v1/categories/",
 		Body:   SampleCategoryFactory(),
+		Role:   &models.Super,
 	}.TestOnStatusAndDB(t, existingAppAssert,
 		h.TesterWithStatus{
 			Status: fiber.StatusCreated,
@@ -107,6 +108,7 @@ func TestCreateCategoryIgnoresid(t *testing.T) {
 			"id":   12,
 			"name": "Foo",
 		},
+		Role: &models.Super,
 	}.TestOnStatusAndDB(t, nil,
 		h.TesterWithStatus{
 			Status: fiber.StatusCreated,
@@ -142,6 +144,7 @@ func TestCreateCategoryFailsIfNameIsNotString(t *testing.T) {
 		Body: &map[string]interface{}{
 			"name": 1231,
 		},
+		Role: &models.Super,
 	}.TestOnErrorAndDB(t, nil,
 		h.ErrorWithTester{
 			Error:  errors.FailedToParseRequestBody,
@@ -155,6 +158,7 @@ func TestCreateCategoryFailsIfNameIsMissing(t *testing.T) {
 		Method: fiber.MethodPost,
 		Path:   "/api/v1/categories/",
 		Body:   &map[string]interface{}{},
+		Role:   &models.Super,
 	}.TestOnErrorAndDB(t, nil,
 		h.ErrorWithTester{
 			Error:  errors.FailedToValidateCategory,
@@ -178,6 +182,7 @@ func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
 			Method: fiber.MethodPost,
 			Path:   "/api/v1/categories/",
 			Body:   &modifiedSampleCategoryBody,
+			Role:   &models.Super,
 		}.TestOnErrorAndDB(t, &existingAppAssert,
 			h.ErrorWithTester{
 				Error:  errors.CategoryAlreadyExists,
@@ -193,8 +198,9 @@ func TestGetCategoryWorks(t *testing.T) {
 	existingAppAssert, uuid := CreateSampleCategory(t, nil)
 
 	h.TestRequest{
-		Method: "GET",
+		Method: fiber.MethodGet,
 		Path:   fmt.Sprintf("/api/v1/categories/%s", uuid),
+		Role:   &models.Super,
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
@@ -216,16 +222,18 @@ func TestGetCategoryFailsBadRequest(t *testing.T) {
 
 	for _, badRequest := range badRequests {
 		h.TestRequest{
-			Method: "GET",
+			Method: fiber.MethodGet,
 			Path:   fmt.Sprintf("/api/v1/categories/%s", badRequest),
+			Role:   &models.Super,
 		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
 	}
 }
 
 func TestGetCategoryFailsNotFound(t *testing.T) {
 	h.TestRequest{
-		Method: "GET",
+		Method: fiber.MethodGet,
 		Path:   fmt.Sprintf("/api/v1/categories/%s", uuid.New()),
+		Role:   &models.Super,
 	}.TestOnError(t, nil, errors.CategoryNotFound).Close()
 }
 
@@ -233,8 +241,9 @@ func TestGetCategoriesWorks(t *testing.T) {
 	existingAppAssert, _ := CreateSampleCategory(t, nil)
 
 	h.TestRequest{
-		Method: "GET",
+		Method: fiber.MethodGet,
 		Path:   "/api/v1/categories/",
+		Role:   &models.Super,
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
@@ -304,6 +313,7 @@ func TestUpdateCategoryWorks(t *testing.T) {
 		Method: fiber.MethodPatch,
 		Path:   fmt.Sprintf("/api/v1/categories/%s", uuid),
 		Body:   &category,
+		Role:   &models.Super,
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
@@ -326,6 +336,7 @@ func TestUpdateCategoryWorksWithSameDetails(t *testing.T) {
 		Method: fiber.MethodPatch,
 		Path:   fmt.Sprintf("/api/v1/categories/%s", uuid),
 		Body:   &category,
+		Role:   &models.Super,
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
@@ -348,6 +359,7 @@ func TestUpdateCategoryFailsBadRequest(t *testing.T) {
 			Method: fiber.MethodPatch,
 			Path:   fmt.Sprintf("/api/v1/categories/%s", badRequest),
 			Body:   SampleCategoryFactory(),
+			Role:   &models.Super,
 		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
 	}
 }
@@ -358,6 +370,7 @@ func TestDeleteCategoryWorks(t *testing.T) {
 	h.TestRequest{
 		Method: fiber.MethodDelete,
 		Path:   fmt.Sprintf("/api/v1/categories/%s", uuid),
+		Role:   &models.Super,
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		h.TesterWithStatus{
 			Status: fiber.StatusNoContent,
@@ -381,6 +394,7 @@ func TestDeleteCategoryFailsBadRequest(t *testing.T) {
 		h.TestRequest{
 			Method: fiber.MethodDelete,
 			Path:   fmt.Sprintf("/api/v1/categories/%s", badRequest),
+			Role:   &models.Super,
 		}.TestOnErrorAndDB(t, &existingAppAssert,
 			h.ErrorWithTester{
 				Error:  errors.FailedToValidateID,
@@ -398,6 +412,7 @@ func TestDeleteCategoryFailsNotFound(t *testing.T) {
 	h.TestRequest{
 		Method: fiber.MethodDelete,
 		Path:   fmt.Sprintf("/api/v1/categories/%s", uuid.New()),
+		Role:   &models.Super,
 	}.TestOnErrorAndDB(t, &existingAppAssert,
 		h.ErrorWithTester{
 			Error:  errors.CategoryNotFound,

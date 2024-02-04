@@ -17,7 +17,7 @@ var (
 func RootConn(dbConfig config.DatabaseSettings) {
 	once.Do(func() {
 		var err error
-		rootConn, err = database.EstablishConn(dbConfig.WithDb())
+		rootConn, err = database.EstablishConn(dbConfig.WithoutDb())
 		if err != nil {
 			panic(err)
 		}

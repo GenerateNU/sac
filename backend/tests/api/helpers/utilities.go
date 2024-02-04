@@ -39,3 +39,7 @@ func AllCasingPermutations(word string) []string {
 	generateCasingPermutations(word, "", 0, &results)
 	return results
 }
+
+func BoolToPointer(b bool) *bool {
+	return &b
+}

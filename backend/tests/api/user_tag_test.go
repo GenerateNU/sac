@@ -56,7 +56,12 @@ func SampleTagIDsFactory(tagIDs *[]uuid.UUID) *map[string]interface{} {
 	}
 }
 
-func CreateSetOfTags(t *testing.T, appAssert h.ExistingAppAssert) []uuid.UUID {
+func CreateSetOfTags(t *testing.T, appAssert *h.ExistingAppAssert) ([]uuid.UUID, *h.ExistingAppAssert) {
+	if appAssert == nil {
+		app, assert := h.InitTest(t)
+		appAssert = &h.ExistingAppAssert{App: app, Assert: assert}
+	}
+
 	categories := SampleCategoriesFactory()
 
 	categoryIDs := []uuid.UUID{}
@@ -65,7 +70,8 @@ func CreateSetOfTags(t *testing.T, appAssert h.ExistingAppAssert) []uuid.UUID {
 			Method: fiber.MethodPost,
 			Path:   "/api/v1/categories/",
 			Body:   &category,
-		}.TestOnStatusAndDB(t, &appAssert,
+			Role:   &models.Super,
+		}.TestOnStatusAndDB(t, appAssert,
 			h.TesterWithStatus{
 				Status: fiber.StatusCreated,
 				Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
@@ -89,7 +95,8 @@ func CreateSetOfTags(t *testing.T, appAssert h.ExistingAppAssert) []uuid.UUID {
 			Method: fiber.MethodPost,
 			Path:   "/api/v1/tags/",
 			Body:   &tag,
-		}.TestOnStatusAndDB(t, &appAssert,
+			Role:   &models.Super,
+		}.TestOnStatusAndDB(t, appAssert,
 			h.TesterWithStatus{
 				Status: fiber.StatusCreated,
 				Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
@@ -105,7 +112,7 @@ func CreateSetOfTags(t *testing.T, appAssert h.ExistingAppAssert) []uuid.UUID {
 		)
 	}
 
-	return tagIDs
+	return tagIDs, appAssert
 }
 
 func AssertUserTagsRespDB(app h.TestApp, assert *assert.A, resp *http.Response, id uuid.UUID) {
@@ -154,9 +161,11 @@ func TestCreateUserTagsFailsOnInvalidDataType(t *testing.T) {
 		malformedTag["tags"] = tag
 
 		h.TestRequest{
-			Method: fiber.MethodPost,
-			Path:   "/api/v1/users/1/tags/",
-			Body:   &malformedTag,
+			Method:             fiber.MethodPost,
+			Path:               "/api/v1/users/:userID/tags/",
+			Body:               &malformedTag,
+			Role:               &models.Student,
+			TestUserIDRequired: h.BoolToPointer(true),
 		}.TestOnError(t, nil, errors.FailedToParseRequestBody).Close()
 	}
 }
@@ -175,7 +184,8 @@ func TestCreateUserTagsFailsOnInvalidUserID(t *testing.T) {
 			Method: fiber.MethodPost,
 			Path:   fmt.Sprintf("/api/v1/users/%s/tags", badRequest),
 			Body:   SampleTagIDsFactory(nil),
-		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
+			Role:   &models.Student,
+		}.TestOnError(t, nil, errors.FailedToParseUUID).Close()
 	}
 }
 
@@ -184,8 +194,6 @@ type UUIDSlice []uuid.UUID
 var testUUID = uuid.New()
 
 func TestCreateUserTagsFailsOnInvalidKey(t *testing.T) {
-	appAssert, uuid, _ := CreateSampleStudent(t, nil)
-
 	invalidBody := []map[string]interface{}{
 		{
 			"tag": UUIDSlice{testUUID, testUUID},
@@ -197,39 +205,53 @@ func TestCreateUserTagsFailsOnInvalidKey(t *testing.T) {
 
 	for _, body := range invalidBody {
 		h.TestRequest{
-			Method: fiber.MethodPost,
-			Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid),
-			Body:   &body,
-		}.TestOnError(t, &appAssert, errors.FailedToValidateUserTags)
+			Method:             fiber.MethodPost,
+			Path:               "/api/v1/users/:userID/tags/",
+			Body:               &body,
+			Role:               &models.Student,
+			TestUserIDRequired: h.BoolToPointer(true),
+		}.TestOnError(t, nil, errors.FailedToValidateUserTags).Close()
 	}
-
-	appAssert.Close()
 }
 
+// TODO: should this be unauthorized or not found?
 func TestCreateUserTagsFailsOnNonExistentUser(t *testing.T) {
-	h.TestRequest{
-		Method: fiber.MethodPost,
-		Path:   fmt.Sprintf("/api/v1/users/%s/tags", uuid.New()),
-		Body:   SampleTagIDsFactory(nil),
-	}.TestOnError(t, nil, errors.UserNotFound).Close()
-}
+	uuid := uuid.New()
 
-func TestCreateUserTagsWorks(t *testing.T) {
-	appAssert, uuid, _ := CreateSampleStudent(t, nil)
-
-	// Create a set of tags:
-	tagUUIDs := CreateSetOfTags(t, appAssert)
-
-	// Confirm adding real tags adds them to the user:
 	h.TestRequest{
 		Method: fiber.MethodPost,
 		Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid),
-		Body:   SampleTagIDsFactory(&tagUUIDs),
-	}.TestOnStatusAndDB(t, &appAssert,
+		Body:   SampleTagIDsFactory(nil),
+		Role:   &models.Super,
+	}.TestOnErrorAndDB(t, nil,
+		h.ErrorWithTester{
+			Error: errors.UserNotFound,
+			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
+				var dbUser models.User
+				err := app.Conn.First(&dbUser, uuid).Error
+
+				assert.Error(err)
+			},
+		},
+	)
+}
+
+func TestCreateUserTagsWorks(t *testing.T) {
+	// Create a set of tags:
+	tagUUIDs, appAssert := CreateSetOfTags(t, nil)
+
+	// Confirm adding real tags adds them to the user:
+	h.TestRequest{
+		Method:             fiber.MethodPost,
+		Path:               "/api/v1/users/:userID/tags/",
+		Body:               SampleTagIDsFactory(&tagUUIDs),
+		Role:               &models.Super,
+		TestUserIDRequired: h.BoolToPointer(true),
+	}.TestOnStatusAndDB(t, appAssert,
 		h.TesterWithStatus{
 			Status: fiber.StatusCreated,
 			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
-				AssertSampleUserTagsRespDB(app, assert, resp, uuid)
+				AssertSampleUserTagsRespDB(app, assert, resp, app.TestUser.UUID)
 			},
 		},
 	)
@@ -238,13 +260,13 @@ func TestCreateUserTagsWorks(t *testing.T) {
 }
 
 func TestCreateUserTagsNoneAddedIfInvalid(t *testing.T) {
-	appAssert, uuid, _ := CreateSampleStudent(t, nil)
-
 	h.TestRequest{
-		Method: fiber.MethodPost,
-		Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid),
-		Body:   SampleTagIDsFactory(nil),
-	}.TestOnStatusAndDB(t, &appAssert,
+		Method:             fiber.MethodPost,
+		Path:               "/api/v1/users/:userID/tags/",
+		Body:               SampleTagIDsFactory(nil),
+		Role:               &models.Super,
+		TestUserIDRequired: h.BoolToPointer(true),
+	}.TestOnStatusAndDB(t, nil,
 		h.TesterWithStatus{
 			Status: fiber.StatusCreated,
 			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
@@ -257,27 +279,27 @@ func TestCreateUserTagsNoneAddedIfInvalid(t *testing.T) {
 				assert.Equal(len(respTags), 0)
 			},
 		},
-	)
-
-	appAssert.Close()
+	).Close()
 }
 
+// TODO: should this be unauthorized or not found?
 func TestGetUserTagsFailsOnNonExistentUser(t *testing.T) {
 	h.TestRequest{
 		Method: fiber.MethodGet,
 		Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid.New()),
+		Role:   &models.Super,
 	}.TestOnError(t, nil, errors.UserNotFound).Close()
 }
 
 func TestGetUserTagsReturnsEmptyListWhenNoneAdded(t *testing.T) {
-	appAssert, uuid, _ := CreateSampleStudent(t, nil)
-
 	h.TestRequest{
-		Method: fiber.MethodGet,
-		Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid),
-	}.TestOnStatusAndDB(t, &appAssert,
+		Method:             fiber.MethodGet,
+		Path:               "/api/v1/users/:userID/tags/",
+		Role:               &models.Student,
+		TestUserIDRequired: h.BoolToPointer(true),
+	}.TestOnStatusAndDB(t, nil,
 		h.TesterWithStatus{
-			Status: 200,
+			Status: fiber.StatusOK,
 			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 				var respTags []models.Tag
 
@@ -288,33 +310,33 @@ func TestGetUserTagsReturnsEmptyListWhenNoneAdded(t *testing.T) {
 				assert.Equal(len(respTags), 0)
 			},
 		},
-	)
-
-	appAssert.Close()
+	).Close()
 }
 
 func TestGetUserTagsReturnsCorrectList(t *testing.T) {
-	appAssert, uuid, _ := CreateSampleStudent(t, nil)
-
 	// Create a set of tags:
-	tagUUIDs := CreateSetOfTags(t, appAssert)
+	tagUUIDs, appAssert := CreateSetOfTags(t, nil)
 
 	// Add the tags:
 	h.TestRequest{
-		Method: fiber.MethodPost,
-		Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid),
-		Body:   SampleTagIDsFactory(&tagUUIDs),
-	}.TestOnStatus(t, &appAssert, fiber.StatusCreated)
+		Method:             fiber.MethodPost,
+		Path:               "/api/v1/users/:userID/tags/",
+		Body:               SampleTagIDsFactory(&tagUUIDs),
+		Role:               &models.Student,
+		TestUserIDRequired: h.BoolToPointer(true),
+	}.TestOnStatus(t, appAssert, fiber.StatusCreated)
 
 	// Get the tags:
 	h.TestRequest{
-		Method: fiber.MethodGet,
-		Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid),
-	}.TestOnStatusAndDB(t, &appAssert,
+		Method:             fiber.MethodGet,
+		Path:               "/api/v1/users/:userID/tags/",
+		Role:               &models.Student,
+		TestUserIDRequired: h.BoolToPointer(true),
+	}.TestOnStatusAndDB(t, appAssert,
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
 			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
-				AssertSampleUserTagsRespDB(app, assert, resp, uuid)
+				AssertSampleUserTagsRespDB(app, assert, resp, app.TestUser.UUID)
 			},
 		},
 	)

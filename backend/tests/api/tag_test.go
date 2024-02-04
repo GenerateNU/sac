@@ -64,6 +64,7 @@ func CreateSampleTag(t *testing.T) (appAssert h.ExistingAppAssert, categoryUUID 
 		Method: fiber.MethodPost,
 		Path:   "/api/v1/tags/",
 		Body:   SampleTagFactory(categoryUUID),
+		Role:   &models.Super,
 	}.TestOnStatusAndDB(t, &appAssert,
 		h.TesterWithStatus{
 			Status: fiber.StatusCreated,
@@ -114,6 +115,7 @@ func TestCreateTagFailsBadRequest(t *testing.T) {
 			Method: fiber.MethodPost,
 			Path:   "/api/v1/tags/",
 			Body:   &badBody,
+			Role:   &models.Super,
 		}.TestOnErrorAndDB(t, nil,
 			h.ErrorWithTester{
 				Error:  errors.FailedToParseRequestBody,
@@ -139,6 +141,7 @@ func TestCreateTagFailsValidation(t *testing.T) {
 			Method: fiber.MethodPost,
 			Path:   "/api/v1/tags/",
 			Body:   &badBody,
+			Role:   &models.Super,
 		}.TestOnErrorAndDB(t, nil,
 			h.ErrorWithTester{
 				Error:  errors.FailedToValidateTag,
@@ -154,6 +157,7 @@ func TestGetTagWorks(t *testing.T) {
 	h.TestRequest{
 		Method: fiber.MethodGet,
 		Path:   fmt.Sprintf("/api/v1/tags/%s", tagUUID),
+		Role:   &models.Super,
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
@@ -177,6 +181,7 @@ func TestGetTagFailsBadRequest(t *testing.T) {
 		h.TestRequest{
 			Method: fiber.MethodGet,
 			Path:   fmt.Sprintf("/api/v1/tags/%s", badRequest),
+			Role:   &models.Super,
 		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
 	}
 }
@@ -185,6 +190,7 @@ func TestGetTagFailsNotFound(t *testing.T) {
 	h.TestRequest{
 		Method: fiber.MethodGet,
 		Path:   fmt.Sprintf("/api/v1/tags/%s", uuid.New()),
+		Role:   &models.Super,
 	}.TestOnError(t, nil, errors.TagNotFound).Close()
 }
 
@@ -202,6 +208,7 @@ func TestUpdateTagWorksUpdateName(t *testing.T) {
 		Method: fiber.MethodPatch,
 		Path:   fmt.Sprintf("/api/v1/tags/%s", tagUUID),
 		Body:   &generateNUTag,
+		Role:   &models.Super,
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
@@ -226,6 +233,7 @@ func TestUpdateTagWorksUpdateCategory(t *testing.T) {
 		Method: fiber.MethodPost,
 		Path:   "/api/v1/categories/",
 		Body:   &technologyCategory,
+		Role:   &models.Super,
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		h.TesterWithStatus{
 			Status: fiber.StatusCreated,
@@ -243,6 +251,7 @@ func TestUpdateTagWorksUpdateCategory(t *testing.T) {
 		Method: fiber.MethodPatch,
 		Path:   fmt.Sprintf("/api/v1/tags/%s", tagUUID),
 		Body:   &technologyTag,
+		Role:   &models.Super,
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
@@ -258,6 +267,7 @@ func TestUpdateTagWorksWithSameDetails(t *testing.T) {
 		Method: fiber.MethodPatch,
 		Path:   fmt.Sprintf("/api/v1/tags/%s", tagUUID),
 		Body:   SampleTagFactory(categoryUUID),
+		Role:   &models.Super,
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
@@ -284,6 +294,7 @@ func TestUpdateTagFailsBadRequest(t *testing.T) {
 			Method: fiber.MethodPatch,
 			Path:   fmt.Sprintf("/api/v1/tags/%s", badRequest),
 			Body:   SampleTagFactory(uuid),
+			Role:   &models.Super,
 		}.TestOnError(t, &appAssert, errors.FailedToValidateID).Close()
 	}
 }
@@ -294,6 +305,7 @@ func TestDeleteTagWorks(t *testing.T) {
 	h.TestRequest{
 		Method: fiber.MethodDelete,
 		Path:   fmt.Sprintf("/api/v1/tags/%s", tagUUID),
+		Role:   &models.Super,
 	}.TestOnStatusAndDB(t, &existingAppAssert,
 		h.TesterWithStatus{
 			Status: fiber.StatusNoContent,
@@ -317,6 +329,7 @@ func TestDeleteTagFailsBadRequest(t *testing.T) {
 		h.TestRequest{
 			Method: fiber.MethodDelete,
 			Path:   fmt.Sprintf("/api/v1/tags/%s", badRequest),
+			Role:   &models.Super,
 		}.TestOnErrorAndDB(t, &appAssert,
 			h.ErrorWithTester{
 				Error:  errors.FailedToValidateID,
@@ -334,6 +347,7 @@ func TestDeleteTagFailsNotFound(t *testing.T) {
 	h.TestRequest{
 		Method: fiber.MethodDelete,
 		Path:   fmt.Sprintf("/api/v1/tags/%s", uuid.New()),
+		Role:   &models.Super,
 	}.TestOnErrorAndDB(t, &appAssert,
 		h.ErrorWithTester{
 			Error:  errors.TagNotFound,

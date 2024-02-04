@@ -16,13 +16,12 @@ import (
 	"gorm.io/gorm"
 )
 
-func SampleClubFactory(userID uuid.UUID) *map[string]interface{} {
+func SampleClubFactory(userID *uuid.UUID) *map[string]interface{} {
 	return &map[string]interface{}{
 		"user_id":           userID,
 		"name":              "Generate",
 		"preview":           "Generate is Northeastern's premier student-led product development studio.",
 		"description":       "https://mongodb.com",
-		"num_members":       1,
 		"is_recruiting":     true,
 		"recruitment_cycle": "always",
 		"recruitment_type":  "application",
@@ -130,7 +129,9 @@ func AssertClubWithBodyRespDBMostRecent(app h.TestApp, assert *assert.A, resp *h
 }
 
 func AssertSampleClubBodyRespDB(app h.TestApp, assert *assert.A, resp *http.Response, userID uuid.UUID) uuid.UUID {
-	return AssertClubBodyRespDB(app, assert, resp, SampleClubFactory(userID))
+	sampleClub := SampleClubFactory(&userID)
+	(*sampleClub)["num_members"] = 1
+	return AssertClubBodyRespDB(app, assert, resp, sampleClub)
 }
 
 func CreateSampleClub(t *testing.T, existingAppAssert *h.ExistingAppAssert) (eaa h.ExistingAppAssert, studentUUID uuid.UUID, clubUUID uuid.UUID) {
@@ -141,7 +142,8 @@ func CreateSampleClub(t *testing.T, existingAppAssert *h.ExistingAppAssert) (eaa
 	newAppAssert := h.TestRequest{
 		Method: fiber.MethodPost,
 		Path:   "/api/v1/clubs/",
-		Body:   SampleClubFactory(userID),
+		Body:   SampleClubFactory(&userID),
+		Role:   &models.Super,
 	}.TestOnStatusAndDB(t, &appAssert,
 		h.TesterWithStatus{
 			Status: fiber.StatusCreated,
@@ -167,6 +169,7 @@ func TestGetClubsWorks(t *testing.T) {
 	h.TestRequest{
 		Method: fiber.MethodGet,
 		Path:   "/api/v1/clubs/",
+		Role:   &models.Super,
 	}.TestOnStatusAndDB(t, nil,
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
@@ -234,13 +237,14 @@ func AssertCreateBadClubDataFails(t *testing.T, jsonKey string, badValues []inte
 	appAssert, uuid, _ := CreateSampleStudent(t, nil)
 
 	for _, badValue := range badValues {
-		sampleClubPermutation := *SampleClubFactory(uuid)
+		sampleClubPermutation := *SampleClubFactory(&uuid)
 		sampleClubPermutation[jsonKey] = badValue
 
 		h.TestRequest{
 			Method: fiber.MethodPost,
 			Path:   "/api/v1/clubs/",
 			Body:   &sampleClubPermutation,
+			Role:   &models.Super,
 		}.TestOnErrorAndDB(t, &appAssert,
 			h.ErrorWithTester{
 				Error:  errors.FailedToValidateClub,
@@ -307,10 +311,11 @@ func TestCreateClubFailsOnInvalidLogo(t *testing.T) {
 	)
 }
 
+// TODO: need to be able to join the club
 func TestUpdateClubWorks(t *testing.T) {
 	appAssert, studentUUID, clubUUID := CreateSampleClub(t, nil)
 
-	updatedClub := SampleClubFactory(studentUUID)
+	updatedClub := SampleClubFactory(&studentUUID)
 	(*updatedClub)["name"] = "Updated Name"
 	(*updatedClub)["preview"] = "Updated Preview"
 
@@ -318,6 +323,7 @@ func TestUpdateClubWorks(t *testing.T) {
 		Method: fiber.MethodPatch,
 		Path:   fmt.Sprintf("/api/v1/clubs/%s", clubUUID),
 		Body:   updatedClub,
+		Role:   &models.Super,
 	}.TestOnStatusAndDB(t, &appAssert,
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
@@ -328,10 +334,11 @@ func TestUpdateClubWorks(t *testing.T) {
 	).Close()
 }
 
+// TODO: need to be able to join the club to try to update
 func TestUpdateClubFailsOnInvalidBody(t *testing.T) {
 	appAssert, studentUUID, clubUUID := CreateSampleClub(t, nil)
 
-	body := SampleClubFactory(studentUUID)
+	body := SampleClubFactory(&studentUUID)
 
 	for _, invalidData := range []map[string]interface{}{
 		{"description": "Not a URL"},
@@ -344,6 +351,7 @@ func TestUpdateClubFailsOnInvalidBody(t *testing.T) {
 			Method: fiber.MethodPatch,
 			Path:   fmt.Sprintf("/api/v1/clubs/%s", clubUUID),
 			Body:   &invalidData,
+			Role:   &models.Super,
 		}.TestOnErrorAndDB(t, &appAssert,
 			h.ErrorWithTester{
 				Error: errors.FailedToValidateClub,
@@ -399,20 +407,22 @@ func TestUpdateClubFailsBadRequest(t *testing.T) {
 			Method: fiber.MethodPatch,
 			Path:   fmt.Sprintf("/api/v1/clubs/%s", badRequest),
 			Body:   h.SampleStudentJSONFactory(sampleStudent, rawPassword),
-		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
+			Role:   &models.Super,
+		}.TestOnError(t, nil, errors.FailedToParseUUID).Close()
 	}
 }
 
+// TODO: should this be unauthorized or not found?
 func TestUpdateClubFailsOnClubIdNotExist(t *testing.T) {
-	appAssert, studentUUID, _ := CreateSampleStudent(t, nil)
-
 	uuid := uuid.New()
 
 	h.TestRequest{
-		Method: fiber.MethodPatch,
-		Path:   fmt.Sprintf("/api/v1/clubs/%s", uuid),
-		Body:   SampleClubFactory(studentUUID),
-	}.TestOnErrorAndDB(t, &appAssert,
+		Method:             fiber.MethodPatch,
+		Path:               fmt.Sprintf("/api/v1/clubs/%s", uuid),
+		Body:               SampleClubFactory(nil),
+		Role:               &models.Student,
+		TestUserIDRequired: h.BoolToPointer(true),
+	}.TestOnErrorAndDB(t, nil,
 		h.ErrorWithTester{
 			Error: errors.ClubNotFound,
 			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
@@ -426,12 +436,14 @@ func TestUpdateClubFailsOnClubIdNotExist(t *testing.T) {
 	).Close()
 }
 
+// TODO: need to be able to join the club
 func TestDeleteClubWorks(t *testing.T) {
 	appAssert, _, clubUUID := CreateSampleClub(t, nil)
 
 	h.TestRequest{
 		Method: fiber.MethodDelete,
 		Path:   fmt.Sprintf("/api/v1/clubs/%s", clubUUID),
+		Role:   &models.Super,
 	}.TestOnStatusAndDB(t, &appAssert,
 		h.TesterWithStatus{
 			Status: fiber.StatusNoContent,
@@ -440,14 +452,16 @@ func TestDeleteClubWorks(t *testing.T) {
 	).Close()
 }
 
+// TODO: should this be unauthorized or not found?
 func TestDeleteClubNotExist(t *testing.T) {
 	uuid := uuid.New()
 	h.TestRequest{
 		Method: fiber.MethodDelete,
 		Path:   fmt.Sprintf("/api/v1/clubs/%s", uuid),
+		Role:   &models.Super,
 	}.TestOnErrorAndDB(t, nil,
 		h.ErrorWithTester{
-			Error: errors.ClubNotFound,
+			Error: errors.Unauthorized,
 			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 				var club models.Club
 
@@ -474,6 +488,7 @@ func TestDeleteClubBadRequest(t *testing.T) {
 		h.TestRequest{
 			Method: fiber.MethodDelete,
 			Path:   fmt.Sprintf("/api/v1/clubs/%s", badRequest),
-		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
+			Role:   &models.Super,
+		}.TestOnError(t, nil, errors.FailedToParseUUID).Close()
 	}
 }

@@ -17,11 +17,11 @@ func NewClubController(clubService services.ClubServiceInterface) *ClubControlle
 	return &ClubController{clubService: clubService}
 }
 
-func (l *ClubController) GetAllClubs(c *fiber.Ctx) error {
+func (cl *ClubController) GetAllClubs(c *fiber.Ctx) error {
 	defaultLimit := 10
 	defaultPage := 1
 
-	clubs, err := l.clubService.GetClubs(c.Query("limit", strconv.Itoa(defaultLimit)), c.Query("page", strconv.Itoa(defaultPage)))
+	clubs, err := cl.clubService.GetClubs(c.Query("limit", strconv.Itoa(defaultLimit)), c.Query("page", strconv.Itoa(defaultPage)))
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -29,13 +29,13 @@ func (l *ClubController) GetAllClubs(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(clubs)
 }
 
-func (l *ClubController) CreateClub(c *fiber.Ctx) error {
+func (cl *ClubController) CreateClub(c *fiber.Ctx) error {
 	var clubBody models.CreateClubRequestBody
 	if err := c.BodyParser(&clubBody); err != nil {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
-	club, err := l.clubService.CreateClub(clubBody)
+	club, err := cl.clubService.CreateClub(clubBody)
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -43,8 +43,8 @@ func (l *ClubController) CreateClub(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(club)
 }
 
-func (l *ClubController) GetClub(c *fiber.Ctx) error {
-	club, err := l.clubService.GetClub(c.Params("id"))
+func (cl *ClubController) GetClub(c *fiber.Ctx) error {
+	club, err := cl.clubService.GetClub(c.Params("id"))
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -52,14 +52,14 @@ func (l *ClubController) GetClub(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(club)
 }
 
-func (l *ClubController) UpdateClub(c *fiber.Ctx) error {
+func (cl *ClubController) UpdateClub(c *fiber.Ctx) error {
 	var clubBody models.UpdateClubRequestBody
 
 	if err := c.BodyParser(&clubBody); err != nil {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
-	updatedClub, err := l.clubService.UpdateClub(c.Params("id"), clubBody)
+	updatedClub, err := cl.clubService.UpdateClub(c.Params("id"), clubBody)
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -67,8 +67,8 @@ func (l *ClubController) UpdateClub(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(updatedClub)
 }
 
-func (l *ClubController) DeleteClub(c *fiber.Ctx) error {
-	err := l.clubService.DeleteClub(c.Params("id"))
+func (cl *ClubController) DeleteClub(c *fiber.Ctx) error {
+	err := cl.clubService.DeleteClub(c.Params("id"))
 	if err != nil {
 		return err.FiberError(c)
 	}

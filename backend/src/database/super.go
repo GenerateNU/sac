@@ -5,7 +5,10 @@ import (
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/google/uuid"
 )
+
+var SuperUserUUID uuid.UUID
 
 func SuperUser(superUserSettings config.SuperUserSettings) (*models.User, *errors.Error) {
 	passwordHash, err := auth.ComputePasswordHash(superUserSettings.Password)
