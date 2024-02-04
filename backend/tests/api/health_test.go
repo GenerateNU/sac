@@ -8,10 +8,11 @@ import (
 )
 
 func TestHealthWorks(t *testing.T) {
-	h.TestRequest{
-		Method: fiber.MethodGet,
-		Path:   "/health",
-	}.TestOnStatus(t, nil,
+	h.InitTest(t).TestOnStatus(
+		h.TestRequest{
+			Method: fiber.MethodGet,
+			Path:   "/health",
+		},
 		fiber.StatusOK,
 	).Close()
 }

@@ -139,12 +139,13 @@ func CreateSampleClub(t *testing.T, existingAppAssert *h.ExistingAppAssert) (eaa
 
 	var sampleClubUUID uuid.UUID
 
-	newAppAssert := h.TestRequest{
-		Method: fiber.MethodPost,
-		Path:   "/api/v1/clubs/",
-		Body:   SampleClubFactory(&userID),
-		Role:   &models.Super,
-	}.TestOnStatusAndDB(t, &appAssert,
+	appAssert.TestOnStatusAndDB(
+		h.TestRequest{
+			Method: fiber.MethodPost,
+			Path:   "/api/v1/clubs/",
+			Body:   SampleClubFactory(&userID),
+			Role:   &models.Super,
+		},
 		h.TesterWithStatus{
 			Status: fiber.StatusCreated,
 			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
@@ -154,7 +155,7 @@ func CreateSampleClub(t *testing.T, existingAppAssert *h.ExistingAppAssert) (eaa
 	)
 
 	if existingAppAssert == nil {
-		return newAppAssert, userID, sampleClubUUID
+		return appAssert, userID, sampleClubUUID
 	} else {
 		return *existingAppAssert, userID, sampleClubUUID
 	}
@@ -166,11 +167,11 @@ func TestCreateClubWorks(t *testing.T) {
 }
 
 func TestGetClubsWorks(t *testing.T) {
-	h.TestRequest{
+	h.InitTest(t).TestOnStatusAndDB(h.TestRequest{
 		Method: fiber.MethodGet,
 		Path:   "/api/v1/clubs/",
 		Role:   &models.Super,
-	}.TestOnStatusAndDB(t, nil,
+	},
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
 			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
@@ -240,12 +241,13 @@ func AssertCreateBadClubDataFails(t *testing.T, jsonKey string, badValues []inte
 		sampleClubPermutation := *SampleClubFactory(&uuid)
 		sampleClubPermutation[jsonKey] = badValue
 
-		h.TestRequest{
-			Method: fiber.MethodPost,
-			Path:   "/api/v1/clubs/",
-			Body:   &sampleClubPermutation,
-			Role:   &models.Super,
-		}.TestOnErrorAndDB(t, &appAssert,
+		appAssert.TestOnErrorAndDB(
+			h.TestRequest{
+				Method: fiber.MethodPost,
+				Path:   "/api/v1/clubs/",
+				Body:   &sampleClubPermutation,
+				Role:   &models.Super,
+			},
 			h.ErrorWithTester{
 				Error:  errors.FailedToValidateClub,
 				Tester: TestNumClubsRemainsAt1,
@@ -319,12 +321,13 @@ func TestUpdateClubWorks(t *testing.T) {
 	(*updatedClub)["name"] = "Updated Name"
 	(*updatedClub)["preview"] = "Updated Preview"
 
-	h.TestRequest{
-		Method: fiber.MethodPatch,
-		Path:   fmt.Sprintf("/api/v1/clubs/%s", clubUUID),
-		Body:   updatedClub,
-		Role:   &models.Super,
-	}.TestOnStatusAndDB(t, &appAssert,
+	appAssert.TestOnStatusAndDB(
+		h.TestRequest{
+			Method: fiber.MethodPatch,
+			Path:   fmt.Sprintf("/api/v1/clubs/%s", clubUUID),
+			Body:   updatedClub,
+			Role:   &models.Super,
+		},
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
 			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
@@ -347,12 +350,13 @@ func TestUpdateClubFailsOnInvalidBody(t *testing.T) {
 		{"application_link": "Not an URL"},
 		{"logo": "@12394X_2"},
 	} {
-		h.TestRequest{
-			Method: fiber.MethodPatch,
-			Path:   fmt.Sprintf("/api/v1/clubs/%s", clubUUID),
-			Body:   &invalidData,
-			Role:   &models.Super,
-		}.TestOnErrorAndDB(t, &appAssert,
+		appAssert.TestOnErrorAndDB(
+			h.TestRequest{
+				Method: fiber.MethodPatch,
+				Path:   fmt.Sprintf("/api/v1/clubs/%s", clubUUID),
+				Body:   &invalidData,
+				Role:   &models.Super,
+			},
 			h.ErrorWithTester{
 				Error: errors.FailedToValidateClub,
 				Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
@@ -392,6 +396,8 @@ func TestUpdateClubFailsOnInvalidBody(t *testing.T) {
 }
 
 func TestUpdateClubFailsBadRequest(t *testing.T) {
+	appAssert := h.InitTest(t)
+
 	badRequests := []string{
 		"0",
 		"-1",
@@ -403,26 +409,31 @@ func TestUpdateClubFailsBadRequest(t *testing.T) {
 	sampleStudent, rawPassword := h.SampleStudentFactory()
 
 	for _, badRequest := range badRequests {
-		h.TestRequest{
-			Method: fiber.MethodPatch,
-			Path:   fmt.Sprintf("/api/v1/clubs/%s", badRequest),
-			Body:   h.SampleStudentJSONFactory(sampleStudent, rawPassword),
-			Role:   &models.Super,
-		}.TestOnError(t, nil, errors.FailedToParseUUID).Close()
+		appAssert.TestOnError(
+			h.TestRequest{
+				Method: fiber.MethodPatch,
+				Path:   fmt.Sprintf("/api/v1/clubs/%s", badRequest),
+				Body:   h.SampleStudentJSONFactory(sampleStudent, rawPassword),
+				Role:   &models.Super,
+			},
+			errors.FailedToParseUUID,
+		)
 	}
+
+	appAssert.Close()
 }
 
 // TODO: should this be unauthorized or not found?
 func TestUpdateClubFailsOnClubIdNotExist(t *testing.T) {
 	uuid := uuid.New()
 
-	h.TestRequest{
+	h.InitTest(t).TestOnErrorAndDB(h.TestRequest{
 		Method:             fiber.MethodPatch,
 		Path:               fmt.Sprintf("/api/v1/clubs/%s", uuid),
 		Body:               SampleClubFactory(nil),
 		Role:               &models.Student,
 		TestUserIDRequired: h.BoolToPointer(true),
-	}.TestOnErrorAndDB(t, nil,
+	},
 		h.ErrorWithTester{
 			Error: errors.ClubNotFound,
 			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
@@ -440,11 +451,12 @@ func TestUpdateClubFailsOnClubIdNotExist(t *testing.T) {
 func TestDeleteClubWorks(t *testing.T) {
 	appAssert, _, clubUUID := CreateSampleClub(t, nil)
 
-	h.TestRequest{
-		Method: fiber.MethodDelete,
-		Path:   fmt.Sprintf("/api/v1/clubs/%s", clubUUID),
-		Role:   &models.Super,
-	}.TestOnStatusAndDB(t, &appAssert,
+	appAssert.TestOnStatusAndDB(
+		h.TestRequest{
+			Method: fiber.MethodDelete,
+			Path:   fmt.Sprintf("/api/v1/clubs/%s", clubUUID),
+			Role:   &models.Super,
+		},
 		h.TesterWithStatus{
 			Status: fiber.StatusNoContent,
 			Tester: TestNumClubsRemainsAt1,
@@ -455,11 +467,12 @@ func TestDeleteClubWorks(t *testing.T) {
 // TODO: should this be unauthorized or not found?
 func TestDeleteClubNotExist(t *testing.T) {
 	uuid := uuid.New()
-	h.TestRequest{
-		Method: fiber.MethodDelete,
-		Path:   fmt.Sprintf("/api/v1/clubs/%s", uuid),
-		Role:   &models.Super,
-	}.TestOnErrorAndDB(t, nil,
+	h.InitTest(t).TestOnErrorAndDB(
+		h.TestRequest{
+			Method: fiber.MethodDelete,
+			Path:   fmt.Sprintf("/api/v1/clubs/%s", uuid),
+			Role:   &models.Super,
+		},
 		h.ErrorWithTester{
 			Error: errors.Unauthorized,
 			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
@@ -476,6 +489,8 @@ func TestDeleteClubNotExist(t *testing.T) {
 }
 
 func TestDeleteClubBadRequest(t *testing.T) {
+	appAssert := h.InitTest(t)
+
 	badRequests := []string{
 		"0",
 		"-1",
@@ -485,10 +500,14 @@ func TestDeleteClubBadRequest(t *testing.T) {
 	}
 
 	for _, badRequest := range badRequests {
-		h.TestRequest{
-			Method: fiber.MethodDelete,
-			Path:   fmt.Sprintf("/api/v1/clubs/%s", badRequest),
-			Role:   &models.Super,
-		}.TestOnError(t, nil, errors.FailedToParseUUID).Close()
+		appAssert.TestOnError(
+			h.TestRequest{
+				Method: fiber.MethodDelete,
+				Path:   fmt.Sprintf("/api/v1/clubs/%s", badRequest),
+				Role:   &models.Super,
+			}, errors.FailedToParseUUID,
+		)
 	}
+
+	appAssert.Close()
 }
