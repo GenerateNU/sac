@@ -10,7 +10,20 @@ import (
 )
 
 func ConfigureDB(settings config.Settings) (*gorm.DB, error) {
-	db, err := gorm.Open(postgres.Open(settings.Database.WithDb()), &gorm.Config{
+	db, err := EstablishConn(settings.Database.WithDb())
+	if err != nil {
+		return nil, err
+	}
+
+	if err := MigrateDB(settings, db); err != nil {
+		return nil, err
+	}
+
+	return db, nil
+}
+
+func EstablishConn(dsn string) (*gorm.DB, error) {
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger:                 logger.Default.LogMode(logger.Info),
 		SkipDefaultTransaction: true,
 		TranslateError:         true,
@@ -21,10 +34,6 @@ func ConfigureDB(settings config.Settings) (*gorm.DB, error) {
 
 	err = db.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"").Error
 	if err != nil {
-		return nil, err
-	}
-
-	if err := MigrateDB(settings, db); err != nil {
 		return nil, err
 	}
 

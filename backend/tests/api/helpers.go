@@ -10,6 +10,7 @@ import (
 	"net/http/httptest"
 	"path/filepath"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/GenerateNU/sac/backend/src/auth"
@@ -23,7 +24,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/huandu/go-assert"
-	gormPostgres "gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -219,20 +219,30 @@ func generateRandomDBName() string {
 	return fmt.Sprintf("%s%s", prefix, string(result))
 }
 
-func configureDatabase(config config.Settings) (*gorm.DB, error) {
-	dsnWithoutDB := config.Database.WithoutDb()
-	dbWithoutDB, err := gorm.Open(gormPostgres.Open(dsnWithoutDB), &gorm.Config{SkipDefaultTransaction: true, TranslateError: true})
+var (
+	rootConn *gorm.DB
+	once     sync.Once
+)
+
+func RootConn(dbConfig config.DatabaseSettings) {
+	once.Do(func() {
+		var err error
+		rootConn, err = database.EstablishConn(dbConfig.WithDb())
+		if err != nil {
+			panic(err)
+		}
+	})
+}
+
+func configureDatabase(settings config.Settings) (*gorm.DB, error) {
+	RootConn(settings.Database)
+
+	err := rootConn.Exec(fmt.Sprintf("CREATE DATABASE %s", settings.Database.DatabaseName)).Error
 	if err != nil {
 		return nil, err
 	}
 
-	err = dbWithoutDB.Exec(fmt.Sprintf("CREATE DATABASE %s;", config.Database.DatabaseName)).Error
-	if err != nil {
-		return nil, err
-	}
-
-	dsnWithDB := config.Database.WithDb()
-	dbWithDB, err := gorm.Open(gormPostgres.Open(dsnWithDB), &gorm.Config{SkipDefaultTransaction: true, TranslateError: true})
+	dbWithDB, err := database.EstablishConn(settings.Database.WithDb())
 	if err != nil {
 		return nil, err
 	}
@@ -241,7 +251,7 @@ func configureDatabase(config config.Settings) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = database.MigrateDB(config, dbWithDB)
+	err = database.MigrateDB(settings, dbWithDB)
 	if err != nil {
 		return nil, err
 	}
