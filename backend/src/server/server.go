@@ -98,9 +98,9 @@ func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface) 
 
 	memberships.Get("/", clubController.GetClubMembers)          // good
 	memberships.Put("/:userID", clubController.CreateMembership) // good
-	memberships.Put("/emails", clubController.CreateMembershipsByEmail)
+	memberships.Put("/", clubController.CreateMembershipsByEmail)
 	memberships.Delete("/:userID", clubController.DeleteMembership) // good
-	memberships.Delete("/userIDs", clubController.DeleteMemberships)
+	memberships.Delete("/", clubController.DeleteMemberships)
 }
 
 func categoryRoutes(router fiber.Router, categoryService services.CategoryServiceInterface) fiber.Router {
