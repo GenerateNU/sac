@@ -44,13 +44,11 @@ type TestApp struct {
 
 func spawnApp() (TestApp, error) {
 	listener, err := net.Listen("tcp", "127.0.0.1:0")
-
 	if err != nil {
 		return TestApp{}, err
 	}
 
 	configuration, err := config.GetConfiguration(filepath.Join("..", "..", "..", "config"))
-
 	if err != nil {
 		return TestApp{}, err
 	}
@@ -60,19 +58,19 @@ func spawnApp() (TestApp, error) {
 	configuration.Database.DatabaseName = generateRandomDBName()
 
 	connectionWithDB, err := configureDatabase(configuration)
-
 	if err != nil {
 		return TestApp{}, err
 	}
 
 	return TestApp{
-		App:           server.Init(connectionWithDB),
+		App:           server.Init(connectionWithDB, configuration),
 		Address:       fmt.Sprintf("http://%s", listener.Addr().String()),
 		Conn:          connectionWithDB,
 		Settings:      configuration,
 		InitialDBName: initialDBName,
 	}, nil
 }
+
 func generateRandomInt(max int64) int64 {
 	randInt, _ := crand.Int(crand.Reader, big.NewInt(max))
 	return randInt.Int64()
@@ -104,18 +102,15 @@ func configureDatabase(config config.Settings) (*gorm.DB, error) {
 
 	dsnWithDB := config.Database.WithDb()
 	dbWithDB, err := gorm.Open(gormPostgres.Open(dsnWithDB), &gorm.Config{SkipDefaultTransaction: true, TranslateError: true})
-
 	if err != nil {
 		return nil, err
 	}
 
 	err = dbWithDB.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"").Error
-
 	if err != nil {
 		return nil, err
 	}
 	err = database.MigrateDB(config, dbWithDB)
-
 	if err != nil {
 		return nil, err
 	}
@@ -130,13 +125,11 @@ type ExistingAppAssert struct {
 
 func (eaa ExistingAppAssert) Close() {
 	db, err := eaa.App.Conn.DB()
-
 	if err != nil {
 		panic(err)
 	}
 
 	err = db.Close()
-
 	if err != nil {
 		panic(err)
 	}

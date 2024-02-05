@@ -40,7 +40,6 @@ type Club struct {
 	Parent *uuid.UUID `gorm:"foreignKey:Parent" json:"-" validate:"uuid4"`
 	Tag    []Tag      `gorm:"many2many:club_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	// User
-	Admin             []User           `gorm:"many2many:user_club_admins;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"required"`
 	Member            []User           `gorm:"many2many:user_club_members;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"required"`
 	Follower          []User           `gorm:"many2many:user_club_followers;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	IntendedApplicant []User           `gorm:"many2many:user_club_intended_applicants;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
@@ -80,4 +79,14 @@ type UpdateClubRequestBody struct {
 
 type CreateClubTagsRequestBody struct {
 	Tags []uuid.UUID `json:"tags" validate:"required"` 
+}
+
+func (c *Club) AfterCreate(tx *gorm.DB) (err error) {
+	tx.Model(&c).Update("num_members", c.NumMembers+1)
+	return
+}
+
+func (c *Club) AfterDelete(tx *gorm.DB) (err error) {
+	tx.Model(&c).Update("num_members", c.NumMembers-1)
+	return
 }

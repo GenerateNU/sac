@@ -22,6 +22,10 @@ type TagService struct {
 	Validate *validator.Validate
 }
 
+func NewTagService(db *gorm.DB, validate *validator.Validate) *TagService {
+	return &TagService{DB: db, Validate: validate}
+}
+
 func (t *TagService) CreateTag(tagBody models.TagRequestBody) (*models.Tag, *errors.Error) {
 	if err := t.Validate.Struct(tagBody); err != nil {
 		return nil, &errors.FailedToValidateTag
@@ -35,17 +39,19 @@ func (t *TagService) CreateTag(tagBody models.TagRequestBody) (*models.Tag, *err
 	return transactions.CreateTag(t.DB, *tag)
 }
 
-func (t *TagService) GetTag(id string) (*models.Tag, *errors.Error) {
-	idAsUUID, err := utilities.ValidateID(id)
-	if err != nil {
-		return nil, err
+func (t *TagService) GetTag(tagID string) (*models.Tag, *errors.Error) {
+	tagIDAsUUID, idErr := utilities.ValidateID(tagID)
+
+	if idErr != nil {
+		return nil, idErr
 	}
 
-	return transactions.GetTag(t.DB, *idAsUUID)
+	return transactions.GetTag(t.DB, *tagIDAsUUID)
 }
 
-func (t *TagService) UpdateTag(id string, tagBody models.TagRequestBody) (*models.Tag, *errors.Error) {
-	idAsUUID, idErr := utilities.ValidateID(id)
+func (t *TagService) UpdateTag(tagID string, tagBody models.TagRequestBody) (*models.Tag, *errors.Error) {
+	tagIDAsUUID, idErr := utilities.ValidateID(tagID)
+
 	if idErr != nil {
 		return nil, idErr
 	}
@@ -59,16 +65,17 @@ func (t *TagService) UpdateTag(id string, tagBody models.TagRequestBody) (*model
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	return transactions.UpdateTag(t.DB, *idAsUUID, *tag)
+	return transactions.UpdateTag(t.DB, *tagIDAsUUID, *tag)
 }
 
-func (t *TagService) DeleteTag(id string) *errors.Error {
-	idAsUUID, err := utilities.ValidateID(id)
-	if err != nil {
-		return &errors.FailedToValidateID
+func (t *TagService) DeleteTag(tagID string) *errors.Error {
+	tagIDAsUUID, idErr := utilities.ValidateID(tagID)
+
+	if idErr != nil {
+		return idErr
 	}
 
-	return transactions.DeleteTag(t.DB, *idAsUUID)
+	return transactions.DeleteTag(t.DB, *tagIDAsUUID)
 }
 
 func (t *TagService) GetTagClubs(id string) ([]models.Club, *errors.Error) {

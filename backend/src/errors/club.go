@@ -39,4 +39,8 @@ var (
 		StatusCode: fiber.StatusBadRequest,
 		Message: "failed to validate club tags",
 	}
+	FailedtoGetAdminIDs = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get admin ids",
+	}
 )

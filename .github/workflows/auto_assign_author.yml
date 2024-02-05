@@ -2,7 +2,11 @@ name: Auto Assign Author
 
 on:
   pull_request:
-    types: [opened, ready_for_review, reopened]
+    types: [opened, reopened]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   auto-add-assignee:

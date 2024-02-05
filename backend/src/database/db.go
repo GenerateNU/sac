@@ -16,13 +16,11 @@ func ConfigureDB(settings config.Settings) (*gorm.DB, error) {
 		SkipDefaultTransaction: true,
 		TranslateError:         true,
 	})
-
 	if err != nil {
 		return nil, err
 	}
 
 	err = db.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"").Error
-
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +34,6 @@ func ConfigureDB(settings config.Settings) (*gorm.DB, error) {
 
 func ConnPooling(db *gorm.DB) error {
 	sqlDB, err := db.DB()
-
 	if err != nil {
 		return err
 	}
@@ -57,8 +54,8 @@ func MigrateDB(settings config.Settings, db *gorm.DB) error {
 		&models.PointOfContact{},
 		&models.Tag{},
 		&models.User{},
+		&models.Membership{},
 	)
-
 	if err != nil {
 		return err
 	}
@@ -82,7 +79,6 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 	}
 
 	passwordHash, err := auth.ComputePasswordHash(settings.SuperUser.Password)
-
 	if err != nil {
 		return err
 	}
@@ -122,19 +118,20 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 			RecruitmentType:  models.Application,
 			ApplicationLink:  "https://generatenu.com/apply",
 			Logo:             "https://aws.amazon.com/s3",
-			Admin:            []models.User{superUser},
 		}
+
 		if err := tx.Create(&superClub).Error; err != nil {
 			tx.Rollback()
 			return err
 		}
 
-		if err := tx.Model(&superClub).Association("Member").Append(&superUser); err != nil {
-			tx.Rollback()
-			return err
+		membership := models.Membership{
+			ClubID:         superClub.ID,
+			UserID:         superUser.ID,
+			MembershipType: models.MembershipTypeAdmin,
 		}
 
-		if err := tx.Model(&superClub).Update("num_members", gorm.Expr("num_members + ?", 1)).Error; err != nil {
+		if err := tx.Create(&membership).Error; err != nil {
 			tx.Rollback()
 			return err
 		}

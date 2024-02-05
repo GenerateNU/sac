@@ -5,9 +5,8 @@ import "github.com/google/uuid"
 type UserRole string
 
 const (
-	Super     UserRole = "super"
-	ClubAdmin UserRole = "clubAdmin"
-	Student   UserRole = "student"
+	Super   UserRole = "super"
+	Student UserRole = "student"
 )
 
 type College string
@@ -38,7 +37,7 @@ const (
 type User struct {
 	Model
 
-	Role         UserRole `gorm:"type:varchar(255);" json:"user_role,omitempty" validate:"required,max=255"`
+	Role         UserRole `gorm:"type:varchar(255);default:'student'" json:"role" validate:"required,oneof=super student"`
 	NUID         string   `gorm:"column:nuid;type:varchar(9);unique" json:"nuid" validate:"required,numeric,len=9"`
 	FirstName    string   `gorm:"type:varchar(255)" json:"first_name" validate:"required,max=255"`
 	LastName     string   `gorm:"type:varchar(255)" json:"last_name" validate:"required,max=255"`
@@ -77,6 +76,11 @@ type UpdateUserRequestBody struct {
 	Year      Year    `json:"year" validate:"omitempty,min=1,max=6"`
 }
 
+type LoginUserResponseBody struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"min=8,max=255"`
+}
+
 type CreateUserTagsBody struct {
-	Tags      []uuid.UUID  `json:"tags" validate:"required"`
+	Tags []uuid.UUID `json:"tags" validate:"required"`
 }
