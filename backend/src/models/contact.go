@@ -20,14 +20,15 @@ const (
 type Contact struct {
 	Model
 
-	Type    ContactType `gorm:"type:varchar(255)" json:"type" validate:"required,max=255"`
-	Content string      `gorm:"type:varchar(255)" json:"content" validate:"required,contact_pointer,max=255"`
+	Type    ContactType `gorm:"type:varchar(255);uniqueIndex:idx_contact_type" json:"type" validate:"required,max=255,oneof=facebook instagram twitter linkedin youtube github slack discord email customSite"`
+	Content string      `gorm:"type:varchar(255);" json:"content" validate:"required,max=255"`
 
-	ClubID uuid.UUID `gorm:"foreignKey:ClubID" json:"-" validate:"uuid4"`
+	ClubID uuid.UUID `gorm:"foreignKey:ClubID;uniqueIndex:idx_contact_type" json:"-" validate:"uuid4"`
 }
 
 type PutContactRequestBody struct {
-	Type    ContactType  `gorm:"type:varchar(255)" json:"type" validate:"required,max=255"`
-	Content string `gorm:"type:varchar(255)" json:"content" validate:"required,url,max=255"`
-	ClubID  uint   `gorm:"foreignKey:ClubID" json:"-" validate:"min=1"`
+	Type    ContactType  `gorm:"type:varchar(255)" json:"type" validate:"required,max=255,oneof=facebook instagram twitter linkedin youtube github slack discord email customSite"`
+
+	//TODO content  validator
+	Content string `gorm:"type:varchar(255)" json:"content" validate:"required,s3_url,max=255"`
 }

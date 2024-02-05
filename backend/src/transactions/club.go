@@ -91,7 +91,7 @@ func GetClubContacts(db *gorm.DB, id uuid.UUID) ([]models.Contact, *errors.Error
 
 func PutContact(db *gorm.DB, clubID uuid.UUID, contact models.Contact) (*models.Contact, *errors.Error) {
 	err := db.Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "type"}},
+		Columns:   []clause.Column{{Name: "club_id"}, {Name: "type"}},
 		DoUpdates: clause.AssignmentColumns([]string{"content"}),
 	}).Create(&contact).Error
 	if err != nil {

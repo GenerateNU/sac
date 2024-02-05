@@ -476,649 +476,196 @@ func TestDeleteClubBadRequest(t *testing.T) {
 		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
 	}
 
-}// Path: contact tests
+}
 
-// func SampleContactFactory(clubUUID uuid.UUID) *map[string]interface{} {
-// 	return &map[string]interface{}{
-// 		"type":    "email",
-// 		"content": "https://google.com",
-// 		"club_id": clubUUID,
-// 	}
-// }
-
-// func AssertContactBodyRespDB(app TestApp, assert *assert.A, resp *http.Response, body *map[string]interface{}) {
-// 	var respContact models.Contact
+// contact tests
 
-// 	err := json.NewDecoder(resp.Body).Decode(&respContact)
+/*
+C- test contact creation works with valid data
+test contact creation fails with invalid data
+- type
+  - missing
+  - not a valid type
+- content
+ 	- not a valid url
+  	- missing
+- club_id
+  - inexistent clubId
+TODO should a club be allowed multiple links of the same type?
 
-// 	assert.NilError(err)
+R- test get contacts works
 
-// 	var dbContacts []models.Contact
-
-// 	err = app.Conn.Order("created_at desc").Find(&dbContacts).Error
-
-// 	assert.NilError(err)
-
-// 	assert.Equal(1, len(dbContacts))
-
-// 	dbContact := dbContacts[0]
-
-// 	assert.Equal(dbContact.ID, respContact.ID)
-// 	assert.Equal(dbContact.Type, respContact.Type)
-// 	assert.Equal(dbContact.Content, respContact.Content)
-// 	assert.Equal(dbContact.ClubID, respContact.ClubID)
-// }
-
-// // TODO test contact type validation
-// func TestCreateContactWorks(t *testing.T) {
-// 	appAssert, userUUID, clubUUID := CreateSampleClub(t, nil)
-
-// 	contact := map[string]interface{}{
-// 		"type":    "email",
-// 		"content": "",
-// 		"club_id": clubUUID,
-// 	}
-	
-// 	TestRequest{
-// 		Method: fiber.MethodPost,
-// 		Path:   "/api/v1/contacts/",
-// 		Body:   &contact,
-// 	}.TestOnStatusAndDB(t, &appAssert,
-// 		DBTesterWithStatus{
-// 			Status: fiber.StatusCreated,
-// 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-// 				var respContact models.Contact
-
-// 				err := json.NewDecoder(resp.Body).Decode(&respContact)
-
-// 				assert.NilError(err)
-
-// 				var dbContacts []models.Contact
-
-// 				err = app.Conn.Order("created_at desc").Find(&dbContacts).Error
-
-// 				assert.NilError(err)
-
-// 				assert.Equal(1, len(dbContacts))
-
-// 				dbContact := dbContacts[0]
-
-// 				assert.Equal(dbContact.ID, respContact.ID)
-// 				assert.Equal(dbContact.Type, respContact.Type)
-// 				assert.Equal(dbContact.Content, respContact.Content)
-// 				assert.Equal(dbContact.ClubID, respContact.ClubID)
-// 			},
-// 		},
-// 	).Close()
-// }
-
-// func TestCreateContactFailsOnInvalidType(t *testing.T) {
-// 	appAssert, userUUID, clubUUID := CreateSampleClub(t, nil)
-
-// 	contact := map[string]interface{}{
-// 		"type":    "not a type",
-// 		"content": "",
-// 		"club_id": clubUUID,
-// 	}
-	
-// 	TestRequest{
-// 		Method: fiber.MethodPost,
-// 		Path:   "/api/v1/contacts/",
-// 		Body:   &contact,
-// 	}.TestOnErrorAndDB(t, &appAssert,
-// 		ErrorWithDBTester{
-// 			Error: errors.FailedToValidateContact,
-// 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-// 				var dbContacts []models.Contact
-
-// 				err := app.Conn.Order("created_at desc").Find(&dbContacts).Error
-
-// 				assert.NilError(err)
-
-// 				assert.Equal(1, len(dbContacts))
-
-// 				dbContact := dbContacts[0]
-
-// 				assert.Equal(dbContact.Type, "email")
-// 				assert.Equal(dbContact.Content, "")
-// 				assert.Equal(dbContact.ClubID, clubUUID)
-// 			},
-// 		},
-// 	).Close()
-// }
-
-// func TestCreateContactFailsOnInvalidContent(t *testing.T) {
-// 	appAssert, userUUID, clubUUID := CreateSampleClub(t, nil)
-
-// 	contact := map[string]interface{}{
-// 		"type":    "email",
-// 		"content": "not a url",
-// 		"club_id": clubUUID,
-// 	}
-	
-// 	TestRequest{
-// 		Method: fiber.MethodPost,
-// 		Path:   "/api/v1/contacts/",
-// 		Body:   &contact,
-// 	}.TestOnErrorAndDB(t, &appAssert,
-// 		ErrorWithDBTester{
-// 			Error: errors.FailedToValidateContact,
-// 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-// 				var dbContacts []models.Contact
-
-// 				err := app.Conn.Order("created_at desc").Find(&dbContacts).Error
-
-// 				assert.NilError(err)
-
-// 				assert.Equal(1, len(dbContacts))
-
-// 				dbContact := dbContacts[0]
-
-// 				assert.Equal(dbContact.Type, "email")
-// 				assert.Equal(dbContact.Content, "")
-// 				assert.Equal(dbContact.ClubID, clubUUID)
-// 			},
-// 		},
-// 	).Close()
-// }
-
-// func TestCreateContactFailsOnInvalidClubId(t *testing.T) {
-// 	appAssert, userUUID, clubUUID := CreateSampleClub(t, nil)
-
-// 	contact := map[string]interface{}{
-// 		"type":    "email",
-// 		"content": "",
-// 		"club_id": uuid.New(),
-// 	}
-	
-// 	TestRequest{
-// 		Method: fiber.MethodPost,
-// 		Path:   "/api/v1/contacts/",
-// 		Body:   &contact,
-// 	}.TestOnErrorAndDB(t, &appAssert,
-// 		ErrorWithDBTester{
-// 			Error: errors.ClubNotFound,
-// 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-// 				var dbContacts []models.Contact
-
-// 				err := app.Conn.Order("created_at desc").Find(&dbContacts).Error
-
-// 				assert.NilError(err)
-
-// 				assert.Equal(0, len(dbContacts))
-// 			},
-// 		},
-// 	).Close()
-// }
-
-// func TestGetContactsWorks(t *testing.T) {
-// 	appAssert, userUUID, clubUUID := CreateSampleClub(t, nil)
-
-// 	contact := map[string]interface{}{
-// 		"type":    "email",
-// 		"content": "",
-// 		"club_id": clubUUID,
-// 	}
-	
-// 	TestRequest{
-// 		Method: fiber.MethodPost,
-// 		Path:   "/api/v1/contacts/",
-// 		Body:   &contact,
-// 	}.TestOnStatusAndDB(t, &appAssert,
-// 		DBTesterWithStatus{
-// 			Status: fiber.StatusCreated,
-// 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-// 				var respContact models.Contact
-
-// 				err := json.NewDecoder(resp.Body).Decode(&respContact)
-
-// 				assert.NilError(err)
-
-// 				var dbContacts []models.Contact
-
-// 				err = app.Conn.Order("created_at desc").Find(&dbContacts).Error
-
-// 				assert.NilError(err)
-
-// 				assert.Equal(1, len(dbContacts))
-
-// 				dbContact := dbContacts[0]
-
-// 				assert.Equal(dbContact.ID, respContact.ID)
-// 				assert.Equal(dbContact.Type, respContact.Type)
-// 				assert.Equal(dbContact.Content, respContact.Content)
-// 				assert.Equal(dbContact.ClubID, respContact.ClubID)
-// 			}
-// 		},
-// 	).Close()
-
-// 	TestRequest{
-// 		Method: fiber.MethodGet,
-// 		Path:   "/api/v1/contacts/",
-// 	}.TestOnStatusAndDB(t, &appAssert,
-// 		DBTesterWithStatus{
-// 			Status: fiber.StatusOK,
-// 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-// 				var respContacts []models.Contact
-
-// 				err := json.NewDecoder(resp.Body).Decode(&respContacts)
-
-// 				assert.NilError(err)
-
-// 				assert.Equal(1, len(respContacts))
-
-// 				respContact := respContacts[0]
-
-// 				var dbContacts []models.Contact
-
-// 				err = app.Conn.Order("created_at desc").Find(&dbContacts).Error
-
-// 				assert.NilError(err)
-
-// 				assert.Equal(1, len(dbContacts))
-
-// 				dbContact := dbContacts[0]
-
-// 				assert.Equal(dbContact.ID, respContact.ID)
-// 				assert.Equal(dbContact.Type, respContact.Type)
-// 				assert.Equal(dbContact.Content, respContact.Content)
-// 				assert.Equal(dbContact.ClubID, respContact.ClubID)
-// 			}
-// 		},
-// 	).Close()
-// }
-
-// func TestUpdateContactWorks(t *testing.T) {
-// 	appAssert, userUUID, clubUUID := CreateSampleClub(t, nil)
-
-// 	contact := map[string]interface{}{
-// 		"type":    "email",
-// 		"content": "",
-// 		"club_id": clubUUID,
-// 	}
-	
-// 	TestRequest{
-// 		Method: fiber.MethodPost,
-// 		Path:   "/api/v1/contacts/",
-// 		Body:   &contact,
-// 	}.TestOnStatusAndDB(t, &appAssert,
-// 		DBTesterWithStatus{
-// 			Status: fiber.StatusCreated,
-// 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-// 				var respContact models.Contact
-
-// 				err := json.NewDecoder(resp.Body).Decode(&respContact)
-
-// 				assert.NilError(err)
-
-// 				var dbContacts []models.Contact
-
-// 				err = app.Conn.Order("created_at desc").Find(&dbContacts).Error
-
-// 				assert.NilError(err)
-
-// 				assert.Equal(1, len(dbContacts))
-
-// 				dbContact := dbContacts[0]
-
-// 				assert.Equal(dbContact.ID, respContact.ID)
-// 				assert.Equal(dbContact.Type, respContact.Type)
-// 				assert.Equal(dbContact.Content, respContact.Content)
-// 				assert.Equal(dbContact.ClubID, respContact.ClubID)
-// 			}
-// 		},
-// 	).Close()
-
-// 	updatedContact := map[string]interface{}{
-// 		"type":    "email",
-// 		"content": "https://google.com",
-// 		"club_id": clubUUID,
-// 	}
-
-// 	TestRequest{
-// 		Method: fiber.MethodPatch,
-// 		Path:   fmt.Sprintf("/api/v1/contacts/%s", contact["id"]),
-// 		Body:   &updatedContact,
-// 	}.TestOnStatusAndDB(t, &appAssert,
-// 		DBTesterWithStatus{
-// 			Status: fiber.StatusOK,
-// 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-// 				var respContact models.Contact
-
-// 				err := json.NewDecoder(resp.Body).Decode(&respContact)
-
-// 				assert.NilError(err)
-
-// 				var dbContacts []models.Contact
-
-// 				err = app.Conn.Order("created_at desc").Find(&dbContacts).Error
-
-// 				assert.NilError(err)
-
-// 				assert.Equal(1, len(dbContacts))
-
-// 				dbContact := dbContacts[0]
-
-// 				assert.Equal(dbContact.ID, respContact.ID)
-// 				assert.Equal(dbContact.Type, respContact.Type)
-// 				assert.Equal(dbContact.Content, respContact.Content)
-// 				assert.Equal(dbContact.ClubID, respContact.ClubID)
-// 			}
-// 		},
-// 	).Close()
-// }
-
-// func TestUpdateContactFailsOnInvalidType(t *testing.T) {
-// 	appAssert, userUUID, clubUUID := CreateSampleClub(t, nil)
-
-// 	contact := map[string]interface{}{
-// 		"type":    "email",
-// 		"content": "",
-// 		"club_id": clubUUID,
-// 	}
-	
-// 	TestRequest{
-// 		Method: fiber.MethodPost,
-// 		Path:   "/api/v1/contacts/",
-// 		Body:   &contact,
-// 	}.TestOnStatusAndDB(t, &appAssert,
-// 		DBTesterWithStatus{
-// 			Status: fiber.StatusCreated,
-// 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-// 				var respContact models.Contact
-
-// 				err := json.NewDecoder(resp.Body).Decode(&respContact)
-
-// 				assert.NilError(err)
-
-// 				var dbContacts []models.Contact
-
-// 				err = app.Conn.Order("created_at desc").Find(&dbContacts).Error
-
-// 				assert.NilError(err)
-
-// 				assert.Equal(1, len(dbContacts))
-
-// 				dbContact := dbContacts[0]
-
-// 				assert.Equal(dbContact.ID, respContact.ID)
-// 				assert.Equal(dbContact.Type, respContact.Type)
-// 				assert.Equal(dbContact.Content, respContact.Content)
-// 				assert.Equal(dbContact.ClubID, respContact.ClubID)
-// 			}
-// 		},
-// 	).Close()
-
-// 	updatedContact := map[string]interface{}{
-// 		"type":    "not a type",
-// 		"content": "https://google.com",
-// 		"club_id": clubUUID,
-// 	}
-
-// 	TestRequest{
-// 		Method: fiber.MethodPatch,
-// 		Path:   fmt.Sprintf("/api/v1/contacts/%s", contact["id"]),
-// 		Body:   &updatedContact,
-// 	}.TestOnErrorAndDB(t, &appAssert,
-// 		ErrorWithDBTester{
-// 			Error: errors.FailedToValidateContact,
-// 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-// 				var dbContacts []models.Contact
-
-// 				err := app.Conn.Order("created_at desc").Find(&dbContacts).Error
-
-// 				assert.NilError(err)
-
-// 				assert.Equal(1, len(dbContacts))
-
-// 				dbContact := dbContacts[0]
-
-// 				assert.Equal(dbContact.Type, "email")
-// 				assert.Equal(dbContact.Content, "")
-// 				assert.Equal(dbContact.ClubID, clubUUID)
-// 			},
-// 		},
-// 	).Close()
-// }
-
-// func TestUpdateContactFailsOnInvalidContent(t *testing.T) {
-// 	appAssert, userUUID, clubUUID := CreateSampleClub(t, nil)
-
-// 	contact := map[string]interface{}{
-// 		"type":    "email",
-// 		"content": "",
-// 		"club_id": clubUUID,
-// 	}
-	
-// 	TestRequest{
-// 		Method: fiber.MethodPost,
-// 		Path:   "/api/v1/contacts/",
-// 		Body:   &contact,
-// 	}.TestOnStatusAndDB(t, &appAssert,
-// 		DBTesterWithStatus{
-// 			Status: fiber.StatusCreated,
-// 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-// 				var respContact models.Contact
-
-// 				err := json.NewDecoder(resp.Body).Decode(&respContact)
-
-// 				assert.NilError(err)
-
-// 				var dbContacts []models.Contact
-
-// 				err = app.Conn.Order("created_at desc").Find(&dbContacts).Error
-
-// 				assert.NilError(err)
-
-// 				assert.Equal(1, len(dbContacts))
-
-// 				dbContact := dbContacts[0]
-
-// 				assert.Equal(dbContact.ID, respContact.ID)
-// 				assert.Equal(dbContact.Type, respContact.Type)
-// 				assert.Equal(dbContact.Content, respContact.Content)
-// 				assert.Equal(dbContact.ClubID, respContact.ClubID)
-// 			}
-// 		},
-// 	).Close()
-
-// 	updatedContact := map[string]interface{}{
-// 		"type":    "email",
-// 		"content": "not a url",
-// 		"club_id": clubUUID,
-// 	}
-
-// 	TestRequest{
-// 		Method: fiber.MethodPatch,
-// 		Path:   fmt.Sprintf("/api/v1/contacts/%s", contact["id"]),
-// 		Body:   &updatedContact,
-// 	}.TestOnErrorAndDB(t, &appAssert,
-// 		ErrorWithDBTester{
-// 			Error: errors.FailedToValidateContact,
-// 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-// 				var dbContacts []models.Contact
-
-// 				err := app.Conn.Order("created_at desc").Find(&dbContacts).Error
-
-// 				assert.NilError(err)
-
-// 				assert.Equal(1, len(dbContacts))
-
-// 				dbContact := dbContacts[0]
-
-// 				assert.Equal(dbContact.Type, "email")
-// 				assert.Equal(dbContact.Content, "")
-// 				assert.Equal(dbContact.ClubID, clubUUID)
-// 			},
-// 		},
-// 	).Close()
-// }
-
-// func TestUpdateContactFailsOnInvalidClubId(t *testing.T) {
-// 	appAssert, userUUID, clubUUID := CreateSampleClub(t, nil)
-
-// 	contact := map[string]interface{}{
-// 		"type":    "email",
-// 		"content": "",
-// 		"club_id": clubUUID,
-// 	}
-	
-// 	TestRequest{
-// 		Method: fiber.MethodPost,
-// 		Path:   "/api/v1/contacts/",
-// 		Body:   &contact,
-// 	}.TestOnStatusAndDB(t, &appAssert,
-// 		DBTesterWithStatus{
-// 			Status: fiber.StatusCreated,
-// 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-// 				var respContact models.Contact
-
-// 				err := json.NewDecoder(resp.Body).Decode(&respContact)
-
-// 				assert.NilError(err)
-
-// 				var dbContacts []models.Contact
-
-// 				err = app.Conn.Order("created_at desc").Find(&dbContacts).Error
-
-// 				assert.NilError(err)
-
-// 				assert.Equal(1, len(dbContacts))
-
-// 				dbContact := dbContacts[0]
-
-// 				assert.Equal(dbContact.ID, respContact.ID)
-// 				assert.Equal(dbContact.Type, respContact.Type)
-// 				assert.Equal(dbContact.Content, respContact.Content)
-// 				assert.Equal(dbContact.ClubID, respContact.ClubID)
-// 			}
-// 		},
-// 	).Close()
-
-// 	updatedContact := map[string]interface{}{
-// 		"type":    "email",
-// 		"content": "https://google.com",
-// 		"club_id": uuid.New(),
-// 	}
-
-// 	TestRequest{
-// 		Method: fiber.MethodPatch,
-// 		Path:   fmt.Sprintf("/api/v1/contacts/%s", contact["id"]),
-// 		Body:   &updatedContact,
-// 	}.TestOnErrorAndDB(t, &appAssert,
-// 		ErrorWithDBTester{
-// 			Error: errors.ClubNotFound,
-// 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-// 				var dbContacts []models.Contact
-
-// 				err := app.Conn.Order("created_at desc").Find(&dbContacts).Error
-
-// 				assert.NilError(err)
-
-// 				assert.Equal(1, len(dbContacts))
-
-// 				dbContact := dbContacts[0]
-
-// 				assert.Equal(dbContact.Type, "email")
-// 				assert.Equal(dbContact.Content, "")
-// 				assert.Equal(dbContact.ClubID, clubUUID)
-// 			},
-// 		},
-// 	).Close()
-// }
-
-// func TestDeleteContactWorks(t *testing.T) {
-// 	appAssert, userUUID, clubUUID := CreateSampleClub(t, nil)
-
-// 	contact := map[string]interface{}{
-// 		"type":    "email",
-// 		"content": "",
-// 		"club_id": clubUUID,
-// 	}
-	
-// 	TestRequest{
-// 		Method: fiber.MethodPost,
-// 		Path:   "/api/v1/contacts/",
-// 		Body:   &contact,
-// 	}.TestOnStatusAndDB(t, &appAssert,
-// 		DBTesterWithStatus{
-// 			Status: fiber.StatusCreated,
-// 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-// 				var respContact models.Contact
-
-// 				err := json.NewDecoder(resp.Body).Decode(&respContact)
-
-// 				assert.NilError(err)
-
-// 				var dbContacts []models.Contact
-
-// 				err = app.Conn.Order("created_at desc").Find(&dbContacts).Error
-
-// 				assert.NilError(err)
-
-// 				assert.Equal(1, len(dbContacts))
-
-// 				dbContact := dbContacts[0]
-
-// 				assert.Equal(dbContact.ID, respContact.ID)
-// 				assert.Equal(dbContact.Type, respContact.Type)
-// 				assert.Equal(dbContact.Content, respContact.Content)
-// 				assert.Equal(dbContact.ClubID, respContact.ClubID)
-// 			}
-// 		},
-// 	).Close()
-
-// 	TestRequest{
-// 		Method: fiber.MethodDelete,
-// 		Path:   fmt.Sprintf("/api/v1/contacts/%s", contact["id"]),
-// 	}.TestOnStatusAndDB(t, &appAssert,
-// 		DBTesterWithStatus{
-// 			Status:   fiber.StatusNoContent,
-// 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-// 				var dbContacts []models.Contact
-
-// 				err := app.Conn.Order("created_at desc").Find(&dbContacts).Error
-
-// 				assert.NilError(err)
-
-// 				assert.Equal(0, len(dbContacts))
-// 			},
-// 		},
-// 	).Close()
-// }
-
-// func TestDeleteContactNotExist(t *testing.T) {
-// 	uuid := uuid.New()
-// 	TestRequest{
-// 		Method: fiber.MethodDelete,
-// 		Path:   fmt.Sprintf("/api/v1/contacts/%s", uuid),
-// 	}.TestOnErrorAndDB(t, nil,
-// 		ErrorWithDBTester{
-// 			Error: errors.ContactNotFound,
-// 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-// 				var contact models.Contact
-
-// 				err := app.Conn.Where("id = ?", uuid).First(&contact).Error
-
-// 				assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
-// 			},
-// 		},
-// 	).Close()
-// }
-
-// func TestDeleteContactBadRequest(t *testing.T) {
-// 	badRequests := []string{
-// 		"0",
-// 		"-1",
-// 		"1.1",
-// 		"hello",
-// 		"null",
-// 	}
-
-// 	for _, badRequest := range badRequests {
-// 		TestRequest{
-// 			Method: fiber.MethodDelete,
-// 			Path:   fmt.Sprintf("/api/v1/contacts/%s", badRequest),
-// 		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
-// 	}
-// }
+
+test delete contact works
+*/
+
+func SampleContactFactory(clubUUID uuid.UUID) *map[string]interface{} {
+	return &map[string]interface{}{
+		"type":    "email",
+		"content": "jermaine@gmail.com",
+		"club_id": clubUUID,
+	}
+}
+
+func AssertContactBodyRespDB(app TestApp, assert *assert.A, resp *http.Response, body *map[string]interface{}) uuid.UUID {
+	var respContact models.Contact
+
+	// decode the response body into a respContact
+	err := json.NewDecoder(resp.Body).Decode(&respContact)
+
+	assert.NilError(err)
+
+	var dbContacts []models.Contact
+
+	// get all contacts from the database ordered by created_at and store them in dbContacts
+	err = app.Conn.Order("created_at desc").Find(&dbContacts).Error
+
+	assert.NilError(err)
+
+	assert.Equal(1, len(dbContacts))
+
+	dbContact := dbContacts[0]
+
+	assert.Equal(dbContact.ID, respContact.ID)
+	assert.Equal(dbContact.Type, respContact.Type)
+	assert.Equal(dbContact.Content, respContact.Content)
+
+	return dbContact.ID
+}
+
+func AssertSampleContactBodyRespDB(app TestApp, assert *assert.A, resp *http.Response, clubUUID uuid.UUID) uuid.UUID {
+	return AssertContactBodyRespDB(app, assert, resp, SampleContactFactory(clubUUID))
+}
+
+func CreateSampleContact(t *testing.T, existingAppAssert *ExistingAppAssert) (eaa ExistingAppAssert, clubUUID uuid.UUID, contactUUID uuid.UUID) {
+	appAssert, _, clubUUID := CreateSampleClub(t, nil)
+
+	var sampleContactUUID uuid.UUID
+
+	newAppAssert := TestRequest{
+		Method: fiber.MethodPut,
+		Path:   fmt.Sprintf("/api/v1/clubs/%s/contacts", clubUUID),
+		Body:   SampleContactFactory(clubUUID),
+	}.TestOnStatusAndDB(t, &appAssert,
+		DBTesterWithStatus{
+			Status: fiber.StatusOK,
+			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+				sampleContactUUID = AssertSampleContactBodyRespDB(app, assert, resp, clubUUID)
+			},
+		},
+	)
+
+	if existingAppAssert == nil {
+		return newAppAssert, clubUUID, sampleContactUUID
+	} else {
+		return *existingAppAssert, clubUUID, sampleContactUUID
+	}
+}
+
+func TestCreateContactWorks(t *testing.T) {
+	existingAppAssert, _, _ := CreateSampleContact(t, nil)
+	existingAppAssert.Close()
+}
+
+func AssertNumContactsRemainsAtN(app TestApp, assert *assert.A, resp *http.Response, n int) {
+	var dbContacts []models.Contact
+
+	err := app.Conn.Order("created_at desc").Find(&dbContacts).Error
+
+	assert.NilError(err)
+
+	assert.Equal(n, len(dbContacts))
+}
+
+var TestNumContactsRemainsAt0 = func(app TestApp, assert *assert.A, resp *http.Response) {
+	AssertNumContactsRemainsAtN(app, assert, resp, 0)
+}
+
+func AssertCreateBadContactDataFails(t *testing.T, jsonKey string, badValues []interface{}) {
+	appAssert, _, clubUUID := CreateSampleClub(t, nil)
+
+	for _, badValue := range badValues {
+		sampleContactPermutation := *SampleContactFactory(clubUUID)
+		sampleContactPermutation[jsonKey] = badValue
+
+		TestRequest{
+			Method: fiber.MethodPut,
+			Path:   fmt.Sprintf("/api/v1/clubs/%s/contacts", clubUUID),
+			Body:   &sampleContactPermutation,
+		}.TestOnErrorAndDB(t, &appAssert,
+			ErrorWithDBTester{
+				Error:    errors.FailedToValidateContact,
+				DBTester: TestNumContactsRemainsAt0,
+			},
+		)
+	}
+	appAssert.Close()
+}
+
+func TestCreateContactFailsOnInvalidType(t *testing.T) {
+	AssertCreateBadContactDataFails(t,
+		"type",
+		[]interface{}{
+			"Not a valid type",
+			"@#139081#$Ad_Axf",
+		},
+	)
+}
+
+func TestCreateContactFailsOnInvalidContent(t *testing.T) {
+	AssertCreateBadContactDataFails(t,
+		"content",
+		[]interface{}{
+			"Not a valid url",
+			"@#139081#$Ad_Axf",
+		},
+	)
+}
+
+func TestPutContactFailsOnClubIDNotExist(t *testing.T) {
+	appAssert, _, _ := CreateSampleContact(t, nil)
+
+	uuid := uuid.New()
+
+	TestRequest{
+		Method: fiber.MethodPut,
+		Path:   fmt.Sprintf("/api/v1/clubs/%s/contacts", uuid),
+		Body:   SampleContactFactory(uuid),
+	}.TestOnErrorAndDB(t, &appAssert,
+		ErrorWithDBTester{
+			Error: errors.ClubNotFound,
+			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+				var contact models.Contact
+
+				err := app.Conn.Where("id = ?", uuid).First(&contact).Error
+
+				assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
+
+				AssertNumContactsRemainsAtN(app, assert, resp, 0)
+			},
+		},
+	).Close()
+}
+
+func TestPutContactFailsOnClubIdNotExist(t *testing.T) {
+	appAssert, _, clubUUID := CreateSampleClub(t, nil)
+
+	uuid := uuid.New()
+
+	TestRequest{
+		Method: fiber.MethodPut,
+		Path:   fmt.Sprintf("/api/v1/clubs/%s/contacts", uuid),
+		Body:   SampleContactFactory(clubUUID),
+	}.TestOnErrorAndDB(t, &appAssert,
+		ErrorWithDBTester{
+			Error: errors.ClubNotFound,
+			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+				var club models.Club
+
+				err := app.Conn.Where("id = ?", uuid).First(&club).Error
+
+				assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
+			},
+		},
+	).Close()
+}
