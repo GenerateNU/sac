@@ -9,7 +9,7 @@ import (
 )
 
 func (m *MiddlewareService) UserAuthorizeById(c *fiber.Ctx) error {
-	idAsUUID, err := utilities.ValidateID(c.Params("id"))
+	idAsUUID, err := utilities.ValidateID(c.Params("userID"))
 	if err != nil {
 		return errors.FailedToValidateID.FiberError(c)
 	}

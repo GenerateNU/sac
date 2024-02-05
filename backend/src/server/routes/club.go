@@ -16,8 +16,8 @@ func Club(router fiber.Router, clubService services.ClubServiceInterface, middle
 	clubs.Get("/", middlewareService.Authorize(types.ClubReadAll), clubController.GetAllClubs)
 	clubs.Post("/", clubController.CreateClub)
 
-	// api/v1/clubs/:id/*
-	clubsID := clubs.Group("/:id")
+	// api/v1/clubs/:clubID/*
+	clubsID := clubs.Group("/:clubID")
 	clubsID.Use(middleware.SuperSkipper(middlewareService.UserAuthorizeById))
 
 	clubsID.Get("/", clubController.GetClub)

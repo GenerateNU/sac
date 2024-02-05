@@ -1,8 +1,6 @@
 package services
 
 import (
-	"fmt"
-
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
@@ -47,7 +45,6 @@ func (c *ClubService) GetClubs(limit string, page string) ([]models.Club, *error
 
 func (c *ClubService) CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, *errors.Error) {
 	if err := c.Validate.Struct(clubBody); err != nil {
-		fmt.Print(err)
 		return nil, &errors.FailedToValidateClub
 	}
 

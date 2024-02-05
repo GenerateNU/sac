@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/GenerateNU/sac/backend/src/auth"
@@ -91,8 +90,6 @@ func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBod
 	if err != nil {
 		return nil, &errors.FailedToMapRequestToModel
 	}
-
-	fmt.Println(user)
 
 	return transactions.UpdateUser(u.DB, *idAsUUID, *user)
 }

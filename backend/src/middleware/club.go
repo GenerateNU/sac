@@ -12,7 +12,7 @@ import (
 )
 
 func (m *MiddlewareService) ClubAuthorizeById(c *fiber.Ctx) error {
-	clubUUID, err := utilities.ValidateID(c.Params("id"))
+	clubUUID, err := utilities.ValidateID(c.Params("clubID"))
 	if err != nil {
 		return errors.FailedToValidateID.FiberError(c)
 	}
