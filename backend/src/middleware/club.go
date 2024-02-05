@@ -12,12 +12,12 @@ import (
 )
 
 func (m *MiddlewareService) ClubAuthorizeById(c *fiber.Ctx) error {
-	clubUUID, err := utilities.ValidateID(c.Params("id"))
+	clubUUID, err := utilities.ValidateID(c.Params("clubID"))
 	if err != nil {
-		return errors.FailedToParseUUID.FiberError(c)
+		return errors.FailedToValidateID.FiberError(c)
 	}
 
-	token, tokenErr := auth.ParseAccessToken(c.Cookies("access_token"))
+	token, tokenErr := auth.ParseAccessToken(c.Cookies("access_token"), m.AuthSettings.AccessToken)
 	if tokenErr != nil {
 		return errors.FailedToParseAccessToken.FiberError(c)
 	}

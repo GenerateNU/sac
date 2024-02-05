@@ -7,6 +7,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
+	h "github.com/GenerateNU/sac/backend/tests/api/helpers"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/huandu/go-assert"
@@ -20,7 +21,7 @@ func SampleCategoryFactory() *map[string]interface{} {
 	}
 }
 
-func AssertCategoryBodyRespDB(app TestApp, assert *assert.A, resp *http.Response, body *map[string]interface{}) uuid.UUID {
+func AssertCategoryBodyRespDB(app h.TestApp, assert *assert.A, resp *http.Response, body *map[string]interface{}) uuid.UUID {
 	var respCategory models.Category
 
 	err := json.NewDecoder(resp.Body).Decode(&respCategory)
@@ -45,7 +46,7 @@ func AssertCategoryBodyRespDB(app TestApp, assert *assert.A, resp *http.Response
 	return dbCategory.ID
 }
 
-func AssertCategoryWithBodyRespDBMostRecent(app TestApp, assert *assert.A, resp *http.Response, body *map[string]interface{}) uuid.UUID {
+func AssertCategoryWithBodyRespDBMostRecent(app h.TestApp, assert *assert.A, resp *http.Response, body *map[string]interface{}) uuid.UUID {
 	var respCategory models.Category
 
 	err := json.NewDecoder(resp.Body).Decode(&respCategory)
@@ -66,65 +67,65 @@ func AssertCategoryWithBodyRespDBMostRecent(app TestApp, assert *assert.A, resp 
 	return dbCategory.ID
 }
 
-func AssertSampleCategoryBodyRespDB(app TestApp, assert *assert.A, resp *http.Response) uuid.UUID {
+func AssertSampleCategoryBodyRespDB(app h.TestApp, assert *assert.A, resp *http.Response) uuid.UUID {
 	return AssertCategoryBodyRespDB(app, assert, resp, SampleCategoryFactory())
 }
 
-func CreateSampleCategory(t *testing.T, existingAppAssert *ExistingAppAssert) (ExistingAppAssert, uuid.UUID) {
+func CreateSampleCategory(existingAppAssert h.ExistingAppAssert) (h.ExistingAppAssert, uuid.UUID) {
 	var sampleCategoryUUID uuid.UUID
 
-	newAppAssert := TestRequest{
-		Method: fiber.MethodPost,
-		Path:   "/api/v1/categories/",
-		Body:   SampleCategoryFactory(),
-	}.TestOnStatusAndDB(t, existingAppAssert,
-		DBTesterWithStatus{
+	existingAppAssert.TestOnStatusAndDB(
+		h.TestRequest{
+			Method: fiber.MethodPost,
+			Path:   "/api/v1/categories/",
+			Body:   SampleCategoryFactory(),
+			Role:   &models.Super,
+		},
+		h.TesterWithStatus{
 			Status: fiber.StatusCreated,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 				sampleCategoryUUID = AssertSampleCategoryBodyRespDB(app, assert, resp)
 			},
 		},
 	)
 
-	if existingAppAssert == nil {
-		return newAppAssert, sampleCategoryUUID
-	} else {
-		return *existingAppAssert, sampleCategoryUUID
-	}
+	return existingAppAssert, sampleCategoryUUID
 }
 
 func TestCreateCategoryWorks(t *testing.T) {
-	existingAppAssert, _ := CreateSampleCategory(t, nil)
+	existingAppAssert, _ := CreateSampleCategory(h.InitTest(t))
 	existingAppAssert.Close()
 }
 
 func TestCreateCategoryIgnoresid(t *testing.T) {
-	TestRequest{
-		Method: fiber.MethodPost,
-		Path:   "/api/v1/categories/",
-		Body: &map[string]interface{}{
-			"id":   12,
-			"name": "Foo",
+	h.InitTest(t).TestOnStatusAndDB(
+		h.TestRequest{
+			Method: fiber.MethodPost,
+			Path:   "/api/v1/categories/",
+			Body: &map[string]interface{}{
+				"id":   12,
+				"name": "Foo",
+			},
+			Role: &models.Super,
 		},
-	}.TestOnStatusAndDB(t, nil,
-		DBTesterWithStatus{
+		h.TesterWithStatus{
 			Status: fiber.StatusCreated,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 				AssertSampleCategoryBodyRespDB(app, assert, resp)
 			},
 		},
 	).Close()
 }
 
-func Assert1Category(app TestApp, assert *assert.A, resp *http.Response) {
+func Assert1Category(app h.TestApp, assert *assert.A, resp *http.Response) {
 	AssertNumCategoriesRemainsAtN(app, assert, resp, 1)
 }
 
-func AssertNoCategories(app TestApp, assert *assert.A, resp *http.Response) {
+func AssertNoCategories(app h.TestApp, assert *assert.A, resp *http.Response) {
 	AssertNumCategoriesRemainsAtN(app, assert, resp, 0)
 }
 
-func AssertNumCategoriesRemainsAtN(app TestApp, assert *assert.A, resp *http.Response, n int) {
+func AssertNumCategoriesRemainsAtN(app h.TestApp, assert *assert.A, resp *http.Response, n int) {
 	var categories []models.Category
 
 	err := app.Conn.Find(&categories).Error
@@ -135,52 +136,58 @@ func AssertNumCategoriesRemainsAtN(app TestApp, assert *assert.A, resp *http.Res
 }
 
 func TestCreateCategoryFailsIfNameIsNotString(t *testing.T) {
-	TestRequest{
-		Method: fiber.MethodPost,
-		Path:   "/api/v1/categories/",
-		Body: &map[string]interface{}{
-			"name": 1231,
+	h.InitTest(t).TestOnErrorAndDB(
+		h.TestRequest{
+			Method: fiber.MethodPost,
+			Path:   "/api/v1/categories/",
+			Body: &map[string]interface{}{
+				"name": 1231,
+			},
+			Role: &models.Super,
 		},
-	}.TestOnErrorAndDB(t, nil,
-		ErrorWithDBTester{
-			Error:    errors.FailedToParseRequestBody,
-			DBTester: AssertNoCategories,
+		h.ErrorWithTester{
+			Error:  errors.FailedToParseRequestBody,
+			Tester: AssertNoCategories,
 		},
 	).Close()
 }
 
 func TestCreateCategoryFailsIfNameIsMissing(t *testing.T) {
-	TestRequest{
-		Method: fiber.MethodPost,
-		Path:   "/api/v1/categories/",
-		Body:   &map[string]interface{}{},
-	}.TestOnErrorAndDB(t, nil,
-		ErrorWithDBTester{
-			Error:    errors.FailedToValidateCategory,
-			DBTester: AssertNoCategories,
+	h.InitTest(t).TestOnErrorAndDB(
+		h.TestRequest{
+			Method: fiber.MethodPost,
+			Path:   "/api/v1/categories/",
+			Body:   &map[string]interface{}{},
+			Role:   &models.Super,
+		},
+		h.ErrorWithTester{
+			Error:  errors.FailedToValidateCategory,
+			Tester: AssertNoCategories,
 		},
 	).Close()
 }
 
 func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
-	existingAppAssert, _ := CreateSampleCategory(t, nil)
+	existingAppAssert, _ := CreateSampleCategory(h.InitTest(t))
 
-	TestNumCategoriesRemainsAt1 := func(app TestApp, assert *assert.A, resp *http.Response) {
+	TestNumCategoriesRemainsAt1 := func(app h.TestApp, assert *assert.A, resp *http.Response) {
 		AssertNumCategoriesRemainsAtN(app, assert, resp, 1)
 	}
 
-	for _, permutation := range AllCasingPermutations((*SampleCategoryFactory())["name"].(string)) {
+	for _, permutation := range h.AllCasingPermutations((*SampleCategoryFactory())["name"].(string)) {
 		modifiedSampleCategoryBody := *SampleCategoryFactory()
 		modifiedSampleCategoryBody["name"] = permutation
 
-		TestRequest{
-			Method: fiber.MethodPost,
-			Path:   "/api/v1/categories/",
-			Body:   &modifiedSampleCategoryBody,
-		}.TestOnErrorAndDB(t, &existingAppAssert,
-			ErrorWithDBTester{
-				Error:    errors.CategoryAlreadyExists,
-				DBTester: TestNumCategoriesRemainsAt1,
+		existingAppAssert.TestOnErrorAndDB(
+			h.TestRequest{
+				Method: fiber.MethodPost,
+				Path:   "/api/v1/categories/",
+				Body:   &modifiedSampleCategoryBody,
+				Role:   &models.Super,
+			},
+			h.ErrorWithTester{
+				Error:  errors.CategoryAlreadyExists,
+				Tester: TestNumCategoriesRemainsAt1,
 			},
 		)
 	}
@@ -189,15 +196,17 @@ func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
 }
 
 func TestGetCategoryWorks(t *testing.T) {
-	existingAppAssert, uuid := CreateSampleCategory(t, nil)
+	existingAppAssert, uuid := CreateSampleCategory(h.InitTest(t))
 
-	TestRequest{
-		Method: "GET",
-		Path:   fmt.Sprintf("/api/v1/categories/%s", uuid),
-	}.TestOnStatusAndDB(t, &existingAppAssert,
-		DBTesterWithStatus{
+	existingAppAssert.TestOnStatusAndDB(
+		h.TestRequest{
+			Method: fiber.MethodGet,
+			Path:   fmt.Sprintf("/api/v1/categories/%s", uuid),
+			Role:   &models.Super,
+		},
+		h.TesterWithStatus{
 			Status: fiber.StatusOK,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 				AssertSampleCategoryBodyRespDB(app, assert, resp)
 			},
 		},
@@ -205,6 +214,8 @@ func TestGetCategoryWorks(t *testing.T) {
 }
 
 func TestGetCategoryFailsBadRequest(t *testing.T) {
+	appAssert := h.InitTest(t)
+
 	badRequests := []string{
 		"0",
 		"-1",
@@ -214,30 +225,41 @@ func TestGetCategoryFailsBadRequest(t *testing.T) {
 	}
 
 	for _, badRequest := range badRequests {
-		TestRequest{
-			Method: "GET",
-			Path:   fmt.Sprintf("/api/v1/categories/%s", badRequest),
-		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
+		appAssert.TestOnError(
+			h.TestRequest{
+				Method: fiber.MethodGet,
+				Path:   fmt.Sprintf("/api/v1/categories/%s", badRequest),
+				Role:   &models.Super,
+			},
+			errors.FailedToValidateID,
+		)
 	}
+
+	appAssert.Close()
 }
 
 func TestGetCategoryFailsNotFound(t *testing.T) {
-	TestRequest{
-		Method: "GET",
-		Path:   fmt.Sprintf("/api/v1/categories/%s", uuid.New()),
-	}.TestOnError(t, nil, errors.CategoryNotFound).Close()
+	h.InitTest(t).TestOnError(
+		h.TestRequest{
+			Method: fiber.MethodGet,
+			Path:   fmt.Sprintf("/api/v1/categories/%s", uuid.New()),
+			Role:   &models.Super,
+		}, errors.CategoryNotFound,
+	).Close()
 }
 
 func TestGetCategoriesWorks(t *testing.T) {
-	existingAppAssert, _ := CreateSampleCategory(t, nil)
+	existingAppAssert, _ := CreateSampleCategory(h.InitTest(t))
 
-	TestRequest{
-		Method: "GET",
-		Path:   "/api/v1/categories/",
-	}.TestOnStatusAndDB(t, &existingAppAssert,
-		DBTesterWithStatus{
+	existingAppAssert.TestOnStatusAndDB(
+		h.TestRequest{
+			Method: fiber.MethodGet,
+			Path:   "/api/v1/categories/",
+			Role:   &models.Super,
+		},
+		h.TesterWithStatus{
 			Status: fiber.StatusOK,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 				var categories []models.Category
 
 				err := app.Conn.Find(&categories).Error
@@ -263,7 +285,7 @@ func TestGetCategoriesWorks(t *testing.T) {
 	).Close()
 }
 
-func AssertUpdatedCategoryBodyRespDB(app TestApp, assert *assert.A, resp *http.Response, body *map[string]interface{}) {
+func AssertUpdatedCategoryBodyRespDB(app h.TestApp, assert *assert.A, resp *http.Response, body *map[string]interface{}) {
 	var respCategory models.Category
 
 	err := json.NewDecoder(resp.Body).Decode(&respCategory)
@@ -288,52 +310,58 @@ func AssertUpdatedCategoryBodyRespDB(app TestApp, assert *assert.A, resp *http.R
 }
 
 func TestUpdateCategoryWorks(t *testing.T) {
-	existingAppAssert, uuid := CreateSampleCategory(t, nil)
+	existingAppAssert, uuid := CreateSampleCategory(h.InitTest(t))
 
 	category := map[string]interface{}{
 		"id":   uuid,
 		"name": "Arts & Crafts",
 	}
 
-	AssertUpdatedCategoryBodyRespDB := func(app TestApp, assert *assert.A, resp *http.Response) {
+	AssertUpdatedCategoryBodyRespDB := func(app h.TestApp, assert *assert.A, resp *http.Response) {
 		AssertUpdatedCategoryBodyRespDB(app, assert, resp, &category)
 	}
 
-	TestRequest{
-		Method: fiber.MethodPatch,
-		Path:   fmt.Sprintf("/api/v1/categories/%s", uuid),
-		Body:   &category,
-	}.TestOnStatusAndDB(t, &existingAppAssert,
-		DBTesterWithStatus{
-			Status:   fiber.StatusOK,
-			DBTester: AssertUpdatedCategoryBodyRespDB,
+	existingAppAssert.TestOnStatusAndDB(
+		h.TestRequest{
+			Method: fiber.MethodPatch,
+			Path:   fmt.Sprintf("/api/v1/categories/%s", uuid),
+			Body:   &category,
+			Role:   &models.Super,
+		},
+		h.TesterWithStatus{
+			Status: fiber.StatusOK,
+			Tester: AssertUpdatedCategoryBodyRespDB,
 		},
 	).Close()
 }
 
 func TestUpdateCategoryWorksWithSameDetails(t *testing.T) {
-	existingAppAssert, uuid := CreateSampleCategory(t, nil)
+	existingAppAssert, uuid := CreateSampleCategory(h.InitTest(t))
 
 	category := *SampleCategoryFactory()
 	category["id"] = uuid
 
-	AssertSampleCategoryBodyRespDB := func(app TestApp, assert *assert.A, resp *http.Response) {
+	AssertSampleCategoryBodyRespDB := func(app h.TestApp, assert *assert.A, resp *http.Response) {
 		AssertUpdatedCategoryBodyRespDB(app, assert, resp, &category)
 	}
 
-	TestRequest{
-		Method: fiber.MethodPatch,
-		Path:   fmt.Sprintf("/api/v1/categories/%s", uuid),
-		Body:   &category,
-	}.TestOnStatusAndDB(t, &existingAppAssert,
-		DBTesterWithStatus{
-			Status:   fiber.StatusOK,
-			DBTester: AssertSampleCategoryBodyRespDB,
+	existingAppAssert.TestOnStatusAndDB(
+		h.TestRequest{
+			Method: fiber.MethodPatch,
+			Path:   fmt.Sprintf("/api/v1/categories/%s", uuid),
+			Body:   &category,
+			Role:   &models.Super,
+		},
+		h.TesterWithStatus{
+			Status: fiber.StatusOK,
+			Tester: AssertSampleCategoryBodyRespDB,
 		},
 	).Close()
 }
 
 func TestUpdateCategoryFailsBadRequest(t *testing.T) {
+	appAssert := h.InitTest(t)
+
 	badRequests := []string{
 		"0",
 		"-1",
@@ -343,30 +371,38 @@ func TestUpdateCategoryFailsBadRequest(t *testing.T) {
 	}
 
 	for _, badRequest := range badRequests {
-		TestRequest{
-			Method: fiber.MethodPatch,
-			Path:   fmt.Sprintf("/api/v1/categories/%s", badRequest),
-			Body:   SampleCategoryFactory(),
-		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
+		appAssert.TestOnError(
+			h.TestRequest{
+				Method: fiber.MethodPatch,
+				Path:   fmt.Sprintf("/api/v1/categories/%s", badRequest),
+				Body:   SampleCategoryFactory(),
+				Role:   &models.Super,
+			},
+			errors.FailedToValidateID,
+		)
 	}
+
+	appAssert.Close()
 }
 
 func TestDeleteCategoryWorks(t *testing.T) {
-	existingAppAssert, uuid := CreateSampleCategory(t, nil)
+	existingAppAssert, uuid := CreateSampleCategory(h.InitTest(t))
 
-	TestRequest{
-		Method: fiber.MethodDelete,
-		Path:   fmt.Sprintf("/api/v1/categories/%s", uuid),
-	}.TestOnStatusAndDB(t, &existingAppAssert,
-		DBTesterWithStatus{
-			Status:   fiber.StatusNoContent,
-			DBTester: AssertNoCategories,
+	existingAppAssert.TestOnStatusAndDB(
+		h.TestRequest{
+			Method: fiber.MethodDelete,
+			Path:   fmt.Sprintf("/api/v1/categories/%s", uuid),
+			Role:   &models.Super,
+		},
+		h.TesterWithStatus{
+			Status: fiber.StatusNoContent,
+			Tester: AssertNoCategories,
 		},
 	).Close()
 }
 
 func TestDeleteCategoryFailsBadRequest(t *testing.T) {
-	existingAppAssert, _ := CreateSampleCategory(t, nil)
+	existingAppAssert, _ := CreateSampleCategory(h.InitTest(t))
 
 	badRequests := []string{
 		"0",
@@ -377,13 +413,15 @@ func TestDeleteCategoryFailsBadRequest(t *testing.T) {
 	}
 
 	for _, badRequest := range badRequests {
-		TestRequest{
-			Method: fiber.MethodDelete,
-			Path:   fmt.Sprintf("/api/v1/categories/%s", badRequest),
-		}.TestOnErrorAndDB(t, &existingAppAssert,
-			ErrorWithDBTester{
-				Error:    errors.FailedToValidateID,
-				DBTester: Assert1Category,
+		existingAppAssert.TestOnErrorAndDB(
+			h.TestRequest{
+				Method: fiber.MethodDelete,
+				Path:   fmt.Sprintf("/api/v1/categories/%s", badRequest),
+				Role:   &models.Super,
+			},
+			h.ErrorWithTester{
+				Error:  errors.FailedToValidateID,
+				Tester: Assert1Category,
 			},
 		)
 	}
@@ -392,15 +430,17 @@ func TestDeleteCategoryFailsBadRequest(t *testing.T) {
 }
 
 func TestDeleteCategoryFailsNotFound(t *testing.T) {
-	existingAppAssert, _ := CreateSampleCategory(t, nil)
+	existingAppAssert, _ := CreateSampleCategory(h.InitTest(t))
 
-	TestRequest{
-		Method: fiber.MethodDelete,
-		Path:   fmt.Sprintf("/api/v1/categories/%s", uuid.New()),
-	}.TestOnErrorAndDB(t, &existingAppAssert,
-		ErrorWithDBTester{
-			Error:    errors.CategoryNotFound,
-			DBTester: Assert1Category,
+	existingAppAssert.TestOnErrorAndDB(
+		h.TestRequest{
+			Method: fiber.MethodDelete,
+			Path:   fmt.Sprintf("/api/v1/categories/%s", uuid.New()),
+			Role:   &models.Super,
+		},
+		h.ErrorWithTester{
+			Error:  errors.CategoryNotFound,
+			Tester: Assert1Category,
 		},
 	).Close()
 }

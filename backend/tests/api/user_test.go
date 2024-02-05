@@ -11,6 +11,7 @@ import (
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
+	h "github.com/GenerateNU/sac/backend/tests/api/helpers"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -19,14 +20,16 @@ import (
 	"github.com/huandu/go-assert"
 )
 
-func TestGetUsersWorks(t *testing.T) {
-	TestRequest{
-		Method: fiber.MethodGet,
-		Path:   "/api/v1/users/",
-	}.TestOnStatusAndDB(t, nil,
-		DBTesterWithStatus{
+func TestGetUsersWorksForSuper(t *testing.T) {
+	h.InitTest(t).TestOnStatusAndDB(
+		h.TestRequest{
+			Method: fiber.MethodGet,
+			Path:   "/api/v1/users/",
+			Role:   &models.Super,
+		},
+		h.TesterWithStatus{
 			Status: fiber.StatusOK,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 				var users []models.User
 
 				err := json.NewDecoder(resp.Body).Decode(&users)
@@ -58,23 +61,37 @@ func TestGetUsersWorks(t *testing.T) {
 	).Close()
 }
 
-func TestGetUserWorks(t *testing.T) {
-	appAssert, uuid := CreateSampleUser(t, nil)
+func TestGetUsersFailsForStudent(t *testing.T) {
+	h.InitTest(t).TestOnError(
+		h.TestRequest{
+			Method: fiber.MethodGet,
+			Path:   "/api/v1/users/",
+			Role:   &models.Student,
+		},
+		errors.Unauthorized,
+	).Close()
+}
 
-	TestRequest{
-		Method: fiber.MethodGet,
-		Path:   fmt.Sprintf("/api/v1/users/%s", uuid),
-	}.TestOnStatusAndDB(t, &appAssert,
-		DBTesterWithStatus{
+func TestGetUserWorks(t *testing.T) {
+	h.InitTest(t).TestOnStatusAndDB(
+		h.TestRequest{
+			Method:             fiber.MethodGet,
+			Path:               "/api/v1/users/:userID",
+			Role:               &models.Student,
+			TestUserIDReplaces: h.StringToPointer(":userID"),
+		},
+		h.TesterWithStatus{
 			Status: fiber.StatusOK,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 				var respUser models.User
 
 				err := json.NewDecoder(resp.Body).Decode(&respUser)
 
 				assert.NilError(err)
 
-				sampleUser := *SampleUserFactory()
+				sampleStudent, rawPassword := h.SampleStudentFactory()
+
+				sampleUser := *h.SampleStudentJSONFactory(sampleStudent, rawPassword)
 
 				assert.Equal(sampleUser["first_name"].(string), respUser.FirstName)
 				assert.Equal(sampleUser["last_name"].(string), respUser.LastName)
@@ -83,7 +100,7 @@ func TestGetUserWorks(t *testing.T) {
 				assert.Equal(models.College(sampleUser["college"].(string)), respUser.College)
 				assert.Equal(models.Year(sampleUser["year"].(int)), respUser.Year)
 
-				dbUser, err := transactions.GetUser(app.Conn, uuid)
+				dbUser, err := transactions.GetUser(app.Conn, app.TestUser.UUID)
 
 				assert.NilError(&err)
 
@@ -94,6 +111,8 @@ func TestGetUserWorks(t *testing.T) {
 }
 
 func TestGetUserFailsBadRequest(t *testing.T) {
+	appAssert := h.InitTest(t)
+
 	badRequests := []string{
 		"0",
 		"-1",
@@ -103,23 +122,31 @@ func TestGetUserFailsBadRequest(t *testing.T) {
 	}
 
 	for _, badRequest := range badRequests {
-		TestRequest{
-			Method: fiber.MethodGet,
-			Path:   fmt.Sprintf("/api/v1/users/%s", badRequest),
-		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
+		appAssert.TestOnError(
+			h.TestRequest{
+				Method: fiber.MethodGet,
+				Path:   fmt.Sprintf("/api/v1/users/%s", badRequest),
+				Role:   &models.Super,
+			},
+			errors.FailedToValidateID,
+		)
 	}
+
+	appAssert.Close()
 }
 
 func TestGetUserFailsNotExist(t *testing.T) {
 	uuid := uuid.New()
 
-	TestRequest{
-		Method: fiber.MethodGet,
-		Path:   fmt.Sprintf("/api/v1/users/%s", uuid),
-	}.TestOnErrorAndDB(t, nil,
-		ErrorWithDBTester{
+	h.InitTest(t).TestOnErrorAndDB(
+		h.TestRequest{
+			Method: fiber.MethodGet,
+			Path:   fmt.Sprintf("/api/v1/users/%s", uuid),
+			Role:   &models.Super,
+		},
+		h.ErrorWithTester{
 			Error: errors.UserNotFound,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 				var user models.User
 
 				err := app.Conn.Where("id = ?", uuid).First(&user).Error
@@ -131,38 +158,43 @@ func TestGetUserFailsNotExist(t *testing.T) {
 }
 
 func TestUpdateUserWorks(t *testing.T) {
-	appAssert, uuid := CreateSampleUser(t, nil)
-
 	newFirstName := "Michael"
 	newLastName := "Brennan"
 
-	TestRequest{
-		Method: fiber.MethodPatch,
-		Path:   fmt.Sprintf("/api/v1/users/%s", uuid),
-		Body: &map[string]interface{}{
-			"first_name": newFirstName,
-			"last_name":  newLastName,
+	h.InitTest(t).TestOnStatusAndDB(
+		h.TestRequest{
+			Method: fiber.MethodPatch,
+			Path:   "/api/v1/users/:userID",
+			Body: &map[string]interface{}{
+				"first_name": newFirstName,
+				"last_name":  newLastName,
+			},
+			Role:               &models.Student,
+			TestUserIDReplaces: h.StringToPointer(":userID"),
 		},
-	}.TestOnStatusAndDB(t, &appAssert,
-		DBTesterWithStatus{
+		h.TesterWithStatus{
 			Status: fiber.StatusOK,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 				var respUser models.User
 
 				err := json.NewDecoder(resp.Body).Decode(&respUser)
 
 				assert.NilError(err)
 
+				sampleStudent, rawPassword := h.SampleStudentFactory()
+
+				sampleStudentJSON := *h.SampleStudentJSONFactory(sampleStudent, rawPassword)
+
 				assert.Equal(newFirstName, respUser.FirstName)
 				assert.Equal(newLastName, respUser.LastName)
-				assert.Equal((*SampleUserFactory())["email"].(string), respUser.Email)
-				assert.Equal((*SampleUserFactory())["nuid"].(string), respUser.NUID)
-				assert.Equal(models.College((*SampleUserFactory())["college"].(string)), respUser.College)
-				assert.Equal(models.Year((*SampleUserFactory())["year"].(int)), respUser.Year)
+				assert.Equal((sampleStudentJSON)["email"].(string), respUser.Email)
+				assert.Equal((sampleStudentJSON)["nuid"].(string), respUser.NUID)
+				assert.Equal(models.College((sampleStudentJSON)["college"].(string)), respUser.College)
+				assert.Equal(models.Year((sampleStudentJSON)["year"].(int)), respUser.Year)
 
 				var dbUser models.User
 
-				err = app.Conn.First(&dbUser, uuid).Error
+				err = app.Conn.First(&dbUser, app.TestUser.UUID).Error
 
 				assert.NilError(err)
 
@@ -178,27 +210,26 @@ func TestUpdateUserWorks(t *testing.T) {
 }
 
 func TestUpdateUserFailsOnInvalidBody(t *testing.T) {
-	appAssert, uuid := CreateSampleUser(t, nil)
-
 	for _, invalidData := range []map[string]interface{}{
 		{"email": "not.northeastern@gmail.com"},
 		{"nuid": "1800-123-4567"},
-		{"password": "1234"},
 		{"year": 1963},
 		{"college": "UT-Austin"},
 	} {
-		TestRequest{
-			Method: fiber.MethodPatch,
-			Path:   fmt.Sprintf("/api/v1/users/%s", uuid),
-			Body:   &invalidData,
-		}.TestOnErrorAndDB(t, &appAssert,
-			ErrorWithDBTester{
-				Error:    errors.FailedToValidateUser,
-				DBTester: TestNumUsersRemainsAt2,
+		h.InitTest(t).TestOnErrorAndDB(
+			h.TestRequest{
+				Method:             fiber.MethodPatch,
+				Path:               "/api/v1/users/:userID",
+				Body:               &invalidData,
+				Role:               &models.Student,
+				TestUserIDReplaces: h.StringToPointer(":userID"),
 			},
-		)
+			h.ErrorWithTester{
+				Error:  errors.FailedToValidateUser,
+				Tester: TestNumUsersRemainsAt2,
+			},
+		).Close()
 	}
-	appAssert.Close()
 }
 
 func TestUpdateUserFailsBadRequest(t *testing.T) {
@@ -210,26 +241,37 @@ func TestUpdateUserFailsBadRequest(t *testing.T) {
 		"null",
 	}
 
+	sampleStudent, rawPassword := h.SampleStudentFactory()
+	slightlyDifferentSampleStudentJSON := h.SampleStudentJSONFactory(sampleStudent, rawPassword)
+	(*slightlyDifferentSampleStudentJSON)["first_name"] = "John"
+
 	for _, badRequest := range badRequests {
-		TestRequest{
+		h.InitTest(t).TestOnError(h.TestRequest{
 			Method: fiber.MethodPatch,
 			Path:   fmt.Sprintf("/api/v1/users/%s", badRequest),
-			Body:   SampleUserFactory(),
-		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
+			Body:   slightlyDifferentSampleStudentJSON,
+			Role:   &models.Student,
+		},
+			errors.FailedToValidateID,
+		).Close()
 	}
 }
 
 func TestUpdateUserFailsOnIdNotExist(t *testing.T) {
 	uuid := uuid.New()
 
-	TestRequest{
-		Method: fiber.MethodPatch,
-		Path:   fmt.Sprintf("/api/v1/users/%s", uuid),
-		Body:   SampleUserFactory(),
-	}.TestOnErrorAndDB(t, nil,
-		ErrorWithDBTester{
+	sampleStudent, rawPassword := h.SampleStudentFactory()
+
+	h.InitTest(t).TestOnErrorAndDB(
+		h.TestRequest{
+			Method: fiber.MethodPatch,
+			Path:   fmt.Sprintf("/api/v1/users/%s", uuid),
+			Body:   h.SampleStudentJSONFactory(sampleStudent, rawPassword),
+			Role:   &models.Super,
+		},
+		h.ErrorWithTester{
 			Error: errors.UserNotFound,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 				var user models.User
 
 				err := app.Conn.Where("id = ?", uuid).First(&user).Error
@@ -241,28 +283,31 @@ func TestUpdateUserFailsOnIdNotExist(t *testing.T) {
 }
 
 func TestDeleteUserWorks(t *testing.T) {
-	appAssert, uuid := CreateSampleUser(t, nil)
-
-	TestRequest{
-		Method: fiber.MethodDelete,
-		Path:   fmt.Sprintf("/api/v1/users/%s", uuid),
-	}.TestOnStatusAndDB(t, &appAssert,
-		DBTesterWithStatus{
-			Status:   fiber.StatusNoContent,
-			DBTester: TestNumUsersRemainsAt1,
+	h.InitTest(t).TestOnStatusAndDB(
+		h.TestRequest{
+			Method:             fiber.MethodDelete,
+			Path:               "/api/v1/users/:userID",
+			Role:               &models.Student,
+			TestUserIDReplaces: h.StringToPointer(":userID"),
+		},
+		h.TesterWithStatus{
+			Status: fiber.StatusNoContent,
+			Tester: TestNumUsersRemainsAt1,
 		},
 	).Close()
 }
 
 func TestDeleteUserNotExist(t *testing.T) {
 	uuid := uuid.New()
-	TestRequest{
+
+	h.InitTest(t).TestOnErrorAndDB(h.TestRequest{
 		Method: fiber.MethodDelete,
 		Path:   fmt.Sprintf("/api/v1/users/%s", uuid),
-	}.TestOnErrorAndDB(t, nil,
-		ErrorWithDBTester{
+		Role:   &models.Super,
+	},
+		h.ErrorWithTester{
 			Error: errors.UserNotFound,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 				var user models.User
 
 				err := app.Conn.Where("id = ?", uuid).First(&user).Error
@@ -276,6 +321,8 @@ func TestDeleteUserNotExist(t *testing.T) {
 }
 
 func TestDeleteUserBadRequest(t *testing.T) {
+	appAssert := h.InitTest(t)
+
 	badRequests := []string{
 		"0",
 		"-1",
@@ -285,31 +332,23 @@ func TestDeleteUserBadRequest(t *testing.T) {
 	}
 
 	for _, badRequest := range badRequests {
-		TestRequest{
-			Method: fiber.MethodDelete,
-			Path:   fmt.Sprintf("/api/v1/users/%s", badRequest),
-		}.TestOnErrorAndDB(t, nil,
-			ErrorWithDBTester{
-				Error:    errors.FailedToValidateID,
-				DBTester: TestNumUsersRemainsAt1,
+		appAssert.TestOnErrorAndDB(
+			h.TestRequest{
+				Method: fiber.MethodDelete,
+				Path:   fmt.Sprintf("/api/v1/users/%s", badRequest),
+				Role:   &models.Super,
+			},
+			h.ErrorWithTester{
+				Error:  errors.FailedToValidateID,
+				Tester: TestNumUsersRemainsAt1,
 			},
 		)
 	}
+
+	appAssert.Close()
 }
 
-func SampleUserFactory() *map[string]interface{} {
-	return &map[string]interface{}{
-		"first_name": "Jane",
-		"last_name":  "Doe",
-		"email":      "doe.jane@northeastern.edu",
-		"password":   "1234567890&",
-		"nuid":       "001234567",
-		"college":    "KCCS",
-		"year":       3,
-	}
-}
-
-func AssertUserWithIDBodyRespDB(app TestApp, assert *assert.A, resp *http.Response, body *map[string]interface{}) uuid.UUID {
+func AssertUserWithIDBodyRespDB(app h.TestApp, assert *assert.A, resp *http.Response, body *map[string]interface{}) uuid.UUID {
 	var respUser models.User
 
 	err := json.NewDecoder(resp.Body).Decode(&respUser)
@@ -349,34 +388,40 @@ func AssertUserWithIDBodyRespDB(app TestApp, assert *assert.A, resp *http.Respon
 	return dbUser.ID
 }
 
-func AssertSampleUserBodyRespDB(app TestApp, assert *assert.A, resp *http.Response) uuid.UUID {
-	return AssertUserWithIDBodyRespDB(app, assert, resp, SampleUserFactory())
+func AssertSampleUserBodyRespDB(app h.TestApp, assert *assert.A, resp *http.Response) uuid.UUID {
+	sampleStudent, rawPassword := h.SampleStudentFactory()
+
+	return AssertUserWithIDBodyRespDB(app, assert, resp, h.SampleStudentJSONFactory(sampleStudent, rawPassword))
 }
 
-func CreateSampleUser(t *testing.T, existingAppAssert *ExistingAppAssert) (ExistingAppAssert, uuid.UUID) {
+func CreateSampleStudent(t *testing.T, existingAppAssert *h.ExistingAppAssert) (h.ExistingAppAssert, uuid.UUID, *map[string]interface{}) {
+	if existingAppAssert == nil {
+		newAppAssert := h.InitTest(t)
+		existingAppAssert = &newAppAssert
+	}
+
 	var uuid uuid.UUID
 
-	newAppAssert := TestRequest{
+	sampleStudent, rawPassword := h.SampleStudentFactory()
+
+	existingAppAssert.TestOnStatusAndDB(h.TestRequest{
 		Method: fiber.MethodPost,
 		Path:   "/api/v1/users/",
-		Body:   SampleUserFactory(),
-	}.TestOnStatusAndDB(t, existingAppAssert,
-		DBTesterWithStatus{
+		Body:   h.SampleStudentJSONFactory(sampleStudent, rawPassword),
+		Role:   &models.Super,
+	},
+		h.TesterWithStatus{
 			Status: fiber.StatusCreated,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 				uuid = AssertSampleUserBodyRespDB(app, assert, resp)
 			},
 		},
 	)
 
-	if existingAppAssert == nil {
-		return newAppAssert, uuid
-	} else {
-		return *existingAppAssert, uuid
-	}
+	return *existingAppAssert, uuid, h.SampleStudentJSONFactory(sampleStudent, rawPassword)
 }
 
-func AssertNumUsersRemainsAtN(app TestApp, assert *assert.A, resp *http.Response, n int) {
+func AssertNumUsersRemainsAtN(app h.TestApp, assert *assert.A, resp *http.Response, n int) {
 	var users []models.User
 
 	err := app.Conn.Find(&users).Error
@@ -386,79 +431,86 @@ func AssertNumUsersRemainsAtN(app TestApp, assert *assert.A, resp *http.Response
 	assert.Equal(n, len(users))
 }
 
-var TestNumUsersRemainsAt1 = func(app TestApp, assert *assert.A, resp *http.Response) {
+var TestNumUsersRemainsAt1 = func(app h.TestApp, assert *assert.A, resp *http.Response) {
 	AssertNumUsersRemainsAtN(app, assert, resp, 1)
 }
 
-var TestNumUsersRemainsAt2 = func(app TestApp, assert *assert.A, resp *http.Response) {
+var TestNumUsersRemainsAt2 = func(app h.TestApp, assert *assert.A, resp *http.Response) {
 	AssertNumUsersRemainsAtN(app, assert, resp, 2)
 }
 
 func TestCreateUserWorks(t *testing.T) {
-	appAssert, _ := CreateSampleUser(t, nil)
+	appAssert, _, _ := CreateSampleStudent(t, nil)
 	appAssert.Close()
 }
 
 func TestCreateUserFailsIfUserWithEmailAlreadyExists(t *testing.T) {
-	appAssert, _ := CreateSampleUser(t, nil)
+	appAssert, studentUUID, body := CreateSampleStudent(t, nil)
 
-	TestRequest{
-		Method: fiber.MethodPost,
-		Path:   "/api/v1/users/",
-		Body:   SampleUserFactory(),
-	}.TestOnErrorAndDB(t, &appAssert,
-		ErrorWithDBTester{
-			Error:    errors.UserAlreadyExists,
-			DBTester: TestNumUsersRemainsAt2,
+	(*body)["id"] = studentUUID
+
+	appAssert.TestOnErrorAndDB(
+		h.TestRequest{
+			Method: fiber.MethodPost,
+			Path:   "/api/v1/users/",
+			Body:   body,
+			Role:   &models.Super,
 		},
-	)
-
-	appAssert.Close()
+		h.ErrorWithTester{
+			Error:  errors.UserAlreadyExists,
+			Tester: TestNumUsersRemainsAt2,
+		},
+	).Close()
 }
 
 func TestCreateUserFailsIfUserWithNUIDAlreadyExists(t *testing.T) {
-	appAssert, _ := CreateSampleUser(t, nil)
+	appAssert, _, _ := CreateSampleStudent(t, nil)
 
-	slightlyDifferentSampleUser := &map[string]interface{}{
-		"first_name": "John",
-		"last_name":  "Doe",
-		"email":      "doe.john@northeastern.edu",
-		"password":   "1234567890&",
-		"nuid":       "001234567",
-		"college":    "KCCS",
-		"year":       3,
-	}
+	sampleStudent, rawPassword := h.SampleStudentFactory()
 
-	TestRequest{
-		Method: fiber.MethodPost,
-		Path:   "/api/v1/users/",
-		Body:   slightlyDifferentSampleUser,
-	}.TestOnErrorAndDB(t, &appAssert,
-		ErrorWithDBTester{
-			Error:    errors.UserAlreadyExists,
-			DBTester: TestNumUsersRemainsAt2,
+	slightlyDifferentSampleStudentJSON := h.SampleStudentJSONFactory(sampleStudent, rawPassword)
+
+	(*slightlyDifferentSampleStudentJSON)["first_name"] = "John"
+	(*slightlyDifferentSampleStudentJSON)["last_name"] = "Doe"
+	(*slightlyDifferentSampleStudentJSON)["email"] = "doe.john@northeastern.edu"
+
+	appAssert.TestOnErrorAndDB(
+		h.TestRequest{
+			Method: fiber.MethodPost,
+			Path:   "/api/v1/users/",
+			Body:   slightlyDifferentSampleStudentJSON,
+			Role:   &models.Super,
+		},
+		h.ErrorWithTester{
+			Error:  errors.UserAlreadyExists,
+			Tester: TestNumUsersRemainsAt2,
 		},
 	).Close()
 }
 
 func AssertCreateBadDataFails(t *testing.T, jsonKey string, badValues []interface{}) {
-	appAssert, _ := CreateSampleUser(t, nil)
+	appAssert, _, _ := CreateSampleStudent(t, nil)
+
+	sampleStudent, rawPassword := h.SampleStudentFactory()
 
 	for _, badValue := range badValues {
-		sampleUserPermutation := *SampleUserFactory()
+		sampleUserPermutation := *h.SampleStudentJSONFactory(sampleStudent, rawPassword)
 		sampleUserPermutation[jsonKey] = badValue
 
-		TestRequest{
-			Method: fiber.MethodPost,
-			Path:   "/api/v1/users/",
-			Body:   &sampleUserPermutation,
-		}.TestOnErrorAndDB(t, &appAssert,
-			ErrorWithDBTester{
-				Error:    errors.FailedToValidateUser,
-				DBTester: TestNumUsersRemainsAt2,
+		appAssert.TestOnErrorAndDB(
+			h.TestRequest{
+				Method: fiber.MethodPost,
+				Path:   "/api/v1/users/",
+				Body:   &sampleUserPermutation,
+				Role:   &models.Super,
+			},
+			h.ErrorWithTester{
+				Error:  errors.FailedToValidateUser,
+				Tester: TestNumUsersRemainsAt2,
 			},
 		)
 	}
+
 	appAssert.Close()
 }
 
@@ -509,7 +561,7 @@ func TestCreateUserFailsOnInvalidYear(t *testing.T) {
 
 func TestCreateUserFailsOnInvalidCollege(t *testing.T) {
 	khouryAbbreviation := "KCCS"
-	permutations := AllCasingPermutations(khouryAbbreviation)
+	permutations := h.AllCasingPermutations(khouryAbbreviation)
 	permutationsWithoutKhoury := make([]interface{}, len(permutations)-1)
 	for _, permutation := range permutations {
 		if permutation != khouryAbbreviation {
@@ -523,7 +575,9 @@ func TestCreateUserFailsOnInvalidCollege(t *testing.T) {
 }
 
 func TestCreateUserFailsOnMissingFields(t *testing.T) {
-	appAssert, _ := CreateSampleUser(t, nil)
+	appAssert, _, _ := CreateSampleStudent(t, nil)
+
+	sampleStudent, rawPassword := h.SampleStudentFactory()
 
 	for _, missingField := range []string{
 		"first_name",
@@ -534,19 +588,22 @@ func TestCreateUserFailsOnMissingFields(t *testing.T) {
 		"college",
 		"year",
 	} {
-		sampleUserPermutation := *SampleUserFactory()
+		sampleUserPermutation := *h.SampleStudentJSONFactory(sampleStudent, rawPassword)
 		delete(sampleUserPermutation, missingField)
 
-		TestRequest{
-			Method: fiber.MethodPost,
-			Path:   "/api/v1/users/",
-			Body:   &sampleUserPermutation,
-		}.TestOnErrorAndDB(t, &appAssert,
-			ErrorWithDBTester{
-				Error:    errors.FailedToValidateUser,
-				DBTester: TestNumUsersRemainsAt2,
+		appAssert.TestOnErrorAndDB(
+			h.TestRequest{
+				Method: fiber.MethodPost,
+				Path:   "/api/v1/users/",
+				Body:   &sampleUserPermutation,
+				Role:   &models.Super,
+			},
+			h.ErrorWithTester{
+				Error:  errors.FailedToValidateUser,
+				Tester: TestNumUsersRemainsAt2,
 			},
 		)
 	}
+
 	appAssert.Close()
 }

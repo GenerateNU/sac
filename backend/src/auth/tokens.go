@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/GenerateNU/sac/backend/src/config"
@@ -71,7 +70,6 @@ func CreateRefreshToken(id string, refreshExpiresAfter uint, refreshTokenSecret 
 
 func SignToken(token *jwt.Token, secret string) (*string, *errors.Error) {
 	if token == nil || secret == "" {
-		fmt.Println(token)
 		return nil, &errors.FailedToSignToken
 	}
 
@@ -103,9 +101,9 @@ func ExpireCookie(name string) *fiber.Cookie {
 }
 
 // RefreshAccessToken refreshes the access token
-func RefreshAccessToken(refreshCookie string, role string, accessExpiresAfter uint, accessTokenSecret string) (*string, *errors.Error) {
+func RefreshAccessToken(refreshCookie string, role string, refreshTokenSecret string, accessExpiresAfter uint, accessTokenSecret string) (*string, *errors.Error) {
 	// Parse the refresh token
-	refreshToken, err := ParseRefreshToken(refreshCookie)
+	refreshToken, err := ParseRefreshToken(refreshCookie, refreshTokenSecret)
 	if err != nil {
 		return nil, &errors.FailedToParseRefreshToken
 	}
@@ -126,26 +124,22 @@ func RefreshAccessToken(refreshCookie string, role string, accessExpiresAfter ui
 }
 
 // ParseAccessToken parses the access token
-func ParseAccessToken(cookie string) (*jwt.Token, error) {
-	var settings config.Settings
-
+func ParseAccessToken(cookie string, accessTokenSecret string) (*jwt.Token, error) {
 	return jwt.ParseWithClaims(cookie, &types.CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(settings.Auth.AccessToken), nil
+		return []byte(accessTokenSecret), nil
 	})
 }
 
 // ParseRefreshToken parses the refresh token
-func ParseRefreshToken(cookie string) (*jwt.Token, error) {
-	var settings config.Settings
-
+func ParseRefreshToken(cookie string, refreshTokenSecret string) (*jwt.Token, error) {
 	return jwt.ParseWithClaims(cookie, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(settings.Auth.RefreshToken), nil
+		return []byte(refreshTokenSecret), nil
 	})
 }
 
 // GetRoleFromToken gets the role from the custom claims
-func GetRoleFromToken(tokenString string) (*string, error) {
-	token, err := ParseAccessToken(tokenString)
+func GetRoleFromToken(tokenString string, accessTokenSecret string) (*string, error) {
+	token, err := ParseAccessToken(tokenString, accessTokenSecret)
 	if err != nil {
 		return nil, err
 	}
@@ -159,8 +153,8 @@ func GetRoleFromToken(tokenString string) (*string, error) {
 }
 
 // ExtractClaims extracts the claims from the token
-func ExtractAccessClaims(tokenString string) (*types.CustomClaims, *errors.Error) {
-	token, err := ParseAccessToken(tokenString)
+func ExtractAccessClaims(tokenString string, accessTokenSecret string) (*types.CustomClaims, *errors.Error) {
+	token, err := ParseAccessToken(tokenString, accessTokenSecret)
 	if err != nil {
 		return nil, &errors.FailedToParseAccessToken
 	}
@@ -174,8 +168,8 @@ func ExtractAccessClaims(tokenString string) (*types.CustomClaims, *errors.Error
 }
 
 // ExtractClaims extracts the claims from the token
-func ExtractRefreshClaims(tokenString string) (*jwt.StandardClaims, *errors.Error) {
-	token, err := ParseRefreshToken(tokenString)
+func ExtractRefreshClaims(tokenString string, refreshTokenSecret string) (*jwt.StandardClaims, *errors.Error) {
+	token, err := ParseRefreshToken(tokenString, refreshTokenSecret)
 	if err != nil {
 		return nil, &errors.FailedToParseRefreshToken
 	}
