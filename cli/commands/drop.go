@@ -70,8 +70,7 @@ func DropData() error {
 			return fmt.Errorf("error scanning table name: %w", err)
 		}
 
-		deleteStmt := fmt.Sprintf("DELETE FROM \"%s\"", tablename)
-		_, err := db.Exec(deleteStmt)
+		_, err := db.Exec("DELETE FROM $1", tablename)
 		if err != nil {
 			return fmt.Errorf("error deleting rows from table %s: %w", tablename, err)
 		}
@@ -82,7 +81,9 @@ func DropData() error {
 		return fmt.Errorf("error in rows handling: %w", err)
 	}
 
-	Migrate()
+	if Migrate() != nil {
+		return fmt.Errorf("error migrating database: %w", err)
+	}
 
 	fmt.Println("All rows removed successfully.")
 	return nil

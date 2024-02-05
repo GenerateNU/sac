@@ -38,7 +38,10 @@ func TestCommand() *cli.Command {
 			folder := c.String("frontend")
 			runFrontend := folder != ""
 			runBackend := c.Bool("backend")
-			Test(folder, runFrontend, runBackend)
+			err := Test(folder, runFrontend, runBackend)
+			if err != nil {
+				return cli.Exit(err.Error(), 1)
+			}
 			return nil
 		},
 	}
@@ -47,13 +50,17 @@ func TestCommand() *cli.Command {
 
 func Test(folder string, runFrontend bool, runBackend bool) error {
 	var wg sync.WaitGroup
+	errChan := make(chan error, 1)
 
 	// Start the backend if specified
 	if runBackend {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			BackendTest()
+			err := BackendTest()
+			if err != nil {
+				errChan <- err
+			}
 		}()
 	}
 
@@ -62,19 +69,30 @@ func Test(folder string, runFrontend bool, runBackend bool) error {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			FrontendTest(folder)
+			err := FrontendTest(folder)
+			if err != nil {
+				errChan <- err
+			}
 		}()
 	}
 
-	wg.Wait()
+	go func() {
+		wg.Wait()
+		close(errChan)
+	}()
+
+	for err := range errChan {
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
 func BackendTest() error {
 	cmd := exec.Command("go", "test", "./...")
 	cmd.Dir = fmt.Sprintf("%s/..", BACKEND_DIR)
-
-	defer CleanTestDBs()
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {
@@ -83,6 +101,12 @@ func BackendTest() error {
 	}
 
 	fmt.Println(string(out))
+
+	err = CleanTestDBs()
+	if err != nil {
+		return cli.Exit(err.Error(), 1)
+	}
+
 	return nil
 }
 
