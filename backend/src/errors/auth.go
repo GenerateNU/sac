@@ -11,8 +11,4 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to cast to custom claims",
 	}
-	ExpectedClaimsButGotNil = Error{
-		StatusCode: fiber.StatusInternalServerError,
-		Message:    "expected claims but got nil",
-	}
 )

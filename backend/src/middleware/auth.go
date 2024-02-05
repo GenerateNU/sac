@@ -26,6 +26,9 @@ func SuperSkipper(h fiber.Handler) fiber.Handler {
 			err.FiberError(c)
 			return false
 		}
+		if claims == nil {
+			return false
+		}
 		return claims.Role == string(models.Super)
 	})
 }
