@@ -44,7 +44,7 @@ func (cl *ClubController) CreateClub(c *fiber.Ctx) error {
 }
 
 func (cl *ClubController) GetClub(c *fiber.Ctx) error {
-	club, err := cl.clubService.GetClub(c.Params("id"))
+	club, err := cl.clubService.GetClub(c.Params("clubID"))
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -59,7 +59,7 @@ func (cl *ClubController) UpdateClub(c *fiber.Ctx) error {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
-	updatedClub, err := cl.clubService.UpdateClub(c.Params("id"), clubBody)
+	updatedClub, err := cl.clubService.UpdateClub(c.Params("clubID"), clubBody)
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -68,7 +68,7 @@ func (cl *ClubController) UpdateClub(c *fiber.Ctx) error {
 }
 
 func (cl *ClubController) DeleteClub(c *fiber.Ctx) error {
-	err := cl.clubService.DeleteClub(c.Params("id"))
+	err := cl.clubService.DeleteClub(c.Params("clubID"))
 	if err != nil {
 		return err.FiberError(c)
 	}
