@@ -15,3 +15,9 @@ linters:
 linters-settings:
   whitespace:
     multi-func: true
+
+issues:
+  exclude-rules:
+    - path: tests/api/helpers/
+      linters:
+        - cyclop

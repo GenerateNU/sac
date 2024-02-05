@@ -16,13 +16,28 @@ import (
 func RegisterCustomValidators() *validator.Validate {
 	validate := validator.New(validator.WithRequiredStructEnabled())
 
-	validate.RegisterValidation("neu_email", validateEmail)
-	validate.RegisterValidation("password", validatePassword)
-	validate.RegisterValidation("mongo_url", validateMongoURL)
-	validate.RegisterValidation("s3_url", validateS3URL)
-	validate.RegisterValidation("contact_pointer", func(fl validator.FieldLevel) bool {
+	err := validate.RegisterValidation("neu_email", validateEmail)
+	if err != nil {
+		panic(err)
+	}
+	err = validate.RegisterValidation("password", validatePassword)
+	if err != nil {
+		panic(err)
+	}
+	err = validate.RegisterValidation("mongo_url", validateMongoURL)
+	if err != nil {
+		panic(err)
+	}
+	err = validate.RegisterValidation("s3_url", validateS3URL)
+	if err != nil {
+		panic(err)
+	}
+	err = validate.RegisterValidation("contact_pointer", func(fl validator.FieldLevel) bool {
 		return validateContactPointer(validate, fl)
 	})
+	if err != nil {
+		panic(err)
+	}
 
 	return validate
 }

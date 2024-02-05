@@ -35,5 +35,8 @@ func main() {
 
 	app := server.Init(db, config)
 
-	app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
+	err = app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
+	if err != nil {
+		panic(err)
+	}
 }

@@ -17,7 +17,7 @@ func GetAdminIDs(db *gorm.DB, clubID uuid.UUID) ([]uuid.UUID, *errors.Error) {
 		return nil, &errors.FailedtoGetAdminIDs
 	}
 
-	var adminUUIDs []uuid.UUID
+	adminUUIDs := make([]uuid.UUID, 0)
 	for _, adminID := range adminIDs {
 		adminUUIDs = append(adminUUIDs, adminID.ClubID)
 	}

@@ -75,7 +75,7 @@ func (a *AuthService) GetRole(id string) (*models.UserRole, *errors.Error) {
 		return nil, &errors.UserNotFound
 	}
 
-	role := models.UserRole(user.Role)
+	role := user.Role
 
 	return &role, nil
 }
