@@ -51,27 +51,29 @@ func TestCommand() *cli.Command {
 func Test(folder string, runFrontend bool, runBackend bool) error {
 	var wg sync.WaitGroup
 	errChan := make(chan error, 1)
+	var errOccurred bool // Flag to indicate whether an error has occurred
 
 	// Start the backend if specified
-	if runBackend {
+	if runBackend && !errOccurred {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
 			err := BackendTest()
 			if err != nil {
 				errChan <- err
+				errOccurred = true
 			}
 		}()
 	}
 
-	// Start the frontend if specified
-	if runFrontend {
+	if runFrontend && !errOccurred {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
 			err := FrontendTest(folder)
 			if err != nil {
 				errChan <- err
+				errOccurred = true
 			}
 		}()
 	}

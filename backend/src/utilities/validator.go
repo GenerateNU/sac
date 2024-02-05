@@ -13,33 +13,32 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-func RegisterCustomValidators() *validator.Validate {
+func RegisterCustomValidators() (*validator.Validate, error) {
 	validate := validator.New(validator.WithRequiredStructEnabled())
 
-	err := validate.RegisterValidation("neu_email", validateEmail)
-	if err != nil {
-		panic(err)
-	}
-	err = validate.RegisterValidation("password", validatePassword)
-	if err != nil {
-		panic(err)
-	}
-	err = validate.RegisterValidation("mongo_url", validateMongoURL)
-	if err != nil {
-		panic(err)
-	}
-	err = validate.RegisterValidation("s3_url", validateS3URL)
-	if err != nil {
-		panic(err)
-	}
-	err = validate.RegisterValidation("contact_pointer", func(fl validator.FieldLevel) bool {
-		return validateContactPointer(validate, fl)
-	})
-	if err != nil {
-		panic(err)
+	if err := validate.RegisterValidation("neu_email", validateEmail); err != nil {
+		return nil, err
 	}
 
-	return validate
+	if err := validate.RegisterValidation("password", validatePassword); err != nil {
+		return nil, err
+	}
+
+	if err := validate.RegisterValidation("mongo_url", validateMongoURL); err != nil {
+		return nil, err
+	}
+
+	if err := validate.RegisterValidation("s3_url", validateS3URL); err != nil {
+		return nil, err
+	}
+
+	if err := validate.RegisterValidation("contact_pointer", func(fl validator.FieldLevel) bool {
+		return validateContactPointer(validate, fl)
+	}); err != nil {
+		return nil, err
+	}
+
+	return validate, nil
 }
 
 func validateEmail(fl validator.FieldLevel) bool {
