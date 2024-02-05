@@ -66,6 +66,7 @@ func Test(folder string, runFrontend bool, runBackend bool) error {
 		}()
 	}
 
+	// Start the frontend if specified
 	if runFrontend && !errOccurred {
 		wg.Add(1)
 		go func() {
