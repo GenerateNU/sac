@@ -23,7 +23,7 @@ func SuperSkipper(h fiber.Handler) fiber.Handler {
 	return skip.New(h, func(c *fiber.Ctx) bool {
 		claims, err := types.From(c)
 		if err != nil {
-			err.FiberError(c)
+			_ = err.FiberError(c)
 			return false
 		}
 		if claims == nil {

@@ -46,17 +46,23 @@ func ResetCommand() *cli.Command {
 func ResetData() error {
 	fmt.Println("Clearing database")
 
-	DropData()
+	err := DropData()
+	if err != nil {
+		return cli.Exit(err.Error(), 1)
+	}
 
 	cmd := exec.Command("sleep", "1")
 	cmd.Dir = BACKEND_DIR
 
-	err := cmd.Run()
+	err = cmd.Run()
 	if err != nil {
 		return cli.Exit("Error running sleep", 1)
 	}
 
-	Migrate()
+	err = Migrate()
+	if err != nil {
+		return cli.Exit(err.Error(), 1)
+	}
 
 	cmd = exec.Command("sleep", "1")
 	cmd.Dir = BACKEND_DIR
@@ -66,7 +72,10 @@ func ResetData() error {
 		return cli.Exit("Error running sleep", 1)
 	}
 
-	InsertDB()
+	err = InsertDB()
+	if err != nil {
+		return cli.Exit(err.Error(), 1)
+	}
 
 	fmt.Println("Data reset successfully")
 
@@ -76,17 +85,23 @@ func ResetData() error {
 func ResetMigration() error {
 	fmt.Println("Resetting migration")
 
-	DropDB()
+	err := DropDB()
+	if err != nil {
+		return cli.Exit(err.Error(), 1)
+	}
 
 	cmd := exec.Command("sleep", "1")
 	cmd.Dir = BACKEND_DIR
 
-	err := cmd.Run()
+	err = cmd.Run()
 	if err != nil {
 		return cli.Exit("Error running sleep", 1)
 	}
 
-	Migrate()
+	err = Migrate()
+	if err != nil {
+		return cli.Exit(err.Error(), 1)
+	}
 
 	fmt.Println("Migration reset successfully")
 

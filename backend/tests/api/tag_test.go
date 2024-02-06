@@ -115,6 +115,7 @@ func TestCreateTagFailsBadRequest(t *testing.T) {
 	}
 
 	for _, badBody := range badBodys {
+		badBody := badBody
 		appAssert.TestOnErrorAndDB(
 			h.TestRequest{
 				Method: fiber.MethodPost,
@@ -146,6 +147,7 @@ func TestCreateTagFailsValidation(t *testing.T) {
 	}
 
 	for _, badBody := range badBodys {
+		badBody := badBody
 		appAssert.TestOnErrorAndDB(
 			h.TestRequest{
 				Method: fiber.MethodPost,
