@@ -3,7 +3,10 @@
 <br />
 
 <div align="center">
-  <!-- Github Actions -->
+  <a href="https://goreportcard.com/report/github.com/GenerateNU/sac/backend">
+    <img src="https://goreportcard.com/badge/github.com/GenerateNU/sac/backend"
+      alt="Backend Go Report" />
+  </a>
   <a href="https://github.com/GenerateNU/sac/actions/workflows/backend.yml">
     <img src="https://github.com/GenerateNU/sac/actions/workflows/backend.yml/badge.svg"
       alt="Backend Workflow Status" />
@@ -16,6 +19,10 @@
 
   <br />
 
+  <a href="https://goreportcard.com/report/github.com/GenerateNU/sac/cli">
+    <img src="https://goreportcard.com/badge/github.com/GenerateNU/sac/cli"
+      alt="CLI Go Report" />
+  </a>
   <a href="https://github.com/GenerateNU/sac/actions/workflows/cli.yml">
     <img src="https://github.com/GenerateNU/sac/actions/workflows/cli.yml/badge.svg"
       alt="CLI Workflow Status" />
