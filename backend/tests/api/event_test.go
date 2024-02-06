@@ -12,8 +12,10 @@ test createEventSeries fails on:
 	invalid separationCount
 	invalid dayofweek, weekofmonth, dayofmonth
 
+test getEvent(by ID)
+
 test updateEvent works
 test updateEvent fails on:
-	
+
 */
 	

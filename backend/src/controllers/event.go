@@ -10,56 +10,100 @@ import (
 )
 
 type EventController struct {
-	clubService services.EventServiceInterface
+	eventService services.EventServiceInterface
 }
 
-func NewEventController(clubService services.EventServiceInterface) *EventController {
-	return &EventController{clubService: clubService}
+func NewEventController(eventService services.EventServiceInterface) *EventController {
+	return &EventController{eventService: eventService}
 }
 
 func (l *EventController) GetAllEvents(c *fiber.Ctx) error {
 	defaultLimit := 10
 	defaultPage := 1
 
-	clubs, err := l.clubService.GetEvents(c.Query("limit", strconv.Itoa(defaultLimit)), c.Query("page", strconv.Itoa(defaultPage)))
+	events, err := l.eventService.GetEvents(c.Query("limit", strconv.Itoa(defaultLimit)), c.Query("page", strconv.Itoa(defaultPage)))
 	if err != nil {
 		return err.FiberError(c)
 	}
 
-	return c.Status(fiber.StatusOK).JSON(clubs)
+	return c.Status(fiber.StatusOK).JSON(events)
 }
 
 func (l *EventController) CreateEvent(c *fiber.Ctx) error {
-	var clubBody models.CreateEventRequestBody
-	if err := c.BodyParser(&clubBody); err != nil {
-		return errors.FailedToParseRequestBody.FiberError(c)
+	recurringPattern, err := getRecurringPattern(c)
+	
+	if err != nil {
+		return CreateEventSeries(l, c, recurringPattern)
 	}
 
-	club, err := l.clubService.CreateEvent(clubBody)
+	var eventBody models.CreateEventRequestBody
+	if err := c.BodyParser(&eventBody); err != nil {
+		return errors.FailedToCreateEvent.FiberError(c)
+	}
+
+	event, err := l.eventService.CreateEvent(eventBody)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(event)
+}
+
+func CreateEventSeries(l *EventController, c *fiber.Ctx, recurringPattern models.CreateRecurringPatternRequestBody) error {
+	var eventBody []models.CreateEventRequestBody
+	if err := c.BodyParser(&eventBody); err != nil {
+		return errors.FailedToCreateEvent.FiberError(c)
+	}
+
+	event, err := l.eventService.CreateEventSeries(eventBody)
 	if err != nil {
 		return err.FiberError(c)
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(club)
+	return c.Status(fiber.StatusCreated).JSON(event)
+}
+
+func getRecurringPattern(c *fiber.Ctx) (models.CreateRecurringPatternRequestBody, error) {
+	recurringType := c.Query("recurring_type")
+	separationCount, separationCountErr := strconv.Atoi(c.Query("separation_count"))
+	maxOccurrences, maxOccurrencesErr := strconv.Atoi(c.Query("max_occurrences"))
+	dayOfWeek, dayOfWeekErr := strconv.Atoi(c.Query("day_of_week"))
+	weekOfMonth, weekOfMonthErr := strconv.Atoi(c.Query("week_of_month"))
+	dayOfMonth, dayOfMonthErr := strconv.Atoi(c.Query("day_of_month"))
+
+	recurringPattern := models.CreateRecurringPatternRequestBody{
+		RecurringType:   models.RecurringType(recurringType),
+		SeparationCount: separationCount,
+		MaxOccurrences:  maxOccurrences,
+		DayOfWeek:       dayOfWeek,
+		WeekOfMonth:     weekOfMonth,
+		DayOfMonth:      dayOfMonth,
+	}
+
+	if (recurringType == "" || separationCountErr != nil || maxOccurrencesErr != nil || dayOfWeekErr != nil || weekOfMonthErr != nil || dayOfMonthErr != nil) {
+		return recurringPattern, errors.FailedToValidateEventSeries.FiberError(c)
+	}
+
+	return recurringPattern, nil
 }
 
 func (l *EventController) GetEvent(c *fiber.Ctx) error {
-	club, err := l.clubService.GetEvent(c.Params("id"))
+	event, err := l.eventService.GetEvent(c.Params("id"))
 	if err != nil {
 		return err.FiberError(c)
 	}
 
-	return c.Status(fiber.StatusOK).JSON(club)
+	return c.Status(fiber.StatusOK).JSON(event)
 }
 
 func (l *EventController) UpdateEvent(c *fiber.Ctx) error {
-	var clubBody models.UpdateEventRequestBody
+	var eventBody models.UpdateEventRequestBody
 
-	if err := c.BodyParser(&clubBody); err != nil {
+	if err := c.BodyParser(&eventBody); err != nil {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
-	updatedEvent, err := l.clubService.UpdateEvent(c.Params("id"), clubBody)
+	updatedEvent, err := l.eventService.UpdateEvent(c.Params("id"), eventBody)
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -68,7 +112,7 @@ func (l *EventController) UpdateEvent(c *fiber.Ctx) error {
 }
 
 func (l *EventController) DeleteEvent(c *fiber.Ctx) error {
-	err := l.clubService.DeleteEvent(c.Params("id"))
+	err := l.eventService.DeleteEvent(c.Params("id"))
 	if err != nil {
 		return err.FiberError(c)
 	}

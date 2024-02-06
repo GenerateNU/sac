@@ -50,6 +50,27 @@ func CreateEvent(db *gorm.DB, event models.Event) (*models.Event, *errors.Error)
 	return &event, nil
 }
 
+func CreateEventSeries(db *gorm.DB, events []models.Event, pattern models.RecurringPattern) (*[]models.Event, *errors.Error) {
+	tx := db.Begin()
+
+	if err := tx.Create(&events).Error; err != nil {
+		tx.Rollback()
+		return nil, &errors.FailedToCreateEventSeries
+	}
+
+	if err := tx.Create(pattern).Error; err != nil {
+		tx.Rollback()
+		return nil, &errors.FailedToCreateEventSeries
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return nil, &errors.FailedToCreateEventSeries
+	}
+
+	return &events, nil
+}
+
 func UpdateEvent(db *gorm.DB, id uuid.UUID, event models.UpdateEventRequestBody) (*models.Event, *errors.Error) {
 	result := db.Model(&models.Event{}).Where("id = ?", id).Updates(event)
 	if result.Error != nil {

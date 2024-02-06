@@ -7,9 +7,17 @@ var (
 		StatusCode: fiber.StatusBadRequest,
 		Message:    "failed to validate event",
 	}
+	FailedToValidateEventSeries = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "failed to validate event series",
+	}
 	FailedToCreateEvent = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to create event",
+	}
+	FailedToCreateEventSeries = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to create event series",
 	}
 	FailedToGetEvents = Error{
 		StatusCode: fiber.StatusInternalServerError,

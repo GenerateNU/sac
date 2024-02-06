@@ -14,6 +14,7 @@ type EventServiceInterface interface {
 	GetEvents(limit string, page string) ([]models.Event, *errors.Error)
 	GetEvent(id string) (*models.Event, *errors.Error)
 	CreateEvent(eventBody models.CreateEventRequestBody) (*models.Event, *errors.Error)
+	CreateEventSeries(eventBodies []models.CreateEventRequestBody) (*[]models.Event, *errors.Error)
 	UpdateEvent(id string, eventBody models.UpdateEventRequestBody) (*models.Event, *errors.Error)
 	DeleteEvent(id string) *errors.Error
 }
@@ -52,6 +53,20 @@ func (c *EventService) CreateEvent(eventBody models.CreateEventRequestBody) (*mo
 	}
 
 	return transactions.CreateEvent(c.DB, *event)
+}
+
+func (c *EventService) CreateEventSeries(eventBodies []models.CreateEventRequestBody) (*[]models.Event, *errors.Error) {
+
+	if err := c.Validate.Struct(eventBodies); err != nil {
+		return nil, &errors.FailedToValidateEventSeries
+	}
+
+	events, err := utilities.MapRequestToModel(eventBodies, &[]models.Event{})
+	if err != nil {
+		return nil, &errors.FailedToMapRequestToModel
+	}
+
+	return transactions.CreateEventSeries(c.DB, *events)
 }
 
 func (c *EventService) GetEvent(id string) (*models.Event, *errors.Error) {

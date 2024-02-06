@@ -77,7 +77,7 @@ func userRoutes(router fiber.Router, userService services.UserServiceInterface) 
 	users.Delete("/:id", userController.DeleteUser)
 
 	userTags := users.Group("/:uid/tags")
-	
+
 	userTags.Post("/", userController.CreateUserTags)
 	userTags.Get("/", userController.GetUserTags)
 }
@@ -123,7 +123,7 @@ func eventRoutes(router fiber.Router, eventService services.EventServiceInterfac
 	events := router.Group("/events")
 
 	events.Get("/:id", eventController.GetEvent)
-	events.Get("/:id", eventController.GetAllEvents)
+	events.Get("/", eventController.GetAllEvents)
 	events.Post("/", eventController.CreateEvent)
 	events.Patch("/:id", eventController.UpdateEvent)
 	events.Delete("/:id", eventController.DeleteEvent)
