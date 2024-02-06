@@ -76,6 +76,10 @@ func (l *ClubController) DeleteClub(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusNoContent)
 }
 
+// func (l* ClubController) GetContact(c *fiber.Ctx) error {
+
+// } 
+
 func (l *ClubController) GetContacts(c *fiber.Ctx) error {
 	defaultLimit := 10
 	defaultPage := 1
@@ -97,6 +101,17 @@ func (l *ClubController) GetClubContacts(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(contacts)
 }
 
+// TODO fix godoc
+// PutContact godoc
+//
+// @Summary		Creates a contact for a club, if it does not exist, other wise updates an existing contact
+// @Description	Returns the updated contact
+// @ID			put-contact
+// @Tags      	club
+// @Produce		json
+// @Success		200	  {object}	  []models.Contact
+// @Failure     400   {string}    string "failed to update contact"
+// @Router		/api/v1/users/  [put]
 func (l *ClubController) PutContact(c *fiber.Ctx) error {
 	var contactBody models.PutContactRequestBody
 

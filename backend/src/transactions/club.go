@@ -11,6 +11,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
+
 func GetClubs(db *gorm.DB, limit int, offset int) ([]models.Club, *errors.Error) {
 	var clubs []models.Club
 	result := db.Limit(limit).Offset(offset).Find(&clubs)
@@ -60,8 +61,6 @@ func GetClub(db *gorm.DB, id uuid.UUID) (*models.Club, *errors.Error) {
 	return &club, nil
 }
 
-
-
 func GetContacts(db *gorm.DB, limit int, offset int) ([]models.Contact, *errors.Error) {
 	var contacts []models.Contact
 	result := db.Limit(limit).Offset(offset).Find(&contacts)
@@ -90,11 +89,18 @@ func GetClubContacts(db *gorm.DB, id uuid.UUID) ([]models.Contact, *errors.Error
 }
 
 func PutContact(db *gorm.DB, clubID uuid.UUID, contact models.Contact) (*models.Contact, *errors.Error) {
+	// if the club already has a contact of the same type, update the existing contact
 	err := db.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "club_id"}, {Name: "type"}},
 		DoUpdates: clause.AssignmentColumns([]string{"content"}),
 	}).Create(&contact).Error
+
 	if err != nil {
+
+		// if the foreign key (clubID) constraint is violated, return a club not found error
+		if stdliberrors.Is(err, gorm.ErrForeignKeyViolated) {
+			return nil, &errors.ClubNotFound
+		}
 		return nil, &errors.Error{StatusCode: fiber.StatusInternalServerError, Message: errors.FailedToUpdateContact.Message}
 	}
 	return &contact, nil
@@ -103,10 +109,11 @@ func PutContact(db *gorm.DB, clubID uuid.UUID, contact models.Contact) (*models.
 func DeleteContact(db *gorm.DB, id uuid.UUID) *errors.Error {
 	result := db.Delete(&models.Contact{}, id)
 	if result.Error != nil {
-		return &errors.FailedToDeleteClub	}
-
-		return nil
+		return &errors.FailedToDeleteClub
 	}
+
+	return nil
+}
 func UpdateClub(db *gorm.DB, id uuid.UUID, club models.Club) (*models.Club, *errors.Error) {
 	result := db.Model(&models.User{}).Where("id = ?", id).Updates(club)
 	if result.Error != nil {
