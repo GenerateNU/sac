@@ -24,6 +24,7 @@ type TestRequest struct {
 	TestUserIDReplaces *string
 }
 
+//gocyclo:ignore
 func (app TestApp) Send(request TestRequest) (*http.Response, error) {
 	address := fmt.Sprintf("%s%s", app.Address, request.Path)
 

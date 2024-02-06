@@ -216,6 +216,7 @@ func TestUpdateUserFailsOnInvalidBody(t *testing.T) {
 		{"year": 1963},
 		{"college": "UT-Austin"},
 	} {
+		invalidData := invalidData
 		h.InitTest(t).TestOnErrorAndDB(
 			h.TestRequest{
 				Method:             fiber.MethodPatch,
