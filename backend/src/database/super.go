@@ -11,7 +11,7 @@ import (
 var SuperUserUUID uuid.UUID
 
 func SuperUser(superUserSettings config.SuperUserSettings) (*models.User, *errors.Error) {
-	passwordHash, err := auth.ComputePasswordHash(superUserSettings.Password)
+	passwordHash, err := auth.ComputePasswordHash(superUserSettings.Password.Expose())
 	if err != nil {
 		return nil, &errors.FailedToComputePasswordHash
 	}

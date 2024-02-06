@@ -99,7 +99,7 @@ func (a *AuthController) Refresh(c *fiber.Ctx) error {
 	refreshTokenValue := c.Cookies("refresh_token")
 
 	// Extract id from refresh token
-	claims, err := auth.ExtractRefreshClaims(refreshTokenValue, a.AuthSettings.RefreshToken)
+	claims, err := auth.ExtractRefreshClaims(refreshTokenValue, a.AuthSettings.RefreshKey)
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -109,7 +109,7 @@ func (a *AuthController) Refresh(c *fiber.Ctx) error {
 		return err.FiberError(c)
 	}
 
-	accessToken, err := auth.RefreshAccessToken(refreshTokenValue, string(*role), a.AuthSettings.RefreshToken, a.AuthSettings.AccessTokenExpiry, a.AuthSettings.AccessToken)
+	accessToken, err := auth.RefreshAccessToken(refreshTokenValue, string(*role), a.AuthSettings.RefreshKey, a.AuthSettings.AccessTokenExpiry, a.AuthSettings.AccessKey)
 	if err != nil {
 		return err.FiberError(c)
 	}
