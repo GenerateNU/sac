@@ -33,16 +33,16 @@ func spawnApp() (*TestApp, error) {
 
 	configuration.Database.DatabaseName = generateRandomDBName()
 
-	connectionWithDB, err := configureDatabase(configuration)
+	connectionWithDB, err := configureDatabase(*configuration)
 	if err != nil {
 		return nil, err
 	}
 
 	return &TestApp{
-		App:      server.Init(connectionWithDB, configuration),
+		App:      server.Init(connectionWithDB, *configuration),
 		Address:  fmt.Sprintf("http://%s", listener.Addr().String()),
 		Conn:     connectionWithDB,
-		Settings: configuration,
+		Settings: *configuration,
 	}, nil
 }
 

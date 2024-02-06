@@ -65,7 +65,7 @@ func (app *TestApp) authSuper() {
 	app.TestUser = &TestUser{
 		UUID:         database.SuperUserUUID,
 		Email:        email,
-		Password:     password,
+		Password:     password.Expose(),
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	}

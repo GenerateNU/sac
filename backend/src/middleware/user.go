@@ -14,7 +14,7 @@ func (m *MiddlewareService) UserAuthorizeById(c *fiber.Ctx) error {
 		return errors.FailedToValidateID.FiberError(c)
 	}
 
-	token, tokenErr := auth.ParseAccessToken(c.Cookies("access_token"), m.AuthSettings.AccessToken)
+	token, tokenErr := auth.ParseAccessToken(c.Cookies("access_token"), m.AuthSettings.AccessKey)
 	if tokenErr != nil {
 		return err
 	}
