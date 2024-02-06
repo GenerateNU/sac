@@ -8,5 +8,10 @@ module.exports = {
   },
   env: {
     'jest/globals': true
+  },
+  parserOptions: {
+    babelOptions: {
+      configFile: './babel.config.js'
+    }
   }
 };
