@@ -79,7 +79,7 @@ func (u *UserController) GetUsers(c *fiber.Ctx) error {
 // @Failure     404   {string}    string "user not found"
 // @Failure		400   {string}    string "failed to validate id"
 // @Failure     500   {string}    string "failed to get user"
-// @Router		/api/v1/users/:id  [get]
+// @Router		/api/v1/users/{id}  [get]
 func (u *UserController) GetUser(c *fiber.Ctx) error {
 	user, err := u.userService.GetUser(c.Params("id"))
 	if err != nil {
@@ -96,13 +96,14 @@ func (u *UserController) GetUser(c *fiber.Ctx) error {
 // @ID			update-user-by-id
 // @Tags      	user
 // @Produce		json
+// @Param		id	path	string	true	"User ID"
 // @Success		200	  {object}	  models.User
 // @Failure     404   {string}    string "user not found"
 // @Failure 	400   {string}    string "invalid request body"
 // @Failure		400   {string}    string "failed to validate id"
 // @Failure		500   {string}	  string "database error"
 // @Failure		500   {string} 	  string "failed to hash password"
-// @Router		/api/v1/users/:id  [patch]
+// @Router		/api/v1/users/{id}  [patch]
 func (u *UserController) UpdateUser(c *fiber.Ctx) error {
 	var user models.UpdateUserRequestBody
 
@@ -126,9 +127,10 @@ func (u *UserController) UpdateUser(c *fiber.Ctx) error {
 // @ID			delete-user
 // @Tags      	user
 // @Produce		json
+// @Param		id	path	string	true	"User ID"
 // @Success		204   {string}     string "no content"
 // @Failure     500   {string}     string "failed to get all users"
-// @Router		/api/v1/users/:id  [delete]
+// @Router		/api/v1/users/{id}  [delete]
 func (u *UserController) DeleteUser(c *fiber.Ctx) error {
 	err := u.userService.DeleteUser(c.Params("id"))
 	if err != nil {
@@ -139,7 +141,7 @@ func (u *UserController) DeleteUser(c *fiber.Ctx) error {
 }
 
 func (u *UserController) GetUserTags(c *fiber.Ctx) error {
-	tags, err := u.userService.GetUserTags(c.Params("uid"))
+	tags, err := u.userService.GetUserTags(c.Params("id"))
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -152,7 +154,7 @@ func (u *UserController) CreateUserTags(c *fiber.Ctx) error {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
-	tags, err := u.userService.CreateUserTags(c.Params("uid"), requestBody)
+	tags, err := u.userService.CreateUserTags(c.Params("id"), requestBody)
 	if err != nil {
 		return err.FiberError(c)
 	}

@@ -15,7 +15,7 @@ import (
 // @description Backend Server for SAC App
 
 // @contact.name	David Oduneye and Garrett Ladley
-// @contact.email	oduneye.d@northeastern.edu and ladley.g@northeastern.edu
+// @contact.email	generatesac@gmail.com
 // @host 127.0.0.1:8080
 // @BasePath /api/v1
 func main() {
@@ -45,5 +45,7 @@ func main() {
 
 	app := server.Init(db, config)
 
-	app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
+	if err := app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port)); err != nil {
+		panic(err)
+	}
 }

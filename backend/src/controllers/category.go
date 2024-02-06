@@ -75,6 +75,7 @@ func (t *CategoryController) GetCategories(c *fiber.Ctx) error {
 // @ID			get-category
 // @Tags      	category
 // @Produce		json
+// @Param		id	path	string	true	"Category ID"
 // @Success		200	  {object}	  models.Category
 // @Failure 	400   {string}    string "failed to validate id"
 // @Failure     404   {string}    string "faied to find category"
@@ -96,7 +97,8 @@ func (t *CategoryController) GetCategory(c *fiber.Ctx) error {
 // @ID			delete-category
 // @Tags      	category
 // @Produce		json
-// @Success		204	  {object}
+// @Param		id	path	string	true	"Category ID"
+// @Success		204	  {string}	  string "no content"
 // @Failure 	400   {string}    string "failed to validate id"
 // @Failure     404   {string}    string "failed to find category"
 // @Failure     500   {string}    string "failed to delete category"
@@ -116,6 +118,7 @@ func (t *CategoryController) DeleteCategory(c *fiber.Ctx) error {
 // @ID			update-category
 // @Tags      	category
 // @Produce		json
+// @Param		id	path	string	true	"Category ID"
 // @Success		200	  {object}	  models.Category
 // @Failure 	400   {string}    string "failed to validate id"
 // @Failure     404   {string}    string "failed to find category"
