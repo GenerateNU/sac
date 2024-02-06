@@ -7,7 +7,7 @@ import (
 )
 
 type SuperUserSettings struct {
-	Password m.Secret[string]
+	Password *m.Secret[string]
 }
 
 type intermediateSuperUserSettings struct {
@@ -21,6 +21,6 @@ func (int *intermediateSuperUserSettings) into() (*SuperUserSettings, error) {
 	}
 
 	return &SuperUserSettings{
-		Password: *password,
+		Password: password,
 	}, nil
 }

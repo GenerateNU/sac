@@ -9,7 +9,7 @@ import (
 
 type DatabaseSettings struct {
 	Username     string
-	Password     m.Secret[string]
+	Password     *m.Secret[string]
 	Port         uint
 	Host         string
 	DatabaseName string
@@ -24,7 +24,7 @@ func (int *intermediateDatabaseSettings) into() (*DatabaseSettings, error) {
 
 	return &DatabaseSettings{
 		Username:     int.Username,
-		Password:     *password,
+		Password:     password,
 		Port:         int.Port,
 		Host:         int.Host,
 		DatabaseName: int.DatabaseName,

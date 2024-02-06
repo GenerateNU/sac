@@ -23,9 +23,9 @@ func AuthSettings() (*config.AuthSettings, error) {
 	}
 
 	return &config.AuthSettings{
-		AccessKey:          *accessKey,
+		AccessKey:          accessKey,
 		AccessTokenExpiry:  60,
-		RefreshKey:         *refreshKey,
+		RefreshKey:         refreshKey,
 		RefreshTokenExpiry: 30,
 	}, nil
 }
@@ -149,7 +149,7 @@ func TestSignTokenSuccess(t *testing.T) {
 
 	assert.NilError(err)
 
-	signedToken, authErr := auth.SignToken(token, *key)
+	signedToken, authErr := auth.SignToken(token, key)
 
 	assert.Assert(authErr == nil)
 
@@ -174,7 +174,7 @@ func TestSignTokenFailure(t *testing.T) {
 
 	assert.NilError(err)
 
-	signedToken, authErr := auth.SignToken(token, *key)
+	signedToken, authErr := auth.SignToken(token, key)
 
 	assert.Assert(authErr != nil)
 

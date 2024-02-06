@@ -7,8 +7,8 @@ import (
 )
 
 type AuthSettings struct {
-	AccessKey          m.Secret[string]
-	RefreshKey         m.Secret[string]
+	AccessKey          *m.Secret[string]
+	RefreshKey         *m.Secret[string]
 	AccessTokenExpiry  uint
 	RefreshTokenExpiry uint
 }
@@ -32,8 +32,8 @@ func (int *intermediateAuthSettings) into() (*AuthSettings, error) {
 	}
 
 	return &AuthSettings{
-		AccessKey:          *accessToken,
-		RefreshKey:         *refreshToken,
+		AccessKey:          accessToken,
+		RefreshKey:         refreshToken,
 		AccessTokenExpiry:  int.AccessTokenExpiry,
 		RefreshTokenExpiry: int.RefreshTokenExpiry,
 	}, nil

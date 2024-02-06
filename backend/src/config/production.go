@@ -92,18 +92,18 @@ func readProd(v *viper.Viper) (*Settings, error) {
 		},
 		Database: DatabaseSettings{
 			Username:     os.Getenv(fmt.Sprintf("%sUSERNAME", dbPrefix)),
-			Password:     *dbPassword,
+			Password:     dbPassword,
 			Host:         os.Getenv(fmt.Sprintf("%sHOST", dbPrefix)),
 			Port:         uint(portInt),
 			DatabaseName: os.Getenv(fmt.Sprintf("%sDATABASE_NAME", dbPrefix)),
 			RequireSSL:   prodSettings.Database.RequireSSL,
 		},
 		SuperUser: SuperUserSettings{
-			Password: *superPassword,
+			Password: superPassword,
 		},
 		Auth: AuthSettings{
-			AccessKey:          *authAccessKey,
-			RefreshKey:         *authRefreshKey,
+			AccessKey:          authAccessKey,
+			RefreshKey:         authRefreshKey,
 			AccessTokenExpiry:  uint(authAccessExpiryInt),
 			RefreshTokenExpiry: uint(authRefreshExpiryInt),
 		},

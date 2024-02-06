@@ -27,7 +27,7 @@ func CreateTokenPair(id string, role string, authSettings config.AuthSettings) (
 }
 
 // CreateAccessToken creates a new access token for the user
-func CreateAccessToken(id string, role string, accessExpiresAfter uint, accessToken m.Secret[string]) (*string, *errors.Error) {
+func CreateAccessToken(id string, role string, accessExpiresAfter uint, accessToken *m.Secret[string]) (*string, *errors.Error) {
 	if id == "" || role == "" {
 		return nil, &errors.FailedToCreateAccessToken
 	}
@@ -50,7 +50,7 @@ func CreateAccessToken(id string, role string, accessExpiresAfter uint, accessTo
 }
 
 // CreateRefreshToken creates a new refresh token for the user
-func CreateRefreshToken(id string, refreshExpiresAfter uint, refreshKey m.Secret[string]) (*string, *errors.Error) {
+func CreateRefreshToken(id string, refreshExpiresAfter uint, refreshKey *m.Secret[string]) (*string, *errors.Error) {
 	if id == "" {
 		return nil, &errors.FailedToCreateRefreshToken
 	}
@@ -69,7 +69,7 @@ func CreateRefreshToken(id string, refreshExpiresAfter uint, refreshKey m.Secret
 	return returnedRefreshToken, nil
 }
 
-func SignToken(token *jwt.Token, key m.Secret[string]) (*string, *errors.Error) {
+func SignToken(token *jwt.Token, key *m.Secret[string]) (*string, *errors.Error) {
 	if token == nil || key.Expose() == "" {
 		return nil, &errors.FailedToSignToken
 	}
@@ -102,7 +102,7 @@ func ExpireCookie(name string) *fiber.Cookie {
 }
 
 // RefreshAccessToken refreshes the access token
-func RefreshAccessToken(refreshCookie string, role string, refreshKey m.Secret[string], accessExpiresAfter uint, accessKey m.Secret[string]) (*string, *errors.Error) {
+func RefreshAccessToken(refreshCookie string, role string, refreshKey *m.Secret[string], accessExpiresAfter uint, accessKey *m.Secret[string]) (*string, *errors.Error) {
 	// Parse the refresh token
 	refreshToken, err := ParseRefreshToken(refreshCookie, refreshKey)
 	if err != nil {
@@ -125,21 +125,21 @@ func RefreshAccessToken(refreshCookie string, role string, refreshKey m.Secret[s
 }
 
 // ParseAccessToken parses the access token
-func ParseAccessToken(cookie string, accessToken m.Secret[string]) (*jwt.Token, error) {
+func ParseAccessToken(cookie string, accessToken *m.Secret[string]) (*jwt.Token, error) {
 	return jwt.ParseWithClaims(cookie, &types.CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(accessToken.Expose()), nil
 	})
 }
 
 // ParseRefreshToken parses the refresh token
-func ParseRefreshToken(cookie string, refreshToken m.Secret[string]) (*jwt.Token, error) {
+func ParseRefreshToken(cookie string, refreshToken *m.Secret[string]) (*jwt.Token, error) {
 	return jwt.ParseWithClaims(cookie, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(refreshToken.Expose()), nil
 	})
 }
 
 // GetRoleFromToken gets the role from the custom claims
-func GetRoleFromToken(tokenString string, accessToken m.Secret[string]) (*string, error) {
+func GetRoleFromToken(tokenString string, accessToken *m.Secret[string]) (*string, error) {
 	token, err := ParseAccessToken(tokenString, accessToken)
 	if err != nil {
 		return nil, err
@@ -154,7 +154,7 @@ func GetRoleFromToken(tokenString string, accessToken m.Secret[string]) (*string
 }
 
 // ExtractClaims extracts the claims from the token
-func ExtractAccessClaims(tokenString string, accessToken m.Secret[string]) (*types.CustomClaims, *errors.Error) {
+func ExtractAccessClaims(tokenString string, accessToken *m.Secret[string]) (*types.CustomClaims, *errors.Error) {
 	token, err := ParseAccessToken(tokenString, accessToken)
 	if err != nil {
 		return nil, &errors.FailedToParseAccessToken
@@ -169,7 +169,7 @@ func ExtractAccessClaims(tokenString string, accessToken m.Secret[string]) (*typ
 }
 
 // ExtractClaims extracts the claims from the token
-func ExtractRefreshClaims(tokenString string, refreshToken m.Secret[string]) (*jwt.StandardClaims, *errors.Error) {
+func ExtractRefreshClaims(tokenString string, refreshToken *m.Secret[string]) (*jwt.StandardClaims, *errors.Error) {
 	token, err := ParseRefreshToken(tokenString, refreshToken)
 	if err != nil {
 		return nil, &errors.FailedToParseRefreshToken
