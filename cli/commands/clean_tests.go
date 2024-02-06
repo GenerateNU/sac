@@ -48,7 +48,7 @@ func CleanTestDBs() error {
 		return fmt.Errorf("failed to get current user: %w", err)
 	}
 
-	rows, err := db.Query("SELECT datname FROM pg_database WHERE datistemplate = false AND datname != 'postgres' AND datname != $1 AND datname != $2", currentUser.Username, CONFIG.Database.DatabaseName)
+	rows, err := db.Query("SELECT datname FROM pg_database WHERE datistemplate = false AND datname != 'postgres' AND datname != $1 AND datname != $2 AND datname LIKE 'sac_test_%';", currentUser.Username, CONFIG.Database.DatabaseName)
 	if err != nil {
 		return err
 	}

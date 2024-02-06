@@ -66,6 +66,7 @@ func CreateSetOfTags(t *testing.T, appAssert *h.ExistingAppAssert) ([]uuid.UUID,
 
 	categoryIDs := []uuid.UUID{}
 	for _, category := range *categories {
+		category := category
 		appAssert.TestOnStatusAndDB(
 			h.TestRequest{
 				Method: fiber.MethodPost,
@@ -92,6 +93,7 @@ func CreateSetOfTags(t *testing.T, appAssert *h.ExistingAppAssert) ([]uuid.UUID,
 
 	tagIDs := []uuid.UUID{}
 	for _, tag := range *tags {
+		tag := tag
 		appAssert.TestOnStatusAndDB(
 			h.TestRequest{
 				Method: fiber.MethodPost,
@@ -212,6 +214,7 @@ func TestCreateUserTagsFailsOnInvalidKey(t *testing.T) {
 	}
 
 	for _, body := range invalidBody {
+		body := body
 		h.InitTest(t).TestOnError(
 			h.TestRequest{
 				Method:             fiber.MethodPost,
