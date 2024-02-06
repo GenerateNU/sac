@@ -40,7 +40,7 @@ func (app *TestApp) authSuper() {
 		Path:   "/api/v1/auth/login",
 		Body: &map[string]interface{}{
 			"email":    email,
-			"password": password,
+			"password": password.Expose(),
 		},
 	})
 	if err != nil {

@@ -125,22 +125,22 @@ func RefreshAccessToken(refreshCookie string, role string, refreshKey *m.Secret[
 }
 
 // ParseAccessToken parses the access token
-func ParseAccessToken(cookie string, accessToken *m.Secret[string]) (*jwt.Token, error) {
+func ParseAccessToken(cookie string, accessKey *m.Secret[string]) (*jwt.Token, error) {
 	return jwt.ParseWithClaims(cookie, &types.CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(accessToken.Expose()), nil
+		return []byte(accessKey.Expose()), nil
 	})
 }
 
 // ParseRefreshToken parses the refresh token
-func ParseRefreshToken(cookie string, refreshToken *m.Secret[string]) (*jwt.Token, error) {
+func ParseRefreshToken(cookie string, refreshKey *m.Secret[string]) (*jwt.Token, error) {
 	return jwt.ParseWithClaims(cookie, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(refreshToken.Expose()), nil
+		return []byte(refreshKey.Expose()), nil
 	})
 }
 
 // GetRoleFromToken gets the role from the custom claims
-func GetRoleFromToken(tokenString string, accessToken *m.Secret[string]) (*string, error) {
-	token, err := ParseAccessToken(tokenString, accessToken)
+func GetRoleFromToken(tokenString string, accessKey *m.Secret[string]) (*string, error) {
+	token, err := ParseAccessToken(tokenString, accessKey)
 	if err != nil {
 		return nil, err
 	}
@@ -154,8 +154,8 @@ func GetRoleFromToken(tokenString string, accessToken *m.Secret[string]) (*strin
 }
 
 // ExtractClaims extracts the claims from the token
-func ExtractAccessClaims(tokenString string, accessToken *m.Secret[string]) (*types.CustomClaims, *errors.Error) {
-	token, err := ParseAccessToken(tokenString, accessToken)
+func ExtractAccessClaims(tokenString string, accessKey *m.Secret[string]) (*types.CustomClaims, *errors.Error) {
+	token, err := ParseAccessToken(tokenString, accessKey)
 	if err != nil {
 		return nil, &errors.FailedToParseAccessToken
 	}
@@ -169,8 +169,8 @@ func ExtractAccessClaims(tokenString string, accessToken *m.Secret[string]) (*ty
 }
 
 // ExtractClaims extracts the claims from the token
-func ExtractRefreshClaims(tokenString string, refreshToken *m.Secret[string]) (*jwt.StandardClaims, *errors.Error) {
-	token, err := ParseRefreshToken(tokenString, refreshToken)
+func ExtractRefreshClaims(tokenString string, refreshKey *m.Secret[string]) (*jwt.StandardClaims, *errors.Error) {
+	token, err := ParseRefreshToken(tokenString, refreshKey)
 	if err != nil {
 		return nil, &errors.FailedToParseRefreshToken
 	}
