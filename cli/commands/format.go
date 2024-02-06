@@ -39,7 +39,10 @@ func FormatCommand() *cli.Command {
 			runFrontend := folder != ""
 			runBackend := c.Bool("backend")
 
-			Format(folder, runFrontend, runBackend)
+			err := Format(folder, runFrontend, runBackend)
+			if err != nil {
+				return cli.Exit(err.Error(), 1)
+			}
 
 			return nil
 		},
@@ -56,7 +59,10 @@ func Format(folder string, runFrontend bool, runBackend bool) error {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			BackendFormat()
+			err := BackendFormat()
+			if err != nil {
+				fmt.Println(err)
+			}
 		}()
 	}
 
@@ -65,7 +71,10 @@ func Format(folder string, runFrontend bool, runBackend bool) error {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			FrontendFormat(folder)
+			err := FrontendFormat(folder)
+			if err != nil {
+				fmt.Println(err)
+			}
 		}()
 	}
 

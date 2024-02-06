@@ -206,8 +206,8 @@ func TestGetClubsWorks(t *testing.T) {
 				assert.Equal("SAC", dbClub.Description)
 				assert.Equal(1, dbClub.NumMembers)
 				assert.Equal(true, dbClub.IsRecruiting)
-				assert.Equal(models.RecruitmentCycle(models.Always), dbClub.RecruitmentCycle)
-				assert.Equal(models.RecruitmentType(models.Application), dbClub.RecruitmentType)
+				assert.Equal(models.Always, dbClub.RecruitmentCycle)
+				assert.Equal(models.Application, dbClub.RecruitmentType)
 				assert.Equal("https://generatenu.com/apply", dbClub.ApplicationLink)
 				assert.Equal("https://aws.amazon.com/s3", dbClub.Logo)
 			},
@@ -303,7 +303,7 @@ func TestCreateClubFailsOnInvalidLogo(t *testing.T) {
 		[]interface{}{
 			"Not an URL",
 			"@#139081#$Ad_Axf",
-			//"https://google.com", <-- TODO uncomment once we figure out s3 url validation
+			// "https://google.com", <-- TODO uncomment once we figure out s3 url validation
 		},
 	)
 }
@@ -343,6 +343,7 @@ func TestUpdateClubFailsOnInvalidBody(t *testing.T) {
 		{"application_link": "Not an URL"},
 		{"logo": "@12394X_2"},
 	} {
+		invalidData := invalidData
 		appAssert.TestOnErrorAndDB(
 			h.TestRequest{
 				Method: fiber.MethodPatch,

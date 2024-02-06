@@ -26,7 +26,11 @@ import (
 func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 	app := newFiberApp()
 
-	validate := utilities.RegisterCustomValidators()
+	validate, err := utilities.RegisterCustomValidators()
+	if err != nil {
+		panic(err)
+	}
+
 	middlewareService := middleware.NewMiddlewareService(db, validate, settings.Auth)
 
 	apiv1 := app.Group("/api/v1")

@@ -141,7 +141,6 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 		}
 
 		return tx.Commit().Error
-
 	}
 	return nil
 }
