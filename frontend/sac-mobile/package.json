@@ -40,7 +40,7 @@
     "react-native-web": "~0.19.6",
     "semver": "7.6.0",
     "zod": "^3.22.4",
-    "zustand": "^4.4.7"
+    "zustand": "^4.5.0"
   },
   "devDependencies": {
     "@babel/core": "^7.23.9",
