@@ -39,6 +39,14 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to get contacts",
 	}
+	FailedToGetContact = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get contact",
+	}
+	ContactNotFound = Error{
+		StatusCode: fiber.StatusNotFound,
+		Message:    "contact not found",
+	}
 	FailedToCreateContact = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to create contact",

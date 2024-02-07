@@ -17,6 +17,7 @@ type ClubServiceInterface interface {
 	UpdateClub(id string, clubBody models.UpdateClubRequestBody) (*models.Club, *errors.Error)
 	DeleteClub(id string) *errors.Error
 	GetContacts(limit string, page string) ([]models.Contact, *errors.Error)
+	GetContact(id string) (*models.Contact, *errors.Error)
 	GetClubContacts(id string) ([]models.Contact, *errors.Error)
 	// GetClubContact(contactId string) (*models.Contact, *errors.Error)
 	PutContact(clubID string, contactBody models.PutContactRequestBody) (*models.Contact, *errors.Error)
@@ -111,6 +112,15 @@ func (c *ClubService) GetContacts(limit string, page string) ([]models.Contact, 
 	offset := (*pageAsInt - 1) * *limitAsInt
 
 	return transactions.GetContacts(c.DB, *limitAsInt, offset)
+}
+
+func (c *ClubService) GetContact(id string) (*models.Contact, *errors.Error) {
+	idAsUUID, err := utilities.ValidateID(id)
+	if err != nil {
+		return nil, &errors.FailedToValidateID
+	}
+
+	return transactions.GetContact(c.DB, *idAsUUID)
 }
 
 func (c *ClubService) GetClubContacts(id string) ([]models.Contact, *errors.Error) {

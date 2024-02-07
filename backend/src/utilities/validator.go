@@ -56,7 +56,6 @@ func validateS3URL(fl validator.FieldLevel) bool {
 func validateContactPointer(validate *validator.Validate, fl validator.FieldLevel) bool {
 	contact, ok := fl.Parent().Interface().(models.PutContactRequestBody)
 	if !ok {
-		println("Failed to cast to PutContactRequestBody")
 		return false
 	}
 	switch contact.Type {

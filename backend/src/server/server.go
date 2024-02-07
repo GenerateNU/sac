@@ -36,6 +36,7 @@ func Init(db *gorm.DB) *fiber.App {
 
 	userRoutes(apiv1, &services.UserService{DB: db, Validate: validate})
 	clubRoutes(apiv1, &services.ClubService{DB: db, Validate: validate})
+	contactRoutes(apiv1, &services.ClubService{DB: db, Validate: validate})
 	categoryRouter := categoryRoutes(apiv1, &services.CategoryService{DB: db, Validate: validate})
 	tagRoutes(categoryRouter, &services.TagService{DB: db, Validate: validate})
 
@@ -99,7 +100,6 @@ func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface) 
 	// club-dependent contact routes
 	contacts.Get("/", clubController.GetClubContacts)
 	contacts.Put("/", clubController.PutContact) // contact to be updated is identified in the body media type
-	contacts.Delete("/:contactID", clubController.DeleteContact)
 }
 
 func contactRoutes(router fiber.Router, clubService services.ClubServiceInterface) {
@@ -108,6 +108,8 @@ func contactRoutes(router fiber.Router, clubService services.ClubServiceInterfac
 	contacts := router.Group("/contacts")
 
 	contacts.Get("/", clubController.GetContacts)
+	contacts.Get("/:id", clubController.GetContact)
+	contacts.Delete("/:id", clubController.DeleteContact)
 }
 
 func categoryRoutes(router fiber.Router, categoryService services.CategoryServiceInterface) fiber.Router {

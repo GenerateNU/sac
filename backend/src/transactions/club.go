@@ -88,6 +88,19 @@ func GetClubContacts(db *gorm.DB, id uuid.UUID) ([]models.Contact, *errors.Error
 	return club.Contact, nil
 }
 
+func GetContact(db *gorm.DB, id uuid.UUID) (*models.Contact, *errors.Error) {
+	var contact models.Contact
+	if err := db.First(&contact, id).Error; err != nil {
+		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, &errors.ContactNotFound
+		} else {
+			return nil, &errors.FailedToGetContact
+		}
+	}
+
+	return &contact, nil
+}
+
 func PutContact(db *gorm.DB, clubID uuid.UUID, contact models.Contact) (*models.Contact, *errors.Error) {
 	// if the club already has a contact of the same type, update the existing contact
 	err := db.Clauses(clause.OnConflict{
@@ -107,11 +120,13 @@ func PutContact(db *gorm.DB, clubID uuid.UUID, contact models.Contact) (*models.
 }
 
 func DeleteContact(db *gorm.DB, id uuid.UUID) *errors.Error {
-	result := db.Delete(&models.Contact{}, id)
-	if result.Error != nil {
-		return &errors.FailedToDeleteClub
+	if result := db.Delete(&models.Contact{}, id); result.RowsAffected == 0 {
+		if result.Error == nil {
+			return &errors.ContactNotFound
+		} else {
+			return &errors.FailedToDeleteContact
+		}
 	}
-
 	return nil
 }
 func UpdateClub(db *gorm.DB, id uuid.UUID, club models.Club) (*models.Club, *errors.Error) {
