@@ -11,8 +11,6 @@ import (
 	"github.com/GenerateNU/sac/backend/src/models"
 
 	"github.com/goccy/go-json"
-
-	"github.com/huandu/go-assert"
 )
 
 type TestRequest struct {
@@ -24,7 +22,6 @@ type TestRequest struct {
 	TestUserIDReplaces *string
 }
 
-//gocyclo:ignore
 func (app TestApp) Send(request TestRequest) (*http.Response, error) {
 	address := fmt.Sprintf("%s%s", app.Address, request.Path)
 
@@ -97,25 +94,24 @@ func (request TestRequest) test(existingAppAssert ExistingAppAssert) (ExistingAp
 func (existingAppAssert ExistingAppAssert) TestOnStatus(request TestRequest, status int) ExistingAppAssert {
 	appAssert, resp := request.test(existingAppAssert)
 
-	_, assert := appAssert.App, appAssert.Assert
-
-	assert.Equal(status, resp.StatusCode)
+	appAssert.Assert.Equal(status, resp.StatusCode)
 
 	return appAssert
 }
 
 func (request *TestRequest) testOn(existingAppAssert ExistingAppAssert, status int, key string, value string) (ExistingAppAssert, *http.Response) {
 	appAssert, resp := request.test(existingAppAssert)
-	assert := appAssert.Assert
 
 	var respBody map[string]interface{}
 
 	err := json.NewDecoder(resp.Body).Decode(&respBody)
 
-	assert.NilError(err)
-	assert.Equal(value, respBody[key].(string))
+	appAssert.Assert.NilError(err)
 
-	assert.Equal(status, resp.StatusCode)
+	appAssert.Assert.Equal(value, respBody[key].(string))
+
+	appAssert.Assert.Equal(status, resp.StatusCode)
+
 	return appAssert, resp
 }
 
@@ -129,9 +125,9 @@ type ErrorWithTester struct {
 	Tester Tester
 }
 
-func (existingAppAssert ExistingAppAssert) TestOnErrorAndDB(request TestRequest, errorWithDBTester ErrorWithTester) ExistingAppAssert {
-	appAssert, resp := request.testOn(existingAppAssert, errorWithDBTester.Error.StatusCode, "error", errorWithDBTester.Error.Message)
-	errorWithDBTester.Tester(appAssert.App, appAssert.Assert, resp)
+func (existingAppAssert ExistingAppAssert) TestOnErrorAndDB(request TestRequest, errorWithTester ErrorWithTester) ExistingAppAssert {
+	appAssert, resp := request.testOn(existingAppAssert, errorWithTester.Error.StatusCode, "error", errorWithTester.Error.Message)
+	errorWithTester.Tester(appAssert, resp)
 	return appAssert
 }
 
@@ -140,26 +136,25 @@ func (existingAppAssert ExistingAppAssert) TestOnMessage(request TestRequest, st
 	return existingAppAssert
 }
 
-func (existingAppAssert ExistingAppAssert) TestOnMessageAndDB(request TestRequest, status int, message string, dbTester Tester) ExistingAppAssert {
+func (existingAppAssert ExistingAppAssert) TestOnMessageAndTester(request TestRequest, status int, message string, tester Tester) ExistingAppAssert {
 	appAssert, resp := request.testOn(existingAppAssert, status, "message", message)
-	dbTester(appAssert.App, appAssert.Assert, resp)
+	tester(appAssert, resp)
 	return appAssert
 }
 
-type Tester func(app TestApp, assert *assert.A, resp *http.Response)
+type Tester func(eaa ExistingAppAssert, resp *http.Response)
 
 type TesterWithStatus struct {
 	Status int
 	Tester
 }
 
-func (existingAppAssert ExistingAppAssert) TestOnStatusAndDB(request TestRequest, testerStatus TesterWithStatus) ExistingAppAssert {
+func (existingAppAssert ExistingAppAssert) TestOnStatusAndTester(request TestRequest, testerStatus TesterWithStatus) ExistingAppAssert {
 	appAssert, resp := request.test(existingAppAssert)
-	app, assert := appAssert.App, appAssert.Assert
 
-	assert.Equal(testerStatus.Status, resp.StatusCode)
+	appAssert.Assert.Equal(testerStatus.Status, resp.StatusCode)
 
-	testerStatus.Tester(app, assert, resp)
+	testerStatus.Tester(appAssert, resp)
 
 	return appAssert
 }
