@@ -10,7 +10,6 @@ import (
 	h "github.com/GenerateNU/sac/backend/tests/api/helpers"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	"github.com/huandu/go-assert"
 
 	"github.com/goccy/go-json"
 )
@@ -21,60 +20,60 @@ func SampleCategoryFactory() *map[string]interface{} {
 	}
 }
 
-func AssertCategoryBodyRespDB(app h.TestApp, assert *assert.A, resp *http.Response, body *map[string]interface{}) uuid.UUID {
+func AssertCategoryBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, body *map[string]interface{}) uuid.UUID {
 	var respCategory models.Category
 
 	err := json.NewDecoder(resp.Body).Decode(&respCategory)
 
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
 	var dbCategories []models.Category
 
-	err = app.Conn.Find(&dbCategories).Error
+	err = eaa.App.Conn.Find(&dbCategories).Error
 
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
-	assert.Equal(1, len(dbCategories))
+	eaa.Assert.Equal(1, len(dbCategories))
 
 	dbCategory := dbCategories[0]
 
-	assert.Equal(dbCategory.ID, respCategory.ID)
-	assert.Equal(dbCategory.Name, respCategory.Name)
+	eaa.Assert.Equal(dbCategory.ID, respCategory.ID)
+	eaa.Assert.Equal(dbCategory.Name, respCategory.Name)
 
-	assert.Equal((*body)["name"].(string), dbCategory.Name)
+	eaa.Assert.Equal((*body)["name"].(string), dbCategory.Name)
 
 	return dbCategory.ID
 }
 
-func AssertCategoryWithBodyRespDBMostRecent(app h.TestApp, assert *assert.A, resp *http.Response, body *map[string]interface{}) uuid.UUID {
+func AssertCategoryWithBodyRespDBMostRecent(eaa h.ExistingAppAssert, resp *http.Response, body *map[string]interface{}) uuid.UUID {
 	var respCategory models.Category
 
 	err := json.NewDecoder(resp.Body).Decode(&respCategory)
 
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
 	var dbCategory models.Category
 
-	err = app.Conn.Order("created_at desc").First(&dbCategory).Error
+	err = eaa.App.Conn.Order("created_at desc").First(&dbCategory).Error
 
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
-	assert.Equal(dbCategory.ID, respCategory.ID)
-	assert.Equal(dbCategory.Name, respCategory.Name)
+	eaa.Assert.Equal(dbCategory.ID, respCategory.ID)
+	eaa.Assert.Equal(dbCategory.Name, respCategory.Name)
 
-	assert.Equal((*body)["name"].(string), dbCategory.Name)
+	eaa.Assert.Equal((*body)["name"].(string), dbCategory.Name)
 
 	return dbCategory.ID
 }
 
-func AssertSampleCategoryBodyRespDB(app h.TestApp, assert *assert.A, resp *http.Response) uuid.UUID {
-	return AssertCategoryBodyRespDB(app, assert, resp, SampleCategoryFactory())
+func AssertSampleCategoryBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response) uuid.UUID {
+	return AssertCategoryBodyRespDB(eaa, resp, SampleCategoryFactory())
 }
 
 func CreateSampleCategory(existingAppAssert h.ExistingAppAssert) (h.ExistingAppAssert, uuid.UUID) {
 	var sampleCategoryUUID uuid.UUID
 
-	existingAppAssert.TestOnStatusAndDB(
+	existingAppAssert.TestOnStatusAndTester(
 		h.TestRequest{
 			Method: fiber.MethodPost,
 			Path:   "/api/v1/categories/",
@@ -83,8 +82,8 @@ func CreateSampleCategory(existingAppAssert h.ExistingAppAssert) (h.ExistingAppA
 		},
 		h.TesterWithStatus{
 			Status: fiber.StatusCreated,
-			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
-				sampleCategoryUUID = AssertSampleCategoryBodyRespDB(app, assert, resp)
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				sampleCategoryUUID = AssertSampleCategoryBodyRespDB(eaa, resp)
 			},
 		},
 	)
@@ -98,7 +97,7 @@ func TestCreateCategoryWorks(t *testing.T) {
 }
 
 func TestCreateCategoryIgnoresid(t *testing.T) {
-	h.InitTest(t).TestOnStatusAndDB(
+	h.InitTest(t).TestOnStatusAndTester(
 		h.TestRequest{
 			Method: fiber.MethodPost,
 			Path:   "/api/v1/categories/",
@@ -110,29 +109,29 @@ func TestCreateCategoryIgnoresid(t *testing.T) {
 		},
 		h.TesterWithStatus{
 			Status: fiber.StatusCreated,
-			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
-				AssertSampleCategoryBodyRespDB(app, assert, resp)
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				AssertSampleCategoryBodyRespDB(eaa, resp)
 			},
 		},
 	).Close()
 }
 
-func Assert1Category(app h.TestApp, assert *assert.A, resp *http.Response) {
-	AssertNumCategoriesRemainsAtN(app, assert, resp, 1)
+func Assert1Category(eaa h.ExistingAppAssert, resp *http.Response) {
+	AssertNumCategoriesRemainsAtN(eaa, resp, 1)
 }
 
-func AssertNoCategories(app h.TestApp, assert *assert.A, resp *http.Response) {
-	AssertNumCategoriesRemainsAtN(app, assert, resp, 0)
+func AssertNoCategories(eaa h.ExistingAppAssert, resp *http.Response) {
+	AssertNumCategoriesRemainsAtN(eaa, resp, 0)
 }
 
-func AssertNumCategoriesRemainsAtN(app h.TestApp, assert *assert.A, resp *http.Response, n int) {
+func AssertNumCategoriesRemainsAtN(eaa h.ExistingAppAssert, resp *http.Response, n int) {
 	var categories []models.Category
 
-	err := app.Conn.Find(&categories).Error
+	err := eaa.App.Conn.Find(&categories).Error
 
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
-	assert.Equal(n, len(categories))
+	eaa.Assert.Equal(n, len(categories))
 }
 
 func TestCreateCategoryFailsIfNameIsNotString(t *testing.T) {
@@ -170,8 +169,8 @@ func TestCreateCategoryFailsIfNameIsMissing(t *testing.T) {
 func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
 	existingAppAssert, _ := CreateSampleCategory(h.InitTest(t))
 
-	TestNumCategoriesRemainsAt1 := func(app h.TestApp, assert *assert.A, resp *http.Response) {
-		AssertNumCategoriesRemainsAtN(app, assert, resp, 1)
+	TestNumCategoriesRemainsAt1 := func(eaa h.ExistingAppAssert, resp *http.Response) {
+		AssertNumCategoriesRemainsAtN(eaa, resp, 1)
 	}
 
 	for _, permutation := range h.AllCasingPermutations((*SampleCategoryFactory())["name"].(string)) {
@@ -198,7 +197,7 @@ func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
 func TestGetCategoryWorks(t *testing.T) {
 	existingAppAssert, uuid := CreateSampleCategory(h.InitTest(t))
 
-	existingAppAssert.TestOnStatusAndDB(
+	existingAppAssert.TestOnStatusAndTester(
 		h.TestRequest{
 			Method: fiber.MethodGet,
 			Path:   fmt.Sprintf("/api/v1/categories/%s", uuid),
@@ -206,8 +205,8 @@ func TestGetCategoryWorks(t *testing.T) {
 		},
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
-			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
-				AssertSampleCategoryBodyRespDB(app, assert, resp)
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				AssertSampleCategoryBodyRespDB(eaa, resp)
 			},
 		},
 	).Close()
@@ -251,7 +250,7 @@ func TestGetCategoryFailsNotFound(t *testing.T) {
 func TestGetCategoriesWorks(t *testing.T) {
 	existingAppAssert, _ := CreateSampleCategory(h.InitTest(t))
 
-	existingAppAssert.TestOnStatusAndDB(
+	existingAppAssert.TestOnStatusAndTester(
 		h.TestRequest{
 			Method: fiber.MethodGet,
 			Path:   "/api/v1/categories/",
@@ -259,54 +258,54 @@ func TestGetCategoriesWorks(t *testing.T) {
 		},
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
-			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
 				var categories []models.Category
 
-				err := app.Conn.Find(&categories).Error
+				err := eaa.App.Conn.Find(&categories).Error
 
-				assert.NilError(err)
+				eaa.Assert.NilError(err)
 
 				var respCategories []models.Category
 
 				err = json.NewDecoder(resp.Body).Decode(&respCategories)
 
-				assert.NilError(err)
+				eaa.Assert.NilError(err)
 
-				assert.Equal(1, len(respCategories))
-				assert.Equal(1, len(categories))
+				eaa.Assert.Equal(1, len(respCategories))
+				eaa.Assert.Equal(1, len(categories))
 
-				assert.Equal(categories[0].ID, respCategories[0].ID)
+				eaa.Assert.Equal(categories[0].ID, respCategories[0].ID)
 
-				assert.Equal(categories[0].Name, respCategories[0].Name)
+				eaa.Assert.Equal(categories[0].Name, respCategories[0].Name)
 
-				assert.Equal((*SampleCategoryFactory())["name"].(string), categories[0].Name)
+				eaa.Assert.Equal((*SampleCategoryFactory())["name"].(string), categories[0].Name)
 			},
 		},
 	).Close()
 }
 
-func AssertUpdatedCategoryBodyRespDB(app h.TestApp, assert *assert.A, resp *http.Response, body *map[string]interface{}) {
+func AssertUpdatedCategoryBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, body *map[string]interface{}) {
 	var respCategory models.Category
 
 	err := json.NewDecoder(resp.Body).Decode(&respCategory)
 
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
 	var dbCategories []models.Category
 
-	err = app.Conn.Find(&dbCategories).Error
+	err = eaa.App.Conn.Find(&dbCategories).Error
 
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
-	assert.Equal(1, len(dbCategories))
+	eaa.Assert.Equal(1, len(dbCategories))
 
 	dbCategory := dbCategories[0]
 
-	assert.Equal(dbCategory.ID, respCategory.ID)
-	assert.Equal(dbCategory.Name, respCategory.Name)
+	eaa.Assert.Equal(dbCategory.ID, respCategory.ID)
+	eaa.Assert.Equal(dbCategory.Name, respCategory.Name)
 
-	assert.Equal((*body)["id"].(uuid.UUID), dbCategory.ID)
-	assert.Equal((*body)["name"].(string), dbCategory.Name)
+	eaa.Assert.Equal((*body)["id"].(uuid.UUID), dbCategory.ID)
+	eaa.Assert.Equal((*body)["name"].(string), dbCategory.Name)
 }
 
 func TestUpdateCategoryWorks(t *testing.T) {
@@ -317,11 +316,11 @@ func TestUpdateCategoryWorks(t *testing.T) {
 		"name": "Arts & Crafts",
 	}
 
-	AssertUpdatedCategoryBodyRespDB := func(app h.TestApp, assert *assert.A, resp *http.Response) {
-		AssertUpdatedCategoryBodyRespDB(app, assert, resp, &category)
+	AssertUpdatedCategoryBodyRespDB := func(eaa h.ExistingAppAssert, resp *http.Response) {
+		AssertUpdatedCategoryBodyRespDB(eaa, resp, &category)
 	}
 
-	existingAppAssert.TestOnStatusAndDB(
+	existingAppAssert.TestOnStatusAndTester(
 		h.TestRequest{
 			Method: fiber.MethodPatch,
 			Path:   fmt.Sprintf("/api/v1/categories/%s", uuid),
@@ -341,11 +340,11 @@ func TestUpdateCategoryWorksWithSameDetails(t *testing.T) {
 	category := *SampleCategoryFactory()
 	category["id"] = uuid
 
-	AssertSampleCategoryBodyRespDB := func(app h.TestApp, assert *assert.A, resp *http.Response) {
-		AssertUpdatedCategoryBodyRespDB(app, assert, resp, &category)
+	AssertSampleCategoryBodyRespDB := func(eaa h.ExistingAppAssert, resp *http.Response) {
+		AssertUpdatedCategoryBodyRespDB(eaa, resp, &category)
 	}
 
-	existingAppAssert.TestOnStatusAndDB(
+	existingAppAssert.TestOnStatusAndTester(
 		h.TestRequest{
 			Method: fiber.MethodPatch,
 			Path:   fmt.Sprintf("/api/v1/categories/%s", uuid),
@@ -388,7 +387,7 @@ func TestUpdateCategoryFailsBadRequest(t *testing.T) {
 func TestDeleteCategoryWorks(t *testing.T) {
 	existingAppAssert, uuid := CreateSampleCategory(h.InitTest(t))
 
-	existingAppAssert.TestOnStatusAndDB(
+	existingAppAssert.TestOnStatusAndTester(
 		h.TestRequest{
 			Method: fiber.MethodDelete,
 			Path:   fmt.Sprintf("/api/v1/categories/%s", uuid),

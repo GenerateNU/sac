@@ -17,11 +17,10 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/goccy/go-json"
-	"github.com/huandu/go-assert"
 )
 
 func TestGetUsersWorksForSuper(t *testing.T) {
-	h.InitTest(t).TestOnStatusAndDB(
+	h.InitTest(t).TestOnStatusAndTester(
 		h.TestRequest{
 			Method: fiber.MethodGet,
 			Path:   "/api/v1/users/",
@@ -29,33 +28,33 @@ func TestGetUsersWorksForSuper(t *testing.T) {
 		},
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
-			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
 				var users []models.User
 
 				err := json.NewDecoder(resp.Body).Decode(&users)
 
-				assert.NilError(err)
+				eaa.Assert.NilError(err)
 
-				assert.Equal(1, len(users))
+				eaa.Assert.Equal(1, len(users))
 
 				respUser := users[0]
 
-				assert.Equal("SAC", respUser.FirstName)
-				assert.Equal("Super", respUser.LastName)
-				assert.Equal("generatesac@gmail.com", respUser.Email)
-				assert.Equal("000000000", respUser.NUID)
-				assert.Equal(models.College("KCCS"), respUser.College)
-				assert.Equal(models.Year(1), respUser.Year)
+				eaa.Assert.Equal("SAC", respUser.FirstName)
+				eaa.Assert.Equal("Super", respUser.LastName)
+				eaa.Assert.Equal("generatesac@gmail.com", respUser.Email)
+				eaa.Assert.Equal("000000000", respUser.NUID)
+				eaa.Assert.Equal(models.College("KCCS"), respUser.College)
+				eaa.Assert.Equal(models.Year(1), respUser.Year)
 
-				dbUsers, err := transactions.GetUsers(app.Conn, 1, 0)
+				dbUsers, err := transactions.GetUsers(eaa.App.Conn, 1, 0)
 
-				assert.NilError(&err)
+				eaa.Assert.NilError(&err)
 
-				assert.Equal(1, len(dbUsers))
+				eaa.Assert.Equal(1, len(dbUsers))
 
 				dbUser := dbUsers[0]
 
-				assert.Equal(dbUser, respUser)
+				eaa.Assert.Equal(dbUser, respUser)
 			},
 		},
 	).Close()
@@ -73,7 +72,7 @@ func TestGetUsersFailsForStudent(t *testing.T) {
 }
 
 func TestGetUserWorks(t *testing.T) {
-	h.InitTest(t).TestOnStatusAndDB(
+	h.InitTest(t).TestOnStatusAndTester(
 		h.TestRequest{
 			Method:             fiber.MethodGet,
 			Path:               "/api/v1/users/:userID",
@@ -82,29 +81,29 @@ func TestGetUserWorks(t *testing.T) {
 		},
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
-			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
 				var respUser models.User
 
 				err := json.NewDecoder(resp.Body).Decode(&respUser)
 
-				assert.NilError(err)
+				eaa.Assert.NilError(err)
 
 				sampleStudent, rawPassword := h.SampleStudentFactory()
 
 				sampleUser := *h.SampleStudentJSONFactory(sampleStudent, rawPassword)
 
-				assert.Equal(sampleUser["first_name"].(string), respUser.FirstName)
-				assert.Equal(sampleUser["last_name"].(string), respUser.LastName)
-				assert.Equal(sampleUser["email"].(string), respUser.Email)
-				assert.Equal(sampleUser["nuid"].(string), respUser.NUID)
-				assert.Equal(models.College(sampleUser["college"].(string)), respUser.College)
-				assert.Equal(models.Year(sampleUser["year"].(int)), respUser.Year)
+				eaa.Assert.Equal(sampleUser["first_name"].(string), respUser.FirstName)
+				eaa.Assert.Equal(sampleUser["last_name"].(string), respUser.LastName)
+				eaa.Assert.Equal(sampleUser["email"].(string), respUser.Email)
+				eaa.Assert.Equal(sampleUser["nuid"].(string), respUser.NUID)
+				eaa.Assert.Equal(models.College(sampleUser["college"].(string)), respUser.College)
+				eaa.Assert.Equal(models.Year(sampleUser["year"].(int)), respUser.Year)
 
-				dbUser, err := transactions.GetUser(app.Conn, app.TestUser.UUID)
+				dbUser, err := transactions.GetUser(eaa.App.Conn, eaa.App.TestUser.UUID)
 
-				assert.NilError(&err)
+				eaa.Assert.NilError(&err)
 
-				assert.Equal(dbUser, &respUser)
+				eaa.Assert.Equal(dbUser, &respUser)
 			},
 		},
 	).Close()
@@ -146,12 +145,12 @@ func TestGetUserFailsNotExist(t *testing.T) {
 		},
 		h.ErrorWithTester{
 			Error: errors.UserNotFound,
-			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
 				var user models.User
 
-				err := app.Conn.Where("id = ?", uuid).First(&user).Error
+				err := eaa.App.Conn.Where("id = ?", uuid).First(&user).Error
 
-				assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
+				eaa.Assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
 			},
 		},
 	).Close()
@@ -161,7 +160,7 @@ func TestUpdateUserWorks(t *testing.T) {
 	newFirstName := "Michael"
 	newLastName := "Brennan"
 
-	h.InitTest(t).TestOnStatusAndDB(
+	h.InitTest(t).TestOnStatusAndTester(
 		h.TestRequest{
 			Method: fiber.MethodPatch,
 			Path:   "/api/v1/users/:userID",
@@ -174,36 +173,36 @@ func TestUpdateUserWorks(t *testing.T) {
 		},
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
-			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
 				var respUser models.User
 
 				err := json.NewDecoder(resp.Body).Decode(&respUser)
 
-				assert.NilError(err)
+				eaa.Assert.NilError(err)
 
 				sampleStudent, rawPassword := h.SampleStudentFactory()
 
 				sampleStudentJSON := *h.SampleStudentJSONFactory(sampleStudent, rawPassword)
 
-				assert.Equal(newFirstName, respUser.FirstName)
-				assert.Equal(newLastName, respUser.LastName)
-				assert.Equal((sampleStudentJSON)["email"].(string), respUser.Email)
-				assert.Equal((sampleStudentJSON)["nuid"].(string), respUser.NUID)
-				assert.Equal(models.College((sampleStudentJSON)["college"].(string)), respUser.College)
-				assert.Equal(models.Year((sampleStudentJSON)["year"].(int)), respUser.Year)
+				eaa.Assert.Equal(newFirstName, respUser.FirstName)
+				eaa.Assert.Equal(newLastName, respUser.LastName)
+				eaa.Assert.Equal((sampleStudentJSON)["email"].(string), respUser.Email)
+				eaa.Assert.Equal((sampleStudentJSON)["nuid"].(string), respUser.NUID)
+				eaa.Assert.Equal(models.College((sampleStudentJSON)["college"].(string)), respUser.College)
+				eaa.Assert.Equal(models.Year((sampleStudentJSON)["year"].(int)), respUser.Year)
 
 				var dbUser models.User
 
-				err = app.Conn.First(&dbUser, app.TestUser.UUID).Error
+				err = eaa.App.Conn.First(&dbUser, eaa.App.TestUser.UUID).Error
 
-				assert.NilError(err)
+				eaa.Assert.NilError(err)
 
-				assert.Equal(dbUser.FirstName, respUser.FirstName)
-				assert.Equal(dbUser.LastName, respUser.LastName)
-				assert.Equal(dbUser.Email, respUser.Email)
-				assert.Equal(dbUser.NUID, respUser.NUID)
-				assert.Equal(dbUser.College, respUser.College)
-				assert.Equal(dbUser.Year, respUser.Year)
+				eaa.Assert.Equal(dbUser.FirstName, respUser.FirstName)
+				eaa.Assert.Equal(dbUser.LastName, respUser.LastName)
+				eaa.Assert.Equal(dbUser.Email, respUser.Email)
+				eaa.Assert.Equal(dbUser.NUID, respUser.NUID)
+				eaa.Assert.Equal(dbUser.College, respUser.College)
+				eaa.Assert.Equal(dbUser.Year, respUser.Year)
 			},
 		},
 	).Close()
@@ -272,19 +271,19 @@ func TestUpdateUserFailsOnIdNotExist(t *testing.T) {
 		},
 		h.ErrorWithTester{
 			Error: errors.UserNotFound,
-			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
 				var user models.User
 
-				err := app.Conn.Where("id = ?", uuid).First(&user).Error
+				err := eaa.App.Conn.Where("id = ?", uuid).First(&user).Error
 
-				assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
+				eaa.Assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
 			},
 		},
 	).Close()
 }
 
 func TestDeleteUserWorks(t *testing.T) {
-	h.InitTest(t).TestOnStatusAndDB(
+	h.InitTest(t).TestOnStatusAndTester(
 		h.TestRequest{
 			Method:             fiber.MethodDelete,
 			Path:               "/api/v1/users/:userID",
@@ -308,14 +307,14 @@ func TestDeleteUserNotExist(t *testing.T) {
 	},
 		h.ErrorWithTester{
 			Error: errors.UserNotFound,
-			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
 				var user models.User
 
-				err := app.Conn.Where("id = ?", uuid).First(&user).Error
+				err := eaa.App.Conn.Where("id = ?", uuid).First(&user).Error
 
-				assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
+				eaa.Assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
 
-				TestNumUsersRemainsAt1(app, assert, resp)
+				TestNumUsersRemainsAt1(eaa, resp)
 			},
 		},
 	).Close()
@@ -349,50 +348,50 @@ func TestDeleteUserBadRequest(t *testing.T) {
 	appAssert.Close()
 }
 
-func AssertUserWithIDBodyRespDB(app h.TestApp, assert *assert.A, resp *http.Response, body *map[string]interface{}) uuid.UUID {
+func AssertUserWithIDBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, body *map[string]interface{}) uuid.UUID {
 	var respUser models.User
 
 	err := json.NewDecoder(resp.Body).Decode(&respUser)
 
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
 	var dbUsers []models.User
 
-	err = app.Conn.Find(&dbUsers).Error
+	err = eaa.App.Conn.Find(&dbUsers).Error
 
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
-	assert.Equal(2, len(dbUsers))
+	eaa.Assert.Equal(2, len(dbUsers))
 
 	dbUser := dbUsers[1]
 
-	assert.Equal(dbUser.FirstName, respUser.FirstName)
-	assert.Equal(dbUser.LastName, respUser.LastName)
-	assert.Equal(dbUser.Email, respUser.Email)
-	assert.Equal(dbUser.NUID, respUser.NUID)
-	assert.Equal(dbUser.College, respUser.College)
-	assert.Equal(dbUser.Year, respUser.Year)
+	eaa.Assert.Equal(dbUser.FirstName, respUser.FirstName)
+	eaa.Assert.Equal(dbUser.LastName, respUser.LastName)
+	eaa.Assert.Equal(dbUser.Email, respUser.Email)
+	eaa.Assert.Equal(dbUser.NUID, respUser.NUID)
+	eaa.Assert.Equal(dbUser.College, respUser.College)
+	eaa.Assert.Equal(dbUser.Year, respUser.Year)
 
 	match, err := auth.ComparePasswordAndHash((*body)["password"].(string), dbUser.PasswordHash)
 
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
-	assert.Assert(match)
+	eaa.Assert.Assert(match)
 
-	assert.Equal((*body)["first_name"].(string), dbUser.FirstName)
-	assert.Equal((*body)["last_name"].(string), dbUser.LastName)
-	assert.Equal((*body)["email"].(string), dbUser.Email)
-	assert.Equal((*body)["nuid"].(string), dbUser.NUID)
-	assert.Equal(models.College((*body)["college"].(string)), dbUser.College)
-	assert.Equal(models.Year((*body)["year"].(int)), dbUser.Year)
+	eaa.Assert.Equal((*body)["first_name"].(string), dbUser.FirstName)
+	eaa.Assert.Equal((*body)["last_name"].(string), dbUser.LastName)
+	eaa.Assert.Equal((*body)["email"].(string), dbUser.Email)
+	eaa.Assert.Equal((*body)["nuid"].(string), dbUser.NUID)
+	eaa.Assert.Equal(models.College((*body)["college"].(string)), dbUser.College)
+	eaa.Assert.Equal(models.Year((*body)["year"].(int)), dbUser.Year)
 
 	return dbUser.ID
 }
 
-func AssertSampleUserBodyRespDB(app h.TestApp, assert *assert.A, resp *http.Response) uuid.UUID {
+func AssertSampleUserBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response) uuid.UUID {
 	sampleStudent, rawPassword := h.SampleStudentFactory()
 
-	return AssertUserWithIDBodyRespDB(app, assert, resp, h.SampleStudentJSONFactory(sampleStudent, rawPassword))
+	return AssertUserWithIDBodyRespDB(eaa, resp, h.SampleStudentJSONFactory(sampleStudent, rawPassword))
 }
 
 func CreateSampleStudent(t *testing.T, existingAppAssert *h.ExistingAppAssert) (h.ExistingAppAssert, uuid.UUID, *map[string]interface{}) {
@@ -405,7 +404,7 @@ func CreateSampleStudent(t *testing.T, existingAppAssert *h.ExistingAppAssert) (
 
 	sampleStudent, rawPassword := h.SampleStudentFactory()
 
-	existingAppAssert.TestOnStatusAndDB(h.TestRequest{
+	existingAppAssert.TestOnStatusAndTester(h.TestRequest{
 		Method: fiber.MethodPost,
 		Path:   "/api/v1/users/",
 		Body:   h.SampleStudentJSONFactory(sampleStudent, rawPassword),
@@ -413,8 +412,8 @@ func CreateSampleStudent(t *testing.T, existingAppAssert *h.ExistingAppAssert) (
 	},
 		h.TesterWithStatus{
 			Status: fiber.StatusCreated,
-			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
-				uuid = AssertSampleUserBodyRespDB(app, assert, resp)
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				uuid = AssertSampleUserBodyRespDB(eaa, resp)
 			},
 		},
 	)
@@ -422,22 +421,22 @@ func CreateSampleStudent(t *testing.T, existingAppAssert *h.ExistingAppAssert) (
 	return *existingAppAssert, uuid, h.SampleStudentJSONFactory(sampleStudent, rawPassword)
 }
 
-func AssertNumUsersRemainsAtN(app h.TestApp, assert *assert.A, resp *http.Response, n int) {
+func AssertNumUsersRemainsAtN(eaa h.ExistingAppAssert, resp *http.Response, n int) {
 	var users []models.User
 
-	err := app.Conn.Find(&users).Error
+	err := eaa.App.Conn.Find(&users).Error
 
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
-	assert.Equal(n, len(users))
+	eaa.Assert.Equal(n, len(users))
 }
 
-var TestNumUsersRemainsAt1 = func(app h.TestApp, assert *assert.A, resp *http.Response) {
-	AssertNumUsersRemainsAtN(app, assert, resp, 1)
+var TestNumUsersRemainsAt1 = func(eaa h.ExistingAppAssert, resp *http.Response) {
+	AssertNumUsersRemainsAtN(eaa, resp, 1)
 }
 
-var TestNumUsersRemainsAt2 = func(app h.TestApp, assert *assert.A, resp *http.Response) {
-	AssertNumUsersRemainsAtN(app, assert, resp, 2)
+var TestNumUsersRemainsAt2 = func(eaa h.ExistingAppAssert, resp *http.Response) {
+	AssertNumUsersRemainsAtN(eaa, resp, 2)
 }
 
 func TestCreateUserWorks(t *testing.T) {
