@@ -19,8 +19,6 @@ func main() {
 			commands.ResetCommand(),
 			commands.InsertCommand(),
 			commands.DropCommand(),
-			commands.ResetCommand(),
-			commands.DropCommand(),
 			commands.RunBackendCommand(),
 			commands.TestCommand(),   // TODO: frontend tests
 			commands.FormatCommand(), // TODO: frontend format
