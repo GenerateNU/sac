@@ -30,13 +30,13 @@ func main() {
 
 	err = database.ConnPooling(db)
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("Error connecting to database: %s", err.Error()))
 	}
 
 	app := server.Init(db, *config)
 
 	err = app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("Error starting server: %s", err.Error()))
 	}
 }
