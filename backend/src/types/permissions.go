@@ -1,7 +1,5 @@
 package types
 
-import "github.com/GenerateNU/sac/backend/src/models"
-
 type Permission string
 
 const (
@@ -59,7 +57,7 @@ const (
 	NotificationDelete  Permission = "notification:delete"
 )
 
-var rolePermissions = map[models.UserRole][]Permission{
+var RolePermissions = map[models.UserRole][]Permission{
 	models.Super: {
 		UserRead, UserReadAll, UserWrite, UserDelete,
 		TagRead, TagCreate, TagWrite, TagDelete,
@@ -83,9 +81,4 @@ var rolePermissions = map[models.UserRole][]Permission{
 		CategoryRead,
 		NotificationRead,
 	},
-}
-
-// Returns the permissions for a given role
-func GetPermissions(role models.UserRole) []Permission {
-	return rolePermissions[role]
 }

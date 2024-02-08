@@ -1,6 +1,13 @@
 package models
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"github.com/GenerateNU/sac/backend/src/types"
+	"net/http"
+
+	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -83,4 +90,47 @@ func (c *Club) AfterCreate(tx *gorm.DB) (err error) {
 func (c *Club) AfterDelete(tx *gorm.DB) (err error) {
 	tx.Model(&c).Update("num_members", c.NumMembers-1)
 	return
+}
+
+func (c *Club) Vectorize() (*types.EmbeddingResult, *errors.Error) {
+	var clubInfoForEmbedding string
+
+	clubInfoForEmbedding = c.Name + " " + c.Name + " " + c.Name + " " + c.Name + " " + c.Description
+	clubInfoPayload := map[string]interface{}{
+		"input": clubInfoForEmbedding,
+		"model": "text-embedding-ada-002",
+	}
+
+	clubInfoBody, _ := json.Marshal(clubInfoPayload)
+	requestClubInfoBody := bytes.NewBuffer(clubInfoBody)
+
+	req, err := http.NewRequest("POST", fmt.Sprintf("https://api.openai.com/v1/embeddings"), requestClubInfoBody)
+	req.Header.Set("Authorization", "Bearer Token")
+	req.Header.Set("content-type", "application/json")
+	req.Header.Set("Api-Key", "Api Key")
+
+	resp, err := http.DefaultClient.Do(req)
+	defer resp.Body.Close()
+
+	if err != nil {
+		return nil, &errors.FailedToVectorizeClub
+	}
+
+	type ResponseBody struct {
+		Data []struct {
+			Embedding []float32 `json:"embedding"`
+		} `json:"data"`
+	}
+
+	embeddingResultBody := ResponseBody{}
+	err = json.NewDecoder(resp.Body).Decode(&embeddingResultBody)
+	if err != nil {
+		return nil, &errors.FailedToVectorizeClub
+	}
+
+	if len(embeddingResultBody.Data) < 1 {
+		return nil, &errors.FailedToVectorizeClub
+	}
+
+	return &types.EmbeddingResult{Id: c.ID.String(), Embedding: embeddingResultBody.Data[0].Embedding}, nil
 }

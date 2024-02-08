@@ -1,6 +1,9 @@
 package models
 
-import "github.com/google/uuid"
+import (
+	"github.com/GenerateNU/sac/backend/src/types"
+	"github.com/google/uuid"
+)
 
 type UserRole string
 
@@ -83,4 +86,9 @@ type LoginUserResponseBody struct {
 
 type CreateUserTagsBody struct {
 	Tags []uuid.UUID `json:"tags" validate:"required"`
+}
+
+// Returns the permissions for a given role
+func GetPermissions(role UserRole) []types.Permission {
+	return types.RolePermissions[role]
 }
