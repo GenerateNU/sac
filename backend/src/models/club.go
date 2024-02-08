@@ -79,6 +79,14 @@ type CreateClubTagsRequestBody struct {
 	Tags []uuid.UUID `json:"tags" validate:"required"`
 }
 
+type ClubQueryParams struct {
+	//TODO: try with specific ENUM types
+	RecruitmentCycle *RecruitmentCycle `query:"recruitment_cycle"`
+	IsRecruiting     *bool             `query:"is_recruiting"`
+	Limit            int               `query:"limit"`
+	Page             int               `query:"page"`
+}
+
 func (c *Club) AfterCreate(tx *gorm.DB) (err error) {
 	tx.Model(&c).Update("num_members", c.NumMembers+1)
 	return
