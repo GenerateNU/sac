@@ -23,7 +23,7 @@ func SuperSkipper(h fiber.Handler) fiber.Handler {
 	return skip.New(h, func(c *fiber.Ctx) bool {
 		claims, err := types.From(c)
 		if err != nil {
-			err.FiberError(c)
+			_ = err.FiberError(c)
 			return false
 		}
 		if claims == nil {
@@ -38,7 +38,7 @@ func (m *MiddlewareService) Authenticate(c *fiber.Ctx) error {
 		return c.Next()
 	}
 
-	token, err := auth.ParseAccessToken(c.Cookies("access_token"), m.AuthSettings.AccessToken)
+	token, err := auth.ParseAccessToken(c.Cookies("access_token"), m.AuthSettings.AccessKey)
 	if err != nil {
 		return errors.FailedToParseAccessToken.FiberError(c)
 	}
@@ -68,7 +68,7 @@ func (m *MiddlewareService) Authorize(requiredPermissions ...types.Permission) f
 			return c.Next()
 		}
 
-		role, err := auth.GetRoleFromToken(c.Cookies("access_token"), m.AuthSettings.AccessToken)
+		role, err := auth.GetRoleFromToken(c.Cookies("access_token"), m.AuthSettings.AccessKey)
 		if err != nil {
 			return errors.FailedToParseAccessToken.FiberError(c)
 		}
