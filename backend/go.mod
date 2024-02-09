@@ -1,6 +1,6 @@
 module github.com/GenerateNU/sac/backend
 
-go 1.21.6
+go 1.22.0
 
 require (
 	github.com/garrettladley/mattress v0.2.2
