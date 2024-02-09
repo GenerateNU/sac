@@ -11,6 +11,7 @@
 - [Node.js](https://nodejs.org/en/)
 - [Yarn](https://yarnpkg.com/)
 - [Go](https://golang.org/)
+   > Do not install through brew, use the official website
 - [Docker](https://www.docker.com/)
 - [PostgreSQL](https://www.postgresql.org/)
   - Install through brew: `brew install postgresql@15`
