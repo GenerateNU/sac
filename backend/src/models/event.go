@@ -42,7 +42,7 @@ type Event struct {
 }
 
 type RecurringPattern struct {
-	EventID         *uuid.UUID    `gorm:"type:uuid;primary_key; foreignKey:EventID" json:"event_id" validate:"uuid4"`
+	EventID         uuid.UUID     `gorm:"type:uuid;primary_key; foreignKey:EventID" json:"event_id" validate:"uuid4"`
 	RecurringType   RecurringType `gorm:"type:varchar(255);default:open" json:"recurring_type" validate:"max=255"`
 	SeparationCount int           `gorm:"type:int" json:"separation_count" validate:"min=0"`
 	MaxOccurrences  int           `gorm:"type:int" json:"max_occurrences" validate:"min=1"`

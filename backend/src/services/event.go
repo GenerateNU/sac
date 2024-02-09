@@ -14,7 +14,7 @@ type EventServiceInterface interface {
 	GetEvents(limit string, page string) ([]models.Event, *errors.Error)
 	GetEvent(id string) (*models.Event, *errors.Error)
 	CreateEvent(eventBody models.CreateEventRequestBody) (*models.Event, *errors.Error)
-	CreateEventSeries(eventBodies []models.CreateEventRequestBody) (*[]models.Event, *errors.Error)
+	CreateEventSeries(eventBodies models.CreateEventRequestBody, pattern models.CreateRecurringPatternRequestBody) (*[]models.Event, *errors.Error)
 	UpdateEvent(id string, eventBody models.UpdateEventRequestBody) (*models.Event, *errors.Error)
 	DeleteEvent(id string) *errors.Error
 }
@@ -55,18 +55,26 @@ func (c *EventService) CreateEvent(eventBody models.CreateEventRequestBody) (*mo
 	return transactions.CreateEvent(c.DB, *event)
 }
 
-func (c *EventService) CreateEventSeries(eventBodies []models.CreateEventRequestBody) (*[]models.Event, *errors.Error) {
+// TODO: add logic for creating the []event here
+func (c *EventService) CreateEventSeries(eventBody models.CreateEventRequestBody, pattern models.CreateRecurringPatternRequestBody) (*[]models.Event, *errors.Error) {
 
-	if err := c.Validate.Struct(eventBodies); err != nil {
+	if err := c.Validate.Struct(eventBody); err != nil {
 		return nil, &errors.FailedToValidateEventSeries
 	}
 
-	events, err := utilities.MapRequestToModel(eventBodies, &[]models.Event{})
+	parentEvent, err := utilities.MapRequestToModel(eventBody, &models.Event{})
 	if err != nil {
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	return transactions.CreateEventSeries(c.DB, *events)
+	recurringPattern, err := utilities.MapRequestToModel(pattern, &models.RecurringPattern{})
+	if err != nil {
+		return nil, &errors.FailedToMapRequestToModel
+	}
+
+	eventBodies := CreateEventSlice(parentEvent, recurringPattern)
+
+	return transactions.CreateEventSeries(c.DB, eventBodies, *recurringPattern)
 }
 
 func (c *EventService) GetEvent(id string) (*models.Event, *errors.Error) {
@@ -106,3 +114,7 @@ func (c *EventService) DeleteEvent(id string) *errors.Error {
 }
 
 //TODO: CreateEventSeries, GetEventSeries, DeleteEventSeries
+// Helpers:
+func CreateEventSlice(parentEvent *models.Event, recurringPattern *models.RecurringPattern) ([]models.Event) {
+	return []models.Event{*parentEvent}
+}

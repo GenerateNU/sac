@@ -1,3 +1,4 @@
+package tests
 /* TEST CASES:
 test createEvent works
 test createEvent fails on:

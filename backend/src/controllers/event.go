@@ -29,10 +29,20 @@ func (l *EventController) GetAllEvents(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(events)
 }
 
-func (l *EventController) CreateEvent(c *fiber.Ctx) error {
-	recurringPattern, err := getRecurringPattern(c)
-	
+func (l *EventController) GetEvent(c *fiber.Ctx) error {
+	event, err := l.eventService.GetEvent(c.Params("id"))
 	if err != nil {
+		return err.FiberError(c)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(event)
+}
+
+// TODO: request will only contain first event. We need to create the slice of events to pass into transactions
+func (l *EventController) CreateEvent(c *fiber.Ctx) error {
+	recurringPattern, patternErr := getRecurringPattern(c)
+	
+	if patternErr == nil {
 		return CreateEventSeries(l, c, recurringPattern)
 	}
 
@@ -43,19 +53,20 @@ func (l *EventController) CreateEvent(c *fiber.Ctx) error {
 
 	event, err := l.eventService.CreateEvent(eventBody)
 	if err != nil {
-		return err
+		return err.FiberError(c)
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(event)
 }
 
 func CreateEventSeries(l *EventController, c *fiber.Ctx, recurringPattern models.CreateRecurringPatternRequestBody) error {
-	var eventBody []models.CreateEventRequestBody
+	var eventBody models.CreateEventRequestBody
+
 	if err := c.BodyParser(&eventBody); err != nil {
 		return errors.FailedToCreateEvent.FiberError(c)
 	}
 
-	event, err := l.eventService.CreateEventSeries(eventBody)
+	event, err := l.eventService.CreateEventSeries(eventBody, recurringPattern)
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -65,11 +76,11 @@ func CreateEventSeries(l *EventController, c *fiber.Ctx, recurringPattern models
 
 func getRecurringPattern(c *fiber.Ctx) (models.CreateRecurringPatternRequestBody, error) {
 	recurringType := c.Query("recurring_type")
-	separationCount, separationCountErr := strconv.Atoi(c.Query("separation_count"))
-	maxOccurrences, maxOccurrencesErr := strconv.Atoi(c.Query("max_occurrences"))
-	dayOfWeek, dayOfWeekErr := strconv.Atoi(c.Query("day_of_week"))
-	weekOfMonth, weekOfMonthErr := strconv.Atoi(c.Query("week_of_month"))
-	dayOfMonth, dayOfMonthErr := strconv.Atoi(c.Query("day_of_month"))
+	separationCount, _ := strconv.Atoi(c.Query("separation_count"))
+	maxOccurrences, _ := strconv.Atoi(c.Query("max_occurrences"))
+	dayOfWeek, _ := strconv.Atoi(c.Query("day_of_week"))
+	weekOfMonth, _ := strconv.Atoi(c.Query("week_of_month"))
+	dayOfMonth, _ := strconv.Atoi(c.Query("day_of_month"))
 
 	recurringPattern := models.CreateRecurringPatternRequestBody{
 		RecurringType:   models.RecurringType(recurringType),
@@ -80,20 +91,11 @@ func getRecurringPattern(c *fiber.Ctx) (models.CreateRecurringPatternRequestBody
 		DayOfMonth:      dayOfMonth,
 	}
 
-	if (recurringType == "" || separationCountErr != nil || maxOccurrencesErr != nil || dayOfWeekErr != nil || weekOfMonthErr != nil || dayOfMonthErr != nil) {
+	if (recurringType == "") {
 		return recurringPattern, errors.FailedToValidateEventSeries.FiberError(c)
 	}
 
 	return recurringPattern, nil
-}
-
-func (l *EventController) GetEvent(c *fiber.Ctx) error {
-	event, err := l.eventService.GetEvent(c.Params("id"))
-	if err != nil {
-		return err.FiberError(c)
-	}
-
-	return c.Status(fiber.StatusOK).JSON(event)
 }
 
 func (l *EventController) UpdateEvent(c *fiber.Ctx) error {
