@@ -42,6 +42,15 @@ func (c *EventService) GetEvents(limit string, page string) ([]models.Event, *er
 	return transactions.GetEvents(c.DB, *limitAsInt, offset)
 }
 
+func (c *EventService) GetEvent(id string) (*models.Event, *errors.Error) {
+	idAsUUID, err := utilities.ValidateID(id)
+	if err != nil {
+		return nil, &errors.FailedToValidateID
+	}
+
+	return transactions.GetEvent(c.DB, *idAsUUID)
+}
+
 func (c *EventService) CreateEvent(eventBody models.CreateEventRequestBody) (*models.Event, *errors.Error) {
 	if err := c.Validate.Struct(eventBody); err != nil {
 		return nil, &errors.FailedToValidateEvent
@@ -75,15 +84,6 @@ func (c *EventService) CreateEventSeries(eventBody models.CreateEventRequestBody
 	eventBodies := CreateEventSlice(parentEvent, recurringPattern)
 
 	return transactions.CreateEventSeries(c.DB, eventBodies, *recurringPattern)
-}
-
-func (c *EventService) GetEvent(id string) (*models.Event, *errors.Error) {
-	idAsUUID, err := utilities.ValidateID(id)
-	if err != nil {
-		return nil, &errors.FailedToValidateID
-	}
-
-	return transactions.GetEvent(c.DB, *idAsUUID)
 }
 
 func (c *EventService) UpdateEvent(id string, eventBody models.UpdateEventRequestBody) (*models.Event, *errors.Error) {

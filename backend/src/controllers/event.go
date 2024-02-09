@@ -43,7 +43,7 @@ func (l *EventController) CreateEvent(c *fiber.Ctx) error {
 	recurringPattern, patternErr := getRecurringPattern(c)
 	
 	if patternErr == nil {
-		return CreateEventSeries(l, c, recurringPattern)
+		return CreateEventSeries(l, c, *recurringPattern)
 	}
 
 	var eventBody models.CreateEventRequestBody
@@ -74,7 +74,7 @@ func CreateEventSeries(l *EventController, c *fiber.Ctx, recurringPattern models
 	return c.Status(fiber.StatusCreated).JSON(event)
 }
 
-func getRecurringPattern(c *fiber.Ctx) (models.CreateRecurringPatternRequestBody, error) {
+func getRecurringPattern(c *fiber.Ctx) (*models.CreateRecurringPatternRequestBody, error) {
 	recurringType := c.Query("recurring_type")
 	separationCount, _ := strconv.Atoi(c.Query("separation_count"))
 	maxOccurrences, _ := strconv.Atoi(c.Query("max_occurrences"))
@@ -82,20 +82,20 @@ func getRecurringPattern(c *fiber.Ctx) (models.CreateRecurringPatternRequestBody
 	weekOfMonth, _ := strconv.Atoi(c.Query("week_of_month"))
 	dayOfMonth, _ := strconv.Atoi(c.Query("day_of_month"))
 
-	recurringPattern := models.CreateRecurringPatternRequestBody{
+	recurringPattern := models.CreateRecurringPatternRequestBody(models.CreateRecurringPatternRequestBody{
 		RecurringType:   models.RecurringType(recurringType),
 		SeparationCount: separationCount,
 		MaxOccurrences:  maxOccurrences,
 		DayOfWeek:       dayOfWeek,
 		WeekOfMonth:     weekOfMonth,
 		DayOfMonth:      dayOfMonth,
-	}
+	})
 
 	if (recurringType == "") {
-		return recurringPattern, errors.FailedToValidateEventSeries.FiberError(c)
+		return nil, errors.FailedToCreateEventSeries.FiberError(c)
 	}
 
-	return recurringPattern, nil
+	return &recurringPattern, nil
 }
 
 func (l *EventController) UpdateEvent(c *fiber.Ctx) error {
