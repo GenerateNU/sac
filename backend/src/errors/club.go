@@ -43,8 +43,4 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to vectorize club",
 	}
-	FailedToUpsertClubToPinecone = Error{
-		StatusCode: fiber.StatusInternalServerError,
-		Message:    "failed to upsert club to pinecone database",
-	}
 )

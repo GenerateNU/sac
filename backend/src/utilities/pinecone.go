@@ -5,116 +5,120 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/types"
 )
 
-// TODO: move to config.yml files, then pass in to UpsertToPincecone,QueryPinecone,
-// DeletePinecone
 var (
-	indexHost = "index Host"
-	apiKey    = "api Key"
+	indexHost = os.Getenv("SAC_PINECONE_INDEX_HOST")
+	apiKey    = os.Getenv("SAC_PINECONE_API_KEY")
 )
 
-func UpsertToPinecone(item types.Vectorizable) *errors.Error {
-	embeddingResult, err := item.Vectorize()
-	if err != nil {
-		return err
+func UpsertToPinecone(item types.Embeddable) *errors.Error {
+	embeddingResult, _err := item.Embed()
+	if _err != nil {
+		return &errors.FailedToUpsertPinecone
 	}
 
 	upsertBody, _ := json.Marshal(map[string]interface{}{
-		"vectors": []types.EmbeddingResult{
-			embeddingResult,
+		"vectors": []types.Embedding{
+			*embeddingResult,
 		},
 		"namespace": item.Namespace(),
 	})
 	requestBody := bytes.NewBuffer(upsertBody)
 
-	req, _err := http.NewRequest("POST", fmt.Sprintf("%s/vectors/upsert", indexHost), requestBody)
-	if _err != nil {
-		return nil
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/vectors/upsert", indexHost), requestBody)
+	if err != nil {
+		return &errors.FailedToUpsertPinecone
 	}
 
 	req.Header.Set("Api-Key", apiKey)
 	req.Header.Set("accept", "application/json")
 	req.Header.Set("content-type", "application/json")
 
-	resp, _err := http.DefaultClient.Do(req)
-	if _err != nil {
-		return nil
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return &errors.FailedToUpsertPinecone
 	}
 
 	if resp.StatusCode != 200 {
-		return &errors.FailedToUpsertClubToPinecone
-	} else {
-		return nil
+		return &errors.FailedToUpsertPinecone
 	}
+
+	return nil
 }
 
-func DeleteFromPinecone(item types.Vectorizable) *errors.Error {
-	deleteBody, _ := json.Marshal(map[string]interface{}{
+func DeleteFromPinecone(item types.Embeddable) *errors.Error {
+	deleteBody, err := json.Marshal(map[string]interface{}{
 		"deleteAll": false,
 		"ids": []string{
-			item.ID(),
+			item.EmbeddingId(),
 		},
 		"namespace": item.Namespace(),
 	})
-
+	if err != nil {
+		return &errors.FailedToDeletePinecone
+	}
 	requestBody := bytes.NewBuffer(deleteBody)
 
-	req, _err := http.NewRequest("POST", fmt.Sprintf("%s/vectors/delete", indexHost), requestBody)
-	if _err != nil {
-		return nil
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/vectors/delete", indexHost), requestBody)
+	if err != nil {
+		return &errors.FailedToDeletePinecone
 	}
 
 	req.Header.Set("Api-Key", apiKey)
 	req.Header.Set("accept", "application/json")
 	req.Header.Set("content-type", "application/json")
 
-	resp, _err := http.DefaultClient.Do(req)
-	if _err != nil {
-		return nil
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return &errors.FailedToDeletePinecone
 	}
 
 	if resp.StatusCode != 200 {
-		return nil
-	} else {
-		return nil
+		return &errors.FailedToDeletePinecone
 	}
+
+	return nil
 }
 
-func SearchPinecone(item types.Vectorizable, topKResults int) ([]string, *errors.Error) {
+func SearchPinecone(item types.Embeddable, topKResults int) ([]string, *errors.Error) {
+	embeddingResult, _err := item.Embed()
+	if _err != nil {
+		return []string{}, _err
+	}
+
 	searchBody, _ := json.Marshal(map[string]interface{}{
 		"includeValues":   false,
 		"includeMetadata": false,
 		"topK":            topKResults,
-		"ids": []string{
-			item.ID(),
-		},
-		"namespace": item.Namespace(),
+		"vector":          embeddingResult.Values,
+		"namespace":       item.Namespace(),
 	})
 
 	requestBody := bytes.NewBuffer(searchBody)
 
-	req, _err := http.NewRequest("POST", fmt.Sprintf("%s/vectors/query", indexHost), requestBody)
-	if _err != nil {
-		return []string{}, nil
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/query", indexHost), requestBody)
+	if err != nil {
+		return []string{}, &errors.FailedToSearchPinecone
 	}
 
 	req.Header.Set("Api-Key", apiKey)
 	req.Header.Set("accept", "application/json")
 	req.Header.Set("content-type", "application/json")
 
-	resp, _err := http.DefaultClient.Do(req)
+	resp, err := http.DefaultClient.Do(req)
 	defer resp.Body.Close()
 
-	if _err != nil {
-		return []string{}, nil
+	if err != nil {
+		return []string{}, &errors.FailedToSearchPinecone
 	}
 
 	if resp.StatusCode != 200 {
-		return []string{}, nil
+		return []string{}, &errors.FailedToSearchPinecone
 	}
 
 	type SearchPineconeResults struct {
@@ -127,12 +131,12 @@ func SearchPinecone(item types.Vectorizable, topKResults int) ([]string, *errors
 	}
 
 	results := SearchPineconeResults{}
-	_err = json.NewDecoder(resp.Body).Decode(&results)
-	if _err != nil {
-		return []string{}, nil
+	err = json.NewDecoder(resp.Body).Decode(&results)
+	if err != nil {
+		return []string{}, &errors.FailedToSearchPinecone
 	}
 
-	resultsToReturn := []string{}
+	var resultsToReturn []string
 	for i := 0; i < len(results.Matches); i += 1 {
 		resultsToReturn = append(resultsToReturn, results.Matches[i].Id)
 	}

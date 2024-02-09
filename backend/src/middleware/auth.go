@@ -73,7 +73,7 @@ func (m *MiddlewareService) Authorize(requiredPermissions ...types.Permission) f
 			return errors.FailedToParseAccessToken.FiberError(c)
 		}
 
-		userPermissions := types.GetPermissions(models.UserRole(*role))
+		userPermissions := models.GetPermissions(models.UserRole(*role))
 
 		for _, requiredPermission := range requiredPermissions {
 			if !slices.Contains(userPermissions, requiredPermission) {

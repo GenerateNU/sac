@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/GenerateNU/sac/backend/src/types"
 	"net/http"
+	"os"
 
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/google/uuid"
@@ -92,7 +93,16 @@ func (c *Club) AfterDelete(tx *gorm.DB) (err error) {
 	return
 }
 
-func (c *Club) Vectorize() (*types.EmbeddingResult, *errors.Error) {
+func (c *Club) EmbeddingId() string {
+	return c.ID.String()
+}
+
+func (c *Club) Namespace() string {
+	return "clubs"
+}
+
+func (c *Club) Embed() (*types.Embedding, *errors.Error) {
+	apiKey := os.Getenv("SAC_OPENAI_API_KEY")
 	var clubInfoForEmbedding string
 
 	clubInfoForEmbedding = c.Name + " " + c.Name + " " + c.Name + " " + c.Name + " " + c.Description
@@ -105,9 +115,8 @@ func (c *Club) Vectorize() (*types.EmbeddingResult, *errors.Error) {
 	requestClubInfoBody := bytes.NewBuffer(clubInfoBody)
 
 	req, err := http.NewRequest("POST", fmt.Sprintf("https://api.openai.com/v1/embeddings"), requestClubInfoBody)
-	req.Header.Set("Authorization", "Bearer Token")
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", apiKey))
 	req.Header.Set("content-type", "application/json")
-	req.Header.Set("Api-Key", "Api Key")
 
 	resp, err := http.DefaultClient.Do(req)
 	defer resp.Body.Close()
@@ -132,5 +141,5 @@ func (c *Club) Vectorize() (*types.EmbeddingResult, *errors.Error) {
 		return nil, &errors.FailedToVectorizeClub
 	}
 
-	return &types.EmbeddingResult{Id: c.ID.String(), Embedding: embeddingResultBody.Data[0].Embedding}, nil
+	return &types.Embedding{Id: c.ID.String(), Values: embeddingResultBody.Data[0].Embedding}, nil
 }

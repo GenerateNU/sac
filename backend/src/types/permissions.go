@@ -56,29 +56,3 @@ const (
 	NotificationCreate  Permission = "notification:create"
 	NotificationDelete  Permission = "notification:delete"
 )
-
-var RolePermissions = map[models.UserRole][]Permission{
-	models.Super: {
-		UserRead, UserReadAll, UserWrite, UserDelete,
-		TagRead, TagCreate, TagWrite, TagDelete,
-		ClubRead, ClubCreate, ClubWrite, ClubDelete,
-		PointOfContactRead, PointOfContactCreate, PointOfContactWrite, PointOfContactDelete,
-		CommentRead, CommentCreate, CommentWrite, CommentDelete,
-		EventRead, EventCreate, EventWrite, EventDelete,
-		ContactRead, ContactCreate, ContactWrite, ContactDelete,
-		CategoryRead, CategoryCreate, CategoryWrite, CategoryDelete,
-		NotificationRead, NotificationCreate, NotificationWrite, NotificationDelete,
-		UserReadAll, TagReadAll, ClubReadAll, PointOfContactReadAll, CommentReadAll, EventReadAll, ContactReadAll, CategoryReadAll, NotificationReadAll,
-	},
-	models.Student: {
-		UserRead,
-		TagRead,
-		ClubRead,
-		PointOfContactRead,
-		CommentRead,
-		EventRead,
-		ContactRead,
-		CategoryRead,
-		NotificationRead,
-	},
-}
