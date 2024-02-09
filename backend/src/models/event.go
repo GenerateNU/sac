@@ -21,6 +21,12 @@ const (
 	Monthly RecurringType = "monthly"
 )
 
+// TODO: add not null to required fields on all gorm models
+type Event_RecurringPattern struct {
+	EventID         *uuid.UUID    `gorm:"not null; unique; type:uuid;primary_key; foreignKey:EventID" json:"event_id" validate:"uuid4"`
+	RecurringID      *uuid.UUID    `gorm:"not null; type:uuid; foreignKey:RecurringID" json:"recurring_id" validate:"uuid4"`
+}
+
 type Event struct {
 	Model
 
@@ -33,7 +39,7 @@ type Event struct {
 	EventType   EventType `gorm:"type:varchar(255);default:open" json:"event_type" validate:"required,max=255"`
 	IsRecurring bool      `gorm:"type:bool;default:false" json:"is_recurring" validate:"required"`
 
-	ParentEvent  *uuid.UUID     `gorm:"foreignKey:ParentEvent" json:"-" validate:"uuid4"`
+	// ParentEvent  *uuid.UUID     `gorm:"foreignKey:ParentEvent" json:"-" validate:"uuid4"`
 	RSVP         []User         `gorm:"many2many:user_event_rsvps;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	Waitlist     []User         `gorm:"many2many:user_event_waitlists;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	Club         []Club         `gorm:"many2many:club_events;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
@@ -42,6 +48,7 @@ type Event struct {
 }
 
 type RecurringPattern struct {
+	Model
 	EventID         uuid.UUID     `gorm:"type:uuid;primary_key; foreignKey:EventID" json:"event_id" validate:"uuid4"`
 	RecurringType   RecurringType `gorm:"type:varchar(255);default:open" json:"recurring_type" validate:"max=255"`
 	SeparationCount int           `gorm:"type:int" json:"separation_count" validate:"min=0"`
