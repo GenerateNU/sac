@@ -24,7 +24,7 @@ const (
 // TODO: add not null to required fields on all gorm models
 type Event_RecurringPattern struct {
 	EventID         *uuid.UUID    `gorm:"not null; unique; type:uuid;primary_key; foreignKey:EventID" json:"event_id" validate:"uuid4"`
-	RecurringID      *uuid.UUID    `gorm:"not null; type:uuid; foreignKey:RecurringID" json:"recurring_id" validate:"uuid4"`
+	RecurringID     *uuid.UUID    `gorm:"not null; type:uuid; foreignKey:RecurringID" json:"recurring_id" validate:"uuid4"`
 }
 
 type Event struct {
@@ -89,7 +89,6 @@ type CreateEventRequestBody struct {
 	EventType   EventType `json:"event_type" validate:"required,max=255"`
 	IsRecurring bool      `json:"is_recurring" validate:"required"`
 
-	// ParentEvent  *uuid.UUID     `gorm:"foreignKey:ParentEvent" json:"-" validate:"uuid4"`
 	Club         []Club         `json:"-" validate:"-"`
 	Tag          []Tag          `json:"-" validate:"-"`
 	Notification []Notification `json:"-" validate:"-"`

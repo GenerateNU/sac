@@ -76,8 +76,8 @@ func CreateEventSeries(l *EventController, c *fiber.Ctx, recurringPattern models
 
 func getRecurringPattern(c *fiber.Ctx) (*models.CreateRecurringPatternRequestBody, error) {
 	recurringType := c.Query("recurring_type")
-	separationCount, _ := strconv.Atoi(c.Query("separation_count"))
-	maxOccurrences, _ := strconv.Atoi(c.Query("max_occurrences"))
+	separationCount, _ := strconv.Atoi(c.Query("separation_count", "0"))
+	maxOccurrences, _ := strconv.Atoi(c.Query("max_occurrences", "1"))
 	dayOfWeek, _ := strconv.Atoi(c.Query("day_of_week"))
 	weekOfMonth, _ := strconv.Atoi(c.Query("week_of_month"))
 	dayOfMonth, _ := strconv.Atoi(c.Query("day_of_month"))

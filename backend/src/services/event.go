@@ -116,5 +116,24 @@ func (c *EventService) DeleteEvent(id string) *errors.Error {
 //TODO: CreateEventSeries, GetEventSeries, DeleteEventSeries
 // Helpers:
 func CreateEventSlice(parentEvent *models.Event, recurringPattern *models.RecurringPattern) ([]models.Event) {
-	return []models.Event{*parentEvent}
+	eventBodies := []models.Event{}
+	months, days := 0, 0
+
+	switch recurringPattern.RecurringType {
+	case "daily":
+		days = recurringPattern.SeparationCount + 1
+	case "weekly":
+		days = 7 * (recurringPattern.SeparationCount + 1)
+	case "monthly":
+		months = recurringPattern.SeparationCount + 1
+	}
+
+	for i:=1; i < recurringPattern.MaxOccurrences+1; i++ {
+		eventToAdd := parentEvent
+		eventToAdd.StartTime = eventToAdd.StartTime.AddDate(0, i*months, i*days)
+		eventToAdd.EndTime = eventToAdd.EndTime.AddDate(0, i*months, i*days)
+		eventBodies = append(eventBodies, *eventToAdd)
+	}
+
+	return eventBodies
 }
