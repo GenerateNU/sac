@@ -62,5 +62,8 @@ var (
 	FailedToValidateContact = Error{
 		StatusCode: fiber.StatusBadRequest,
 		Message:    "failed to validate contact",
+	FailedtoGetAdminIDs = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get admin ids",
 	}
 )

@@ -57,7 +57,6 @@ type CreateClubRequestBody struct {
 	Name             string           `json:"name" validate:"required,max=255"`
 	Preview          string           `json:"preview" validate:"required,max=255"`
 	Description      string           `json:"description" validate:"required,http_url,mongo_url,max=255"` // MongoDB URL
-	NumMembers       int              `json:"num_members" validate:"required,min=1"`
 	IsRecruiting     bool             `json:"is_recruiting" validate:"required"`
 	RecruitmentCycle RecruitmentCycle `gorm:"type:varchar(255);default:always" json:"recruitment_cycle" validate:"required,max=255,oneof=fall spring fallSpring always"`
 	RecruitmentType  RecruitmentType  `gorm:"type:varchar(255);default:unrestricted" json:"recruitment_type" validate:"required,max=255,oneof=unrestricted tryout application"`
@@ -69,10 +68,19 @@ type UpdateClubRequestBody struct {
 	Name             string           `json:"name" validate:"omitempty,max=255"`
 	Preview          string           `json:"preview" validate:"omitempty,max=255"`
 	Description      string           `json:"description" validate:"omitempty,http_url,mongo_url,max=255"` // MongoDB URL
-	NumMembers       int              `json:"num_members" validate:"omitempty,min=1"`
 	IsRecruiting     bool             `json:"is_recruiting" validate:"omitempty"`
 	RecruitmentCycle RecruitmentCycle `gorm:"type:varchar(255);default:always" json:"recruitment_cycle" validate:"required,max=255,oneof=fall spring fallSpring always"`
 	RecruitmentType  RecruitmentType  `gorm:"type:varchar(255);default:unrestricted" json:"recruitment_type" validate:"required,max=255,oneof=unrestricted tryout application"`
 	ApplicationLink  string           `json:"application_link" validate:"omitempty,required,max=255,http_url"`
 	Logo             string           `json:"logo" validate:"omitempty,http_url,s3_url,max=255"` // S3 URL
+}
+
+func (c *Club) AfterCreate(tx *gorm.DB) (err error) {
+	tx.Model(&c).Update("num_members", c.NumMembers+1)
+	return
+}
+
+func (c *Club) AfterDelete(tx *gorm.DB) (err error) {
+	tx.Model(&c).Update("num_members", c.NumMembers-1)
+	return
 }

@@ -17,23 +17,12 @@ func NewClubController(clubService services.ClubServiceInterface) *ClubControlle
 	return &ClubController{clubService: clubService}
 }
 
-// GetAllClubs returns all clubs.
-//
-// @Summary     Get all clubs
-// @Description Get all clubs with pagination support
-// @ID           get-all-clubs
-// @Tags         club
-// @Produce      json
-// @Param        limit     query    int    false    "Number of clubs per page"
-// @Param        page      query    int    false    "Page number"
-// @Success      200       {object} []models.Club
-// @Failure      400       {string} string "failed to get clubs"
-// @Router       /api/v1/clubs/ [get]
-func (l *ClubController) GetAllClubs(c *fiber.Ctx) error {
+
+func (cl *ClubController) GetAllClubs(c *fiber.Ctx) error {
 	defaultLimit := 10
 	defaultPage := 1
 
-	clubs, err := l.clubService.GetClubs(c.Query("limit", strconv.Itoa(defaultLimit)), c.Query("page", strconv.Itoa(defaultPage)))
+	clubs, err := cl.clubService.GetClubs(c.Query("limit", strconv.Itoa(defaultLimit)), c.Query("page", strconv.Itoa(defaultPage)))
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -41,25 +30,14 @@ func (l *ClubController) GetAllClubs(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(clubs)
 }
 
-// CreateClub creates a new club.
-//
-// @Summary     Create a club
-// @Description Create a new club
-// @ID           create-club
-// @Tags         club
-// @Accept       json
-// @Produce      json
-// @Param        clubBody     body    models.CreateClubRequestBody    true    "Club details"
-// @Success      201       {object} models.Club
-// @Failure      400       {string} string "failed to create club"
-// @Router       /api/v1/clubs/ [post]
-func (l *ClubController) CreateClub(c *fiber.Ctx) error {
+
+func (cl *ClubController) CreateClub(c *fiber.Ctx) error {
 	var clubBody models.CreateClubRequestBody
 	if err := c.BodyParser(&clubBody); err != nil {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
-	club, err := l.clubService.CreateClub(clubBody)
+	club, err := cl.clubService.CreateClub(clubBody)
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -67,19 +45,8 @@ func (l *ClubController) CreateClub(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(club)
 }
 
-// GetClub returns a club by ID.
-//
-// @Summary     Get a club by ID
-// @Description Get a club by its ID
-// @ID           get-club
-// @Tags         club
-// @Produce      json
-// @Param        id     path    string    true    "Club ID"
-// @Success      200       {object} models.Club
-// @Failure      400       {string} string "failed to get club"
-// @Router       /api/v1/clubs/{id} [get]
-func (l *ClubController) GetClub(c *fiber.Ctx) error {
-	club, err := l.clubService.GetClub(c.Params("id"))
+func (cl *ClubController) GetClub(c *fiber.Ctx) error {
+	club, err := cl.clubService.GetClub(c.Params("clubID"))
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -87,27 +54,15 @@ func (l *ClubController) GetClub(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(club)
 }
 
-// UpdateClub updates a club by ID.
-//
-// @Summary     Update a club by ID
-// @Description Update a club by its ID
-// @ID           update-club
-// @Tags         club
-// @Accept       json
-// @Produce      json
-// @Param        id     path    string    true    "Club ID"
-// @Param        clubBody     body    models.UpdateClubRequestBody    true    "Club details"
-// @Success      200       {object} models.Club
-// @Failure      400       {string} string "failed to update club"
-// @Router       /api/v1/clubs/{id} [put]
-func (l *ClubController) UpdateClub(c *fiber.Ctx) error {
+
+func (cl *ClubController) UpdateClub(c *fiber.Ctx) error {
 	var clubBody models.UpdateClubRequestBody
 
 	if err := c.BodyParser(&clubBody); err != nil {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
-	updatedClub, err := l.clubService.UpdateClub(c.Params("id"), clubBody)
+	updatedClub, err := cl.clubService.UpdateClub(c.Params("clubID"), clubBody)
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -115,19 +70,8 @@ func (l *ClubController) UpdateClub(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(updatedClub)
 }
 
-// DeleteClub deletes a club by ID.
-//
-// @Summary     Delete a club by ID
-// @Description Delete a club by its ID
-// @ID           delete-club
-// @Tags         club
-// @Produce      json
-// @Param        id     path    string    true    "Club ID"
-// @Success      204       -    No Content
-// @Failure      400       {string} string "failed to delete club"
-// @Router       /api/v1/clubs/{id} [delete]
-func (l *ClubController) DeleteClub(c *fiber.Ctx) error {
-	err := l.clubService.DeleteClub(c.Params("id"))
+func (cl *ClubController) DeleteClub(c *fiber.Ctx) error {
+	err := cl.clubService.DeleteClub(c.Params("clubID"))
 	if err != nil {
 		return err.FiberError(c)
 	}
