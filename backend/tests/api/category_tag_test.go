@@ -94,7 +94,7 @@ func TestGetCategoryTagsFailsCategoryNotFound(t *testing.T) {
 
 	uuid := uuid.New()
 
-	appAssert.TestOnErrorAndDB(
+	appAssert.TestOnErrorAndTester(
 		h.TestRequest{
 			Method: fiber.MethodGet,
 			Path:   fmt.Sprintf("/api/v1/categories/%s/tags", uuid),

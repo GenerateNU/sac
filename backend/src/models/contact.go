@@ -27,7 +27,6 @@ type Contact struct {
 }
 
 type PutContactRequestBody struct {
-	Type    ContactType  `json:"type" validate:"required,max=255,oneof=facebook instagram twitter linkedin youtube github slack discord email customSite,contact_pointer"`
-
-	Content string `json:"content" validate:"required,max=255"`
+	Type    ContactType `json:"type" validate:"required,max=255,oneof=facebook instagram twitter linkedin youtube github slack discord email customSite,contact_pointer"`
+	Content string      `json:"content" validate:"required,max=255"`
 }

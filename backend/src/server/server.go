@@ -36,7 +36,6 @@ func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 	apiv1 := app.Group("/api/v1")
 	apiv1.Use(middlewareService.Authenticate)
 
-
 	routes.Utility(app)
 
 	routes.Auth(apiv1, services.NewAuthService(db, validate), settings.Auth)
@@ -44,7 +43,10 @@ func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 	userRouter := routes.User(apiv1, services.NewUserService(db, validate), middlewareService)
 	routes.UserTag(userRouter, services.NewUserTagService(db, validate))
 
-	routes.Club(apiv1, services.NewClubService(db, validate), middlewareService)
+	routes.Contact(apiv1, services.NewContactService(db, validate))
+
+	clubsRouter := routes.Club(apiv1, services.NewClubService(db, validate), middlewareService)
+	routes.ClubContact(clubsRouter, services.NewClubContactService(db, validate))
 
 	routes.Tag(apiv1, services.NewTagService(db, validate))
 
@@ -71,4 +73,3 @@ func newFiberApp() *fiber.App {
 
 	return app
 }
-

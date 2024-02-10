@@ -230,7 +230,7 @@ func TestCreateUserTagsFailsOnInvalidKey(t *testing.T) {
 func TestCreateUserTagsFailsOnNonExistentUser(t *testing.T) {
 	uuid := uuid.New()
 
-	h.InitTest(t).TestOnErrorAndDB(
+	h.InitTest(t).TestOnErrorAndTester(
 		h.TestRequest{
 			Method: fiber.MethodPost,
 			Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid),
