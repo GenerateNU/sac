@@ -29,7 +29,6 @@ func (cl *ClubController) GetAllClubs(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(clubs)
 }
 
-
 func (cl *ClubController) CreateClub(c *fiber.Ctx) error {
 	var clubBody models.CreateClubRequestBody
 	if err := c.BodyParser(&clubBody); err != nil {
@@ -44,7 +43,6 @@ func (cl *ClubController) CreateClub(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(club)
 }
 
-
 func (cl *ClubController) GetClub(c *fiber.Ctx) error {
 	club, err := cl.clubService.GetClub(c.Params("clubID"))
 	if err != nil {
@@ -53,7 +51,6 @@ func (cl *ClubController) GetClub(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusOK).JSON(club)
 }
-
 
 func (cl *ClubController) UpdateClub(c *fiber.Ctx) error {
 	var clubBody models.UpdateClubRequestBody

@@ -124,4 +124,3 @@ func GetUserFollowersForClub(db *gorm.DB, club_id uuid.UUID) ([]models.User, *er
 	}
 	return users, nil
 }
-
