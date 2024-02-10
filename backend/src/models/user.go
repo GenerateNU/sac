@@ -81,6 +81,11 @@ type LoginUserResponseBody struct {
 	Password string `json:"password" validate:"min=8,max=255"`
 }
 
+type UpdatePasswordRequestBody struct {
+	OldPassword string `json:"old_password" validate:"required,password"`
+	NewPassword string `json:"new_password" validate:"required,password"`
+}
+
 type CreateUserTagsBody struct {
 	Tags []uuid.UUID `json:"tags" validate:"required"`
 }
