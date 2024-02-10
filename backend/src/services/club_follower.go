@@ -10,7 +10,7 @@ import (
 )
 
 type ClubFollowerServiceInterface interface {
-	GetUserFollowingClubs(userID string) ([]models.Club, *errors.Error)
+	GetClubFollowers(clubID string, limit string, page string) ([]models.User, *errors.Error)
 }
 
 type ClubFollowerService struct {
@@ -22,11 +22,21 @@ func NewClubFollowerService(db *gorm.DB, validate *validator.Validate) *ClubFoll
 	return &ClubFollowerService{DB: db, Validate: validate}
 }
 
-func (cf *ClubFollowerService) GetUserFollowingClubs(userID string) ([]models.Club, *errors.Error) {
-	userIDAsUUID, err := utilities.ValidateID(userID)
+func (cf *ClubFollowerService) GetClubFollowers(clubID string, limit string, page string) ([]models.User, *errors.Error) {
+	idAsUUID, err := utilities.ValidateID(clubID)
 	if err != nil {
-		return nil, err
+		return nil, &errors.FailedToValidateID
 	}
 
-	return transactions.GetClubFollowing(cf.DB, *userIDAsUUID)
+	limitAsInt, err := utilities.ValidateNonNegative(limit)
+	if err != nil {
+		return nil, &errors.FailedToValidateLimit
+	}
+
+	pageAsInt, err := utilities.ValidateNonNegative(page)
+	if err != nil {
+		return nil, &errors.FailedToValidatePage
+	}
+
+	return transactions.GetClubFollowers(cf.DB, *idAsUUID, *limitAsInt, *pageAsInt)
 }

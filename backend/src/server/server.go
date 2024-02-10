@@ -73,14 +73,3 @@ func newFiberApp() *fiber.App {
 
 	return app
 }
-
-func userFollowerRoutes(router fiber.Router, userFollowerService services.UserFollowerServiceInterface) {
-	userFollowerController := controllers.NewUserFollowerController(userFollowerService)
-
-	userFollower := router.Group("/:userID/follower")
-
-	userFollower.Put("/:clubID", userFollowerController.CreateFollowing)
-	userFollower.Delete("/:clubID", userFollowerController.DeleteFollowing)
-	userFollower.Get("/", userFollowerController.GetAllFollowing)
-}
-

@@ -7,7 +7,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// Create following for a user
 func CreateFollowing(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error {
 	user, err := GetUserWithFollowers(db, userId)
 	if err != nil {
@@ -24,7 +23,6 @@ func CreateFollowing(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Er
 	return nil
 }
 
-// Delete following for a user
 func DeleteFollowing(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error {
 	user, err := GetUser(db, userId)
 	if err != nil {
@@ -34,15 +32,11 @@ func DeleteFollowing(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Er
 	if err != nil {
 		return &errors.ClubNotFound
 	}
-	// What to return here?
-	// Should we return User or Success message?
 	if err := db.Model(&user).Association("Follower").Delete(club); err != nil {
 		return &errors.FailedToUpdateUser
 	}
 	return nil
 }
-
-// Get all following for a user
 
 func GetClubFollowing(db *gorm.DB, userId uuid.UUID) ([]models.Club, *errors.Error) {
 	var clubs []models.Club
