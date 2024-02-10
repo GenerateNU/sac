@@ -129,7 +129,6 @@ func (cat *CategoryController) UpdateCategory(c *fiber.Ctx) error {
 	}
 
 	updatedCategory, err := cat.categoryService.UpdateCategory(c.Params("categoryID"), category)
-
 	if err != nil {
 		return err.FiberError(c)
 	}
