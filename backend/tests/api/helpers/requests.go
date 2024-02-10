@@ -125,7 +125,7 @@ type ErrorWithTester struct {
 	Tester Tester
 }
 
-func (existingAppAssert ExistingAppAssert) TestOnErrorAndDB(request TestRequest, errorWithTester ErrorWithTester) ExistingAppAssert {
+func (existingAppAssert ExistingAppAssert) TestOnErrorAndTester(request TestRequest, errorWithTester ErrorWithTester) ExistingAppAssert {
 	appAssert, resp := request.testOn(existingAppAssert, errorWithTester.Error.StatusCode, "error", errorWithTester.Error.Message)
 	errorWithTester.Tester(appAssert, resp)
 	return appAssert
