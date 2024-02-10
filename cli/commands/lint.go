@@ -39,7 +39,10 @@ func LintCommand() *cli.Command {
 			runFrontend := folder != ""
 			runBackend := c.Bool("backend")
 
-			Lint(folder, runFrontend, runBackend)
+			err := Lint(folder, runFrontend, runBackend)
+			if err != nil {
+				return cli.Exit(err.Error(), 1)
+			}
 
 			return nil
 		},
@@ -50,26 +53,45 @@ func LintCommand() *cli.Command {
 
 func Lint(folder string, runFrontend bool, runBackend bool) error {
 	var wg sync.WaitGroup
+	errChan := make(chan error, 1)
+	var errOccurred bool // Flag to indicate whether an error has occurred
 
 	// Start the backend if specified
-	if runBackend {
+	if runBackend && !errOccurred {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			BackendLint()
+			err := BackendLint()
+			if err != nil {
+				errChan <- err
+				errOccurred = true
+			}
 		}()
 	}
 
 	// Start the frontend if specified
-	if runFrontend {
+	if runFrontend && !errOccurred {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			FrontendLint(folder)
+			err := FrontendLint(folder)
+			if err != nil {
+				errChan <- err
+				errOccurred = true
+			}
 		}()
 	}
 
-	wg.Wait()
+	go func() {
+		wg.Wait()
+		close(errChan)
+	}()
+
+	for err := range errChan {
+		if err != nil {
+			return err
+		}
+	}
 
 	return nil
 }
@@ -77,7 +99,7 @@ func Lint(folder string, runFrontend bool, runBackend bool) error {
 func BackendLint() error {
 	fmt.Println("Linting backend")
 
-	cmd := exec.Command("go", "vet", "./...")
+	cmd := exec.Command("golangci-lint", "run", "--fix")
 	cmd.Dir = BACKEND_DIR
 
 	err := cmd.Run()

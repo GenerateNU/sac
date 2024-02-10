@@ -81,7 +81,7 @@ func (cat *CategoryController) GetCategories(c *fiber.Ctx) error {
 // @Failure     500   {string}    string "failed to retrieve category"
 // @Router		/api/v1/category/{id}  [get]
 func (cat *CategoryController) GetCategory(c *fiber.Ctx) error {
-	category, err := cat.categoryService.GetCategory(c.Params("id"))
+	category, err := cat.categoryService.GetCategory(c.Params("categoryID"))
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -102,7 +102,7 @@ func (cat *CategoryController) GetCategory(c *fiber.Ctx) error {
 // @Failure     500   {string}    string "failed to delete category"
 // @Router		/api/v1/category/{id}  [delete]
 func (cat *CategoryController) DeleteCategory(c *fiber.Ctx) error {
-	if err := cat.categoryService.DeleteCategory(c.Params("id")); err != nil {
+	if err := cat.categoryService.DeleteCategory(c.Params("categoryID")); err != nil {
 		return err.FiberError(c)
 	}
 
@@ -128,7 +128,8 @@ func (cat *CategoryController) UpdateCategory(c *fiber.Ctx) error {
 		return errors.FailedToValidateCategory.FiberError(c)
 	}
 
-	updatedCategory, err := cat.categoryService.UpdateCategory(c.Params("id"), category)
+	updatedCategory, err := cat.categoryService.UpdateCategory(c.Params("categoryID"), category)
+
 	if err != nil {
 		return err.FiberError(c)
 	}

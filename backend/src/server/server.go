@@ -2,10 +2,9 @@ package server
 
 import (
 	"github.com/GenerateNU/sac/backend/src/config"
-	"github.com/GenerateNU/sac/backend/src/controllers"
 	"github.com/GenerateNU/sac/backend/src/middleware"
+	"github.com/GenerateNU/sac/backend/src/server/routes"
 	"github.com/GenerateNU/sac/backend/src/services"
-	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/goccy/go-json"
 
@@ -13,7 +12,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
-	"github.com/gofiber/swagger"
 	"gorm.io/gorm"
 )
 
@@ -28,26 +26,32 @@ import (
 func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 	app := newFiberApp()
 
-	validate := utilities.RegisterCustomValidators()
-	middlewareService := middleware.NewMiddlewareService(db, validate)
+	validate, err := utilities.RegisterCustomValidators()
+	if err != nil {
+		panic(err)
+	}
+
+	middlewareService := middleware.NewMiddlewareService(db, validate, settings.Auth)
 
 	apiv1 := app.Group("/api/v1")
 	apiv1.Use(middlewareService.Authenticate)
 
-	utilityRoutes(app)
+	routes.Utility(app)
 
-	authRoutes(apiv1, services.NewAuthService(db, validate), settings.Auth)
+	routes.Auth(apiv1, services.NewAuthService(db, validate), settings.Auth)
 
-	userRouter := userRoutes(apiv1, services.NewUserService(db, validate), middlewareService)
-	userTagRoutes(userRouter, services.NewUserTagService(db, validate))
-	userFollowerRoutes(userRouter, services.NewUserFollowerService(db, validate))
+	userRouter := routes.User(apiv1, services.NewUserService(db, validate), middlewareService)
+	routes.UserTag(userRouter, services.NewUserTagService(db, validate))
 
-	clubRouter := clubRoutes(apiv1, services.NewClubService(db, validate), middlewareService)
-	clubFollowerRoutes(clubRouter, services.NewClubFollowerService(db, validate))
+	routes.Contact(apiv1, services.NewContactService(db, validate))
 
-	tagRoutes(apiv1, services.NewTagService(db, validate))
-	categoryRouter := categoryRoutes(apiv1, services.NewCategoryService(db, validate))
-	categoryTagRoutes(categoryRouter, services.NewCategoryTagService(db, validate))
+	clubsRouter := routes.Club(apiv1, services.NewClubService(db, validate), middlewareService)
+	routes.ClubContact(clubsRouter, services.NewClubContactService(db, validate))
+
+	routes.Tag(apiv1, services.NewTagService(db, validate))
+
+	categoryRouter := routes.Category(apiv1, services.NewCategoryService(db, validate))
+	routes.CategoryTag(categoryRouter, services.NewCategoryTagService(db, validate))
 
 	return app
 }
@@ -70,37 +74,6 @@ func newFiberApp() *fiber.App {
 	return app
 }
 
-func utilityRoutes(router fiber.Router) {
-	router.Get("/swagger/*", swagger.HandlerDefault)
-	router.Get("/health", func(c *fiber.Ctx) error {
-		return c.SendStatus(200)
-	})
-}
-
-func userRoutes(router fiber.Router, userService services.UserServiceInterface, middlewareService middleware.MiddlewareInterface) fiber.Router {
-	userController := controllers.NewUserController(userService)
-
-	// api/v1/users/*
-	users := router.Group("/users")
-	users.Post("/", userController.CreateUser)
-	users.Get("/", middlewareService.Authorize(types.UserReadAll), userController.GetUsers)
-
-	// api/v1/users/:id/*
-	usersID := users.Group("/:id")
-	usersID.Use(middlewareService.UserAuthorizeById)
-
-	usersID.Get("/", middlewareService.Authorize(types.UserRead), userController.GetUser)
-	usersID.Patch("/", middlewareService.Authorize(types.UserWrite), userController.UpdateUser)
-	usersID.Delete("/", middlewareService.Authorize(types.UserDelete), userController.DeleteUser)
-
-	users.Get("/", userController.GetUsers)
-	users.Get("/:id", userController.GetUser)
-	users.Patch("/:id", userController.UpdateUser)
-	users.Delete("/:id", userController.DeleteUser)
-
-	return users
-}
-
 func userFollowerRoutes(router fiber.Router, userFollowerService services.UserFollowerServiceInterface) {
 	userFollowerController := controllers.NewUserFollowerController(userFollowerService)
 
@@ -111,84 +84,3 @@ func userFollowerRoutes(router fiber.Router, userFollowerService services.UserFo
 	userFollower.Get("/", userFollowerController.GetAllFollowing)
 }
 
-func userTagRoutes(router fiber.Router, userTagService services.UserTagServiceInterface) {
-	userTagController := controllers.NewUserTagController(userTagService)
-
-	userTags := router.Group("/:userID/tags")
-
-	userTags.Post("/", userTagController.CreateUserTags)
-	userTags.Get("/", userTagController.GetUserTags)
-}
-
-func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface, middlewareService middleware.MiddlewareInterface) fiber.Router {
-	clubController := controllers.NewClubController(clubService)
-
-	clubs := router.Group("/clubs")
-
-	clubs.Get("/", middlewareService.Authorize(types.ClubReadAll), clubController.GetAllClubs)
-	clubs.Post("/", clubController.CreateClub)
-
-	// api/v1/clubs/:id/*
-	clubsID := clubs.Group("/:id")
-	clubsID.Use(middlewareService.ClubAuthorizeById)
-
-	clubsID.Get("/", clubController.GetClub)
-	clubsID.Patch("/", middlewareService.Authorize(types.ClubWrite), clubController.UpdateClub)
-	clubsID.Delete("/", middlewareService.Authorize(types.ClubDelete), clubController.DeleteClub)
-	clubs.Get("/:id", clubController.GetClub)
-	clubs.Patch("/:id", clubController.UpdateClub)
-	clubs.Delete("/:id", clubController.DeleteClub)
-
-	return clubs
-}
-
-func clubFollowerRoutes(router fiber.Router, clubFollowerService services.ClubFollowerServiceInterface) {
-	clubFollowerController := controllers.NewClubFollowerController(clubFollowerService)
-
-	router.Get("/:userID/follower", clubFollowerController.GetUserFollowingClubs)
-}
-
-func authRoutes(router fiber.Router, authService services.AuthServiceInterface, authSettings config.AuthSettings) {
-	authController := controllers.NewAuthController(authService, authSettings)
-
-	// api/v1/auth/*
-	auth := router.Group("/auth")
-	auth.Post("/login", authController.Login)
-	auth.Get("/logout", authController.Logout)
-	auth.Get("/refresh", authController.Refresh)
-	auth.Get("/me", authController.Me)
-}
-
-func categoryRoutes(router fiber.Router, categoryService services.CategoryServiceInterface) fiber.Router {
-	categoryController := controllers.NewCategoryController(categoryService)
-
-	categories := router.Group("/categories")
-
-	categories.Post("/", categoryController.CreateCategory)
-	categories.Get("/", categoryController.GetCategories)
-	categories.Get("/:id", categoryController.GetCategory)
-	categories.Delete("/:id", categoryController.DeleteCategory)
-	categories.Patch("/:id", categoryController.UpdateCategory)
-
-	return categories
-}
-
-func tagRoutes(router fiber.Router, tagService services.TagServiceInterface) {
-	tagController := controllers.NewTagController(tagService)
-
-	tags := router.Group("/tags")
-
-	tags.Get("/:tagID", tagController.GetTag)
-	tags.Post("/", tagController.CreateTag)
-	tags.Patch("/:tagID", tagController.UpdateTag)
-	tags.Delete("/:tagID", tagController.DeleteTag)
-}
-
-func categoryTagRoutes(router fiber.Router, categoryTagService services.CategoryTagServiceInterface) {
-	categoryTagController := controllers.NewCategoryTagController(categoryTagService)
-
-	categoryTags := router.Group("/:categoryID/tags")
-
-	categoryTags.Get("/", categoryTagController.GetTagsByCategory)
-	categoryTags.Get("/:tagID", categoryTagController.GetTagByCategory)
-}

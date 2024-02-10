@@ -13,18 +13,32 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-func RegisterCustomValidators() *validator.Validate {
+func RegisterCustomValidators() (*validator.Validate, error) {
 	validate := validator.New(validator.WithRequiredStructEnabled())
 
-	validate.RegisterValidation("neu_email", validateEmail)
-	validate.RegisterValidation("password", validatePassword)
-	validate.RegisterValidation("mongo_url", validateMongoURL)
-	validate.RegisterValidation("s3_url", validateS3URL)
-	validate.RegisterValidation("contact_pointer", func(fl validator.FieldLevel) bool {
-		return validateContactPointer(validate, fl)
-	})
+	if err := validate.RegisterValidation("neu_email", validateEmail); err != nil {
+		return nil, err
+	}
 
-	return validate
+	if err := validate.RegisterValidation("password", validatePassword); err != nil {
+		return nil, err
+	}
+
+	if err := validate.RegisterValidation("mongo_url", validateMongoURL); err != nil {
+		return nil, err
+	}
+
+	if err := validate.RegisterValidation("s3_url", validateS3URL); err != nil {
+		return nil, err
+	}
+
+	if err := validate.RegisterValidation("contact_pointer", func(fl validator.FieldLevel) bool {
+		return validateContactPointer(validate, fl)
+	}); err != nil {
+		return nil, err
+	}
+
+	return validate, nil
 }
 
 func validateEmail(fl validator.FieldLevel) bool {
@@ -58,12 +72,10 @@ func validateS3URL(fl validator.FieldLevel) bool {
 }
 
 func validateContactPointer(validate *validator.Validate, fl validator.FieldLevel) bool {
-	contact, ok := fl.Parent().Interface().(models.Contact)
-
+	contact, ok := fl.Parent().Interface().(models.PutContactRequestBody)
 	if !ok {
 		return false
 	}
-
 	switch contact.Type {
 	case models.Email:
 		return validate.Var(contact.Content, "email") == nil

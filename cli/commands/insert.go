@@ -1,15 +1,12 @@
 package commands
 
 import (
-	"bytes"
 	"database/sql"
-	"errors"
 	"fmt"
+	"os"
 	"os/exec"
-	"strconv"
-	"strings"
 
-	_ "github.com/lib/pq"
+	"github.com/lib/pq"
 	"github.com/urfave/cli/v2"
 )
 
@@ -65,18 +62,20 @@ func InsertDB() error {
 		fmt.Println("Database exists with tables.")
 	}
 
-	insertCmd := exec.Command("psql", "-h", CONFIG.Database.Host, "-p", strconv.Itoa(int(CONFIG.Database.Port)), "-U", CONFIG.Database.Username, "-d", CONFIG.Database.DatabaseName, "-a", "-f", MIGRATION_FILE)
-
-	var output bytes.Buffer
-	insertCmd.Stdout = &output
-	insertCmd.Stderr = &output
-
-	if err := insertCmd.Run(); err != nil {
-		return fmt.Errorf("error inserting data: %w", err)
+	migrationSQL, err := os.ReadFile(MIGRATION_FILE)
+	if err != nil {
+		return fmt.Errorf("error reading migration file: %w", err)
 	}
 
-	if strings.Contains(output.String(), "ROLLBACK") {
-		return errors.New("insertion failed, rolling back")
+	_, err = db.Exec(string(migrationSQL))
+	if err != nil {
+		if pqErr, ok := err.(*pq.Error); ok {
+			fmt.Println("PostgreSQL Error:")
+			fmt.Println("Code:", pqErr.Code)
+			fmt.Println("Message:", pqErr.Message)
+		} else {
+			return fmt.Errorf("error executing migration: %w", err)
+		}
 	}
 
 	fmt.Println("Data inserted successfully.")
