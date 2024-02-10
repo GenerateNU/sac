@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"path/filepath"
 
@@ -18,7 +19,12 @@ import (
 // @host 127.0.0.1:8080
 // @BasePath /api/v1
 func main() {
-	config, err := config.GetConfiguration(filepath.Join("..", "..", "config"))
+	onlyMigrate := flag.Bool("only-migrate", false, "Specify if you want to only perform the database migration")
+	configPath := flag.String("config", filepath.Join("..", "..", "config"), "Specify the path to the config directory")
+
+	flag.Parse()
+
+	config, err := config.GetConfiguration(*configPath)
 	if err != nil {
 		panic(fmt.Sprintf("Error getting configuration: %s", err.Error()))
 	}
@@ -26,6 +32,10 @@ func main() {
 	db, err := database.ConfigureDB(*config)
 	if err != nil {
 		panic(fmt.Sprintf("Error configuring database: %s", err.Error()))
+	}
+
+	if *onlyMigrate {
+		return
 	}
 
 	err = database.ConnPooling(db)
