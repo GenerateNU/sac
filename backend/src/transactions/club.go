@@ -111,16 +111,3 @@ func DeleteClub(db *gorm.DB, id uuid.UUID) *errors.Error {
 	}
 	return nil
 }
-
-func GetUserFollowersForClub(db *gorm.DB, club_id uuid.UUID) ([]models.User, *errors.Error) {
-	var users []models.User
-	club, err := GetClub(db, club_id)
-	if err != nil {
-		return nil, &errors.ClubNotFound
-	}
-
-	if err := db.Model(&club).Association("Follower").Find(&users); err != nil {
-		return nil, &errors.FailedToGetClubFollowers
-	}
-	return users, nil
-}

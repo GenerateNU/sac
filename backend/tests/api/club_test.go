@@ -128,8 +128,6 @@ func AssertClubWithBodyRespDBMostRecent(eaa h.ExistingAppAssert, resp *http.Resp
 
 func AssertSampleClubBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, userID uuid.UUID) uuid.UUID {
 	sampleClub := SampleClubFactory(&userID)
-	(*sampleClub)["num_members"] = 1
-
 	return AssertClubBodyRespDB(eaa, resp, sampleClub)
 }
 

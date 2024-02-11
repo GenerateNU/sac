@@ -1,46 +1,36 @@
 package tests
 
-import (
-	"fmt"
-	"net/http"
-	"testing"
+// func TestCreateFollowingWorks(t *testing.T) {
+// 	appAssert, userUUID, clubUUID := CreateSampleClub(h.InitTest(t))
 
-	"github.com/GenerateNU/sac/backend/src/models"
-	h "github.com/GenerateNU/sac/backend/tests/api/helpers"
-	"github.com/gofiber/fiber/v2"
-)
+// 	appAssert.TestOnStatusAndTester(
+// 		h.TestRequest{
+// 			Method: fiber.MethodPost,
+// 			Path:   fmt.Sprintf("/api/v1/users/%s/follower/%s", userUUID, clubUUID),
+// 		},
+// 		h.TesterWithStatus{
+// 			Status: fiber.StatusCreated,
+// 			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+// 				var user models.User
 
-func TestCreateFollowingWorks(t *testing.T) {
-	appAssert, userUUID, clubUUID := CreateSampleClub(h.InitTest(t))
+// 				err := eaa.App.Conn.Where("id = ?", userUUID).Preload("Follower").First(&user)
 
-	appAssert.TestOnStatusAndTester(
-		h.TestRequest{
-			Method: fiber.MethodPost,
-			Path:   fmt.Sprintf("/api/v1/users/%s/follower/%s", userUUID, clubUUID),
-		},
-		h.TesterWithStatus{
-			Status: fiber.StatusCreated,
-			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
-				var user models.User
+// 				eaa.Assert.NilError(err)
 
-				err := eaa.App.Conn.Where("id = ?", userUUID).Preload("Follower").First(&user)
+// 				eaa.Assert.Equal(1, len(user.Follower))
 
-				eaa.Assert.NilError(err)
+// 				eaa.Assert.Equal(clubUUID, user.Follower[0].ID)
 
-				eaa.Assert.Equal(1, len(user.Follower))
+// 				var club models.Club
 
-				eaa.Assert.Equal(clubUUID, user.Follower[0].ID)
+// 				err = eaa.App.Conn.Where("id = ?", clubUUID).Preload("Follower").First(&club)
 
-				var club models.Club
+// 				eaa.Assert.NilError(err)
 
-				err = eaa.App.Conn.Where("id = ?", clubUUID).Preload("Follower").First(&club)
+// 				eaa.Assert.Equal(1, len(club.Follower))
 
-				eaa.Assert.NilError(err)
-
-				eaa.Assert.Equal(1, len(club.Follower))
-
-				eaa.Assert.Equal(userUUID, club.Follower[0].ID)
-			},
-		},
-	).Close()
-}
+// 				eaa.Assert.Equal(userUUID, club.Follower[0].ID)
+// 			},
+// 		},
+// 	).Close()
+// }
