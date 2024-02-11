@@ -34,6 +34,25 @@ func GetEvent(db *gorm.DB, id uuid.UUID) (*models.Event, *errors.Error) {
 	return &event, nil
 }
 
+func GetEventSeries(db *gorm.DB, id uuid.UUID) ([]models.Event, *errors.Error) {
+	var events []models.Event
+	if err := db.Where("parent_id = ?", id).Find(&events).Error; err != nil {
+		return nil, &errors.FailedToGetEvents
+	}
+
+	return events, nil
+}
+
+func GetClubEvents(db *gorm.DB, id uuid.UUID) ([]models.Event, *errors.Error) {
+	var events []models.Event
+
+	if err := db.Where("club_id = ?", id).Find(&events).Error; err != nil {
+		return nil, &errors.FailedToGetEvents
+	}
+
+	return events, nil
+}
+
 func CreateEvent(db *gorm.DB, event models.Event) (*models.Event, *errors.Error) {
 	tx := db.Begin()
 
@@ -112,6 +131,18 @@ func UpdateEvent(db *gorm.DB, id uuid.UUID, event models.UpdateEventRequestBody)
 }
 
 func DeleteEvent(db *gorm.DB, id uuid.UUID) *errors.Error {
+	if result := db.Delete(&models.Event{}, id); result.RowsAffected == 0 {
+		if result.Error == nil {
+			return &errors.EventNotFound
+		} else {
+			return &errors.FailedToDeleteEvent
+		}
+	}
+
+	return nil
+}
+
+func DeleteEventSeries(db *gorm.DB, id uuid.UUID) *errors.Error {
 	if result := db.Delete(&models.Event{}, id); result.RowsAffected == 0 {
 		if result.Error == nil {
 			return &errors.EventNotFound

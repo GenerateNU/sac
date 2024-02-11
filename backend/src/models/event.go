@@ -21,12 +21,6 @@ const (
 	Monthly RecurringType = "monthly"
 )
 
-// TODO: add not null to required fields on all gorm models
-type Event_RecurringPattern struct {
-	EventID         *uuid.UUID    `gorm:"not null; unique; type:uuid;primary_key; foreignKey:EventID" json:"event_id" validate:"uuid4"`
-	RecurringID     *uuid.UUID    `gorm:"not null; type:uuid; foreignKey:RecurringID" json:"recurring_id" validate:"uuid4"`
-}
-
 type Event struct {
 	Model
 
@@ -37,35 +31,44 @@ type Event struct {
 	EndTime     time.Time `gorm:"type:timestamptz" json:"end_time" validate:"required,datetime,gtecsfield=StartTime"`
 	Location    string    `gorm:"type:varchar(255)" json:"location" validate:"required,max=255"`
 	EventType   EventType `gorm:"type:varchar(255);default:open" json:"event_type" validate:"required,max=255"`
-	IsRecurring bool      `gorm:"type:bool;default:false" json:"is_recurring" validate:"required"`
+	IsRecurring bool      `gorm:"not null;type:bool;default:false" json:"is_recurring" validate:"required"`
 
 	// ParentEvent  *uuid.UUID     `gorm:"foreignKey:ParentEvent" json:"-" validate:"uuid4"`
-	RSVP         []User         `gorm:"many2many:user_event_rsvps;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
-	Waitlist     []User         `gorm:"many2many:user_event_waitlists;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
-	Club         []Club         `gorm:"many2many:club_events;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
-	Tag          []Tag          `gorm:"many2many:event_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
-	Notification []Notification `gorm:"polymorphic:Reference;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;;" json:"-" validate:"-"`
+	RSVP                  []User         `gorm:"many2many:user_event_rsvps;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
+	Waitlist              []User         `gorm:"many2many:user_event_waitlists;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
+	Club                  []Club         `gorm:"many2many:club_events;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
+	Tag                   []Tag          `gorm:"many2many:event_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
+	Notification          []Notification `gorm:"polymorphic:Reference;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;;" json:"-" validate:"-"`
+	RecurringPatternRefer uuid.UUID
 }
 
 type RecurringPattern struct {
 	Model
-	EventID         uuid.UUID     `gorm:"type:uuid;primary_key; foreignKey:EventID" json:"event_id" validate:"uuid4"`
 	RecurringType   RecurringType `gorm:"type:varchar(255);default:open" json:"recurring_type" validate:"max=255"`
 	SeparationCount int           `gorm:"type:int" json:"separation_count" validate:"min=0"`
 	MaxOccurrences  int           `gorm:"type:int" json:"max_occurrences" validate:"min=1"`
 	DayOfWeek       int           `gorm:"type:int" json:"day_of_week" validate:"min=1,max=7"`
 	WeekOfMonth     int           `gorm:"type:int" json:"week_of_month" validate:"min=1,max=5"`
 	DayOfMonth      int           `gorm:"type:int" json:"day_of_month" validate:"min=1,max=31"`
+	Events          []Event       `gorm:"many2many:event_recurring_patterns" json:"events" validate:"-"` 
+}
+
+// TODO: add not null to required fields on all gorm models
+type Event_RecurringPattern struct {
+	EventID            uuid.UUID `gorm:"not null; type:uuid; primary_key;" json:"event_id" validate:"uuid4"`
+	Event              Event
+	RecurringPatternID uuid.UUID        `gorm:"not null; type:uuid;" json:"recurring_id" validate:"uuid4"`
+	RecurringPattern   RecurringPattern `json:"-" validate:"-"`
 }
 
 type EventInstanceException struct {
 	Model
-
-	EventID       *uuid.UUID `gorm:"foreignKey:EventID" json:"event_id" validate:"uuid4"`
-	IsRescheduled bool       `gorm:"type:bool;default:true" json:"is_rescheduled" validate:"required"`
-	IsCancelled   bool       `gorm:"type:bool;default:false" json:"is_cancelled" validate:"required"`
-	StartTime     time.Time  `gorm:"type:timestamptz" json:"start_time" validate:"required,datetime,ltecsfield=EndTime"`
-	EndTime       time.Time  `gorm:"type:timestamptz" json:"end_time" validate:"required,datetime,gtecsfield=StartTime"`
+	EventID       int `gorm:"not null; type:uuid" json:"event_id" validate:"required"`
+	Event         Event
+	IsRescheduled bool      `gorm:"type:bool;default:true" json:"is_rescheduled" validate:"required"`
+	IsCancelled   bool      `gorm:"type:bool;default:false" json:"is_cancelled" validate:"required"`
+	StartTime     time.Time `gorm:"type:timestamptz" json:"start_time" validate:"required,datetime,ltecsfield=EndTime"`
+	EndTime       time.Time `gorm:"type:timestamptz" json:"end_time" validate:"required,datetime,gtecsfield=StartTime"`
 }
 
 type CreateRecurringPatternRequestBody struct {
@@ -92,6 +95,8 @@ type CreateEventRequestBody struct {
 	Club         []Club         `json:"-" validate:"-"`
 	Tag          []Tag          `json:"-" validate:"-"`
 	Notification []Notification `json:"-" validate:"-"`
+
+	RecurringPattern CreateRecurringPatternRequestBody `json:"recurring_pattern" validate:"-"`
 }
 
 type UpdateEventRequestBody struct {
@@ -117,8 +122,9 @@ C- create Event, recurring Series (Sunny)
 R-
 Get All Events (paginated) (Sunny)
 Get Event By ID (Sunny)
-Get Event By Club ID (Olivier)
-Get Event Series (Olivier)
+Get Event Series by eventID (Olivier)
+Get Event Series By seriesID (Olivier)
+Get Event Series By ClubID (Olivier)
 
 U-
 
@@ -127,8 +133,8 @@ Update Series
 
 D (Olivier)-
 
-Delete Event
 Delete Series
 
+create validators
 
 */

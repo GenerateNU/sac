@@ -92,6 +92,9 @@ func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface) 
 	clubs.Get("/:id", clubController.GetClub)
 	clubs.Patch("/:id", clubController.UpdateClub)
 	clubs.Delete("/:id", clubController.DeleteClub)
+
+	events := clubs.Group("/:id/events")
+	events.Get("/", clubController.GetClubEvents)
 }
 
 func categoryRoutes(router fiber.Router, categoryService services.CategoryServiceInterface) {
@@ -123,8 +126,10 @@ func eventRoutes(router fiber.Router, eventService services.EventServiceInterfac
 	events := router.Group("/events")
 
 	events.Get("/:id", eventController.GetEvent)
+	events.Get("/:id/series", eventController.GetEventSeries)
 	events.Get("/", eventController.GetAllEvents)
 	events.Post("/", eventController.CreateEvent)
 	events.Patch("/:id", eventController.UpdateEvent)
 	events.Delete("/:id", eventController.DeleteEvent)
+	events.Delete("/:id/series", eventController.DeleteEventSeries)
 }

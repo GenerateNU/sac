@@ -38,13 +38,26 @@ func (l *EventController) GetEvent(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(event)
 }
 
+func (l *EventController) GetClubEvents(c *fiber.Ctx) error {
+	events, err := l.eventService.GetClubEvents(c.Params("id"))
+	if err != nil {
+		return err.FiberError(c)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(events)
+}
+
+func (l *EventController) GetEventSeries(c *fiber.Ctx) error {
+	events, err := l.eventService.GetEventSeries(c.Params("id"))
+	if err != nil {
+		return err.FiberError(c)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(events)
+}
+
 // TODO: request will only contain first event. We need to create the slice of events to pass into transactions
 func (l *EventController) CreateEvent(c *fiber.Ctx) error {
-	recurringPattern, patternErr := getRecurringPattern(c)
-	
-	if patternErr == nil {
-		return CreateEventSeries(l, c, *recurringPattern)
-	}
 
 	var eventBody models.CreateEventRequestBody
 	if err := c.BodyParser(&eventBody); err != nil {
@@ -59,7 +72,7 @@ func (l *EventController) CreateEvent(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(event)
 }
 
-func CreateEventSeries(l *EventController, c *fiber.Ctx, recurringPattern models.CreateRecurringPatternRequestBody) error {
+func (l *EventController) CreateEventSeries(c *fiber.Ctx, recurringPattern models.CreateRecurringPatternRequestBody) error {
 	var eventBody models.CreateEventRequestBody
 
 	if err := c.BodyParser(&eventBody); err != nil {
@@ -74,7 +87,7 @@ func CreateEventSeries(l *EventController, c *fiber.Ctx, recurringPattern models
 	return c.Status(fiber.StatusCreated).JSON(event)
 }
 
-func getRecurringPattern(c *fiber.Ctx) (*models.CreateRecurringPatternRequestBody, error) {
+func getRecurringPattern(c *fiber.Ctx)  error {
 	recurringType := c.Query("recurring_type")
 	separationCount, _ := strconv.Atoi(c.Query("separation_count", "0"))
 	maxOccurrences, _ := strconv.Atoi(c.Query("max_occurrences", "1"))
@@ -91,11 +104,11 @@ func getRecurringPattern(c *fiber.Ctx) (*models.CreateRecurringPatternRequestBod
 		DayOfMonth:      dayOfMonth,
 	})
 
-	if (recurringType == "") {
+	if recurringType == "" {
 		return nil, errors.FailedToCreateEventSeries.FiberError(c)
 	}
 
-	return &recurringPattern, nil
+	return c.SendStatus(400)
 }
 
 func (l *EventController) UpdateEvent(c *fiber.Ctx) error {
@@ -113,9 +126,18 @@ func (l *EventController) UpdateEvent(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(updatedEvent)
 }
 
+func (l *EventController) DeleteEventSeries(c *fiber.Ctx) error {
+
+	if err := l.eventService.DeleteEventSeries(c.Params("id")); err != nil {
+		return err.FiberError(c)
+	}
+
+	return c.SendStatus(fiber.StatusNoContent)
+}
+
 func (l *EventController) DeleteEvent(c *fiber.Ctx) error {
-	err := l.eventService.DeleteEvent(c.Params("id"))
-	if err != nil {
+
+	if err := l.eventService.DeleteEvent(c.Params("id")); err != nil {
 		return err.FiberError(c)
 	}
 

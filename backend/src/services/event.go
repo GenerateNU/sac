@@ -12,11 +12,15 @@ import (
 
 type EventServiceInterface interface {
 	GetEvents(limit string, page string) ([]models.Event, *errors.Error)
+	GetClubEvents(id string) ([]models.Event, *errors.Error)
 	GetEvent(id string) (*models.Event, *errors.Error)
+	GetEventSeries(id string) ([]models.Event, *errors.Error)
 	CreateEvent(eventBody models.CreateEventRequestBody) (*models.Event, *errors.Error)
 	CreateEventSeries(eventBodies models.CreateEventRequestBody, pattern models.CreateRecurringPatternRequestBody) (*[]models.Event, *errors.Error)
 	UpdateEvent(id string, eventBody models.UpdateEventRequestBody) (*models.Event, *errors.Error)
 	DeleteEvent(id string) *errors.Error
+	DeleteEventSeries(id string) *errors.Error
+
 }
 
 type EventService struct {
@@ -42,16 +46,17 @@ func (c *EventService) GetEvents(limit string, page string) ([]models.Event, *er
 	return transactions.GetEvents(c.DB, *limitAsInt, offset)
 }
 
-func (c *EventService) GetEvent(id string) (*models.Event, *errors.Error) {
+func (c *EventService) GetClubEvents(id string) ([]models.Event, *errors.Error) {
 	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return nil, &errors.FailedToValidateID
 	}
 
-	return transactions.GetEvent(c.DB, *idAsUUID)
+	return transactions.GetClubEvents(c.DB, *idAsUUID)
 }
 
 func (c *EventService) CreateEvent(eventBody models.CreateEventRequestBody) (*models.Event, *errors.Error) {
+	
 	if err := c.Validate.Struct(eventBody); err != nil {
 		return nil, &errors.FailedToValidateEvent
 	}
@@ -86,6 +91,24 @@ func (c *EventService) CreateEventSeries(eventBody models.CreateEventRequestBody
 	return transactions.CreateEventSeries(c.DB, eventBodies, *recurringPattern)
 }
 
+func (c *EventService) GetEvent(id string) (*models.Event, *errors.Error) {
+	idAsUUID, err := utilities.ValidateID(id)
+	if err != nil {
+		return nil, &errors.FailedToValidateID
+	}
+
+	return transactions.GetEvent(c.DB, *idAsUUID)
+}
+
+func (c *EventService) GetEventSeries(id string) ([]models.Event, *errors.Error) {
+	idAsUUID, err := utilities.ValidateID(id)
+	if err != nil {
+		return nil, &errors.FailedToValidateID
+	}
+
+	return transactions.GetEventSeries(c.DB, *idAsUUID)
+}
+
 func (c *EventService) UpdateEvent(id string, eventBody models.UpdateEventRequestBody) (*models.Event, *errors.Error) {
 	idAsUUID, idErr := utilities.ValidateID(id)
 	if idErr != nil {
@@ -112,6 +135,18 @@ func (c *EventService) DeleteEvent(id string) *errors.Error {
 
 	return transactions.DeleteEvent(c.DB, *idAsUUID)
 }
+
+func (c *EventService) DeleteEventSeries(id string) *errors.Error {
+
+	idAsUUID, err := utilities.ValidateID(id)
+	if err != nil {
+		return &errors.FailedToValidateID
+	}
+
+	return transactions.DeleteEventSeries(c.DB, *idAsUUID)
+
+}
+
 
 //TODO: CreateEventSeries, GetEventSeries, DeleteEventSeries
 // Helpers:

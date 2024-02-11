@@ -75,3 +75,25 @@ func (l *ClubController) DeleteClub(c *fiber.Ctx) error {
 
 	return c.SendStatus(fiber.StatusNoContent)
 }
+
+
+func (l *ClubController) GetClubEvents(c *fiber.Ctx) error {
+	//TODO add filters by date
+	if events, err := l.clubService.GetClubEvents(c.Params("id")); err != nil {
+		return err.FiberError(c)
+	} else {
+		return c.Status(fiber.StatusOK).JSON(events)
+	}
+}
+
+// func (l *ClubController) GetClubEvents(c *fiber.Ctx) error {
+// 	defaultLimit := 10
+// 	defaultPage := 1
+
+// 	events, err := l.clubService.GetClubEvents(c.Params("cid"), c.Query("limit", strconv.Itoa(defaultLimit)), c.Query("page", strconv.Itoa(defaultPage)))
+// 	if err != nil {
+// 		return err.FiberError(c)
+// 	}
+
+// 	return c.Status(fiber.StatusOK).JSON(events)
+// }
