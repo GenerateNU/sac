@@ -48,6 +48,7 @@ func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 	routes.Contact(apiv1, services.NewContactService(db, validate))
 
 	clubsIDRouter := routes.Club(apiv1, services.NewClubService(db, validate), middlewareService)
+	routes.ClubTag(clubsIDRouter, services.NewClubTagService(db, validate))
 	routes.ClubFollower(clubsIDRouter, services.NewClubFollowerService(db))
 	routes.ClubMember(clubsIDRouter, services.NewClubMemberService(db, validate))
 	routes.ClubContact(clubsIDRouter, services.NewClubContactService(db, validate))

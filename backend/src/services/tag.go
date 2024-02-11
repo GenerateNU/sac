@@ -11,9 +11,9 @@ import (
 
 type TagServiceInterface interface {
 	CreateTag(tagBody models.TagRequestBody) (*models.Tag, *errors.Error)
-	GetTag(tagID string) (*models.Tag, *errors.Error)
-	UpdateTag(tagID string, tagBody models.TagRequestBody) (*models.Tag, *errors.Error)
-	DeleteTag(tagID string) *errors.Error
+	GetTag(id string) (*models.Tag, *errors.Error)
+	UpdateTag(id string, tagBody models.TagRequestBody) (*models.Tag, *errors.Error)
+	DeleteTag(id string) *errors.Error
 }
 
 type TagService struct {
