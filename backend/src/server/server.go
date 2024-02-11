@@ -131,5 +131,5 @@ func eventRoutes(router fiber.Router, eventService services.EventServiceInterfac
 	events.Post("/", eventController.CreateEvent)
 	events.Patch("/:id", eventController.UpdateEvent)
 	events.Delete("/:id", eventController.DeleteEvent)
-	events.Delete("/:id/series", eventController.DeleteEventSeries)
+	events.Delete("/:id/series", eventController.DeleteEventSeries) 
 }

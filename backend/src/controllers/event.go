@@ -56,7 +56,6 @@ func (l *EventController) GetEventSeries(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(events)
 }
 
-// TODO: request will only contain first event. We need to create the slice of events to pass into transactions
 func (l *EventController) CreateEvent(c *fiber.Ctx) error {
 
 	var eventBody models.CreateEventRequestBody
@@ -70,45 +69,6 @@ func (l *EventController) CreateEvent(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(event)
-}
-
-func (l *EventController) CreateEventSeries(c *fiber.Ctx, recurringPattern models.CreateRecurringPatternRequestBody) error {
-	var eventBody models.CreateEventRequestBody
-
-	if err := c.BodyParser(&eventBody); err != nil {
-		return errors.FailedToCreateEvent.FiberError(c)
-	}
-
-	event, err := l.eventService.CreateEventSeries(eventBody, recurringPattern)
-	if err != nil {
-		return err.FiberError(c)
-	}
-
-	return c.Status(fiber.StatusCreated).JSON(event)
-}
-
-func getRecurringPattern(c *fiber.Ctx)  error {
-	recurringType := c.Query("recurring_type")
-	separationCount, _ := strconv.Atoi(c.Query("separation_count", "0"))
-	maxOccurrences, _ := strconv.Atoi(c.Query("max_occurrences", "1"))
-	dayOfWeek, _ := strconv.Atoi(c.Query("day_of_week"))
-	weekOfMonth, _ := strconv.Atoi(c.Query("week_of_month"))
-	dayOfMonth, _ := strconv.Atoi(c.Query("day_of_month"))
-
-	recurringPattern := models.CreateRecurringPatternRequestBody(models.CreateRecurringPatternRequestBody{
-		RecurringType:   models.RecurringType(recurringType),
-		SeparationCount: separationCount,
-		MaxOccurrences:  maxOccurrences,
-		DayOfWeek:       dayOfWeek,
-		WeekOfMonth:     weekOfMonth,
-		DayOfMonth:      dayOfMonth,
-	})
-
-	if recurringType == "" {
-		return nil, errors.FailedToCreateEventSeries.FiberError(c)
-	}
-
-	return c.SendStatus(400)
 }
 
 func (l *EventController) UpdateEvent(c *fiber.Ctx) error {

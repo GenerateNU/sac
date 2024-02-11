@@ -69,28 +69,15 @@ func CreateEvent(db *gorm.DB, event models.Event) (*models.Event, *errors.Error)
 	return &event, nil
 }
 
-func CreateEventSeries(db *gorm.DB, events []models.Event, pattern models.RecurringPattern) (*[]models.Event, *errors.Error) {
+func CreateEventSeries(db *gorm.DB, series models.Series) ([]models.Event, *errors.Error) {
 	tx := db.Begin()
 
-	// if we do the parent event idea, then we should only insert the first event here
-	// then, we update the rest of the events parentID field before inserting
-	if err := tx.Create(&events).Error; err != nil {
-		tx.Rollback()
-		return nil, &errors.FailedToCreateEventSeries
-	}
+	// if err := tx.Create(&events).Error; err != nil {
+	// 	tx.Rollback()
+	// 	return nil, &errors.FailedToCreateEventSeries
+	// }
 
-	// change the CreateRecurringPatternRequestBody to a RecurringPattern struct
-	updatedRecurringPattern := models.RecurringPattern {
-		EventID: events[0].ID, // this is the id of the row we just inserted into events
-		RecurringType: pattern.RecurringType,
-		SeparationCount: pattern.SeparationCount,
-		MaxOccurrences: pattern.MaxOccurrences,
-		DayOfWeek: pattern.DayOfWeek,
-		WeekOfMonth: pattern.WeekOfMonth,
-		DayOfMonth: pattern.DayOfMonth,
-	}
-
-	if err := tx.Create(updatedRecurringPattern).Error; err != nil {
+	if err := tx.Create(series).Error; err != nil {
 		tx.Rollback()
 		return nil, &errors.FailedToCreateEventSeries
 	}
@@ -100,7 +87,7 @@ func CreateEventSeries(db *gorm.DB, events []models.Event, pattern models.Recurr
 		return nil, &errors.FailedToCreateEventSeries
 	}
 
-	return &events, nil
+	return series.Events, nil
 }
 
 func UpdateEvent(db *gorm.DB, id uuid.UUID, event models.UpdateEventRequestBody) (*models.Event, *errors.Error) {

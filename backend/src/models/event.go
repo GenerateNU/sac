@@ -39,10 +39,9 @@ type Event struct {
 	Club                  []Club         `gorm:"many2many:club_events;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	Tag                   []Tag          `gorm:"many2many:event_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	Notification          []Notification `gorm:"polymorphic:Reference;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;;" json:"-" validate:"-"`
-	RecurringPatternRefer uuid.UUID
 }
 
-type RecurringPattern struct {
+type Series struct {
 	Model
 	RecurringType   RecurringType `gorm:"type:varchar(255);default:open" json:"recurring_type" validate:"max=255"`
 	SeparationCount int           `gorm:"type:int" json:"separation_count" validate:"min=0"`
@@ -50,17 +49,18 @@ type RecurringPattern struct {
 	DayOfWeek       int           `gorm:"type:int" json:"day_of_week" validate:"min=1,max=7"`
 	WeekOfMonth     int           `gorm:"type:int" json:"week_of_month" validate:"min=1,max=5"`
 	DayOfMonth      int           `gorm:"type:int" json:"day_of_month" validate:"min=1,max=31"`
-	Events          []Event       `gorm:"many2many:event_recurring_patterns" json:"events" validate:"-"` 
+	Events          []Event       `gorm:"many2many:event_series" json:"events" validate:"-"` 
 }
 
 // TODO: add not null to required fields on all gorm models
-type Event_RecurringPattern struct {
+type Event_Series struct {
 	EventID            uuid.UUID `gorm:"not null; type:uuid; primary_key;" json:"event_id" validate:"uuid4"`
 	Event              Event
-	RecurringPatternID uuid.UUID        `gorm:"not null; type:uuid;" json:"recurring_id" validate:"uuid4"`
-	RecurringPattern   RecurringPattern `json:"-" validate:"-"`
+	SeriesID uuid.UUID        `gorm:"not null; type:uuid;" json:"series_id" validate:"uuid4"`
+	Series   Series `json:"-" validate:"-"`
 }
 
+// potentially not needed?
 type EventInstanceException struct {
 	Model
 	EventID       int `gorm:"not null; type:uuid" json:"event_id" validate:"required"`
@@ -71,7 +71,7 @@ type EventInstanceException struct {
 	EndTime       time.Time `gorm:"type:timestamptz" json:"end_time" validate:"required,datetime,gtecsfield=StartTime"`
 }
 
-type CreateRecurringPatternRequestBody struct {
+type CreateSeriesRequestBody struct {
 	RecurringType   RecurringType `json:"recurring_type" validate:"max=255"`
 	SeparationCount int           `json:"separation_count" validate:"min=0"`
 	MaxOccurrences  int           `json:"max_occurrences" validate:"min=1"`
@@ -81,7 +81,6 @@ type CreateRecurringPatternRequestBody struct {
 }
 
 // TODO We will likely need to update the create and update structs to account for recurring series
-// TODO validation for starttime, endtime, location
 type CreateEventRequestBody struct {
 	Name        string    `json:"name" validate:"required,max=255"`
 	Preview     string    `json:"preview" validate:"required,max=255"`
@@ -96,7 +95,7 @@ type CreateEventRequestBody struct {
 	Tag          []Tag          `json:"-" validate:"-"`
 	Notification []Notification `json:"-" validate:"-"`
 
-	RecurringPattern CreateRecurringPatternRequestBody `json:"recurring_pattern" validate:"-"`
+	Series CreateSeriesRequestBody `json:"series" validate:"-"`
 }
 
 type UpdateEventRequestBody struct {

@@ -15,8 +15,7 @@ type EventServiceInterface interface {
 	GetClubEvents(id string) ([]models.Event, *errors.Error)
 	GetEvent(id string) (*models.Event, *errors.Error)
 	GetEventSeries(id string) ([]models.Event, *errors.Error)
-	CreateEvent(eventBody models.CreateEventRequestBody) (*models.Event, *errors.Error)
-	CreateEventSeries(eventBodies models.CreateEventRequestBody, pattern models.CreateRecurringPatternRequestBody) (*[]models.Event, *errors.Error)
+	CreateEvent(eventBodies models.CreateEventRequestBody) ([]models.Event, *errors.Error)
 	UpdateEvent(id string, eventBody models.UpdateEventRequestBody) (*models.Event, *errors.Error)
 	DeleteEvent(id string) *errors.Error
 	DeleteEventSeries(id string) *errors.Error
@@ -55,40 +54,33 @@ func (c *EventService) GetClubEvents(id string) ([]models.Event, *errors.Error) 
 	return transactions.GetClubEvents(c.DB, *idAsUUID)
 }
 
-func (c *EventService) CreateEvent(eventBody models.CreateEventRequestBody) (*models.Event, *errors.Error) {
-	
-	if err := c.Validate.Struct(eventBody); err != nil {
-		return nil, &errors.FailedToValidateEvent
-	}
-
-	event, err := utilities.MapRequestToModel(eventBody, &models.Event{})
-	if err != nil {
-		return nil, &errors.FailedToMapRequestToModel
-	}
-
-	return transactions.CreateEvent(c.DB, *event)
-}
-
 // TODO: add logic for creating the []event here
-func (c *EventService) CreateEventSeries(eventBody models.CreateEventRequestBody, pattern models.CreateRecurringPatternRequestBody) (*[]models.Event, *errors.Error) {
+func (c *EventService) CreateEvent(eventBody models.CreateEventRequestBody) ([]models.Event, *errors.Error) {
 
 	if err := c.Validate.Struct(eventBody); err != nil {
 		return nil, &errors.FailedToValidateEventSeries
 	}
 
-	parentEvent, err := utilities.MapRequestToModel(eventBody, &models.Event{})
+	firstEvent, err := utilities.MapRequestToModel(eventBody, &models.Event{})
 	if err != nil {
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	recurringPattern, err := utilities.MapRequestToModel(pattern, &models.RecurringPattern{})
+	if !firstEvent.IsRecurring {
+		event, err := transactions.CreateEvent(c.DB, *firstEvent)
+		return []models.Event{*event}, err
+	}
+
+	series, err := utilities.MapRequestToModel(eventBody.Series, &models.Series{})
 	if err != nil {
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	eventBodies := CreateEventSlice(parentEvent, recurringPattern)
+	// Create other events in series and update field in series (for join table)
+	events := CreateEventSlice(firstEvent, *series)
+	series.Events = events
 
-	return transactions.CreateEventSeries(c.DB, eventBodies, *recurringPattern)
+	return transactions.CreateEventSeries(c.DB, *series)
 }
 
 func (c *EventService) GetEvent(id string) (*models.Event, *errors.Error) {
@@ -147,24 +139,24 @@ func (c *EventService) DeleteEventSeries(id string) *errors.Error {
 
 }
 
-
 //TODO: CreateEventSeries, GetEventSeries, DeleteEventSeries
-// Helpers:
-func CreateEventSlice(parentEvent *models.Event, recurringPattern *models.RecurringPattern) ([]models.Event) {
-	eventBodies := []models.Event{}
+
+// Helper to create other events in a given series using the given firstEvent
+func CreateEventSlice(firstEvent *models.Event, series models.Series) ([]models.Event) {
+	eventBodies := []models.Event{*firstEvent}
 	months, days := 0, 0
 
-	switch recurringPattern.RecurringType {
+	switch series.RecurringType {
 	case "daily":
-		days = recurringPattern.SeparationCount + 1
+		days = series.SeparationCount + 1
 	case "weekly":
-		days = 7 * (recurringPattern.SeparationCount + 1)
+		days = 7 * (series.SeparationCount + 1)
 	case "monthly":
-		months = recurringPattern.SeparationCount + 1
+		months = series.SeparationCount + 1
 	}
 
-	for i:=1; i < recurringPattern.MaxOccurrences+1; i++ {
-		eventToAdd := parentEvent
+	for i:=1; i < series.MaxOccurrences; i++ {
+		eventToAdd := firstEvent
 		eventToAdd.StartTime = eventToAdd.StartTime.AddDate(0, i*months, i*days)
 		eventToAdd.EndTime = eventToAdd.EndTime.AddDate(0, i*months, i*days)
 		eventBodies = append(eventBodies, *eventToAdd)
