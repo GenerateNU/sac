@@ -36,7 +36,7 @@ func CreateAccessToken(id string, role string, accessExpiresAfter uint, accessTo
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  time.Now().Unix(),
 			Issuer:    id,
-			ExpiresAt: time.Now().Add(time.Hour * time.Duration(accessExpiresAfter)).Unix(),
+			ExpiresAt: time.Now().Add(time.Minute * time.Duration(accessExpiresAfter)).Unix(),
 		},
 		Role: role,
 	})
