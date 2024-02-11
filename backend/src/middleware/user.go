@@ -9,12 +9,12 @@ import (
 )
 
 func (m *MiddlewareService) UserAuthorizeById(c *fiber.Ctx) error {
-	idAsUUID, err := utilities.ValidateID(c.Params("id"))
+	idAsUUID, err := utilities.ValidateID(c.Params("userID"))
 	if err != nil {
-		return errors.FailedToParseUUID.FiberError(c)
+		return errors.FailedToValidateID.FiberError(c)
 	}
 
-	token, tokenErr := auth.ParseAccessToken(c.Cookies("access_token"))
+	token, tokenErr := auth.ParseAccessToken(c.Cookies("access_token"), m.AuthSettings.AccessKey)
 	if tokenErr != nil {
 		return err
 	}
@@ -26,7 +26,7 @@ func (m *MiddlewareService) UserAuthorizeById(c *fiber.Ctx) error {
 
 	issuerIDAsUUID, err := utilities.ValidateID(claims.Issuer)
 	if err != nil {
-		return errors.FailedToParseUUID.FiberError(c)
+		return errors.FailedToValidateID.FiberError(c)
 	}
 
 	if issuerIDAsUUID.String() == idAsUUID.String() {

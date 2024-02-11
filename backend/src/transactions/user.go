@@ -55,6 +55,19 @@ func GetUser(db *gorm.DB, id uuid.UUID) (*models.User, *errors.Error) {
 	return &user, nil
 }
 
+func GetUserPasswordHash(db *gorm.DB, id uuid.UUID) (string, *errors.Error) {
+	var user models.User
+	if err := db.Select("password_hash").First(&user, id).Error; err != nil {
+		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
+			return "", &errors.UserNotFound
+		} else {
+			return "", &errors.FailedToGetUser
+		}
+	}
+
+	return user.PasswordHash, nil
+}
+
 func UpdateUser(db *gorm.DB, id uuid.UUID, user models.User) (*models.User, *errors.Error) {
 	var existingUser models.User
 
@@ -72,6 +85,18 @@ func UpdateUser(db *gorm.DB, id uuid.UUID, user models.User) (*models.User, *err
 	}
 
 	return &existingUser, nil
+}
+
+func UpdatePassword(db *gorm.DB, id uuid.UUID, passwordHash string) *errors.Error {
+	result := db.Model(&models.User{}).Where("id = ?", id).Update("password_hash", passwordHash)
+	if result.RowsAffected == 0 {
+		if result.Error == nil {
+			return &errors.UserNotFound
+		} else {
+			return &errors.FailedToUpdateUser
+		}
+	}
+	return nil
 }
 
 func DeleteUser(db *gorm.DB, id uuid.UUID) *errors.Error {

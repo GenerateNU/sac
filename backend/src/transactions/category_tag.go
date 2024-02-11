@@ -12,6 +12,15 @@ import (
 )
 
 func GetTagsByCategory(db *gorm.DB, categoryID uuid.UUID, limit int, offset int) ([]models.Tag, *errors.Error) {
+	var category models.Category
+
+	if err := db.Where("id = ?", categoryID).First(&category).Error; err != nil {
+		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, &errors.CategoryNotFound
+		}
+		return nil, &errors.FailedToGetCategory
+	}
+
 	var tags []models.Tag
 	if err := db.Where("category_id = ?", categoryID).Limit(limit).Offset(offset).Find(&tags).Error; err != nil {
 		return nil, &errors.FailedToGetTags

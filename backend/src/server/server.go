@@ -2,10 +2,9 @@ package server
 
 import (
 	"github.com/GenerateNU/sac/backend/src/config"
-	"github.com/GenerateNU/sac/backend/src/controllers"
 	"github.com/GenerateNU/sac/backend/src/middleware"
+	"github.com/GenerateNU/sac/backend/src/server/routes"
 	"github.com/GenerateNU/sac/backend/src/services"
-	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/goccy/go-json"
 
@@ -13,7 +12,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
-	"github.com/gofiber/swagger"
 	"gorm.io/gorm"
 )
 
@@ -28,20 +26,36 @@ import (
 func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 	app := newFiberApp()
 
-	validate := utilities.RegisterCustomValidators()
-	middlewareService := middleware.NewMiddlewareService(db, validate)
+	validate, err := utilities.RegisterCustomValidators()
+	if err != nil {
+		panic(err)
+	}
+
+	middlewareService := middleware.NewMiddlewareService(db, validate, settings.Auth)
 
 	apiv1 := app.Group("/api/v1")
 	apiv1.Use(middlewareService.Authenticate)
 
-	utilityRoutes(app)
-	authRoutes(apiv1, services.NewAuthService(db, validate), settings.Auth)
-	userRouter := userRoutes(apiv1, services.NewUserService(db, validate), middlewareService)
-	userTagRouter(userRouter, services.NewUserTagService(db, validate))
-	clubRoutes(apiv1, services.NewClubService(db, validate), middlewareService)
-	categoryRouter := categoryRoutes(apiv1, services.NewCategoryService(db, validate))
-	tagRoutes(apiv1, services.NewTagService(db, validate))
-	categoryTagRoutes(categoryRouter, services.NewCategoryTagService(db, validate))
+	routes.Utility(app)
+
+	routes.Auth(apiv1, services.NewAuthService(db, validate), settings.Auth)
+
+	userRouter := routes.User(apiv1, services.NewUserService(db, validate), middlewareService)
+	routes.UserTag(userRouter, services.NewUserTagService(db, validate))
+	routes.UserFollower(userRouter, services.NewUserFollowerService(db, validate))
+	routes.UserMember(userRouter, services.NewUserMemberService(db))
+
+	routes.Contact(apiv1, services.NewContactService(db, validate))
+
+	clubsIDRouter := routes.Club(apiv1, services.NewClubService(db, validate), middlewareService)
+	routes.ClubFollower(clubsIDRouter, services.NewClubFollowerService(db))
+	routes.ClubMember(clubsIDRouter, services.NewClubMemberService(db, validate))
+	routes.ClubContact(clubsIDRouter, services.NewClubContactService(db, validate))
+
+	routes.Tag(apiv1, services.NewTagService(db, validate))
+
+	categoryRouter := routes.Category(apiv1, services.NewCategoryService(db, validate))
+	routes.CategoryTag(categoryRouter, services.NewCategoryTagService(db, validate))
 
 	return app
 }
@@ -177,3 +191,4 @@ func categoryTagRoutes(router fiber.Router, categoryTagService services.Category
 	categoryTags.Get("/", categoryTagController.GetTagsByCategory)
 	categoryTags.Get("/:tagID", categoryTagController.GetTagByCategory)
 }
+

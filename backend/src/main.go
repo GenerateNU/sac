@@ -29,7 +29,7 @@ func main() {
 		panic(fmt.Sprintf("Error getting configuration: %s", err.Error()))
 	}
 
-	db, err := database.ConfigureDB(config)
+	db, err := database.ConfigureDB(*config)
 	if err != nil {
 		panic(fmt.Sprintf("Error configuring database: %s", err.Error()))
 	}
@@ -40,10 +40,13 @@ func main() {
 
 	err = database.ConnPooling(db)
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("Error connecting to database: %s", err.Error()))
 	}
 
-	app := server.Init(db, config)
+	app := server.Init(db, *config)
 
-	app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
+	err = app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
+	if err != nil {
+		panic(fmt.Sprintf("Error starting server: %s", err.Error()))
+	}
 }

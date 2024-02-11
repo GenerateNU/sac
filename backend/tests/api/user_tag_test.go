@@ -7,10 +7,10 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
+	h "github.com/GenerateNU/sac/backend/tests/api/helpers"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	"github.com/huandu/go-assert"
 )
 
 func SampleCategoriesFactory() *[]map[string]interface{} {
@@ -55,24 +55,32 @@ func SampleTagIDsFactory(tagIDs *[]uuid.UUID) *map[string]interface{} {
 	}
 }
 
-func CreateSetOfTags(t *testing.T, appAssert ExistingAppAssert) []uuid.UUID {
+func CreateSetOfTags(t *testing.T, appAssert *h.ExistingAppAssert) ([]uuid.UUID, *h.ExistingAppAssert) {
+	if appAssert == nil {
+		newAppAssert := h.InitTest(t)
+		appAssert = &newAppAssert
+	}
+
 	categories := SampleCategoriesFactory()
 
 	categoryIDs := []uuid.UUID{}
 	for _, category := range *categories {
-		TestRequest{
-			Method: fiber.MethodPost,
-			Path:   "/api/v1/categories/",
-			Body:   &category,
-		}.TestOnStatusAndDB(t, &appAssert,
-			DBTesterWithStatus{
+		category := category
+		appAssert.TestOnStatusAndTester(
+			h.TestRequest{
+				Method: fiber.MethodPost,
+				Path:   "/api/v1/categories/",
+				Body:   &category,
+				Role:   &models.Super,
+			},
+			h.TesterWithStatus{
 				Status: fiber.StatusCreated,
-				DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+				Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
 					var respCategory models.Category
 
 					err := json.NewDecoder(resp.Body).Decode(&respCategory)
 
-					assert.NilError(err)
+					eaa.Assert.NilError(err)
 
 					categoryIDs = append(categoryIDs, respCategory.ID)
 				},
@@ -84,19 +92,22 @@ func CreateSetOfTags(t *testing.T, appAssert ExistingAppAssert) []uuid.UUID {
 
 	tagIDs := []uuid.UUID{}
 	for _, tag := range *tags {
-		TestRequest{
-			Method: fiber.MethodPost,
-			Path:   "/api/v1/tags/",
-			Body:   &tag,
-		}.TestOnStatusAndDB(t, &appAssert,
-			DBTesterWithStatus{
+		tag := tag
+		appAssert.TestOnStatusAndTester(
+			h.TestRequest{
+				Method: fiber.MethodPost,
+				Path:   "/api/v1/tags/",
+				Body:   &tag,
+				Role:   &models.Super,
+			},
+			h.TesterWithStatus{
 				Status: fiber.StatusCreated,
-				DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+				Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
 					var respTag models.Tag
 
 					err := json.NewDecoder(resp.Body).Decode(&respTag)
 
-					assert.NilError(err)
+					eaa.Assert.NilError(err)
 
 					tagIDs = append(tagIDs, respTag.ID)
 				},
@@ -104,39 +115,39 @@ func CreateSetOfTags(t *testing.T, appAssert ExistingAppAssert) []uuid.UUID {
 		)
 	}
 
-	return tagIDs
+	return tagIDs, appAssert
 }
 
-func AssertUserTagsRespDB(app TestApp, assert *assert.A, resp *http.Response, id uuid.UUID) {
+func AssertUserTagsRespDB(eaa h.ExistingAppAssert, resp *http.Response, id uuid.UUID) {
 	var respTags []models.Tag
 
 	// Retrieve the tags from the response:
 	err := json.NewDecoder(resp.Body).Decode(&respTags)
 
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
 	// Retrieve the user connected to the tags:
 	var dbUser models.User
-	err = app.Conn.First(&dbUser, id).Error
+	err = eaa.App.Conn.First(&dbUser, id).Error
 
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
 	// Retrieve the tags in the bridge table associated with the user:
 	var dbTags []models.Tag
-	err = app.Conn.Model(&dbUser).Association("Tag").Find(&dbTags)
+	err = eaa.App.Conn.Model(&dbUser).Association("Tag").Find(&dbTags)
 
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
 	// Confirm all the resp tags are equal to the db tags:
 	for i, respTag := range respTags {
-		assert.Equal(respTag.ID, dbTags[i].ID)
-		assert.Equal(respTag.Name, dbTags[i].Name)
-		assert.Equal(respTag.CategoryID, dbTags[i].CategoryID)
+		eaa.Assert.Equal(respTag.ID, dbTags[i].ID)
+		eaa.Assert.Equal(respTag.Name, dbTags[i].Name)
+		eaa.Assert.Equal(respTag.CategoryID, dbTags[i].CategoryID)
 	}
 }
 
-func AssertSampleUserTagsRespDB(app TestApp, assert *assert.A, resp *http.Response, uuid uuid.UUID) {
-	AssertUserTagsRespDB(app, assert, resp, uuid)
+func AssertSampleUserTagsRespDB(eaa h.ExistingAppAssert, resp *http.Response, uuid uuid.UUID) {
+	AssertUserTagsRespDB(eaa, resp, uuid)
 }
 
 func TestCreateUserTagsFailsOnInvalidDataType(t *testing.T) {
@@ -152,11 +163,16 @@ func TestCreateUserTagsFailsOnInvalidDataType(t *testing.T) {
 		malformedTag := *SampleTagIDsFactory(nil)
 		malformedTag["tags"] = tag
 
-		TestRequest{
-			Method: fiber.MethodPost,
-			Path:   "/api/v1/users/1/tags/",
-			Body:   &malformedTag,
-		}.TestOnError(t, nil, errors.FailedToParseRequestBody).Close()
+		h.InitTest(t).TestOnError(
+			h.TestRequest{
+				Method:             fiber.MethodPost,
+				Path:               "/api/v1/users/:userID/tags/",
+				Body:               &malformedTag,
+				Role:               &models.Student,
+				TestUserIDReplaces: h.StringToPointer(":userID"),
+			},
+			errors.FailedToParseRequestBody,
+		).Close()
 	}
 }
 
@@ -170,11 +186,15 @@ func TestCreateUserTagsFailsOnInvalidUserID(t *testing.T) {
 	}
 
 	for _, badRequest := range badRequests {
-		TestRequest{
-			Method: fiber.MethodPost,
-			Path:   fmt.Sprintf("/api/v1/users/%s/tags", badRequest),
-			Body:   SampleTagIDsFactory(nil),
-		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
+		h.InitTest(t).TestOnError(
+			h.TestRequest{
+				Method: fiber.MethodPost,
+				Path:   fmt.Sprintf("/api/v1/users/%s/tags", badRequest),
+				Body:   SampleTagIDsFactory(nil),
+				Role:   &models.Student,
+			},
+			errors.FailedToValidateID,
+		).Close()
 	}
 }
 
@@ -183,8 +203,6 @@ type UUIDSlice []uuid.UUID
 var testUUID = uuid.New()
 
 func TestCreateUserTagsFailsOnInvalidKey(t *testing.T) {
-	appAssert, uuid := CreateSampleUser(t, nil)
-
 	invalidBody := []map[string]interface{}{
 		{
 			"tag": UUIDSlice{testUUID, testUUID},
@@ -195,40 +213,59 @@ func TestCreateUserTagsFailsOnInvalidKey(t *testing.T) {
 	}
 
 	for _, body := range invalidBody {
-		TestRequest{
-			Method: fiber.MethodPost,
-			Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid),
-			Body:   &body,
-		}.TestOnError(t, &appAssert, errors.FailedToValidateUserTags)
+		body := body
+		h.InitTest(t).TestOnError(
+			h.TestRequest{
+				Method:             fiber.MethodPost,
+				Path:               "/api/v1/users/:userID/tags/",
+				Body:               &body,
+				Role:               &models.Student,
+				TestUserIDReplaces: h.StringToPointer(":userID"),
+			},
+			errors.FailedToValidateUserTags,
+		).Close()
 	}
-
-	appAssert.Close()
 }
 
 func TestCreateUserTagsFailsOnNonExistentUser(t *testing.T) {
-	TestRequest{
-		Method: fiber.MethodPost,
-		Path:   fmt.Sprintf("/api/v1/users/%s/tags", uuid.New()),
-		Body:   SampleTagIDsFactory(nil),
-	}.TestOnError(t, nil, errors.UserNotFound).Close()
+	uuid := uuid.New()
+
+	h.InitTest(t).TestOnErrorAndTester(
+		h.TestRequest{
+			Method: fiber.MethodPost,
+			Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid),
+			Body:   SampleTagIDsFactory(nil),
+			Role:   &models.Super,
+		},
+		h.ErrorWithTester{
+			Error: errors.UserNotFound,
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				var dbUser models.User
+				err := eaa.App.Conn.First(&dbUser, uuid).Error
+
+				eaa.Assert.Assert(err != nil)
+			},
+		},
+	).Close()
 }
 
 func TestCreateUserTagsWorks(t *testing.T) {
-	appAssert, uuid := CreateSampleUser(t, nil)
-
 	// Create a set of tags:
-	tagUUIDs := CreateSetOfTags(t, appAssert)
+	tagUUIDs, appAssert := CreateSetOfTags(t, nil)
 
 	// Confirm adding real tags adds them to the user:
-	TestRequest{
-		Method: fiber.MethodPost,
-		Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid),
-		Body:   SampleTagIDsFactory(&tagUUIDs),
-	}.TestOnStatusAndDB(t, &appAssert,
-		DBTesterWithStatus{
+	appAssert.TestOnStatusAndTester(
+		h.TestRequest{
+			Method:             fiber.MethodPost,
+			Path:               "/api/v1/users/:userID/tags/",
+			Body:               SampleTagIDsFactory(&tagUUIDs),
+			Role:               &models.Super,
+			TestUserIDReplaces: h.StringToPointer(":userID"),
+		},
+		h.TesterWithStatus{
 			Status: fiber.StatusCreated,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-				AssertSampleUserTagsRespDB(app, assert, resp, uuid)
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				AssertSampleUserTagsRespDB(eaa, resp, eaa.App.TestUser.UUID)
 			},
 		},
 	)
@@ -237,86 +274,88 @@ func TestCreateUserTagsWorks(t *testing.T) {
 }
 
 func TestCreateUserTagsNoneAddedIfInvalid(t *testing.T) {
-	appAssert, uuid := CreateSampleUser(t, nil)
-
-	TestRequest{
-		Method: fiber.MethodPost,
-		Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid),
-		Body:   SampleTagIDsFactory(nil),
-	}.TestOnStatusAndDB(t, &appAssert,
-		DBTesterWithStatus{
+	h.InitTest(t).TestOnStatusAndTester(
+		h.TestRequest{
+			Method:             fiber.MethodPost,
+			Path:               "/api/v1/users/:userID/tags/",
+			Body:               SampleTagIDsFactory(nil),
+			Role:               &models.Super,
+			TestUserIDReplaces: h.StringToPointer(":userID"),
+		},
+		h.TesterWithStatus{
 			Status: fiber.StatusCreated,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
 				var respTags []models.Tag
 
 				err := json.NewDecoder(resp.Body).Decode(&respTags)
 
-				assert.NilError(err)
+				eaa.Assert.NilError(err)
 
-				assert.Equal(len(respTags), 0)
+				eaa.Assert.Equal(len(respTags), 0)
 			},
 		},
-	)
-
-	appAssert.Close()
+	).Close()
 }
 
 func TestGetUserTagsFailsOnNonExistentUser(t *testing.T) {
-	TestRequest{
-		Method: fiber.MethodGet,
-		Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid.New()),
-	}.TestOnError(t, nil, errors.UserNotFound).Close()
+	h.InitTest(t).TestOnError(
+		h.TestRequest{
+			Method: fiber.MethodGet,
+			Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid.New()),
+			Role:   &models.Super,
+		}, errors.UserNotFound,
+	).Close()
 }
 
 func TestGetUserTagsReturnsEmptyListWhenNoneAdded(t *testing.T) {
-	appAssert, uuid := CreateSampleUser(t, nil)
-
-	TestRequest{
-		Method: fiber.MethodGet,
-		Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid),
-	}.TestOnStatusAndDB(t, &appAssert,
-		DBTesterWithStatus{
-			Status: 200,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+	h.InitTest(t).TestOnStatusAndTester(
+		h.TestRequest{
+			Method:             fiber.MethodGet,
+			Path:               "/api/v1/users/:userID/tags/",
+			Role:               &models.Student,
+			TestUserIDReplaces: h.StringToPointer(":userID"),
+		},
+		h.TesterWithStatus{
+			Status: fiber.StatusOK,
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
 				var respTags []models.Tag
 
 				err := json.NewDecoder(resp.Body).Decode(&respTags)
 
-				assert.NilError(err)
+				eaa.Assert.NilError(err)
 
-				assert.Equal(len(respTags), 0)
+				eaa.Assert.Equal(len(respTags), 0)
 			},
 		},
-	)
-
-	appAssert.Close()
+	).Close()
 }
 
 func TestGetUserTagsReturnsCorrectList(t *testing.T) {
-	appAssert, uuid := CreateSampleUser(t, nil)
+	tagUUIDs, appAssert := CreateSetOfTags(t, nil)
 
-	// Create a set of tags:
-	tagUUIDs := CreateSetOfTags(t, appAssert)
+	newAppAssert := *appAssert
 
-	// Add the tags:
-	TestRequest{
-		Method: fiber.MethodPost,
-		Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid),
-		Body:   SampleTagIDsFactory(&tagUUIDs),
-	}.TestOnStatus(t, &appAssert, fiber.StatusCreated)
-
-	// Get the tags:
-	TestRequest{
-		Method: fiber.MethodGet,
-		Path:   fmt.Sprintf("/api/v1/users/%s/tags/", uuid),
-	}.TestOnStatusAndDB(t, &appAssert,
-		DBTesterWithStatus{
+	newAppAssert.TestOnStatus(
+		h.TestRequest{
+			Method:             fiber.MethodPost,
+			Path:               "/api/v1/users/:userID/tags/",
+			Body:               SampleTagIDsFactory(&tagUUIDs),
+			Role:               &models.Student,
+			TestUserIDReplaces: h.StringToPointer(":userID"),
+		},
+		fiber.StatusCreated,
+	).TestOnStatusAndTester(
+		h.TestRequest{
+			Method:             fiber.MethodGet,
+			Path:               "/api/v1/users/:userID/tags/",
+			Role:               &models.Student,
+			TestUserIDReplaces: h.StringToPointer(":userID"),
+		},
+		h.TesterWithStatus{
 			Status: fiber.StatusOK,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-				AssertSampleUserTagsRespDB(app, assert, resp, uuid)
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				AssertSampleUserTagsRespDB(eaa, resp, eaa.App.TestUser.UUID)
 			},
 		},
-	)
-
-	appAssert.Close()
+	).Close()
 }
