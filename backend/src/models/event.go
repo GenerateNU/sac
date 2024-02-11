@@ -32,8 +32,8 @@ type Event struct {
 	Name        string    `gorm:"type:varchar(255)" json:"name" validate:"required,max=255"`
 	Preview     string    `gorm:"type:varchar(255)" json:"preview" validate:"required,max=255"`
 	Content     string    `gorm:"type:varchar(255)" json:"content" validate:"required,max=255"`
-	StartTime   time.Time `gorm:"type:timestamptz" json:"start_time" validate:"required,datetime,ltecsfield=EndTime"`
-	EndTime     time.Time `gorm:"type:timestamptz" json:"end_time" validate:"required,datetime,gtecsfield=StartTime"`
+	StartTime   time.Time `gorm:"type:timestamptz" json:"start_time" validate:"required,ltecsfield=EndTime"`
+	EndTime     time.Time `gorm:"type:timestamptz" json:"end_time" validate:"required,gtecsfield=StartTime"`
 	Location    string    `gorm:"type:varchar(255)" json:"location" validate:"required,max=255"`
 	EventType   EventType `gorm:"type:varchar(255);default:open" json:"event_type" validate:"required,max=255"`
 	IsRecurring bool      `gorm:"not null;type:bool;default:false" json:"is_recurring" validate:"-"`
@@ -87,22 +87,21 @@ type CreateSeriesRequestBody struct {
 
 // TODO We will likely need to update the create and update structs to account for recurring series
 type CreateEventRequestBody struct {
-	Name    string `json:"name" validate:"required,max=255"`
-	Preview string `json:"preview" validate:"required,max=255"`
-	Content string `json:"content" validate:"required,max=255"`
-	// StartTime time.Time `json:"start_time" validate:"required,ltecsfield=EndTime"`
-	// EndTime   time.Time `json:"end_time" validate:"required,gtecsfield=StartTime"`
-	StartTime   string    `json:"start_time" validate:"required"`
-	EndTime     string    `json:"end_time" validate:"required"`
+	Name        string    `json:"name" validate:"required,max=255"`
+	Preview     string    `json:"preview" validate:"required,max=255"`
+	Content     string    `json:"content" validate:"required,max=255"`
+	StartTime   time.Time `json:"start_time" validate:"required,ltecsfield=EndTime"`
+	EndTime     time.Time `json:"end_time" validate:"required,gtecsfield=StartTime"`
 	Location    string    `json:"location" validate:"required,max=255"`
-	EventType   EventType `json:"event_type" validate:"required,oneof=open membersOnly"`
-	IsRecurring bool      `json:"is_recurring" binding:"exists"`
+	EventType   EventType `json:"event_type" validate:"required,max=255"`
+	IsRecurring *bool     `json:"is_recurring" validate:"required"`
 
 	Club         []Club         `json:"-" validate:"-"`
 	Tag          []Tag          `json:"-" validate:"-"`
 	Notification []Notification `json:"-" validate:"-"`
 
-	Series CreateSeriesRequestBody `json:"series" validate:"-"`
+	//TODO validate if isRecurring, then series is required
+	Series CreateSeriesRequestBody `json:"series" validate:"omitempty,excluded_if=recurring true,required_if=IsRecurring true"`
 }
 
 type UpdateEventRequestBody struct {

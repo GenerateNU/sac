@@ -60,7 +60,7 @@ func (l *EventController) CreateEvent(c *fiber.Ctx) error {
 
 	var eventBody models.CreateEventRequestBody
 	if err := c.BodyParser(&eventBody); err != nil {
-		return errors.FailedToCreateEvent.FiberError(c)
+		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
 	event, err := l.eventService.CreateEvent(eventBody)

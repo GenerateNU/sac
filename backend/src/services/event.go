@@ -56,47 +56,29 @@ func (c *EventService) GetClubEvents(id string) ([]models.Event, *errors.Error) 
 }
 
 // TODO: add logic for creating the []event here
+// TODO Q: should we always return a slice of events? or should we return a slice of events if it's a series and a single event if it's not?
 func (c *EventService) CreateEvent(eventBody models.CreateEventRequestBody) ([]models.Event, *errors.Error) {
 
 	if err := c.Validate.Struct(eventBody); err != nil {
-		// return nil, &errors.FailedToValidateEventSeries
-		return nil, &errors.Error{StatusCode: 400, Message: err.Error()}
+		return nil, &errors.FailedToValidateEvent
+	}
+	
+	// map requestToModels only works well with maps
+	// event, err := utilities.MapRequestToModel(eventBody, &models.Event{})
+
+	event := &models.Event{
+		Name: eventBody.Name,
+		Preview: eventBody.Preview,
+		Content: eventBody.Content,
+		StartTime: eventBody.StartTime,
+		EndTime: eventBody.EndTime,
+		Location: eventBody.Location,
+		EventType: eventBody.EventType,
+		IsRecurring: *eventBody.IsRecurring,
 	}
 
-	// Extra validation steps for the startTime and endTime fields
-	startTime, err := time.Parse(time.RFC3339, eventBody.StartTime)
-	if err != nil {
-		return nil, &errors.FailedToValidateEventSeries
-	}
-
-	endTime, err := time.Parse(time.RFC3339, eventBody.EndTime)
-	if err != nil {
-		return nil, &errors.FailedToValidateEventSeries
-	}
-
-	if startTime.Compare(endTime) != -1 {
-		return nil, &errors.FailedToValidateEventSeries
-	}
-
-	firstEvent := &models.Event{
-		Name:        eventBody.Name,
-		Preview:     eventBody.Preview,
-		Content:     eventBody.Content,
-		StartTime:   startTime,
-		EndTime:     endTime,
-		Location:    eventBody.Location,
-		EventType:   eventBody.EventType,
-		IsRecurring: eventBody.IsRecurring,
-	}
-
-	// firstEvent, err := utilities.MapRequestToModel(eventBody, &models.Event{})
-	// if err != nil {
-	// 	return nil, &errors.FailedToMapRequestToModel
-	//   	return nil, &errors.Error{StatusCode: 400, Message: err.Error()}
-	// }
-
-	if !firstEvent.IsRecurring {
-		event, err := transactions.CreateEvent(c.DB, *firstEvent)
+	if !event.IsRecurring {
+		event, err := transactions.CreateEvent(c.DB, *event)
 		return []models.Event{*event}, err
 	}
 
@@ -106,7 +88,7 @@ func (c *EventService) CreateEvent(eventBody models.CreateEventRequestBody) ([]m
 	}
 
 	// Create other events in series and update field in series (for join table)
-	events := CreateEventSlice(firstEvent, *series)
+	events := CreateEventSlice(event, *series)
 	series.Events = events
 
 	return transactions.CreateEventSeries(c.DB, *series)
