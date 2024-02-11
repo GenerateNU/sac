@@ -12,8 +12,13 @@ const (
 	MembersOnly EventType = "membersOnly"
 )
 
-type RecurringType string
+type Boolean string
+const (
+	True Boolean = "true"
+	False Boolean = "false"
+)
 
+type RecurringType string
 // excluding annually for now bc most clubs have meetings per semester
 const (
 	Daily   RecurringType = "daily"
@@ -31,14 +36,14 @@ type Event struct {
 	EndTime     time.Time `gorm:"type:timestamptz" json:"end_time" validate:"required,datetime,gtecsfield=StartTime"`
 	Location    string    `gorm:"type:varchar(255)" json:"location" validate:"required,max=255"`
 	EventType   EventType `gorm:"type:varchar(255);default:open" json:"event_type" validate:"required,max=255"`
-	IsRecurring bool      `gorm:"not null;type:bool;default:false" json:"is_recurring" validate:"required"`
+	IsRecurring bool      `gorm:"not null;type:bool;default:false" json:"is_recurring" validate:"-"`
 
 	// ParentEvent  *uuid.UUID     `gorm:"foreignKey:ParentEvent" json:"-" validate:"uuid4"`
-	RSVP                  []User         `gorm:"many2many:user_event_rsvps;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
-	Waitlist              []User         `gorm:"many2many:user_event_waitlists;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
-	Club                  []Club         `gorm:"many2many:club_events;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
-	Tag                   []Tag          `gorm:"many2many:event_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
-	Notification          []Notification `gorm:"polymorphic:Reference;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;;" json:"-" validate:"-"`
+	RSVP         []User         `gorm:"many2many:user_event_rsvps;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
+	Waitlist     []User         `gorm:"many2many:user_event_waitlists;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
+	Club         []Club         `gorm:"many2many:club_events;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
+	Tag          []Tag          `gorm:"many2many:event_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
+	Notification []Notification `gorm:"polymorphic:Reference;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;;" json:"-" validate:"-"`
 }
 
 type Series struct {
@@ -49,15 +54,15 @@ type Series struct {
 	DayOfWeek       int           `gorm:"type:int" json:"day_of_week" validate:"min=1,max=7"`
 	WeekOfMonth     int           `gorm:"type:int" json:"week_of_month" validate:"min=1,max=5"`
 	DayOfMonth      int           `gorm:"type:int" json:"day_of_month" validate:"min=1,max=31"`
-	Events          []Event       `gorm:"many2many:event_series" json:"events" validate:"-"` 
+	Events          []Event       `gorm:"many2many:event_series" json:"events" validate:"-"`
 }
 
 // TODO: add not null to required fields on all gorm models
 type Event_Series struct {
-	EventID            uuid.UUID `gorm:"not null; type:uuid; primary_key;" json:"event_id" validate:"uuid4"`
-	Event              Event
-	SeriesID uuid.UUID        `gorm:"not null; type:uuid;" json:"series_id" validate:"uuid4"`
-	Series   Series `json:"-" validate:"-"`
+	EventID  uuid.UUID `gorm:"not null; type:uuid; primary_key;" json:"event_id" validate:"uuid4"`
+	Event    Event
+	SeriesID uuid.UUID `gorm:"not null; type:uuid;" json:"series_id" validate:"uuid4"`
+	Series   Series    `json:"-" validate:"-"`
 }
 
 // potentially not needed?
@@ -82,14 +87,16 @@ type CreateSeriesRequestBody struct {
 
 // TODO We will likely need to update the create and update structs to account for recurring series
 type CreateEventRequestBody struct {
-	Name        string    `json:"name" validate:"required,max=255"`
-	Preview     string    `json:"preview" validate:"required,max=255"`
-	Content     string    `json:"content" validate:"required,max=255"`
-	StartTime   time.Time `json:"start_time" validate:"required,datetime,ltecsfield=EndTime"`
-	EndTime     time.Time `json:"end_time" validate:"required,datetime,gtecsfield=StartTime"`
+	Name    string `json:"name" validate:"required,max=255"`
+	Preview string `json:"preview" validate:"required,max=255"`
+	Content string `json:"content" validate:"required,max=255"`
+	// StartTime time.Time `json:"start_time" validate:"required,ltecsfield=EndTime"`
+	// EndTime   time.Time `json:"end_time" validate:"required,gtecsfield=StartTime"`
+	StartTime   string    `json:"start_time" validate:"required"`
+	EndTime     string    `json:"end_time" validate:"required"`
 	Location    string    `json:"location" validate:"required,max=255"`
-	EventType   EventType `json:"event_type" validate:"required,max=255"`
-	IsRecurring bool      `json:"is_recurring" validate:"required"`
+	EventType   EventType `json:"event_type" validate:"required,oneof=open membersOnly"`
+	IsRecurring bool      `json:"is_recurring" binding:"exists"`
 
 	Club         []Club         `json:"-" validate:"-"`
 	Tag          []Tag          `json:"-" validate:"-"`
@@ -99,19 +106,19 @@ type CreateEventRequestBody struct {
 }
 
 type UpdateEventRequestBody struct {
-	Name      string    `gorm:"type:varchar(255)" json:"name" validate:"required,max=255"`
-	Preview   string    `gorm:"type:varchar(255)" json:"preview" validate:"required,max=255"`
-	Content   string    `gorm:"type:varchar(255)" json:"content" validate:"required,max=255"`
-	StartTime time.Time `gorm:"type:timestamptz" json:"start_time" validate:"required,datetime,ltecsfield=EndTime"`
-	EndTime   time.Time `gorm:"type:timestamptz" json:"end_time" validate:"required,datetime,gtecsfield=StartTime"`
-	Location  string    `gorm:"type:varchar(255)" json:"location" validate:"required,max=255"`
+	Name      string    `json:"name" validate:"required,max=255"`
+	Preview   string    `json:"preview" validate:"required,max=255"`
+	Content   string    `json:"content" validate:"required,max=255"`
+	StartTime time.Time `json:"start_time" validate:"required,datetime,ltecsfield=EndTime"`
+	EndTime   time.Time `json:"end_time" validate:"required,datetime,gtecsfield=StartTime"`
+	Location  string    `json:"location" validate:"required,max=255"`
 	EventType EventType `gorm:"type:varchar(255);default:open" json:"event_type" validate:"required,max=255"`
 
-	RSVP         []User         `gorm:"many2many:user_event_rsvps;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
-	Waitlist     []User         `gorm:"many2many:user_event_waitlists;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
-	Club         []Club         `gorm:"many2many:club_events;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
-	Tag          []Tag          `gorm:"many2many:event_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
-	Notification []Notification `gorm:"polymorphic:Reference;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;;" json:"-" validate:"-"`
+	RSVP         []User         `json:"-" validate:"-"`
+	Waitlist     []User         `json:"-" validate:"-"`
+	Club         []Club         `json:"-" validate:"-"`
+	Tag          []Tag          `json:"-" validate:"-"`
+	Notification []Notification `json:"-" validate:"-"`
 }
 
 /*TODO CRUD

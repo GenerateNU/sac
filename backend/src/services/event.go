@@ -1,6 +1,8 @@
 package services
 
 import (
+	"time"
+
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
@@ -19,7 +21,6 @@ type EventServiceInterface interface {
 	UpdateEvent(id string, eventBody models.UpdateEventRequestBody) (*models.Event, *errors.Error)
 	DeleteEvent(id string) *errors.Error
 	DeleteEventSeries(id string) *errors.Error
-
 }
 
 type EventService struct {
@@ -58,13 +59,41 @@ func (c *EventService) GetClubEvents(id string) ([]models.Event, *errors.Error) 
 func (c *EventService) CreateEvent(eventBody models.CreateEventRequestBody) ([]models.Event, *errors.Error) {
 
 	if err := c.Validate.Struct(eventBody); err != nil {
+		// return nil, &errors.FailedToValidateEventSeries
+		return nil, &errors.Error{StatusCode: 400, Message: err.Error()}
+	}
+
+	// Extra validation steps for the startTime and endTime fields
+	startTime, err := time.Parse(time.RFC3339, eventBody.StartTime)
+	if err != nil {
 		return nil, &errors.FailedToValidateEventSeries
 	}
 
-	firstEvent, err := utilities.MapRequestToModel(eventBody, &models.Event{})
+	endTime, err := time.Parse(time.RFC3339, eventBody.EndTime)
 	if err != nil {
-		return nil, &errors.FailedToMapRequestToModel
+		return nil, &errors.FailedToValidateEventSeries
 	}
+
+	if startTime.Compare(endTime) != -1 {
+		return nil, &errors.FailedToValidateEventSeries
+	}
+
+	firstEvent := &models.Event{
+		Name:        eventBody.Name,
+		Preview:     eventBody.Preview,
+		Content:     eventBody.Content,
+		StartTime:   startTime,
+		EndTime:     endTime,
+		Location:    eventBody.Location,
+		EventType:   eventBody.EventType,
+		IsRecurring: eventBody.IsRecurring,
+	}
+
+	// firstEvent, err := utilities.MapRequestToModel(eventBody, &models.Event{})
+	// if err != nil {
+	// 	return nil, &errors.FailedToMapRequestToModel
+	//   	return nil, &errors.Error{StatusCode: 400, Message: err.Error()}
+	// }
 
 	if !firstEvent.IsRecurring {
 		event, err := transactions.CreateEvent(c.DB, *firstEvent)
@@ -142,7 +171,7 @@ func (c *EventService) DeleteEventSeries(id string) *errors.Error {
 //TODO: CreateEventSeries, GetEventSeries, DeleteEventSeries
 
 // Helper to create other events in a given series using the given firstEvent
-func CreateEventSlice(firstEvent *models.Event, series models.Series) ([]models.Event) {
+func CreateEventSlice(firstEvent *models.Event, series models.Series) []models.Event {
 	eventBodies := []models.Event{*firstEvent}
 	months, days := 0, 0
 
@@ -155,7 +184,7 @@ func CreateEventSlice(firstEvent *models.Event, series models.Series) ([]models.
 		months = series.SeparationCount + 1
 	}
 
-	for i:=1; i < series.MaxOccurrences; i++ {
+	for i := 1; i < series.MaxOccurrences; i++ {
 		eventToAdd := firstEvent
 		eventToAdd.StartTime = eventToAdd.StartTime.AddDate(0, i*months, i*days)
 		eventToAdd.EndTime = eventToAdd.EndTime.AddDate(0, i*months, i*days)
