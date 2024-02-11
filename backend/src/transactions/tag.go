@@ -93,7 +93,7 @@ func GetTagClubs(db *gorm.DB, id uuid.UUID) ([]models.Club, *errors.Error) {
 		return nil, &errors.ClubNotFound
 	}
 
-	if err := db.Model(&tag).Association("Club").Find(&clubs) ; err != nil {
+	if err := db.Model(&tag).Association("Club").Find(&clubs); err != nil {
 		return nil, &errors.FailedToGetTag
 	}
 	return clubs, nil

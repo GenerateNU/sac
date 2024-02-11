@@ -22,7 +22,6 @@ func CreateClubTags(db *gorm.DB, id uuid.UUID, tags []models.Tag) ([]models.Tag,
 	return tags, nil
 }
 
-
 // Get tags for a club
 func GetClubTags(db *gorm.DB, id uuid.UUID) ([]models.Tag, *errors.Error) {
 	var tags []models.Tag
@@ -32,7 +31,7 @@ func GetClubTags(db *gorm.DB, id uuid.UUID) ([]models.Tag, *errors.Error) {
 		return nil, &errors.ClubNotFound
 	}
 
-	if err := db.Model(&club).Association("Tag").Find(&tags) ; err != nil {
+	if err := db.Model(&club).Association("Tag").Find(&tags); err != nil {
 		return nil, &errors.FailedToGetTag
 	}
 	return tags, nil

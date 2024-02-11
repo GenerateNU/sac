@@ -35,10 +35,10 @@ var (
 		StatusCode: fiber.StatusNotFound,
 		Message:    "club not found",
 	}
-	FailedToValidateClubTags = Error {
+	FailedToValidateClubTags = Error{
 		StatusCode: fiber.StatusBadRequest,
-		Message: "failed to validate club tags",
-  }
+		Message:    "failed to validate club tags",
+	}
 	FailedToGetMembers = Error{
 		StatusCode: fiber.StatusNotFound,
 		Message:    "failed to get members",
