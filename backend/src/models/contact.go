@@ -2,23 +2,31 @@ package models
 
 import "github.com/google/uuid"
 
-type Media string
+type ContactType string
 
 const (
-	Facebook  Media = "facebook"
-	Instagram Media = "instagram"
-	Twitter   Media = "twitter"
-	LinkedIn  Media = "linkedin"
-	YouTube   Media = "youtube"
-	GitHub    Media = "github"
-	Custom    Media = "custom"
+	Facebook   ContactType = "facebook"
+	Instagram  ContactType = "instagram"
+	Twitter    ContactType = "twitter"
+	LinkedIn   ContactType = "linkedin"
+	YouTube    ContactType = "youtube"
+	GitHub     ContactType = "github"
+	Slack      ContactType = "slack"
+	Discord    ContactType = "discord"
+	Email      ContactType = "email"
+	CustomSite ContactType = "customSite"
 )
 
 type Contact struct {
 	Model
 
-	Type    Media  `gorm:"type:varchar(255)" json:"type" validate:"required,max=255"`
-	Content string `gorm:"type:varchar(255)" json:"content" validate:"required,http_url,max=255"` // media URL
+	Type    ContactType `gorm:"type:varchar(255);uniqueIndex:idx_contact_type" json:"type" validate:"required,max=255,oneof=facebook instagram twitter linkedin youtube github slack discord email customSite"`
+	Content string      `gorm:"type:varchar(255)" json:"content" validate:"required,max=255"`
 
-	ClubID uuid.UUID `gorm:"foreignKey:ClubID" json:"-" validate:"uuid4"`
+	ClubID uuid.UUID `gorm:"foreignKey:ClubID;uniqueIndex:idx_contact_type" json:"-" validate:"uuid4"`
+}
+
+type PutContactRequestBody struct {
+	Type    ContactType `json:"type" validate:"required,max=255,oneof=facebook instagram twitter linkedin youtube github slack discord email customSite,contact_pointer"`
+	Content string      `json:"content" validate:"required,max=255"`
 }

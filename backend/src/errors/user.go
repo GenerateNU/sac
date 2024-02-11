@@ -50,5 +50,9 @@ var (
 	FailedToGetMemberships = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to get memberships",
+  }
+	FailedToGetUserFollowing = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get user following",
 	}
 )

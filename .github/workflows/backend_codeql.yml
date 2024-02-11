@@ -1,0 +1,44 @@
+name: Backend CodeQL
+
+on:
+  push:
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend_codeql.yml"
+  pull_request:
+    types: opened
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend_codeql.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: "1.21"
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: "go"
+          queries: security-and-quality
+      - name: Build
+        run: |
+          cd ./backend/ && go build -o backend src/main.go
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:go"

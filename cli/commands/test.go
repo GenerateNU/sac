@@ -10,8 +10,9 @@ import (
 
 func TestCommand() *cli.Command {
 	command := cli.Command{
-		Name:  "test",
-		Usage: "Runs tests",
+		Name:    "test",
+		Aliases: []string{"t"},
+		Usage:   "Runs tests",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "frontend",
@@ -37,38 +38,57 @@ func TestCommand() *cli.Command {
 			folder := c.String("frontend")
 			runFrontend := folder != ""
 			runBackend := c.Bool("backend")
-
-			Test(folder, runFrontend, runBackend)
-
+			err := Test(folder, runFrontend, runBackend)
+			if err != nil {
+				return cli.Exit(err.Error(), 1)
+			}
 			return nil
 		},
 	}
-
 	return &command
 }
 
 func Test(folder string, runFrontend bool, runBackend bool) error {
 	var wg sync.WaitGroup
+	errChan := make(chan error, 1)
+	var errOccurred bool // Flag to indicate whether an error has occurred
 
 	// Start the backend if specified
-	if runBackend {
+	if runBackend && !errOccurred {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			BackendTest()
+			err := BackendTest()
+			if err != nil {
+				errChan <- err
+				errOccurred = true
+			}
 		}()
 	}
 
 	// Start the frontend if specified
-	if runFrontend {
+	if runFrontend && !errOccurred {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			FrontendTest(folder)
+			err := FrontendTest(folder)
+			if err != nil {
+				errChan <- err
+				errOccurred = true
+			}
 		}()
 	}
 
-	wg.Wait()
+	go func() {
+		wg.Wait()
+		close(errChan)
+	}()
+
+	for err := range errChan {
+		if err != nil {
+			return err
+		}
+	}
 
 	return nil
 }
@@ -77,16 +97,18 @@ func BackendTest() error {
 	cmd := exec.Command("go", "test", "./...")
 	cmd.Dir = fmt.Sprintf("%s/..", BACKEND_DIR)
 
-	defer CleanTestDBs()
-
 	out, err := cmd.CombinedOutput()
-
 	if err != nil {
 		fmt.Println(string(out))
 		return cli.Exit("Failed to run backend tests", 1)
 	}
 
 	fmt.Println(string(out))
+
+	err = CleanTestDBs()
+	if err != nil {
+		return cli.Exit(err.Error(), 1)
+	}
 
 	return nil
 }

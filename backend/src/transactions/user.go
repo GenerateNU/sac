@@ -22,6 +22,16 @@ func CreateUser(db *gorm.DB, user *models.User) (*models.User, *errors.Error) {
 	return user, nil
 }
 
+func GetUserByEmail(db *gorm.DB, email string) (*models.User, *errors.Error) {
+	var user models.User
+
+	if err := db.Where("email = ?", email).First(&user).Error; err != nil {
+		return nil, &errors.UserNotFound
+	}
+
+	return &user, nil
+}
+
 func GetUsers(db *gorm.DB, limit int, offset int) ([]models.User, *errors.Error) {
 	var users []models.User
 
@@ -48,6 +58,10 @@ func GetUser(db *gorm.DB, id uuid.UUID) (*models.User, *errors.Error) {
 func GetUserWithMemberships(db *gorm.DB, id uuid.UUID) (*models.User, *errors.Error) {
 	var user models.User
 	if err := db.Preload("Member").Omit("password_hash").First(&user, id).Error; err != nil {
+    
+func GetUserWithFollowers(db *gorm.DB, id uuid.UUID) (*models.User, *errors.Error) {
+	var user models.User
+	if err := db.Preload("Follower").Omit("password_hash").First(&user, id).Error; err != nil {
 		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &errors.UserNotFound
 		} else {

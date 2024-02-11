@@ -35,9 +35,9 @@ func CreateTag(db *gorm.DB, tag models.Tag) (*models.Tag, *errors.Error) {
 	return &tag, nil
 }
 
-func GetTag(db *gorm.DB, categoryID uuid.UUID, tagID uuid.UUID) (*models.Tag, *errors.Error) {
+func GetTag(db *gorm.DB, tagID uuid.UUID) (*models.Tag, *errors.Error) {
 	var tag models.Tag
-	if err := db.Where("category_id = ? AND id = ?", categoryID, tagID).First(&tag).Error; err != nil {
+	if err := db.Where("id = ?", tagID).First(&tag).Error; err != nil {
 		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &errors.TagNotFound
 		} else {
@@ -60,8 +60,8 @@ func UpdateTag(db *gorm.DB, id uuid.UUID, tag models.Tag) (*models.Tag, *errors.
 	return &tag, nil
 }
 
-func DeleteTag(db *gorm.DB, categoryID uuid.UUID, tagID uuid.UUID) *errors.Error {
-	if result := db.Where("category_id = ? AND id = ?", categoryID, tagID).Delete(&models.Tag{}); result.RowsAffected == 0 {
+func DeleteTag(db *gorm.DB, tagID uuid.UUID) *errors.Error {
+	if result := db.Where("id = ?", tagID).Delete(&models.Tag{}); result.RowsAffected == 0 {
 		if result.Error == nil {
 			return &errors.TagNotFound
 		} else {

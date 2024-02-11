@@ -29,6 +29,10 @@ type UserService struct {
 	Validate *validator.Validate
 }
 
+func NewUserService(db *gorm.DB, validate *validator.Validate) *UserService {
+	return &UserService{DB: db, Validate: validate}
+}
+
 func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models.User, *errors.Error) {
 	if err := u.Validate.Struct(userBody); err != nil {
 		return nil, &errors.FailedToValidateUser
@@ -52,13 +56,11 @@ func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models
 
 func (u *UserService) GetUsers(limit string, page string) ([]models.User, *errors.Error) {
 	limitAsInt, err := utilities.ValidateNonNegative(limit)
-
 	if err != nil {
 		return nil, &errors.FailedToValidateLimit
 	}
 
 	pageAsInt, err := utilities.ValidateNonNegative(page)
-
 	if err != nil {
 		return nil, &errors.FailedToValidatePage
 	}
@@ -87,17 +89,10 @@ func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBod
 		return nil, &errors.FailedToValidateUser
 	}
 
-	passwordHash, err := auth.ComputePasswordHash(userBody.Password)
-	if err != nil {
-		return nil, &errors.FailedToComputePasswordHash
-	}
-
 	user, err := utilities.MapRequestToModel(userBody, &models.User{})
 	if err != nil {
 		return nil, &errors.FailedToMapRequestToModel
 	}
-
-	user.PasswordHash = *passwordHash
 
 	return transactions.UpdateUser(u.DB, *idAsUUID, *user)
 }
@@ -133,7 +128,6 @@ func (u *UserService) CreateUserTags(id string, tagIDs models.CreateUserTagsBody
 
 	// Retrieve a list of valid tags from the ids:
 	tags, err := transactions.GetTagsByIDs(u.DB, tagIDs.Tags)
-
 	if err != nil {
 		return nil, err
 	}

@@ -11,6 +11,10 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to create tag",
 	}
+	FailedToGetTags = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get tags",
+	}
 	FailedToGetTag = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to get tag",

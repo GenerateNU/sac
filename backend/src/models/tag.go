@@ -15,5 +15,6 @@ type Tag struct {
 }
 
 type TagRequestBody struct {
-	Name string `json:"name" validate:"required,max=255"`
+	Name       string    `json:"name" validate:"required,max=255"`
+	CategoryID uuid.UUID `json:"category_id" validate:"required,uuid4"`
 }

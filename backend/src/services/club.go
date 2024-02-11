@@ -22,6 +22,7 @@ type ClubServiceInterface interface {
 	CreateMembershipsByEmail(clubID string, emails []string) *errors.Error
 	DeleteMembership(clubID string, userID string) *errors.Error
 	DeleteMemberships(clubID string, userIDs []string) *errors.Error
+	GetUserFollowersForClub(id string) ([]models.User, *errors.Error)
 }
 
 type ClubService struct {
@@ -29,15 +30,17 @@ type ClubService struct {
 	Validate *validator.Validate
 }
 
+func NewClubService(db *gorm.DB, validate *validator.Validate) *ClubService {
+	return &ClubService{DB: db, Validate: validate}
+}
+
 func (c *ClubService) GetClubs(limit string, page string) ([]models.Club, *errors.Error) {
 	limitAsInt, err := utilities.ValidateNonNegative(limit)
-
 	if err != nil {
 		return nil, &errors.FailedToValidateLimit
 	}
 
 	pageAsInt, err := utilities.ValidateNonNegative(page)
-
 	if err != nil {
 		return nil, &errors.FailedToValidatePage
 	}
@@ -158,4 +161,12 @@ func (c *ClubService) DeleteMemberships(clubID string, userIDs []string) *errors
 	}
 
 	return transactions.DeleteMemberships(c.DB, *clubIDAsUUID, userIDsAsUUIDs)
+}
+
+func (c *ClubService) GetUserFollowersForClub(id string) ([]models.User, *errors.Error) {
+	idAsUUID, err := utilities.ValidateID(id)
+	if err != nil {
+		return nil, &errors.FailedToValidateID
+	}
+	return transactions.GetUserFollowersForClub(c.DB, *idAsUUID)
 }

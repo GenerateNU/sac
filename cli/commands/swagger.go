@@ -9,14 +9,18 @@ import (
 
 func SwaggerCommand() *cli.Command {
 	command := cli.Command{
-		Name:  "swagger",
-		Usage: "Updates the swagger documentation",
+		Name:    "swagger",
+		Aliases: []string{"swag"},
+		Usage:   "Updates the swagger documentation",
 		Action: func(c *cli.Context) error {
 			if c.Args().Len() > 0 {
 				return cli.Exit("Invalid arguments", 1)
 			}
 
-			Swagger()
+			err := Swagger()
+			if err != nil {
+				return cli.Exit(err.Error(), 1)
+			}
 			return nil
 		},
 	}
