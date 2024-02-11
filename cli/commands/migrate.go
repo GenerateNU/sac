@@ -9,14 +9,18 @@ import (
 
 func MigrateCommand() *cli.Command {
 	command := cli.Command{
-		Name:  "migrate",
-		Usage: "Migrate the database",
+		Name:     "migrate",
+		Usage:    "Migrate the database, creating tables and relationships",
+		Category: "Database Operations",
 		Action: func(c *cli.Context) error {
 			if c.Args().Len() > 0 {
 				return cli.Exit("Invalid arguments", 1)
 			}
 
-			Migrate()
+			err := Migrate()
+			if err != nil {
+				return cli.Exit(err.Error(), 1)
+			}
 			return nil
 		},
 	}
@@ -37,17 +41,6 @@ func Migrate() error {
 
 	fmt.Println(string(output))
 
-	fmt.Println("Inserting data into database")
-
-	scriptCmd := exec.Command("./scripts/insert_db.sh")
-	scriptCmd.Dir = ROOT_DIR
-
-	output, err = scriptCmd.CombinedOutput()
-	if err != nil {
-		return cli.Exit("Error running insert_db.sh", 1)
-	}
-
-	fmt.Println(string(output))
 	fmt.Println("Done migrating database")
 
 	return nil

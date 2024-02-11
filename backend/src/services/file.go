@@ -50,7 +50,7 @@ func (f *FileService) GetFile(id string) (*models.File, *errors.Error) {
 	var file models.File
 
 	if err := f.DB.First(&file, id).Error; err != nil {
-		return &models.File{}, &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToGetFile}
+		return &models.File{}, &errors.FailedToGetFile
 	}
 
 	return &file, nil
@@ -82,7 +82,7 @@ func (f *FileService) CreateFile(file models.File, data *multipart.FileHeader, r
 
 	// Check if the file size is greater than 5 MB
 	if data.Size > 5000000 {
-		return nil, &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.InvalidFileSize}
+		return nil, &errors.InvalidFileSize
 	}
 
 	file.FileSize = data.Size
@@ -90,7 +90,7 @@ func (f *FileService) CreateFile(file models.File, data *multipart.FileHeader, r
 	// Upload the file to the S3 bucket
 	sess, err := createAWSSession(f.Settings)
 	if err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusInternalServerError, Message: errors.FailedToCreateAWSSession}
+		return nil, &errors.FailedToCreateAWSSession
 	}
 
 	uploader := s3manager.NewUploader(sess)
@@ -101,13 +101,13 @@ func (f *FileService) CreateFile(file models.File, data *multipart.FileHeader, r
 		Body:   reader,
 	})
 	if err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusInternalServerError, Message: errors.FailedToUploadToS3}
+		return nil, &errors.FailedToUploadToS3
 	}
 
 	// Create the file in the database
 	if err := f.DB.Create(&file).Error; err != nil {
 		f.DeleteFile(fmt.Sprint(file.ID), true) // delete file from s3 if it cant be made in database
-		return nil, &errors.Error{StatusCode: fiber.StatusInternalServerError, Message: errors.FailedToCreateFileInDB}
+		return nil, &errors.FailedToCreateFileInDB
 	}
 	return &file, nil
 }

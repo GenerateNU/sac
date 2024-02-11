@@ -10,8 +10,9 @@ import (
 
 func FormatCommand() *cli.Command {
 	command := cli.Command{
-		Name:  "format",
-		Usage: "Runs formatting tools",
+		Name:    "format",
+		Usage:   "Runs formatting tools",
+		Aliases: []string{"f"},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "frontend",
@@ -38,7 +39,10 @@ func FormatCommand() *cli.Command {
 			runFrontend := folder != ""
 			runBackend := c.Bool("backend")
 
-			Format(folder, runFrontend, runBackend)
+			err := Format(folder, runFrontend, runBackend)
+			if err != nil {
+				return cli.Exit(err.Error(), 1)
+			}
 
 			return nil
 		},
@@ -55,7 +59,10 @@ func Format(folder string, runFrontend bool, runBackend bool) error {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			BackendFormat()
+			err := BackendFormat()
+			if err != nil {
+				fmt.Println(err)
+			}
 		}()
 	}
 
@@ -64,7 +71,10 @@ func Format(folder string, runFrontend bool, runBackend bool) error {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			FrontendFormat(folder)
+			err := FrontendFormat(folder)
+			if err != nil {
+				fmt.Println(err)
+			}
 		}()
 	}
 
@@ -76,7 +86,7 @@ func Format(folder string, runFrontend bool, runBackend bool) error {
 func BackendFormat() error {
 	fmt.Println("Formatting backend")
 
-	cmd := exec.Command("go", "fmt", "./...")
+	cmd := exec.Command("gofumpt", "-l", "-w", ".")
 	cmd.Dir = BACKEND_DIR
 
 	err := cmd.Run()
@@ -90,5 +100,5 @@ func BackendFormat() error {
 
 func FrontendFormat(folder string) error {
 	fmt.Println("UNIMPLEMENTED")
-	return nil 
+	return nil
 }

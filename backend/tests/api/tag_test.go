@@ -7,74 +7,97 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
+	h "github.com/GenerateNU/sac/backend/tests/api/helpers"
 	"github.com/gofiber/fiber/v2"
-	"github.com/huandu/go-assert"
+	"github.com/google/uuid"
 
 	"github.com/goccy/go-json"
 )
 
-func SampleTagFactory() *map[string]interface{} {
+func SampleTagFactory(categoryID uuid.UUID) *map[string]interface{} {
 	return &map[string]interface{}{
 		"name":        "Generate",
-		"category_id": 1,
+		"category_id": categoryID,
 	}
 }
 
-func AssertTagWithIDBodyRespDB(app TestApp, assert *assert.A, resp *http.Response, id uint, body *map[string]interface{}) {
+func AssertTagWithBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, body *map[string]interface{}) uuid.UUID {
 	var respTag models.Tag
 
 	err := json.NewDecoder(resp.Body).Decode(&respTag)
 
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
 	var dbTag models.Tag
 
-	err = app.Conn.First(&dbTag, id).Error
+	err = eaa.App.Conn.First(&dbTag).Error
 
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
-	assert.Equal(dbTag.ID, respTag.ID)
-	assert.Equal(dbTag.Name, respTag.Name)
-	assert.Equal(dbTag.CategoryID, respTag.CategoryID)
+	eaa.Assert.Equal(dbTag.ID, respTag.ID)
+	eaa.Assert.Equal(dbTag.Name, respTag.Name)
+	eaa.Assert.Equal(dbTag.CategoryID, respTag.CategoryID)
 
-	assert.Equal((*body)["name"].(string), dbTag.Name)
-	assert.Equal((*body)["category_id"].(int), int(dbTag.CategoryID))
+	eaa.Assert.Equal((*body)["name"].(string), dbTag.Name)
+	eaa.Assert.Equal((*body)["category_id"].(uuid.UUID), dbTag.CategoryID)
+
+	return dbTag.ID
 }
 
-func AssertSampleTagBodyRespDB(app TestApp, assert *assert.A, resp *http.Response) {
-	AssertTagWithIDBodyRespDB(app, assert, resp, 1, SampleTagFactory())
+func AssertSampleTagBodyRespDB(t *testing.T, eaa h.ExistingAppAssert, resp *http.Response) uuid.UUID {
+	appAssert, uuid := CreateSampleCategory(eaa)
+	return AssertTagWithBodyRespDB(appAssert, resp, SampleTagFactory(uuid))
 }
 
-func CreateSampleTag(t *testing.T) ExistingAppAssert {
-	appAssert := CreateSampleCategory(t)
+func CreateSampleTag(appAssert h.ExistingAppAssert) (existingAppAssert h.ExistingAppAssert, categoryUUID uuid.UUID, tagUUID uuid.UUID) {
+	appAssert, categoryUUID = CreateSampleCategory(appAssert)
 
-	return TestRequest{
-		Method: fiber.MethodPost,
-		Path:   "/api/v1/tags/",
-		Body:   SampleTagFactory(),
-	}.TestOnStatusAndDB(t, &appAssert,
-		DBTesterWithStatus{
-			Status:   201,
-			DBTester: AssertSampleTagBodyRespDB,
+	AssertSampleTagBodyRespDB := func(eaa h.ExistingAppAssert, resp *http.Response) {
+		tagUUID = AssertTagWithBodyRespDB(appAssert, resp, SampleTagFactory(categoryUUID))
+	}
+
+	appAssert.TestOnStatusAndTester(
+		h.TestRequest{
+			Method: fiber.MethodPost,
+			Path:   "/api/v1/tags/",
+			Body:   SampleTagFactory(categoryUUID),
+			Role:   &models.Super,
+		},
+		h.TesterWithStatus{
+			Status: fiber.StatusCreated,
+			Tester: AssertSampleTagBodyRespDB,
 		},
 	)
+
+	return appAssert, categoryUUID, tagUUID
 }
 
 func TestCreateTagWorks(t *testing.T) {
-	CreateSampleTag(t).Close()
+	appAssert, _, _ := CreateSampleTag(h.InitTest(t))
+	appAssert.Close()
 }
 
-var AssertNoTags = func(app TestApp, assert *assert.A, resp *http.Response) {
+func AssertNumTagsRemainsAtN(eaa h.ExistingAppAssert, resp *http.Response, n int) {
 	var tags []models.Tag
 
-	err := app.Conn.Find(&tags).Error
+	err := eaa.App.Conn.Find(&tags).Error
 
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
-	assert.Equal(0, len(tags))
+	eaa.Assert.Equal(n, len(tags))
+}
+
+func AssertNoTags(eaa h.ExistingAppAssert, resp *http.Response) {
+	AssertNumTagsRemainsAtN(eaa, resp, 0)
+}
+
+func Assert1Tag(eaa h.ExistingAppAssert, resp *http.Response) {
+	AssertNumTagsRemainsAtN(eaa, resp, 1)
 }
 
 func TestCreateTagFailsBadRequest(t *testing.T) {
+	appAssert := h.InitTest(t)
+
 	badBodys := []map[string]interface{}{
 		{
 			"name":        "Generate",
@@ -87,65 +110,77 @@ func TestCreateTagFailsBadRequest(t *testing.T) {
 	}
 
 	for _, badBody := range badBodys {
-		TestRequest{
-			Method: fiber.MethodPost,
-			Path:   "/api/v1/tags/",
-			Body:   &badBody,
-		}.TestOnStatusMessageAndDB(t, nil,
-			StatusMessageDBTester{
-				MessageWithStatus: MessageWithStatus{
-					Status:  400,
-					Message: errors.FailedToParseRequestBody,
-				},
-				DBTester: AssertNoTags,
+		badBody := badBody
+		appAssert.TestOnErrorAndTester(
+			h.TestRequest{
+				Method: fiber.MethodPost,
+				Path:   "/api/v1/tags/",
+				Body:   &badBody,
+				Role:   &models.Super,
 			},
-		).Close()
+			h.ErrorWithTester{
+				Error:  errors.FailedToParseRequestBody,
+				Tester: AssertNoTags,
+			},
+		)
 	}
+
+	appAssert.Close()
 }
 
 func TestCreateTagFailsValidation(t *testing.T) {
+	appAssert := h.InitTest(t)
+
 	badBodys := []map[string]interface{}{
 		{
 			"name": "Generate",
 		},
 		{
-			"category_id": 1,
+			"category_id": uuid.New(),
 		},
 		{},
 	}
 
 	for _, badBody := range badBodys {
-		TestRequest{
-			Method: fiber.MethodPost,
-			Path:   "/api/v1/tags/",
-			Body:   &badBody,
-		}.TestOnStatusMessageAndDB(t, nil,
-			StatusMessageDBTester{
-				MessageWithStatus: MessageWithStatus{
-					Status:  400,
-					Message: errors.FailedToValidateTag,
-				},
-				DBTester: AssertNoTags,
+		badBody := badBody
+		appAssert.TestOnErrorAndTester(
+			h.TestRequest{
+				Method: fiber.MethodPost,
+				Path:   "/api/v1/tags/",
+				Body:   &badBody,
+				Role:   &models.Super,
 			},
-		).Close()
+			h.ErrorWithTester{
+				Error:  errors.FailedToValidateTag,
+				Tester: AssertNoTags,
+			},
+		)
 	}
+
+	appAssert.Close()
 }
 
 func TestGetTagWorks(t *testing.T) {
-	existingAppAssert := CreateSampleTag(t)
+	existingAppAssert, categoryUUID, tagUUID := CreateSampleTag(h.InitTest(t))
 
-	TestRequest{
-		Method: fiber.MethodGet,
-		Path:   "/api/v1/tags/1",
-	}.TestOnStatusAndDB(t, &existingAppAssert,
-		DBTesterWithStatus{
-			Status:   200,
-			DBTester: AssertSampleTagBodyRespDB,
+	existingAppAssert.TestOnStatusAndTester(
+		h.TestRequest{
+			Method: fiber.MethodGet,
+			Path:   fmt.Sprintf("/api/v1/tags/%s", tagUUID),
+			Role:   &models.Super,
+		},
+		h.TesterWithStatus{
+			Status: fiber.StatusOK,
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				AssertTagWithBodyRespDB(eaa, resp, SampleTagFactory(categoryUUID))
+			},
 		},
 	).Close()
 }
 
 func TestGetTagFailsBadRequest(t *testing.T) {
+	appAssert := h.InitTest(t)
+
 	badRequests := []string{
 		"0",
 		"-1",
@@ -155,108 +190,121 @@ func TestGetTagFailsBadRequest(t *testing.T) {
 	}
 
 	for _, badRequest := range badRequests {
-		TestRequest{
-			Method: fiber.MethodGet,
-			Path:   fmt.Sprintf("/api/v1/tags/%s", badRequest),
-		}.TestOnStatusAndMessage(t, nil,
-			MessageWithStatus{
-				Status:  400,
-				Message: "failed to validate id",
+		appAssert.TestOnError(
+			h.TestRequest{
+				Method: fiber.MethodGet,
+				Path:   fmt.Sprintf("/api/v1/tags/%s", badRequest),
+				Role:   &models.Super,
 			},
-		).Close()
+			errors.FailedToValidateID,
+		)
 	}
+
+	appAssert.Close()
 }
 
 func TestGetTagFailsNotFound(t *testing.T) {
-	TestRequest{
-		Method: fiber.MethodGet,
-		Path:   "/api/v1/tags/1",
-	}.TestOnStatusAndMessage(t, nil,
-		MessageWithStatus{
-			Status:  404,
-			Message: errors.TagNotFound,
+	h.InitTest(t).TestOnError(
+		h.TestRequest{
+			Method: fiber.MethodGet,
+			Path:   fmt.Sprintf("/api/v1/tags/%s", uuid.New()),
+			Role:   &models.Super,
 		},
+		errors.TagNotFound,
 	).Close()
 }
 
 func TestUpdateTagWorksUpdateName(t *testing.T) {
-	existingAppAssert := CreateSampleTag(t)
+	existingAppAssert, categoryUUID, tagUUID := CreateSampleTag(h.InitTest(t))
 
-	generateNUTag := *SampleTagFactory()
+	generateNUTag := *SampleTagFactory(categoryUUID)
 	generateNUTag["name"] = "GenerateNU"
 
-	var AssertUpdatedTagBodyRespDB = func(app TestApp, assert *assert.A, resp *http.Response) {
-		AssertTagWithIDBodyRespDB(app, assert, resp, 1, &generateNUTag)
+	AssertUpdatedTagBodyRespDB := func(eaa h.ExistingAppAssert, resp *http.Response) {
+		tagUUID = AssertTagWithBodyRespDB(eaa, resp, &generateNUTag)
 	}
 
-	TestRequest{
-		Method: fiber.MethodPatch,
-		Path:   "/api/v1/tags/1",
-		Body:   &generateNUTag,
-	}.TestOnStatusAndDB(t, &existingAppAssert,
-		DBTesterWithStatus{
-			Status:   200,
-			DBTester: AssertUpdatedTagBodyRespDB,
+	existingAppAssert.TestOnStatusAndTester(
+		h.TestRequest{
+			Method: fiber.MethodPatch,
+			Path:   fmt.Sprintf("/api/v1/tags/%s", tagUUID),
+			Body:   &generateNUTag,
+			Role:   &models.Super,
+		},
+		h.TesterWithStatus{
+			Status: fiber.StatusOK,
+			Tester: AssertUpdatedTagBodyRespDB,
 		},
 	).Close()
 }
 
 func TestUpdateTagWorksUpdateCategory(t *testing.T) {
-	existingAppAssert := CreateSampleTag(t)
+	existingAppAssert, _, tagUUID := CreateSampleTag(h.InitTest(t))
 
 	technologyCategory := *SampleCategoryFactory()
-	technologyCategory["category_name"] = "Technology"
+	technologyCategory["name"] = "Technology"
 
-	var AssertNewCategoryBodyRespDB = func(app TestApp, assert *assert.A, resp *http.Response) {
-		AssertCategoryWithIDBodyRespDB(app, assert, resp, 2, &technologyCategory)
+	var technologyCategoryUUID uuid.UUID
+
+	AssertNewCategoryBodyRespDB := func(eaa h.ExistingAppAssert, resp *http.Response) {
+		technologyCategoryUUID = AssertCategoryWithBodyRespDBMostRecent(eaa, resp, &technologyCategory)
 	}
 
-	TestRequest{
-		Method: fiber.MethodPost,
-		Path:   "/api/v1/categories/",
-		Body:   &technologyCategory,
-	}.TestOnStatusAndDB(t, &existingAppAssert,
-		DBTesterWithStatus{
-			Status:   201,
-			DBTester: AssertNewCategoryBodyRespDB,
+	existingAppAssert.TestOnStatusAndTester(
+		h.TestRequest{
+			Method: fiber.MethodPost,
+			Path:   "/api/v1/categories/",
+			Body:   &technologyCategory,
+			Role:   &models.Super,
+		},
+		h.TesterWithStatus{
+			Status: fiber.StatusCreated,
+			Tester: AssertNewCategoryBodyRespDB,
 		},
 	)
 
-	technologyTag := *SampleTagFactory()
-	technologyTag["category_id"] = 2
+	technologyTag := *SampleTagFactory(technologyCategoryUUID)
 
-	var AssertUpdatedTagBodyRespDB = func(app TestApp, assert *assert.A, resp *http.Response) {
-		AssertTagWithIDBodyRespDB(app, assert, resp, 1, &technologyTag)
+	AssertUpdatedTagBodyRespDB := func(eaa h.ExistingAppAssert, resp *http.Response) {
+		AssertTagWithBodyRespDB(eaa, resp, &technologyTag)
 	}
 
-	TestRequest{
-		Method: fiber.MethodPatch,
-		Path:   "/api/v1/tags/1",
-		Body:   &technologyTag,
-	}.TestOnStatusAndDB(t, &existingAppAssert,
-		DBTesterWithStatus{
-			Status:   200,
-			DBTester: AssertUpdatedTagBodyRespDB,
+	existingAppAssert.TestOnStatusAndTester(
+		h.TestRequest{
+			Method: fiber.MethodPatch,
+			Path:   fmt.Sprintf("/api/v1/tags/%s", tagUUID),
+			Body:   &technologyTag,
+			Role:   &models.Super,
+		},
+		h.TesterWithStatus{
+			Status: fiber.StatusOK,
+			Tester: AssertUpdatedTagBodyRespDB,
 		},
 	).Close()
 }
 
 func TestUpdateTagWorksWithSameDetails(t *testing.T) {
-	existingAppAssert := CreateSampleTag(t)
+	existingAppAssert, categoryUUID, tagUUID := CreateSampleTag(h.InitTest(t))
 
-	TestRequest{
-		Method: fiber.MethodPatch,
-		Path:   "/api/v1/tags/1",
-		Body:   SampleTagFactory(),
-	}.TestOnStatusAndDB(t, &existingAppAssert,
-		DBTesterWithStatus{
-			Status:   200,
-			DBTester: AssertSampleTagBodyRespDB,
+	existingAppAssert.TestOnStatusAndTester(
+		h.TestRequest{
+			Method: fiber.MethodPatch,
+			Path:   fmt.Sprintf("/api/v1/tags/%s", tagUUID),
+			Body:   SampleTagFactory(categoryUUID),
+			Role:   &models.Super,
+		},
+		h.TesterWithStatus{
+			Status: fiber.StatusOK,
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				AssertTagWithBodyRespDB(eaa, resp, SampleTagFactory(categoryUUID))
+			},
 		},
 	).Close()
 }
 
 func TestUpdateTagFailsBadRequest(t *testing.T) {
+	appAssert, uuid := CreateSampleCategory(h.InitTest(t))
+
 	badRequests := []string{
 		"0",
 		"-1",
@@ -266,34 +314,39 @@ func TestUpdateTagFailsBadRequest(t *testing.T) {
 	}
 
 	for _, badRequest := range badRequests {
-		TestRequest{
-			Method: fiber.MethodPatch,
-			Path:   fmt.Sprintf("/api/v1/tags/%s", badRequest),
-			Body:   SampleTagFactory(),
-		}.TestOnStatusAndMessage(t, nil,
-			MessageWithStatus{
-				Status:  400,
-				Message: errors.FailedToValidateID,
+		appAssert.TestOnError(
+			h.TestRequest{
+				Method: fiber.MethodPatch,
+				Path:   fmt.Sprintf("/api/v1/tags/%s", badRequest),
+				Body:   SampleTagFactory(uuid),
+				Role:   &models.Super,
 			},
-		).Close()
+			errors.FailedToValidateID,
+		)
 	}
+
+	appAssert.Close()
 }
 
 func TestDeleteTagWorks(t *testing.T) {
-	existingAppAssert := CreateSampleTag(t)
+	existingAppAssert, _, tagUUID := CreateSampleTag(h.InitTest(t))
 
-	TestRequest{
-		Method: fiber.MethodDelete,
-		Path:   "/api/v1/tags/1",
-	}.TestOnStatusAndDB(t, &existingAppAssert,
-		DBTesterWithStatus{
-			Status:   204,
-			DBTester: AssertNoTags,
+	existingAppAssert.TestOnStatusAndTester(
+		h.TestRequest{
+			Method: fiber.MethodDelete,
+			Path:   fmt.Sprintf("/api/v1/tags/%s", tagUUID),
+			Role:   &models.Super,
+		},
+		h.TesterWithStatus{
+			Status: fiber.StatusNoContent,
+			Tester: AssertNoTags,
 		},
 	).Close()
 }
 
 func TestDeleteTagFailsBadRequest(t *testing.T) {
+	appAssert, _, _ := CreateSampleTag(h.InitTest(t))
+
 	badRequests := []string{
 		"0",
 		"-1",
@@ -303,26 +356,34 @@ func TestDeleteTagFailsBadRequest(t *testing.T) {
 	}
 
 	for _, badRequest := range badRequests {
-		TestRequest{
-			Method: fiber.MethodDelete,
-			Path:   fmt.Sprintf("/api/v1/tags/%s", badRequest),
-		}.TestOnStatusAndMessage(t, nil,
-			MessageWithStatus{
-				Status:  400,
-				Message: errors.FailedToValidateID,
+		appAssert.TestOnErrorAndTester(
+			h.TestRequest{
+				Method: fiber.MethodDelete,
+				Path:   fmt.Sprintf("/api/v1/tags/%s", badRequest),
+				Role:   &models.Super,
 			},
-		).Close()
+			h.ErrorWithTester{
+				Error:  errors.FailedToValidateID,
+				Tester: Assert1Tag,
+			},
+		)
 	}
+
+	appAssert.Close()
 }
 
 func TestDeleteTagFailsNotFound(t *testing.T) {
-	TestRequest{
-		Method: fiber.MethodDelete,
-		Path:   "/api/v1/tags/1",
-	}.TestOnStatusAndMessage(t, nil,
-		MessageWithStatus{
-			Status:  404,
-			Message: errors.TagNotFound,
+	appAssert, _, _ := CreateSampleTag(h.InitTest(t))
+
+	appAssert.TestOnErrorAndTester(
+		h.TestRequest{
+			Method: fiber.MethodDelete,
+			Path:   fmt.Sprintf("/api/v1/tags/%s", uuid.New()),
+			Role:   &models.Super,
+		},
+		h.ErrorWithTester{
+			Error:  errors.TagNotFound,
+			Tester: Assert1Tag,
 		},
 	).Close()
 }

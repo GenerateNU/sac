@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"path/filepath"
 
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/database"
@@ -19,7 +20,7 @@ import (
 // @BasePath /api/v1
 func main() {
 	onlyMigrate := flag.Bool("only-migrate", false, "Specify if you want to only perform the database migration")
-	configPath := flag.String("config", "../../config", "Specify the path to the config directory")
+	configPath := flag.String("config", filepath.Join("..", "..", "config"), "Specify the path to the config directory")
 
 	flag.Parse()
 
@@ -28,7 +29,7 @@ func main() {
 		panic(fmt.Sprintf("Error getting configuration: %s", err.Error()))
 	}
 
-	db, err := database.ConfigureDB(config)
+	db, err := database.ConfigureDB(*config)
 	if err != nil {
 		panic(fmt.Sprintf("Error configuring database: %s", err.Error()))
 	}
@@ -39,10 +40,13 @@ func main() {
 
 	err = database.ConnPooling(db)
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("Error connecting to database: %s", err.Error()))
 	}
 
-	app := server.Init(db, config)
+	app := server.Init(db, *config)
 
-	app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
+	err = app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
+	if err != nil {
+		panic(fmt.Sprintf("Error starting server: %s", err.Error()))
+	}
 }

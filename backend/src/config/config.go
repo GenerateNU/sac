@@ -1,9 +1,7 @@
 package config
 
 import (
-	"fmt"
 	"os"
-	"strconv"
 
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
@@ -13,62 +11,40 @@ type Settings struct {
 	Application ApplicationSettings `yaml:"application"`
 	Database    DatabaseSettings    `yaml:"database"`
 	SuperUser   SuperUserSettings   `yaml:"superuser"`
+	Auth        AuthSettings
 	AWS         AWSSettings
 }
 
-type ProductionSettings struct {
-	Database    ProductionDatabaseSettings    `yaml:"database"`
-	Application ProductionApplicationSettings `yaml:"application"`
+type intermediateSettings struct {
+	Application ApplicationSettings           `yaml:"application"`
+	Database    intermediateDatabaseSettings  `yaml:"database"`
+	SuperUser   intermediateSuperUserSettings `yaml:"superuser"`
+	Auth        intermediateAuthSettings      `yaml:"authsecret"`
+	AWS         AWSSettings
 }
 
-type ApplicationSettings struct {
-	Port    uint16 `yaml:"port"`
-	Host    string `yaml:"host"`
-	BaseUrl string `yaml:"baseurl"`
-}
-
-type ProductionApplicationSettings struct {
-	Port uint16 `yaml:"port"`
-	Host string `yaml:"host"`
-}
-
-type DatabaseSettings struct {
-	Username     string `yaml:"username"`
-	Password     string `yaml:"password"`
-	Port         uint   `yaml:"port"`
-	Host         string `yaml:"host"`
-	DatabaseName string `yaml:"databasename"`
-	RequireSSL   bool   `yaml:"requiressl"`
-}
-
-type ProductionDatabaseSettings struct {
-	RequireSSL bool `yaml:"requiressl"`
-}
-
-func (s *DatabaseSettings) WithoutDb() string {
-	var sslMode string
-	if s.RequireSSL {
-		sslMode = "require"
-	} else {
-		sslMode = "disable"
+func (int *intermediateSettings) into() (*Settings, error) {
+	databaseSettings, err := int.Database.into()
+	if err != nil {
+		return nil, err
 	}
 
-	return fmt.Sprintf("host=%s port=%d user=%s password=%s sslmode=%s",
-		s.Host, s.Port, s.Username, s.Password, sslMode)
-}
+	superUserSettings, err := int.SuperUser.into()
+	if err != nil {
+		return nil, err
+	}
 
-func (s *DatabaseSettings) WithDb() string {
-	return fmt.Sprintf("%s dbname=%s", s.WithoutDb(), s.DatabaseName)
-}
+	authSettings, err := int.Auth.into()
+	if err != nil {
+		return nil, err
+	}
 
-type SuperUserSettings struct {
-	Password string `yaml:"password"`
-}
-
-type AWSSettings struct {
-	BUCKET_NAME string
-	ID          string
-	SECRET      string
+	return &Settings{
+		Application: int.Application,
+		Database:    *databaseSettings,
+		SuperUser:   *superUserSettings,
+		Auth:        *authSettings,
+	}, nil
 }
 
 func configAWS() AWSSettings {
@@ -88,8 +64,7 @@ const (
 	EnvironmentProduction Environment = "production"
 )
 
-func GetConfiguration(path string) (Settings, error) {
-
+func GetConfiguration(path string) (*Settings, error) {
 	var environment Environment
 	if env := os.Getenv("APP_ENVIRONMENT"); env != "" {
 		environment = Environment(env)
@@ -100,64 +75,9 @@ func GetConfiguration(path string) (Settings, error) {
 	v := viper.New()
 	v.SetConfigType("yaml")
 	v.AddConfigPath(path)
-	AWSSettings := configAWS()
 	if environment == EnvironmentLocal {
-		var settings Settings
-
-		v.SetConfigName(string(environment))
-
-		if err := v.ReadInConfig(); err != nil {
-			return settings, fmt.Errorf("failed to read %s configuration: %w", string(environment), err)
-		}
-
-		if err := v.Unmarshal(&settings); err != nil {
-			return settings, fmt.Errorf("failed to unmarshal configuration: %w", err)
-		}
-		settings.AWS = AWSSettings
-		return settings, nil
+		return readLocal(v)
 	} else {
-		var prodSettings ProductionSettings
-
-		v.SetConfigName(string(environment))
-
-		if err := v.ReadInConfig(); err != nil {
-			return Settings{}, fmt.Errorf("failed to read %s configuration: %w", string(environment), err)
-		}
-
-		if err := v.Unmarshal(&prodSettings); err != nil {
-			return Settings{}, fmt.Errorf("failed to unmarshal configuration: %w", err)
-		}
-
-		appPrefix := "APP_"
-		applicationPrefix := fmt.Sprintf("%sAPPLICATION__", appPrefix)
-		dbPrefix := fmt.Sprintf("%sDATABASE__", appPrefix)
-		superUserPrefix := fmt.Sprintf("%sSUPERUSER__", appPrefix)
-
-		portStr := os.Getenv(fmt.Sprintf("%sPORT", appPrefix))
-		portInt, err := strconv.ParseUint(portStr, 10, 16)
-
-		if err != nil {
-			return Settings{}, fmt.Errorf("failed to parse port: %w", err)
-		}
-
-		return Settings{
-			Application: ApplicationSettings{
-				Port:    uint16(portInt),
-				Host:    prodSettings.Application.Host,
-				BaseUrl: os.Getenv(fmt.Sprintf("%sBASE_URL", applicationPrefix)),
-			},
-			Database: DatabaseSettings{
-				Username:     os.Getenv(fmt.Sprintf("%sUSERNAME", dbPrefix)),
-				Password:     os.Getenv(fmt.Sprintf("%sPASSWORD", dbPrefix)),
-				Host:         os.Getenv(fmt.Sprintf("%sHOST", dbPrefix)),
-				Port:         uint(portInt),
-				DatabaseName: os.Getenv(fmt.Sprintf("%sDATABASE_NAME", dbPrefix)),
-				RequireSSL:   prodSettings.Database.RequireSSL,
-			},
-			SuperUser: SuperUserSettings{
-				Password: os.Getenv(fmt.Sprintf("%sPASSWORD", superUserPrefix)),
-			},
-			AWS: AWSSettings,
-		}, nil
+		return readProd(v)
 	}
 }

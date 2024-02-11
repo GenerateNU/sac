@@ -2,11 +2,16 @@ name: Auto Assign Author
 
 on:
   pull_request:
-    types: [opened, ready_for_review, reopened]
+    types: [opened, reopened]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   auto-add-assignee:
     runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]' && github.event.pull_request.user.login != 'dependabot[bot]'
     steps:
       - uses: kentaro-m/auto-assign-action@v1.2.6
         with:

@@ -11,6 +11,7 @@
 - [Node.js](https://nodejs.org/en/)
 - [Yarn](https://yarnpkg.com/)
 - [Go](https://golang.org/)
+   > Do not install through brew, use the official website
 - [Docker](https://www.docker.com/)
 - [PostgreSQL](https://www.postgresql.org/)
   - Install through brew: `brew install postgresql@15`
@@ -22,20 +23,20 @@
 
 1. **Clone the repository**
 
-   ```bash
+   ```console
    git clone git@github.com:GenerateNU/sac.git
    ```
 
 2. **Install dependencies**
 
-   ```bash
+   ```console
    cd frontend/* 
    yarn install
    ```
 
    - If you get an error about `expo-cli` not being installed, run `yarn global add expo-cli` and then run `yarn install` again.
 
-   ```bash
+   ```console
    cd server
    go get ./...
    ```
@@ -46,7 +47,7 @@
 
 1. **Create client build**
 
-   ```bash
+   ```console
    cd frotend/sac-mobile
    eas login
    eas build:configure
@@ -61,7 +62,7 @@
 
 3. **Start the client**
 
-   ```bash
+   ```console
    cd frontend/sac-mobile
    npx expo start --dev-client
    ```
@@ -74,40 +75,40 @@
 
    - MacOS
 
-   ```bash
+   ```console
    brew services start postgresql@15
    ```
 
    - Windows
 
-   ```bash
+   ```console
    pg_ctl -D /usr/local/var/postgres start
    ```
 
 2. **Create a user**
 
-   ```bash
+   ```console
    createdb
    ```
 
 3. **Create a database**
 
-   ```bash
+   ```console
    psql // opens psql shell
    CREATE DATABASE sac;
    ```
 
 4. **Create a user**
 
-   ```bash
+   ```console
    createuser postgres -U <your username>
    ```
 
 # Commands
 
-### React Native
+## React Native
 
-  ```bash
+  ```console
    npx expo start --dev-client // runnning dev client
    npx expo start --dev-client --ios // specific platform
    yarn format // format code
@@ -115,9 +116,9 @@
    yarn test // run tests
    ```
 
-### Go
+## Go
 
-   ```bash
+   ```console
    go run main.go // run server
    go test ./... // run tests
    go fmt ./... // format code
@@ -128,20 +129,38 @@
 
    To install use `./install.sh` and then run `sac-cli` to see all commands.
 
-   ```bash
-   sac-cli migrate // run migrations
-   sac-cli reset // reset database
-   sac-cli swagger // generate swagger docs
-   sac-cli lint // lint code
-   sac-cli format // format code
-   sac-cli test // run tests
+  ```console
+   NAME:
+      sac-cli - CLI for SAC
+
+   USAGE:
+      sac-cli [global options] command [command options] 
+
+   COMMANDS:
+      swagger, swag  Updates the swagger documentation
+      be             Run the backend
+      test, t        Runs tests
+      format, f      Runs formatting tools
+      lint, l        Runs linting tools
+      help, h        Shows a list of commands or help for one command
+      Database Operations:
+         clean      Remove databases used for testing
+         migrate    Migrate the database, creating tables and relationships
+         insert, i  Inserts mock data into the database
+         reset, r   Resets the database, dropping all tables, clearing data, and re-running migrations   
+            * can use --data to just reset data and not drop tables
+         drop, d    Drop data with a migration or drops the entire database
+            * can use --data to just drop data and not drop tables
+
+   GLOBAL OPTIONS:
+      --help, -h  show help
    ```
 
 # Git Flow
 
 1. **Create a new branch**
 
-   ```bash
+   ```console
    git checkout -b <branch-name> // this is determined by your ticket name
    ```
 
@@ -149,7 +168,7 @@
 
    - **Commit changes**
 
-     ```bash
+     ```console
      git add .
      git commit
      ```
@@ -160,13 +179,13 @@
 
 3. **Push changes to GitHub**
 
-   ```bash
+   ```console
    git push
    ```
 
    or
 
-   ```bash
+   ```console
    git push origin <branch-name>
    ```
 

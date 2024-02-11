@@ -10,13 +10,12 @@ import (
 	"github.com/GenerateNU/sac/backend/src/utilities"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
 
 type UserServiceInterface interface {
-	GetAllUsers() ([]models.User, *errors.Error)
 	CreateUser(userBody models.CreateUserRequestBody) (*models.User, *errors.Error)
+	GetUsers(limit string, page string) ([]models.User, *errors.Error)
 	GetUser(id string) (*models.User, *errors.Error)
 	UpdateUser(id string, userBody models.UpdateUserRequestBody) (*models.User, *errors.Error)
 	DeleteUser(id string) *errors.Error
@@ -27,24 +26,23 @@ type UserService struct {
 	Validate *validator.Validate
 }
 
-// Gets all users (including soft deleted users) for testing
-func (u *UserService) GetAllUsers() ([]models.User, *errors.Error) {
-	return transactions.GetAllUsers(u.DB)
+func NewUserService(db *gorm.DB, validate *validator.Validate) *UserService {
+	return &UserService{DB: db, Validate: validate}
 }
 
 func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models.User, *errors.Error) {
 	if err := u.Validate.Struct(userBody); err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidateUser}
+		return nil, &errors.FailedToValidateUser
 	}
 
-	user, err := utilities.MapResponseToModel(userBody, &models.User{})
+	user, err := utilities.MapRequestToModel(userBody, &models.User{})
 	if err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusInternalServerError, Message: errors.FailedToMapResposeToModel}
+		return nil, &errors.FailedToMapRequestToModel
 	}
 
 	passwordHash, err := auth.ComputePasswordHash(userBody.Password)
 	if err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusInternalServerError, Message: errors.InternalServerError}
+		return nil, &errors.FailedToComputePasswordHash
 	}
 
 	user.Email = strings.ToLower(userBody.Email)
@@ -53,46 +51,54 @@ func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models
 	return transactions.CreateUser(u.DB, user)
 }
 
-func (u *UserService) GetUser(id string) (*models.User, *errors.Error) {
-	idAsUint, err := utilities.ValidateID(id)
+func (u *UserService) GetUsers(limit string, page string) ([]models.User, *errors.Error) {
+	limitAsInt, err := utilities.ValidateNonNegative(limit)
 	if err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidateID}
+		return nil, &errors.FailedToValidateLimit
 	}
 
-	return transactions.GetUser(u.DB, *idAsUint)
+	pageAsInt, err := utilities.ValidateNonNegative(page)
+	if err != nil {
+		return nil, &errors.FailedToValidatePage
+	}
+
+	offset := (*pageAsInt - 1) * *limitAsInt
+
+	return transactions.GetUsers(u.DB, *limitAsInt, offset)
+}
+
+func (u *UserService) GetUser(id string) (*models.User, *errors.Error) {
+	idAsUUID, err := utilities.ValidateID(id)
+	if err != nil {
+		return nil, &errors.FailedToValidateID
+	}
+
+	return transactions.GetUser(u.DB, *idAsUUID)
 }
 
 func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBody) (*models.User, *errors.Error) {
-	idAsUint, err := utilities.ValidateID(id)
-	if err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidateID}
+	idAsUUID, idErr := utilities.ValidateID(id)
+	if idErr != nil {
+		return nil, idErr
 	}
 
 	if err := u.Validate.Struct(userBody); err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidateUser}
+		return nil, &errors.FailedToValidateUser
 	}
 
-	passwordHash, err := auth.ComputePasswordHash(userBody.Password)
+	user, err := utilities.MapRequestToModel(userBody, &models.User{})
 	if err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusInternalServerError, Message: errors.InternalServerError}
+		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	user, err := utilities.MapResponseToModel(userBody, &models.User{})
-	if err != nil {
-		return nil, &errors.Error{StatusCode: fiber.StatusInternalServerError, Message: errors.FailedToMapResposeToModel}
-	}
-
-	user.PasswordHash = *passwordHash
-
-	return transactions.UpdateUser(u.DB, *idAsUint, *user)
+	return transactions.UpdateUser(u.DB, *idAsUUID, *user)
 }
 
-// Delete user with a specific id
 func (u *UserService) DeleteUser(id string) *errors.Error {
-	idAsInt, err := utilities.ValidateID(id)
+	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
-		return &errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidateID}
+		return err
 	}
 
-	return transactions.DeleteUser(u.DB, *idAsInt)
+	return transactions.DeleteUser(u.DB, *idAsUUID)
 }

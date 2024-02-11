@@ -1,16 +1,42 @@
 package errors
 
-const (
-	FailedToUpsertPointOfContact = "failed to update or insert point of contact"
-	FailedToGetAllPointOfContact = "failed to get all point of contact"
-	PointOfContactNotFound = "point of contact not found"
-	FailedToDeletePointOfContact = "failed to delete point of contact"
-	FailedToValidatePointOfContact = "failed to validate point of contact"
-	FailedToValidateEmail = "failed to validate email"
-	FailedToMapResponseToModel = "failed to map response to model"
-	FailedToGetAPointOfContact = "failed to get a point of contact"
-	FailedToValidatePointOfContactId = "failed to validate point of contact id"
-	FailedToValidateClubId = "failed to validate club id"
-	ClubNotFound = "club not found"
-	FailedToGetClub = "failed to get club"
+import "github.com/gofiber/fiber/v2"
+
+var (
+	FailedToUpsertPointOfContact = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to update or insert point of contact",
+	}
+	FailedToGetAllPointOfContact = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get all point of contact",
+	}
+	PointOfContactNotFound = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "point of contact not found",
+	}
+	FailedToDeletePointOfContact = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to delete point of contact",
+	}
+	FailedToValidatePointOfContact = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to validate point of contact",
+	}
+	FailedToValidateEmail = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "failed to validate email",
+	}
+	FailedToMapResponseToModel = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "failed to map response to model",
+	}
+	FailedToGetAPointOfContact = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get a point of contact",
+	}
+	FailedToValidatePointOfContactId = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "failed to validate point of contact id",
+	}
 )

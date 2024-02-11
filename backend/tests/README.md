@@ -21,11 +21,11 @@ Here is an example of creating a `TestRequest`, notice how instead of saying `He
 
 ```go
 TestRequest{
-  Method: "POST",
+  Method: fiber.MethodPost,
   Path:   "/api/v1/tags/",
   Body: &map[string]interface{}{
    "name":        tagName,
-   "category_id": 1,
+   "category_id": uuid.New(),
   },
 }
 ```
@@ -38,9 +38,9 @@ Say you want to test hitting the `[APP_ADDRESS]/health` endpoint with a GET requ
 
 ```go
 TestRequest{
-  Method: "GET",
+  Method: fiber.MethodGet,
   Path:   "/health",
- }.TestOnStatus(t, nil, 200).Close()
+ }.TestOnStatus(t, nil, fiber.StatusOK).Close()
 ```
 
 ## Testing that a Request Returns a XXX Status Code and Assert Something About the Database
@@ -49,36 +49,43 @@ Say you want to test that a creating a catgory with POST `[APP_ADDRESS]/api/v1/c
 
 ```go
 TestRequest{
-  Method: "POST",
+  Method: fiber.MethodPost,
   Path:   "/api/v1/categories/",
-  Body: &map[string]interface{}{
-   "category_name": categoryName,
-  },
- }.TestOnStatusAndDB(t, nil,
-  DBTesterWithStatus{
-   Status:   201,
-   DBTester: AssertRespCategorySameAsDBCategory,
+  Body: SampleCategoryFactory(),
+ }.TestOnStatusAndTester(t, nil,
+  TesterWithStatus{
+   Status:   fiber.StatusCreated,
+   DBTester: AssertSampleCategoryBodyRespDB,
   },
  ).Close()
 ```
 
 ### DBTesters
 
-Often times there are common assertions you want to make about the database, for example, if the object in the response is the same as the object in the database. We can create a lambda function that takes in the `TestApp`, `*assert.A`, and `*http.Response` and makes the assertions we want. We can then pass this function to the `DBTesterWithStatus` struct.
+Often times there are common assertions you want to make about the database, for example, if the object in the response is the same as the object in the database. We can create a lambda function that takes in the `TestApp`, `*assert.A`, and `*http.Response` and makes the assertions we want. We can then pass this function to the `TesterWithStatus` struct.
 
 ```go
-var AssertRespCategorySameAsDBCategory = func(app TestApp, assert *assert.A, resp *http.Response) {
+func AssertSampleCategoryBodyRespDB(app TestApp, assert *assert.A, resp *http.Response) {
+ AssertCategoryWithIDBodyRespDB(app, assert, resp, 1, SampleCategoryFactory())
+}
+
+func AssertCategoryWithIDBodyRespDB(app TestApp, assert *assert.A, resp *http.Response, id uint, body *map[string]interface{}) {
  var respCategory models.Category
 
  err := json.NewDecoder(resp.Body).Decode(&respCategory)
 
  assert.NilError(err)
 
- dbCategory, err := transactions.GetCategory(app.Conn, respCategory.ID)
+ var dbCategory models.Category
+
+ err = app.Conn.First(&dbCategory, id).Error
 
  assert.NilError(err)
 
- assert.Equal(dbCategory, &respCategory)
+ assert.Equal(dbCategory.ID, respCategory.ID)
+ assert.Equal(dbCategory.Name, respCategory.Name)
+
+ assert.Equal((*body)["name"].(string), dbCategory.Name)
 }
 ```
 
@@ -86,58 +93,24 @@ var AssertRespCategorySameAsDBCategory = func(app TestApp, assert *assert.A, res
 
 Since the test suite creates a new database for each test, we can have a deterministic database state for each test. However, what if we have a multi step test that depends on the previous steps database state? That is where `ExistingAppAssert` comes in! This will allow us to keep using the database from a previous step in the test.
 
-Consider this example, to create a tag, we need to create a category first. This is a multi step test, so we need to use `ExistingAppAssert` to keep the database state from the previous step.
-
-```go
-appAssert := TestRequest{
-  Method: "POST",
-  Path:   "/api/v1/categories/",
-  Body: &map[string]interface{}{
-   "category_name": categoryName,
-  },
- }.TestOnStatusAndDB(t, nil,
-  DBTesterWithStatus{
-   Status:   201,
-   DBTester: AssertRespCategorySameAsDBCategory,
-  },
- )
-
-TestRequest{
-  Method: "POST",
-  Path:   "/api/v1/tags/",
-  Body: &map[string]interface{}{
-   "name":        tagName,
-   "category_id": 1,
-  },
- }.TestOnStatusAndDB(t, &appAssert,
-  DBTesterWithStatus{
-   Status:   201,
-   DBTester: AssertRespTagSameAsDBTag,
-  },
- ).Close()
-```
-
 ### Why Close?
 
 This closes the connection to the database. This is important because if you don't close the connection, we will run out of available connections and the tests will fail. **Call this on the last test request of a test**
 
-## Testing that a Request Returns a XXX Status Code, Assert Something About the Message, and Assert Something About the Database
+## Testing that a Request Returns the Correct Error (Status Code and Message), and Assert Something About the Database
 
-Say you want to test a bad request to POST `[APP_ADDRESS]/api/v1/categories/` endpoint returns a `400` status code, the message is `failed to process the request`, and that a category was not created.
+Say you want to test a bad request to POST `[APP_ADDRESS]/api/v1/categories/` endpoint returns a `400` status code, the message is `failed to process the request`, and that a category was not created. We can leverage our errors defined in the error package to do this!
 
 ```go
-TestRequest{
-  Method: "POST",
+ TestRequest{
+  Method: fiber.MethodPost,
   Path:   "/api/v1/categories/",
   Body: &map[string]interface{}{
-   "category_name": 1231,
+   "name": 1231,
   },
  }.TestOnStatusMessageAndDB(t, nil,
-  StatusMessageDBTester{
-   MessageWithStatus: MessageWithStatus{
-    Status:  400,
-    Message: "failed to process the request",
-   },
+  ErrorWithDBTester{
+   Error:    errors.FailedToParseRequestBody,
    DBTester: AssertNoCategories,
   },
  ).Close()

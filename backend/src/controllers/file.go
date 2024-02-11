@@ -23,18 +23,18 @@ func (f *FileController) CreateFile(c *fiber.Ctx) error {
 	var file models.File
 	formFile, err := c.FormFile("img")
 	if err != nil {
-		return errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToProcessRequest}.FiberError(c)
+		return errors.FailedToProcessRequest.FiberError(c)
 	}
 	fileData, err := formFile.Open()
 	if err != nil {
-		return errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToOpenFile}.FiberError(c)
+		return errors.FailedToOpenFile.FiberError(c)
 	}
 	buff := make([]byte, 512)
 	if _, err = fileData.Read(buff); err != nil {
-		return errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.InvalidImageFormat}.FiberError(c)
+		return errors.InvalidImageFormat.FiberError(c)
 	}
 	if !((http.DetectContentType(buff) == "image/png") || (http.DetectContentType(buff) == "image/jpeg")) {
-		return errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToValidatedData}.FiberError(c)
+		return errors.FailedToValidatedData.FiberError(c)
 	}
 	defer fileData.Close()
 	fileCreated, errFile := f.fileService.CreateFile(file, formFile, fileData)

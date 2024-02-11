@@ -1,13 +1,14 @@
 package controllers
 
 import (
+	"strconv"
+
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
 	"github.com/gofiber/fiber/v2"
 )
 
-// Point of Contact
 type ClubController struct {
 	clubService services.ClubServiceInterface
 }
@@ -16,10 +17,70 @@ func NewClubController(clubService services.ClubServiceInterface) *ClubControlle
 	return &ClubController{clubService: clubService}
 }
 
+func (cl *ClubController) GetAllClubs(c *fiber.Ctx) error {
+	defaultLimit := 10
+	defaultPage := 1
+
+	clubs, err := cl.clubService.GetClubs(c.Query("limit", strconv.Itoa(defaultLimit)), c.Query("page", strconv.Itoa(defaultPage)))
+	if err != nil {
+		return err.FiberError(c)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(clubs)
+}
+
+func (cl *ClubController) CreateClub(c *fiber.Ctx) error {
+	var clubBody models.CreateClubRequestBody
+	if err := c.BodyParser(&clubBody); err != nil {
+		return errors.FailedToParseRequestBody.FiberError(c)
+	}
+
+	club, err := cl.clubService.CreateClub(clubBody)
+	if err != nil {
+		return err.FiberError(c)
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(club)
+}
+
+func (cl *ClubController) GetClub(c *fiber.Ctx) error {
+	club, err := cl.clubService.GetClub(c.Params("clubID"))
+	if err != nil {
+		return err.FiberError(c)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(club)
+}
+
+func (cl *ClubController) UpdateClub(c *fiber.Ctx) error {
+	var clubBody models.UpdateClubRequestBody
+
+	if err := c.BodyParser(&clubBody); err != nil {
+		return errors.FailedToParseRequestBody.FiberError(c)
+	}
+
+	updatedClub, err := cl.clubService.UpdateClub(c.Params("clubID"), clubBody)
+	if err != nil {
+		return err.FiberError(c)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(updatedClub)
+}
+
+func (cl *ClubController) DeleteClub(c *fiber.Ctx) error {
+	err := cl.clubService.DeleteClub(c.Params("clubID"))
+	if err != nil {
+		return err.FiberError(c)
+	}
+	return c.SendStatus(fiber.StatusNoContent)
+}
+
+// Point of Contact
+
 // UpsertPointofContact godoc
 //
-// @Summary		Creates or Updates a User
-// @Description	Creates or Updates a User
+// @Summary		Creates or Updates a PointofContact
+// @Description	Creates or Updates a PointofContact
 // @ID			upsert-point-of-contact
 // @Tags      	club
 // @Accept      json
@@ -34,15 +95,14 @@ func NewClubController(clubService services.ClubServiceInterface) *ClubControlle
 func (u *ClubController) UpsertPointOfContact(c *fiber.Ctx) error {
 	var pointOfContactBody models.CreatePointOfContactBody
 	if err := c.BodyParser(&pointOfContactBody); err != nil {
-		return errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToParseRequestBody}.FiberError(c)
+		return errors.FailedToParseRequestBody.FiberError(c)
 	}
-	pointOfContact, err := u.clubService.UpsertPointOfContact(c.Params("id"), pointOfContactBody)
+	pointOfContact, err := u.clubService.UpsertPointOfContact(c.Params("clubID"), pointOfContactBody)
 	if err != nil {
 		return err.FiberError(c)
 	}
 	return c.Status(fiber.StatusOK).JSON(pointOfContact)
 }
-
 
 // GetAllPointOfContact godoc
 //
@@ -59,14 +119,13 @@ func (u *ClubController) UpsertPointOfContact(c *fiber.Ctx) error {
 // @Router		api/v1/clubs/:id/poc/:pocId [get]
 
 func (u *ClubController) GetAllPointOfContact(c *fiber.Ctx) error {
-	clubId := c.Params("id")
+	clubId := c.Params("clubID")
 	pointOfContact, err := u.clubService.GetAllPointOfContacts(clubId)
 	if err != nil {
 		return err.FiberError(c)
 	}
 	return c.Status(fiber.StatusOK).JSON(pointOfContact)
 }
-
 
 // GetPointOfContact godoc
 //
@@ -82,15 +141,14 @@ func (u *ClubController) GetAllPointOfContact(c *fiber.Ctx) error {
 // @Router		api/v1/clubs/:id/poc/:pocId [get]
 
 func (u *ClubController) GetPointOfContact(c *fiber.Ctx) error {
-	clubId := c.Params("id")
-	pocId := c.Params("pocId")
+	clubId := c.Params("clubID")
+	pocId := c.Params("pocID")
 	pointOfContact, err := u.clubService.GetPointOfContact(pocId, clubId)
 	if err != nil {
 		return err.FiberError(c)
 	}
 	return c.Status(fiber.StatusOK).JSON(pointOfContact)
 }
-
 
 // DeletePointOfContact godoc
 //
@@ -104,8 +162,8 @@ func (u *ClubController) GetPointOfContact(c *fiber.Ctx) error {
 // @Router		api/v1/clubs/:id/poc/:pocId [delete]
 
 func (u *ClubController) DeletePointOfContact(c *fiber.Ctx) error {
-	clubId := c.Params("id")
-	pocId := c.Params("pocId")
+	clubId := c.Params("clubID")
+	pocId := c.Params("pocID")
 	err := u.clubService.DeletePointOfContact(pocId, clubId)
 	if err != nil {
 		return err.FiberError(c)

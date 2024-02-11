@@ -1,9 +1,38 @@
 package errors
 
-const (
-	FailedToValidateCategory = "failed to validate category"
-	FailedToCreateCategory   = "failed to create category"
-	FailedToGetCategory      = "failed to get category"
-	CategoryAlreadyExists    = "category already exists"
-	CategoryNotFound         = "category not found"
+import "github.com/gofiber/fiber/v2"
+
+var (
+	FailedToValidateCategory = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "failed to validate category",
+	}
+	FailedToCreateCategory = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to create category",
+	}
+	FailedToGetCategories = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get categories",
+	}
+	FailedToGetCategory = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get category",
+	}
+	FailedToUpdateCategory = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to update category",
+	}
+	FailedToDeleteCategory = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to delete category",
+	}
+	CategoryAlreadyExists = Error{
+		StatusCode: fiber.StatusConflict,
+		Message:    "category already exists",
+	}
+	CategoryNotFound = Error{
+		StatusCode: fiber.StatusNotFound,
+		Message:    "category not found",
+	}
 )

@@ -2,11 +2,15 @@ name: Auto Request Review
 
 on:
   pull_request:
-    types: [opened, ready_for_review, reopened]
+    types: [opened, reopened]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   auto-request-review:
     runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]' && github.event.pull_request.user.login != 'dependabot[bot]'
     steps:
       - name: Request review from the TLs and random team members
         uses: necojackarc/auto-request-review@v0.12.0

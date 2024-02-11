@@ -4,18 +4,44 @@ import (
 	"regexp"
 	"strconv"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/GenerateNU/sac/backend/src/errors"
+	"github.com/GenerateNU/sac/backend/src/models"
+
+	"github.com/google/uuid"
+	"github.com/mcnijman/go-emailaddress"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/mcnijman/go-emailaddress"
 )
 
-func RegisterCustomValidators(validate *validator.Validate) {
-	validate.RegisterValidation("neu_email", ValidateEmail)
-	validate.RegisterValidation("password", ValidatePassword)
+func RegisterCustomValidators() (*validator.Validate, error) {
+	validate := validator.New(validator.WithRequiredStructEnabled())
+
+	if err := validate.RegisterValidation("neu_email", validateEmail); err != nil {
+		return nil, err
+	}
+
+	if err := validate.RegisterValidation("password", validatePassword); err != nil {
+		return nil, err
+	}
+
+	if err := validate.RegisterValidation("mongo_url", validateMongoURL); err != nil {
+		return nil, err
+	}
+
+	if err := validate.RegisterValidation("s3_url", validateS3URL); err != nil {
+		return nil, err
+	}
+
+	if err := validate.RegisterValidation("contact_pointer", func(fl validator.FieldLevel) bool {
+		return validateContactPointer(validate, fl)
+	}); err != nil {
+		return nil, err
+	}
+
+	return validate, nil
 }
 
-func ValidateEmail(fl validator.FieldLevel) bool {
+func validateEmail(fl validator.FieldLevel) bool {
 	email, err := emailaddress.Parse(fl.Field().String())
 	if err != nil {
 		return false
@@ -28,13 +54,7 @@ func ValidateEmail(fl validator.FieldLevel) bool {
 	return true
 }
 
-func ValidateGenericEmail(email string) bool {
-	_, err := emailaddress.Parse(email)
-	return err == nil
-}
-
-
-func ValidatePassword(fl validator.FieldLevel) bool {
+func validatePassword(fl validator.FieldLevel) bool {
 	if len(fl.Field().String()) < 8 {
 		return false
 	}
@@ -43,21 +63,42 @@ func ValidatePassword(fl validator.FieldLevel) bool {
 	return specialCharactersMatch && numbersMatch
 }
 
-// Validates that an id follows postgres uint format, returns a uint otherwise returns an error
-func ValidateID(id string) (*uint, error) {
-	idAsInt, err := strconv.Atoi(id)
+func validateMongoURL(fl validator.FieldLevel) bool {
+	return true
+}
 
-	errMsg := "failed to validate id"
+func validateS3URL(fl validator.FieldLevel) bool {
+	return true
+}
 
+func validateContactPointer(validate *validator.Validate, fl validator.FieldLevel) bool {
+	contact, ok := fl.Parent().Interface().(models.PutContactRequestBody)
+	if !ok {
+		return false
+	}
+	switch contact.Type {
+	case models.Email:
+		return validate.Var(contact.Content, "email") == nil
+	default:
+		return validate.Var(contact.Content, "http_url") == nil
+	}
+}
+
+func ValidateID(id string) (*uuid.UUID, *errors.Error) {
+	idAsUUID, err := uuid.Parse(id)
 	if err != nil {
-		return nil, fiber.NewError(fiber.StatusBadRequest, errMsg)
+		return nil, &errors.FailedToValidateID
 	}
 
-	if idAsInt < 1 { // postgres ids start at 1
-		return nil, fiber.NewError(fiber.StatusBadRequest, errMsg)
+	return &idAsUUID, nil
+}
+
+func ValidateNonNegative(value string) (*int, *errors.Error) {
+	valueAsInt, err := strconv.Atoi(value)
+
+	if err != nil || valueAsInt < 0 {
+		return nil, &errors.FailedToValidateNonNegativeValue
 	}
 
-	idAsUint := uint(idAsInt)
-
-	return &idAsUint, nil
+	return &valueAsInt, nil
 }
