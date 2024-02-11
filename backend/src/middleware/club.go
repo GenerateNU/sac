@@ -32,7 +32,7 @@ func (m *MiddlewareService) ClubAuthorizeById(c *fiber.Ctx) error {
 		return errors.FailedToParseAccessToken.FiberError(c)
 	}
 
-	// use club_id to get the list of admin for a certain club
+	// use clubID to get the list of admin for a certain club
 	clubAdmin, clubErr := transactions.GetAdminIDs(m.DB, *clubUUID)
 	if clubErr != nil {
 		return err

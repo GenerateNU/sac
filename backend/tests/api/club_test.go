@@ -152,7 +152,7 @@ func CreateSampleClub(existingAppAssert h.ExistingAppAssert) (eaa h.ExistingAppA
 		},
 	)
 
-	return existingAppAssert, newAppAssert.App.TestUser.UUID, sampleClubUUID
+	return newAppAssert, newAppAssert.App.TestUser.UUID, sampleClubUUID
 }
 
 func TestCreateClubWorks(t *testing.T) {

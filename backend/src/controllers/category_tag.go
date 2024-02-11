@@ -16,11 +16,11 @@ func NewCategoryTagController(categoryTagService services.CategoryTagServiceInte
 	return &CategoryTagController{categoryTagService: categoryTagService}
 }
 
-func (t *CategoryTagController) GetTagsByCategory(c *fiber.Ctx) error {
+func (ct *CategoryTagController) GetTagsByCategory(c *fiber.Ctx) error {
 	defaultLimit := 10
 	defaultPage := 1
 
-	tags, err := t.categoryTagService.GetTagsByCategory(c.Params("categoryID"), c.Query("limit", strconv.Itoa(defaultLimit)), c.Query("page", strconv.Itoa(defaultPage)))
+	tags, err := ct.categoryTagService.GetTagsByCategory(c.Params("categoryID"), c.Query("limit", strconv.Itoa(defaultLimit)), c.Query("page", strconv.Itoa(defaultPage)))
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -28,8 +28,8 @@ func (t *CategoryTagController) GetTagsByCategory(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(&tags)
 }
 
-func (t *CategoryTagController) GetTagByCategory(c *fiber.Ctx) error {
-	tag, err := t.categoryTagService.GetTagByCategory(c.Params("categoryID"), c.Params("tagID"))
+func (ct *CategoryTagController) GetTagByCategory(c *fiber.Ctx) error {
+	tag, err := ct.categoryTagService.GetTagByCategory(c.Params("categoryID"), c.Params("tagID"))
 	if err != nil {
 		return err.FiberError(c)
 	}

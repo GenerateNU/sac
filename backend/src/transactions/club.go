@@ -73,3 +73,54 @@ func GetClub(db *gorm.DB, id uuid.UUID) (*models.Club, *errors.Error) {
 
 	return &club, nil
 }
+
+func UpdateClub(db *gorm.DB, id uuid.UUID, club models.Club) (*models.Club, *errors.Error) {
+	result := db.Model(&models.User{}).Where("id = ?", id).Updates(club)
+	if result.Error != nil {
+		if stdliberrors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, &errors.UserNotFound
+		} else {
+			return nil, &errors.FailedToUpdateClub
+		}
+	}
+	var existingClub models.Club
+
+	err := db.First(&existingClub, id).Error
+	if err != nil {
+		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, &errors.ClubNotFound
+		} else {
+			return nil, &errors.FailedToCreateClub
+		}
+	}
+
+	if err := db.Model(&existingClub).Updates(&club).Error; err != nil {
+		return nil, &errors.FailedToUpdateUser
+	}
+
+	return &existingClub, nil
+}
+
+func DeleteClub(db *gorm.DB, id uuid.UUID) *errors.Error {
+	if result := db.Delete(&models.Club{}, id); result.RowsAffected == 0 {
+		if result.Error == nil {
+			return &errors.ClubNotFound
+		} else {
+			return &errors.FailedToDeleteClub
+		}
+	}
+	return nil
+}
+
+func GetUserFollowersForClub(db *gorm.DB, club_id uuid.UUID) ([]models.User, *errors.Error) {
+	var users []models.User
+	club, err := GetClub(db, club_id)
+	if err != nil {
+		return nil, &errors.ClubNotFound
+	}
+
+	if err := db.Model(&club).Association("Follower").Find(&users); err != nil {
+		return nil, &errors.FailedToGetClubFollowers
+	}
+	return users, nil
+}

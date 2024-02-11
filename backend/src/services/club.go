@@ -16,6 +16,7 @@ type ClubServiceInterface interface {
 	CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, *errors.Error)
 	UpdateClub(id string, clubBody models.UpdateClubRequestBody) (*models.Club, *errors.Error)
 	DeleteClub(id string) *errors.Error
+	GetUserFollowersForClub(id string) ([]models.User, *errors.Error)
 }
 
 type ClubService struct {
@@ -90,4 +91,12 @@ func (c *ClubService) DeleteClub(id string) *errors.Error {
 	}
 
 	return transactions.DeleteClub(c.DB, *idAsUUID)
+}
+
+func (c *ClubService) GetUserFollowersForClub(id string) ([]models.User, *errors.Error) {
+	idAsUUID, err := utilities.ValidateID(id)
+	if err != nil {
+		return nil, &errors.FailedToValidateID
+	}
+	return transactions.GetUserFollowersForClub(c.DB, *idAsUUID)
 }

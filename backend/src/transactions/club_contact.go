@@ -2,7 +2,6 @@ package transactions
 
 import (
 	stdliberrors "errors"
-	"fmt"
 
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
@@ -17,7 +16,6 @@ func PutClubContact(db *gorm.DB, contact models.Contact) (*models.Contact, *erro
 		DoUpdates: clause.AssignmentColumns([]string{"content"}),
 	}).Create(&contact).Error
 	if err != nil {
-		fmt.Println(err)
 		if stdliberrors.Is(err, gorm.ErrRecordNotFound) || stdliberrors.Is(err, gorm.ErrForeignKeyViolated) {
 			return nil, &errors.ClubNotFound
 		} else {

@@ -55,6 +55,19 @@ func GetUser(db *gorm.DB, id uuid.UUID) (*models.User, *errors.Error) {
 	return &user, nil
 }
 
+func GetUserWithFollowers(db *gorm.DB, id uuid.UUID) (*models.User, *errors.Error) {
+	var user models.User
+	if err := db.Preload("Follower").Omit("password_hash").First(&user, id).Error; err != nil {
+		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, &errors.UserNotFound
+		} else {
+			return nil, &errors.FailedToGetUser
+		}
+	}
+
+	return &user, nil
+}
+
 func UpdateUser(db *gorm.DB, id uuid.UUID, user models.User) (*models.User, *errors.Error) {
 	var existingUser models.User
 
