@@ -151,7 +151,7 @@ func TestSignTokenSuccess(t *testing.T) {
 
 	signedToken, authErr := auth.SignToken(token, key)
 
-	assert.Assert(authErr == nil)
+	assert.NilError(authErr == nil)
 
 	assert.Assert(signedToken != nil)
 }

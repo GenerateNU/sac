@@ -8,7 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func Club(router fiber.Router, clubService services.ClubServiceInterface, middlewareService middleware.MiddlewareInterface) {
+func Club(router fiber.Router, clubService services.ClubServiceInterface, middlewareService middleware.MiddlewareInterface) fiber.Router {
 	clubController := controllers.NewClubController(clubService)
 
 	clubs := router.Group("/clubs")
@@ -22,5 +22,7 @@ func Club(router fiber.Router, clubService services.ClubServiceInterface, middle
 
 	clubsID.Get("/", clubController.GetClub)
 	clubsID.Patch("/", middlewareService.Authorize(types.ClubWrite), clubController.UpdateClub)
-	clubsID.Delete("/", middleware.SuperSkipper(middlewareService.Authorize(types.ClubDelete)), clubController.DeleteClub)
+	clubsID.Delete("/", middlewareService.Authorize(types.ClubDelete), clubController.DeleteClub)
+
+	return clubsID
 }

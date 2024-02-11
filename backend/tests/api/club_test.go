@@ -128,8 +128,6 @@ func AssertClubWithBodyRespDBMostRecent(eaa h.ExistingAppAssert, resp *http.Resp
 
 func AssertSampleClubBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, userID uuid.UUID) uuid.UUID {
 	sampleClub := SampleClubFactory(&userID)
-	(*sampleClub)["num_members"] = 1
-
 	return AssertClubBodyRespDB(eaa, resp, sampleClub)
 }
 
@@ -152,7 +150,7 @@ func CreateSampleClub(existingAppAssert h.ExistingAppAssert) (eaa h.ExistingAppA
 		},
 	)
 
-	return existingAppAssert, newAppAssert.App.TestUser.UUID, sampleClubUUID
+	return newAppAssert, newAppAssert.App.TestUser.UUID, sampleClubUUID
 }
 
 func TestCreateClubWorks(t *testing.T) {
@@ -235,7 +233,7 @@ func AssertCreateBadClubDataFails(t *testing.T, jsonKey string, badValues []inte
 		sampleClubPermutation := *SampleClubFactory(&uuid)
 		sampleClubPermutation[jsonKey] = badValue
 
-		appAssert.TestOnErrorAndDB(
+		appAssert.TestOnErrorAndTester(
 			h.TestRequest{
 				Method: fiber.MethodPost,
 				Path:   "/api/v1/clubs/",
@@ -343,7 +341,7 @@ func TestUpdateClubFailsOnInvalidBody(t *testing.T) {
 		{"logo": "@12394X_2"},
 	} {
 		invalidData := invalidData
-		appAssert.TestOnErrorAndDB(
+		appAssert.TestOnErrorAndTester(
 			h.TestRequest{
 				Method: fiber.MethodPatch,
 				Path:   fmt.Sprintf("/api/v1/clubs/%s", clubUUID),
@@ -418,7 +416,7 @@ func TestUpdateClubFailsBadRequest(t *testing.T) {
 func TestUpdateClubFailsOnClubIdNotExist(t *testing.T) {
 	uuid := uuid.New()
 
-	h.InitTest(t).TestOnErrorAndDB(h.TestRequest{
+	h.InitTest(t).TestOnErrorAndTester(h.TestRequest{
 		Method:             fiber.MethodPatch,
 		Path:               fmt.Sprintf("/api/v1/clubs/%s", uuid),
 		Body:               SampleClubFactory(nil),
@@ -456,7 +454,7 @@ func TestDeleteClubWorks(t *testing.T) {
 
 func TestDeleteClubNotExist(t *testing.T) {
 	uuid := uuid.New()
-	h.InitTest(t).TestOnErrorAndDB(
+	h.InitTest(t).TestOnErrorAndTester(
 		h.TestRequest{
 			Method: fiber.MethodDelete,
 			Path:   fmt.Sprintf("/api/v1/clubs/%s", uuid),

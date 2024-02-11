@@ -135,7 +135,7 @@ func AssertNumCategoriesRemainsAtN(eaa h.ExistingAppAssert, resp *http.Response,
 }
 
 func TestCreateCategoryFailsIfNameIsNotString(t *testing.T) {
-	h.InitTest(t).TestOnErrorAndDB(
+	h.InitTest(t).TestOnErrorAndTester(
 		h.TestRequest{
 			Method: fiber.MethodPost,
 			Path:   "/api/v1/categories/",
@@ -152,7 +152,7 @@ func TestCreateCategoryFailsIfNameIsNotString(t *testing.T) {
 }
 
 func TestCreateCategoryFailsIfNameIsMissing(t *testing.T) {
-	h.InitTest(t).TestOnErrorAndDB(
+	h.InitTest(t).TestOnErrorAndTester(
 		h.TestRequest{
 			Method: fiber.MethodPost,
 			Path:   "/api/v1/categories/",
@@ -177,7 +177,7 @@ func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
 		modifiedSampleCategoryBody := *SampleCategoryFactory()
 		modifiedSampleCategoryBody["name"] = permutation
 
-		existingAppAssert.TestOnErrorAndDB(
+		existingAppAssert.TestOnErrorAndTester(
 			h.TestRequest{
 				Method: fiber.MethodPost,
 				Path:   "/api/v1/categories/",
@@ -412,7 +412,7 @@ func TestDeleteCategoryFailsBadRequest(t *testing.T) {
 	}
 
 	for _, badRequest := range badRequests {
-		existingAppAssert.TestOnErrorAndDB(
+		existingAppAssert.TestOnErrorAndTester(
 			h.TestRequest{
 				Method: fiber.MethodDelete,
 				Path:   fmt.Sprintf("/api/v1/categories/%s", badRequest),
@@ -431,7 +431,7 @@ func TestDeleteCategoryFailsBadRequest(t *testing.T) {
 func TestDeleteCategoryFailsNotFound(t *testing.T) {
 	existingAppAssert, _ := CreateSampleCategory(h.InitTest(t))
 
-	existingAppAssert.TestOnErrorAndDB(
+	existingAppAssert.TestOnErrorAndTester(
 		h.TestRequest{
 			Method: fiber.MethodDelete,
 			Path:   fmt.Sprintf("/api/v1/categories/%s", uuid.New()),
