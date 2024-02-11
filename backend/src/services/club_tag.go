@@ -20,8 +20,11 @@ type ClubTagService struct {
 	Validate *validator.Validate
 }
 
+func NewClubTagService(db *gorm.DB, validate *validator.Validate) ClubTagServiceInterface {
+	return &ClubTagService{DB: db, Validate: validate}
+}
+
 func (c *ClubTagService) CreateClubTags(id string, clubTagsBody models.CreateClubTagsRequestBody) ([]models.Tag, *errors.Error) {
-	// Validate the id:
 	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return nil, err
@@ -31,14 +34,11 @@ func (c *ClubTagService) CreateClubTags(id string, clubTagsBody models.CreateClu
 		return nil, &errors.FailedToValidateClubTags
 	}
 
-	// Retrieve a list of valid tags from the ids:
 	tags, err := transactions.GetTagsByIDs(c.DB, clubTagsBody.Tags)
-
 	if err != nil {
 		return nil, err
 	}
 
-	// Update the club to reflect the new tags:
 	return transactions.CreateClubTags(c.DB, *idAsUUID, tags)
 }
 

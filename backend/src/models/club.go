@@ -72,12 +72,11 @@ type UpdateClubRequestBody struct {
 	RecruitmentCycle RecruitmentCycle `gorm:"type:varchar(255);default:always" json:"recruitment_cycle" validate:"required,max=255,oneof=fall spring fallSpring always"`
 	RecruitmentType  RecruitmentType  `gorm:"type:varchar(255);default:unrestricted" json:"recruitment_type" validate:"required,max=255,oneof=unrestricted tryout application"`
 	ApplicationLink  string           `json:"application_link" validate:"omitempty,required,max=255,http_url"`
-	Logo             string           `json:"logo" validate: "omitempty,http_url,s3_url,max=255"` // S3 URL
+	Logo             string           `json:"logo" validate:"omitempty,s3_url,max=255,http_url"` // S3 URL
 }
 
-
 type CreateClubTagsRequestBody struct {
-	Tags []uuid.UUID `json:"tags" validate:"required"` 
+	Tags []uuid.UUID `json:"tags" validate:"required"`
 }
 
 func (c *Club) AfterCreate(tx *gorm.DB) (err error) {

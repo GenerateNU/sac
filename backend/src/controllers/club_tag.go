@@ -18,7 +18,7 @@ func NewClubTagController(clubTagService services.ClubTagServiceInterface) *Club
 // CreateClubTags godoc
 //
 // @Summary		Create Club Tags
-// @Description	Adds Tags to a Club 
+// @Description	Adds Tags to a Club
 // @ID			create-club-tags
 // @Tags      	club
 // @Accept      json
@@ -35,7 +35,7 @@ func (l *ClubTagController) CreateClubTags(c *fiber.Ctx) error {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
-	clubTags, err := l.clubTagService.CreateClubTags(c.Params("id"), clubTagsBody)
+	clubTags, err := l.clubTagService.CreateClubTags(c.Params("clubID"), clubTagsBody)
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -57,8 +57,7 @@ func (l *ClubTagController) CreateClubTags(c *fiber.Ctx) error {
 // @Failure		500   {string}	  string "database error"
 // @Router		/api/v1/clubs/:id/tags  [get]
 func (l *ClubTagController) GetClubTags(c *fiber.Ctx) error {
-	clubTags, err := l.clubTagService.GetClubTags(c.Params("id"))
-
+	clubTags, err := l.clubTagService.GetClubTags(c.Params("clubID"))
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -72,18 +71,17 @@ func (l *ClubTagController) GetClubTags(c *fiber.Ctx) error {
 // @Description	Deletes the tags for a club
 // @ID			delete-club-tags
 // @Tags      	club
-// @Success		204	  
+// @Success		204
 // @Failure     404   {string}    string "club not found"
 // @Failure 	400   {string}    string "invalid request body"
 // @Failure		400   {string}    string "failed to validate id"
 // @Failure		500   {string}	  string "database error"
 // @Router		/api/v1/clubs/:id/tags/:tagId  [delete]
 func (l *ClubTagController) DeleteClubTag(c *fiber.Ctx) error {
-	err := l.clubTagService.DeleteClubTag(c.Params("id"), c.Params("tagId"))
+	err := l.clubTagService.DeleteClubTag(c.Params("clubID"), c.Params("tagID"))
 	if err != nil {
 		return err.FiberError(c)
 	}
 
 	return c.SendStatus(fiber.StatusNoContent)
-
 }
