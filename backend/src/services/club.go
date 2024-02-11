@@ -28,7 +28,6 @@ func NewClubService(db *gorm.DB, validate *validator.Validate) *ClubService {
 }
 
 func (c *ClubService) GetClubs(params *models.ClubQueryParams) ([]models.Club, *errors.Error) {
-
 	if params.Limit < 0 {
 		return nil, &errors.FailedToValidateLimit
 	}

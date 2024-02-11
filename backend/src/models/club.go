@@ -1,6 +1,9 @@
 package models
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -80,11 +83,45 @@ type CreateClubTagsRequestBody struct {
 }
 
 type ClubQueryParams struct {
-	//TODO: try with specific ENUM types
+	// Tags             []uuid.UUIDs            `query:"tags"`
+	MinMembers       int               `query:"min_members"`
+	MaxMembers       int               `query:"max_members"`
 	RecruitmentCycle *RecruitmentCycle `query:"recruitment_cycle"`
 	IsRecruiting     *bool             `query:"is_recruiting"`
 	Limit            int               `query:"limit"`
 	Page             int               `query:"page"`
+}
+
+func (cqp *ClubQueryParams) IntoWhere() string {
+	var where string
+	var conditions []string
+
+	// if len(cqp.Tags) > 0 {
+	// 	var tagPlaceholders []stri
+	// 	for _, tag := range cqp.Tags {
+	// 		tagPlaceholders = append(tagPlaceholders, fmt.Sprintf("'%v'", tag))
+	// 	}
+	// 	conditions = append(conditions, "tags IN ("+strings.Join(tagPlaceholders, ",")+")")
+	// }
+
+	if cqp.MinMembers != 0 {
+		conditions = append(conditions, fmt.Sprintf("num_members >= %d", cqp.MinMembers))
+	}
+	if cqp.MaxMembers != 0 {
+		conditions = append(conditions, fmt.Sprintf("num_members <= %d", cqp.MaxMembers))
+	}
+	if cqp.RecruitmentCycle != nil {
+		conditions = append(conditions, fmt.Sprintf("recruitment_cycle = '%s'", *cqp.RecruitmentCycle))
+	}
+	if cqp.IsRecruiting != nil {
+		conditions = append(conditions, fmt.Sprintf("is_recruiting = %t", *cqp.IsRecruiting))
+	}
+
+	if len(conditions) > 0 {
+		where = strings.Join(conditions, " AND ")
+	}
+
+	return where
 }
 
 func (c *Club) AfterCreate(tx *gorm.DB) (err error) {

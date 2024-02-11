@@ -28,15 +28,9 @@ func GetAdminIDs(db *gorm.DB, clubID uuid.UUID) ([]uuid.UUID, *errors.Error) {
 func GetClubs(db *gorm.DB, params *models.ClubQueryParams) ([]models.Club, *errors.Error) {
 	offset := (*&params.Page - 1) * *&params.Limit
 	var clubs []models.Club
-	//TODO try with mapper function in manipulator.go
-	query_params := map[string]interface{}{}
-	if params.RecruitmentCycle != nil {
-		query_params["recruitment_cycle"] = params.RecruitmentCycle
-	}
-	if params.IsRecruiting != nil {
-		query_params["is_recruiting"] = *params.IsRecruiting
-	}
-	result := db.Where(query_params).Limit(params.Limit).Offset(offset).Find(&clubs)
+
+	// result := db.Where(params.IntoWhere()).Limit(params.Limit).Offset(offset).Association("Tag").Find(&clubs)
+	result := db.Where(params.IntoWhere()).Limit(params.Limit).Offset(offset).Find(&clubs)
 	if result.Error != nil {
 		return nil, &errors.FailedToGetClubs
 	}
