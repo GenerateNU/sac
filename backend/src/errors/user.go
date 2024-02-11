@@ -47,10 +47,10 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to get users by email",
 	}
-	FailedToGetMemberships = Error{
+	FailedToGetUserMemberships = Error{
 		StatusCode: fiber.StatusInternalServerError,
-		Message:    "failed to get memberships",
-  }
+		Message:    "failed to get user memberships",
+	}
 	FailedToGetUserFollowing = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to get user following",

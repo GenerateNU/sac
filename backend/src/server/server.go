@@ -43,12 +43,14 @@ func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 	userRouter := routes.User(apiv1, services.NewUserService(db, validate), middlewareService)
 	routes.UserTag(userRouter, services.NewUserTagService(db, validate))
 	routes.UserFollower(userRouter, services.NewUserFollowerService(db, validate))
+	routes.UserMember(userRouter, services.NewUserMemberService(db))
 
 	routes.Contact(apiv1, services.NewContactService(db, validate))
 
-	clubsRouter := routes.Club(apiv1, services.NewClubService(db, validate), middlewareService)
-	routes.ClubFollower(clubsRouter, services.NewClubFollowerService(db, validate))
-	routes.ClubContact(clubsRouter, services.NewClubContactService(db, validate))
+	clubsIDRouter := routes.Club(apiv1, services.NewClubService(db, validate), middlewareService)
+	routes.ClubFollower(clubsIDRouter, services.NewClubFollowerService(db))
+	routes.ClubMember(clubsIDRouter, services.NewClubMemberService(db, validate))
+	routes.ClubContact(clubsIDRouter, services.NewClubContactService(db, validate))
 
 	routes.Tag(apiv1, services.NewTagService(db, validate))
 
@@ -74,75 +76,4 @@ func newFiberApp() *fiber.App {
 	}))
 
 	return app
-}
-
-func utilityRoutes(router fiber.Router) {
-	router.Get("/swagger/*", swagger.HandlerDefault)
-	router.Get("/health", func(c *fiber.Ctx) error {
-		return c.SendStatus(200)
-	})
-}
-
-func userRoutes(router fiber.Router, userService services.UserServiceInterface) {
-	userController := controllers.NewUserController(userService)
-
-	users := router.Group("/users")
-
-	users.Post("/", userController.CreateUser)
-	users.Get("/", userController.GetUsers)
-	users.Get("/:id", userController.GetUser)
-	users.Patch("/:id", userController.UpdateUser)
-	users.Delete("/:id", userController.DeleteUser)
-
-	users.Get("/:userID/membership", userController.GetUserMemberships)
-
-	userTags := users.Group("/:uid/tags")
-
-	userTags.Post("/", userController.CreateUserTags)
-	userTags.Get("/", userController.GetUserTags)
-}
-
-func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface) {
-	clubController := controllers.NewClubController(clubService)
-
-	clubs := router.Group("/clubs")
-
-	clubs.Get("/", clubController.GetAllClubs)
-	clubs.Post("/", clubController.CreateClub)
-	clubs.Get("/:id", clubController.GetClub)
-	clubs.Patch("/:id", clubController.UpdateClub)
-	clubs.Delete("/:id", clubController.DeleteClub)
-
-	memberships := clubs.Group("/:clubID/membership")
-
-	memberships.Get("/", clubController.GetClubMembers)           // good
-	memberships.Post("/:userID", clubController.CreateMembership) // good
-	memberships.Post("/", clubController.CreateMembershipsByEmail)
-	memberships.Delete("/:userID", clubController.DeleteMembership) // good
-	memberships.Delete("/", clubController.DeleteMemberships)
-}
-
-func categoryRoutes(router fiber.Router, categoryService services.CategoryServiceInterface) fiber.Router {
-	categoryController := controllers.NewCategoryController(categoryService)
-
-	categories := router.Group("/categories")
-
-	categories.Post("/", categoryController.CreateCategory)
-	categories.Get("/", categoryController.GetCategories)
-	categories.Get("/:id", categoryController.GetCategory)
-	categories.Delete("/:id", categoryController.DeleteCategory)
-	categories.Patch("/:id", categoryController.UpdateCategory)
-
-	return categories
-}
-
-func tagRoutes(router fiber.Router, tagService services.TagServiceInterface) {
-	tagController := controllers.NewTagController(tagService)
-
-	tags := router.Group("/:categoryID/tags")
-
-	tags.Get("/:tagID", tagController.GetTag)
-	tags.Post("/", tagController.CreateTag)
-	tags.Patch("/:tagID", tagController.UpdateTag)
-	tags.Delete("/:tagID", tagController.DeleteTag)
 }

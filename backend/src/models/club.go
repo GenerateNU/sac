@@ -75,12 +75,6 @@ type UpdateClubRequestBody struct {
 	Logo             string           `json:"logo" validate:"omitempty,http_url,s3_url,max=255"` // S3 URL
 }
 
-type CreateMembershipsByEmailRequestBody struct {
-	Emails []string `json:"emails" validate:"-"`
-}
-
-type DeleteMembershipsByIdsRequestBody struct {
-	UserIDs []string `json:"userIDs" validate:"-"`
 func (c *Club) AfterCreate(tx *gorm.DB) (err error) {
 	tx.Model(&c).Update("num_members", c.NumMembers+1)
 	return

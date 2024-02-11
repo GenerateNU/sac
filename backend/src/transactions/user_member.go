@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateFollowing(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error {
+func CreateMember(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error {
 	user, err := GetUser(db, userId)
 	if err != nil {
 		return &errors.UserNotFound
@@ -18,29 +18,30 @@ func CreateFollowing(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Er
 		return &errors.ClubNotFound
 	}
 
-	if err := db.Model(&user).Association("Follower").Append(&club); err != nil {
+	if err := db.Model(&user).Association("Member").Append(&club); err != nil {
 		return &errors.FailedToUpdateUser
 	}
 
 	return nil
 }
 
-func DeleteFollowing(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error {
+func DeleteMember(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error {
 	user, err := GetUser(db, userId)
 	if err != nil {
 		return &errors.UserNotFound
 	}
+
 	club, err := GetClub(db, clubId)
 	if err != nil {
 		return &errors.ClubNotFound
 	}
-	if err := db.Model(&user).Association("Follower").Delete(club); err != nil {
+	if err := db.Model(&user).Association("Member").Delete(club); err != nil {
 		return &errors.FailedToUpdateUser
 	}
 	return nil
 }
 
-func GetClubFollowing(db *gorm.DB, userId uuid.UUID) ([]models.Club, *errors.Error) {
+func GetClubMembership(db *gorm.DB, userId uuid.UUID) ([]models.Club, *errors.Error) {
 	var clubs []models.Club
 
 	user, err := GetUser(db, userId)
@@ -48,8 +49,9 @@ func GetClubFollowing(db *gorm.DB, userId uuid.UUID) ([]models.Club, *errors.Err
 		return nil, &errors.UserNotFound
 	}
 
-	if err := db.Model(&user).Association("Follower").Find(&clubs); err != nil {
-		return nil, &errors.FailedToGetUserFollowing
+	if err := db.Model(&user).Association("Member").Find(&clubs); err != nil {
+		return nil, &errors.FailedToGetUserMemberships
 	}
+
 	return clubs, nil
 }

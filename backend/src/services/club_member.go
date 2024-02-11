@@ -5,22 +5,23 @@ import (
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
 	"github.com/GenerateNU/sac/backend/src/utilities"
+	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
 )
 
-type ClubFollowerServiceInterface interface {
-	GetClubFollowers(clubID string, limit string, page string) ([]models.User, *errors.Error)
+type ClubMemberServiceInterface interface {
+	GetClubMembers(clubID string, limit string, page string) ([]models.User, *errors.Error)
 }
 
-type ClubFollowerService struct {
+type ClubMemberService struct {
 	DB *gorm.DB
 }
 
-func NewClubFollowerService(db *gorm.DB) *ClubFollowerService {
-	return &ClubFollowerService{DB: db}
+func NewClubMemberService(db *gorm.DB, validate *validator.Validate) *ClubMemberService {
+	return &ClubMemberService{DB: db}
 }
 
-func (cf *ClubFollowerService) GetClubFollowers(clubID string, limit string, page string) ([]models.User, *errors.Error) {
+func (cms *ClubMemberService) GetClubMembers(clubID string, limit string, page string) ([]models.User, *errors.Error) {
 	idAsUUID, err := utilities.ValidateID(clubID)
 	if err != nil {
 		return nil, &errors.FailedToValidateID
@@ -36,5 +37,5 @@ func (cf *ClubFollowerService) GetClubFollowers(clubID string, limit string, pag
 		return nil, &errors.FailedToValidatePage
 	}
 
-	return transactions.GetClubFollowers(cf.DB, *idAsUUID, *limitAsInt, *pageAsInt)
+	return transactions.GetClubMembers(cms.DB, *idAsUUID, *limitAsInt, *pageAsInt)
 }
