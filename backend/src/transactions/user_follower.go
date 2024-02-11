@@ -8,18 +8,22 @@ import (
 )
 
 func CreateFollowing(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error {
-	user, err := GetUserWithFollowers(db, userId)
+	user, err := GetUser(db, userId)
 	if err != nil {
 		return &errors.UserNotFound
 	}
+
 	club, err := GetClub(db, clubId)
 	if err != nil {
 		return &errors.ClubNotFound
 	}
 
-	if err := db.Model(&user).Association("Follower").Replace(append(user.Follower, *club)); err != nil {
+	user.Follower = append(user.Follower, *club)
+
+	if err := db.Model(&user).Association("Follower").Append(&club); err != nil {
 		return &errors.FailedToUpdateUser
 	}
+
 	return nil
 }
 

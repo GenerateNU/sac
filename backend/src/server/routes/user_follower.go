@@ -9,10 +9,10 @@ import (
 func UserFollower(usersIDRouter fiber.Router, userFollowerService services.UserFollowerServiceInterface) {
 	userFollowerController := controllers.NewUserFollowerController(userFollowerService)
 
-	userFollower := usersIDRouter.Group("/follower")
+	userFollower := usersIDRouter.Group("/:userID/follower")
 
-	// api/users/:userID/follower/*
-	userFollower.Put("/:clubID", userFollowerController.CreateFollowing)
+	// api/v1/users/:userID/follower/*
+	userFollower.Post("/:clubID", userFollowerController.CreateFollowing)
 	userFollower.Delete("/:clubID", userFollowerController.DeleteFollowing)
 	userFollower.Get("/", userFollowerController.GetAllFollowing)
 }
