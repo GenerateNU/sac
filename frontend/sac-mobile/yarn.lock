@@ -6426,10 +6426,10 @@ jest-environment-node@^29.6.3, jest-environment-node@^29.7.0:
     jest-mock "^29.7.0"
     jest-util "^29.7.0"
 
-jest-expo@~50.0.1:
-  version "50.0.1"
-  resolved "https://registry.yarnpkg.com/jest-expo/-/jest-expo-50.0.1.tgz#4b180b2a06a2cad49c5c74cf8cbbd4387bb30621"
-  integrity sha512-osvA63UDLJ/v7MG9UHjU7WJ0oZ0Krq9UhXxm2s6rdOlnt85ARocyMU57RC0T0yzPN47C9Ref45sEeOIxoV4Mzg==
+jest-expo@~50.0.2:
+  version "50.0.2"
+  resolved "https://registry.yarnpkg.com/jest-expo/-/jest-expo-50.0.2.tgz#cbf5b4c2dd40bac646d6b08f2c575a0e1e0d9bd9"
+  integrity sha512-g9Vq4Cpndp6M+bWGNJfyxw+iiZm7o1XpaOEHgtyC1evdy4B9IsEWql1Y2xBH7uD79FwSKhaIz+xCQHZNhnSlAg==
   dependencies:
     "@expo/config" "~8.5.0"
     "@expo/json-file" "^8.2.37"
