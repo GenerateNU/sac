@@ -1,6 +1,5 @@
 package tests
 
-
 /* TEST CASES:
 test createEvent works
 test createEvent fails on:
@@ -21,4 +20,3 @@ test updateEvent works
 test updateEvent fails on:
 
 */
-	

@@ -159,6 +159,7 @@ func CreateEventSlice(firstEvent *models.Event, series models.Series) []models.E
 	eventBodies := []models.Event{*firstEvent}
 	months, days := 0, 0
 
+	// currently 0-indexed (separation count 0 means every week/day/month)
 	switch series.RecurringType {
 	case "daily":
 		days = series.SeparationCount + 1
@@ -169,10 +170,10 @@ func CreateEventSlice(firstEvent *models.Event, series models.Series) []models.E
 	}
 
 	for i := 1; i < series.MaxOccurrences; i++ {
-		eventToAdd := firstEvent
+		eventToAdd := *firstEvent
 		eventToAdd.StartTime = eventToAdd.StartTime.AddDate(0, i*months, i*days)
 		eventToAdd.EndTime = eventToAdd.EndTime.AddDate(0, i*months, i*days)
-		eventBodies = append(eventBodies, *eventToAdd)
+		eventBodies = append(eventBodies, eventToAdd)
 	}
 
 	return eventBodies
