@@ -9,15 +9,15 @@ import (
 )
 
 func FormatCommand() *cli.Command {
-    command := cli.Command{
-        Name:    "format",
-        Aliases: []string{"f"},
-        Usage:   "Runs formatting tools",
+	command := cli.Command{
+		Name:     "format",
+		Aliases:  []string{"f"},
+		Usage:    "Runs formatting tools",
 		Category: "CI",
 		Subcommands: []*cli.Command{
 			{
-				Name:  "frontend",
-				Usage: "Format the frontend",
+				Name:    "frontend",
+				Usage:   "Format the frontend",
 				Aliases: []string{"f"},
 				Flags: []cli.Flag{
 					&cli.StringFlag{
@@ -46,8 +46,8 @@ func FormatCommand() *cli.Command {
 				},
 			},
 			{
-				Name:  "backend",
-				Usage: "Format the backend",
+				Name:    "backend",
+				Usage:   "Format the backend",
 				Aliases: []string{"b"},
 				Action: func(c *cli.Context) error {
 					if c.Args().Len() > 0 {
@@ -104,7 +104,7 @@ func FormatMobile() error {
 
 	mobileCmd.Stdout = os.Stdout
 	mobileCmd.Stderr = os.Stderr
-	mobileCmd.Stdin = os.Stdin 
+	mobileCmd.Stdin = os.Stdin
 
 	if err := mobileCmd.Run(); err != nil {
 		return err

@@ -9,15 +9,15 @@ import (
 )
 
 func LintCommand() *cli.Command {
-    command := cli.Command{
-        Name:    "lint",
-        Aliases: []string{"l"},
-        Usage:   "Runs linting tools",
+	command := cli.Command{
+		Name:     "lint",
+		Aliases:  []string{"l"},
+		Usage:    "Runs linting tools",
 		Category: "CI",
 		Subcommands: []*cli.Command{
 			{
-				Name:  "frontend",
-				Usage: "Lint the frontend",
+				Name:    "frontend",
+				Usage:   "Lint the frontend",
 				Aliases: []string{"f"},
 				Flags: []cli.Flag{
 					&cli.StringFlag{
@@ -27,9 +27,9 @@ func LintCommand() *cli.Command {
 						Usage:   "Lint a specific frontend type (web or mobile)",
 					},
 					&cli.BoolFlag{
-						Name: "fix",
+						Name:    "fix",
 						Aliases: []string{"f"},
-						Usage: "Fix linting errors",
+						Usage:   "Fix linting errors",
 					},
 				},
 				Action: func(c *cli.Context) error {
@@ -53,8 +53,8 @@ func LintCommand() *cli.Command {
 				},
 			},
 			{
-				Name:  "backend",
-				Usage: "Lint the backend",
+				Name:    "backend",
+				Usage:   "Lint the backend",
 				Aliases: []string{"b"},
 				Action: func(c *cli.Context) error {
 					if c.Args().Len() > 0 {
@@ -89,7 +89,7 @@ func LintFrontend(target string, fix bool) error {
 func LintBackend() error {
 	fmt.Println("Linting backend")
 
-	cmd := exec.Command("go", "vet", "./...")
+	cmd := exec.Command("golangci-lint", "run", "--fix")
 	cmd.Dir = BACKEND_DIR
 
 	err := cmd.Run()
@@ -117,7 +117,7 @@ func LintMobile(fix bool) error {
 
 	mobileCmd.Stdout = os.Stdout
 	mobileCmd.Stderr = os.Stderr
-	mobileCmd.Stdin = os.Stdin 
+	mobileCmd.Stdin = os.Stdin
 
 	if err := mobileCmd.Run(); err != nil {
 		return err

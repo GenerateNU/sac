@@ -5,8 +5,8 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
-	"github.com/google/uuid"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -17,7 +17,7 @@ func GetAdminIDs(db *gorm.DB, clubID uuid.UUID) ([]uuid.UUID, *errors.Error) {
 		return nil, &errors.FailedtoGetAdminIDs
 	}
 
-	var adminUUIDs []uuid.UUID
+	adminUUIDs := make([]uuid.UUID, 0)
 	for _, adminID := range adminIDs {
 		adminUUIDs = append(adminUUIDs, adminID.ClubID)
 	}
@@ -109,6 +109,5 @@ func DeleteClub(db *gorm.DB, id uuid.UUID) *errors.Error {
 			return &errors.FailedToDeleteClub
 		}
 	}
-
 	return nil
 }

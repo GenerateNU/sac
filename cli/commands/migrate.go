@@ -18,7 +18,10 @@ func MigrateCommand() *cli.Command {
 				return cli.Exit("Invalid arguments", 1)
 			}
 
-			Migrate()
+			err := Migrate()
+			if err != nil {
+				return cli.Exit(err.Error(), 1)
+			}
 			return nil
 		},
 	}

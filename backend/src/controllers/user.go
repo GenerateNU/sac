@@ -81,7 +81,7 @@ func (u *UserController) GetUsers(c *fiber.Ctx) error {
 // @Failure     500   {string}    string "failed to get user"
 // @Router		/api/v1/users/{id}  [get]
 func (u *UserController) GetUser(c *fiber.Ctx) error {
-	user, err := u.userService.GetUser(c.Params("id"))
+	user, err := u.userService.GetUser(c.Params("userID"))
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -111,7 +111,7 @@ func (u *UserController) UpdateUser(c *fiber.Ctx) error {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
-	updatedUser, err := u.userService.UpdateUser(c.Params("id"), user)
+	updatedUser, err := u.userService.UpdateUser(c.Params("userID"), user)
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -132,7 +132,7 @@ func (u *UserController) UpdateUser(c *fiber.Ctx) error {
 // @Failure     500   {string}     string "failed to get all users"
 // @Router		/api/v1/users/{id}  [delete]
 func (u *UserController) DeleteUser(c *fiber.Ctx) error {
-	err := u.userService.DeleteUser(c.Params("id"))
+	err := u.userService.DeleteUser(c.Params("userID"))
 	if err != nil {
 		return err.FiberError(c)
 	}

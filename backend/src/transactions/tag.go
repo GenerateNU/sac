@@ -35,9 +35,9 @@ func CreateTag(db *gorm.DB, tag models.Tag) (*models.Tag, *errors.Error) {
 	return &tag, nil
 }
 
-func GetTag(db *gorm.DB, categoryID uuid.UUID, tagID uuid.UUID) (*models.Tag, *errors.Error) {
+func GetTag(db *gorm.DB, tagID uuid.UUID) (*models.Tag, *errors.Error) {
 	var tag models.Tag
-	if err := db.Where("category_id = ? AND id = ?", categoryID, tagID).First(&tag).Error; err != nil {
+	if err := db.Where("id = ?", tagID).First(&tag).Error; err != nil {
 		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &errors.TagNotFound
 		} else {
@@ -60,8 +60,8 @@ func UpdateTag(db *gorm.DB, id uuid.UUID, tag models.Tag) (*models.Tag, *errors.
 	return &tag, nil
 }
 
-func DeleteTag(db *gorm.DB, categoryID uuid.UUID, tagID uuid.UUID) *errors.Error {
-	if result := db.Where("category_id = ? AND id = ?", categoryID, tagID).Delete(&models.Tag{}); result.RowsAffected == 0 {
+func DeleteTag(db *gorm.DB, tagID uuid.UUID) *errors.Error {
+	if result := db.Where("id = ?", tagID).Delete(&models.Tag{}); result.RowsAffected == 0 {
 		if result.Error == nil {
 			return &errors.TagNotFound
 		} else {
@@ -82,4 +82,19 @@ func GetTagsByIDs(db *gorm.DB, selectedTagIDs []uuid.UUID) ([]models.Tag, *error
 		return tags, nil
 	}
 	return []models.Tag{}, nil
+}
+
+// Get clubs for a tag
+func GetTagClubs(db *gorm.DB, id uuid.UUID) ([]models.Club, *errors.Error) {
+	var clubs []models.Club
+
+	tag, err := GetTag(db, id)
+	if err != nil {
+		return nil, &errors.ClubNotFound
+	}
+
+	if err := db.Model(&tag).Association("Club").Find(&clubs); err != nil {
+		return nil, &errors.FailedToGetTag
+	}
+	return clubs, nil
 }

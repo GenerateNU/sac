@@ -19,8 +19,6 @@ type UserServiceInterface interface {
 	GetUser(id string) (*models.User, *errors.Error)
 	UpdateUser(id string, userBody models.UpdateUserRequestBody) (*models.User, *errors.Error)
 	DeleteUser(id string) *errors.Error
-	GetUserTags(id string) ([]models.Tag, *errors.Error)
-	CreateUserTags(id string, tagIDs models.CreateUserTagsBody) ([]models.Tag, *errors.Error)
 }
 
 type UserService struct {
@@ -88,17 +86,10 @@ func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBod
 		return nil, &errors.FailedToValidateUser
 	}
 
-	passwordHash, err := auth.ComputePasswordHash(userBody.Password)
-	if err != nil {
-		return nil, &errors.FailedToComputePasswordHash
-	}
-
 	user, err := utilities.MapRequestToModel(userBody, &models.User{})
 	if err != nil {
 		return nil, &errors.FailedToMapRequestToModel
 	}
-
-	user.PasswordHash = *passwordHash
 
 	return transactions.UpdateUser(u.DB, *idAsUUID, *user)
 }
@@ -110,34 +101,4 @@ func (u *UserService) DeleteUser(id string) *errors.Error {
 	}
 
 	return transactions.DeleteUser(u.DB, *idAsUUID)
-}
-
-func (u *UserService) GetUserTags(id string) ([]models.Tag, *errors.Error) {
-	idAsUUID, err := utilities.ValidateID(id)
-	if err != nil {
-		return nil, err
-	}
-
-	return transactions.GetUserTags(u.DB, *idAsUUID)
-}
-
-func (u *UserService) CreateUserTags(id string, tagIDs models.CreateUserTagsBody) ([]models.Tag, *errors.Error) {
-	// Validate the id:
-	idAsUUID, err := utilities.ValidateID(id)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := u.Validate.Struct(tagIDs); err != nil {
-		return nil, &errors.FailedToValidateUserTags
-	}
-
-	// Retrieve a list of valid tags from the ids:
-	tags, err := transactions.GetTagsByIDs(u.DB, tagIDs.Tags)
-	if err != nil {
-		return nil, err
-	}
-
-	// Update the user to reflect the new tags:
-	return transactions.CreateUserTags(u.DB, *idAsUUID, tags)
 }
