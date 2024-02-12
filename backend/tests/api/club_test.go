@@ -97,7 +97,9 @@ func CreateInvalidEmailPOC(t *testing.T) h.ExistingAppAssert {
 
 // POINT OF CONTACT UPSERT
 func TestInsertPOCWorks(t *testing.T) {
-	CreateSamplePOC(t).Close()
+	existingAppAssert, _, _ := CreateSampleClub(h.InitTest(t))
+	appAssert, _ := CreateSamplePOC(t, existingAppAssert)
+	appAssert.Close()
 }
 
 func TestCreatePOCFailsOnInvalidEmail(t *testing.T) {
@@ -105,10 +107,9 @@ func TestCreatePOCFailsOnInvalidEmail(t *testing.T) {
 }
 
 func TestUpdatePOCWorks(t *testing.T) {
-	appAssert := CreateSamplePOC(h.InitTest(t))
-	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
+	existingAppAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
+	appAssert, _ := CreateSamplePOC(t, existingAppAssert)
 
-	id := 1
 	newName := "Jane Austen"
 	newPosition := "Executive Director"
 	email := "doe.jane@northeastern.edu"
@@ -128,7 +129,7 @@ func TestUpdatePOCWorks(t *testing.T) {
 			Status: 200,
 			DBTester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 				var club models.Club
-				err := app.Conn.First(&club, id).Error
+				err := app.Conn.First(&club, clubUUID).Error
 				assert.NilError(err)
 
 				var respPOC models.PointOfContact
@@ -353,8 +354,8 @@ func TestGetClubsWorks(t *testing.T) {
 }
 
 func TestUpdatePOCFailsOnInvalidBody(t *testing.T) {
-	appAssert := CreateSamplePOC(t)
-	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
+	existingAppAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
+	appAssert, _ := CreateSamplePOC(t, existingAppAssert)
 
 	for _, invalidData := range []map[string]interface{}{
 		{"email": "not.northeastern"},
@@ -552,8 +553,8 @@ func TestUpdateClubFailsOnInvalidBody(t *testing.T) {
 }
 
 func TestInsertPOCFailsOnMissingFields(t *testing.T) {
-	appAssert := CreateSamplePOC(t)
-	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
+	existingAppAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
+	appAssert, _ := CreateSamplePOC(t, existingAppAssert)
 
 	for _, missingField := range []string{
 		"name",
@@ -564,7 +565,7 @@ func TestInsertPOCFailsOnMissingFields(t *testing.T) {
 		delete(samplePOCPermutation, missingField)
 		TestRequest{
 			Method: fiber.MethodPut,
-			Path:   fmt.Sprintf("/api/v1/clubs/1/poc/", clubUUID),
+			Path:   fmt.Sprintf("/api/v1/clubs/%s/poc/", clubUUID),
 			Body:   &samplePOCPermutation,
 		}.TestOnStatusMessageAndDB(t, &appAssert,
 			StatusMessageDBTester{
@@ -581,8 +582,8 @@ func TestInsertPOCFailsOnMissingFields(t *testing.T) {
 
 // GET ALL POC TEST CASES
 func TestGetAllPOCWorks(t *testing.T) {
-	appAssert := CreateSamplePOC(t)
-	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
+	existingAppAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
+	appAssert, _ := CreateSamplePOC(t, existingAppAssert)
 
 	TestRequest{
 		Method: fiber.MethodGet,
@@ -635,16 +636,16 @@ func TestGetAllPOCClubNotFound(t *testing.T) {
 }
 
 func TestGetPOCWorks(t *testing.T) {
-	appAssert := CreateSamplePOC(t)
-	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
+	existingAppAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
+	appAssert, pocUUID := CreateSamplePOC(t, existingAppAssert)
 
 	h.TestRequest{
 		Method: fiber.MethodGet,
-		Path:   fmt.Sprintf("/api/v1/clubs/%s/poc/%d", clubUUID, id),
+		Path:   fmt.Sprintf("/api/v1/clubs/%s/poc/%s", clubUUID, pocUUID),
 	}.TestOnStatusAndDB(t, &appAssert,
 		DBTesterWithStatus{
 			Status: 200,
-			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
+			DBTester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 				var respPOC models.PointOfContact
 
 				err := json.NewDecoder(resp.Body).Decode(&respPOC)
@@ -690,11 +691,11 @@ func TestGetPOCFailsBadRequest(t *testing.T) {
 
 func TestGetPOCFailsNotExist(t *testing.T) {
 	_, _, clubUUID := CreateSampleClub(h.InitTest(t))
-	id := uuid.New()
+	pocUUIDNotExist := uuid.New()
 
 	TestRequest{
 		Method: fiber.MethodGet,
-		Path:   fmt.Sprintf("/api/v1/clubs/%s/poc/%d", clubUUID, id),
+		Path:   fmt.Sprintf("/api/v1/clubs/%s/poc/%s", clubUUID, pocUUIDNotExist),
 	}.TestOnStatusMessageAndDB(t, nil,
 		StatusMessageDBTester{
 			MessageWithStatus: MessageWithStatus{
@@ -703,7 +704,7 @@ func TestGetPOCFailsNotExist(t *testing.T) {
 			},
 			DBTester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
 				var pointOfContact models.PointOfContact
-				err := app.Conn.Where("id = ?", id).First(&pointOfContact).Error
+				err := app.Conn.Where("id = ?", pocUUIDNotExist).First(&pointOfContact).Error
 				assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
 			},
 		},
@@ -712,13 +713,12 @@ func TestGetPOCFailsNotExist(t *testing.T) {
 
 // DELETE TEST CASES
 func TestDeletePointOfContactWorks(t *testing.T) {
-	appAssert := CreateSamplePOC(t)
-	// how to get pocId
-	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
+	existingAppAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
+	appAssert, pocUUID := CreateSamplePOC(t, existingAppAssert)
 
 	TestRequest{
 		Method: fiber.MethodDelete,
-		Path:   fmt.Sprintf("/api/v1/clubs/%s/poc/%s", clubUUID, pocId),
+		Path:   fmt.Sprintf("/api/v1/clubs/%s/poc/%s", clubUUID, pocUUID),
 	}.TestOnStatusAndDB(t, &appAssert,
 		DBTesterWithStatus{
 			Status:   204,
@@ -728,6 +728,8 @@ func TestDeletePointOfContactWorks(t *testing.T) {
 }
 
 func TestDeletePOCClubIDBadRequest(t *testing.T) {
+	existingAppAssert, _, _ := CreateSampleClub(h.InitTest(t))
+	_, pocUUID := CreateSamplePOC(t, existingAppAssert)
 	badRequests := []string{
 		"0",
 		"-1",
@@ -739,7 +741,7 @@ func TestDeletePOCClubIDBadRequest(t *testing.T) {
 	for _, badRequest := range badRequests {
 		TestRequest{
 			Method: fiber.MethodDelete,
-			Path:   fmt.Sprintf("/api/v1/clubs/%s/poc/1", badRequest),
+			Path:   fmt.Sprintf("/api/v1/clubs/%s/poc/%s", badRequest, pocUUID),
 		}.TestOnStatusAndMessage(t, nil,
 			MessageWithStatus{
 				Status:  400,
@@ -774,11 +776,13 @@ func TestDeletePOCBadRequest(t *testing.T) {
 }
 
 func TestDeletePOCClubNotExist(t *testing.T) {
+	existingAppAssert, _, _ := CreateSampleClub(h.InitTest(t))
+	_, pocUUID := CreateSamplePOC(t, existingAppAssert)
 	clubUUID := uuid.New()
 
 	TestRequest{
 		Method: fiber.MethodDelete,
-		Path:   fmt.Sprintf("/api/v1/clubs/%s/poc/%s", clubUUID, pocId),
+		Path:   fmt.Sprintf("/api/v1/clubs/%s/poc/%s", clubUUID, pocUUID),
 	}.TestOnStatusMessageAndDB(t, nil,
 		StatusMessageDBTester{
 			MessageWithStatus: MessageWithStatus{
@@ -786,9 +790,9 @@ func TestDeletePOCClubNotExist(t *testing.T) {
 				Message: errors.ClubNotFound,
 			},
 			DBTester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
-				var pointOfContact models.PointOfContact
+				var club models.Club
 
-				err := app.Conn.Where("id = ?", pocId).First(&pointOfContact).Error
+				err := app.Conn.Where("id = ?", clubUUID).First(&club).Error
 
 				assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
 			},
@@ -812,7 +816,7 @@ func TestDeletePOCNotExist(t *testing.T) {
 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
 				var pointOfContact models.PointOfContact
 
-				err := app.Conn.Where("id = ?", pocId).First(&pointOfContact).Error
+				err := app.Conn.Where("id = ?", pocUUID).First(&pointOfContact).Error
 
 				assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
 			},
@@ -821,7 +825,7 @@ func TestDeletePOCNotExist(t *testing.T) {
 }
 
 // assert remaining numbers of POC
-func AssertNumPOCRemainsAtN(app TestApp, assert *assert.A, resp *http.Response, n int) {
+func AssertNumPOCRemainsAtN(app h.TestApp, assert *assert.A, resp *http.Response, n int) {
 	var pointOfContact []models.PointOfContact
 
 	err := app.Conn.Find(&pointOfContact).Error
@@ -840,25 +844,112 @@ var TestNumPOCRemainsAt0 = func(app h.TestApp, assert *assert.A, resp *http.Resp
 	AssertNumPOCRemainsAtN(app, assert, resp, 0)
 }
 
-func AssertCreatePOCBadDataFails(t *testing.T, jsonKey string, badValues []interface{}) {
-	appAssert := CreateSamplePOC(t)
+func TestUpdateClubFailsBadRequest(t *testing.T) {
+	appAssert := h.InitTest(t)
+	badRequests := []string{
+		"0",
+		"-1",
+		"1.1",
+		"foo",
+		"null",
+	}
+	sampleStudent, rawPassword := h.SampleStudentFactory()
 
-	for _, badValue := range badValues {
-		samplePOCPermutation := *SamplePOCFactory()
-		samplePOCPermutation[jsonKey] = badValue
-
-		TestRequest{
-			Method: fiber.MethodPut,
-			Path:   "/api/v1/clubs/1/poc",
-			Body:   &samplePOCPermutation,
-		}.TestOnStatusMessageAndDB(t, &appAssert,
-			StatusMessageDBTester{
-				MessageWithStatus: MessageWithStatus{
-					Status:  400,
-					Message: errors.FailedToValidatePointOfContact,
-				},
-				DBTester: TestNumPOCRemainsAt1,
+	for _, badRequest := range badRequests {
+		appAssert.TestOnError(
+			h.TestRequest{
+				Method: fiber.MethodPatch,
+				Path:   fmt.Sprintf("/api/v1/clubs/%s", badRequest),
+				Body:   h.SampleStudentJSONFactory(sampleStudent, rawPassword),
+				Role:   &models.Super,
 			},
+			errors.FailedToValidateID,
+		)
+	}
+	appAssert.Close()
+}
+
+func TestUpdateClubFailsOnClubIdNotExist(t *testing.T) {
+	uuid := uuid.New()
+
+	h.InitTest(t).TestOnErrorAndTester(h.TestRequest{
+		Method:             fiber.MethodPatch,
+		Path:               fmt.Sprintf("/api/v1/clubs/%s", uuid),
+		Body:               SampleClubFactory(nil),
+		Role:               &models.Super,
+		TestUserIDReplaces: h.StringToPointer("user_id"),
+	},
+		h.ErrorWithTester{
+			Error: errors.ClubNotFound,
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				var club models.Club
+
+				err := eaa.App.Conn.Where("id = ?", uuid).First(&club).Error
+
+				eaa.Assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
+			},
+		},
+	).Close()
+}
+
+func TestDeleteClubWorks(t *testing.T) {
+	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
+
+	appAssert.TestOnStatusAndTester(
+		h.TestRequest{
+			Method: fiber.MethodDelete,
+			Path:   fmt.Sprintf("/api/v1/clubs/%s", clubUUID),
+			Role:   &models.Super,
+		},
+		h.TesterWithStatus{
+			Status: fiber.StatusNoContent,
+			Tester: TestNumClubsRemainsAt1,
+		},
+	).Close()
+}
+
+func TestDeleteClubNotExist(t *testing.T) {
+	uuid := uuid.New()
+	h.InitTest(t).TestOnErrorAndTester(
+		h.TestRequest{
+			Method: fiber.MethodDelete,
+			Path:   fmt.Sprintf("/api/v1/clubs/%s", uuid),
+			Role:   &models.Super,
+		},
+		h.ErrorWithTester{
+			Error: errors.ClubNotFound,
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				var club models.Club
+
+				err := eaa.App.Conn.Where("id = ?", uuid).First(&club).Error
+
+				eaa.Assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
+
+				AssertNumClubsRemainsAtN(eaa, resp, 1)
+			},
+		},
+	).Close()
+}
+
+func TestDeleteClubBadRequest(t *testing.T) {
+	appAssert := h.InitTest(t)
+
+	badRequests := []string{
+		"0",
+		"-1",
+		"1.1",
+		"hello",
+		"null",
+	}
+
+	for _, badRequest := range badRequests {
+		appAssert.TestOnError(
+			h.TestRequest{
+				Method: fiber.MethodDelete,
+				Path:   fmt.Sprintf("/api/v1/clubs/%s", badRequest),
+				Role:   &models.Super,
+			},
+			errors.FailedToValidateID,
 		)
 	}
 	appAssert.Close()
