@@ -129,7 +129,7 @@
 
    To install use `./install.sh` and then run `sac-cli` to see all commands.
 
-  ```console
+   ```console
    NAME:
       sac-cli - CLI for SAC
 
@@ -138,24 +138,28 @@
 
    COMMANDS:
       swagger, swag  Updates the swagger documentation
-      be             Run the backend
       test, t        Runs tests
-      format, f      Runs formatting tools
-      lint, l        Runs linting tools
       help, h        Shows a list of commands or help for one command
+      CI:
+         format, f  Runs formatting tools
+         lint, l    Runs linting tools
+            * can use --fix to fix linting errors for frontend
       Database Operations:
-         clean      Remove databases used for testing
-         migrate    Migrate the database, creating tables and relationships
-         insert, i  Inserts mock data into the database
-         reset, r   Resets the database, dropping all tables, clearing data, and re-running migrations   
+         clean, c    Remove databases used for testing
+         migrate, m  Migrate the database, creating tables and relationships
+         reset, r    Resets the database, dropping all tables, clearing data, and re-running migrations
             * can use --data to just reset data and not drop tables
-         drop, d    Drop data with a migration or drops the entire database
+         insert, i   Inserts mock data into the database
+         drop, d     Drop data with a migration or drops the entire database
             * can use --data to just drop data and not drop tables
+
+      Development:
+         be  Run the backend
+         fe  Run the frontend
 
    GLOBAL OPTIONS:
       --help, -h  show help
    ```
-
 # Git Flow
 
 1. **Create a new branch**

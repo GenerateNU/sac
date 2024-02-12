@@ -139,25 +139,3 @@ func (u *UserController) DeleteUser(c *fiber.Ctx) error {
 
 	return c.SendStatus(fiber.StatusNoContent)
 }
-
-func (u *UserController) GetUserTags(c *fiber.Ctx) error {
-	tags, err := u.userService.GetUserTags(c.Params("id"))
-	if err != nil {
-		return err.FiberError(c)
-	}
-	return c.Status(fiber.StatusOK).JSON(&tags)
-}
-
-func (u *UserController) CreateUserTags(c *fiber.Ctx) error {
-	var requestBody models.CreateUserTagsBody
-	if err := c.BodyParser(&requestBody); err != nil {
-		return errors.FailedToParseRequestBody.FiberError(c)
-	}
-
-	tags, err := u.userService.CreateUserTags(c.Params("id"), requestBody)
-	if err != nil {
-		return err.FiberError(c)
-	}
-
-	return c.Status(fiber.StatusCreated).JSON(&tags)
-}
