@@ -35,6 +35,14 @@ var (
 		StatusCode: fiber.StatusNotFound,
 		Message:    "club not found",
 	}
+	FailedToValidateClubTags = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "failed to validate club tags",
+	}
+	FailedToGetMembers = Error{
+		StatusCode: fiber.StatusNotFound,
+		Message:    "failed to get members",
+	}
 	FailedtoGetAdminIDs = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to get admin ids",
@@ -42,5 +50,12 @@ var (
 	FailedToVectorizeClub = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to vectorize club",
+	FailedToGetClubFollowers = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get club followers",
+	}
+	FailedToGetClubMembers = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get club members",
 	}
 )

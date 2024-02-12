@@ -12,28 +12,27 @@ import (
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	"github.com/huandu/go-assert"
 )
 
-func AssertTagsWithBodyRespDB(app h.TestApp, assert *assert.A, resp *http.Response, body *[]map[string]interface{}) []uuid.UUID {
+func AssertTagsWithBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, body *[]map[string]interface{}) []uuid.UUID {
 	var respTags []models.Tag
 
 	err := json.NewDecoder(resp.Body).Decode(&respTags)
 
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
 	var dbTags []models.Tag
 
-	err = app.Conn.Find(&dbTags).Error
+	err = eaa.App.Conn.Find(&dbTags).Error
 
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
-	assert.Equal(len(dbTags), len(respTags))
+	eaa.Assert.Equal(len(dbTags), len(respTags))
 
 	for i, dbTag := range dbTags {
-		assert.Equal(dbTag.ID, respTags[i].ID)
-		assert.Equal(dbTag.Name, respTags[i].Name)
-		assert.Equal(dbTag.CategoryID, respTags[i].CategoryID)
+		eaa.Assert.Equal(dbTag.ID, respTags[i].ID)
+		eaa.Assert.Equal(dbTag.Name, respTags[i].Name)
+		eaa.Assert.Equal(dbTag.CategoryID, respTags[i].CategoryID)
 	}
 
 	tagIDs := make([]uuid.UUID, len(dbTags))
@@ -50,7 +49,7 @@ func TestGetCategoryTagsWorks(t *testing.T) {
 	body := SampleTagFactory(categoryUUID)
 	(*body)["id"] = tagID
 
-	appAssert.TestOnStatusAndDB(
+	appAssert.TestOnStatusAndTester(
 		h.TestRequest{
 			Method: fiber.MethodGet,
 			Path:   fmt.Sprintf("/api/v1/categories/%s/tags", categoryUUID),
@@ -58,8 +57,8 @@ func TestGetCategoryTagsWorks(t *testing.T) {
 		},
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
-			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
-				AssertTagsWithBodyRespDB(app, assert, resp, &[]map[string]interface{}{*body})
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				AssertTagsWithBodyRespDB(eaa, resp, &[]map[string]interface{}{*body})
 			},
 		},
 	).Close()
@@ -95,17 +94,17 @@ func TestGetCategoryTagsFailsCategoryNotFound(t *testing.T) {
 
 	uuid := uuid.New()
 
-	appAssert.TestOnErrorAndDB(
+	appAssert.TestOnErrorAndTester(
 		h.TestRequest{
 			Method: fiber.MethodGet,
 			Path:   fmt.Sprintf("/api/v1/categories/%s/tags", uuid),
 			Role:   &models.Super,
 		}, h.ErrorWithTester{
 			Error: errors.CategoryNotFound,
-			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
 				var category models.Category
-				err := app.Conn.Where("id = ?", uuid).First(&category).Error
-				assert.Assert(err != nil)
+				err := eaa.App.Conn.Where("id = ?", uuid).First(&category).Error
+				eaa.Assert.Assert(err != nil)
 			},
 		},
 	).Close()
@@ -114,7 +113,7 @@ func TestGetCategoryTagsFailsCategoryNotFound(t *testing.T) {
 func TestGetCategoryTagWorks(t *testing.T) {
 	existingAppAssert, categoryUUID, tagUUID := CreateSampleTag(h.InitTest(t))
 
-	existingAppAssert.TestOnStatusAndDB(
+	existingAppAssert.TestOnStatusAndTester(
 		h.TestRequest{
 			Method: fiber.MethodGet,
 			Path:   fmt.Sprintf("/api/v1/categories/%s/tags/%s", categoryUUID, tagUUID),
@@ -122,8 +121,8 @@ func TestGetCategoryTagWorks(t *testing.T) {
 		},
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
-			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
-				AssertTagWithBodyRespDB(app, assert, resp, SampleTagFactory(categoryUUID))
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				AssertTagWithBodyRespDB(eaa, resp, SampleTagFactory(categoryUUID))
 			},
 		},
 	).Close()

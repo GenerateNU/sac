@@ -72,12 +72,10 @@ func validateS3URL(fl validator.FieldLevel) bool {
 }
 
 func validateContactPointer(validate *validator.Validate, fl validator.FieldLevel) bool {
-	contact, ok := fl.Parent().Interface().(models.Contact)
-
+	contact, ok := fl.Parent().Interface().(models.PutContactRequestBody)
 	if !ok {
 		return false
 	}
-
 	switch contact.Type {
 	case models.Email:
 		return validate.Var(contact.Content, "email") == nil

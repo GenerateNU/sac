@@ -12,7 +12,6 @@ import (
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	"github.com/huandu/go-assert"
 	"gorm.io/gorm"
 )
 
@@ -30,114 +29,112 @@ func SampleClubFactory(userID *uuid.UUID) *map[string]interface{} {
 	}
 }
 
-func AssertClubBodyRespDB(app h.TestApp, assert *assert.A, resp *http.Response, body *map[string]interface{}) uuid.UUID {
+func AssertClubBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, body *map[string]interface{}) uuid.UUID {
 	var respClub models.Club
 
 	err := json.NewDecoder(resp.Body).Decode(&respClub)
 
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
 	var dbClubs []models.Club
 
-	err = app.Conn.Order("created_at desc").Find(&dbClubs).Error
+	err = eaa.App.Conn.Order("created_at desc").Find(&dbClubs).Error
 
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
-	assert.Equal(2, len(dbClubs))
+	eaa.Assert.Equal(2, len(dbClubs))
 
 	dbClub := dbClubs[0]
 
-	assert.Equal(dbClub.ID, respClub.ID)
-	assert.Equal(dbClub.Name, respClub.Name)
-	assert.Equal(dbClub.Preview, respClub.Preview)
-	assert.Equal(dbClub.Description, respClub.Description)
-	assert.Equal(dbClub.NumMembers, respClub.NumMembers)
-	assert.Equal(dbClub.IsRecruiting, respClub.IsRecruiting)
-	assert.Equal(dbClub.RecruitmentCycle, respClub.RecruitmentCycle)
-	assert.Equal(dbClub.RecruitmentType, respClub.RecruitmentType)
-	assert.Equal(dbClub.ApplicationLink, respClub.ApplicationLink)
-	assert.Equal(dbClub.Logo, respClub.Logo)
+	eaa.Assert.Equal(dbClub.ID, respClub.ID)
+	eaa.Assert.Equal(dbClub.Name, respClub.Name)
+	eaa.Assert.Equal(dbClub.Preview, respClub.Preview)
+	eaa.Assert.Equal(dbClub.Description, respClub.Description)
+	eaa.Assert.Equal(dbClub.NumMembers, respClub.NumMembers)
+	eaa.Assert.Equal(dbClub.IsRecruiting, respClub.IsRecruiting)
+	eaa.Assert.Equal(dbClub.RecruitmentCycle, respClub.RecruitmentCycle)
+	eaa.Assert.Equal(dbClub.RecruitmentType, respClub.RecruitmentType)
+	eaa.Assert.Equal(dbClub.ApplicationLink, respClub.ApplicationLink)
+	eaa.Assert.Equal(dbClub.Logo, respClub.Logo)
 
 	var dbAdmins []models.User
 
-	err = app.Conn.Model(&dbClub).Association("Admin").Find(&dbAdmins)
+	err = eaa.App.Conn.Model(&dbClub).Association("Admin").Find(&dbAdmins)
 
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
-	assert.Equal(1, len(dbAdmins))
+	eaa.Assert.Equal(1, len(dbAdmins))
 
-	assert.Equal(*(*body)["user_id"].(*uuid.UUID), dbAdmins[0].ID)
-	assert.Equal((*body)["name"].(string), dbClub.Name)
-	assert.Equal((*body)["preview"].(string), dbClub.Preview)
-	assert.Equal((*body)["description"].(string), dbClub.Description)
-	assert.Equal((*body)["is_recruiting"].(bool), dbClub.IsRecruiting)
-	assert.Equal(models.RecruitmentCycle((*body)["recruitment_cycle"].(string)), dbClub.RecruitmentCycle)
-	assert.Equal(models.RecruitmentType((*body)["recruitment_type"].(string)), dbClub.RecruitmentType)
-	assert.Equal((*body)["application_link"].(string), dbClub.ApplicationLink)
-	assert.Equal((*body)["logo"].(string), dbClub.Logo)
+	eaa.Assert.Equal(*(*body)["user_id"].(*uuid.UUID), dbAdmins[0].ID)
+	eaa.Assert.Equal((*body)["name"].(string), dbClub.Name)
+	eaa.Assert.Equal((*body)["preview"].(string), dbClub.Preview)
+	eaa.Assert.Equal((*body)["description"].(string), dbClub.Description)
+	eaa.Assert.Equal((*body)["is_recruiting"].(bool), dbClub.IsRecruiting)
+	eaa.Assert.Equal(models.RecruitmentCycle((*body)["recruitment_cycle"].(string)), dbClub.RecruitmentCycle)
+	eaa.Assert.Equal(models.RecruitmentType((*body)["recruitment_type"].(string)), dbClub.RecruitmentType)
+	eaa.Assert.Equal((*body)["application_link"].(string), dbClub.ApplicationLink)
+	eaa.Assert.Equal((*body)["logo"].(string), dbClub.Logo)
 
 	return dbClub.ID
 }
 
-func AssertClubWithBodyRespDBMostRecent(app h.TestApp, assert *assert.A, resp *http.Response, body *map[string]interface{}) uuid.UUID {
+func AssertClubWithBodyRespDBMostRecent(eaa h.ExistingAppAssert, resp *http.Response, body *map[string]interface{}) uuid.UUID {
 	var respClub models.Club
 
 	err := json.NewDecoder(resp.Body).Decode(&respClub)
 
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
 	var dbClub models.Club
 
-	err = app.Conn.Order("created_at desc").First(&dbClub).Error
+	err = eaa.App.Conn.Order("created_at desc").First(&dbClub).Error
 
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
-	assert.Equal(dbClub.ID, respClub.ID)
-	assert.Equal(dbClub.Name, respClub.Name)
-	assert.Equal(dbClub.Preview, respClub.Preview)
-	assert.Equal(dbClub.Description, respClub.Description)
-	assert.Equal(dbClub.NumMembers, respClub.NumMembers)
-	assert.Equal(dbClub.IsRecruiting, respClub.IsRecruiting)
-	assert.Equal(dbClub.RecruitmentCycle, respClub.RecruitmentCycle)
-	assert.Equal(dbClub.RecruitmentType, respClub.RecruitmentType)
-	assert.Equal(dbClub.ApplicationLink, respClub.ApplicationLink)
-	assert.Equal(dbClub.Logo, respClub.Logo)
+	eaa.Assert.Equal(dbClub.ID, respClub.ID)
+	eaa.Assert.Equal(dbClub.Name, respClub.Name)
+	eaa.Assert.Equal(dbClub.Preview, respClub.Preview)
+	eaa.Assert.Equal(dbClub.Description, respClub.Description)
+	eaa.Assert.Equal(dbClub.NumMembers, respClub.NumMembers)
+	eaa.Assert.Equal(dbClub.IsRecruiting, respClub.IsRecruiting)
+	eaa.Assert.Equal(dbClub.RecruitmentCycle, respClub.RecruitmentCycle)
+	eaa.Assert.Equal(dbClub.RecruitmentType, respClub.RecruitmentType)
+	eaa.Assert.Equal(dbClub.ApplicationLink, respClub.ApplicationLink)
+	eaa.Assert.Equal(dbClub.Logo, respClub.Logo)
 
 	var dbAdmins []models.User
 
-	err = app.Conn.Model(&dbClub).Association("Admins").Find(&dbAdmins)
+	err = eaa.App.Conn.Model(&dbClub).Association("Admins").Find(&dbAdmins)
 
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
-	assert.Equal(1, len(dbAdmins))
+	eaa.Assert.Equal(1, len(dbAdmins))
 
 	dbAdmin := dbAdmins[0]
 
-	assert.Equal((*body)["user_id"].(uuid.UUID), dbAdmin.ID)
-	assert.Equal((*body)["name"].(string), dbClub.Name)
-	assert.Equal((*body)["preview"].(string), dbClub.Preview)
-	assert.Equal((*body)["description"].(string), dbClub.Description)
-	assert.Equal((*body)["num_members"].(int), dbClub.NumMembers)
-	assert.Equal((*body)["is_recruiting"].(bool), dbClub.IsRecruiting)
-	assert.Equal((*body)["recruitment_cycle"].(string), dbClub.RecruitmentCycle)
-	assert.Equal((*body)["recruitment_type"].(string), dbClub.RecruitmentType)
-	assert.Equal((*body)["application_link"].(string), dbClub.ApplicationLink)
-	assert.Equal((*body)["logo"].(string), dbClub.Logo)
+	eaa.Assert.Equal((*body)["user_id"].(uuid.UUID), dbAdmin.ID)
+	eaa.Assert.Equal((*body)["name"].(string), dbClub.Name)
+	eaa.Assert.Equal((*body)["preview"].(string), dbClub.Preview)
+	eaa.Assert.Equal((*body)["description"].(string), dbClub.Description)
+	eaa.Assert.Equal((*body)["num_members"].(int), dbClub.NumMembers)
+	eaa.Assert.Equal((*body)["is_recruiting"].(bool), dbClub.IsRecruiting)
+	eaa.Assert.Equal((*body)["recruitment_cycle"].(string), dbClub.RecruitmentCycle)
+	eaa.Assert.Equal((*body)["recruitment_type"].(string), dbClub.RecruitmentType)
+	eaa.Assert.Equal((*body)["application_link"].(string), dbClub.ApplicationLink)
+	eaa.Assert.Equal((*body)["logo"].(string), dbClub.Logo)
 
 	return dbClub.ID
 }
 
-func AssertSampleClubBodyRespDB(app h.TestApp, assert *assert.A, resp *http.Response, userID uuid.UUID) uuid.UUID {
+func AssertSampleClubBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, userID uuid.UUID) uuid.UUID {
 	sampleClub := SampleClubFactory(&userID)
-	(*sampleClub)["num_members"] = 1
-
-	return AssertClubBodyRespDB(app, assert, resp, sampleClub)
+	return AssertClubBodyRespDB(eaa, resp, sampleClub)
 }
 
 func CreateSampleClub(existingAppAssert h.ExistingAppAssert) (eaa h.ExistingAppAssert, studentUUID uuid.UUID, clubUUID uuid.UUID) {
 	var sampleClubUUID uuid.UUID
 
-	newAppAssert := existingAppAssert.TestOnStatusAndDB(
+	newAppAssert := existingAppAssert.TestOnStatusAndTester(
 		h.TestRequest{
 			Method:             fiber.MethodPost,
 			Path:               "/api/v1/clubs/",
@@ -147,13 +144,13 @@ func CreateSampleClub(existingAppAssert h.ExistingAppAssert) (eaa h.ExistingAppA
 		},
 		h.TesterWithStatus{
 			Status: fiber.StatusCreated,
-			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
-				sampleClubUUID = AssertSampleClubBodyRespDB(app, assert, resp, app.TestUser.UUID)
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				sampleClubUUID = AssertSampleClubBodyRespDB(eaa, resp, eaa.App.TestUser.UUID)
 			},
 		},
 	)
 
-	return existingAppAssert, newAppAssert.App.TestUser.UUID, sampleClubUUID
+	return newAppAssert, newAppAssert.App.TestUser.UUID, sampleClubUUID
 }
 
 func TestCreateClubWorks(t *testing.T) {
@@ -162,71 +159,71 @@ func TestCreateClubWorks(t *testing.T) {
 }
 
 func TestGetClubsWorks(t *testing.T) {
-	h.InitTest(t).TestOnStatusAndDB(h.TestRequest{
+	h.InitTest(t).TestOnStatusAndTester(h.TestRequest{
 		Method: fiber.MethodGet,
 		Path:   "/api/v1/clubs/",
 		Role:   &models.Super,
 	},
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
-			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
 				var respClubs []models.Club
 
 				err := json.NewDecoder(resp.Body).Decode(&respClubs)
 
-				assert.NilError(err)
+				eaa.Assert.NilError(err)
 
-				assert.Equal(1, len(respClubs))
+				eaa.Assert.Equal(1, len(respClubs))
 
 				respClub := respClubs[0]
 
 				var dbClubs []models.Club
 
-				err = app.Conn.Order("created_at desc").Find(&dbClubs).Error
+				err = eaa.App.Conn.Order("created_at desc").Find(&dbClubs).Error
 
-				assert.NilError(err)
+				eaa.Assert.NilError(err)
 
-				assert.Equal(1, len(dbClubs))
+				eaa.Assert.Equal(1, len(dbClubs))
 
 				dbClub := dbClubs[0]
 
-				assert.Equal(dbClub.ID, respClub.ID)
-				assert.Equal(dbClub.Name, respClub.Name)
-				assert.Equal(dbClub.Preview, respClub.Preview)
-				assert.Equal(dbClub.Description, respClub.Description)
-				assert.Equal(dbClub.NumMembers, respClub.NumMembers)
-				assert.Equal(dbClub.IsRecruiting, respClub.IsRecruiting)
-				assert.Equal(dbClub.RecruitmentCycle, respClub.RecruitmentCycle)
-				assert.Equal(dbClub.RecruitmentType, respClub.RecruitmentType)
-				assert.Equal(dbClub.ApplicationLink, respClub.ApplicationLink)
-				assert.Equal(dbClub.Logo, respClub.Logo)
+				eaa.Assert.Equal(dbClub.ID, respClub.ID)
+				eaa.Assert.Equal(dbClub.Name, respClub.Name)
+				eaa.Assert.Equal(dbClub.Preview, respClub.Preview)
+				eaa.Assert.Equal(dbClub.Description, respClub.Description)
+				eaa.Assert.Equal(dbClub.NumMembers, respClub.NumMembers)
+				eaa.Assert.Equal(dbClub.IsRecruiting, respClub.IsRecruiting)
+				eaa.Assert.Equal(dbClub.RecruitmentCycle, respClub.RecruitmentCycle)
+				eaa.Assert.Equal(dbClub.RecruitmentType, respClub.RecruitmentType)
+				eaa.Assert.Equal(dbClub.ApplicationLink, respClub.ApplicationLink)
+				eaa.Assert.Equal(dbClub.Logo, respClub.Logo)
 
-				assert.Equal("SAC", dbClub.Name)
-				assert.Equal("SAC", dbClub.Preview)
-				assert.Equal("SAC", dbClub.Description)
-				assert.Equal(1, dbClub.NumMembers)
-				assert.Equal(true, dbClub.IsRecruiting)
-				assert.Equal(models.Always, dbClub.RecruitmentCycle)
-				assert.Equal(models.Application, dbClub.RecruitmentType)
-				assert.Equal("https://generatenu.com/apply", dbClub.ApplicationLink)
-				assert.Equal("https://aws.amazon.com/s3", dbClub.Logo)
+				eaa.Assert.Equal("SAC", dbClub.Name)
+				eaa.Assert.Equal("SAC", dbClub.Preview)
+				eaa.Assert.Equal("SAC", dbClub.Description)
+				eaa.Assert.Equal(1, dbClub.NumMembers)
+				eaa.Assert.Equal(true, dbClub.IsRecruiting)
+				eaa.Assert.Equal(models.Always, dbClub.RecruitmentCycle)
+				eaa.Assert.Equal(models.Application, dbClub.RecruitmentType)
+				eaa.Assert.Equal("https://generatenu.com/apply", dbClub.ApplicationLink)
+				eaa.Assert.Equal("https://aws.amazon.com/s3", dbClub.Logo)
 			},
 		},
 	).Close()
 }
 
-func AssertNumClubsRemainsAtN(app h.TestApp, assert *assert.A, resp *http.Response, n int) {
+func AssertNumClubsRemainsAtN(eaa h.ExistingAppAssert, resp *http.Response, n int) {
 	var dbClubs []models.Club
 
-	err := app.Conn.Order("created_at desc").Find(&dbClubs).Error
+	err := eaa.App.Conn.Order("created_at desc").Find(&dbClubs).Error
 
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
-	assert.Equal(n, len(dbClubs))
+	eaa.Assert.Equal(n, len(dbClubs))
 }
 
-var TestNumClubsRemainsAt1 = func(app h.TestApp, assert *assert.A, resp *http.Response) {
-	AssertNumClubsRemainsAtN(app, assert, resp, 1)
+var TestNumClubsRemainsAt1 = func(eaa h.ExistingAppAssert, resp *http.Response) {
+	AssertNumClubsRemainsAtN(eaa, resp, 1)
 }
 
 func AssertCreateBadClubDataFails(t *testing.T, jsonKey string, badValues []interface{}) {
@@ -236,7 +233,7 @@ func AssertCreateBadClubDataFails(t *testing.T, jsonKey string, badValues []inte
 		sampleClubPermutation := *SampleClubFactory(&uuid)
 		sampleClubPermutation[jsonKey] = badValue
 
-		appAssert.TestOnErrorAndDB(
+		appAssert.TestOnErrorAndTester(
 			h.TestRequest{
 				Method: fiber.MethodPost,
 				Path:   "/api/v1/clubs/",
@@ -315,7 +312,7 @@ func TestUpdateClubWorks(t *testing.T) {
 	(*updatedClub)["name"] = "Updated Name"
 	(*updatedClub)["preview"] = "Updated Preview"
 
-	appAssert.TestOnStatusAndDB(
+	appAssert.TestOnStatusAndTester(
 		h.TestRequest{
 			Method: fiber.MethodPatch,
 			Path:   fmt.Sprintf("/api/v1/clubs/%s", clubUUID),
@@ -324,8 +321,8 @@ func TestUpdateClubWorks(t *testing.T) {
 		},
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
-			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
-				AssertClubBodyRespDB(app, assert, resp, updatedClub)
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				AssertClubBodyRespDB(eaa, resp, updatedClub)
 			},
 		},
 	).Close()
@@ -344,7 +341,7 @@ func TestUpdateClubFailsOnInvalidBody(t *testing.T) {
 		{"logo": "@12394X_2"},
 	} {
 		invalidData := invalidData
-		appAssert.TestOnErrorAndDB(
+		appAssert.TestOnErrorAndTester(
 			h.TestRequest{
 				Method: fiber.MethodPatch,
 				Path:   fmt.Sprintf("/api/v1/clubs/%s", clubUUID),
@@ -353,34 +350,34 @@ func TestUpdateClubFailsOnInvalidBody(t *testing.T) {
 			},
 			h.ErrorWithTester{
 				Error: errors.FailedToValidateClub,
-				Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
+				Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
 					var dbClubs []models.Club
 
-					err := app.Conn.Order("created_at desc").Find(&dbClubs).Error
+					err := eaa.App.Conn.Order("created_at desc").Find(&dbClubs).Error
 
-					assert.NilError(err)
+					eaa.Assert.NilError(err)
 
-					assert.Equal(2, len(dbClubs))
+					eaa.Assert.Equal(2, len(dbClubs))
 
 					dbClub := dbClubs[0]
 
 					var dbAdmins []models.User
 
-					err = app.Conn.Model(&dbClub).Association("Admin").Find(&dbAdmins)
+					err = eaa.App.Conn.Model(&dbClub).Association("Admin").Find(&dbAdmins)
 
-					assert.NilError(err)
+					eaa.Assert.NilError(err)
 
-					assert.Equal(1, len(dbAdmins))
+					eaa.Assert.Equal(1, len(dbAdmins))
 
-					assert.Equal(*(*body)["user_id"].(*uuid.UUID), dbAdmins[0].ID)
-					assert.Equal((*body)["name"].(string), dbClub.Name)
-					assert.Equal((*body)["preview"].(string), dbClub.Preview)
-					assert.Equal((*body)["description"].(string), dbClub.Description)
-					assert.Equal((*body)["is_recruiting"].(bool), dbClub.IsRecruiting)
-					assert.Equal(models.RecruitmentCycle((*body)["recruitment_cycle"].(string)), dbClub.RecruitmentCycle)
-					assert.Equal(models.RecruitmentType((*body)["recruitment_type"].(string)), dbClub.RecruitmentType)
-					assert.Equal((*body)["application_link"].(string), dbClub.ApplicationLink)
-					assert.Equal((*body)["logo"].(string), dbClub.Logo)
+					eaa.Assert.Equal(*(*body)["user_id"].(*uuid.UUID), dbAdmins[0].ID)
+					eaa.Assert.Equal((*body)["name"].(string), dbClub.Name)
+					eaa.Assert.Equal((*body)["preview"].(string), dbClub.Preview)
+					eaa.Assert.Equal((*body)["description"].(string), dbClub.Description)
+					eaa.Assert.Equal((*body)["is_recruiting"].(bool), dbClub.IsRecruiting)
+					eaa.Assert.Equal(models.RecruitmentCycle((*body)["recruitment_cycle"].(string)), dbClub.RecruitmentCycle)
+					eaa.Assert.Equal(models.RecruitmentType((*body)["recruitment_type"].(string)), dbClub.RecruitmentType)
+					eaa.Assert.Equal((*body)["application_link"].(string), dbClub.ApplicationLink)
+					eaa.Assert.Equal((*body)["logo"].(string), dbClub.Logo)
 				},
 			},
 		)
@@ -419,7 +416,7 @@ func TestUpdateClubFailsBadRequest(t *testing.T) {
 func TestUpdateClubFailsOnClubIdNotExist(t *testing.T) {
 	uuid := uuid.New()
 
-	h.InitTest(t).TestOnErrorAndDB(h.TestRequest{
+	h.InitTest(t).TestOnErrorAndTester(h.TestRequest{
 		Method:             fiber.MethodPatch,
 		Path:               fmt.Sprintf("/api/v1/clubs/%s", uuid),
 		Body:               SampleClubFactory(nil),
@@ -428,12 +425,12 @@ func TestUpdateClubFailsOnClubIdNotExist(t *testing.T) {
 	},
 		h.ErrorWithTester{
 			Error: errors.ClubNotFound,
-			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
 				var club models.Club
 
-				err := app.Conn.Where("id = ?", uuid).First(&club).Error
+				err := eaa.App.Conn.Where("id = ?", uuid).First(&club).Error
 
-				assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
+				eaa.Assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
 			},
 		},
 	).Close()
@@ -442,7 +439,7 @@ func TestUpdateClubFailsOnClubIdNotExist(t *testing.T) {
 func TestDeleteClubWorks(t *testing.T) {
 	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
-	appAssert.TestOnStatusAndDB(
+	appAssert.TestOnStatusAndTester(
 		h.TestRequest{
 			Method: fiber.MethodDelete,
 			Path:   fmt.Sprintf("/api/v1/clubs/%s", clubUUID),
@@ -457,7 +454,7 @@ func TestDeleteClubWorks(t *testing.T) {
 
 func TestDeleteClubNotExist(t *testing.T) {
 	uuid := uuid.New()
-	h.InitTest(t).TestOnErrorAndDB(
+	h.InitTest(t).TestOnErrorAndTester(
 		h.TestRequest{
 			Method: fiber.MethodDelete,
 			Path:   fmt.Sprintf("/api/v1/clubs/%s", uuid),
@@ -465,14 +462,14 @@ func TestDeleteClubNotExist(t *testing.T) {
 		},
 		h.ErrorWithTester{
 			Error: errors.ClubNotFound,
-			Tester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
 				var club models.Club
 
-				err := app.Conn.Where("id = ?", uuid).First(&club).Error
+				err := eaa.App.Conn.Where("id = ?", uuid).First(&club).Error
 
-				assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
+				eaa.Assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
 
-				AssertNumClubsRemainsAtN(app, assert, resp, 1)
+				AssertNumClubsRemainsAtN(eaa, resp, 1)
 			},
 		},
 	).Close()

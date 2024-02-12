@@ -15,21 +15,21 @@ func NewUserTagController(userTagService services.UserTagServiceInterface) *User
 	return &UserTagController{userTagService: userTagService}
 }
 
-func (u *UserTagController) GetUserTags(c *fiber.Ctx) error {
-	tags, err := u.userTagService.GetUserTags(c.Params("userID"))
+func (ut *UserTagController) GetUserTags(c *fiber.Ctx) error {
+	tags, err := ut.userTagService.GetUserTags(c.Params("userID"))
 	if err != nil {
 		return err.FiberError(c)
 	}
 	return c.Status(fiber.StatusOK).JSON(&tags)
 }
 
-func (u *UserTagController) CreateUserTags(c *fiber.Ctx) error {
+func (ut *UserTagController) CreateUserTags(c *fiber.Ctx) error {
 	var requestBody models.CreateUserTagsBody
 	if err := c.BodyParser(&requestBody); err != nil {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
-	tags, err := u.userTagService.CreateUserTags(c.Params("userID"), requestBody)
+	tags, err := ut.userTagService.CreateUserTags(c.Params("userID"), requestBody)
 	if err != nil {
 		return err.FiberError(c)
 	}

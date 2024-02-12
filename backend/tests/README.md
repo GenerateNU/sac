@@ -52,7 +52,7 @@ TestRequest{
   Method: fiber.MethodPost,
   Path:   "/api/v1/categories/",
   Body: SampleCategoryFactory(),
- }.TestOnStatusAndDB(t, nil,
+ }.TestOnStatusAndTester(t, nil,
   TesterWithStatus{
    Status:   fiber.StatusCreated,
    DBTester: AssertSampleCategoryBodyRespDB,
