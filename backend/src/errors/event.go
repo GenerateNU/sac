@@ -19,7 +19,15 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to create event series",
 	}
+	FailedToGetEventSeries = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get event series",
+	}
 	FailedToGetEvents = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get events",
+	}
+	FailedToGetClubEvents = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to get events",
 	}

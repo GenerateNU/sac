@@ -5,6 +5,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/google/uuid"
 
 	"gorm.io/gorm"
@@ -34,20 +35,40 @@ func GetEvent(db *gorm.DB, id uuid.UUID) (*models.Event, *errors.Error) {
 	return &event, nil
 }
 
-func GetEventSeries(db *gorm.DB, id uuid.UUID) ([]models.Event, *errors.Error) {
-	var events []models.Event
-	if err := db.Where("parent_id = ?", id).Find(&events).Error; err != nil {
-		return nil, &errors.FailedToGetEvents
+func GetSeriesByEventId(db *gorm.DB, id uuid.UUID) ([]models.Event, *errors.Error) {
+	var sid string
+	tx := db.Begin()
+	if err := tx.Model(&models.Event_Series{}).Where("event_id = ?", id).Select("series_id").Find(&sid).Error; err != nil {
+		tx.Rollback()
+		return nil, &errors.FailedToGetEventSeries
+	}
+	sidAsUUID, err := utilities.ValidateID(sid)
+	if err != nil {
+		return nil, err
+	}
+	events, err := GetSeriesBySeriesId(tx, *sidAsUUID)
+	if err != nil {
+		tx.Rollback()
+		return nil, &errors.FailedToGetEventSeries
+	}
+	tx.Commit()
+	return events, nil
+}
+
+func GetSeriesBySeriesId(db *gorm.DB, id uuid.UUID) ([]models.Event, *errors.Error) {
+	var series models.Series
+	if err := db.Preload("Events").Find(&series, id).Error; err != nil {
+		return nil, &errors.FailedToGetEventSeries
 	}
 
-	return events, nil
+	return series.Events, nil
 }
 
 func GetClubEvents(db *gorm.DB, id uuid.UUID) ([]models.Event, *errors.Error) {
 	var events []models.Event
 
 	if err := db.Where("club_id = ?", id).Find(&events).Error; err != nil {
-		return nil, &errors.FailedToGetEvents
+		return nil, &errors.FailedToGetClubEvents
 	}
 
 	return events, nil

@@ -47,8 +47,8 @@ func (l *EventController) GetClubEvents(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(events)
 }
 
-func (l *EventController) GetEventSeries(c *fiber.Ctx) error {
-	events, err := l.eventService.GetEventSeries(c.Params("id"))
+func (l *EventController) GetSeriesByEventId(c *fiber.Ctx) error {
+	events, err := l.eventService.GetSeriesByEventId(c.Params("id"))
 	if err != nil {
 		return err.FiberError(c)
 	}

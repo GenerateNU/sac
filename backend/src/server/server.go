@@ -126,7 +126,7 @@ func eventRoutes(router fiber.Router, eventService services.EventServiceInterfac
 	events := router.Group("/events")
 
 	events.Get("/:id", eventController.GetEvent)
-	events.Get("/:id/series", eventController.GetEventSeries)
+	events.Get("/:id/series", eventController.GetSeriesByEventId)
 	events.Get("/", eventController.GetAllEvents)
 	events.Post("/", eventController.CreateEvent)
 	events.Patch("/:id", eventController.UpdateEvent)

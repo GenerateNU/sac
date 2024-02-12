@@ -1,8 +1,6 @@
 package services
 
 import (
-	"time"
-
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
@@ -16,7 +14,7 @@ type EventServiceInterface interface {
 	GetEvents(limit string, page string) ([]models.Event, *errors.Error)
 	GetClubEvents(id string) ([]models.Event, *errors.Error)
 	GetEvent(id string) (*models.Event, *errors.Error)
-	GetEventSeries(id string) ([]models.Event, *errors.Error)
+	GetSeriesByEventId(id string) ([]models.Event, *errors.Error)
 	CreateEvent(eventBodies models.CreateEventRequestBody) ([]models.Event, *errors.Error)
 	UpdateEvent(id string, eventBody models.UpdateEventRequestBody) (*models.Event, *errors.Error)
 	DeleteEvent(id string) *errors.Error
@@ -62,24 +60,28 @@ func (c *EventService) CreateEvent(eventBody models.CreateEventRequestBody) ([]m
 	if err := c.Validate.Struct(eventBody); err != nil {
 		return nil, &errors.FailedToValidateEvent
 	}
-	
+
 	// map requestToModels only works well with maps
 	// event, err := utilities.MapRequestToModel(eventBody, &models.Event{})
 
 	event := &models.Event{
-		Name: eventBody.Name,
-		Preview: eventBody.Preview,
-		Content: eventBody.Content,
-		StartTime: eventBody.StartTime,
-		EndTime: eventBody.EndTime,
-		Location: eventBody.Location,
-		EventType: eventBody.EventType,
+		Name:        eventBody.Name,
+		Preview:     eventBody.Preview,
+		Content:     eventBody.Content,
+		StartTime:   eventBody.StartTime,
+		EndTime:     eventBody.EndTime,
+		Location:    eventBody.Location,
+		EventType:   eventBody.EventType,
 		IsRecurring: *eventBody.IsRecurring,
 	}
 
 	if !event.IsRecurring {
 		event, err := transactions.CreateEvent(c.DB, *event)
 		return []models.Event{*event}, err
+	}
+
+	if err := c.Validate.Struct(eventBody.Series); err != nil {
+		return nil, &errors.FailedToValidateEventSeries
 	}
 
 	series, err := utilities.MapRequestToModel(eventBody.Series, &models.Series{})
@@ -103,13 +105,13 @@ func (c *EventService) GetEvent(id string) (*models.Event, *errors.Error) {
 	return transactions.GetEvent(c.DB, *idAsUUID)
 }
 
-func (c *EventService) GetEventSeries(id string) ([]models.Event, *errors.Error) {
+func (c *EventService) GetSeriesByEventId(id string) ([]models.Event, *errors.Error) {
 	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return nil, &errors.FailedToValidateID
 	}
 
-	return transactions.GetEventSeries(c.DB, *idAsUUID)
+	return transactions.GetSeriesByEventId(c.DB, *idAsUUID)
 }
 
 func (c *EventService) UpdateEvent(id string, eventBody models.UpdateEventRequestBody) (*models.Event, *errors.Error) {

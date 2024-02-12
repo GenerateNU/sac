@@ -12,12 +12,6 @@ const (
 	MembersOnly EventType = "membersOnly"
 )
 
-type Boolean string
-const (
-	True Boolean = "true"
-	False Boolean = "false"
-)
-
 type RecurringType string
 // excluding annually for now bc most clubs have meetings per semester
 const (
@@ -60,9 +54,9 @@ type Series struct {
 // TODO: add not null to required fields on all gorm models
 type Event_Series struct {
 	EventID  uuid.UUID `gorm:"not null; type:uuid; primary_key;" json:"event_id" validate:"uuid4"`
-	Event    Event
+	Event    Event     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	SeriesID uuid.UUID `gorm:"not null; type:uuid;" json:"series_id" validate:"uuid4"`
-	Series   Series    `json:"-" validate:"-"`
+	Series   Series    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 }
 
 // potentially not needed?
@@ -79,10 +73,10 @@ type EventInstanceException struct {
 type CreateSeriesRequestBody struct {
 	RecurringType   RecurringType `json:"recurring_type" validate:"max=255"`
 	SeparationCount int           `json:"separation_count" validate:"min=0"`
-	MaxOccurrences  int           `json:"max_occurrences" validate:"min=1"`
-	DayOfWeek       int           `json:"day_of_week" validate:"min=1,max=7"`
-	WeekOfMonth     int           `json:"week_of_month" validate:"min=1,max=5"`
-	DayOfMonth      int           `json:"day_of_month" validate:"min=1,max=31"`
+	MaxOccurrences  int           `json:"max_occurrences" validate:"min=2"`
+	// DayOfWeek       int           `json:"day_of_week" validate:"min=1,max=7"`
+	// WeekOfMonth     int           `json:"week_of_month" validate:"min=1,max=5"`
+	// DayOfMonth      int           `json:"day_of_month" validate:"min=1,max=31"`
 }
 
 // TODO We will likely need to update the create and update structs to account for recurring series
@@ -96,12 +90,13 @@ type CreateEventRequestBody struct {
 	EventType   EventType `json:"event_type" validate:"required,max=255"`
 	IsRecurring *bool     `json:"is_recurring" validate:"required"`
 
+	//TODO club/tag/notification logic
 	Club         []Club         `json:"-" validate:"-"`
 	Tag          []Tag          `json:"-" validate:"-"`
 	Notification []Notification `json:"-" validate:"-"`
 
 	//TODO validate if isRecurring, then series is required
-	Series CreateSeriesRequestBody `json:"series" validate:"omitempty,excluded_if=recurring true,required_if=IsRecurring true"`
+	Series CreateSeriesRequestBody `json:"series" validate:"-"`
 }
 
 type UpdateEventRequestBody struct {
