@@ -111,6 +111,10 @@ func SearchPinecone(item types.Embeddable, topKResults int) ([]string, *errors.E
 	req.Header.Set("content-type", "application/json")
 
 	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return []string{}, &errors.FailedToSearchPinecone
+	}
+
 	defer resp.Body.Close()
 
 	if err != nil {

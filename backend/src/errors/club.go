@@ -50,6 +50,7 @@ var (
 	FailedToVectorizeClub = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to vectorize club",
+	}
 	FailedToGetClubFollowers = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to get club followers",

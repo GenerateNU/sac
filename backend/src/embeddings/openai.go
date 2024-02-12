@@ -21,10 +21,18 @@ func CreateEmbeddingVector(infoForEmbedding string) ([]float32, *errors.Error) {
 	requestInfoBody := bytes.NewBuffer(InfoBody)
 
 	req, err := http.NewRequest("POST", fmt.Sprintf("https://api.openai.com/v1/embeddings"), requestInfoBody)
+	if err != nil {
+		return nil, &errors.FailedToVectorizeClub
+	}
+
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", apiKey))
 	req.Header.Set("content-type", "application/json")
 
 	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, &errors.FailedToVectorizeClub
+	}
+
 	defer resp.Body.Close()
 
 	if err != nil {
