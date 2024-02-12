@@ -9,7 +9,7 @@ export const userSchema = z.object({
     firstName: z.string().min(3),
     lastName: z.string().min(3),
     createdAt: z.date(),
-    updatedAt: z.date(),
+    updatedAt: z.date()
 });
 
 export type User = z.infer<typeof userSchema>;

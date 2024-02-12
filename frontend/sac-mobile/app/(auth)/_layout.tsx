@@ -1,5 +1,7 @@
-import React from 'react'
-import { Stack } from 'expo-router'
+import React from 'react';
+
+import { Stack } from 'expo-router';
+import { SafeAreaView } from 'react-native';
 
 const AuthLayout = () => {
     return (
@@ -8,19 +10,18 @@ const AuthLayout = () => {
                 name="login"
                 options={{
                     title: 'Login',
-                    headerShown: false,
+                    headerShown: false
                 }}
-
             />
             <Stack.Screen
                 name="register"
                 options={{
                     title: 'Register',
-                    headerShown: false,
+                    headerShown: false
                 }}
             />
         </Stack>
-    )
-}
+    );
+};
 
-export default AuthLayout
+export default AuthLayout;

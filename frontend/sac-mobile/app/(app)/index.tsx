@@ -1,12 +1,15 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { useAuthStore } from '@/hooks/use-auth';
+import React from 'react';
+import { Button, Text, View } from 'react-native';
 
 const Home = () => {
+    const { logout } = useAuthStore();
     return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View className="items-center justify-center flex-1">
+            <Button onPress={logout} title="Logout" />
             <Text>Home</Text>
         </View>
-    )
-}
+    );
+};
 
-export default Home
+export default Home;

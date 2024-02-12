@@ -1,6 +1,7 @@
-import { Tokens, User } from '@/types/user';
-import { setItemAsync } from 'expo-secure-store';
+import { deleteItemAsync, setItemAsync } from 'expo-secure-store';
 import { create } from 'zustand';
+
+import { Tokens, User } from '@/types/user';
 
 export type AuthStore = {
     isLoggedIn: boolean;
@@ -23,6 +24,16 @@ export const useAuthStore = create<AuthStore>((set) => ({
         setItemAsync('refreshToken', tokens.refreshToken);
         setItemAsync('user', JSON.stringify(user));
     },
-    logout: () => set({ isLoggedIn: false, accessToken: null, refreshToken: null, user: null }),
-    setTokens: (tokens: Tokens) => set({ ...tokens }),
+    logout: () => {
+        set({
+            isLoggedIn: false,
+            accessToken: null,
+            refreshToken: null,
+            user: null
+        });
+        deleteItemAsync('accessToken');
+        deleteItemAsync('refreshToken');
+        deleteItemAsync('user');
+    },
+    setTokens: (tokens: Tokens) => set({ ...tokens })
 }));

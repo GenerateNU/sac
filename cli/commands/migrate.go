@@ -10,6 +10,7 @@ import (
 func MigrateCommand() *cli.Command {
 	command := cli.Command{
 		Name:     "migrate",
+		Aliases: []string{"m"},
 		Usage:    "Migrate the database, creating tables and relationships",
 		Category: "Database Operations",
 		Action: func(c *cli.Context) error {

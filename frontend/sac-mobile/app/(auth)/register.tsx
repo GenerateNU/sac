@@ -1,9 +1,9 @@
 import React from 'react';
-import { Text, View, TextInput, Button, Alert } from 'react-native';
-import { useForm, Controller } from 'react-hook-form';
-import { ZodError, z } from 'zod'; // Import Zod
-import { useAuthStore } from '@/hooks/use-auth';
+import { Controller, useForm } from 'react-hook-form';
+import { Alert, Button, Text, TextInput, View } from 'react-native';
+
 import { router } from 'expo-router';
+import { ZodError, z } from 'zod';
 
 type RegisterFormData = {
     firstName: string;
@@ -12,21 +12,25 @@ type RegisterFormData = {
     password: string;
 };
 
-// Define Zod schema
 const registerSchema = z.object({
-    firstName: z.string().min(2, { message: 'First name must be at least 2 characters long' }),
-    lastName: z.string().min(2, { message: 'Last name must be at least 2 characters long' }),
-    email: z.string().email({ message: 'Invalid email' }), // Email validation
-    password: z.string().min(8, { message: 'Password must be at least 8 characters long' }), // Password validation
+    firstName: z
+        .string()
+        .min(2, { message: 'First name must be at least 2 characters long' }),
+    lastName: z
+        .string()
+        .min(2, { message: 'Last name must be at least 2 characters long' }),
+    email: z.string().email({ message: 'Invalid email' }),
+    password: z
+        .string()
+        .min(8, { message: 'Password must be at least 8 characters long' })
 });
 
 const Register = () => {
     const {
         control,
         handleSubmit,
-        formState: { errors },
+        formState: { errors }
     } = useForm<RegisterFormData>();
-
 
     const onSubmit = (data: RegisterFormData) => {
         // Validate form data using Zod schema
@@ -44,14 +48,14 @@ const Register = () => {
     };
 
     return (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-            <View style={{ width: '100%', marginBottom: 20 }}>
+        <View className="items-center justify-center flex-1 p-4">
+            <View className="w-full mb-4">
                 <Text>First Name</Text>
                 <Controller
                     control={control}
                     render={({ field: { onChange, value } }) => (
                         <TextInput
-                            style={{ padding: 10, borderColor: 'gray', borderWidth: 1 }}
+                            className="p-2 border border-gray-300"
                             placeholder="Ladley"
                             onChangeText={onChange}
                             value={value}
@@ -63,16 +67,15 @@ const Register = () => {
                     defaultValue=""
                 />
                 {errors.firstName && <Text>{errors.firstName.message}</Text>}
-
             </View>
 
-            <View style={{ width: '100%', marginBottom: 20 }}>
+            <View className="w-full mb-4">
                 <Text>Last Name</Text>
                 <Controller
                     control={control}
                     render={({ field: { onChange, value } }) => (
                         <TextInput
-                            style={{ padding: 10, borderColor: 'gray', borderWidth: 1 }}
+                            className="p-2 border border-gray-300"
                             placeholder="G"
                             onChangeText={onChange}
                             value={value}
@@ -86,13 +89,13 @@ const Register = () => {
                 {errors.lastName && <Text>{errors.lastName.message}</Text>}
             </View>
 
-            <View style={{ width: '100%', marginBottom: 20 }}>
+            <View className="w-full mb-4">
                 <Text>Email</Text>
                 <Controller
                     control={control}
                     render={({ field: { onChange, value } }) => (
                         <TextInput
-                            style={{ padding: 10, borderColor: 'gray', borderWidth: 1 }}
+                            className="p-2 border border-gray-300"
                             placeholder="ladley.g@northeastern.edu"
                             onChangeText={onChange}
                             value={value}
@@ -106,13 +109,13 @@ const Register = () => {
                 {errors.email && <Text>{errors.email.message}</Text>}
             </View>
 
-            <View style={{ width: '100%', marginBottom: 20 }}>
+            <View className="w-full mb-4">
                 <Text>Password</Text>
                 <Controller
                     control={control}
                     render={({ field: { onChange, value } }) => (
                         <TextInput
-                            style={{ padding: 10, borderColor: 'gray', borderWidth: 1 }}
+                            className="p-2 border border-gray-300"
                             placeholder="Password"
                             onChangeText={onChange}
                             value={value}
@@ -128,11 +131,14 @@ const Register = () => {
             </View>
 
             <Button title="Submit" onPress={handleSubmit(onSubmit)} />
-            <View style={{ marginTop: 20 }}>
-                <Button title="Login" onPress={() => router.push('/(auth)/login')} />
+            <View className="mt-4">
+                <Button
+                    title="Login"
+                    onPress={() => router.push('/(auth)/login')}
+                />
             </View>
         </View>
     );
-}
+};
 
 export default Register;

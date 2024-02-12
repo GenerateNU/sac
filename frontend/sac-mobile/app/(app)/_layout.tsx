@@ -1,9 +1,13 @@
-import React from 'react'
-import { Tabs } from 'expo-router'
-import { MaterialCommunityIcons } from '@expo/vector-icons'
+import React from 'react';
+
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Tabs } from 'expo-router';
+
+const HomeTabBarIcon = ({ color }: { color: string }) => (
+    <MaterialCommunityIcons name="home" size={24} color={color} />
+);
 
 const AppLayout = () => {
-
     return (
         <Tabs>
             <Tabs.Screen
@@ -11,11 +15,11 @@ const AppLayout = () => {
                 options={{
                     title: 'Home',
                     headerShown: false,
-                    tabBarIcon: ({ color }) => <MaterialCommunityIcons name="home" size={24} color={color} />
+                    tabBarIcon: HomeTabBarIcon
                 }}
             />
         </Tabs>
-    )
-}
+    );
+};
 
-export default AppLayout
+export default AppLayout;
