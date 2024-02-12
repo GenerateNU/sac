@@ -1,9 +1,6 @@
 package models
 
 import (
-	"github.com/GenerateNU/sac/backend/src/embeddings"
-	"github.com/GenerateNU/sac/backend/src/errors"
-	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -92,7 +89,7 @@ func (c *Club) AfterDelete(tx *gorm.DB) (err error) {
 	return
 }
 
-func (c *Club) EmbeddingId() string {
+func (c *Club) SearchId() string {
 	return c.ID.String()
 }
 
@@ -100,14 +97,6 @@ func (c *Club) Namespace() string {
 	return "clubs"
 }
 
-func (c *Club) Embed() (*types.Embedding, *errors.Error) {
-	var clubInfoForEmbedding string
-	clubInfoForEmbedding = c.Name + " " + c.Name + " " + c.Name + " " + c.Name + " " + c.Description
-	embeddingVector, err := embeddings.CreateEmbeddingVector(clubInfoForEmbedding)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &types.Embedding{Id: c.ID.String(), Values: embeddingVector}, nil
+func (c *Club) EmbeddingString() string {
+	return c.Name + " " + c.Name + " " + c.Name + " " + c.Name + " " + c.Description
 }
