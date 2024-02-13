@@ -29,8 +29,18 @@ func GetClubs(db *gorm.DB, params *models.ClubQueryParams) ([]models.Club, *erro
 	offset := (*&params.Page - 1) * *&params.Limit
 	var clubs []models.Club
 
-	// result := db.Where(params.IntoWhere()).Limit(params.Limit).Offset(offset).Association("Tag").Find(&clubs)
-	result := db.Where(params.IntoWhere()).Limit(params.Limit).Offset(offset).Find(&clubs)
+	db_call := db
+	if params.Tags != nil {
+		//We only want to query tags if necessary
+		//i.e. when we filter
+		db_call = db.Preload("Tag")
+	}
+	query := db_call.Where(params.IntoWhere())
+	if params.Tags != nil {
+		query = query.Where("id IN (SELECT club_id FROM club_tags WHERE tag_id IN ?)", params.Tags)
+	}
+	result := query.Limit(params.Limit).Offset(offset).Find(&clubs)
+
 	if result.Error != nil {
 		return nil, &errors.FailedToGetClubs
 	}

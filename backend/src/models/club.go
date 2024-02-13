@@ -41,7 +41,7 @@ type Club struct {
 	Logo             string           `gorm:"type:varchar(255);default:NULL" json:"logo" validate:"omitempty,http_url,s3_url,max=255"` // S3 URL
 
 	Parent *uuid.UUID `gorm:"foreignKey:Parent" json:"-" validate:"uuid4"`
-	Tag    []Tag      `gorm:"many2many:club_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
+	Tag    []Tag      `gorm:"many2many:club_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"tags,omitempty" validate:"-"`
 	// User
 	Admin             []User           `gorm:"many2many:user_club_admins;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"required"`
 	Member            []User           `gorm:"many2many:user_club_members;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"required"`
@@ -83,7 +83,7 @@ type CreateClubTagsRequestBody struct {
 }
 
 type ClubQueryParams struct {
-	// Tags             []uuid.UUIDs            `query:"tags"`
+	Tags             []string          `query:"tags"`
 	MinMembers       int               `query:"min_members"`
 	MaxMembers       int               `query:"max_members"`
 	RecruitmentCycle *RecruitmentCycle `query:"recruitment_cycle"`
@@ -116,6 +116,8 @@ func (cqp *ClubQueryParams) IntoWhere() string {
 	if cqp.IsRecruiting != nil {
 		conditions = append(conditions, fmt.Sprintf("is_recruiting = %t", *cqp.IsRecruiting))
 	}
+
+	// conditions = append(conditions, fmt.Sprintf("'clubs'.'club_tags' = 8761310a-4e1a-4cc4-b9c9-799dd9950e07"))
 
 	if len(conditions) > 0 {
 		where = strings.Join(conditions, " AND ")

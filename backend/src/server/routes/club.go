@@ -13,7 +13,7 @@ func Club(router fiber.Router, clubService services.ClubServiceInterface, middle
 
 	clubs := router.Group("/clubs")
 
-	clubs.Get("/", clubController.GetAllClubs)
+	clubs.Get("/", middlewareService.Authorize(types.ClubReadAll), clubController.GetAllClubs)
 	clubs.Post("/", clubController.CreateClub)
 
 	// api/v1/clubs/:clubID/*
