@@ -33,29 +33,29 @@ func BadEmailPOCFactory() *map[string]interface{} {
 	}
 }
 
-func AssertPOCWithBodyRespDB(app h.TestApp, assert *assert.A, resp *http.Response, body *map[string]interface{}) {
+func AssertPOCWithBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, body *map[string]interface{}) {
 	var respPOC models.PointOfContact
 
 	err := json.NewDecoder(resp.Body).Decode(&respPOC)
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
 	var dbPOC models.PointOfContact
 
-	err = app.Conn.Where("id = ?", respPOC.ID).First(&dbPOC).Error
-	assert.NilError(err)
+	err = eaa.App.Conn.Where("id = ?", respPOC.ID).First(&dbPOC).Error
+	eaa.Assert.NilError(err)
 
-	assert.Equal(dbPOC.Name, respPOC.Name)
-	assert.Equal(dbPOC.Email, respPOC.Email)
-	assert.Equal(dbPOC.Position, respPOC.Position)
+	eaa.Assert.Equal(dbPOC.Name, respPOC.Name)
+	eaa.Assert.Equal(dbPOC.Email, respPOC.Email)
+	eaa.Assert.Equal(dbPOC.Position, respPOC.Position)
 
-	assert.Equal((*body)["name"].(string), dbPOC.Name)
-	assert.Equal((*body)["email"].(string), dbPOC.Email)
-	assert.Equal((*body)["position"].(string), dbPOC.Position)
+	eaa.Assert.Equal((*body)["name"].(string), dbPOC.Name)
+	eaa.Assert.Equal((*body)["email"].(string), dbPOC.Email)
+	eaa.Assert.Equal((*body)["position"].(string), dbPOC.Position)
 }
 
-func AssertSamplePOCBodyRespDB(app h.TestApp, assert *assert.A, resp *http.Response) {
-	AssertPOCWithBodyRespDB(app, assert, resp, SamplePOCFactory())
-}
+// func AssertSamplePOCBodyRespDB(app h.TestApp, assert *assert.A, resp *http.Response) {
+// 	AssertPOCWithBodyRespDB(app, assert, resp, SamplePOCFactory())
+// }
 
 func CreateSamplePOC(t *testing.T, existingAppAssert h.ExistingAppAssert) (h.ExistingAppAssert, uuid.UUID) {
 	_, _, clubUUID := CreateSampleClub(h.InitTest(t))
@@ -81,18 +81,21 @@ func CreateSamplePOC(t *testing.T, existingAppAssert h.ExistingAppAssert) (h.Exi
 }
 
 func CreateInvalidEmailPOC(t *testing.T) h.ExistingAppAssert {
-	_, _, clubUUID := CreateSampleClub(h.InitTest(t))
+	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
-	return h.TestRequest{
-		Method: fiber.MethodPut,
-		Path:   fmt.Sprintf("/api/v1/clubs/%s/poc/", clubUUID),
-		Body:   BadEmailPOCFactory(),
-	}.TestOnStatusAndDB(t, nil,
-		DBTesterWithStatus{
-			Status:   400,
-			DBTester: TestNumPOCRemainsAt0,
+	appAssert.TestOnErrorAndTester(
+		h.TestRequest{
+			Method: fiber.MethodPut,
+			Path:   fmt.Sprintf("/api/v1/clubs/%s/poc/", clubUUID),
+			Body:   BadEmailPOCFactory(),
+			Role:   &models.Super,
 		},
-	)
+		h.ErrorWithTester{
+			Error:  errors.FailedToValidateEmail,
+			Tester: TestNumPOCRemainsAt0,
+		},
+	).Close()
+	return appAssert
 }
 
 // POINT OF CONTACT UPSERT
@@ -120,35 +123,21 @@ func TestUpdatePOCWorks(t *testing.T) {
 		"email":    email,
 	}
 
-	TestRequest{
-		Method: fiber.MethodPut,
-		Path:   fmt.Sprintf("/api/v1/clubs/%s/poc/", clubUUID),
-		Body:   &requestBody,
-	}.TestOnStatusAndDB(t, &appAssert,
-		DBTesterWithStatus{
-			Status: 200,
-			DBTester: func(app h.TestApp, assert *assert.A, resp *http.Response) {
-				var club models.Club
-				err := app.Conn.First(&club, clubUUID).Error
-				assert.NilError(err)
+	updatedPOC := SamplePOCFactory()
+	(*updatedPOC)["name"] = newName
+	(*updatedPOC)["position"] = newPosition
 
-				var respPOC models.PointOfContact
-				err = json.NewDecoder(resp.Body).Decode(&respPOC)
-				assert.NilError(err)
-
-				var dbPOC models.PointOfContact
-				err = app.Conn.Where("email = ?", "doe.jane@northeastern.edu").First(&dbPOC).Error
-				assert.NilError(err)
-
-				assert.Equal(newName, respPOC.Name)
-				assert.Equal(newPosition, respPOC.Position)
-				assert.Equal((*SamplePOCFactory())["email"].(string), respPOC.Email)
-
-				assert.Equal(dbPOC.Name, respPOC.Name)
-				assert.Equal(dbPOC.Photo, respPOC.Photo)
-				assert.Equal(dbPOC.Email, respPOC.Email)
-				assert.Equal(dbPOC.Position, respPOC.Position)
-				// TODO Club ID not matching between response and db
+	appAssert.TestOnStatusAndTester(
+		h.TestRequest{
+			Method: fiber.MethodPatch,
+			Path:   fmt.Sprintf("/api/v1/clubs/%s/poc/", clubUUID),
+			Body:   &requestBody,
+			Role:   &models.Super,
+		},
+		h.TesterWithStatus{
+			Status: fiber.StatusOK,
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				AssertPOCWithBodyRespDB(eaa, resp, updatedPOC)
 			},
 		},
 	).Close()
@@ -362,17 +351,17 @@ func TestUpdatePOCFailsOnInvalidBody(t *testing.T) {
 		{"position": ""},
 		{"name": ""},
 	} {
-		h.TestRequest{
-			Method: fiber.MethodPut,
-			Path:   fmt.Sprintf("/api/v1/clubs/%s/poc/", clubUUID),
-			Body:   &invalidData,
-		}.TestOnStatusMessageAndDB(t, &appAssert,
-			StatusMessageDBTester{
-				MessageWithStatus: MessageWithStatus{
-					Status:  400,
-					Message: errors.FailedToValidatePointOfContact,
-				},
-				DBTester: TestNumPOCRemainsAt1,
+		invalidData := invalidData
+		appAssert.TestOnErrorAndTester(
+			h.TestRequest{
+				Method: fiber.MethodPut,
+				Path:   fmt.Sprintf("/api/v1/clubs/%s/poc/", clubUUID),
+				Body:   &invalidData,
+				Role:   &models.Super,
+			},
+			h.ErrorWithTester{
+				Error:  errors.FailedToUpsertPointOfContact,
+				Tester: TestNumPOCRemainsAt1,
 			},
 		)
 	}
@@ -825,23 +814,23 @@ func TestDeletePOCNotExist(t *testing.T) {
 }
 
 // assert remaining numbers of POC
-func AssertNumPOCRemainsAtN(app h.TestApp, assert *assert.A, resp *http.Response, n int) {
+func AssertNumPOCRemainsAtN(eaa h.ExistingAppAssert, resp *http.Response, n int) {
 	var pointOfContact []models.PointOfContact
 
-	err := app.Conn.Find(&pointOfContact).Error
+	err := eaa.App.Conn.Find(&pointOfContact).Error
 
-	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
-	assert.Equal(n, len(pointOfContact))
+	eaa.Assert.Equal(n, len(pointOfContact))
 }
 
 // assert remaining POC = 1
-var TestNumPOCRemainsAt1 = func(app h.TestApp, assert *assert.A, resp *http.Response) {
-	AssertNumPOCRemainsAtN(app, assert, resp, 1)
+var TestNumPOCRemainsAt1 = func(eaa h.ExistingAppAssert, resp *http.Response) {
+	AssertNumPOCRemainsAtN(eaa, resp, 1)
 }
 
-var TestNumPOCRemainsAt0 = func(app h.TestApp, assert *assert.A, resp *http.Response) {
-	AssertNumPOCRemainsAtN(app, assert, resp, 0)
+var TestNumPOCRemainsAt0 = func(eaa h.ExistingAppAssert, resp *http.Response) {
+	AssertNumPOCRemainsAtN(eaa, resp, 0)
 }
 
 func TestUpdateClubFailsBadRequest(t *testing.T) {

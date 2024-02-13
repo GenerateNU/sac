@@ -35,9 +35,9 @@ func (u *ClubService) UpsertPointOfContact(clubId string, pointOfContactBody mod
 	if err != nil {
 		return nil, &errors.FailedToMapRequestToModel
 	}
-	clubIdAsUUID, err := utilities.ValidateID(clubId)
+	clubIdAsUUID, idErr := utilities.ValidateID(clubId)
 	pointOfContact.ClubID = *clubIdAsUUID
-	if err != nil {
+	if idErr != nil {
 		return nil, &errors.FailedToValidateClub
 	}
 	return transactions.UpsertPointOfContact(u.DB, pointOfContact)
@@ -77,8 +77,6 @@ func (u *ClubService) DeletePointOfContact(pocId string, clubId string) *errors.
 	}
 	return transactions.DeletePointOfContact(u.DB, *pocIdAsUUID, *clubIdAsUUID)
 }
-
-
 
 func NewClubService(db *gorm.DB, validate *validator.Validate) *ClubService {
 	return &ClubService{DB: db, Validate: validate}
