@@ -26,15 +26,17 @@ type EventService struct {
 	Validate *validator.Validate
 }
 
+func NewEventService(db *gorm.DB, validate *validator.Validate) *EventService {
+	return &EventService{DB: db, Validate: validate}
+}
+
 func (c *EventService) GetEvents(limit string, page string) ([]models.Event, *errors.Error) {
 	limitAsInt, err := utilities.ValidateNonNegative(limit)
-
 	if err != nil {
 		return nil, &errors.FailedToValidateLimit
 	}
 
 	pageAsInt, err := utilities.ValidateNonNegative(page)
-
 	if err != nil {
 		return nil, &errors.FailedToValidatePage
 	}
@@ -56,7 +58,6 @@ func (c *EventService) GetClubEvents(id string) ([]models.Event, *errors.Error) 
 // TODO: add logic for creating the []event here
 // TODO Q: should we always return a slice of events? or should we return a slice of events if it's a series and a single event if it's not?
 func (c *EventService) CreateEvent(eventBody models.CreateEventRequestBody) ([]models.Event, *errors.Error) {
-
 	if err := c.Validate.Struct(eventBody); err != nil {
 		return nil, &errors.FailedToValidateEvent
 	}
@@ -142,17 +143,15 @@ func (c *EventService) DeleteEvent(id string) *errors.Error {
 }
 
 func (c *EventService) DeleteEventSeries(id string) *errors.Error {
-
 	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return &errors.FailedToValidateID
 	}
 
 	return transactions.DeleteEventSeries(c.DB, *idAsUUID)
-
 }
 
-//TODO: CreateEventSeries, GetEventSeries, DeleteEventSeries
+// TODO: CreateEventSeries, GetEventSeries, DeleteEventSeries
 
 // Helper to create other events in a given series using the given firstEvent
 func CreateEventSlice(firstEvent *models.Event, series models.Series) []models.Event {

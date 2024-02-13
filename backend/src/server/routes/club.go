@@ -24,5 +24,10 @@ func Club(router fiber.Router, clubService services.ClubServiceInterface, middle
 	clubsID.Patch("/", middlewareService.Authorize(types.ClubWrite), clubController.UpdateClub)
 	clubsID.Delete("/", middlewareService.Authorize(types.ClubDelete), clubController.DeleteClub)
 
+	// TODO: refactor into club_event vertical (controller <-> service <-> model)
+	// api/v1/clubs/:clubID/events/*
+	events := clubsID.Group("/events")
+	events.Get("/", clubController.GetClubEvents)
+
 	return clubsID
 }

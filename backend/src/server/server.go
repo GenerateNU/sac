@@ -36,8 +36,6 @@ func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 	apiv1 := app.Group("/api/v1")
 	apiv1.Use(middlewareService.Authenticate)
 
-
-	eventRoutes(apiv1, &services.EventService{DB: db, Validate: validate})
 	routes.Utility(app)
 
 	routes.Auth(apiv1, services.NewAuthService(db, validate), settings.Auth)
@@ -60,6 +58,8 @@ func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 	categoryRouter := routes.Category(apiv1, services.NewCategoryService(db, validate))
 	routes.CategoryTag(categoryRouter, services.NewCategoryTagService(db, validate))
 
+	routes.Event(apiv1, services.NewEventService(db, validate))
+
 	return app
 }
 
@@ -80,24 +80,3 @@ func newFiberApp() *fiber.App {
 
 	return app
 }
-
-
-	//events := clubs.Group("/:id/events")
-	//events.Get("/", clubController.GetClubEvents)
-
-
-
-func eventRoutes(router fiber.Router, eventService services.EventServiceInterface) {
-	eventController := controllers.NewEventController(eventService)
-
-	events := router.Group("/events")
-
-	events.Get("/:id", eventController.GetEvent)
-	events.Get("/:id/series", eventController.GetSeriesByEventId)
-	events.Get("/", eventController.GetAllEvents)
-	events.Post("/", eventController.CreateEvent)
-	events.Patch("/:id", eventController.UpdateEvent)
-	events.Delete("/:id", eventController.DeleteEvent)
-	events.Delete("/:id/series", eventController.DeleteEventSeries) 
-}
-
