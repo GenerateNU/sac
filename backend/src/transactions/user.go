@@ -22,6 +22,16 @@ func CreateUser(db *gorm.DB, user *models.User) (*models.User, *errors.Error) {
 	return user, nil
 }
 
+func GetUserByEmail(db *gorm.DB, email string) (*models.User, *errors.Error) {
+	var user models.User
+
+	if err := db.Where("email = ?", email).First(&user).Error; err != nil {
+		return nil, &errors.UserNotFound
+	}
+
+	return &user, nil
+}
+
 func GetUsers(db *gorm.DB, limit int, offset int) ([]models.User, *errors.Error) {
 	var users []models.User
 
@@ -45,6 +55,19 @@ func GetUser(db *gorm.DB, id uuid.UUID) (*models.User, *errors.Error) {
 	return &user, nil
 }
 
+func GetUserPasswordHash(db *gorm.DB, id uuid.UUID) (string, *errors.Error) {
+	var user models.User
+	if err := db.Select("password_hash").First(&user, id).Error; err != nil {
+		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
+			return "", &errors.UserNotFound
+		} else {
+			return "", &errors.FailedToGetUser
+		}
+	}
+
+	return user.PasswordHash, nil
+}
+
 func UpdateUser(db *gorm.DB, id uuid.UUID, user models.User) (*models.User, *errors.Error) {
 	var existingUser models.User
 
@@ -64,6 +87,18 @@ func UpdateUser(db *gorm.DB, id uuid.UUID, user models.User) (*models.User, *err
 	return &existingUser, nil
 }
 
+func UpdatePassword(db *gorm.DB, id uuid.UUID, passwordHash string) *errors.Error {
+	result := db.Model(&models.User{}).Where("id = ?", id).Update("password_hash", passwordHash)
+	if result.RowsAffected == 0 {
+		if result.Error == nil {
+			return &errors.UserNotFound
+		} else {
+			return &errors.FailedToUpdateUser
+		}
+	}
+	return nil
+}
+
 func DeleteUser(db *gorm.DB, id uuid.UUID) *errors.Error {
 	result := db.Delete(&models.User{}, id)
 	if result.RowsAffected == 0 {
@@ -74,31 +109,4 @@ func DeleteUser(db *gorm.DB, id uuid.UUID) *errors.Error {
 		}
 	}
 	return nil
-}
-
-func GetUserTags(db *gorm.DB, id uuid.UUID) ([]models.Tag, *errors.Error) {
-	var tags []models.Tag
-
-	user, err := GetUser(db, id)
-	if err != nil {
-		return nil, &errors.UserNotFound
-	}
-
-	if err := db.Model(&user).Association("Tag").Find(&tags) ; err != nil {
-		return nil, &errors.FailedToGetTag
-	}
-	return tags, nil
-}
-
-func CreateUserTags(db *gorm.DB, id uuid.UUID, tags []models.Tag) ([]models.Tag, *errors.Error) {
-	user, err := GetUser(db, id)
-	if err != nil {
-		return nil, &errors.UserNotFound
-	}
-
-	if err := db.Model(&user).Association("Tag").Replace(tags); err != nil {
-		return nil, &errors.FailedToUpdateUser
-	}
-
-	return tags, nil
 }

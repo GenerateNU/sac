@@ -11,6 +11,7 @@
 - [Node.js](https://nodejs.org/en/)
 - [Yarn](https://yarnpkg.com/)
 - [Go](https://golang.org/)
+   > Do not install through brew, use the official website
 - [Docker](https://www.docker.com/)
 - [PostgreSQL](https://www.postgresql.org/)
   - Install through brew: `brew install postgresql@15`
@@ -128,13 +129,31 @@
 
    To install use `./install.sh` and then run `sac-cli` to see all commands.
 
-   ```console
-   sac-cli migrate // run migrations
-   sac-cli reset // reset database
-   sac-cli swagger // generate swagger docs
-   sac-cli lint // lint code
-   sac-cli format // format code
-   sac-cli test // run tests
+  ```console
+   NAME:
+      sac-cli - CLI for SAC
+
+   USAGE:
+      sac-cli [global options] command [command options] 
+
+   COMMANDS:
+      swagger, swag  Updates the swagger documentation
+      be             Run the backend
+      test, t        Runs tests
+      format, f      Runs formatting tools
+      lint, l        Runs linting tools
+      help, h        Shows a list of commands or help for one command
+      Database Operations:
+         clean      Remove databases used for testing
+         migrate    Migrate the database, creating tables and relationships
+         insert, i  Inserts mock data into the database
+         reset, r   Resets the database, dropping all tables, clearing data, and re-running migrations   
+            * can use --data to just reset data and not drop tables
+         drop, d    Drop data with a migration or drops the entire database
+            * can use --data to just drop data and not drop tables
+
+   GLOBAL OPTIONS:
+      --help, -h  show help
    ```
 
 # Git Flow

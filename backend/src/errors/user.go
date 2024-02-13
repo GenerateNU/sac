@@ -7,9 +7,9 @@ var (
 		StatusCode: fiber.StatusBadRequest,
 		Message:    "failed to validate user",
 	}
-	FailedToValidateUserTags = Error {
+	FailedToValidateUserTags = Error{
 		StatusCode: fiber.StatusBadRequest,
-		Message: "failed to validate user tags",
+		Message:    "failed to validate user tags",
 	}
 	FailedToCreateUser = Error{
 		StatusCode: fiber.StatusInternalServerError,
@@ -42,5 +42,17 @@ var (
 	FailedToComputePasswordHash = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to compute password hash",
+	}
+	FailedToFindUsersByEmail = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get users by email",
+	}
+	FailedToGetUserMemberships = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get user memberships",
+	}
+	FailedToGetUserFollowing = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get user following",
 	}
 )

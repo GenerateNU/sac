@@ -1,7 +1,6 @@
 package database
 
 import (
-	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/models"
 
@@ -11,18 +10,7 @@ import (
 )
 
 func ConfigureDB(settings config.Settings) (*gorm.DB, error) {
-	db, err := gorm.Open(postgres.Open(settings.Database.WithDb()), &gorm.Config{
-		Logger:                 logger.Default.LogMode(logger.Info),
-		SkipDefaultTransaction: true,
-		TranslateError:         true,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	err = db.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"").Error
-
+	db, err := EstablishConn(settings.Database.WithDb(), WithLoggerInfo())
 	if err != nil {
 		return nil, err
 	}
@@ -34,9 +22,40 @@ func ConfigureDB(settings config.Settings) (*gorm.DB, error) {
 	return db, nil
 }
 
+type OptionalFunc func(gorm.Config) gorm.Config
+
+func WithLoggerInfo() OptionalFunc {
+	return func(gormConfig gorm.Config) gorm.Config {
+		gormConfig.Logger = logger.Default.LogMode(logger.Info)
+		return gormConfig
+	}
+}
+
+func EstablishConn(dsn string, opts ...OptionalFunc) (*gorm.DB, error) {
+	rootConfig := gorm.Config{
+		SkipDefaultTransaction: true,
+		TranslateError:         true,
+	}
+
+	for _, opt := range opts {
+		rootConfig = opt(rootConfig)
+	}
+
+	db, err := gorm.Open(postgres.Open(dsn), &rootConfig)
+	if err != nil {
+		return nil, err
+	}
+
+	err = db.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"").Error
+	if err != nil {
+		return nil, err
+	}
+
+	return db, nil
+}
+
 func ConnPooling(db *gorm.DB) error {
 	sqlDB, err := db.DB()
-
 	if err != nil {
 		return err
 	}
@@ -60,8 +79,8 @@ func MigrateDB(settings config.Settings, db *gorm.DB) error {
 		&models.Series{},
 		&models.EventInstanceException{},
 		&models.Event_Series{},
+		&models.Membership{},
 	)
-
 	if err != nil {
 		return err
 	}
@@ -84,21 +103,10 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 		return err
 	}
 
-	passwordHash, err := auth.ComputePasswordHash(settings.SuperUser.Password)
-
+	superUser, err := SuperUser(settings.SuperUser)
 	if err != nil {
+		tx.Rollback()
 		return err
-	}
-
-	superUser := models.User{
-		Role:         models.Super,
-		NUID:         "000000000",
-		Email:        "generatesac@gmail.com",
-		PasswordHash: *passwordHash,
-		FirstName:    "SAC",
-		LastName:     "Super",
-		College:      models.KCCS,
-		Year:         models.First,
 	}
 
 	var user models.User
@@ -115,35 +123,27 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 			return err
 		}
 
-		superClub := models.Club{
-			Name:             "SAC",
-			Preview:          "SAC",
-			Description:      "SAC",
-			NumMembers:       0,
-			IsRecruiting:     true,
-			RecruitmentCycle: models.RecruitmentCycle(models.Always),
-			RecruitmentType:  models.Application,
-			ApplicationLink:  "https://generatenu.com/apply",
-			Logo:             "https://aws.amazon.com/s3",
-			Admin:            []models.User{superUser},
-		}
+		SuperUserUUID = superUser.ID
+
+		superClub := SuperClub()
+
 		if err := tx.Create(&superClub).Error; err != nil {
 			tx.Rollback()
 			return err
 		}
 
-		if err := tx.Model(&superClub).Association("Member").Append(&superUser); err != nil {
-			tx.Rollback()
-			return err
+		membership := models.Membership{
+			ClubID:         superClub.ID,
+			UserID:         superUser.ID,
+			MembershipType: models.MembershipTypeAdmin,
 		}
 
-		if err := tx.Model(&superClub).Update("num_members", gorm.Expr("num_members + ?", 1)).Error; err != nil {
+		if err := tx.Create(&membership).Error; err != nil {
 			tx.Rollback()
 			return err
 		}
 
 		return tx.Commit().Error
-
 	}
 	return nil
 }

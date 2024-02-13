@@ -4,10 +4,9 @@ import "github.com/google/uuid"
 
 type UserRole string
 
-const (
-	Super     UserRole = "super"
-	ClubAdmin UserRole = "clubAdmin"
-	Student   UserRole = "student"
+var (
+	Super   UserRole = "super"
+	Student UserRole = "student"
 )
 
 type College string
@@ -38,7 +37,7 @@ const (
 type User struct {
 	Model
 
-	Role         UserRole `gorm:"type:varchar(255);" json:"user_role,omitempty" validate:"required,max=255"`
+	Role         UserRole `gorm:"type:varchar(255);default:'student'" json:"role" validate:"required,oneof=super student"`
 	NUID         string   `gorm:"column:nuid;type:varchar(9);unique" json:"nuid" validate:"required,numeric,len=9"`
 	FirstName    string   `gorm:"type:varchar(255)" json:"first_name" validate:"required,max=255"`
 	LastName     string   `gorm:"type:varchar(255)" json:"last_name" validate:"required,max=255"`
@@ -48,8 +47,9 @@ type User struct {
 	Year         Year     `gorm:"type:smallint" json:"year" validate:"required,min=1,max=6"`
 
 	Tag               []Tag     `gorm:"many2many:user_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
+	Admin             []Club    `gorm:"many2many:user_club_admins;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	Member            []Club    `gorm:"many2many:user_club_members;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
-	Follower          []Club    `gorm:"many2many:user_club_followers;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
+	Follower          []Club    `gorm:"many2many:user_club_followers;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"clubs_followed,omitempty" validate:"-"`
 	IntendedApplicant []Club    `gorm:"many2many:user_club_intended_applicants;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	Asked             []Comment `gorm:"foreignKey:AskedByID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"-" validate:"-"`
 	Answered          []Comment `gorm:"foreignKey:AnsweredByID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"-" validate:"-"`
@@ -72,11 +72,20 @@ type UpdateUserRequestBody struct {
 	FirstName string  `json:"first_name" validate:"omitempty,max=255"`
 	LastName  string  `json:"last_name" validate:"omitempty,max=255"`
 	Email     string  `json:"email" validate:"omitempty,email,neu_email,max=255"`
-	Password  string  `json:"password" validate:"omitempty,password"`
 	College   College `json:"college" validate:"omitempty,oneof=CAMD DMSB KCCS CE BCHS SL CPS CS CSSH"`
 	Year      Year    `json:"year" validate:"omitempty,min=1,max=6"`
 }
 
+type LoginUserResponseBody struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"min=8,max=255"`
+}
+
+type UpdatePasswordRequestBody struct {
+	OldPassword string `json:"old_password" validate:"required,password"`
+	NewPassword string `json:"new_password" validate:"required,password"`
+}
+
 type CreateUserTagsBody struct {
-	Tags      []uuid.UUID  `json:"tags" validate:"required"`
+	Tags []uuid.UUID `json:"tags" validate:"required"`
 }

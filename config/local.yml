@@ -11,3 +11,8 @@ database:
   requiressl: false
 superuser:
   password: password
+auth:
+  accesskey: g(r|##*?>\Qp}h37e+,T2
+  accesstokenexpiry: 60 # in minutes
+  refreshkey: amk*2!gG}1i"8D9RwJS$p
+  refreshtokenexpiry: 30 # in days

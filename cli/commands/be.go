@@ -19,7 +19,6 @@ func RunBackendCommand() *cli.Command {
 			}
 
 			err := RunBE()
-
 			if err != nil {
 				return cli.Exit(err.Error(), 1)
 			}
@@ -41,7 +40,6 @@ func RunBE() error {
 	fmt.Println("Running backend")
 
 	err := goCmd.Run()
-
 	if err != nil {
 		return fmt.Errorf("error running backend: %w", err)
 	}
