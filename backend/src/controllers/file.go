@@ -44,6 +44,16 @@ func (f *FileController) CreateFile(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fileCreated)
 }
 
+// Get File
+func (f *FileController) GetFile(c *fiber.Ctx) error {
+	fileID := c.Params("fileID")
+	file, err := f.fileService.GetFile(fileID)
+	if err != nil {
+		return err.FiberError(c)
+	}
+	return c.Status(fiber.StatusOK).JSON(file)
+}
+
 // // Delete File
 // func (f *FileController) DeleteFile(c *fiber.Ctx) error {
 // 	fileID := c.Params("fid")
@@ -51,14 +61,4 @@ func (f *FileController) CreateFile(c *fiber.Ctx) error {
 // 		return err
 // 	}
 // 	return c.SendStatus(fiber.StatusNoContent)
-// }
-
-// // Get File
-// func (f *FileController) GetFile(c *fiber.Ctx) error {
-// 	fileID := c.Params("fid")
-// 	file, err := f.fileService.GetFile(fileID)
-// 	if err != nil {
-// 		return err.FiberError(c)
-// 	}
-// 	return c.Status(fiber.StatusOK).JSON(file)
 // }

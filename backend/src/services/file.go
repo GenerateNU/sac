@@ -6,6 +6,8 @@ import (
 	"mime/multipart"
 	"strings"
 
+	"os"
+
     "github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
@@ -45,13 +47,28 @@ func createAWSSession(settings config.AWSSettings) (*session.Session, error) {
 	return sess, nil
 }
 
-// Get File
+// // Get File
 func (f *FileService) GetFile(id string) (*models.File, *errors.Error) {
 	var file models.File
 
 	if err := f.DB.First(&file, id).Error; err != nil {
 		return &models.File{}, &errors.FailedToGetFile
 	}
+
+	sess, err := createAWSSession(f.Settings)
+	if err != nil {
+		return nil, &errors.FailedToCreateAWSSession
+	}
+
+	downloader := s3manager.NewDownloader(sess)
+
+	downloadedFile, err := os.Create(file.FileName)
+
+	_, err = downloader.Download(downloadedFile,
+		&s3.GetObjectInput{
+			Bucket: aws.String("generate-sac-storage"),
+			Key:    aws.String(file.FileName),
+	})
 
 	return &file, nil
 }
