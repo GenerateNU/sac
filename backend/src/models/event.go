@@ -13,6 +13,7 @@ const (
 )
 
 type RecurringType string
+
 // excluding annually for now bc most clubs have meetings per semester
 const (
 	Daily   RecurringType = "daily"

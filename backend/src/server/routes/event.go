@@ -17,5 +17,5 @@ func Event(router fiber.Router, eventService services.EventServiceInterface) {
 	events.Post("/", eventController.CreateEvent)
 	events.Patch("/:id", eventController.UpdateEvent)
 	events.Delete("/:id", eventController.DeleteEvent)
-	events.Delete("/:id/series", eventController.DeleteEventSeries) 
+	events.Delete("/:id/series", eventController.DeleteEventSeries)
 }

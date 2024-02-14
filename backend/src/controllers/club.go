@@ -76,7 +76,6 @@ func (cl *ClubController) DeleteClub(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusNoContent)
 }
 
-
 func (l *ClubController) GetClubEvents(c *fiber.Ctx) error {
 	//TODO add filters by date
 	if events, err := l.clubService.GetClubEvents(c.Params("id")); err != nil {
