@@ -16,7 +16,7 @@ func GetClubMembers(db *gorm.DB, clubID uuid.UUID, limit int, page int) ([]model
 
 	var users []models.User
 
-	if err := db.Model(&club).Association("Members").Find(&users); err != nil {
+	if err := db.Model(&club).Association("Member").Find(&users); err != nil {
 		return nil, &errors.FailedToGetClubMembers
 	}
 

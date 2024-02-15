@@ -12,7 +12,7 @@ func UserMember(usersRouter fiber.Router, userMembershipService services.UserMem
 	userMember := usersRouter.Group("/:userID/member")
 
 	// api/v1/users/:userID/member/*
-	userMember.Post("/", userMemberController.CreateMembership)
-	userMember.Delete("/", userMemberController.DeleteMembership)
+	userMember.Post("/:clubID", userMemberController.CreateMembership)
+	userMember.Delete("/:clubID", userMemberController.DeleteMembership)
 	userMember.Get("/", userMemberController.GetMembership)
 }

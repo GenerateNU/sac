@@ -1,6 +1,8 @@
 package transactions
 
 import (
+	"slices"
+
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/google/uuid"
@@ -18,7 +20,9 @@ func CreateMember(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error
 		return &errors.ClubNotFound
 	}
 
-	if err := db.Model(&user).Association("Member").Append(&club); err != nil {
+	user.Member = append(user.Member, *club)
+
+	if err := db.Model(&user).Association("Member").Replace(user.Member); err != nil {
 		return &errors.FailedToUpdateUser
 	}
 
@@ -35,9 +39,21 @@ func DeleteMember(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error
 	if err != nil {
 		return &errors.ClubNotFound
 	}
+
+	userMemberClubIDs := make([]uuid.UUID, len(user.Member))
+
+	for i, club := range user.Member {
+		userMemberClubIDs[i] = club.ID
+	}
+
+	if !slices.Contains(userMemberClubIDs, club.ID) {
+		return &errors.UserNotMemberOfClub
+	}
+
 	if err := db.Model(&user).Association("Member").Delete(club); err != nil {
 		return &errors.FailedToUpdateUser
 	}
+
 	return nil
 }
 
