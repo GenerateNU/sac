@@ -34,9 +34,9 @@ func TestCreateMembershipWorks(t *testing.T) {
 
 				eaa.Assert.NilError(err)
 
-				eaa.Assert.Equal(1, len(user.Member))
+				eaa.Assert.Equal(2, len(user.Member)) // SAC Super Club and the one just added
 
-				eaa.Assert.Equal(clubUUID, user.Member[0].ID)
+				eaa.Assert.Equal(clubUUID, user.Member[1].ID) // second club AKA the one just added
 
 				var club models.Club
 
@@ -128,7 +128,7 @@ func TestDeleteMembershipWorks(t *testing.T) {
 
 				eaa.Assert.NilError(err)
 
-				eaa.Assert.Equal(0, len(user.Member))
+				eaa.Assert.Equal(1, len(user.Member)) // SAC Super Club
 
 				var club models.Club
 
@@ -259,7 +259,7 @@ func TestGetMembershipWorks(t *testing.T) {
 
 				eaa.Assert.NilError(err)
 
-				eaa.Assert.Equal(1, len(clubs))
+				eaa.Assert.Equal(2, len(clubs)) // SAC Super Club and the one just added
 
 				var dbClubs []models.Club
 
@@ -267,7 +267,7 @@ func TestGetMembershipWorks(t *testing.T) {
 
 				eaa.Assert.NilError(err)
 
-				eaa.Assert.Equal(1, len(clubs))
+				eaa.Assert.Equal(2, len(clubs)) // SAC Super Club and the one just added
 			},
 		},
 	).Close()

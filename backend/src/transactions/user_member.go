@@ -20,9 +20,7 @@ func CreateMember(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error
 		return err
 	}
 
-	user.Member = append(user.Member, *club)
-
-	if err := db.Model(&user).Association("Member").Replace(user.Member); err != nil {
+	if err := db.Model(&user).Association("Member").Append(club); err != nil {
 		return &errors.FailedToUpdateUser
 	}
 

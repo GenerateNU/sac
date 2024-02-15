@@ -42,7 +42,7 @@ func GetUsers(db *gorm.DB, limit int, offset int) ([]models.User, *errors.Error)
 	return users, nil
 }
 
-func GetUser(db *gorm.DB, id uuid.UUID, preloads ...OptionalPreload) (*models.User, *errors.Error) {
+func GetUser(db *gorm.DB, id uuid.UUID, preloads ...OptionalQuery) (*models.User, *errors.Error) {
 	var user models.User
 
 	query := db
