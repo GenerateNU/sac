@@ -78,6 +78,9 @@ func (c *EventService) CreateEvent(eventBody models.CreateEventRequestBody) ([]m
 
 	if !event.IsRecurring {
 		event, err := transactions.CreateEvent(c.DB, *event)
+		if err != nil {
+			return nil, &errors.FailedToCreateEvent
+		}
 		return []models.Event{*event}, err
 	}
 
@@ -151,7 +154,6 @@ func (c *EventService) DeleteEventSeries(id string) *errors.Error {
 	return transactions.DeleteEventSeries(c.DB, *idAsUUID)
 }
 
-// TODO: CreateEventSeries, GetEventSeries, DeleteEventSeries
 
 // Helper to create other events in a given series using the given firstEvent
 func CreateEventSlice(firstEvent *models.Event, series models.Series) []models.Event {

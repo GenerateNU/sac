@@ -39,6 +39,10 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to delete event",
 	}
+	FailedToDeleteSeries = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to delete series",
+	}
 	FailedToUpdateEvent = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to update event",
@@ -46,5 +50,9 @@ var (
 	EventNotFound = Error{
 		StatusCode: fiber.StatusNotFound,
 		Message:    "event not found",
+	}
+	SeriesNotFound = Error{
+		StatusCode: fiber.StatusNotFound,
+		Message:    "series not found",
 	}
 )

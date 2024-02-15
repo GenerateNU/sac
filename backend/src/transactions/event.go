@@ -42,6 +42,10 @@ func GetSeriesByEventId(db *gorm.DB, id uuid.UUID) ([]models.Event, *errors.Erro
 		tx.Rollback()
 		return nil, &errors.FailedToGetEventSeries
 	}
+
+	if sid == "" {
+		return nil, &errors.SeriesNotFound
+	}
 	sidAsUUID, err := utilities.ValidateID(sid)
 	if err != nil {
 		return nil, err
@@ -150,14 +154,41 @@ func DeleteEvent(db *gorm.DB, id uuid.UUID) *errors.Error {
 	return nil
 }
 
+// delete series of an event
+// TODO factor out getting series by event id
 func DeleteEventSeries(db *gorm.DB, id uuid.UUID) *errors.Error {
-	if result := db.Delete(&models.Event{}, id); result.RowsAffected == 0 {
-		if result.Error == nil {
-			return &errors.EventNotFound
-		} else {
-			return &errors.FailedToDeleteEvent
-		}
+
+	var sid string
+	tx := db.Begin()
+	if err := tx.Model(&models.Event_Series{}).Where("event_id = ?", id).Select("series_id").Find(&sid).Error; err != nil {
+		tx.Rollback()
+		return &errors.FailedToGetEventSeries
 	}
+
+	if sid == "" {
+		return &errors.SeriesNotFound
+	}
+	uid, err := utilities.ValidateID(sid)
+
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	var eventIDs uuid.UUIDs
+	if err := tx.Model(&models.Event_Series{}).Select("event_id").Where("series_id = (?)", uid).Find(&eventIDs).Error; err != nil {
+		tx.Rollback()
+		return &errors.FailedToDeleteSeries
+	} else if len(eventIDs) < 1 {
+		tx.Rollback()
+		return &errors.SeriesNotFound
+	}
+
+	if result := tx.Delete(&models.Event{}, eventIDs); result.RowsAffected == 0 {
+		tx.Rollback()
+		return &errors.FailedToDeleteSeries
+	}
+	tx.Commit()
 
 	return nil
 }
