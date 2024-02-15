@@ -20,6 +20,7 @@ import (
 )
 
 func TestGetUsersWorksForSuper(t *testing.T) {
+	t.Parallel()
 	h.InitTest(t).TestOnStatusAndTester(
 		h.TestRequest{
 			Method: fiber.MethodGet,
@@ -61,6 +62,7 @@ func TestGetUsersWorksForSuper(t *testing.T) {
 }
 
 func TestGetUsersFailsForStudent(t *testing.T) {
+	t.Parallel()
 	h.InitTest(t).TestOnError(
 		h.TestRequest{
 			Method: fiber.MethodGet,
@@ -72,6 +74,7 @@ func TestGetUsersFailsForStudent(t *testing.T) {
 }
 
 func TestGetUserWorks(t *testing.T) {
+	t.Parallel()
 	h.InitTest(t).TestOnStatusAndTester(
 		h.TestRequest{
 			Method:             fiber.MethodGet,
@@ -110,6 +113,7 @@ func TestGetUserWorks(t *testing.T) {
 }
 
 func TestGetUserFailsBadRequest(t *testing.T) {
+	t.Parallel()
 	appAssert := h.InitTest(t)
 
 	badRequests := []string{
@@ -135,6 +139,7 @@ func TestGetUserFailsBadRequest(t *testing.T) {
 }
 
 func TestGetUserFailsNotExist(t *testing.T) {
+	t.Parallel()
 	uuid := uuid.New()
 
 	h.InitTest(t).TestOnErrorAndTester(
@@ -157,6 +162,7 @@ func TestGetUserFailsNotExist(t *testing.T) {
 }
 
 func TestUpdateUserWorks(t *testing.T) {
+	t.Parallel()
 	newFirstName := "Michael"
 	newLastName := "Brennan"
 
@@ -209,6 +215,7 @@ func TestUpdateUserWorks(t *testing.T) {
 }
 
 func TestUpdateUserFailsOnInvalidBody(t *testing.T) {
+	t.Parallel()
 	for _, invalidData := range []map[string]interface{}{
 		{"email": "not.northeastern@gmail.com"},
 		{"nuid": "1800-123-4567"},
@@ -233,6 +240,7 @@ func TestUpdateUserFailsOnInvalidBody(t *testing.T) {
 }
 
 func TestUpdateUserFailsBadRequest(t *testing.T) {
+	t.Parallel()
 	badRequests := []string{
 		"0",
 		"-1",
@@ -258,6 +266,7 @@ func TestUpdateUserFailsBadRequest(t *testing.T) {
 }
 
 func TestUpdateUserFailsOnIdNotExist(t *testing.T) {
+	t.Parallel()
 	uuid := uuid.New()
 
 	sampleStudent, rawPassword := h.SampleStudentFactory()
@@ -283,6 +292,7 @@ func TestUpdateUserFailsOnIdNotExist(t *testing.T) {
 }
 
 func TestDeleteUserWorks(t *testing.T) {
+	t.Parallel()
 	h.InitTest(t).TestOnStatusAndTester(
 		h.TestRequest{
 			Method:             fiber.MethodDelete,
@@ -298,6 +308,7 @@ func TestDeleteUserWorks(t *testing.T) {
 }
 
 func TestDeleteUserNotExist(t *testing.T) {
+	t.Parallel()
 	uuid := uuid.New()
 
 	h.InitTest(t).TestOnErrorAndTester(h.TestRequest{
@@ -321,6 +332,7 @@ func TestDeleteUserNotExist(t *testing.T) {
 }
 
 func TestDeleteUserBadRequest(t *testing.T) {
+	t.Parallel()
 	appAssert := h.InitTest(t)
 
 	badRequests := []string{
@@ -440,11 +452,13 @@ var TestNumUsersRemainsAt2 = func(eaa h.ExistingAppAssert, resp *http.Response) 
 }
 
 func TestCreateUserWorks(t *testing.T) {
+	t.Parallel()
 	appAssert, _, _ := CreateSampleStudent(t, nil)
 	appAssert.Close()
 }
 
 func TestCreateUserFailsIfUserWithEmailAlreadyExists(t *testing.T) {
+	t.Parallel()
 	appAssert, studentUUID, body := CreateSampleStudent(t, nil)
 
 	(*body)["id"] = studentUUID
@@ -464,6 +478,7 @@ func TestCreateUserFailsIfUserWithEmailAlreadyExists(t *testing.T) {
 }
 
 func TestCreateUserFailsIfUserWithNUIDAlreadyExists(t *testing.T) {
+	t.Parallel()
 	appAssert, _, _ := CreateSampleStudent(t, nil)
 
 	sampleStudent, rawPassword := h.SampleStudentFactory()
@@ -515,6 +530,7 @@ func AssertCreateBadDataFails(t *testing.T, jsonKey string, badValues []interfac
 }
 
 func TestCreateUserFailsOnInvalidNUID(t *testing.T) {
+	t.Parallel()
 	AssertCreateBadDataFails(t,
 		"nuid",
 		[]interface{}{
@@ -526,6 +542,7 @@ func TestCreateUserFailsOnInvalidNUID(t *testing.T) {
 }
 
 func TestCreateUserFailsOnInvalidEmail(t *testing.T) {
+	t.Parallel()
 	AssertCreateBadDataFails(t,
 		"email",
 		[]interface{}{
@@ -539,6 +556,7 @@ func TestCreateUserFailsOnInvalidEmail(t *testing.T) {
 }
 
 func TestCreateUserFailsOnInvalidPassword(t *testing.T) {
+	t.Parallel()
 	AssertCreateBadDataFails(t,
 		"password",
 		[]interface{}{
@@ -551,6 +569,7 @@ func TestCreateUserFailsOnInvalidPassword(t *testing.T) {
 }
 
 func TestCreateUserFailsOnInvalidYear(t *testing.T) {
+	t.Parallel()
 	AssertCreateBadDataFails(t,
 		"year",
 		[]interface{}{
@@ -560,6 +579,7 @@ func TestCreateUserFailsOnInvalidYear(t *testing.T) {
 }
 
 func TestCreateUserFailsOnInvalidCollege(t *testing.T) {
+	t.Parallel()
 	khouryAbbreviation := "KCCS"
 	permutations := h.AllCasingPermutations(khouryAbbreviation)
 	permutationsWithoutKhoury := make([]interface{}, len(permutations)-1)
@@ -575,6 +595,7 @@ func TestCreateUserFailsOnInvalidCollege(t *testing.T) {
 }
 
 func TestCreateUserFailsOnMissingFields(t *testing.T) {
+	t.Parallel()
 	appAssert, _, _ := CreateSampleStudent(t, nil)
 
 	sampleStudent, rawPassword := h.SampleStudentFactory()

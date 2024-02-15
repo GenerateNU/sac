@@ -44,6 +44,7 @@ func AssertTagsWithBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, body
 }
 
 func TestGetCategoryTagsWorks(t *testing.T) {
+	t.Parallel()
 	appAssert, categoryUUID, tagID := CreateSampleTag(h.InitTest(t))
 
 	body := SampleTagFactory(categoryUUID)
@@ -65,6 +66,7 @@ func TestGetCategoryTagsWorks(t *testing.T) {
 }
 
 func TestGetCategoryTagsFailsCategoryBadRequest(t *testing.T) {
+	t.Parallel()
 	appAssert, _ := CreateSampleCategory(h.InitTest(t))
 
 	badRequests := []string{
@@ -90,6 +92,7 @@ func TestGetCategoryTagsFailsCategoryBadRequest(t *testing.T) {
 }
 
 func TestGetCategoryTagsFailsCategoryNotFound(t *testing.T) {
+	t.Parallel()
 	appAssert, _ := CreateSampleCategory(h.InitTest(t))
 
 	uuid := uuid.New()
@@ -111,6 +114,7 @@ func TestGetCategoryTagsFailsCategoryNotFound(t *testing.T) {
 }
 
 func TestGetCategoryTagWorks(t *testing.T) {
+	t.Parallel()
 	existingAppAssert, categoryUUID, tagUUID := CreateSampleTag(h.InitTest(t))
 
 	existingAppAssert.TestOnStatusAndTester(
@@ -129,6 +133,7 @@ func TestGetCategoryTagWorks(t *testing.T) {
 }
 
 func TestGetCategoryTagFailsCategoryBadRequest(t *testing.T) {
+	t.Parallel()
 	appAssert, _, tagUUID := CreateSampleTag(h.InitTest(t))
 
 	badRequests := []string{
@@ -153,6 +158,7 @@ func TestGetCategoryTagFailsCategoryBadRequest(t *testing.T) {
 }
 
 func TestGetCategoryTagFailsTagBadRequest(t *testing.T) {
+	t.Parallel()
 	appAssert, categoryUUID := CreateSampleCategory(h.InitTest(t))
 
 	badRequests := []string{
@@ -177,6 +183,7 @@ func TestGetCategoryTagFailsTagBadRequest(t *testing.T) {
 }
 
 func TestGetCategoryTagFailsCategoryNotFound(t *testing.T) {
+	t.Parallel()
 	appAssert, _, tagUUID := CreateSampleTag(h.InitTest(t))
 
 	appAssert.TestOnError(
@@ -190,6 +197,7 @@ func TestGetCategoryTagFailsCategoryNotFound(t *testing.T) {
 }
 
 func TestGetCategoryTagFailsTagNotFound(t *testing.T) {
+	t.Parallel()
 	appAssert, categoryUUID := CreateSampleCategory(h.InitTest(t))
 
 	appAssert.TestOnError(

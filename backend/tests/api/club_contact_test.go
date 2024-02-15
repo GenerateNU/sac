@@ -40,6 +40,7 @@ func AssertCreateBadContactDataFails(t *testing.T, jsonKey string, badValues []i
 }
 
 func TestCreateContactFailsOnInvalidType(t *testing.T) {
+	t.Parallel()
 	AssertCreateBadContactDataFails(t,
 		"type",
 		[]interface{}{
@@ -50,6 +51,7 @@ func TestCreateContactFailsOnInvalidType(t *testing.T) {
 }
 
 func TestCreateContactFailsOnInvalidContent(t *testing.T) {
+	t.Parallel()
 	AssertCreateBadContactDataFails(t,
 		"content",
 		[]interface{}{
@@ -60,6 +62,7 @@ func TestCreateContactFailsOnInvalidContent(t *testing.T) {
 }
 
 func TestPutContactFailsOnClubIdNotExist(t *testing.T) {
+	t.Parallel()
 	appAssert, _, _ := CreateSampleClub(h.InitTest(t))
 
 	uuid := uuid.New()
@@ -84,6 +87,7 @@ func TestPutContactFailsOnClubIdNotExist(t *testing.T) {
 }
 
 func TestPutContactUpdatesExistingContact(t *testing.T) {
+	t.Parallel()
 	appAssert, clubUUID, contactUUID := CreateSampleContact(h.InitTest(t))
 
 	updatedContact := SampleContactFactory()
@@ -111,6 +115,7 @@ func TestPutContactUpdatesExistingContact(t *testing.T) {
 }
 
 func TestGetClubContacts(t *testing.T) {
+	t.Parallel()
 	appAssert, clubUUID, _ := CreateManyContacts(h.InitTest(t))
 
 	appAssert.TestOnStatusAndTester(h.TestRequest{

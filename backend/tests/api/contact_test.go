@@ -129,11 +129,13 @@ func CreateManyContacts(existingAppAssert h.ExistingAppAssert) (eaa h.ExistingAp
 }
 
 func TestCreateManyContactsWorks(t *testing.T) {
+	t.Parallel()
 	existingAppAssert, _, _ := CreateManyContacts(h.InitTest(t))
 	existingAppAssert.Close()
 }
 
 func TestCreateContactWorks(t *testing.T) {
+	t.Parallel()
 	existingAppAssert, _, _ := CreateSampleContact(h.InitTest(t))
 	existingAppAssert.Close()
 }
@@ -149,6 +151,7 @@ func AssertNumContactsRemainsAtN(eaa h.ExistingAppAssert, resp *http.Response, n
 }
 
 func TestGetContactByIdWorks(t *testing.T) {
+	t.Parallel()
 	appAssert, _, contactUUID := CreateSampleContact(h.InitTest(t))
 
 	appAssert.TestOnStatusAndTester(h.TestRequest{
@@ -180,6 +183,7 @@ func TestGetContactByIdWorks(t *testing.T) {
 }
 
 func TestGetContactFailsOnContactIdNotExist(t *testing.T) {
+	t.Parallel()
 	appAssert, _, _ := CreateSampleContact(h.InitTest(t))
 
 	uuid := uuid.New()
@@ -203,6 +207,7 @@ func TestGetContactFailsOnContactIdNotExist(t *testing.T) {
 }
 
 func TestDeleteContactWorks(t *testing.T) {
+	t.Parallel()
 	appAssert, _, contactUUID := CreateSampleContact(h.InitTest(t))
 
 	appAssert.TestOnStatusAndTester(h.TestRequest{
@@ -224,6 +229,7 @@ func TestDeleteContactWorks(t *testing.T) {
 }
 
 func TestDeleteContactFailsOnContactIdNotExist(t *testing.T) {
+	t.Parallel()
 	appAssert, _, _ := CreateSampleContact(h.InitTest(t))
 	uuid := uuid.New()
 
@@ -247,6 +253,7 @@ func TestDeleteContactFailsOnContactIdNotExist(t *testing.T) {
 
 // test that the request returns paginated contacts
 func TestGetContactsWorks(t *testing.T) {
+	t.Parallel()
 	appAssert, _, _ := CreateManyContacts(h.InitTest(t))
 
 	appAssert.TestOnStatus(h.TestRequest{

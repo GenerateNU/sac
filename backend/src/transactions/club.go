@@ -38,7 +38,7 @@ func GetClubs(db *gorm.DB, limit int, offset int) ([]models.Club, *errors.Error)
 func CreateClub(db *gorm.DB, userId uuid.UUID, club models.Club) (*models.Club, *errors.Error) {
 	user, err := GetUser(db, userId)
 	if err != nil {
-		return nil, &errors.UserNotFound
+		return nil, err
 	}
 
 	tx := db.Begin()
@@ -61,9 +61,16 @@ func CreateClub(db *gorm.DB, userId uuid.UUID, club models.Club) (*models.Club, 
 	return &club, nil
 }
 
-func GetClub(db *gorm.DB, id uuid.UUID) (*models.Club, *errors.Error) {
+func GetClub(db *gorm.DB, id uuid.UUID, preloads ...OptionalPreload) (*models.Club, *errors.Error) {
 	var club models.Club
-	if err := db.First(&club, id).Error; err != nil {
+
+	query := db.First(&club, id)
+
+	for _, preload := range preloads {
+		query = preload(query)
+	}
+
+	if err := query.Error; err != nil {
 		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &errors.ClubNotFound
 		} else {

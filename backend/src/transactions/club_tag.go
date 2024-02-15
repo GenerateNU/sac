@@ -8,11 +8,10 @@ import (
 	"gorm.io/gorm"
 )
 
-// Create tags for a club
 func CreateClubTags(db *gorm.DB, id uuid.UUID, tags []models.Tag) ([]models.Tag, *errors.Error) {
 	user, err := GetClub(db, id)
 	if err != nil {
-		return nil, &errors.UserNotFound
+		return nil, err
 	}
 
 	if err := db.Model(&user).Association("Tag").Replace(tags); err != nil {
@@ -22,13 +21,12 @@ func CreateClubTags(db *gorm.DB, id uuid.UUID, tags []models.Tag) ([]models.Tag,
 	return tags, nil
 }
 
-// Get tags for a club
 func GetClubTags(db *gorm.DB, id uuid.UUID) ([]models.Tag, *errors.Error) {
 	var tags []models.Tag
 
 	club, err := GetClub(db, id)
 	if err != nil {
-		return nil, &errors.ClubNotFound
+		return nil, err
 	}
 
 	if err := db.Model(&club).Association("Tag").Find(&tags); err != nil {
@@ -37,16 +35,15 @@ func GetClubTags(db *gorm.DB, id uuid.UUID) ([]models.Tag, *errors.Error) {
 	return tags, nil
 }
 
-// Delete tag for a club
 func DeleteClubTag(db *gorm.DB, id uuid.UUID, tagId uuid.UUID) *errors.Error {
 	club, err := GetClub(db, id)
 	if err != nil {
-		return &errors.ClubNotFound
+		return err
 	}
 
 	tag, err := GetTag(db, tagId)
 	if err != nil {
-		return &errors.TagNotFound
+		return err
 	}
 
 	if err := db.Model(&club).Association("Tag").Delete(&tag); err != nil {

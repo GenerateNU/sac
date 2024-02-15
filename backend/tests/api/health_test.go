@@ -8,6 +8,7 @@ import (
 )
 
 func TestHealthWorks(t *testing.T) {
+	t.Parallel()
 	h.InitTest(t).TestOnStatus(
 		h.TestRequest{
 			Method: fiber.MethodGet,

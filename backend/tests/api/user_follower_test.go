@@ -16,6 +16,7 @@ import (
 )
 
 func TestCreateFollowingWorks(t *testing.T) {
+	t.Parallel()
 	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	appAssert.TestOnStatusAndTester(
@@ -53,6 +54,7 @@ func TestCreateFollowingWorks(t *testing.T) {
 }
 
 func TestCreateFollowingFailsClubIdNotExists(t *testing.T) {
+	t.Parallel()
 	appAssert, _, _ := CreateSampleClub(h.InitTest(t))
 
 	uuid := uuid.New()
@@ -78,6 +80,7 @@ func TestCreateFollowingFailsClubIdNotExists(t *testing.T) {
 }
 
 func TestCreateFollowingFailsUserIdNotExists(t *testing.T) {
+	t.Parallel()
 	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	uuid := uuid.New()
@@ -102,6 +105,7 @@ func TestCreateFollowingFailsUserIdNotExists(t *testing.T) {
 }
 
 func TestDeleteFollowingWorks(t *testing.T) {
+	t.Parallel()
 	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	appAssert.TestOnStatus(
@@ -143,6 +147,7 @@ func TestDeleteFollowingWorks(t *testing.T) {
 }
 
 func TestDeleteFollwerNotFollower(t *testing.T) {
+	t.Parallel()
 	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	userClubsFollowerBefore, err := transactions.GetClubFollowing(appAssert.App.Conn, appAssert.App.TestUser.UUID)
@@ -184,6 +189,7 @@ func TestDeleteFollwerNotFollower(t *testing.T) {
 }
 
 func TestDeleteFollowingFailsClubIdNotExists(t *testing.T) {
+	t.Parallel()
 	appAssert, _, _ := CreateSampleClub(h.InitTest(t))
 
 	uuid := uuid.New()
@@ -209,6 +215,7 @@ func TestDeleteFollowingFailsClubIdNotExists(t *testing.T) {
 }
 
 func TestDeleteFollowingFailsUserIdNotExists(t *testing.T) {
+	t.Parallel()
 	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	uuid := uuid.New()
@@ -233,6 +240,7 @@ func TestDeleteFollowingFailsUserIdNotExists(t *testing.T) {
 }
 
 func TestGetFollowingWorks(t *testing.T) {
+	t.Parallel()
 	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	appAssert.TestOnStatus(
@@ -274,6 +282,7 @@ func TestGetFollowingWorks(t *testing.T) {
 }
 
 func TestGetFollowingFailsUserIdNotExists(t *testing.T) {
+	t.Parallel()
 	appAssert, _, _ := CreateSampleClub(h.InitTest(t))
 
 	uuid := uuid.New()

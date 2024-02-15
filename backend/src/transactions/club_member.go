@@ -11,7 +11,7 @@ import (
 func GetClubMembers(db *gorm.DB, clubID uuid.UUID, limit int, page int) ([]models.User, *errors.Error) {
 	club, err := GetClub(db, clubID)
 	if err != nil {
-		return nil, &errors.ClubNotFound
+		return nil, err
 	}
 
 	var users []models.User

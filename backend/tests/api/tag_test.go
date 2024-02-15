@@ -73,6 +73,7 @@ func CreateSampleTag(appAssert h.ExistingAppAssert) (existingAppAssert h.Existin
 }
 
 func TestCreateTagWorks(t *testing.T) {
+	t.Parallel()
 	appAssert, _, _ := CreateSampleTag(h.InitTest(t))
 	appAssert.Close()
 }
@@ -96,6 +97,7 @@ func Assert1Tag(eaa h.ExistingAppAssert, resp *http.Response) {
 }
 
 func TestCreateTagFailsBadRequest(t *testing.T) {
+	t.Parallel()
 	appAssert := h.InitTest(t)
 
 	badBodys := []map[string]interface{}{
@@ -129,6 +131,7 @@ func TestCreateTagFailsBadRequest(t *testing.T) {
 }
 
 func TestCreateTagFailsValidation(t *testing.T) {
+	t.Parallel()
 	appAssert := h.InitTest(t)
 
 	badBodys := []map[string]interface{}{
@@ -161,6 +164,7 @@ func TestCreateTagFailsValidation(t *testing.T) {
 }
 
 func TestGetTagWorks(t *testing.T) {
+	t.Parallel()
 	existingAppAssert, categoryUUID, tagUUID := CreateSampleTag(h.InitTest(t))
 
 	existingAppAssert.TestOnStatusAndTester(
@@ -179,6 +183,7 @@ func TestGetTagWorks(t *testing.T) {
 }
 
 func TestGetTagFailsBadRequest(t *testing.T) {
+	t.Parallel()
 	appAssert := h.InitTest(t)
 
 	badRequests := []string{
@@ -204,6 +209,7 @@ func TestGetTagFailsBadRequest(t *testing.T) {
 }
 
 func TestGetTagFailsNotFound(t *testing.T) {
+	t.Parallel()
 	h.InitTest(t).TestOnError(
 		h.TestRequest{
 			Method: fiber.MethodGet,
@@ -215,6 +221,7 @@ func TestGetTagFailsNotFound(t *testing.T) {
 }
 
 func TestUpdateTagWorksUpdateName(t *testing.T) {
+	t.Parallel()
 	existingAppAssert, categoryUUID, tagUUID := CreateSampleTag(h.InitTest(t))
 
 	generateNUTag := *SampleTagFactory(categoryUUID)
@@ -239,6 +246,7 @@ func TestUpdateTagWorksUpdateName(t *testing.T) {
 }
 
 func TestUpdateTagWorksUpdateCategory(t *testing.T) {
+	t.Parallel()
 	existingAppAssert, _, tagUUID := CreateSampleTag(h.InitTest(t))
 
 	technologyCategory := *SampleCategoryFactory()
@@ -284,6 +292,7 @@ func TestUpdateTagWorksUpdateCategory(t *testing.T) {
 }
 
 func TestUpdateTagWorksWithSameDetails(t *testing.T) {
+	t.Parallel()
 	existingAppAssert, categoryUUID, tagUUID := CreateSampleTag(h.InitTest(t))
 
 	existingAppAssert.TestOnStatusAndTester(
@@ -303,6 +312,7 @@ func TestUpdateTagWorksWithSameDetails(t *testing.T) {
 }
 
 func TestUpdateTagFailsBadRequest(t *testing.T) {
+	t.Parallel()
 	appAssert, uuid := CreateSampleCategory(h.InitTest(t))
 
 	badRequests := []string{
@@ -329,6 +339,7 @@ func TestUpdateTagFailsBadRequest(t *testing.T) {
 }
 
 func TestDeleteTagWorks(t *testing.T) {
+	t.Parallel()
 	existingAppAssert, _, tagUUID := CreateSampleTag(h.InitTest(t))
 
 	existingAppAssert.TestOnStatusAndTester(
@@ -345,6 +356,7 @@ func TestDeleteTagWorks(t *testing.T) {
 }
 
 func TestDeleteTagFailsBadRequest(t *testing.T) {
+	t.Parallel()
 	appAssert, _, _ := CreateSampleTag(h.InitTest(t))
 
 	badRequests := []string{
@@ -373,6 +385,7 @@ func TestDeleteTagFailsBadRequest(t *testing.T) {
 }
 
 func TestDeleteTagFailsNotFound(t *testing.T) {
+	t.Parallel()
 	appAssert, _, _ := CreateSampleTag(h.InitTest(t))
 
 	appAssert.TestOnErrorAndTester(

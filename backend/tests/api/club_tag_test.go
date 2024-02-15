@@ -29,6 +29,7 @@ package tests
 // }
 
 // func TestCreateClubTagsWorks(t *testing.T) {
+// t.Parallel()
 // 	appAssert, _, uuid := CreateSampleClub(t, nil)
 
 // 	// Create a set of tags:
@@ -52,6 +53,7 @@ package tests
 // }
 
 // // func TestCreateClubTagsFailsOnInvalidDataType(t *testing.T) {
+// t.Parallel()
 // // 	_, _, uuid := CreateSampleClub(t, nil)
 
 // // 	// Invalid tag data types:
@@ -75,6 +77,7 @@ package tests
 // // }
 
 // func TestCreateClubTagsFailsOnInvalidClubID(t *testing.T) {
+// t.Parallel()
 // 	badRequests := []string{
 // 		"0",
 // 		"-1",
@@ -93,6 +96,7 @@ package tests
 // }
 
 // func TestCreateClubTagsFailsOnInvalidKey(t *testing.T) {
+// t.Parallel()
 // 	appAssert, _, uuid := CreateSampleClub(t, nil)
 
 // 	invalidBody := []map[string]interface{}{
@@ -116,6 +120,7 @@ package tests
 // }
 
 // func TestCreateClubTagsNoneAddedIfInvalid(t *testing.T) {
+// t.Parallel()
 // 	appAssert, _, uuid := CreateSampleClub(t, nil)
 
 // 	TestRequest{
@@ -141,6 +146,7 @@ package tests
 // }
 
 // func TestGetClubTagsFailsOnNonExistentClub(t *testing.T) {
+// t.Parallel()
 // 	TestRequest{
 // 		Method: fiber.MethodGet,
 // 		Path:   fmt.Sprintf("/api/v1/clubs/%s/tags/", uuid.New()),
@@ -148,6 +154,7 @@ package tests
 // }
 
 // func TestGetClubTagsReturnsEmptyListWhenNoneAdded(t *testing.T) {
+// t.Parallel()
 // 	appAssert, _, uuid := CreateSampleClub(t, nil)
 
 // 	TestRequest{
@@ -172,6 +179,7 @@ package tests
 // }
 
 // func TestGetClubTagsReturnsCorrectList(t *testing.T) {
+// t.Parallel()
 // 	appAssert, _, uuid := CreateSampleClub(t, nil)
 
 // 	// Create a set of tags:
