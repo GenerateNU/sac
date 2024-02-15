@@ -92,13 +92,11 @@ func CreateSampleCategory(existingAppAssert h.ExistingAppAssert) (h.ExistingAppA
 }
 
 func TestCreateCategoryWorks(t *testing.T) {
-	t.Parallel()
 	existingAppAssert, _ := CreateSampleCategory(h.InitTest(t))
 	existingAppAssert.Close()
 }
 
 func TestCreateCategoryIgnoresid(t *testing.T) {
-	t.Parallel()
 	h.InitTest(t).TestOnStatusAndTester(
 		h.TestRequest{
 			Method: fiber.MethodPost,
@@ -137,7 +135,6 @@ func AssertNumCategoriesRemainsAtN(eaa h.ExistingAppAssert, resp *http.Response,
 }
 
 func TestCreateCategoryFailsIfNameIsNotString(t *testing.T) {
-	t.Parallel()
 	h.InitTest(t).TestOnErrorAndTester(
 		h.TestRequest{
 			Method: fiber.MethodPost,
@@ -155,7 +152,6 @@ func TestCreateCategoryFailsIfNameIsNotString(t *testing.T) {
 }
 
 func TestCreateCategoryFailsIfNameIsMissing(t *testing.T) {
-	t.Parallel()
 	h.InitTest(t).TestOnErrorAndTester(
 		h.TestRequest{
 			Method: fiber.MethodPost,
@@ -171,7 +167,6 @@ func TestCreateCategoryFailsIfNameIsMissing(t *testing.T) {
 }
 
 func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
-	t.Parallel()
 	existingAppAssert, _ := CreateSampleCategory(h.InitTest(t))
 
 	TestNumCategoriesRemainsAt1 := func(eaa h.ExistingAppAssert, resp *http.Response) {
@@ -200,7 +195,6 @@ func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
 }
 
 func TestGetCategoryWorks(t *testing.T) {
-	t.Parallel()
 	existingAppAssert, uuid := CreateSampleCategory(h.InitTest(t))
 
 	existingAppAssert.TestOnStatusAndTester(
@@ -219,7 +213,6 @@ func TestGetCategoryWorks(t *testing.T) {
 }
 
 func TestGetCategoryFailsBadRequest(t *testing.T) {
-	t.Parallel()
 	appAssert := h.InitTest(t)
 
 	badRequests := []string{
@@ -245,7 +238,6 @@ func TestGetCategoryFailsBadRequest(t *testing.T) {
 }
 
 func TestGetCategoryFailsNotFound(t *testing.T) {
-	t.Parallel()
 	h.InitTest(t).TestOnError(
 		h.TestRequest{
 			Method: fiber.MethodGet,
@@ -256,7 +248,6 @@ func TestGetCategoryFailsNotFound(t *testing.T) {
 }
 
 func TestGetCategoriesWorks(t *testing.T) {
-	t.Parallel()
 	existingAppAssert, _ := CreateSampleCategory(h.InitTest(t))
 
 	existingAppAssert.TestOnStatusAndTester(
@@ -318,7 +309,6 @@ func AssertUpdatedCategoryBodyRespDB(eaa h.ExistingAppAssert, resp *http.Respons
 }
 
 func TestUpdateCategoryWorks(t *testing.T) {
-	t.Parallel()
 	existingAppAssert, uuid := CreateSampleCategory(h.InitTest(t))
 
 	category := map[string]interface{}{
@@ -345,7 +335,6 @@ func TestUpdateCategoryWorks(t *testing.T) {
 }
 
 func TestUpdateCategoryWorksWithSameDetails(t *testing.T) {
-	t.Parallel()
 	existingAppAssert, uuid := CreateSampleCategory(h.InitTest(t))
 
 	category := *SampleCategoryFactory()
@@ -370,7 +359,6 @@ func TestUpdateCategoryWorksWithSameDetails(t *testing.T) {
 }
 
 func TestUpdateCategoryFailsBadRequest(t *testing.T) {
-	t.Parallel()
 	appAssert := h.InitTest(t)
 
 	badRequests := []string{
@@ -397,7 +385,6 @@ func TestUpdateCategoryFailsBadRequest(t *testing.T) {
 }
 
 func TestDeleteCategoryWorks(t *testing.T) {
-	t.Parallel()
 	existingAppAssert, uuid := CreateSampleCategory(h.InitTest(t))
 
 	existingAppAssert.TestOnStatusAndTester(
@@ -414,7 +401,6 @@ func TestDeleteCategoryWorks(t *testing.T) {
 }
 
 func TestDeleteCategoryFailsBadRequest(t *testing.T) {
-	t.Parallel()
 	existingAppAssert, _ := CreateSampleCategory(h.InitTest(t))
 
 	badRequests := []string{
@@ -443,7 +429,6 @@ func TestDeleteCategoryFailsBadRequest(t *testing.T) {
 }
 
 func TestDeleteCategoryFailsNotFound(t *testing.T) {
-	t.Parallel()
 	existingAppAssert, _ := CreateSampleCategory(h.InitTest(t))
 
 	existingAppAssert.TestOnErrorAndTester(

@@ -151,7 +151,6 @@ func AssertSampleUserTagsRespDB(eaa h.ExistingAppAssert, resp *http.Response, uu
 }
 
 func TestCreateUserTagsFailsOnInvalidDataType(t *testing.T) {
-	t.Parallel()
 	// Invalid tag data types:
 	invalidTags := []interface{}{
 		[]string{"1", "2", "34"},
@@ -178,7 +177,6 @@ func TestCreateUserTagsFailsOnInvalidDataType(t *testing.T) {
 }
 
 func TestCreateUserTagsFailsOnInvalidUserID(t *testing.T) {
-	t.Parallel()
 	badRequests := []string{
 		"0",
 		"-1",
@@ -205,7 +203,6 @@ type UUIDSlice []uuid.UUID
 var testUUID = uuid.New()
 
 func TestCreateUserTagsFailsOnInvalidKey(t *testing.T) {
-	t.Parallel()
 	invalidBody := []map[string]interface{}{
 		{
 			"tag": UUIDSlice{testUUID, testUUID},
@@ -231,7 +228,6 @@ func TestCreateUserTagsFailsOnInvalidKey(t *testing.T) {
 }
 
 func TestCreateUserTagsFailsOnNonExistentUser(t *testing.T) {
-	t.Parallel()
 	uuid := uuid.New()
 
 	h.InitTest(t).TestOnErrorAndTester(
@@ -254,7 +250,6 @@ func TestCreateUserTagsFailsOnNonExistentUser(t *testing.T) {
 }
 
 func TestCreateUserTagsWorks(t *testing.T) {
-	t.Parallel()
 	// Create a set of tags:
 	tagUUIDs, appAssert := CreateSetOfTags(t, nil)
 
@@ -279,7 +274,6 @@ func TestCreateUserTagsWorks(t *testing.T) {
 }
 
 func TestCreateUserTagsNoneAddedIfInvalid(t *testing.T) {
-	t.Parallel()
 	h.InitTest(t).TestOnStatusAndTester(
 		h.TestRequest{
 			Method:             fiber.MethodPost,
@@ -304,7 +298,6 @@ func TestCreateUserTagsNoneAddedIfInvalid(t *testing.T) {
 }
 
 func TestGetUserTagsFailsOnNonExistentUser(t *testing.T) {
-	t.Parallel()
 	h.InitTest(t).TestOnError(
 		h.TestRequest{
 			Method: fiber.MethodGet,
@@ -315,7 +308,6 @@ func TestGetUserTagsFailsOnNonExistentUser(t *testing.T) {
 }
 
 func TestGetUserTagsReturnsEmptyListWhenNoneAdded(t *testing.T) {
-	t.Parallel()
 	h.InitTest(t).TestOnStatusAndTester(
 		h.TestRequest{
 			Method:             fiber.MethodGet,
@@ -339,7 +331,6 @@ func TestGetUserTagsReturnsEmptyListWhenNoneAdded(t *testing.T) {
 }
 
 func TestGetUserTagsReturnsCorrectList(t *testing.T) {
-	t.Parallel()
 	tagUUIDs, appAssert := CreateSetOfTags(t, nil)
 
 	newAppAssert := *appAssert

@@ -12,7 +12,6 @@ import (
 )
 
 func TestClubFollowerWorks(t *testing.T) {
-	t.Parallel()
 	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	appAssert.TestOnStatus(

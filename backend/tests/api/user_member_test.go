@@ -16,7 +16,6 @@ import (
 )
 
 func TestCreateMembershipWorks(t *testing.T) {
-	t.Parallel()
 	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	appAssert.TestOnStatusAndTester(
@@ -54,7 +53,6 @@ func TestCreateMembershipWorks(t *testing.T) {
 }
 
 func TestCreateMembershipFailsClubIdNotExists(t *testing.T) {
-	t.Parallel()
 	appAssert, _, _ := CreateSampleClub(h.InitTest(t))
 
 	uuid := uuid.New()
@@ -80,7 +78,6 @@ func TestCreateMembershipFailsClubIdNotExists(t *testing.T) {
 }
 
 func TestCreateMembershipFailsUserIdNotExists(t *testing.T) {
-	t.Parallel()
 	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	uuid := uuid.New()
@@ -105,7 +102,6 @@ func TestCreateMembershipFailsUserIdNotExists(t *testing.T) {
 }
 
 func TestDeleteMembershipWorks(t *testing.T) {
-	t.Parallel()
 	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	appAssert.TestOnStatus(
@@ -147,7 +143,6 @@ func TestDeleteMembershipWorks(t *testing.T) {
 }
 
 func TestDeleteMembershipNotMembership(t *testing.T) {
-	t.Parallel()
 	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	userClubsMemberBefore, err := transactions.GetClubMembership(appAssert.App.Conn, appAssert.App.TestUser.UUID)
@@ -189,7 +184,6 @@ func TestDeleteMembershipNotMembership(t *testing.T) {
 }
 
 func TestDeleteMembershipFailsClubIdNotExists(t *testing.T) {
-	t.Parallel()
 	appAssert, _, _ := CreateSampleClub(h.InitTest(t))
 
 	uuid := uuid.New()
@@ -215,7 +209,6 @@ func TestDeleteMembershipFailsClubIdNotExists(t *testing.T) {
 }
 
 func TestDeleteMembershipFailsUserIdNotExists(t *testing.T) {
-	t.Parallel()
 	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	uuid := uuid.New()
@@ -240,7 +233,6 @@ func TestDeleteMembershipFailsUserIdNotExists(t *testing.T) {
 }
 
 func TestGetMembershipWorks(t *testing.T) {
-	t.Parallel()
 	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	appAssert.TestOnStatus(
@@ -282,7 +274,6 @@ func TestGetMembershipWorks(t *testing.T) {
 }
 
 func TestGetMembershipFailsUserIdNotExists(t *testing.T) {
-	t.Parallel()
 	appAssert, _, _ := CreateSampleClub(h.InitTest(t))
 
 	uuid := uuid.New()

@@ -154,13 +154,11 @@ func CreateSampleClub(existingAppAssert h.ExistingAppAssert) (eaa h.ExistingAppA
 }
 
 func TestCreateClubWorks(t *testing.T) {
-	t.Parallel()
 	existingAppAssert, _, _ := CreateSampleClub(h.InitTest(t))
 	existingAppAssert.Close()
 }
 
 func TestGetClubsWorks(t *testing.T) {
-	t.Parallel()
 	h.InitTest(t).TestOnStatusAndTester(h.TestRequest{
 		Method: fiber.MethodGet,
 		Path:   "/api/v1/clubs/",
@@ -252,7 +250,6 @@ func AssertCreateBadClubDataFails(t *testing.T, jsonKey string, badValues []inte
 }
 
 func TestCreateClubFailsOnInvalidDescription(t *testing.T) {
-	t.Parallel()
 	AssertCreateBadClubDataFails(t,
 		"description",
 		[]interface{}{
@@ -264,7 +261,6 @@ func TestCreateClubFailsOnInvalidDescription(t *testing.T) {
 }
 
 func TestCreateClubFailsOnInvalidRecruitmentCycle(t *testing.T) {
-	t.Parallel()
 	AssertCreateBadClubDataFails(t,
 		"recruitment_cycle",
 		[]interface{}{
@@ -277,7 +273,6 @@ func TestCreateClubFailsOnInvalidRecruitmentCycle(t *testing.T) {
 }
 
 func TestCreateClubFailsOnInvalidRecruitmentType(t *testing.T) {
-	t.Parallel()
 	AssertCreateBadClubDataFails(t,
 		"recruitment_type",
 		[]interface{}{
@@ -290,7 +285,6 @@ func TestCreateClubFailsOnInvalidRecruitmentType(t *testing.T) {
 }
 
 func TestCreateClubFailsOnInvalidApplicationLink(t *testing.T) {
-	t.Parallel()
 	AssertCreateBadClubDataFails(t,
 		"application_link",
 		[]interface{}{
@@ -301,7 +295,6 @@ func TestCreateClubFailsOnInvalidApplicationLink(t *testing.T) {
 }
 
 func TestCreateClubFailsOnInvalidLogo(t *testing.T) {
-	t.Parallel()
 	AssertCreateBadClubDataFails(t,
 		"logo",
 		[]interface{}{
@@ -313,7 +306,6 @@ func TestCreateClubFailsOnInvalidLogo(t *testing.T) {
 }
 
 func TestUpdateClubWorks(t *testing.T) {
-	t.Parallel()
 	appAssert, studentUUID, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	updatedClub := SampleClubFactory(&studentUUID)
@@ -337,7 +329,6 @@ func TestUpdateClubWorks(t *testing.T) {
 }
 
 func TestUpdateClubFailsOnInvalidBody(t *testing.T) {
-	t.Parallel()
 	appAssert, studentUUID, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	body := SampleClubFactory(&studentUUID)
@@ -395,7 +386,6 @@ func TestUpdateClubFailsOnInvalidBody(t *testing.T) {
 }
 
 func TestUpdateClubFailsBadRequest(t *testing.T) {
-	t.Parallel()
 	appAssert := h.InitTest(t)
 
 	badRequests := []string{
@@ -424,7 +414,6 @@ func TestUpdateClubFailsBadRequest(t *testing.T) {
 }
 
 func TestUpdateClubFailsOnClubIdNotExist(t *testing.T) {
-	t.Parallel()
 	uuid := uuid.New()
 
 	h.InitTest(t).TestOnErrorAndTester(h.TestRequest{
@@ -448,7 +437,6 @@ func TestUpdateClubFailsOnClubIdNotExist(t *testing.T) {
 }
 
 func TestDeleteClubWorks(t *testing.T) {
-	t.Parallel()
 	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	appAssert.TestOnStatusAndTester(
@@ -465,7 +453,6 @@ func TestDeleteClubWorks(t *testing.T) {
 }
 
 func TestDeleteClubNotExist(t *testing.T) {
-	t.Parallel()
 	uuid := uuid.New()
 	h.InitTest(t).TestOnErrorAndTester(
 		h.TestRequest{
@@ -489,7 +476,6 @@ func TestDeleteClubNotExist(t *testing.T) {
 }
 
 func TestDeleteClubBadRequest(t *testing.T) {
-	t.Parallel()
 	appAssert := h.InitTest(t)
 
 	badRequests := []string{
