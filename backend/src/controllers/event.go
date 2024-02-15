@@ -56,6 +56,15 @@ func (l *EventController) GetSeriesByEventId(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(events)
 }
 
+func (l *EventController) GetSeriesById(c *fiber.Ctx) error {
+	events, err := l.eventService.GetSeriesById(c.Params("id"))
+	if err != nil {
+		return err.FiberError(c)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(events)
+}
+
 func (l *EventController) CreateEvent(c *fiber.Ctx) error {
 
 	var eventBody models.CreateEventRequestBody
@@ -86,9 +95,16 @@ func (l *EventController) UpdateEvent(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(updatedEvent)
 }
 
-func (l *EventController) DeleteEventSeries(c *fiber.Ctx) error {
+func (l *EventController) DeleteSeriesById(c *fiber.Ctx) error {
+	if err := l.eventService.DeleteSeriesById(c.Params("id")); err != nil {
+		return err.FiberError(c)
+	}
 
-	if err := l.eventService.DeleteEventSeries(c.Params("id")); err != nil {
+	return c.SendStatus(fiber.StatusNoContent)
+}
+
+func (l *EventController) DeleteSeriesByEventId(c *fiber.Ctx) error {
+	if err := l.eventService.DeleteSeriesByEventId(c.Params("id")); err != nil {
 		return err.FiberError(c)
 	}
 

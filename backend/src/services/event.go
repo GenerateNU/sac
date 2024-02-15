@@ -15,10 +15,12 @@ type EventServiceInterface interface {
 	GetClubEvents(id string) ([]models.Event, *errors.Error)
 	GetEvent(id string) (*models.Event, *errors.Error)
 	GetSeriesByEventId(id string) ([]models.Event, *errors.Error)
+	GetSeriesById(id string) ([]models.Event, *errors.Error)
 	CreateEvent(eventBodies models.CreateEventRequestBody) ([]models.Event, *errors.Error)
 	UpdateEvent(id string, eventBody models.UpdateEventRequestBody) (*models.Event, *errors.Error)
 	DeleteEvent(id string) *errors.Error
-	DeleteEventSeries(id string) *errors.Error
+	DeleteSeriesByEventId(id string) *errors.Error
+	DeleteSeriesById(id string) *errors.Error
 }
 
 type EventService struct {
@@ -118,6 +120,15 @@ func (c *EventService) GetSeriesByEventId(id string) ([]models.Event, *errors.Er
 	return transactions.GetSeriesByEventId(c.DB, *idAsUUID)
 }
 
+func (c *EventService) GetSeriesById(id string) ([]models.Event, *errors.Error){
+	idAsUUID, err := utilities.ValidateID(id)
+	if err != nil {
+		return nil, &errors.FailedToValidateID
+	}
+
+	return transactions.GetSeriesById(c.DB, *idAsUUID)
+}
+
 func (c *EventService) UpdateEvent(id string, eventBody models.UpdateEventRequestBody) (*models.Event, *errors.Error) {
 	idAsUUID, idErr := utilities.ValidateID(id)
 	if idErr != nil {
@@ -145,15 +156,24 @@ func (c *EventService) DeleteEvent(id string) *errors.Error {
 	return transactions.DeleteEvent(c.DB, *idAsUUID)
 }
 
-func (c *EventService) DeleteEventSeries(id string) *errors.Error {
+func (c *EventService) DeleteSeriesByEventId(id string) *errors.Error {
 	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return &errors.FailedToValidateID
 	}
 
-	return transactions.DeleteEventSeries(c.DB, *idAsUUID)
+	return transactions.DeleteSeriesByEventId(c.DB, *idAsUUID)
 }
 
+
+func (c* EventService) DeleteSeriesById(id string) *errors.Error {
+	idAsUUID, err := utilities.ValidateID(id)
+	if err != nil {
+		return &errors.FailedToValidateID
+	}
+
+	return transactions.DeleteSeriesById(c.DB, *idAsUUID)
+}
 
 // Helper to create other events in a given series using the given firstEvent
 func CreateEventSlice(firstEvent *models.Event, series models.Series) []models.Event {
