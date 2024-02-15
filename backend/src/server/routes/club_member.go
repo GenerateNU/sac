@@ -9,8 +9,8 @@ import (
 func ClubMember(clubsIDRouter fiber.Router, clubMemberService services.ClubMemberServiceInterface) {
 	clubMemberController := controllers.NewClubMemberController(clubMemberService)
 
-	clubMember := clubsIDRouter.Group("/member")
+	clubMember := clubsIDRouter.Group("/members")
 
-	// api/v1/clubs/:clubID/member/*
+	// api/v1/clubs/:clubID/members/*
 	clubMember.Get("/", clubMemberController.GetClubMembers)
 }
