@@ -9,12 +9,12 @@ import (
 )
 
 func CreateClubTags(db *gorm.DB, id uuid.UUID, tags []models.Tag) ([]models.Tag, *errors.Error) {
-	user, err := GetClub(db, id)
+	user, err := GetClub(db, id, PreloadTag())
 	if err != nil {
 		return nil, err
 	}
 
-	if err := db.Model(&user).Association("Tag").Replace(tags); err != nil {
+	if err := db.Model(&user).Association("Tag").Append(tags); err != nil {
 		return nil, &errors.FailedToUpdateUser
 	}
 

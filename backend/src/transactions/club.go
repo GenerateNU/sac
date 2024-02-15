@@ -61,7 +61,7 @@ func CreateClub(db *gorm.DB, userId uuid.UUID, club models.Club) (*models.Club, 
 	return &club, nil
 }
 
-func GetClub(db *gorm.DB, id uuid.UUID, preloads ...OptionalPreload) (*models.Club, *errors.Error) {
+func GetClub(db *gorm.DB, id uuid.UUID, preloads ...OptionalQuery) (*models.Club, *errors.Error) {
 	var club models.Club
 
 	query := db

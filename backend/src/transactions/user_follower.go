@@ -20,9 +20,7 @@ func CreateFollowing(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Er
 		return err
 	}
 
-	user.Follower = append(user.Follower, *club)
-
-	if err := db.Model(&user).Association("Follower").Replace(user.Follower); err != nil {
+	if err := db.Model(&user).Association("Follower").Append(club); err != nil {
 		return &errors.FailedToUpdateUser
 	}
 
