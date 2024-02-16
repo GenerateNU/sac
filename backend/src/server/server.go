@@ -52,6 +52,9 @@ func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 	categoryRouter := routes.Category(apiv1, services.NewCategoryService(db, validate))
 	routes.CategoryTag(categoryRouter, services.NewCategoryTagService(db, validate))
 
+	fileRouter := routes.File(apiv1, services.NewFileService(db, config.ConfigAWS(), validate))
+	routes.File(fileRouter, services.NewFileService(db, config.ConfigAWS(), validate))
+
 	return app
 }
 

@@ -6,8 +6,8 @@ import (
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
-
 	"github.com/gofiber/fiber/v2"
+	"strings"
 )
 
 type FileController struct {
@@ -33,6 +33,9 @@ func (f *FileController) CreateFile(c *fiber.Ctx) error {
 	if _, err = fileData.Read(buff); err != nil {
 		return errors.InvalidImageFormat.FiberError(c)
 	}
+
+	
+
 	if !((http.DetectContentType(buff) == "image/png") || (http.DetectContentType(buff) == "image/jpeg")) {
 		return errors.FailedToValidatedData.FiberError(c)
 	}
@@ -51,14 +54,18 @@ func (f *FileController) GetFile(c *fiber.Ctx) error {
 	if err != nil {
 		return err.FiberError(c)
 	}
-	return c.Status(fiber.StatusOK).JSON(file)
+	arr := strings.SplitAfter(file.FileName, ".")
+	lenArr := len(arr)
+	print(arr[lenArr-1])
+	c.Set("Content-Type", "image/jpeg")
+	return c.Send(file.FileData)
 }
 
-// // Delete File
-// func (f *FileController) DeleteFile(c *fiber.Ctx) error {
-// 	fileID := c.Params("fid")
-// 	if err := f.fileService.DeleteFile(fileID, false); err != nil {
-// 		return err
-// 	}
-// 	return c.SendStatus(fiber.StatusNoContent)
-// }
+// Delete File
+func (f *FileController) DeleteFile(c *fiber.Ctx) error {
+	fileID := c.Params("fileID")
+	if err := f.fileService.DeleteFile(fileID, false); err != nil {
+		return err
+	}
+	return c.SendStatus(fiber.StatusNoContent)
+}

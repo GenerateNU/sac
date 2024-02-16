@@ -5,6 +5,7 @@ type File struct {
 
 	FileName  string `gorm:"type:varchar(255)" json:"file_name"`
 	FileSize  int64  `gorm:"type:bigint;default:0" json:"file_size"`
+	FileData  []byte
 	ObjectKey string `gorm:"type:varchar(255);unique" json:"object_key"`
 	Tags      []*Tag `gorm:"many2many:file_tags;" json:"tags"`
 

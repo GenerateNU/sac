@@ -6,10 +6,14 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func fileRoutes(router fiber.Router, fileService services.FileServiceInterface) {
+func File(router fiber.Router, fileService services.FileServiceInterface) fiber.Router {
 	fileController := controllers.NewFileController(fileService)
 
-	file := router.Group("/file")
-	file.Post("/", fileController.CreateFile)
+	files := router.Group("/files")
+	files.Post("/", fileController.CreateFile)
+	files.Get("/:fileID", fileController.GetFile)
+	files.Delete("/:fileID", fileController.DeleteFile)
+
+	return files
 }
 

@@ -43,4 +43,8 @@ var (
 		StatusCode: fiber.StatusBadRequest,
 		Message:    "invalid image format",
 	}
+	FailedToDownloadFile = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to download the file",
+	}
 )

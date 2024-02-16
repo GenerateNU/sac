@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"io"
 	"mime/multipart"
+	"os"
 	"strings"
 
-	"os"
-
-    "github.com/GenerateNU/sac/backend/src/config"
+	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -21,8 +21,6 @@ import (
 	"gorm.io/gorm"
 )
 
-
-
 type FileServiceInterface interface {
 	CreateFile(file models.File, data *multipart.FileHeader, reader io.Reader) (*models.File, *errors.Error)
 	DeleteFile(id string, s3Only bool) error
@@ -32,6 +30,11 @@ type FileServiceInterface interface {
 type FileService struct {
 	DB *gorm.DB
     Settings config.AWSSettings
+	Validate *validator.Validate
+}
+
+func NewFileService(db *gorm.DB, settings config.AWSSettings, validate *validator.Validate) *FileService {
+	return &FileService{DB: db, Settings: settings, Validate: validate}
 }
 
 func createAWSSession(settings config.AWSSettings) (*session.Session, error) {
@@ -47,11 +50,17 @@ func createAWSSession(settings config.AWSSettings) (*session.Session, error) {
 	return sess, nil
 }
 
-// // Get File
+// Get File
 func (f *FileService) GetFile(id string) (*models.File, *errors.Error) {
 	var file models.File
 
-	if err := f.DB.First(&file, id).Error; err != nil {
+	idAsUUID, errUUID := utilities.ValidateID(id)
+	
+	if errUUID != nil {
+		return nil, &errors.FailedToValidateID
+	}
+
+	if err := f.DB.First(&file, idAsUUID).Error; err != nil {
 		return &models.File{}, &errors.FailedToGetFile
 	}
 
@@ -68,7 +77,13 @@ func (f *FileService) GetFile(id string) (*models.File, *errors.Error) {
 		&s3.GetObjectInput{
 			Bucket: aws.String("generate-sac-storage"),
 			Key:    aws.String(file.FileName),
-	})
+		})
+
+	fileData, fileDataErr := io.ReadAll(downloadedFile)
+	if fileDataErr != nil {
+		return nil, &errors.FailedToDownloadFile
+	}
+	file.FileData = fileData
 
 	return &file, nil
 }
@@ -133,7 +148,12 @@ func (f *FileService) CreateFile(file models.File, data *multipart.FileHeader, r
 func (f *FileService) DeleteFile(id string, s3Only bool) error {
 	var file models.File
 
-	if err := f.DB.First(&file, id).Error; err != nil {
+	idAsUUID, errUUID := utilities.ValidateID(id)
+	if errUUID != nil {
+		return &errors.FailedToValidateID
+	}
+
+	if err := f.DB.First(&file, idAsUUID).Error; err != nil {
 		return err
 	}
 
