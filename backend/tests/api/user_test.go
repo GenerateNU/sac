@@ -234,8 +234,6 @@ func TestUpdateUserFailsOnInvalidBody(t *testing.T) {
 }
 
 func TestUpdateUserFailsBadRequest(t *testing.T) {
-	appAssert := h.InitTest(t)
-
 	badRequests := []string{
 		"0",
 		"-1",
@@ -249,17 +247,15 @@ func TestUpdateUserFailsBadRequest(t *testing.T) {
 	(*slightlyDifferentSampleStudentJSON)["first_name"] = "John"
 
 	for _, badRequest := range badRequests {
-		appAssert.TestOnError(h.TestRequest{
+		h.InitTest(t).TestOnError(h.TestRequest{
 			Method: fiber.MethodPatch,
 			Path:   fmt.Sprintf("/api/v1/users/%s", badRequest),
 			Body:   slightlyDifferentSampleStudentJSON,
 			Role:   &models.Student,
 		},
 			errors.FailedToValidateID,
-		)
+		).Close()
 	}
-
-	appAssert.Close()
 }
 
 func TestUpdateUserFailsOnIdNotExist(t *testing.T) {
