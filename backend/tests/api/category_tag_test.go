@@ -76,7 +76,7 @@ func TestGetCategoryTagsFailsCategoryBadRequest(t *testing.T) {
 	}
 
 	for _, badRequest := range badRequests {
-		appAssert.TestOnError(
+		appAssert = appAssert.TestOnError(
 			h.TestRequest{
 				Method: fiber.MethodGet,
 				Path:   fmt.Sprintf("/api/v1/categories/%s/tags", badRequest),
@@ -140,7 +140,7 @@ func TestGetCategoryTagFailsCategoryBadRequest(t *testing.T) {
 	}
 
 	for _, badRequest := range badRequests {
-		appAssert.TestOnError(
+		appAssert = appAssert.TestOnError(
 			h.TestRequest{
 				Method: fiber.MethodGet,
 				Path:   fmt.Sprintf("/api/v1/categories/%s/tags/%s", badRequest, tagUUID),
@@ -164,7 +164,7 @@ func TestGetCategoryTagFailsTagBadRequest(t *testing.T) {
 	}
 
 	for _, badRequest := range badRequests {
-		appAssert.TestOnError(
+		appAssert = appAssert.TestOnError(
 			h.TestRequest{
 				Method: fiber.MethodGet,
 				Path:   fmt.Sprintf("/api/v1/categories/%s/tags/%s", categoryUUID, badRequest),

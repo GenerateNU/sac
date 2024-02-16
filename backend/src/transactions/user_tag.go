@@ -12,7 +12,7 @@ func GetUserTags(db *gorm.DB, id uuid.UUID) ([]models.Tag, *errors.Error) {
 
 	user, err := GetUser(db, id)
 	if err != nil {
-		return nil, &errors.UserNotFound
+		return nil, err
 	}
 
 	if err := db.Model(&user).Association("Tag").Find(&tags); err != nil {
@@ -22,12 +22,12 @@ func GetUserTags(db *gorm.DB, id uuid.UUID) ([]models.Tag, *errors.Error) {
 }
 
 func CreateUserTags(db *gorm.DB, id uuid.UUID, tags []models.Tag) ([]models.Tag, *errors.Error) {
-	user, err := GetUser(db, id)
+	user, err := GetUser(db, id, PreloadTag())
 	if err != nil {
-		return nil, &errors.UserNotFound
+		return nil, err
 	}
 
-	if err := db.Model(&user).Association("Tag").Replace(tags); err != nil {
+	if err := db.Model(&user).Association("Tag").Append(tags); err != nil {
 		return nil, &errors.FailedToUpdateUser
 	}
 

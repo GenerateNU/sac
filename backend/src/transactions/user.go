@@ -42,9 +42,16 @@ func GetUsers(db *gorm.DB, limit int, offset int) ([]models.User, *errors.Error)
 	return users, nil
 }
 
-func GetUser(db *gorm.DB, id uuid.UUID) (*models.User, *errors.Error) {
+func GetUser(db *gorm.DB, id uuid.UUID, preloads ...OptionalQuery) (*models.User, *errors.Error) {
 	var user models.User
-	if err := db.Omit("password_hash").First(&user, id).Error; err != nil {
+
+	query := db
+
+	for _, preload := range preloads {
+		query = preload(query)
+	}
+
+	if err := query.Omit("password_hash").First(&user, id).Error; err != nil {
 		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &errors.UserNotFound
 		} else {
