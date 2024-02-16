@@ -233,7 +233,7 @@ func AssertCreateBadClubDataFails(t *testing.T, jsonKey string, badValues []inte
 		sampleClubPermutation := *SampleClubFactory(&uuid)
 		sampleClubPermutation[jsonKey] = badValue
 
-		appAssert.TestOnErrorAndTester(
+		appAssert = appAssert.TestOnErrorAndTester(
 			h.TestRequest{
 				Method: fiber.MethodPost,
 				Path:   "/api/v1/clubs/",
@@ -341,7 +341,7 @@ func TestUpdateClubFailsOnInvalidBody(t *testing.T) {
 		{"logo": "@12394X_2"},
 	} {
 		invalidData := invalidData
-		appAssert.TestOnErrorAndTester(
+		appAssert = appAssert.TestOnErrorAndTester(
 			h.TestRequest{
 				Method: fiber.MethodPatch,
 				Path:   fmt.Sprintf("/api/v1/clubs/%s", clubUUID),
@@ -399,7 +399,7 @@ func TestUpdateClubFailsBadRequest(t *testing.T) {
 	sampleStudent, rawPassword := h.SampleStudentFactory()
 
 	for _, badRequest := range badRequests {
-		appAssert.TestOnError(
+		appAssert = appAssert.TestOnError(
 			h.TestRequest{
 				Method: fiber.MethodPatch,
 				Path:   fmt.Sprintf("/api/v1/clubs/%s", badRequest),
@@ -487,7 +487,7 @@ func TestDeleteClubBadRequest(t *testing.T) {
 	}
 
 	for _, badRequest := range badRequests {
-		appAssert.TestOnError(
+		appAssert = appAssert.TestOnError(
 			h.TestRequest{
 				Method: fiber.MethodDelete,
 				Path:   fmt.Sprintf("/api/v1/clubs/%s", badRequest),

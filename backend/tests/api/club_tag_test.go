@@ -56,7 +56,7 @@ func TestCreateClubTagsFailsOnInvalidDataType(t *testing.T) {
 		malformedTag := *SampleTagIDsFactory(nil)
 		malformedTag["tags"] = tag
 
-		appAssert.TestOnError(
+		appAssert = appAssert.TestOnError(
 			h.TestRequest{
 				Method: fiber.MethodPost,
 				Path:   fmt.Sprintf("/api/v1/clubs/%s/tags/", clubUUID),

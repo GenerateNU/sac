@@ -61,7 +61,7 @@ func CreateSetOfTags(appAssert h.ExistingAppAssert) ([]uuid.UUID, h.ExistingAppA
 	categoryIDs := []uuid.UUID{}
 	for _, category := range *categories {
 		category := category
-		appAssert.TestOnStatusAndTester(
+		appAssert = appAssert.TestOnStatusAndTester(
 			h.TestRequest{
 				Method: fiber.MethodPost,
 				Path:   "/api/v1/categories/",
@@ -88,7 +88,7 @@ func CreateSetOfTags(appAssert h.ExistingAppAssert) ([]uuid.UUID, h.ExistingAppA
 	tagIDs := []uuid.UUID{}
 	for _, tag := range *tags {
 		tag := tag
-		appAssert.TestOnStatusAndTester(
+		appAssert = appAssert.TestOnStatusAndTester(
 			h.TestRequest{
 				Method: fiber.MethodPost,
 				Path:   "/api/v1/tags/",
