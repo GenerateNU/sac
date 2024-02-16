@@ -211,6 +211,8 @@ func TestCreateUserTagsFailsOnInvalidKey(t *testing.T) {
 	}
 
 	for _, body := range invalidBody {
+		body := body
+
 		appAssert = appAssert.TestOnError(
 			h.TestRequest{
 				Method:             fiber.MethodPost,

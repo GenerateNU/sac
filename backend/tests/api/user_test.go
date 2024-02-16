@@ -217,6 +217,8 @@ func TestUpdateUserFailsOnInvalidBody(t *testing.T) {
 		{"year": 1963},
 		{"college": "UT-Austin"},
 	} {
+		invalidData := invalidData
+
 		appAssert.TestOnErrorAndTester(
 			h.TestRequest{
 				Method:             fiber.MethodPatch,
