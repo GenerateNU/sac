@@ -209,14 +209,15 @@ func TestUpdateUserWorks(t *testing.T) {
 }
 
 func TestUpdateUserFailsOnInvalidBody(t *testing.T) {
+	appAssert := h.InitTest(t)
+
 	for _, invalidData := range []map[string]interface{}{
 		{"email": "not.northeastern@gmail.com"},
 		{"nuid": "1800-123-4567"},
 		{"year": 1963},
 		{"college": "UT-Austin"},
 	} {
-		invalidData := invalidData
-		h.InitTest(t).TestOnErrorAndTester(
+		appAssert.TestOnErrorAndTester(
 			h.TestRequest{
 				Method:             fiber.MethodPatch,
 				Path:               "/api/v1/users/:userID",
@@ -228,11 +229,15 @@ func TestUpdateUserFailsOnInvalidBody(t *testing.T) {
 				Error:  errors.FailedToValidateUser,
 				Tester: TestNumUsersRemainsAt2,
 			},
-		).Close()
+		)
 	}
+
+	appAssert.Close()
 }
 
 func TestUpdateUserFailsBadRequest(t *testing.T) {
+	appAssert := h.InitTest(t)
+
 	badRequests := []string{
 		"0",
 		"-1",
@@ -246,15 +251,17 @@ func TestUpdateUserFailsBadRequest(t *testing.T) {
 	(*slightlyDifferentSampleStudentJSON)["first_name"] = "John"
 
 	for _, badRequest := range badRequests {
-		h.InitTest(t).TestOnError(h.TestRequest{
+		appAssert.TestOnError(h.TestRequest{
 			Method: fiber.MethodPatch,
 			Path:   fmt.Sprintf("/api/v1/users/%s", badRequest),
 			Body:   slightlyDifferentSampleStudentJSON,
 			Role:   &models.Student,
 		},
 			errors.FailedToValidateID,
-		).Close()
+		)
 	}
+
+	appAssert.Close()
 }
 
 func TestUpdateUserFailsOnIdNotExist(t *testing.T) {
