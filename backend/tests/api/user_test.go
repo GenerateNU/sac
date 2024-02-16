@@ -209,8 +209,6 @@ func TestUpdateUserWorks(t *testing.T) {
 }
 
 func TestUpdateUserFailsOnInvalidBody(t *testing.T) {
-	appAssert := h.InitTest(t)
-
 	for _, invalidData := range []map[string]interface{}{
 		{"email": "not.northeastern@gmail.com"},
 		{"nuid": "1800-123-4567"},
@@ -219,7 +217,7 @@ func TestUpdateUserFailsOnInvalidBody(t *testing.T) {
 	} {
 		invalidData := invalidData
 
-		appAssert.TestOnErrorAndTester(
+		h.InitTest(t).TestOnErrorAndTester(
 			h.TestRequest{
 				Method:             fiber.MethodPatch,
 				Path:               "/api/v1/users/:userID",
@@ -231,10 +229,8 @@ func TestUpdateUserFailsOnInvalidBody(t *testing.T) {
 				Error:  errors.FailedToValidateUser,
 				Tester: TestNumUsersRemainsAt2,
 			},
-		)
+		).Close()
 	}
-
-	appAssert.Close()
 }
 
 func TestUpdateUserFailsBadRequest(t *testing.T) {

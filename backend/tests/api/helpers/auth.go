@@ -103,7 +103,6 @@ func (app *TestApp) authStudent() {
 			"password": rawPassword,
 		},
 	})
-
 	if err != nil {
 		panic(err)
 	}
