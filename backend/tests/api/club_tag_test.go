@@ -1,209 +1,269 @@
 package tests
 
-// func AssertClubTagsRespDB(app TestApp, assert *assert.A, resp *http.Response, id uuid.UUID) {
-// 	var respTags []models.Tag
+import (
+	"fmt"
+	"net/http"
+	"testing"
 
-// 	// Retrieve the tags from the response:
-// 	err := json.NewDecoder(resp.Body).Decode(&respTags)
+	"github.com/GenerateNU/sac/backend/src/errors"
+	"github.com/GenerateNU/sac/backend/src/models"
+	h "github.com/GenerateNU/sac/backend/tests/api/helpers"
+	"github.com/goccy/go-json"
+	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
+)
 
-// 	assert.NilError(err)
+func AssertClubTagsRespDB(eaa h.ExistingAppAssert, resp *http.Response, id uuid.UUID) {
+	var respTags []models.Tag
 
-// 	// Retrieve the club connected to the tags:
-// 	var dbClub models.Club
-// 	err = app.Conn.First(&dbClub, id).Error
+	err := json.NewDecoder(resp.Body).Decode(&respTags)
 
-// 	assert.NilError(err)
+	eaa.Assert.NilError(err)
 
-// 	// Retrieve the tags in the bridge table associated with the club:
-// 	var dbTags []models.Tag
-// 	err = app.Conn.Model(&dbClub).Association("Tag").Find(&dbTags)
+	var dbClub models.Club
 
-// 	assert.NilError(err)
+	err = eaa.App.Conn.First(&dbClub, id).Error
 
-// 	// Confirm all the resp tags are equal to the db tags:
-// 	for i, respTag := range respTags {
-// 		assert.Equal(respTag.ID, dbTags[i].ID)
-// 		assert.Equal(respTag.Name, dbTags[i].Name)
-// 		assert.Equal(respTag.CategoryID, dbTags[i].CategoryID)
-// 	}
-// }
+	eaa.Assert.NilError(err)
 
-// func TestCreateClubTagsWorks(t *testing.T) {
-// t.Parallel()
-// 	appAssert, _, uuid := CreateSampleClub(t, nil)
+	var dbTags []models.Tag
 
-// 	// Create a set of tags:
-// 	tagUUIDs := CreateSetOfTags(t, appAssert)
+	err = eaa.App.Conn.Model(&dbClub).Association("Tag").Find(&dbTags)
 
-// 	// Confirm adding real tags adds them to the club:
-// 	TestRequest{
-// 		Method: fiber.MethodPost,
-// 		Path:   fmt.Sprintf("/api/v1/clubs/%s/tags/", uuid),
-// 		Body:   SampleTagIDsFactory(&tagUUIDs),
-// 	}.TestOnStatusAndDB(t, &appAssert,
-// 		DBTesterWithStatus{
-// 			Status: fiber.StatusCreated,
-// 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-// 				AssertClubTagsRespDB(app, assert, resp, uuid)
-// 			},
-// 		},
-// 	)
+	eaa.Assert.NilError(err)
 
-// 	appAssert.Close()
-// }
+	for i, respTag := range respTags {
+		eaa.Assert.Equal(respTag.ID, dbTags[i].ID)
+		eaa.Assert.Equal(respTag.Name, dbTags[i].Name)
+		eaa.Assert.Equal(respTag.CategoryID, dbTags[i].CategoryID)
+	}
+}
 
-// // func TestCreateClubTagsFailsOnInvalidDataType(t *testing.T) {
-// t.Parallel()
-// // 	_, _, uuid := CreateSampleClub(t, nil)
+func AssertSampleClubTagsRespDB(eaa h.ExistingAppAssert, resp *http.Response, uuid uuid.UUID) {
+	AssertClubTagsRespDB(eaa, resp, uuid)
+}
 
-// // 	// Invalid tag data types:
-// // 	invalidTags := []interface{}{
-// // 		[]string{"1", "2", "34"},
-// // 		[]models.Tag{{Name: "Test", CategoryID: uuid.UUID{}}, {Name: "Test2", CategoryID: uuid.UUID{}}},
-// // 		[]float32{1.32, 23.5, 35.1},
-// // 	}
+func TestCreateClubTagsFailsOnInvalidDataType(t *testing.T) {
+	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
-// // 	// Test each of the invalid tags:
-// // 	for _, tag := range invalidTags {
-// // 		malformedTag := *SampleTagIDsFactory(nil)
-// // 		malformedTag["tags"] = tag
+	invalidTags := []interface{}{
+		[]string{"1", "2", "34"},
+		[]models.Tag{{Name: "Test", CategoryID: uuid.UUID{}}, {Name: "Test2", CategoryID: uuid.UUID{}}},
+		[]float32{1.32, 23.5, 35.1},
+	}
 
-// // 		TestRequest{
-// // 			Method: fiber.MethodPost,
-// // 			Path:   fmt.Sprintf("/api/v1/clubs/%s/tags/", uuid),
-// // 			Body:   &malformedTag,
-// // 		}.TestOnError(t, nil, errors.FailedToParseRequestBody).Close()
-// // 	}
-// // }
+	for _, tag := range invalidTags {
+		malformedTag := *SampleTagIDsFactory(nil)
+		malformedTag["tags"] = tag
 
-// func TestCreateClubTagsFailsOnInvalidClubID(t *testing.T) {
-// t.Parallel()
-// 	badRequests := []string{
-// 		"0",
-// 		"-1",
-// 		"1.1",
-// 		"foo",
-// 		"null",
-// 	}
+		appAssert = appAssert.TestOnError(
+			h.TestRequest{
+				Method: fiber.MethodPost,
+				Path:   fmt.Sprintf("/api/v1/clubs/%s/tags/", clubUUID),
+				Body:   &malformedTag,
+				Role:   &models.Super,
+			},
+			errors.FailedToParseRequestBody,
+		)
+	}
 
-// 	for _, badRequest := range badRequests {
-// 		TestRequest{
-// 			Method: fiber.MethodPost,
-// 			Path:   fmt.Sprintf("/api/v1/clubs/%s/tags", badRequest),
-// 			Body:   SampleTagIDsFactory(nil),
-// 		}.TestOnError(t, nil, errors.FailedToValidateID).Close()
-// 	}
-// }
+	appAssert.Close()
+}
 
-// func TestCreateClubTagsFailsOnInvalidKey(t *testing.T) {
-// t.Parallel()
-// 	appAssert, _, uuid := CreateSampleClub(t, nil)
+func TestCreateClubTagsFailsOnInvalidUserID(t *testing.T) {
+	appAssert := h.InitTest(t)
 
-// 	invalidBody := []map[string]interface{}{
-// 		{
-// 			"tag": UUIDSlice{testUUID, testUUID},
-// 		},
-// 		{
-// 			"tagIDs": []uint{1, 2, 3},
-// 		},
-// 	}
+	badRequests := []string{
+		"0",
+		"-1",
+		"1.1",
+		"foo",
+		"null",
+	}
 
-// 	for _, body := range invalidBody {
-// 		TestRequest{
-// 			Method: fiber.MethodPost,
-// 			Path:   fmt.Sprintf("/api/v1/clubs/%s/tags/", uuid),
-// 			Body:   &body,
-// 		}.TestOnError(t, &appAssert, errors.FailedToValidateClubTags)
-// 	}
+	for _, badRequest := range badRequests {
+		appAssert = appAssert.TestOnError(
+			h.TestRequest{
+				Method: fiber.MethodPost,
+				Path:   fmt.Sprintf("/api/v1/clubs/%s/tags", badRequest),
+				Body:   SampleTagIDsFactory(nil),
+				Role:   &models.Student,
+			},
+			errors.FailedToValidateID,
+		)
+	}
 
-// 	appAssert.Close()
-// }
+	appAssert.Close()
+}
 
-// func TestCreateClubTagsNoneAddedIfInvalid(t *testing.T) {
-// t.Parallel()
-// 	appAssert, _, uuid := CreateSampleClub(t, nil)
+func TestCreateClubTagsFailsOnInvalidKey(t *testing.T) {
+	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
-// 	TestRequest{
-// 		Method: fiber.MethodPost,
-// 		Path:   fmt.Sprintf("/api/v1/clubs/%s/tags/", uuid),
-// 		Body:   SampleTagIDsFactory(nil),
-// 	}.TestOnStatusAndDB(t, &appAssert,
-// 		DBTesterWithStatus{
-// 			Status: fiber.StatusCreated,
-// 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-// 				var respTags []models.Tag
+	invalidBody := []map[string]interface{}{
+		{
+			"tag": UUIDSlice{uuid.New(), uuid.New()},
+		},
+		{
+			"tagIDs": []uint{1, 2, 3},
+		},
+	}
 
-// 				err := json.NewDecoder(resp.Body).Decode(&respTags)
+	for _, body := range invalidBody {
+		body := body
+		appAssert = appAssert.TestOnError(
+			h.TestRequest{
+				Method: fiber.MethodPost,
+				Path:   fmt.Sprintf("/api/v1/clubs/%s/tags/", clubUUID),
+				Body:   &body,
+				Role:   &models.Student,
+			},
+			errors.FailedToValidateClubTags,
+		)
+	}
 
-// 				assert.NilError(err)
+	appAssert.Close()
+}
 
-// 				assert.Equal(len(respTags), 0)
-// 			},
-// 		},
-// 	)
+func TestCreateClubTagsFailsOnNonExistentClub(t *testing.T) {
+	uuid := uuid.New()
 
-// 	appAssert.Close()
-// }
+	h.InitTest(t).TestOnErrorAndTester(
+		h.TestRequest{
+			Method: fiber.MethodPost,
+			Path:   fmt.Sprintf("/api/v1/clubs/%s/tags/", uuid),
+			Body:   SampleTagIDsFactory(nil),
+			Role:   &models.Super,
+		},
+		h.ErrorWithTester{
+			Error: errors.ClubNotFound,
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				var dbClub models.Club
 
-// func TestGetClubTagsFailsOnNonExistentClub(t *testing.T) {
-// t.Parallel()
-// 	TestRequest{
-// 		Method: fiber.MethodGet,
-// 		Path:   fmt.Sprintf("/api/v1/clubs/%s/tags/", uuid.New()),
-// 	}.TestOnError(t, nil, errors.ClubNotFound).Close()
-// }
+				err := eaa.App.Conn.First(&dbClub, uuid).Error
 
-// func TestGetClubTagsReturnsEmptyListWhenNoneAdded(t *testing.T) {
-// t.Parallel()
-// 	appAssert, _, uuid := CreateSampleClub(t, nil)
+				eaa.Assert.Assert(err != nil)
+			},
+		},
+	).Close()
+}
 
-// 	TestRequest{
-// 		Method: fiber.MethodGet,
-// 		Path:   fmt.Sprintf("/api/v1/clubs/%s/tags/", uuid),
-// 	}.TestOnStatusAndDB(t, &appAssert,
-// 		DBTesterWithStatus{
-// 			Status: 200,
-// 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-// 				var respTags []models.Tag
+func TestCreateClubTagsWorks(t *testing.T) {
+	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
+	tagUUIDs, appAssert := CreateSetOfTags(appAssert)
 
-// 				err := json.NewDecoder(resp.Body).Decode(&respTags)
+	appAssert.TestOnStatusAndTester(
+		h.TestRequest{
+			Method: fiber.MethodPost,
+			Path:   fmt.Sprintf("/api/v1/clubs/%s/tags/", clubUUID),
+			Body:   SampleTagIDsFactory(&tagUUIDs),
+			Role:   &models.Super,
+		},
+		h.TesterWithStatus{
+			Status: fiber.StatusCreated,
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				AssertSampleClubTagsRespDB(eaa, resp, clubUUID)
+			},
+		},
+	)
 
-// 				assert.NilError(err)
+	appAssert.Close()
+}
 
-// 				assert.Equal(len(respTags), 0)
-// 			},
-// 		},
-// 	)
+func TestCreateClubTagsNoneAddedIfInvalid(t *testing.T) {
+	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
-// 	appAssert.Close()
-// }
+	appAssert.TestOnStatusAndTester(
+		h.TestRequest{
+			Method: fiber.MethodPost,
+			Path:   fmt.Sprintf("/api/v1/clubs/%s/tags/", clubUUID),
+			Body:   SampleTagIDsFactory(nil),
+			Role:   &models.Super,
+		},
+		h.TesterWithStatus{
+			Status: fiber.StatusCreated,
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				var respTags []models.Tag
 
-// func TestGetClubTagsReturnsCorrectList(t *testing.T) {
-// t.Parallel()
-// 	appAssert, _, uuid := CreateSampleClub(t, nil)
+				err := json.NewDecoder(resp.Body).Decode(&respTags)
 
-// 	// Create a set of tags:
-// 	tagUUIDs := CreateSetOfTags(t, appAssert)
+				eaa.Assert.NilError(err)
 
-// 	// Add the tags:
-// 	TestRequest{
-// 		Method: fiber.MethodPost,
-// 		Path:   fmt.Sprintf("/api/v1/clubs/%s/tags/", uuid),
-// 		Body:   SampleTagIDsFactory(&tagUUIDs),
-// 	}.TestOnStatus(t, &appAssert, fiber.StatusCreated)
+				eaa.Assert.Equal(len(respTags), 0)
+			},
+		},
+	).Close()
+}
 
-// 	// Get the tags:
-// 	TestRequest{
-// 		Method: fiber.MethodGet,
-// 		Path:   fmt.Sprintf("/api/v1/clubs/%s/tags/", uuid),
-// 	}.TestOnStatusAndDB(t, &appAssert,
-// 		DBTesterWithStatus{
-// 			Status:   fiber.StatusOK,
-// 			DBTester: func(app TestApp, assert *assert.A, resp *http.Response) {
-// 				AssertClubTagsRespDB(app, assert, resp, uuid)
-// 			},
-// 		},
-// 	)
+func TestGetClubTagsFailsOnNonExistentClub(t *testing.T) {
+	uuid := uuid.New()
 
-// 	appAssert.Close()
-// }
+	h.InitTest(t).TestOnErrorAndTester(
+		h.TestRequest{
+			Method: fiber.MethodGet,
+			Path:   fmt.Sprintf("/api/v1/clubs/%s/tags/", uuid),
+			Role:   &models.Super,
+		},
+		h.ErrorWithTester{
+			Error: errors.ClubNotFound,
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				var dbClub models.Club
+
+				err := eaa.App.Conn.First(&dbClub, uuid).Error
+
+				eaa.Assert.Assert(err != nil)
+			},
+		},
+	).Close()
+}
+
+func TestGetClubTagsReturnsEmptyListWhenNoneAdded(t *testing.T) {
+	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
+
+	appAssert.TestOnStatusAndTester(
+		h.TestRequest{
+			Method: fiber.MethodGet,
+			Path:   fmt.Sprintf("/api/v1/clubs/%s/tags/", clubUUID),
+			Role:   &models.Student,
+		},
+		h.TesterWithStatus{
+			Status: fiber.StatusOK,
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				var respTags []models.Tag
+
+				err := json.NewDecoder(resp.Body).Decode(&respTags)
+
+				eaa.Assert.NilError(err)
+
+				eaa.Assert.Equal(len(respTags), 0)
+			},
+		},
+	).Close()
+}
+
+func TestGetClubTagsReturnsCorrectList(t *testing.T) {
+	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
+
+	tagUUIDs, appAssert := CreateSetOfTags(appAssert)
+
+	appAssert.TestOnStatus(
+		h.TestRequest{
+			Method: fiber.MethodPost,
+			Path:   fmt.Sprintf("/api/v1/clubs/%s/tags/", clubUUID),
+			Body:   SampleTagIDsFactory(&tagUUIDs),
+			Role:   &models.Student,
+		},
+		fiber.StatusCreated,
+	).TestOnStatusAndTester(
+		h.TestRequest{
+			Method: fiber.MethodGet,
+			Path:   fmt.Sprintf("/api/v1/clubs/%s/tags/", clubUUID),
+			Role:   &models.Student,
+		},
+		h.TesterWithStatus{
+			Status: fiber.StatusOK,
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				AssertSampleClubTagsRespDB(eaa, resp, clubUUID)
+			},
+		},
+	).Close()
+}
