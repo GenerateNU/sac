@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type UserRole string
@@ -90,4 +91,16 @@ type UpdatePasswordRequestBody struct {
 
 type CreateUserTagsBody struct {
 	Tags []uuid.UUID `json:"tags" validate:"required"`
+}
+
+// create a user should make them join the sac club
+func (u *User) AfterCreate(tx *gorm.DB) (err error) {
+	sac := &Club{}
+	tx.Where("name = ?", "SAC").First(sac)
+	err = tx.Model(u).Association("Member").Append(sac)
+	if err != nil {
+		tx.Rollback()
+	}
+
+	return err
 }

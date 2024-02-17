@@ -118,6 +118,12 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 			return err
 		}
 
+		superClub := SuperClub()
+		if err := tx.Create(&superClub).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+
 		if err := tx.Create(&superUser).Error; err != nil {
 			tx.Rollback()
 			return err
@@ -125,25 +131,8 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 
 		SuperUserUUID = superUser.ID
 
-		superClub := SuperClub()
-
-		if err := tx.Create(&superClub).Error; err != nil {
-			tx.Rollback()
-			return err
-		}
-
-		membership := models.Membership{
-			ClubID:         superClub.ID,
-			UserID:         superUser.ID,
-			MembershipType: models.MembershipTypeAdmin,
-		}
-
-		if err := tx.Create(&membership).Error; err != nil {
-			tx.Rollback()
-			return err
-		}
-
 		return tx.Commit().Error
 	}
+
 	return nil
 }
