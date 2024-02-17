@@ -6,7 +6,6 @@ import (
 	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/transactions"
-	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/gofiber/fiber/v2"
 )
@@ -22,7 +21,7 @@ func (m *MiddlewareService) ClubAuthorizeById(c *fiber.Ctx) error {
 		return errors.FailedToParseAccessToken.FiberError(c)
 	}
 
-	claims, ok := token.Claims.(*types.CustomClaims)
+	claims, ok := token.Claims.(*auth.CustomClaims)
 	if !ok || !token.Valid {
 		return errors.FailedToValidateAccessToken.FiberError(c)
 	}

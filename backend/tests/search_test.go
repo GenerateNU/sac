@@ -2,11 +2,13 @@ package tests
 
 import (
 	"fmt"
+	"path/filepath"
+	"testing"
+
+	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/search"
 	"github.com/h2non/gock"
 	"github.com/huandu/go-assert"
-	"os"
-	"testing"
 )
 
 type MockSearchableStruct struct{}
@@ -25,8 +27,10 @@ func (e *MockSearchableStruct) EmbeddingString() string {
 
 func TestPineconeUpsertWorks(t *testing.T) {
 	assert := assert.New(t)
-	indexHost := os.Getenv("SAC_PINECONE_INDEX_HOST")
-	apiKey := os.Getenv("SAC_PINECONE_API_KEY")
+
+	configuration, err := config.GetConfiguration(filepath.Join("..", "..", "..", "config"))
+
+	assert.NilError(err)
 
 	mockSearchId := (&MockSearchableStruct{}).SearchId()
 	mockSearchString := (&MockSearchableStruct{}).EmbeddingString()
@@ -35,9 +39,9 @@ func TestPineconeUpsertWorks(t *testing.T) {
 
 	defer gock.Off()
 
-	gock.New(fmt.Sprintf("%s", indexHost)).
+	gock.New(fmt.Sprintf("%s", configuration.PineconeSettings.IndexHost.Expose())).
 		Post("/vectors/upsert").
-		MatchHeader("Api-Key", apiKey).
+		MatchHeader("Api-Key", configuration.PineconeSettings.APIKey.Expose()).
 		MatchHeader("accept", "application/json").
 		MatchHeader("content-type", "application/json").
 		MatchType("json").
@@ -54,7 +58,7 @@ func TestPineconeUpsertWorks(t *testing.T) {
 
 	gock.New("https://api.openai.com").
 		Post("/v1/embeddings").
-		MatchHeader("Authorization", fmt.Sprintf("Bearer %s", apiKey)).
+		MatchHeader("Authorization", fmt.Sprintf("Bearer %s", configuration.OpenAISettings.APIKey.Expose())).
 		MatchHeader("content-type", "application/json").
 		MatchType("json").
 		JSON(map[string]interface{}{
@@ -70,25 +74,26 @@ func TestPineconeUpsertWorks(t *testing.T) {
 			},
 		})
 
-	client := search.NewPineconeClient(search.NewOpenAiClient())
-	err := client.Upsert(&MockSearchableStruct{})
+	client := search.NewPineconeClient(search.NewOpenAIClient(configuration.OpenAISettings), configuration.PineconeSettings)
+	err = client.Upsert(&MockSearchableStruct{})
 	assert.Equal(err, nil)
 }
 
 func TestPineconeDeleteWorks(t *testing.T) {
 	assert := assert.New(t)
 
-	indexHost := os.Getenv("SAC_PINECONE_INDEX_HOST")
-	apiKey := os.Getenv("SAC_PINECONE_API_KEY")
+	configuration, err := config.GetConfiguration(filepath.Join("..", "..", "..", "config"))
+
+	assert.NilError(err)
 
 	mockSearchId := (&MockSearchableStruct{}).SearchId()
 	mockNamespace := (&MockSearchableStruct{}).Namespace()
 
 	defer gock.Off()
 
-	gock.New(fmt.Sprintf("%s", indexHost)).
+	gock.New(fmt.Sprintf("%s", configuration.PineconeSettings.IndexHost.Expose())).
 		Post("/vectors/delete").
-		MatchHeader("Api-Key", apiKey).
+		MatchHeader("Api-Key", configuration.PineconeSettings.APIKey.Expose()).
 		MatchHeader("accept", "application/json").
 		MatchHeader("content-type", "application/json").
 		MatchType("json").
@@ -101,16 +106,17 @@ func TestPineconeDeleteWorks(t *testing.T) {
 		}).
 		Reply(200)
 
-	client := search.NewPineconeClient(search.NewOpenAiClient())
-	err := client.Delete(&MockSearchableStruct{})
+	client := search.NewPineconeClient(search.NewOpenAIClient(configuration.OpenAISettings), configuration.PineconeSettings)
+	err = client.Delete(&MockSearchableStruct{})
 	assert.Equal(err, nil)
 }
 
 func TestPineconeSearchWorks(t *testing.T) {
 	assert := assert.New(t)
 
-	indexHost := os.Getenv("SAC_PINECONE_INDEX_HOST")
-	apiKey := os.Getenv("SAC_PINECONE_API_KEY")
+	configuration, err := config.GetConfiguration(filepath.Join("..", "..", "..", "config"))
+
+	assert.NilError(err)
 
 	mockSearchId := (&MockSearchableStruct{}).SearchId()
 	mockSearchString := (&MockSearchableStruct{}).EmbeddingString()
@@ -120,9 +126,9 @@ func TestPineconeSearchWorks(t *testing.T) {
 
 	defer gock.Off()
 
-	gock.New(fmt.Sprintf("%s", indexHost)).
+	gock.New(fmt.Sprintf("%s", configuration.PineconeSettings.IndexHost.Expose())).
 		Post("/query").
-		MatchHeader("Api-Key", apiKey).
+		MatchHeader("Api-Key", configuration.PineconeSettings.APIKey.Expose()).
 		MatchHeader("accept", "application/json").
 		MatchHeader("content-type", "application/json").
 		MatchType("json").
@@ -147,7 +153,7 @@ func TestPineconeSearchWorks(t *testing.T) {
 
 	gock.New("https://api.openai.com").
 		Post("/v1/embeddings").
-		MatchHeader("Authorization", fmt.Sprintf("Bearer %s", apiKey)).
+		MatchHeader("Authorization", "Bearer "+configuration.OpenAISettings.APIKey.Expose()).
 		MatchHeader("content-type", "application/json").
 		MatchType("json").
 		JSON(map[string]interface{}{
@@ -163,7 +169,7 @@ func TestPineconeSearchWorks(t *testing.T) {
 			},
 		})
 
-	client := search.NewPineconeClient(search.NewOpenAiClient())
+	client := search.NewPineconeClient(search.NewOpenAIClient(configuration.OpenAISettings), configuration.PineconeSettings)
 	ids, err := client.Search(&MockSearchableStruct{}, 5)
 	assert.Equal(err, nil)
 	assert.Equal(len(ids), 1)
@@ -173,14 +179,17 @@ func TestPineconeSearchWorks(t *testing.T) {
 func TestOpenAIEmbeddingWorks(T *testing.T) {
 	assert := assert.New(T)
 
-	apiKey := os.Getenv("SAC_OPENAI_API_KEY")
+	configuration, err := config.GetConfiguration(filepath.Join("..", "..", "..", "config"))
+
+	assert.NilError(err)
+
 	testString := "test string"
 
 	defer gock.Off()
 
 	gock.New("https://api.openai.com").
 		Post("/v1/embeddings").
-		MatchHeader("Authorization", fmt.Sprintf("Bearer %s", apiKey)).
+		MatchHeader("Authorization", "Bearer "+configuration.OpenAISettings.APIKey.Expose()).
 		MatchHeader("content-type", "application/json").
 		MatchType("json").
 		JSON(map[string]interface{}{
@@ -196,7 +205,7 @@ func TestOpenAIEmbeddingWorks(T *testing.T) {
 			},
 		})
 
-	client := search.NewOpenAiClient()
+	client := search.NewOpenAIClient(configuration.OpenAISettings)
 	vector, err := client.CreateEmbedding(testString)
 	assert.Equal(err, nil)
 	assert.Equal(vector, []float32{1.0, 1.0, 1.0, 1.0})

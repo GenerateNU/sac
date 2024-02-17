@@ -2,13 +2,15 @@ package search
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
-	"github.com/garrettladley/mattress"
 	"net/http"
-	"os"
 
+	"github.com/goccy/go-json"
+	"github.com/gofiber/fiber/v2"
+
+	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/errors"
+	"github.com/GenerateNU/sac/backend/src/utilities"
 )
 
 type PineconeClientInterface interface {
@@ -18,113 +20,162 @@ type PineconeClientInterface interface {
 }
 
 type PineconeClient struct {
-	indexHost    *mattress.Secret[string]
-	apiKey       *mattress.Secret[string]
-	openAiClient *OpenAiClient
+	Settings     config.PineconeSettings
+	openAIClient *OpenAIClient
 }
 
-func NewPineconeClient[T OpenAiClient](openAiClient *OpenAiClient) *PineconeClient {
-	indexHost, _ := mattress.NewSecret(os.Getenv("SAC_PINECONE_INDEX_HOST"))
-	apiKey, _ := mattress.NewSecret(os.Getenv("SAC_PINECONE_API_KEY"))
+func NewPineconeClient(openAIClient *OpenAIClient, settings config.PineconeSettings) *PineconeClient {
+	return &PineconeClient{
+		Settings:     settings,
+		openAIClient: openAIClient,
+	}
+}
 
-	return &PineconeClient{indexHost: indexHost, apiKey: apiKey, openAiClient: openAiClient}
+func (c *PineconeClient) pineconeRequest(req *http.Request) *http.Request {
+	return utilities.ApplyModifiers(req,
+		utilities.HeaderKV("Api-Key", c.Settings.APIKey.Expose()),
+		utilities.AcceptJSON(),
+		utilities.JSON(),
+	)
+}
+
+type Vector struct {
+	ID     string    `json:"id"`
+	Values []float32 `json:"values"`
+}
+
+type PineconeUpsertRequestBody struct {
+	Vectors   []Vector `json:"vectors"`
+	Namespace string   `json:"namespace"`
 }
 
 func (c *PineconeClient) Upsert(item Searchable) *errors.Error {
-	values, _err := c.openAiClient.CreateEmbedding(item.EmbeddingString())
-	if _err != nil {
+	values, embeddingErr := c.openAIClient.CreateEmbedding(item.EmbeddingString())
+	if embeddingErr != nil {
 		return &errors.FailedToUpsertToPinecone
 	}
 
-	upsertBody, _ := json.Marshal(map[string]interface{}{
-		"vectors": []interface{}{
-			map[string]interface{}{
-				"id":     item.SearchId(),
-				"values": values,
+	upsertBody, _ := json.Marshal(
+		PineconeUpsertRequestBody{
+			Vectors: []Vector{
+				{
+					ID:     item.SearchId(),
+					Values: values,
+				},
 			},
-		},
-		"namespace": item.Namespace(),
-	})
-	requestBody := bytes.NewBuffer(upsertBody)
+			Namespace: item.Namespace(),
+		})
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/vectors/upsert", c.indexHost.Expose()), requestBody)
+	req, err := http.NewRequest(fiber.MethodPost,
+		fmt.Sprintf("%s/vectors/upsert", c.Settings.IndexHost.Expose()),
+		bytes.NewBuffer(upsertBody))
 	if err != nil {
 		return &errors.FailedToUpsertToPinecone
 	}
 
-	req.Header.Set("Api-Key", c.apiKey.Expose())
-	req.Header.Set("accept", "application/json")
-	req.Header.Set("content-type", "application/json")
+	req = c.pineconeRequest(req)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return &errors.FailedToUpsertToPinecone
 	}
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != fiber.StatusOK {
 		return &errors.FailedToUpsertToPinecone
 	}
 
 	return nil
+}
+
+type PineconeDeleteRequestBody struct {
+	IDs       []string `json:"ids"`
+	Namespace string   `json:"namespace"`
+	DeleteAll bool     `json:"deleteAll"`
+}
+
+func NewPineconeDeleteRequestBody(ids []string, namespace string, deleteAll bool) *PineconeDeleteRequestBody {
+	return &PineconeDeleteRequestBody{
+		IDs:       ids,
+		Namespace: namespace,
+		DeleteAll: deleteAll,
+	}
 }
 
 func (c *PineconeClient) Delete(item Searchable) *errors.Error {
-	deleteBody, err := json.Marshal(map[string]interface{}{
-		"deleteAll": false,
-		"ids": []string{
-			item.SearchId(),
-		},
-		"namespace": item.Namespace(),
-	})
-	if err != nil {
-		return &errors.FailedToDeleteToPinecone
-	}
-	requestBody := bytes.NewBuffer(deleteBody)
-
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/vectors/delete", c.indexHost.Expose()), requestBody)
+	deleteBody, err := json.Marshal(
+		PineconeDeleteRequestBody{
+			IDs:       []string{item.SearchId()},
+			Namespace: item.Namespace(),
+			DeleteAll: false,
+		})
 	if err != nil {
 		return &errors.FailedToDeleteToPinecone
 	}
 
-	req.Header.Set("Api-Key", c.apiKey.Expose())
-	req.Header.Set("accept", "application/json")
-	req.Header.Set("content-type", "application/json")
+	req, err := http.NewRequest(fiber.MethodPost,
+		fmt.Sprintf("%s/vectors/delete", c.Settings.IndexHost.Expose()),
+		bytes.NewBuffer(deleteBody))
+	if err != nil {
+		return &errors.FailedToDeleteToPinecone
+	}
+
+	req = c.pineconeRequest(req)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return &errors.FailedToDeleteToPinecone
 	}
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != fiber.StatusOK {
 		return &errors.FailedToDeleteToPinecone
 	}
 
 	return nil
 }
 
+type PineconeSearchRequestBody struct {
+	IncludeValues   bool      `json:"includeValues"`
+	IncludeMetadata bool      `json:"includeMetadata"`
+	TopK            int       `json:"topK"`
+	Vector          []float32 `json:"vector"`
+	Namespace       string    `json:"namespace"`
+}
+
+type PineconeSearchResponseBody struct {
+	Matches []struct {
+		Id     string    `json:"id"`
+		Score  float32   `json:"score"`
+		Values []float32 `json:"values"`
+	} `json:"matches"`
+	Namespace string `json:"namespace"`
+}
+
 func (c *PineconeClient) Search(item Searchable, topK int) ([]string, *errors.Error) {
-	values, _err := c.openAiClient.CreateEmbedding(item.EmbeddingString())
-	if _err != nil {
-		return []string{}, _err
+	values, embeddingErr := c.openAIClient.CreateEmbedding(item.EmbeddingString())
+	if embeddingErr != nil {
+		return []string{}, embeddingErr
 	}
 
-	searchBody, _ := json.Marshal(map[string]interface{}{
-		"includeValues":   false,
-		"includeMetadata": false,
-		"topK":            topK,
-		"vector":          values,
-		"namespace":       item.Namespace(),
-	})
-	requestBody := bytes.NewBuffer(searchBody)
-
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/query", c.indexHost.Expose()), requestBody)
+	searchBody, err := json.Marshal(
+		PineconeSearchRequestBody{
+			IncludeValues:   false,
+			IncludeMetadata: false,
+			TopK:            topK,
+			Vector:          values,
+			Namespace:       item.Namespace(),
+		})
 	if err != nil {
 		return []string{}, &errors.FailedToSearchToPinecone
 	}
 
-	req.Header.Set("Api-Key", c.apiKey.Expose())
-	req.Header.Set("accept", "application/json")
-	req.Header.Set("content-type", "application/json")
+	req, err := http.NewRequest(fiber.MethodPost,
+		fmt.Sprintf("%s/query", c.Settings.IndexHost.Expose()),
+		bytes.NewBuffer(searchBody))
+	if err != nil {
+		return []string{}, &errors.FailedToSearchToPinecone
+	}
+
+	req = c.pineconeRequest(req)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -137,28 +188,20 @@ func (c *PineconeClient) Search(item Searchable, topK int) ([]string, *errors.Er
 		return []string{}, &errors.FailedToSearchToPinecone
 	}
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != fiber.StatusOK {
 		return []string{}, &errors.FailedToSearchToPinecone
 	}
 
-	type SearchPineconeResults struct {
-		Matches []struct {
-			Id     string    `json:"id"`
-			Score  float32   `json:"score"`
-			Values []float32 `json:"values"`
-		} `json:"matches"`
-		Namespace string `json:"namespace"`
-	}
-
-	results := SearchPineconeResults{}
+	var results PineconeSearchResponseBody
 	err = json.NewDecoder(resp.Body).Decode(&results)
 	if err != nil {
 		return []string{}, &errors.FailedToSearchToPinecone
 	}
 
-	var resultsToReturn []string
-	for i := 0; i < len(results.Matches); i += 1 {
-		resultsToReturn = append(resultsToReturn, results.Matches[i].Id)
+	resultsToReturn := make([]string, len(results.Matches))
+
+	for i, match := range results.Matches {
+		resultsToReturn[i] = match.Id
 	}
 
 	return resultsToReturn, nil

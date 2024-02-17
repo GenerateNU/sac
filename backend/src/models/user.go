@@ -1,7 +1,6 @@
 package models
 
 import (
-	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/google/uuid"
 )
 
@@ -91,36 +90,4 @@ type UpdatePasswordRequestBody struct {
 
 type CreateUserTagsBody struct {
 	Tags []uuid.UUID `json:"tags" validate:"required"`
-}
-
-var rolePermissions = map[UserRole][]types.Permission{
-	Super: {
-		types.UserRead, types.UserReadAll, types.UserWrite, types.UserDelete,
-		types.TagRead, types.TagCreate, types.TagWrite, types.TagDelete,
-		types.ClubRead, types.ClubCreate, types.ClubWrite, types.ClubDelete,
-		types.PointOfContactRead, types.PointOfContactCreate, types.PointOfContactWrite, types.PointOfContactDelete,
-		types.CommentRead, types.CommentCreate, types.CommentWrite, types.CommentDelete,
-		types.EventRead, types.EventCreate, types.EventWrite, types.EventDelete,
-		types.ContactRead, types.ContactCreate, types.ContactWrite, types.ContactDelete,
-		types.CategoryRead, types.CategoryCreate, types.CategoryWrite, types.CategoryDelete,
-		types.NotificationRead, types.NotificationCreate, types.NotificationWrite, types.NotificationDelete,
-		types.UserReadAll, types.TagReadAll, types.ClubReadAll, types.PointOfContactReadAll, types.CommentReadAll,
-		types.EventReadAll, types.ContactReadAll, types.CategoryReadAll, types.NotificationReadAll,
-	},
-	Student: {
-		types.UserRead,
-		types.TagRead,
-		types.ClubRead,
-		types.PointOfContactRead,
-		types.CommentRead,
-		types.EventRead,
-		types.ContactRead,
-		types.CategoryRead,
-		types.NotificationRead,
-	},
-}
-
-// Returns the permissions for a given role
-func GetPermissions(role UserRole) []types.Permission {
-	return rolePermissions[role]
 }

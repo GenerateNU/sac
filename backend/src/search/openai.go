@@ -2,44 +2,54 @@ package search
 
 import (
 	"bytes"
-	"encoding/json"
-	"fmt"
-	"github.com/GenerateNU/sac/backend/src/errors"
-	"github.com/garrettladley/mattress"
 	"net/http"
-	"os"
+
+	"github.com/goccy/go-json"
+
+	"github.com/GenerateNU/sac/backend/src/config"
+	"github.com/GenerateNU/sac/backend/src/errors"
+	"github.com/GenerateNU/sac/backend/src/utilities"
+	"github.com/gofiber/fiber/v2"
 )
 
-type OpenAiClientInterface interface {
+type OpenAIClientInterface interface {
 	CreateEmbedding(payload string) ([]float32, *errors.Error)
 }
 
-type OpenAiClient struct {
-	apiKey *mattress.Secret[string]
+type OpenAIClient struct {
+	Settings config.OpenAISettings
 }
 
-func NewOpenAiClient() *OpenAiClient {
-	apiKey, _ := mattress.NewSecret(os.Getenv("SAC_OPENAI_API_KEY"))
-
-	return &OpenAiClient{apiKey: apiKey}
+func NewOpenAIClient(settings config.OpenAISettings) *OpenAIClient {
+	return &OpenAIClient{Settings: settings}
 }
 
-func (c *OpenAiClient) CreateEmbedding(payload string) ([]float32, *errors.Error) {
-	apiKey := c.apiKey.Expose()
+type CreateEmbeddingResponseBody struct {
+	Data []struct {
+		Embedding []float32 `json:"embedding"`
+	} `json:"data"`
+}
 
-	embeddingBody, _ := json.Marshal(map[string]interface{}{
+func (c *OpenAIClient) CreateEmbedding(payload string) ([]float32, *errors.Error) {
+	embeddingBody, err := json.Marshal(map[string]interface{}{
 		"input": payload,
 		"model": "text-embedding-ada-002",
 	})
-	requestBody := bytes.NewBuffer(embeddingBody)
-
-	req, err := http.NewRequest("POST", fmt.Sprintf("https://api.openai.com/v1/embeddings"), requestBody)
 	if err != nil {
 		return nil, &errors.FailedToCreateEmbedding
 	}
 
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", apiKey))
-	req.Header.Set("content-type", "application/json")
+	req, err := http.NewRequest(fiber.MethodPost,
+		"https://api.openai.com/v1/embeddings",
+		bytes.NewBuffer(embeddingBody))
+	if err != nil {
+		return nil, &errors.FailedToCreateEmbedding
+	}
+
+	req = utilities.ApplyModifiers(req,
+		utilities.Authorization(c.Settings.APIKey.Expose()),
+		utilities.JSON(),
+	)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -52,13 +62,8 @@ func (c *OpenAiClient) CreateEmbedding(payload string) ([]float32, *errors.Error
 		return nil, &errors.FailedToCreateEmbedding
 	}
 
-	type ResponseBody struct {
-		Data []struct {
-			Embedding []float32 `json:"embedding"`
-		} `json:"data"`
-	}
+	var embeddingResultBody CreateEmbeddingResponseBody
 
-	embeddingResultBody := ResponseBody{}
 	err = json.NewDecoder(resp.Body).Decode(&embeddingResultBody)
 	if err != nil {
 		return nil, &errors.FailedToCreateEmbedding
@@ -68,6 +73,7 @@ func (c *OpenAiClient) CreateEmbedding(payload string) ([]float32, *errors.Error
 		return nil, &errors.FailedToCreateEmbedding
 	}
 
-	return embeddingResultBody.Data[0].Embedding, nil
+	EMBEDDING_INDEX := 0
 
+	return embeddingResultBody.Data[EMBEDDING_INDEX].Embedding, nil
 }

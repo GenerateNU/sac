@@ -26,5 +26,19 @@ func readLocal(v *viper.Viper) (*Settings, error) {
 		return nil, fmt.Errorf("failed to convert intermediate settings into final settings: %w", err)
 	}
 
+	pineconeSettings, err := readPineconeSettings()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read Pinecone settings: %w", err)
+	}
+
+	settings.PineconeSettings = *pineconeSettings
+
+	openAISettings, err := readOpenAISettings()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read OpenAI settings: %w", err)
+	}
+
+	settings.OpenAISettings = *openAISettings
+
 	return settings, nil
 }

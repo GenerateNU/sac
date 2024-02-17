@@ -7,10 +7,12 @@ import (
 )
 
 type Settings struct {
-	Application ApplicationSettings
-	Database    DatabaseSettings
-	SuperUser   SuperUserSettings
-	Auth        AuthSettings
+	Application      ApplicationSettings
+	Database         DatabaseSettings
+	SuperUser        SuperUserSettings
+	Auth             AuthSettings
+	PineconeSettings PineconeSettings
+	OpenAISettings   OpenAISettings
 }
 
 type intermediateSettings struct {

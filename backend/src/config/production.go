@@ -84,6 +84,16 @@ func readProd(v *viper.Viper) (*Settings, error) {
 		return nil, errors.New("failed to create secret from refresh token")
 	}
 
+	pineconeSettings, err := readPineconeSettings()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read Pinecone settings: %w", err)
+	}
+
+	openAISettings, err := readOpenAISettings()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read OpenAI settings: %w", err)
+	}
+
 	return &Settings{
 		Application: ApplicationSettings{
 			Port:    uint16(portInt),
@@ -107,5 +117,7 @@ func readProd(v *viper.Viper) (*Settings, error) {
 			AccessTokenExpiry:  uint(authAccessExpiryInt),
 			RefreshTokenExpiry: uint(authRefreshExpiryInt),
 		},
+		PineconeSettings: *pineconeSettings,
+		OpenAISettings:   *openAISettings,
 	}, nil
 }
