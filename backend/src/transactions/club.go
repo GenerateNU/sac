@@ -25,9 +25,28 @@ func GetAdminIDs(db *gorm.DB, clubID uuid.UUID) ([]uuid.UUID, *errors.Error) {
 	return adminUUIDs, nil
 }
 
-func GetClubs(db *gorm.DB, limit int, offset int) ([]models.Club, *errors.Error) {
+func GetClubs(db *gorm.DB, queryParams *models.ClubQueryParams) ([]models.Club, *errors.Error) {
+	query := db.Model(&models.Club{})
+
+	if queryParams.Tags != nil && len(queryParams.Tags) > 0 {
+		query = query.Preload("Tags")
+	}
+
+	for key, value := range queryParams.IntoWhere() {
+		query = query.Where(key, value)
+	}
+
+	if queryParams.Tags != nil && len(queryParams.Tags) > 0 {
+		query = query.Joins("JOIN club_tags ON club_tags.club_id = clubs.id").
+			Where("club_tags.tag_id IN ?", queryParams.Tags).
+			Group("clubs.id") // ensure unique club records
+	}
+
 	var clubs []models.Club
-	result := db.Limit(limit).Offset(offset).Find(&clubs)
+
+	offset := (queryParams.Page - 1) * queryParams.Limit
+
+	result := query.Limit(queryParams.Limit).Offset(offset).Find(&clubs)
 	if result.Error != nil {
 		return nil, &errors.FailedToGetClubs
 	}
