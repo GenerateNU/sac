@@ -27,10 +27,6 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to get events",
 	}
-	FailedToGetClubEvents = Error{
-		StatusCode: fiber.StatusInternalServerError,
-		Message:    "failed to get events",
-	}
 	FailedToGetEvent = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to get event",
@@ -47,6 +43,10 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to update event",
 	}
+	FailedToUpdateSeries = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to update series",
+	}
 	EventNotFound = Error{
 		StatusCode: fiber.StatusNotFound,
 		Message:    "event not found",
@@ -54,5 +54,9 @@ var (
 	SeriesNotFound = Error{
 		StatusCode: fiber.StatusNotFound,
 		Message:    "series not found",
+	}
+	FailedToUpdateEventSeries = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to update event series",
 	}
 )

@@ -52,6 +52,7 @@ func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 	routes.ClubFollower(clubsIDRouter, services.NewClubFollowerService(db))
 	routes.ClubMember(clubsIDRouter, services.NewClubMemberService(db, validate))
 	routes.ClubContact(clubsIDRouter, services.NewClubContactService(db, validate))
+	routes.ClubEvent(clubsIDRouter, services.NewClubEventService(db), middlewareService)
 
 	routes.Tag(apiv1, services.NewTagService(db, validate))
 

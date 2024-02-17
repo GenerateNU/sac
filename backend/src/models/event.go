@@ -1,8 +1,9 @@
 package models
 
 import (
-	"github.com/google/uuid"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type EventType string
@@ -14,7 +15,6 @@ const (
 
 type RecurringType string
 
-// excluding annually for now bc most clubs have meetings per semester
 const (
 	Daily   RecurringType = "daily"
 	Weekly  RecurringType = "weekly"
@@ -33,7 +33,7 @@ type Event struct {
 	EventType   EventType `gorm:"type:varchar(255);default:open" json:"event_type" validate:"required,max=255"`
 	IsRecurring bool      `gorm:"not null;type:bool;default:false" json:"is_recurring" validate:"-"`
 
-	// ParentEvent  *uuid.UUID     `gorm:"foreignKey:ParentEvent" json:"-" validate:"uuid4"`
+	ParentEvent  *uuid.UUID     `gorm:"foreignKey:ParentEvent" json:"-" validate:"uuid4"`
 	RSVP         []User         `gorm:"many2many:user_event_rsvps;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	Waitlist     []User         `gorm:"many2many:user_event_waitlists;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	Club         []Club         `gorm:"many2many:club_events;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
@@ -53,14 +53,13 @@ type Series struct {
 }
 
 // TODO: add not null to required fields on all gorm models
-type Event_Series struct {
+type EventSeries struct {
 	EventID  uuid.UUID `gorm:"not null; type:uuid; primary_key;" json:"event_id" validate:"uuid4"`
 	Event    Event     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	SeriesID uuid.UUID `gorm:"not null; type:uuid;" json:"series_id" validate:"uuid4"`
 	Series   Series    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 }
 
-// potentially not needed?
 type EventInstanceException struct {
 	Model
 	EventID       int `gorm:"not null; type:uuid" json:"event_id" validate:"required"`
@@ -75,9 +74,9 @@ type CreateSeriesRequestBody struct {
 	RecurringType   RecurringType `json:"recurring_type" validate:"max=255"`
 	SeparationCount int           `json:"separation_count" validate:"min=0"`
 	MaxOccurrences  int           `json:"max_occurrences" validate:"min=2"`
-	// DayOfWeek       int           `json:"day_of_week" validate:"min=1,max=7"`
-	// WeekOfMonth     int           `json:"week_of_month" validate:"min=1,max=5"`
-	// DayOfMonth      int           `json:"day_of_month" validate:"min=1,max=31"`
+	DayOfWeek       int           `json:"day_of_week" validate:"min=1,max=7"`
+	WeekOfMonth     int           `json:"week_of_month" validate:"min=1,max=5"`
+	DayOfMonth      int           `json:"day_of_month" validate:"min=1,max=31"`
 }
 
 // TODO We will likely need to update the create and update structs to account for recurring series
@@ -91,12 +90,12 @@ type CreateEventRequestBody struct {
 	EventType   EventType `json:"event_type" validate:"required,max=255"`
 	IsRecurring *bool     `json:"is_recurring" validate:"required"`
 
-	//TODO club/tag/notification logic
+	// TODO club/tag/notification logic
 	Club         []Club         `json:"-" validate:"-"`
 	Tag          []Tag          `json:"-" validate:"-"`
 	Notification []Notification `json:"-" validate:"-"`
 
-	//TODO validate if isRecurring, then series is required
+	// TODO validate if isRecurring, then series is required
 	Series CreateSeriesRequestBody `json:"series" validate:"-"`
 }
 
@@ -116,26 +115,11 @@ type UpdateEventRequestBody struct {
 	Notification []Notification `json:"-" validate:"-"`
 }
 
-/*TODO CRUD
-
-C- create Event, recurring Series (Sunny)
-
-R-
-Get All Events (paginated) (Sunny)
-Get Event By ID (Sunny)
-Get Event Series by eventID (Olivier)
-Get Event Series By seriesID (Olivier)
-Get Event Series By ClubID (Olivier)
-
-U-
-
-Update Event
-Update Series
-
-D (Olivier)-
-
-Delete Series
-
-create validators
-
-*/
+type UpdateSeriesRequestBody struct {
+	RecurringType   RecurringType `json:"recurring_type" validate:"max=255"`
+	SeparationCount int           `json:"separation_count" validate:"min=0"`
+	MaxOccurrences  int           `json:"max_occurrences" validate:"min=2"`
+	DayOfWeek       int           `json:"day_of_week" validate:"min=1,max=7"`
+	WeekOfMonth     int           `json:"week_of_month" validate:"min=1,max=5"`
+	DayOfMonth      int           `json:"day_of_month" validate:"min=1,max=31"`
+}

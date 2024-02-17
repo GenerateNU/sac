@@ -78,7 +78,7 @@ func MigrateDB(settings config.Settings, db *gorm.DB) error {
 		&models.User{},
 		&models.Series{},
 		&models.EventInstanceException{},
-		&models.Event_Series{},
+		&models.EventSeries{},
 		&models.Membership{},
 	)
 	if err != nil {

@@ -9,19 +9,28 @@ import (
 func Event(router fiber.Router, eventService services.EventServiceInterface) {
 	eventController := controllers.NewEventController(eventService)
 
+	// api/v1/events/*
 	events := router.Group("/events")
 
-	events.Get("/:id", eventController.GetEvent)
-	events.Get("/:id/series", eventController.GetSeriesByEventId)
 	events.Get("/", eventController.GetAllEvents)
 	events.Post("/", eventController.CreateEvent)
-	events.Patch("/:id", eventController.UpdateEvent)
-	events.Delete("/:id", eventController.DeleteEvent)
-	events.Delete("/:id/series", eventController.DeleteSeriesByEventId)
 
+	// api/v1/events/:eventID/*
+	eventID := events.Group("/:eventID")
+
+	eventID.Get("/", eventController.GetEvent)
+	eventID.Get("/series", eventController.GetSeriesByEventID)
+	events.Patch("/", eventController.UpdateEvent)
+	eventID.Delete("/", eventController.DeleteEvent)
+	eventID.Delete("/series", eventController.DeleteSeriesByEventID)
+
+	// api/v1/events/:eventID/series/*
 	series := router.Group("/series")
 
-	series.Get("/:id", eventController.GetSeriesById)
-	// series.Patch("/:id") TODO
-	series.Delete("/:id", eventController.DeleteSeriesById)
+	// api/v1/events/:eventID/series/:seriesID/*
+	seriesID := series.Group("/:seriesID")
+
+	seriesID.Get("/", eventController.GetSeriesByID)
+	seriesID.Patch("/", eventController.UpdateSeriesByID)
+	seriesID.Delete("/", eventController.DeleteSeriesByID)
 }
