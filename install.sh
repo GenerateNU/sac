@@ -12,13 +12,12 @@ go build -o "sac-cli" "cli/main.go"
 # Identify the user's shell
 SHELL_NAME=$(basename "$SHELL")
 
-# # Check if the command is already installed
-# COMMAND_NAME="sac-cli"
+# Check if the command is already installed to avoid adding it to path multiple times
+COMMAND_NAME="sac-cli"
 
-# if command -v "$COMMAND_NAME" >/dev/null 2>&1; then
-# 	echo "The command '$COMMAND_NAME' is already installed. Please uninstall it before installing a new version."
-# 	exit 1
-# fi
+if command -v "$COMMAND_NAME" >/dev/null 2>&1; then
+	exit 1
+fi
 
 # Add sac-cli to the user's PATH
 if [[ $SHELL_NAME == "zsh" ]]; then
