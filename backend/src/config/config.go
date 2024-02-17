@@ -13,6 +13,8 @@ type Settings struct {
 	SuperUser   SuperUserSettings   `yaml:"superuser"`
 	Auth        AuthSettings
 	AWS         AWSSettings
+	PineconeSettings PineconeSettings
+	OpenAISettings   OpenAISettings
 }
 
 type intermediateSettings struct {
@@ -76,7 +78,7 @@ func GetConfiguration(path string) (*Settings, error) {
 	v.SetConfigType("yaml")
 	v.AddConfigPath(path)
 	if environment == EnvironmentLocal {
-		return readLocal(v)
+		return readLocal(v, path)
 	} else {
 		return readProd(v)
 	}

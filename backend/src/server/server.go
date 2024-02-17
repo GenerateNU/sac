@@ -41,11 +41,17 @@ func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 
 	userRouter := routes.User(apiv1, services.NewUserService(db, validate), middlewareService)
 	routes.UserTag(userRouter, services.NewUserTagService(db, validate))
+	routes.UserFollower(userRouter, services.NewUserFollowerService(db, validate))
+	routes.UserMember(userRouter, services.NewUserMemberService(db))
 
 	routes.Contact(apiv1, services.NewContactService(db, validate))
 
-	clubsRouter := routes.Club(apiv1, services.NewClubService(db, validate), middlewareService)
-	routes.ClubContact(clubsRouter, services.NewClubContactService(db, validate))
+	clubsIDRouter := routes.Club(apiv1, services.NewClubService(db, validate), middlewareService)
+	routes.ClubTag(clubsIDRouter, services.NewClubTagService(db, validate))
+	routes.ClubFollower(clubsIDRouter, services.NewClubFollowerService(db))
+	routes.ClubMember(clubsIDRouter, services.NewClubMemberService(db, validate))
+	routes.ClubContact(clubsIDRouter, services.NewClubContactService(db, validate))
+	routes.ClubEvent(clubsIDRouter, services.NewClubEventService(db), middlewareService)
 
 	routes.Tag(apiv1, services.NewTagService(db, validate))
 
@@ -54,6 +60,8 @@ func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 
 	fileRouter := routes.File(apiv1, services.NewFileService(db, config.ConfigAWS(), validate))
 	routes.File(fileRouter, services.NewFileService(db, config.ConfigAWS(), validate))
+  
+	routes.Event(apiv1, services.NewEventService(db, validate))
 
 	return app
 }

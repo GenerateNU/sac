@@ -21,3 +21,6 @@ issues:
     - path: tests/api/helpers/
       linters:
         - cyclop
+    - path: src/config/production.go
+      linters:
+        - cyclop

@@ -83,3 +83,18 @@ func GetTagsByIDs(db *gorm.DB, selectedTagIDs []uuid.UUID) ([]models.Tag, *error
 	}
 	return []models.Tag{}, nil
 }
+
+// Get clubs for a tag
+func GetTagClubs(db *gorm.DB, id uuid.UUID) ([]models.Club, *errors.Error) {
+	var clubs []models.Club
+
+	tag, err := GetTag(db, id)
+	if err != nil {
+		return nil, &errors.ClubNotFound
+	}
+
+	if err := db.Model(&tag).Association("Club").Find(&clubs); err != nil {
+		return nil, &errors.FailedToGetTag
+	}
+	return clubs, nil
+}

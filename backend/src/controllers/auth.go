@@ -8,7 +8,6 @@ import (
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
-	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/gofiber/fiber/v2"
 )
@@ -34,7 +33,7 @@ func NewAuthController(authService services.AuthServiceInterface, authSettings c
 // @Failure     401   {string}    string "failed to get current user"
 // @Router		/api/v1/auth/me  [get]
 func (a *AuthController) Me(c *fiber.Ctx) error {
-	claims, err := types.From(c)
+	claims, err := auth.From(c)
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -143,6 +142,39 @@ func (a *AuthController) Logout(c *fiber.Ctx) error {
 	// Expire and clear the cookies
 	c.Cookie(auth.ExpireCookie("access_token"))
 	c.Cookie(auth.ExpireCookie("refresh_token"))
+
+	return utilities.FiberMessage(c, fiber.StatusOK, "success")
+}
+
+// UpdatePassword godoc
+//
+// @Summary		Updates a user's password
+// @Description	Updates a user's password
+// @ID			update-password
+// @Tags      	user
+// @Accept		json
+// @Produce		json
+// @Param		userBody	body	[]string	true	"User Body"
+// @Success		200	  {object}	  string "success"
+// @Failure     400   {string}    string "failed to parse body"
+// @Failure     401   {string}    string "failed to update password"
+// @Router		/api/v1/auth/update-password  [post]
+func (a *AuthController) UpdatePassword(c *fiber.Ctx) error {
+	var userBody models.UpdatePasswordRequestBody
+
+	if err := c.BodyParser(&userBody); err != nil {
+		return errors.FailedToParseRequestBody.FiberError(c)
+	}
+
+	claims, err := auth.From(c)
+	if err != nil {
+		return err.FiberError(c)
+	}
+
+	err = a.authService.UpdatePassword(claims.Issuer, userBody)
+	if err != nil {
+		return err.FiberError(c)
+	}
 
 	return utilities.FiberMessage(c, fiber.StatusOK, "success")
 }

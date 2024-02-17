@@ -30,14 +30,14 @@ func NewCategoryController(categoryService services.CategoryServiceInterface) *C
 // @Failure		400	  {string}	  string "category with that name already exists"
 // @Failure     500   {string}    string "failed to create category"
 // @Router		/api/v1/category/  [post]
-func (t *CategoryController) CreateCategory(c *fiber.Ctx) error {
+func (cat *CategoryController) CreateCategory(c *fiber.Ctx) error {
 	var categoryBody models.CategoryRequestBody
 
 	if err := c.BodyParser(&categoryBody); err != nil {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
-	newCategory, err := t.categoryService.CreateCategory(categoryBody)
+	newCategory, err := cat.categoryService.CreateCategory(categoryBody)
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -55,11 +55,11 @@ func (t *CategoryController) CreateCategory(c *fiber.Ctx) error {
 // @Success		200	  {object}	  []models.Category
 // @Failure     500   {string}    string "unable to retrieve categories"
 // @Router		/api/v1/category/  [get]
-func (t *CategoryController) GetCategories(c *fiber.Ctx) error {
+func (cat *CategoryController) GetCategories(c *fiber.Ctx) error {
 	defaultLimit := 10
 	defaultPage := 1
 
-	categories, err := t.categoryService.GetCategories(c.Query("limit", strconv.Itoa(defaultLimit)), c.Query("page", strconv.Itoa(defaultPage)))
+	categories, err := cat.categoryService.GetCategories(c.Query("limit", strconv.Itoa(defaultLimit)), c.Query("page", strconv.Itoa(defaultPage)))
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -79,8 +79,8 @@ func (t *CategoryController) GetCategories(c *fiber.Ctx) error {
 // @Failure     404   {string}    string "faied to find category"
 // @Failure     500   {string}    string "failed to retrieve category"
 // @Router		/api/v1/category/{id}  [get]
-func (t *CategoryController) GetCategory(c *fiber.Ctx) error {
-	category, err := t.categoryService.GetCategory(c.Params("categoryID"))
+func (cat *CategoryController) GetCategory(c *fiber.Ctx) error {
+	category, err := cat.categoryService.GetCategory(c.Params("categoryID"))
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -100,8 +100,8 @@ func (t *CategoryController) GetCategory(c *fiber.Ctx) error {
 // @Failure     404   {string}    string "failed to find category"
 // @Failure     500   {string}    string "failed to delete category"
 // @Router		/api/v1/category/{id}  [delete]
-func (t *CategoryController) DeleteCategory(c *fiber.Ctx) error {
-	if err := t.categoryService.DeleteCategory(c.Params("categoryID")); err != nil {
+func (cat *CategoryController) DeleteCategory(c *fiber.Ctx) error {
+	if err := cat.categoryService.DeleteCategory(c.Params("categoryID")); err != nil {
 		return err.FiberError(c)
 	}
 
@@ -120,14 +120,14 @@ func (t *CategoryController) DeleteCategory(c *fiber.Ctx) error {
 // @Failure     404   {string}    string "failed to find category"
 // @Failure     500   {string}    string "failed to update category"
 // @Router		/api/v1/category/{id}  [patch]
-func (t *CategoryController) UpdateCategory(c *fiber.Ctx) error {
+func (cat *CategoryController) UpdateCategory(c *fiber.Ctx) error {
 	var category models.CategoryRequestBody
 
 	if err := c.BodyParser(&category); err != nil {
 		return errors.FailedToValidateCategory.FiberError(c)
 	}
 
-	updatedCategory, err := t.categoryService.UpdateCategory(c.Params("categoryID"), category)
+	updatedCategory, err := cat.categoryService.UpdateCategory(c.Params("categoryID"), category)
 	if err != nil {
 		return err.FiberError(c)
 	}

@@ -20,9 +20,9 @@ func main() {
 			commands.InsertCommand(),
 			commands.DropCommand(),
 			commands.RunBackendCommand(),
-			commands.TestCommand(),   // TODO: frontend tests
-			commands.FormatCommand(), // TODO: frontend format
-			commands.LintCommand(),   // TODO: frontend lint
+			commands.TestCommand(), // TODO: frontend tests
+			commands.FormatCommand(),
+			commands.LintCommand(),
 		},
 	}
 	err := app.Run(os.Args)

@@ -106,9 +106,28 @@ func GetAdminIDs(db *gorm.DB, clubID uuid.UUID) ([]uuid.UUID, *errors.Error) {
 	return adminUUIDs, nil
 }
 
-func GetClubs(db *gorm.DB, limit int, offset int) ([]models.Club, *errors.Error) {
+func GetClubs(db *gorm.DB, queryParams *models.ClubQueryParams) ([]models.Club, *errors.Error) {
+	query := db.Model(&models.Club{})
+
+	if queryParams.Tags != nil && len(queryParams.Tags) > 0 {
+		query = query.Preload("Tags")
+	}
+
+	for key, value := range queryParams.IntoWhere() {
+		query = query.Where(key, value)
+	}
+
+	if queryParams.Tags != nil && len(queryParams.Tags) > 0 {
+		query = query.Joins("JOIN club_tags ON club_tags.club_id = clubs.id").
+			Where("club_tags.tag_id IN ?", queryParams.Tags).
+			Group("clubs.id") // ensure unique club records
+	}
+
 	var clubs []models.Club
-	result := db.Limit(limit).Offset(offset).Find(&clubs)
+
+	offset := (queryParams.Page - 1) * queryParams.Limit
+
+	result := query.Limit(queryParams.Limit).Offset(offset).Find(&clubs)
 	if result.Error != nil {
 		return nil, &errors.FailedToGetClubs
 	}
@@ -119,7 +138,7 @@ func GetClubs(db *gorm.DB, limit int, offset int) ([]models.Club, *errors.Error)
 func CreateClub(db *gorm.DB, userId uuid.UUID, club models.Club) (*models.Club, *errors.Error) {
 	user, err := GetUser(db, userId)
 	if err != nil {
-		return nil, &errors.UserNotFound
+		return nil, err
 	}
 
 	tx := db.Begin()
@@ -142,9 +161,16 @@ func CreateClub(db *gorm.DB, userId uuid.UUID, club models.Club) (*models.Club, 
 	return &club, nil
 }
 
-func GetClub(db *gorm.DB, id uuid.UUID) (*models.Club, *errors.Error) {
+func GetClub(db *gorm.DB, id uuid.UUID, preloads ...OptionalQuery) (*models.Club, *errors.Error) {
 	var club models.Club
-	if err := db.First(&club, id).Error; err != nil {
+
+	query := db
+
+	for _, preload := range preloads {
+		query = preload(query)
+	}
+
+	if err := query.First(&club, id).Error; err != nil {
 		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &errors.ClubNotFound
 		} else {
@@ -153,4 +179,42 @@ func GetClub(db *gorm.DB, id uuid.UUID) (*models.Club, *errors.Error) {
 	}
 
 	return &club, nil
+}
+
+func UpdateClub(db *gorm.DB, id uuid.UUID, club models.Club) (*models.Club, *errors.Error) {
+	result := db.Model(&models.User{}).Where("id = ?", id).Updates(club)
+	if result.Error != nil {
+		if stdliberrors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, &errors.UserNotFound
+		} else {
+			return nil, &errors.FailedToUpdateClub
+		}
+	}
+	var existingClub models.Club
+
+	err := db.First(&existingClub, id).Error
+	if err != nil {
+		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, &errors.ClubNotFound
+		} else {
+			return nil, &errors.FailedToCreateClub
+		}
+	}
+
+	if err := db.Model(&existingClub).Updates(&club).Error; err != nil {
+		return nil, &errors.FailedToUpdateUser
+	}
+
+	return &existingClub, nil
+}
+
+func DeleteClub(db *gorm.DB, id uuid.UUID) *errors.Error {
+	if result := db.Delete(&models.Club{}, id); result.RowsAffected == 0 {
+		if result.Error == nil {
+			return &errors.ClubNotFound
+		} else {
+			return &errors.FailedToDeleteClub
+		}
+	}
+	return nil
 }

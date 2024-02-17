@@ -5,7 +5,6 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/errors"
-	"github.com/GenerateNU/sac/backend/src/types"
 
 	m "github.com/garrettladley/mattress"
 	"github.com/gofiber/fiber/v2"
@@ -32,11 +31,11 @@ func CreateAccessToken(id string, role string, accessExpiresAfter uint, accessTo
 		return nil, &errors.FailedToCreateAccessToken
 	}
 
-	accessTokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, &types.CustomClaims{
+	accessTokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, &CustomClaims{
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  time.Now().Unix(),
 			Issuer:    id,
-			ExpiresAt: time.Now().Add(time.Hour * time.Duration(accessExpiresAfter)).Unix(),
+			ExpiresAt: time.Now().Add(time.Minute * time.Duration(accessExpiresAfter)).Unix(),
 		},
 		Role: role,
 	})
@@ -126,7 +125,7 @@ func RefreshAccessToken(refreshCookie string, role string, refreshKey *m.Secret[
 
 // ParseAccessToken parses the access token
 func ParseAccessToken(cookie string, accessKey *m.Secret[string]) (*jwt.Token, error) {
-	return jwt.ParseWithClaims(cookie, &types.CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+	return jwt.ParseWithClaims(cookie, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(accessKey.Expose()), nil
 	})
 }
@@ -145,7 +144,7 @@ func GetRoleFromToken(tokenString string, accessKey *m.Secret[string]) (*string,
 		return nil, err
 	}
 
-	claims, ok := token.Claims.(*types.CustomClaims)
+	claims, ok := token.Claims.(*CustomClaims)
 	if !ok || !token.Valid {
 		return nil, &errors.FailedToValidateAccessToken
 	}
@@ -154,13 +153,13 @@ func GetRoleFromToken(tokenString string, accessKey *m.Secret[string]) (*string,
 }
 
 // ExtractClaims extracts the claims from the token
-func ExtractAccessClaims(tokenString string, accessKey *m.Secret[string]) (*types.CustomClaims, *errors.Error) {
+func ExtractAccessClaims(tokenString string, accessKey *m.Secret[string]) (*CustomClaims, *errors.Error) {
 	token, err := ParseAccessToken(tokenString, accessKey)
 	if err != nil {
 		return nil, &errors.FailedToParseAccessToken
 	}
 
-	claims, ok := token.Claims.(*types.CustomClaims)
+	claims, ok := token.Claims.(*CustomClaims)
 	if !ok || !token.Valid {
 		return nil, &errors.FailedToValidateAccessToken
 	}

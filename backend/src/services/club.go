@@ -15,6 +15,7 @@ type ClubServiceInterface interface {
 	GetPointOfContact(pocId string, clubId string) (*models.PointOfContact, *errors.Error)
 	DeletePointOfContact(pocId string, clubId string) *errors.Error
 	GetClubs(limit string, page string) ([]models.Club, *errors.Error)
+	GetClubs(queryParams *models.ClubQueryParams) ([]models.Club, *errors.Error)
 	GetClub(id string) (*models.Club, *errors.Error)
 	CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, *errors.Error)
 	UpdateClub(id string, clubBody models.UpdateClubRequestBody) (*models.Club, *errors.Error)
@@ -82,20 +83,16 @@ func NewClubService(db *gorm.DB, validate *validator.Validate) *ClubService {
 	return &ClubService{DB: db, Validate: validate}
 }
 
-func (c *ClubService) GetClubs(limit string, page string) ([]models.Club, *errors.Error) {
-	limitAsInt, err := utilities.ValidateNonNegative(limit)
-	if err != nil {
+func (c *ClubService) GetClubs(queryParams *models.ClubQueryParams) ([]models.Club, *errors.Error) {
+	if queryParams.Limit < 0 {
 		return nil, &errors.FailedToValidateLimit
 	}
 
-	pageAsInt, err := utilities.ValidateNonNegative(page)
-	if err != nil {
+	if queryParams.Page < 0 {
 		return nil, &errors.FailedToValidatePage
 	}
 
-	offset := (*pageAsInt - 1) * *limitAsInt
-
-	return transactions.GetClubs(c.DB, *limitAsInt, offset)
+	return transactions.GetClubs(c.DB, queryParams)
 }
 
 func (c *ClubService) CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, *errors.Error) {

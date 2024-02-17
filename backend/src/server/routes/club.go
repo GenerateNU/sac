@@ -1,10 +1,10 @@
 package routes
 
 import (
+	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/controllers"
 	"github.com/GenerateNU/sac/backend/src/middleware"
 	"github.com/GenerateNU/sac/backend/src/services"
-	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -13,7 +13,7 @@ func Club(router fiber.Router, clubService services.ClubServiceInterface, middle
 
 	clubs := router.Group("/clubs")
 
-	clubs.Get("/", middlewareService.Authorize(types.ClubReadAll), clubController.GetAllClubs)
+	clubs.Get("/", middlewareService.Authorize(auth.ClubReadAll), clubController.GetAllClubs)
 	clubs.Post("/", clubController.CreateClub)
 
 	// api/v1/clubs/:clubID/*
@@ -21,8 +21,8 @@ func Club(router fiber.Router, clubService services.ClubServiceInterface, middle
 	clubsID.Use(middleware.SuperSkipper(middlewareService.UserAuthorizeById))
 
 	clubsID.Get("/", clubController.GetClub)
-	clubsID.Patch("/", middlewareService.Authorize(types.ClubWrite), clubController.UpdateClub)
-	clubsID.Delete("/", middlewareService.Authorize(types.ClubDelete), clubController.DeleteClub)
+	clubsID.Patch("/", middlewareService.Authorize(auth.ClubWrite), clubController.UpdateClub)
+	clubsID.Delete("/", middlewareService.Authorize(auth.ClubDelete), clubController.DeleteClub)
 
 	// api/v1/clubs/:clubID/poc/*
 	pointOfContact := router.Group("/clubs/:clubID/poc")

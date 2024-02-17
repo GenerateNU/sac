@@ -121,7 +121,7 @@ func TestGetUserFailsBadRequest(t *testing.T) {
 	}
 
 	for _, badRequest := range badRequests {
-		appAssert.TestOnError(
+		appAssert = appAssert.TestOnError(
 			h.TestRequest{
 				Method: fiber.MethodGet,
 				Path:   fmt.Sprintf("/api/v1/users/%s", badRequest),
@@ -216,6 +216,7 @@ func TestUpdateUserFailsOnInvalidBody(t *testing.T) {
 		{"college": "UT-Austin"},
 	} {
 		invalidData := invalidData
+
 		h.InitTest(t).TestOnErrorAndTester(
 			h.TestRequest{
 				Method:             fiber.MethodPatch,
@@ -332,7 +333,7 @@ func TestDeleteUserBadRequest(t *testing.T) {
 	}
 
 	for _, badRequest := range badRequests {
-		appAssert.TestOnErrorAndTester(
+		appAssert = appAssert.TestOnErrorAndTester(
 			h.TestRequest{
 				Method: fiber.MethodDelete,
 				Path:   fmt.Sprintf("/api/v1/users/%s", badRequest),
@@ -497,7 +498,7 @@ func AssertCreateBadDataFails(t *testing.T, jsonKey string, badValues []interfac
 		sampleUserPermutation := *h.SampleStudentJSONFactory(sampleStudent, rawPassword)
 		sampleUserPermutation[jsonKey] = badValue
 
-		appAssert.TestOnErrorAndTester(
+		appAssert = appAssert.TestOnErrorAndTester(
 			h.TestRequest{
 				Method: fiber.MethodPost,
 				Path:   "/api/v1/users/",
@@ -591,7 +592,7 @@ func TestCreateUserFailsOnMissingFields(t *testing.T) {
 		sampleUserPermutation := *h.SampleStudentJSONFactory(sampleStudent, rawPassword)
 		delete(sampleUserPermutation, missingField)
 
-		appAssert.TestOnErrorAndTester(
+		appAssert = appAssert.TestOnErrorAndTester(
 			h.TestRequest{
 				Method: fiber.MethodPost,
 				Path:   "/api/v1/users/",

@@ -17,4 +17,5 @@ func Auth(router fiber.Router, authService services.AuthServiceInterface, authSe
 	auth.Get("/logout", authController.Logout)
 	auth.Get("/refresh", authController.Refresh)
 	auth.Get("/me", authController.Me)
+	auth.Post("/update-password", authController.UpdatePassword)
 }

@@ -31,6 +31,7 @@ func AuthSettings() (*config.AuthSettings, error) {
 }
 
 func TestCreateTokenPairSuccess(t *testing.T) {
+	t.Parallel()
 	assert := assert.New(t)
 
 	id := "user123"
@@ -48,6 +49,7 @@ func TestCreateTokenPairSuccess(t *testing.T) {
 }
 
 func TestCreateTokenPairFailure(t *testing.T) {
+	t.Parallel()
 	assert := assert.New(t)
 
 	id := "user123"
@@ -66,6 +68,7 @@ func TestCreateTokenPairFailure(t *testing.T) {
 }
 
 func TestCreateAccessTokenSuccess(t *testing.T) {
+	t.Parallel()
 	assert := assert.New(t)
 
 	id := "user123"
@@ -83,6 +86,7 @@ func TestCreateAccessTokenSuccess(t *testing.T) {
 }
 
 func TestCreateAccessTokenFailure(t *testing.T) {
+	t.Parallel()
 	assert := assert.New(t)
 
 	id := "user123"
@@ -100,6 +104,7 @@ func TestCreateAccessTokenFailure(t *testing.T) {
 }
 
 func TestCreateRefreshTokenSuccess(t *testing.T) {
+	t.Parallel()
 	assert := assert.New(t)
 
 	id := "user123"
@@ -116,6 +121,7 @@ func TestCreateRefreshTokenSuccess(t *testing.T) {
 }
 
 func TestCreateRefreshTokenFailure(t *testing.T) {
+	t.Parallel()
 	assert := assert.New(t)
 
 	id := ""
@@ -132,6 +138,7 @@ func TestCreateRefreshTokenFailure(t *testing.T) {
 }
 
 func TestSignTokenSuccess(t *testing.T) {
+	t.Parallel()
 	assert := assert.New(t)
 
 	token := jwt.New(jwt.SigningMethodHS256)
@@ -151,12 +158,13 @@ func TestSignTokenSuccess(t *testing.T) {
 
 	signedToken, authErr := auth.SignToken(token, key)
 
-	assert.Assert(authErr == nil)
+	assert.NilError(authErr == nil)
 
 	assert.Assert(signedToken != nil)
 }
 
 func TestSignTokenFailure(t *testing.T) {
+	t.Parallel()
 	assert := assert.New(t)
 
 	token := jwt.New(jwt.SigningMethodHS256)
