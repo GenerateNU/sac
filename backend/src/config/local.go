@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 
+	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
 
@@ -24,6 +25,11 @@ func readLocal(v *viper.Viper) (*Settings, error) {
 	settings, err := intermediateSettings.into()
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert intermediate settings into final settings: %w", err)
+	}
+
+	err = godotenv.Load(".example_env")
+	if err != nil {
+		return nil, fmt.Errorf("failed to load .example_env: %w", err)
 	}
 
 	pineconeSettings, err := readPineconeSettings()

@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	m "github.com/garrettladley/mattress"
+	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
 
@@ -37,6 +38,11 @@ func readProd(v *viper.Viper) (*Settings, error) {
 
 	if err := v.Unmarshal(&prodSettings); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal configuration: %w", err)
+	}
+
+	err := godotenv.Load(".env")
+	if err != nil {
+		return nil, fmt.Errorf("failed to load .env: %w", err)
 	}
 
 	appPrefix := "APP_"
