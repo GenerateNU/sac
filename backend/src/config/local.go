@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func readLocal(v *viper.Viper) (*Settings, error) {
+func readLocal(v *viper.Viper, path string) (*Settings, error) {
 	var intermediateSettings intermediateSettings
 
 	env := string(EnvironmentLocal)
@@ -27,9 +27,9 @@ func readLocal(v *viper.Viper) (*Settings, error) {
 		return nil, fmt.Errorf("failed to convert intermediate settings into final settings: %w", err)
 	}
 
-	err = godotenv.Load(".example_env")
+	err = godotenv.Load(fmt.Sprintf("%s/.example_backend_env", path))
 	if err != nil {
-		return nil, fmt.Errorf("failed to load .example_env: %w", err)
+		return nil, fmt.Errorf("failed to load %s/.example_backend_env: %w", path, err)
 	}
 
 	pineconeSettings, err := readPineconeSettings()

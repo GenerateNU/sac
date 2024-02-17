@@ -66,7 +66,7 @@ func GetConfiguration(path string) (*Settings, error) {
 	v.AddConfigPath(path)
 
 	if environment == EnvironmentLocal {
-		return readLocal(v)
+		return readLocal(v, path)
 	} else {
 		return readProd(v)
 	}
