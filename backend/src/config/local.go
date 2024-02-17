@@ -27,9 +27,9 @@ func readLocal(v *viper.Viper, path string) (*Settings, error) {
 		return nil, fmt.Errorf("failed to convert intermediate settings into final settings: %w", err)
 	}
 
-	err = godotenv.Load(fmt.Sprintf("%s/.example_backend_env", path))
+	err = godotenv.Load(fmt.Sprintf("%s/.env.template", path))
 	if err != nil {
-		return nil, fmt.Errorf("failed to load %s/.example_backend_env: %w", path, err)
+		return nil, fmt.Errorf("failed to load %s/.env.template: %w", path, err)
 	}
 
 	pineconeSettings, err := readPineconeSettings()
