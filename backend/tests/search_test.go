@@ -30,7 +30,7 @@ type mockConfig struct {
 }
 
 func newMockConfig() *mockConfig {
-	pineconeIndexHost := "indexHost"
+	pineconeIndexHost := "https://indexHost.com"
 	pineconeApiKey := "pinecone"
 
 	pineconeIndexHostSecret, err := m.NewSecret(pineconeIndexHost)
@@ -79,14 +79,14 @@ func TestPineconeUpsertWorks(t *testing.T) {
 		MatchHeader("accept", "application/json").
 		MatchHeader("content-type", "application/json").
 		MatchType("json").
-		JSON(map[string]interface{}{
-			"vectors": []interface{}{
-				map[string]interface{}{
-					"id":     mockSearchId,
-					"values": mockValues,
+		JSON(search.PineconeUpsertRequestBody{
+			Vectors: []search.Vector{
+				{
+					ID:     mockSearchId,
+					Values: mockValues,
 				},
 			},
-			"namespace": mockNamespace,
+			Namespace: mockNamespace,
 		}).
 		Reply(200)
 
@@ -95,15 +95,15 @@ func TestPineconeUpsertWorks(t *testing.T) {
 		MatchHeader("Authorization", "Bearer "+mockConfig.OpenAI.APIKey.Expose()).
 		MatchHeader("content-type", "application/json").
 		MatchType("json").
-		JSON(map[string]interface{}{
-			"input": mockSearchString,
-			"model": "text-embedding-ada-002",
+		JSON(search.CreateEmbeddingRequestBody{
+			Input: mockSearchString,
+			Model: "text-embedding-ada-002",
 		}).
 		Reply(200).
-		JSON(map[string]interface{}{
-			"data": []map[string]interface{}{
+		JSON(search.CreateEmbeddingResponseBody{
+			Data: []search.Embedding{
 				{
-					"embedding": []float32{1.0, 1.0, 1.0, 1.0},
+					Embedding: mockValues,
 				},
 			},
 		})
@@ -129,12 +129,10 @@ func TestPineconeDeleteWorks(t *testing.T) {
 		MatchHeader("accept", "application/json").
 		MatchHeader("content-type", "application/json").
 		MatchType("json").
-		JSON(map[string]interface{}{
-			"deleteAll": false,
-			"ids": []string{
-				mockSearchId,
-			},
-			"namespace": mockNamespace,
+		JSON(search.PineconeDeleteRequestBody{
+			Namespace: mockNamespace,
+			IDs:       []string{mockSearchId},
+			DeleteAll: false,
 		}).
 		Reply(200)
 
@@ -162,23 +160,23 @@ func TestPineconeSearchWorks(t *testing.T) {
 		MatchHeader("accept", "application/json").
 		MatchHeader("content-type", "application/json").
 		MatchType("json").
-		JSON(map[string]interface{}{
-			"includeValues":   false,
-			"includeMetadata": false,
-			"topK":            topK,
-			"vector":          mockValues,
-			"namespace":       mockNamespace,
+		JSON(search.PineconeSearchRequestBody{
+			IncludeValues:   false,
+			IncludeMetadata: false,
+			TopK:            topK,
+			Vector:          mockValues,
+			Namespace:       mockNamespace,
 		}).
 		Reply(200).
-		JSON(map[string]interface{}{
-			"matches": []map[string]interface{}{
+		JSON(search.PineconeSearchResponseBody{
+			Matches: []search.Match{
 				{
-					"id":     mockSearchId,
-					"score":  1.0,
-					"values": []float32{1.0, 1.0, 1.0, 1.0},
+					Id:     mockSearchId,
+					Score:  1.0,
+					Values: mockValues,
 				},
 			},
-			"namespace": mockNamespace,
+			Namespace: mockNamespace,
 		})
 
 	gock.New("https://api.openai.com").
@@ -186,15 +184,15 @@ func TestPineconeSearchWorks(t *testing.T) {
 		MatchHeader("Authorization", "Bearer "+mockConfig.OpenAI.APIKey.Expose()).
 		MatchHeader("content-type", "application/json").
 		MatchType("json").
-		JSON(map[string]interface{}{
-			"input": mockSearchString,
-			"model": "text-embedding-ada-002",
+		JSON(search.CreateEmbeddingRequestBody{
+			Input: mockSearchString,
+			Model: "text-embedding-ada-002",
 		}).
 		Reply(200).
-		JSON(map[string]interface{}{
-			"data": []map[string]interface{}{
+		JSON(search.CreateEmbeddingResponseBody{
+			Data: []search.Embedding{
 				{
-					"embedding": []float32{1.0, 1.0, 1.0, 1.0},
+					Embedding: []float32{1.0, 1.0, 1.0, 1.0},
 				},
 			},
 		})
@@ -220,15 +218,15 @@ func TestOpenAIEmbeddingWorks(t *testing.T) {
 		MatchHeader("Authorization", "Bearer "+mockConfig.OpenAI.APIKey.Expose()).
 		MatchHeader("content-type", "application/json").
 		MatchType("json").
-		JSON(map[string]interface{}{
-			"input": testString,
-			"model": "text-embedding-ada-002",
+		JSON(search.CreateEmbeddingRequestBody{
+			Input: testString,
+			Model: "text-embedding-ada-002",
 		}).
 		Reply(200).
-		JSON(map[string]interface{}{
-			"data": []map[string]interface{}{
+		JSON(search.CreateEmbeddingResponseBody{
+			Data: []search.Embedding{
 				{
-					"embedding": []float32{1.0, 1.0, 1.0, 1.0},
+					Embedding: []float32{1.0, 1.0, 1.0, 1.0},
 				},
 			},
 		})

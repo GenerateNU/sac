@@ -55,7 +55,7 @@ func (c *PineconeClient) Upsert(item Searchable) *errors.Error {
 		return &errors.FailedToUpsertToPinecone
 	}
 
-	upsertBody, _ := json.Marshal(
+	upsertBody, err := json.Marshal(
 		PineconeUpsertRequestBody{
 			Vectors: []Vector{
 				{
@@ -65,6 +65,9 @@ func (c *PineconeClient) Upsert(item Searchable) *errors.Error {
 			},
 			Namespace: item.Namespace(),
 		})
+	if err != nil {
+		return &errors.FailedToUpsertToPinecone
+	}
 
 	req, err := http.NewRequest(fiber.MethodPost,
 		fmt.Sprintf("%s/vectors/upsert", c.Settings.IndexHost.Expose()),
@@ -141,13 +144,15 @@ type PineconeSearchRequestBody struct {
 	Namespace       string    `json:"namespace"`
 }
 
+type Match struct {
+	Id     string    `json:"id"`
+	Score  float32   `json:"score"`
+	Values []float32 `json:"values"`
+}
+
 type PineconeSearchResponseBody struct {
-	Matches []struct {
-		Id     string    `json:"id"`
-		Score  float32   `json:"score"`
-		Values []float32 `json:"values"`
-	} `json:"matches"`
-	Namespace string `json:"namespace"`
+	Matches   []Match `json:"matches"`
+	Namespace string  `json:"namespace"`
 }
 
 func (c *PineconeClient) Search(item Searchable, topK int) ([]string, *errors.Error) {
@@ -183,10 +188,6 @@ func (c *PineconeClient) Search(item Searchable, topK int) ([]string, *errors.Er
 	}
 
 	defer resp.Body.Close()
-
-	if err != nil {
-		return []string{}, &errors.FailedToSearchToPinecone
-	}
 
 	if resp.StatusCode != fiber.StatusOK {
 		return []string{}, &errors.FailedToSearchToPinecone

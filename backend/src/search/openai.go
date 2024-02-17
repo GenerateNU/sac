@@ -24,17 +24,25 @@ func NewOpenAIClient(settings config.OpenAISettings) *OpenAIClient {
 	return &OpenAIClient{Settings: settings}
 }
 
+type CreateEmbeddingRequestBody struct {
+	Input string `json:"input"`
+	Model string `json:"model"`
+}
+
+type Embedding struct {
+	Embedding []float32 `json:"embedding"`
+}
+
 type CreateEmbeddingResponseBody struct {
-	Data []struct {
-		Embedding []float32 `json:"embedding"`
-	} `json:"data"`
+	Data []Embedding `json:"data"`
 }
 
 func (c *OpenAIClient) CreateEmbedding(payload string) ([]float32, *errors.Error) {
-	embeddingBody, err := json.Marshal(map[string]interface{}{
-		"input": payload,
-		"model": "text-embedding-ada-002",
-	})
+	embeddingBody, err := json.Marshal(
+		CreateEmbeddingRequestBody{
+			Input: payload,
+			Model: "text-embedding-ada-002",
+		})
 	if err != nil {
 		return nil, &errors.FailedToCreateEmbedding
 	}
