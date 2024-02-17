@@ -18,14 +18,17 @@ func NewClubController(clubService services.ClubServiceInterface) *ClubControlle
 func (cl *ClubController) GetAllClubs(c *fiber.Ctx) error {
 	defaultLimit := 10
 	defaultPage := 1
-	p := new(models.ClubQueryParams)
-	p.Limit = defaultLimit
-	p.Page = defaultPage
-	if err := c.QueryParser(p); err != nil {
+
+	var queryParams models.ClubQueryParams
+
+	queryParams.Limit = defaultLimit
+	queryParams.Page = defaultPage
+
+	if err := c.QueryParser(queryParams); err != nil {
 		return err
 	}
 
-	clubs, err := cl.clubService.GetClubs(p)
+	clubs, err := cl.clubService.GetClubs(&queryParams)
 	if err != nil {
 		return err.FiberError(c)
 	}

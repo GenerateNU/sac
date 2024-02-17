@@ -11,7 +11,7 @@ import (
 )
 
 type ClubServiceInterface interface {
-	GetClubs(params *models.ClubQueryParams) ([]models.Club, *errors.Error)
+	GetClubs(queryParams *models.ClubQueryParams) ([]models.Club, *errors.Error)
 	GetClub(id string) (*models.Club, *errors.Error)
 	CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, *errors.Error)
 	UpdateClub(id string, clubBody models.UpdateClubRequestBody) (*models.Club, *errors.Error)
@@ -27,16 +27,16 @@ func NewClubService(db *gorm.DB, validate *validator.Validate) *ClubService {
 	return &ClubService{DB: db, Validate: validate}
 }
 
-func (c *ClubService) GetClubs(params *models.ClubQueryParams) ([]models.Club, *errors.Error) {
-	if params.Limit < 0 {
+func (c *ClubService) GetClubs(queryParams *models.ClubQueryParams) ([]models.Club, *errors.Error) {
+	if queryParams.Limit < 0 {
 		return nil, &errors.FailedToValidateLimit
 	}
 
-	if params.Page < 0 {
+	if queryParams.Page < 0 {
 		return nil, &errors.FailedToValidatePage
 	}
 
-	return transactions.GetClubs(c.DB, params)
+	return transactions.GetClubs(c.DB, queryParams)
 }
 
 func (c *ClubService) CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, *errors.Error) {

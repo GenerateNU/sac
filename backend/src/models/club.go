@@ -93,16 +93,7 @@ type ClubQueryParams struct {
 }
 
 func (cqp *ClubQueryParams) IntoWhere() string {
-	var where string
-	var conditions []string
-
-	// if len(cqp.Tags) > 0 {
-	// 	var tagPlaceholders []stri
-	// 	for _, tag := range cqp.Tags {
-	// 		tagPlaceholders = append(tagPlaceholders, fmt.Sprintf("'%v'", tag))
-	// 	}
-	// 	conditions = append(conditions, "tags IN ("+strings.Join(tagPlaceholders, ",")+")")
-	// }
+	conditions := make([]string, 0)
 
 	if cqp.MinMembers != 0 {
 		conditions = append(conditions, fmt.Sprintf("num_members >= %d", cqp.MinMembers))
@@ -117,13 +108,10 @@ func (cqp *ClubQueryParams) IntoWhere() string {
 		conditions = append(conditions, fmt.Sprintf("is_recruiting = %t", *cqp.IsRecruiting))
 	}
 
-	// conditions = append(conditions, fmt.Sprintf("'clubs'.'club_tags' = 8761310a-4e1a-4cc4-b9c9-799dd9950e07"))
-
-	if len(conditions) > 0 {
-		where = strings.Join(conditions, " AND ")
+	if len(conditions) == 0 {
+		return ""
 	}
-
-	return where
+	return "WHERE " + strings.Join(conditions, " AND ")
 }
 
 func (c *Club) AfterCreate(tx *gorm.DB) (err error) {
