@@ -177,7 +177,7 @@ func TestCreateCategoryFailsIfCategoryWithThatNameAlreadyExists(t *testing.T) {
 		modifiedSampleCategoryBody := *SampleCategoryFactory()
 		modifiedSampleCategoryBody["name"] = permutation
 
-		existingAppAssert.TestOnErrorAndTester(
+		existingAppAssert = existingAppAssert.TestOnErrorAndTester(
 			h.TestRequest{
 				Method: fiber.MethodPost,
 				Path:   "/api/v1/categories/",
@@ -224,7 +224,7 @@ func TestGetCategoryFailsBadRequest(t *testing.T) {
 	}
 
 	for _, badRequest := range badRequests {
-		appAssert.TestOnError(
+		appAssert = appAssert.TestOnError(
 			h.TestRequest{
 				Method: fiber.MethodGet,
 				Path:   fmt.Sprintf("/api/v1/categories/%s", badRequest),
@@ -370,7 +370,7 @@ func TestUpdateCategoryFailsBadRequest(t *testing.T) {
 	}
 
 	for _, badRequest := range badRequests {
-		appAssert.TestOnError(
+		appAssert = appAssert.TestOnError(
 			h.TestRequest{
 				Method: fiber.MethodPatch,
 				Path:   fmt.Sprintf("/api/v1/categories/%s", badRequest),
@@ -412,7 +412,7 @@ func TestDeleteCategoryFailsBadRequest(t *testing.T) {
 	}
 
 	for _, badRequest := range badRequests {
-		existingAppAssert.TestOnErrorAndTester(
+		existingAppAssert = existingAppAssert.TestOnErrorAndTester(
 			h.TestRequest{
 				Method: fiber.MethodDelete,
 				Path:   fmt.Sprintf("/api/v1/categories/%s", badRequest),

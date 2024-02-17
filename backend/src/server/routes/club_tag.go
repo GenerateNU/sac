@@ -9,7 +9,7 @@ import (
 func ClubTag(router fiber.Router, clubTagService services.ClubTagServiceInterface) {
 	clubTagController := controllers.NewClubTagController(clubTagService)
 
-	clubTags := router.Group("/:clubID/tags")
+	clubTags := router.Group("/tags")
 
 	clubTags.Post("/", clubTagController.CreateClubTags)
 	clubTags.Get("/", clubTagController.GetClubTags)

@@ -7,10 +7,12 @@ import (
 )
 
 type Settings struct {
-	Application ApplicationSettings
-	Database    DatabaseSettings
-	SuperUser   SuperUserSettings
-	Auth        AuthSettings
+	Application      ApplicationSettings
+	Database         DatabaseSettings
+	SuperUser        SuperUserSettings
+	Auth             AuthSettings
+	PineconeSettings PineconeSettings
+	OpenAISettings   OpenAISettings
 }
 
 type intermediateSettings struct {
@@ -64,7 +66,7 @@ func GetConfiguration(path string) (*Settings, error) {
 	v.AddConfigPath(path)
 
 	if environment == EnvironmentLocal {
-		return readLocal(v)
+		return readLocal(v, path)
 	} else {
 		return readProd(v)
 	}

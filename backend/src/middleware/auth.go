@@ -6,7 +6,6 @@ import (
 	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
-	"github.com/GenerateNU/sac/backend/src/types"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/skip"
@@ -21,7 +20,7 @@ var paths = []string{
 
 func SuperSkipper(h fiber.Handler) fiber.Handler {
 	return skip.New(h, func(c *fiber.Ctx) bool {
-		claims, err := types.From(c)
+		claims, err := auth.From(c)
 		if err != nil {
 			_ = err.FiberError(c)
 			return false
@@ -43,7 +42,7 @@ func (m *MiddlewareService) Authenticate(c *fiber.Ctx) error {
 		return errors.FailedToParseAccessToken.FiberError(c)
 	}
 
-	claims, ok := token.Claims.(*types.CustomClaims)
+	claims, ok := token.Claims.(*auth.CustomClaims)
 	if !ok || !token.Valid {
 		return errors.FailedToValidateAccessToken.FiberError(c)
 	}
@@ -57,9 +56,9 @@ func (m *MiddlewareService) Authenticate(c *fiber.Ctx) error {
 	return c.Next()
 }
 
-func (m *MiddlewareService) Authorize(requiredPermissions ...types.Permission) func(c *fiber.Ctx) error {
+func (m *MiddlewareService) Authorize(requiredPermissions ...auth.Permission) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
-		claims, fromErr := types.From(c)
+		claims, fromErr := auth.From(c)
 		if fromErr != nil {
 			return fromErr.FiberError(c)
 		}
@@ -73,7 +72,7 @@ func (m *MiddlewareService) Authorize(requiredPermissions ...types.Permission) f
 			return errors.FailedToParseAccessToken.FiberError(c)
 		}
 
-		userPermissions := types.GetPermissions(models.UserRole(*role))
+		userPermissions := auth.GetPermissions(models.UserRole(*role))
 
 		for _, requiredPermission := range requiredPermissions {
 			if !slices.Contains(userPermissions, requiredPermission) {

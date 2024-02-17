@@ -32,7 +32,7 @@ func (um *UserMemberController) DeleteMembership(c *fiber.Ctx) error {
 }
 
 func (um *UserMemberController) GetMembership(c *fiber.Ctx) error {
-	followers, err := um.clubMemberService.GetMembership(c.Params("clubID"))
+	followers, err := um.clubMemberService.GetMembership(c.Params("userID"))
 	if err != nil {
 		return err.FiberError(c)
 	}

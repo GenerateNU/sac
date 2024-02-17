@@ -8,7 +8,6 @@ import (
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
-	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/gofiber/fiber/v2"
 )
@@ -34,7 +33,7 @@ func NewAuthController(authService services.AuthServiceInterface, authSettings c
 // @Failure     401   {string}    string "failed to get current user"
 // @Router		/api/v1/auth/me  [get]
 func (a *AuthController) Me(c *fiber.Ctx) error {
-	claims, err := types.From(c)
+	claims, err := auth.From(c)
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -167,7 +166,7 @@ func (a *AuthController) UpdatePassword(c *fiber.Ctx) error {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
-	claims, err := types.From(c)
+	claims, err := auth.From(c)
 	if err != nil {
 		return err.FiberError(c)
 	}
