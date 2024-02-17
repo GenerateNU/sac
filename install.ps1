@@ -6,7 +6,6 @@ go build -o "sac-cli" "cli/main.go"
 
 # Check if sac-cli is already installed
 if (Test-Path -Path "$Env:USERPROFILE\AppData\Local\Programs\sac-cli\sac-cli.exe") {
-    Write-Host "sac-cli is already installed."
     exit 1
 }
 
