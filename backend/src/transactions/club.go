@@ -44,6 +44,7 @@ func GetClubs(db *gorm.DB, queryParams *models.ClubQueryParams) ([]models.Club, 
 	}
 
 	var clubs []models.Club
+
 	offset := (queryParams.Page - 1) * queryParams.Limit
 
 	result := query.Limit(queryParams.Limit).Offset(offset).Find(&clubs)
