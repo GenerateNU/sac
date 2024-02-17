@@ -1,10 +1,10 @@
 package routes
 
 import (
+	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/controllers"
 	"github.com/GenerateNU/sac/backend/src/middleware"
 	"github.com/GenerateNU/sac/backend/src/services"
-	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -14,7 +14,7 @@ func User(router fiber.Router, userService services.UserServiceInterface, middle
 	// api/v1/users/*
 	users := router.Group("/users")
 	users.Post("/", userController.CreateUser)
-	users.Get("/", middleware.SuperSkipper(middlewareService.Authorize(types.UserReadAll)), userController.GetUsers)
+	users.Get("/", middleware.SuperSkipper(middlewareService.Authorize(auth.UserReadAll)), userController.GetUsers)
 
 	// api/v1/users/:userID/*
 	usersID := users.Group("/:userID")

@@ -1,4 +1,4 @@
-package types
+package auth
 
 import "github.com/GenerateNU/sac/backend/src/models"
 
@@ -85,7 +85,6 @@ var rolePermissions = map[models.UserRole][]Permission{
 	},
 }
 
-// Returns the permissions for a given role
 func GetPermissions(role models.UserRole) []Permission {
 	return rolePermissions[role]
 }
