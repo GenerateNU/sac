@@ -8,6 +8,7 @@ import (
 )
 
 func TestThatAllCasingPermutationsWorks(t *testing.T) {
+	t.Parallel()
 	assert := assert.New(t)
 
 	expectedPermutations := []string{"foo", "Foo", "fOo", "foO", "FOo", "FoO", "fOO", "FOO"}

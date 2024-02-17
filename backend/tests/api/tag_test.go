@@ -111,7 +111,7 @@ func TestCreateTagFailsBadRequest(t *testing.T) {
 
 	for _, badBody := range badBodys {
 		badBody := badBody
-		appAssert.TestOnErrorAndTester(
+		appAssert = appAssert.TestOnErrorAndTester(
 			h.TestRequest{
 				Method: fiber.MethodPost,
 				Path:   "/api/v1/tags/",
@@ -143,7 +143,7 @@ func TestCreateTagFailsValidation(t *testing.T) {
 
 	for _, badBody := range badBodys {
 		badBody := badBody
-		appAssert.TestOnErrorAndTester(
+		appAssert = appAssert.TestOnErrorAndTester(
 			h.TestRequest{
 				Method: fiber.MethodPost,
 				Path:   "/api/v1/tags/",
@@ -190,7 +190,7 @@ func TestGetTagFailsBadRequest(t *testing.T) {
 	}
 
 	for _, badRequest := range badRequests {
-		appAssert.TestOnError(
+		appAssert = appAssert.TestOnError(
 			h.TestRequest{
 				Method: fiber.MethodGet,
 				Path:   fmt.Sprintf("/api/v1/tags/%s", badRequest),
@@ -314,7 +314,7 @@ func TestUpdateTagFailsBadRequest(t *testing.T) {
 	}
 
 	for _, badRequest := range badRequests {
-		appAssert.TestOnError(
+		appAssert = appAssert.TestOnError(
 			h.TestRequest{
 				Method: fiber.MethodPatch,
 				Path:   fmt.Sprintf("/api/v1/tags/%s", badRequest),
@@ -356,7 +356,7 @@ func TestDeleteTagFailsBadRequest(t *testing.T) {
 	}
 
 	for _, badRequest := range badRequests {
-		appAssert.TestOnErrorAndTester(
+		appAssert = appAssert.TestOnErrorAndTester(
 			h.TestRequest{
 				Method: fiber.MethodDelete,
 				Path:   fmt.Sprintf("/api/v1/tags/%s", badRequest),

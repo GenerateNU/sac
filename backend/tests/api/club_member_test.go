@@ -11,13 +11,13 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func TestClubFollowerWorks(t *testing.T) {
+func TestClubMemberWorks(t *testing.T) {
 	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	appAssert.TestOnStatus(
 		h.TestRequest{
 			Method:             fiber.MethodPost,
-			Path:               fmt.Sprintf("/api/v1/users/:userID/follower/%s", clubUUID),
+			Path:               fmt.Sprintf("/api/v1/users/:userID/member/%s", clubUUID),
 			Role:               &models.Super,
 			TestUserIDReplaces: h.StringToPointer(":userID"),
 		},
@@ -25,19 +25,19 @@ func TestClubFollowerWorks(t *testing.T) {
 	).TestOnStatusAndTester(
 		h.TestRequest{
 			Method: fiber.MethodGet,
-			Path:   fmt.Sprintf("/api/v1/clubs/%s/followers", clubUUID),
+			Path:   fmt.Sprintf("/api/v1/clubs/%s/members", clubUUID),
 			Role:   &models.Super,
 		},
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
 			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
-				var followers []models.User
+				var members []models.User
 
-				err := json.NewDecoder(resp.Body).Decode(&followers)
+				err := json.NewDecoder(resp.Body).Decode(&members)
 
 				eaa.Assert.NilError(err)
 
-				eaa.Assert.Equal(1, len(followers))
+				eaa.Assert.Equal(1, len(members))
 
 				var club models.Club
 
@@ -45,13 +45,13 @@ func TestClubFollowerWorks(t *testing.T) {
 
 				eaa.Assert.NilError(err)
 
-				var dbFollowers []models.User
+				var dbMembers []models.User
 
-				err = eaa.App.Conn.Model(&club).Association("Follower").Find(&dbFollowers)
+				err = eaa.App.Conn.Model(&club).Association("Member").Find(&dbMembers)
 
 				eaa.Assert.NilError(err)
 
-				eaa.Assert.Equal(len(dbFollowers), len(followers))
+				eaa.Assert.Equal(len(dbMembers), len(members))
 			},
 		},
 	).Close()
