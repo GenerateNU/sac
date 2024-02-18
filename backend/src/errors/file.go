@@ -47,4 +47,28 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to download the file",
 	}
+	InvalidAssociationType = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "invalid association type",
+	}
+	FailedToFindAssociationID = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to find association ID",
+	}
+	FailedToParseDaysToInt = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "failed to parse days to int",
+	}
+	FailedToGetSignedURL = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get signed URL",
+	}
+	InvalidFileID = Error{
+		StatusCode: fiber.StatusBadRequest, 
+		Message: "invalid file id", 
+	}
+	CannotFindFile = Error{
+		StatusCode: fiber.StatusInternalServerError, 
+		Message: "unable to find file", 
+	}
 )

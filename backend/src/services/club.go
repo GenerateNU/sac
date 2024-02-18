@@ -6,6 +6,7 @@ import (
 	"github.com/GenerateNU/sac/backend/src/transactions"
 	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -14,7 +15,6 @@ type ClubServiceInterface interface {
 	GetAllPointOfContacts(clubId string) ([]models.PointOfContact, *errors.Error)
 	GetPointOfContact(pocId string, clubId string) (*models.PointOfContact, *errors.Error)
 	DeletePointOfContact(pocId string, clubId string) *errors.Error
-	GetClubs(limit string, page string) ([]models.Club, *errors.Error)
 	GetClubs(queryParams *models.ClubQueryParams) ([]models.Club, *errors.Error)
 	GetClub(id string) (*models.Club, *errors.Error)
 	CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, *errors.Error)
@@ -37,11 +37,33 @@ func (u *ClubService) UpsertPointOfContact(clubId string, pointOfContactBody mod
 		return nil, &errors.FailedToMapRequestToModel
 	}
 	clubIdAsUUID, idErr := utilities.ValidateID(clubId)
+	var file models.File
+	if (pointOfContact.PhotoFileID != uuid.Nil) {
+		result := u.DB.Where("id = ?", pointOfContact.PhotoFileID).RowsAffected
+		if result == 0 {
+			return nil, &errors.InvalidFileID
+		}
+		
+		if err := u.DB.First(&file, "id = ?", pointOfContact.PhotoFileID).Error; err != nil {
+			return nil, &errors.CannotFindFile
+		}
+		
+	}
 	pointOfContact.ClubID = *clubIdAsUUID
 	if idErr != nil {
 		return nil, &errors.FailedToValidateClub
 	}
-	return transactions.UpsertPointOfContact(u.DB, pointOfContact)
+	poc, upsertErr := transactions.UpsertPointOfContact(u.DB, pointOfContact)
+
+	if (upsertErr != nil) {
+		return poc, upsertErr
+	}
+
+	if (pointOfContact.PhotoFileID != uuid.Nil) {
+		file.AssociationType = "point_of_contact"
+		file.AssociationID = poc.ID
+	}
+	return poc, nil
 }
 
 // Get All Point of Contact

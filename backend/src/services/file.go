@@ -5,7 +5,9 @@ import (
 	"io"
 	"mime/multipart"
 	"os"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/errors"
@@ -18,18 +20,20 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type FileServiceInterface interface {
-	CreateFile(file models.File, data *multipart.FileHeader, reader io.Reader) (*models.File, *errors.Error)
-	DeleteFile(id string, s3Only bool) error
+	CreateFile(fileBody models.FileBody, file models.File, data *multipart.FileHeader, reader io.Reader) (*models.File, *errors.Error)
 	GetFile(id string) (*models.File, *errors.Error)
+	GetFileInfo(id string, days string) (*models.File, *errors.Error)
+	DeleteFile(id string, s3Only bool) error
 }
 
 type FileService struct {
-	DB *gorm.DB
-    Settings config.AWSSettings
+	DB       *gorm.DB
+	Settings config.AWSSettings
 	Validate *validator.Validate
 }
 
@@ -55,7 +59,7 @@ func (f *FileService) GetFile(id string) (*models.File, *errors.Error) {
 	var file models.File
 
 	idAsUUID, errUUID := utilities.ValidateID(id)
-	
+
 	if errUUID != nil {
 		return nil, &errors.FailedToValidateID
 	}
@@ -88,11 +92,69 @@ func (f *FileService) GetFile(id string) (*models.File, *errors.Error) {
 	return &file, nil
 }
 
+func (f *FileService) GetFileInfo(id string, days string) (*models.File, *errors.Error) {
+	var file models.File
+
+	idAsUUID, errUUID := utilities.ValidateID(id)
+
+	if errUUID != nil {
+		return nil, &errors.FailedToValidateID
+	}
+
+	if err := f.DB.First(&file, idAsUUID).Error; err != nil {
+		return nil, &errors.FailedToGetFile
+	}
+
+	sess, err := createAWSSession(f.Settings)
+	if err != nil {
+		return nil, &errors.FailedToCreateAWSSession
+	}
+
+	svc := s3.New(sess)
+
+	req, _ := svc.GetObjectRequest(&s3.GetObjectInput{
+		Bucket: aws.String("generate-sac-storage"),
+		Key:    aws.String(file.ObjectKey),
+	})
+
+	daysInt, err := strconv.Atoi(days)
+	if err != nil {
+		return nil, &errors.FailedToParseDaysToInt
+	}
+	expiration := time.Duration(24*time.Hour) * time.Duration(daysInt)
+
+	url, err := req.Presign(expiration)
+	if err != nil {
+		return nil, &errors.FailedToGetSignedURL
+	}
+
+	file.S3Url = url
+	return &file, nil
+}
+
 // Create File
-func (f *FileService) CreateFile(file models.File, data *multipart.FileHeader, reader io.Reader) (*models.File, *errors.Error) {
+func (f *FileService) CreateFile(fileBody models.FileBody, file models.File, data *multipart.FileHeader, reader io.Reader) (*models.File, *errors.Error) {
 	var testFile models.File
 	var searchFiles []models.File
 	file.FileName = data.Filename
+
+	// if file type and file id are populated, if both are then search to see if id exists in corresponding table. Throw error
+	// if entry does not exist
+	associationType := fileBody.AssociationType
+	associationID := fileBody.AssociationID
+	print(associationID.String())
+
+	possibleTypes := []string{"users", "clubs", "events", "point_of_contacts"}
+
+	if associationID != uuid.Nil {
+		if !isInArray(possibleTypes, associationType) {
+			return nil, &errors.InvalidAssociationType
+		}
+		result := f.DB.Table(associationType).Where("id = ?", associationID).RowsAffected
+		if result == 0 {
+			return nil, &errors.FailedToFindAssociationID
+		}
+	}
 
 	// check if filename is already taken, and add (filenumber) to name if it is
 	objectKey := file.FileName
@@ -142,6 +204,16 @@ func (f *FileService) CreateFile(file models.File, data *multipart.FileHeader, r
 		return nil, &errors.FailedToCreateFileInDB
 	}
 	return &file, nil
+}
+
+// check if a string is in the array
+func isInArray(arr []string, value string) bool {
+	for _, v := range arr {
+		if v == value {
+			return true
+		}
+	}
+	return false
 }
 
 // Delete File

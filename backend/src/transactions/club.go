@@ -14,7 +14,7 @@ import (
 func UpsertPointOfContact(db *gorm.DB, pointOfContact *models.PointOfContact) (*models.PointOfContact, *errors.Error) {
 	err := db.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "email"}, {Name: "club_id"}},
-		DoUpdates: clause.AssignmentColumns([]string{"name", "photo", "email", "position"}),
+		DoUpdates: clause.AssignmentColumns([]string{"name", "photo_file_id", "email", "position"}),
 	}).Create(&pointOfContact).Error
 	if err != nil {
 		return nil, &errors.FailedToUpsertPointOfContact
