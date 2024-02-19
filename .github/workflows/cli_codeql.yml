@@ -6,7 +6,7 @@ on:
       - "cli/**"
       - ".github/workflows/cli_codeql.yml"
   pull_request:
-    types: opened
+    types: [opened]
     paths:
       - "cli/**"
       - ".github/workflows/cli_codeql.yml"
@@ -29,7 +29,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version: "1.21"
+          go-version: "1.22"
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
