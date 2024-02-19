@@ -30,7 +30,7 @@ type Event struct {
 	StartTime   time.Time `gorm:"type:timestamptz" json:"start_time" validate:"required,ltecsfield=EndTime"`
 	EndTime     time.Time `gorm:"type:timestamptz" json:"end_time" validate:"required,gtecsfield=StartTime"`
 	Location    string    `gorm:"type:varchar(255)" json:"location" validate:"required,max=255"`
-	EventType   EventType `gorm:"type:varchar(255);default:open" json:"event_type" validate:"required,max=255"`
+	EventType   EventType `gorm:"type:varchar(255);default:open" json:"event_type" validate:"required,max=255,oneof=open membersOnly"`
 	IsRecurring bool      `gorm:"not null;type:bool;default:false" json:"is_recurring" validate:"-"`
 
 	ParentEvent  *uuid.UUID     `gorm:"foreignKey:ParentEvent" json:"-" validate:"uuid4"`
@@ -71,7 +71,7 @@ type EventInstanceException struct {
 }
 
 type CreateSeriesRequestBody struct {
-	RecurringType   RecurringType `json:"recurring_type" validate:"max=255"`
+	RecurringType   RecurringType `json:"recurring_type" validate:"max=255,oneof=daily weekly monthly"`
 	SeparationCount int           `json:"separation_count" validate:"min=0"`
 	MaxOccurrences  int           `json:"max_occurrences" validate:"min=2"`
 	DayOfWeek       int           `json:"day_of_week" validate:"min=1,max=7"`
@@ -87,7 +87,7 @@ type CreateEventRequestBody struct {
 	StartTime   time.Time `json:"start_time" validate:"required,ltecsfield=EndTime"`
 	EndTime     time.Time `json:"end_time" validate:"required,gtecsfield=StartTime"`
 	Location    string    `json:"location" validate:"required,max=255"`
-	EventType   EventType `json:"event_type" validate:"required,max=255"`
+	EventType   EventType `json:"event_type" validate:"required,max=255,oneof=open membersOnly"`
 	IsRecurring *bool     `json:"is_recurring" validate:"required"`
 
 	// TODO club/tag/notification logic
@@ -100,13 +100,13 @@ type CreateEventRequestBody struct {
 }
 
 type UpdateEventRequestBody struct {
-	Name      string    `json:"name" validate:"required,max=255"`
-	Preview   string    `json:"preview" validate:"required,max=255"`
-	Content   string    `json:"content" validate:"required,max=255"`
-	StartTime time.Time `json:"start_time" validate:"required,datetime,ltecsfield=EndTime"`
-	EndTime   time.Time `json:"end_time" validate:"required,datetime,gtecsfield=StartTime"`
-	Location  string    `json:"location" validate:"required,max=255"`
-	EventType EventType `gorm:"type:varchar(255);default:open" json:"event_type" validate:"required,max=255"`
+	Name      string    `json:"name" validate:"omitempty,max=255"`
+	Preview   string    `json:"preview" validate:"omitempty,max=255"`
+	Content   string    `json:"content" validate:"omitempty,max=255"`
+	StartTime time.Time `json:"start_time" validate:"omitempty,ltecsfield=EndTime"`
+	EndTime   time.Time `json:"end_time" validate:"omitempty,gtecsfield=StartTime"`
+	Location  string    `json:"location" validate:"omitempty,max=255"`
+	EventType EventType `gorm:"type:varchar(255);default:open" json:"event_type" validate:"omitempty,max=255,oneof=open membersOnly"`
 
 	RSVP         []User         `json:"-" validate:"-"`
 	Waitlist     []User         `json:"-" validate:"-"`
@@ -116,7 +116,7 @@ type UpdateEventRequestBody struct {
 }
 
 type UpdateSeriesRequestBody struct {
-	RecurringType   RecurringType `json:"recurring_type" validate:"max=255"`
+	RecurringType   RecurringType `json:"recurring_type" validate:"max=255,oneof=daily weekly monthly"`
 	SeparationCount int           `json:"separation_count" validate:"min=0"`
 	MaxOccurrences  int           `json:"max_occurrences" validate:"min=2"`
 	DayOfWeek       int           `json:"day_of_week" validate:"min=1,max=7"`

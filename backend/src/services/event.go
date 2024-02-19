@@ -48,8 +48,8 @@ func (e *EventService) GetEvents(limit string, page string) ([]models.Event, *er
 	return transactions.GetEvents(e.DB, *limitAsInt, offset)
 }
 
-// TODO: add logic for creating the []event here
 // TODO Q: should we always return a slice of events? or should we return a slice of events if it's a series and a single event if it's not?
+// right now we are always returning a slice
 func (e *EventService) CreateEvent(eventBody models.CreateEventRequestBody) ([]models.Event, *errors.Error) {
 	if err := e.Validate.Struct(eventBody); err != nil {
 		return nil, &errors.FailedToValidateEvent
@@ -127,12 +127,22 @@ func (e *EventService) UpdateEvent(id string, eventBody models.UpdateEventReques
 		return nil, &errors.FailedToValidateEvent
 	}
 
-	event, err := utilities.MapRequestToModel(eventBody, &models.UpdateEventRequestBody{})
-	if err != nil {
-		return nil, &errors.FailedToMapRequestToModel
+	updatedEvent := &models.Event{
+		Name:      eventBody.Name,
+		Preview:   eventBody.Preview,
+		Content:   eventBody.Content,
+		StartTime: eventBody.StartTime,
+		EndTime:   eventBody.EndTime,
+		Location:  eventBody.Location,
+		EventType: eventBody.EventType,
 	}
 
-	return transactions.UpdateEvent(e.DB, *idAsUUID, *event)
+	// updatedEvent, err := utilities.MapRequestToModel(eventBody, &models.UpdateEventRequestBody{})
+	// if err != nil {
+	// 	return nil, &errors.FailedToMapRequestToModel
+	// }
+
+	return transactions.UpdateEvent(e.DB, *idAsUUID, *updatedEvent)
 }
 
 func (e *EventService) UpdateSeries(eventID string, seriesID string, seriesBody models.UpdateSeriesRequestBody) ([]models.Event, *errors.Error) {

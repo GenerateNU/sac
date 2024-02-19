@@ -112,7 +112,7 @@ func CreateEventSeries(db *gorm.DB, series models.Series) ([]models.Event, *erro
 	return series.Events, nil
 }
 
-func UpdateEvent(db *gorm.DB, id uuid.UUID, event models.UpdateEventRequestBody) (*models.Event, *errors.Error) {
+func UpdateEvent(db *gorm.DB, id uuid.UUID, event models.Event) (*models.Event, *errors.Error) {
 	if err := db.Model(&models.Event{}).Where("id = ?", id).Updates(event).Error; err != nil {
 		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &errors.UserNotFound

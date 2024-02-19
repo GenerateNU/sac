@@ -20,7 +20,7 @@ func Event(router fiber.Router, eventService services.EventServiceInterface) {
 
 	eventID.Get("/", eventController.GetEvent)
 	eventID.Get("/series", eventController.GetSeriesByEventID)
-	events.Patch("/", eventController.UpdateEvent)
+	eventID.Patch("/", eventController.UpdateEvent)
 	eventID.Delete("/", eventController.DeleteEvent)
 	eventID.Delete("/series", eventController.DeleteSeriesByEventID)
 
