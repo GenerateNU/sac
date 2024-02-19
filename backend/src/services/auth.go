@@ -1,8 +1,6 @@
 package services
 
 import (
-	"fmt"
-
 	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
@@ -101,7 +99,6 @@ func (a *AuthService) UpdatePassword(id string, userBody models.UpdatePasswordRe
 
 	correct, passwordErr := auth.ComparePasswordAndHash(userBody.OldPassword, passwordHash)
 	if passwordErr != nil {
-		fmt.Println("err", passwordErr)
 		return &errors.FailedToValidateUser
 	}
 
