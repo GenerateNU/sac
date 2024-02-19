@@ -6,7 +6,7 @@ on:
       - "cli/**"
       - ".github/workflows/cli_codeql.yml"
   pull_request:
-    types: opened
+    types: [opened]
     paths:
       - "cli/**"
       - ".github/workflows/cli_codeql.yml"

@@ -6,7 +6,7 @@ on:
       - "backend/**"
       - ".github/workflows/backend_codeql.yml"
   pull_request:
-    types: opened
+    types: [opened]
     paths:
       - "backend/**"
       - ".github/workflows/backend_codeql.yml"
