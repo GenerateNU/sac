@@ -39,7 +39,7 @@ func (a *AuthService) Me(id string) (*models.User, *errors.Error) {
 
 	user, err := transactions.GetUser(a.DB, *idAsUint)
 	if err != nil {
-		return nil, &errors.UserNotFound
+		return nil, err
 	}
 
 	return user, nil
@@ -52,15 +52,11 @@ func (a *AuthService) Login(userBody models.LoginUserResponseBody) (*models.User
 
 	user, err := transactions.GetUserByEmail(a.DB, userBody.Email)
 	if err != nil {
-		return nil, &errors.UserNotFound
+		return nil, err
 	}
 
 	correct, passwordErr := auth.ComparePasswordAndHash(userBody.Password, user.PasswordHash)
-	if passwordErr != nil {
-		return nil, &errors.FailedToValidateUser
-	}
-
-	if !correct {
+	if passwordErr != nil || !correct {
 		return nil, &errors.FailedToValidateUser
 	}
 
@@ -75,7 +71,7 @@ func (a *AuthService) GetRole(id string) (*models.UserRole, *errors.Error) {
 
 	user, err := transactions.GetUser(a.DB, *idAsUint)
 	if err != nil {
-		return nil, &errors.UserNotFound
+		return nil, err
 	}
 
 	role := user.Role
@@ -96,16 +92,12 @@ func (a *AuthService) UpdatePassword(id string, userBody models.UpdatePasswordRe
 
 	passwordHash, err := transactions.GetUserPasswordHash(a.DB, *idAsUint)
 	if err != nil {
-		return &errors.UserNotFound
+		return err
 	}
 
 	correct, passwordErr := auth.ComparePasswordAndHash(userBody.OldPassword, passwordHash)
-	if passwordErr != nil {
+	if passwordErr != nil || !correct {
 		fmt.Println("err", passwordErr)
-		return &errors.FailedToValidateUser
-	}
-
-	if !correct {
 		return &errors.FailedToValidateUser
 	}
 
