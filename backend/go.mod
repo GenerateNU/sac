@@ -3,26 +3,28 @@ module github.com/GenerateNU/sac/backend
 go 1.22.0
 
 require (
-	github.com/garrettladley/mattress v0.2.2
+	github.com/garrettladley/mattress v0.3.2
 	github.com/go-playground/validator/v10 v10.18.0
 	github.com/goccy/go-json v0.10.2
 	github.com/gofiber/fiber/v2 v2.52.0
 	github.com/gofiber/swagger v1.0.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.6.0
+	github.com/h2non/gock v1.2.0
 	github.com/huandu/go-assert v1.1.6
 	github.com/mcnijman/go-emailaddress v1.1.1
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/spf13/viper v1.18.2
 	github.com/swaggo/swag v1.16.3
-	gorm.io/driver/postgres v1.5.4
-	gorm.io/gorm v1.25.6
+	golang.org/x/crypto v0.19.0
+	golang.org/x/text v0.14.0
+	gorm.io/driver/postgres v1.5.6
+	gorm.io/gorm v1.25.7
 )
 
 require (
 	github.com/awnumar/memcall v0.2.0 // indirect
 	github.com/awnumar/memguard v0.22.4 // indirect
-	github.com/h2non/gock v1.2.0 // indirect
 	github.com/h2non/parth v0.0.0-20190131123155-b4df798d6542 // indirect
 )
 
@@ -55,8 +57,6 @@ require (
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
-	github.com/awnumar/memcall v0.2.0 // indirect
-	github.com/awnumar/memguard v0.22.4 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect

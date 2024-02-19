@@ -133,5 +133,5 @@ func (c *Club) Namespace() string {
 }
 
 func (c *Club) EmbeddingString() string {
-	return c.Name + " " + c.Name + " " + c.Name + " " + c.Name + " " + c.Description
+	return fmt.Sprintf("%s %s %s %s %s", c.Name, c.Name, c.Name, c.Name, c.Description)
 }
