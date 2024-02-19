@@ -94,7 +94,7 @@ func (a *AuthService) UpdatePassword(id string, userBody models.UpdatePasswordRe
 	}
 
 	correct, passwordErr := auth.ComparePasswordAndHash(userBody.OldPassword, passwordHash)
-	if passwordErr != nil {
+	if passwordErr != nil || !correct {
 		return &errors.FailedToValidateUser
 	}
 
