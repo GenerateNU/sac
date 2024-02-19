@@ -49,7 +49,7 @@ func (cat *CategoryController) CreateCategory(c *fiber.Ctx) error {
 }
 
 // GetCategories godoc
-// 
+//
 // @Summary		Retrieve all categories
 // @Description	Retrieves all categories
 // @ID			get-categories

@@ -16,7 +16,6 @@ func NewCategoryTagController(categoryTagService services.CategoryTagServiceInte
 	return &CategoryTagController{categoryTagService: categoryTagService}
 }
 
-
 // GetTagsByCategory godoc
 //
 // @Summary		Retrieve all tags by category
