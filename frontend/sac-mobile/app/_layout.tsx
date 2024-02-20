@@ -62,7 +62,6 @@ function RootLayoutNav() {
                 login({ accessToken, refreshToken }, user);
             }
 
-            console.log('accessToken', accessToken);
         };
 
         checkLoginStatus();
@@ -77,8 +76,6 @@ function RootLayoutNav() {
             router.push('/(app)/');
         }
     }, [isLoggedIn]);
-
-    console.log('isLoggedIn', isLoggedIn);
 
     return (
         <Stack>
