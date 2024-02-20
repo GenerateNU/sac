@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { Tokens, User } from '@/types/user';
+import { College, Tokens, User, Year } from '@/types/user';
 import { API_BASE_URL } from '@/utils/const';
 
 /**
@@ -55,7 +55,9 @@ export const register = async (
     firstName: string,
     lastName: string,
     email: string,
-    password: string
+    password: string,
+    college: College,
+    year: Year
 ): Promise<User> => {
     try {
         const response = await axios.post(`${API_BASE_URL}/users/`, {
@@ -63,8 +65,8 @@ export const register = async (
             lastName,
             email,
             password,
-            college: 'KKCS',
-            year: '3'
+            college,
+            year
         });
         return response.data;
     } catch (error) {
