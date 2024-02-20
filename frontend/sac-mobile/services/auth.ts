@@ -64,11 +64,11 @@ export const register = async (
             email,
             password,
             college: 'KKCS',
-            year: '3',
+            year: '3'
         });
         return response.data;
     } catch (error) {
         console.error(error);
         throw new Error('Error registering');
     }
-}
+};
