@@ -4881,21 +4881,6 @@ expo@~50.0.7:
   version "50.0.7"
   resolved "https://registry.yarnpkg.com/expo/-/expo-50.0.7.tgz#d32e6f05e03e7b97d53571f5b3a453a1c4d72fde"
   integrity sha512-lTqIrKOUTKHLdTuAaJzZihi1v7F8Ix1dOXVWMpToDy9zPC/s+fet0fbyXdFUxYsCUyuEDIB9tvejrTYZk8Hm0Q==
-    "@babel/runtime" "^7.20.0"
-    "@expo/cli" "0.17.5"
-    "@expo/config" "8.5.4"
-    "@expo/config-plugins" "7.8.4"
-    "@expo/metro-config" "0.17.4"
-    "@expo/vector-icons" "^14.0.0"
-    babel-preset-expo "~10.0.1"
-    expo-asset "~9.0.2"
-    expo-file-system "~16.0.6"
-    expo-font "~11.10.3"
-    expo-keep-awake "~12.8.2"
-    expo-modules-autolinking "1.10.3"
-    expo-modules-core "1.11.9"
-    fbemitter "^3.0.0"
-    whatwg-url-without-unicode "8.0.0-3"
 
 extend@^3.0.1:
   version "3.0.2"
