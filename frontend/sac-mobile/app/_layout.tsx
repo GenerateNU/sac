@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { View } from 'react-native';
 
 import { useFonts } from 'expo-font';
 import { Stack, router } from 'expo-router';
