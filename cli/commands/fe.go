@@ -10,21 +10,21 @@ import (
 
 func RunFrontendCommand() *cli.Command {
 	command := cli.Command{
-		Name:  "fe",
-		Usage: "Run the frontend",
+		Name:     "fe",
+		Usage:    "Run the frontend",
 		Category: "Development",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-                Name:    "target",
-                Aliases: []string{"t"},
-                Value:   "mobile",
-                Usage:   "Run a specific frontend type (web or mobile)",
-            },
+				Name:    "target",
+				Aliases: []string{"t"},
+				Value:   "mobile",
+				Usage:   "Run a specific frontend type (web or mobile)",
+			},
 			&cli.StringFlag{
-				Name:  "platform",
+				Name:    "platform",
 				Aliases: []string{"p"},
-				Usage: "Run a specific platform for mobile frontend",
-				Value: "ios",
+				Usage:   "Run a specific platform for mobile frontend",
+				Value:   "ios",
 			},
 		},
 		Action: func(c *cli.Context) error {
@@ -33,10 +33,9 @@ func RunFrontendCommand() *cli.Command {
 			}
 
 			target := c.String("target")
-            if target != "web" && target != "mobile" {
-                return cli.Exit("Invalid frontend type: must be 'web' or 'mobile'", 1)
-            }
-
+			if target != "web" && target != "mobile" {
+				return cli.Exit("Invalid frontend type: must be 'web' or 'mobile'", 1)
+			}
 
 			err := RunFE(c.String("type"), c.String("platform"))
 			if err != nil {
@@ -62,18 +61,18 @@ func RunFE(feType string, platform string) error {
 }
 
 func RunMobileFE(platform string) error {
-    mobileCmd := exec.Command("yarn", "run", platform)
-    mobileCmd.Dir = FRONTEND_DIR + "/sac-mobile"
+	mobileCmd := exec.Command("yarn", "run", platform)
+	mobileCmd.Dir = FRONTEND_DIR + "/sac-mobile"
 
-    mobileCmd.Stdout = os.Stdout
-    mobileCmd.Stderr = os.Stderr
-    mobileCmd.Stdin = os.Stdin 
+	mobileCmd.Stdout = os.Stdout
+	mobileCmd.Stderr = os.Stderr
+	mobileCmd.Stdin = os.Stdin
 
-    if err := mobileCmd.Run(); err != nil {
-        return err
-    }
+	if err := mobileCmd.Run(); err != nil {
+		return err
+	}
 
-    return nil
+	return nil
 }
 
 func RunWebFE() error {
