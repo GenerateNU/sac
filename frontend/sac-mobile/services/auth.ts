@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { Tokens, User } from '@/types/user';
+import { College, Tokens, User, Year } from '@/types/user';
 import { API_BASE_URL } from '@/utils/const';
 
 /**
@@ -40,5 +40,37 @@ export const loginByEmail = async (
     } catch (error) {
         console.error(error);
         throw new Error('Error logging in');
+    }
+};
+
+/**
+ * Registers the user with the given first name, last name, email, and password.
+ * @param firstName The first name of the user.
+ * @param lastName The last name of the user.
+ * @param email The email of the user.
+ * @param password The password of the user.
+ * @returns The user that was registered.
+ */
+export const register = async (
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: string,
+    college: College,
+    year: Year
+): Promise<User> => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/users/`, {
+            firstName,
+            lastName,
+            email,
+            password,
+            college,
+            year
+        });
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Error registering');
     }
 };

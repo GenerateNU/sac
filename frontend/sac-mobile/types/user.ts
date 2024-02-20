@@ -12,6 +12,22 @@ export const userSchema = z.object({
     updatedAt: z.date()
 });
 
+export const collegeSchema = z.enum([
+    'CAMD',
+    'DMSB',
+    'KCCS',
+    'CE',
+    'BCHS',
+    'SL',
+    'CPS',
+    'CS',
+    'CSSH'
+]);
+export type College = z.infer<typeof collegeSchema>;
+
+export const yearSchema = z.enum(['1', '2', '3', '4', '5']);
+export type Year = z.infer<typeof yearSchema>;
+
 export type User = z.infer<typeof userSchema>;
 
 export type Tokens = {

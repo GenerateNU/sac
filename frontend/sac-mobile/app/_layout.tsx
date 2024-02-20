@@ -61,8 +61,6 @@ function RootLayoutNav() {
             if (accessToken && refreshToken) {
                 login({ accessToken, refreshToken }, user);
             }
-
-            console.log('accessToken', accessToken);
         };
 
         checkLoginStatus();
@@ -73,12 +71,11 @@ function RootLayoutNav() {
 
         if (!isLoggedIn) {
             router.push('/(auth)/login');
-        } else {
-            router.push('/(app)/');
+            return;
         }
-    }, [isLoggedIn]);
 
-    console.log('isLoggedIn', isLoggedIn);
+        router.push('/(app)/');
+    }, [isLoggedIn]);
 
     return (
         <Stack>

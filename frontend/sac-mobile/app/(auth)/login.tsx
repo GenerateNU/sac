@@ -37,7 +37,6 @@ const Login = () => {
                 data.password
             );
             login(tokens, user);
-            console.log(`Logged in, ${user}, ${tokens}`);
             router.push('/(app)/');
         } catch (e: unknown) {
             if (e instanceof ZodError) {

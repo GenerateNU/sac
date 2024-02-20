@@ -64,7 +64,6 @@ const Register = () => {
                     )}
                     name="firstName"
                     rules={{ required: 'First name is required' }}
-                    defaultValue=""
                 />
                 {errors.firstName && <Text>{errors.firstName.message}</Text>}
             </View>
@@ -84,7 +83,6 @@ const Register = () => {
                     )}
                     name="lastName"
                     rules={{ required: 'Last name is required' }}
-                    defaultValue=""
                 />
                 {errors.lastName && <Text>{errors.lastName.message}</Text>}
             </View>
@@ -104,7 +102,6 @@ const Register = () => {
                     )}
                     name="email"
                     rules={{ required: 'Email is required' }}
-                    defaultValue=""
                 />
                 {errors.email && <Text>{errors.email.message}</Text>}
             </View>
@@ -125,7 +122,6 @@ const Register = () => {
                     )}
                     name="password"
                     rules={{ required: 'Password is required' }}
-                    defaultValue=""
                 />
                 {errors.password && <Text>{errors.password.message}</Text>}
             </View>
