@@ -71,9 +71,10 @@ function RootLayoutNav() {
 
         if (!isLoggedIn) {
             router.push('/(auth)/login');
-        } else {
-            router.push('/(app)/');
+            return;
         }
+
+        router.push('/(app)/');
     }, [isLoggedIn]);
 
     return (
