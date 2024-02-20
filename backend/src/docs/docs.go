@@ -11,14 +11,179 @@ const docTemplate = `{
         "title": "{{.Title}}",
         "contact": {
             "name": "David Oduneye and Garrett Ladley",
-            "email": "oduneye.d@northeastern.edu and ladley.g@northeastern.edu"
+            "email": "generatesac@gmail.com"
         },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/auth/login": {
+            "post": {
+                "description": "Logs in a user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Logs in a user",
+                "operationId": "login-user",
+                "parameters": [
+                    {
+                        "description": "User Body",
+                        "name": "userBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "failed to parse body",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "failed to login user",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/logout": {
+            "get": {
+                "description": "Logs out a user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Logs out a user",
+                "operationId": "logout-user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "failed to logout user",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/me": {
+            "get": {
+                "description": "Returns the current user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Gets the current user",
+                "operationId": "get-current-user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "401": {
+                        "description": "failed to get current user",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/refresh": {
+            "get": {
+                "description": "Refreshes a user's access token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Refreshes a user's access token",
+                "operationId": "refresh-user",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "failed to refresh access token",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/category/": {
+            "get": {
+                "description": "Retrieves all existing categories",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "category"
+                ],
+                "summary": "Retrieve all categories",
+                "operationId": "get-categories",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Category"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "unable to retrieve categories",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Creates a category that is used to group tags",
                 "produces": [
@@ -44,6 +209,146 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "failed to create category",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/category/{id}": {
+            "get": {
+                "description": "Retrieve a category by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "category"
+                ],
+                "summary": "Retrieve a category",
+                "operationId": "get-category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Category"
+                        }
+                    },
+                    "400": {
+                        "description": "failed to validate id",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "faied to find category",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "failed to retrieve category",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a category by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "category"
+                ],
+                "summary": "Delete a category",
+                "operationId": "delete-category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "no content",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "failed to validate id",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "failed to find category",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "failed to delete category",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Updates a category",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "category"
+                ],
+                "summary": "Updates a category",
+                "operationId": "update-category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Category"
+                        }
+                    },
+                    "400": {
+                        "description": "failed to validate id",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "failed to find category",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "failed to update category",
                         "schema": {
                             "type": "string"
                         }
@@ -152,7 +457,10 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": "No Content"
+                        "description": "no content",
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     "400": {
                         "description": "failed to validate id",
@@ -161,7 +469,7 @@ const docTemplate = `{
                         }
                     },
                     "404": {
-                        "description": "failed to find tag",
+                        "description": "tag not found",
                         "schema": {
                             "type": "string"
                         }
@@ -226,15 +534,88 @@ const docTemplate = `{
         },
         "/api/v1/users/": {
             "get": {
-                "description": "Returns specific user",
+                "description": "Returns all users",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "user"
                 ],
-                "summary": "Gets specific user",
-                "operationId": "get-user",
+                "summary": "Gets all users",
+                "operationId": "get-all-users",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.User"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "failed to get all users",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Creates a User",
+                "operationId": "create-user",
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "failed to create user",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/{id}": {
+            "get": {
+                "description": "Returns a user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Gets a user",
+                "operationId": "get-user-by-id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -249,13 +630,93 @@ const docTemplate = `{
                         }
                     },
                     "404": {
-                        "description": "failed to find user",
+                        "description": "user not found",
                         "schema": {
                             "type": "string"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "failed to get user",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Returns nil",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Deletes the given userID",
+                "operationId": "delete-user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "no content",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "failed to get all users",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Updates a user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Updates a user",
+                "operationId": "update-user-by-id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "failed to validate id",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "user not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "failed to hash password",
                         "schema": {
                             "type": "string"
                         }
@@ -268,20 +729,20 @@ const docTemplate = `{
         "models.Category": {
             "type": "object",
             "required": [
-                "category_name"
+                "name"
             ],
             "properties": {
-                "category_name": {
-                    "type": "string",
-                    "maxLength": 255
-                },
                 "created_at": {
                     "type": "string",
                     "example": "2023-09-20T16:34:50Z"
                 },
                 "id": {
-                    "type": "integer",
-                    "example": 1
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 255
                 },
                 "updated_at": {
                     "type": "string",
@@ -333,16 +794,15 @@ const docTemplate = `{
             ],
             "properties": {
                 "category_id": {
-                    "type": "integer",
-                    "minimum": 1
+                    "type": "string"
                 },
                 "created_at": {
                     "type": "string",
                     "example": "2023-09-20T16:34:50Z"
                 },
                 "id": {
-                    "type": "integer",
-                    "example": 1
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "name": {
                     "type": "string",
@@ -362,7 +822,7 @@ const docTemplate = `{
                 "first_name",
                 "last_name",
                 "nuid",
-                "user_role",
+                "role",
                 "year"
             ],
             "properties": {
@@ -387,8 +847,8 @@ const docTemplate = `{
                     "maxLength": 255
                 },
                 "id": {
-                    "type": "integer",
-                    "example": 1
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
                 "last_name": {
                     "type": "string",
@@ -397,17 +857,20 @@ const docTemplate = `{
                 "nuid": {
                     "type": "string"
                 },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                },
-                "user_role": {
-                    "maxLength": 255,
+                "role": {
+                    "enum": [
+                        "super",
+                        "student"
+                    ],
                     "allOf": [
                         {
                             "$ref": "#/definitions/models.UserRole"
                         }
                     ]
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2023-09-20T16:34:50Z"
                 },
                 "year": {
                     "maximum": 6,
@@ -424,12 +887,10 @@ const docTemplate = `{
             "type": "string",
             "enum": [
                 "super",
-                "clubAdmin",
                 "student"
             ],
             "x-enum-varnames": [
                 "Super",
-                "ClubAdmin",
                 "Student"
             ]
         },

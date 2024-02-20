@@ -2,20 +2,20 @@ basePath: /api/v1
 definitions:
   models.Category:
     properties:
-      category_name:
-        maxLength: 255
-        type: string
       created_at:
         example: "2023-09-20T16:34:50Z"
         type: string
       id:
-        example: 1
-        type: integer
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      name:
+        maxLength: 255
+        type: string
       updated_at:
         example: "2023-09-20T16:34:50Z"
         type: string
     required:
-    - category_name
+    - name
     type: object
   models.College:
     enum:
@@ -52,14 +52,13 @@ definitions:
   models.Tag:
     properties:
       category_id:
-        minimum: 1
-        type: integer
+        type: string
       created_at:
         example: "2023-09-20T16:34:50Z"
         type: string
       id:
-        example: 1
-        type: integer
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
       name:
         maxLength: 255
         type: string
@@ -86,20 +85,22 @@ definitions:
         maxLength: 255
         type: string
       id:
-        example: 1
-        type: integer
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
       last_name:
         maxLength: 255
         type: string
       nuid:
         type: string
+      role:
+        allOf:
+        - $ref: '#/definitions/models.UserRole'
+        enum:
+        - super
+        - student
       updated_at:
         example: "2023-09-20T16:34:50Z"
         type: string
-      user_role:
-        allOf:
-        - $ref: '#/definitions/models.UserRole'
-        maxLength: 255
       year:
         allOf:
         - $ref: '#/definitions/models.Year'
@@ -111,18 +112,16 @@ definitions:
     - first_name
     - last_name
     - nuid
-    - user_role
+    - role
     - year
     type: object
   models.UserRole:
     enum:
     - super
-    - clubAdmin
     - student
     type: string
     x-enum-varnames:
     - Super
-    - ClubAdmin
     - Student
   models.Year:
     enum:
@@ -143,13 +142,123 @@ definitions:
 host: 127.0.0.1:8080
 info:
   contact:
-    email: oduneye.d@northeastern.edu and ladley.g@northeastern.edu
+    email: generatesac@gmail.com
     name: David Oduneye and Garrett Ladley
   description: Backend Server for SAC App
   title: SAC API
   version: "1.0"
 paths:
+  /api/v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Logs in a user
+      operationId: login-user
+      parameters:
+      - description: User Body
+        in: body
+        name: userBody
+        required: true
+        schema:
+          items:
+            type: string
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+        "400":
+          description: failed to parse body
+          schema:
+            type: string
+        "401":
+          description: failed to login user
+          schema:
+            type: string
+      summary: Logs in a user
+      tags:
+      - user
+  /api/v1/auth/logout:
+    get:
+      consumes:
+      - application/json
+      description: Logs out a user
+      operationId: logout-user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "401":
+          description: failed to logout user
+          schema:
+            type: string
+      summary: Logs out a user
+      tags:
+      - user
+  /api/v1/auth/me:
+    get:
+      description: Returns the current user
+      operationId: get-current-user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "401":
+          description: failed to get current user
+          schema:
+            type: string
+      summary: Gets the current user
+      tags:
+      - user
+  /api/v1/auth/refresh:
+    get:
+      consumes:
+      - application/json
+      description: Refreshes a user's access token
+      operationId: refresh-user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+        "401":
+          description: failed to refresh access token
+          schema:
+            type: string
+      summary: Refreshes a user's access token
+      tags:
+      - user
   /api/v1/category/:
+    get:
+      description: Retrieves all existing categories
+      operationId: get-categories
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Category'
+            type: array
+        "500":
+          description: unable to retrieve categories
+          schema:
+            type: string
+      summary: Retrieve all categories
+      tags:
+      - category
     post:
       description: Creates a category that is used to group tags
       operationId: create-category
@@ -169,6 +278,100 @@ paths:
           schema:
             type: string
       summary: Create a category
+      tags:
+      - category
+  /api/v1/category/{id}:
+    delete:
+      description: Delete a category by ID
+      operationId: delete-category
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: no content
+          schema:
+            type: string
+        "400":
+          description: failed to validate id
+          schema:
+            type: string
+        "404":
+          description: failed to find category
+          schema:
+            type: string
+        "500":
+          description: failed to delete category
+          schema:
+            type: string
+      summary: Delete a category
+      tags:
+      - category
+    get:
+      description: Retrieve a category by its ID
+      operationId: get-category
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Category'
+        "400":
+          description: failed to validate id
+          schema:
+            type: string
+        "404":
+          description: faied to find category
+          schema:
+            type: string
+        "500":
+          description: failed to retrieve category
+          schema:
+            type: string
+      summary: Retrieve a category
+      tags:
+      - category
+    patch:
+      description: Updates a category
+      operationId: update-category
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Category'
+        "400":
+          description: failed to validate id
+          schema:
+            type: string
+        "404":
+          description: failed to find category
+          schema:
+            type: string
+        "500":
+          description: failed to update category
+          schema:
+            type: string
+      summary: Updates a category
       tags:
       - category
   /api/v1/tags/:
@@ -207,13 +410,15 @@ paths:
         type: integer
       responses:
         "204":
-          description: No Content
+          description: no content
+          schema:
+            type: string
         "400":
           description: failed to validate id
           schema:
             type: string
         "404":
-          description: failed to find tag
+          description: tag not found
           schema:
             type: string
         "500":
@@ -289,8 +494,80 @@ paths:
       - tag
   /api/v1/users/:
     get:
-      description: Returns specific user
-      operationId: get-user
+      description: Returns all users
+      operationId: get-all-users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "500":
+          description: failed to get all users
+          schema:
+            type: string
+      summary: Gets all users
+      tags:
+      - user
+    post:
+      consumes:
+      - application/json
+      description: Creates a user
+      operationId: create-user
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: failed to create user
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Creates a User
+      tags:
+      - user
+  /api/v1/users/{id}:
+    delete:
+      description: Returns nil
+      operationId: delete-user
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: no content
+          schema:
+            type: string
+        "500":
+          description: failed to get all users
+          schema:
+            type: string
+      summary: Deletes the given userID
+      tags:
+      - user
+    get:
+      description: Returns a user
+      operationId: get-user-by-id
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -303,14 +580,45 @@ paths:
           schema:
             type: string
         "404":
-          description: failed to find user
+          description: user not found
           schema:
             type: string
         "500":
-          description: Internal Server Error
+          description: failed to get user
           schema:
             type: string
-      summary: Gets specific user
+      summary: Gets a user
+      tags:
+      - user
+    patch:
+      description: Updates a user
+      operationId: update-user-by-id
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: failed to validate id
+          schema:
+            type: string
+        "404":
+          description: user not found
+          schema:
+            type: string
+        "500":
+          description: failed to hash password
+          schema:
+            type: string
+      summary: Updates a user
       tags:
       - user
 swagger: "2.0"
