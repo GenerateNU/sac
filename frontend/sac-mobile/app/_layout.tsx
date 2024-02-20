@@ -61,7 +61,6 @@ function RootLayoutNav() {
             if (accessToken && refreshToken) {
                 login({ accessToken, refreshToken }, user);
             }
-
         };
 
         checkLoginStatus();
