@@ -1,4 +1,16 @@
-# SAC Club Scraper
+
+
+<h1 align="center">SAC Club Scraper</h1>
+
+<br />
+
+<div align="center">
+  <!-- Github Actions -->
+  <a href="https://github.com/GenerateNU/sac/actions/workflows/club_scraper.yml">
+    <img src="https://github.com/GenerateNU/sac/actions/workflows/club_scraper.yml/badge.svg"
+      alt="Club Scraper Workflow Status" />
+  </a>
+</div>
 
 A Rust CLI that scrapes Clubs from to be used as mock data for natural language search.
 
