@@ -47,6 +47,10 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to get admin ids",
 	}
+	FailedToVectorizeClub = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to vectorize club",
+	}
 	FailedToGetClubFollowers = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to get club followers",
@@ -54,5 +58,9 @@ var (
 	FailedToGetClubMembers = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to get club members",
+	}
+	FailedToGetClubEvents = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get club events",
 	}
 )

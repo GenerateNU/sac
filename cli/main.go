@@ -21,9 +21,9 @@ func main() {
 			commands.DropCommand(),
 			commands.RunBackendCommand(),
 			commands.RunFrontendCommand(),
-			commands.TestCommand(),   // TODO: frontend tests
-			commands.FormatCommand(), 
-			commands.LintCommand(),  
+			commands.TestCommand(), // TODO: frontend tests
+			commands.FormatCommand(),
+			commands.LintCommand(),
 		},
 	}
 	err := app.Run(os.Args)

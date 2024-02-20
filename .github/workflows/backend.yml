@@ -8,7 +8,7 @@ on:
       - backend/**
       - .github/workflows/backend.yml
   pull_request:
-    types: opened
+    types: [opened]
     paths:
       - backend/**
       - .github/workflows/backend.yml
@@ -27,7 +27,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version: "1.21"
+          go-version: "1.22"
       - name: Cache Go Modules
         uses: actions/cache@v3
         with:
@@ -56,7 +56,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v4
         with:
-          go-version: "1.21"
+          go-version: "1.22"
           cache: false
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
@@ -81,7 +81,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version: "1.21"
+          go-version: "1.22"
       - name: Cache Go Modules
         uses: actions/cache@v3
         with:

@@ -69,6 +69,10 @@ func (app TestApp) Send(request TestRequest) (*http.Response, error) {
 			Name:  "access_token",
 			Value: app.TestUser.AccessToken,
 		})
+		req.AddCookie(&http.Cookie{
+			Name:  "refresh_token",
+			Value: app.TestUser.RefreshToken,
+		})
 	}
 
 	resp, err := app.App.Test(req)
