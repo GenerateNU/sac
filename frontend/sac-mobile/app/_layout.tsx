@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
-import { usePathname, Redirect } from 'expo-router';
+import { View } from 'react-native';
 
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useFonts } from 'expo-font';
 import { Stack, router } from 'expo-router';
-import { deleteItemAsync, getItemAsync } from 'expo-secure-store';
+import { getItemAsync } from 'expo-secure-store';
 import * as SplashScreen from 'expo-splash-screen';
+
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 import { useAuthStore } from '@/hooks/use-auth';
 import { User } from '@/types/user';
@@ -49,13 +50,9 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
     const { isLoggedIn, login } = useAuthStore();
-    const previousRoute = usePathname();
 
     useEffect(() => {
         const checkLoginStatus = async () => {
-            // deleteItemAsync('accessToken');
-            // deleteItemAsync('refreshToken');
-            // deleteItemAsync('user');
             const accessToken = await getItemAsync('accessToken');
             const refreshToken = await getItemAsync('refreshToken');
             const savedUser = await getItemAsync('user');
@@ -63,7 +60,6 @@ function RootLayoutNav() {
             const user: User = savedUser ? JSON.parse(savedUser) : null;
 
             if (accessToken && refreshToken) {
-                // Update the Zustand store on successful login
                 login({ accessToken, refreshToken }, user);
             }
 
@@ -71,22 +67,18 @@ function RootLayoutNav() {
         };
 
         checkLoginStatus();
-    }, [login]); // Only depend on login
+    }, [login]);
 
     useEffect(() => {
+        if (isLoggedIn === null) return;
+
         if (!isLoggedIn) {
-            // Store the previous route before redirecting to the login page
-            //     const currentRoute = navigationRef.getCurrentRoute();
-            //     console.log('currentRoute', currentRoute);
             router.push('/(auth)/login');
-            // } else if (previousRoute.current) {
-            //     // Redirect back to the previous route if available
-            //     router.push(previousRoute.current);
+        } else {
+            router.push('/(app)/');
         }
     }, [isLoggedIn]);
 
-
-    // Log out console to check if the isLoggedIn state is updating correctly
     console.log('isLoggedIn', isLoggedIn);
 
     return (

@@ -1,6 +1,7 @@
-import { useAuthStore } from '@/hooks/use-auth';
 import React from 'react';
 import { Button, Text, View } from 'react-native';
+
+import { useAuthStore } from '@/hooks/use-auth';
 
 const Home = () => {
     const { logout } = useAuthStore();

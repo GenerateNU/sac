@@ -3,6 +3,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { Alert, Button, Text, TextInput, View } from 'react-native';
 
 import { router } from 'expo-router';
+
 import { ZodError, z } from 'zod';
 
 type RegisterFormData = {
@@ -33,7 +34,6 @@ const Register = () => {
     } = useForm<RegisterFormData>();
 
     const onSubmit = (data: RegisterFormData) => {
-        // Validate form data using Zod schema
         try {
             registerSchema.parse(data);
             Alert.alert('Form Submitted', JSON.stringify(data));

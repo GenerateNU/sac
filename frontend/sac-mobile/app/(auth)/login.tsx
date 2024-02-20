@@ -3,6 +3,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { Alert, Button, Text, TextInput, View } from 'react-native';
 
 import { router } from 'expo-router';
+
 import { ZodError, z } from 'zod';
 
 import { useAuthStore } from '@/hooks/use-auth';
@@ -55,7 +56,7 @@ const Login = () => {
                     control={control}
                     render={({ field: { onChange, value } }) => (
                         <TextInput
-                            autoCapitalize='none'
+                            autoCapitalize="none"
                             autoCorrect={false}
                             className="p-2 border border-gray-300"
                             placeholder="ladley.g@northeastern.edu"
@@ -76,7 +77,7 @@ const Login = () => {
                     control={control}
                     render={({ field: { onChange, value } }) => (
                         <TextInput
-                            autoCapitalize='none'
+                            autoCapitalize="none"
                             autoCorrect={false}
                             className="p-2 border border-gray-300"
                             placeholder="Password"

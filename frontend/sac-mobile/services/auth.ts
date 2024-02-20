@@ -18,10 +18,8 @@ export const loginByEmail = async (
             email,
             password
         });
-        // response headers
         const cookies = response.headers['set-cookie'];
 
-        // extract tokens from cookies
         let accessToken = '';
         let refreshToken = '';
         cookies?.forEach((cookie: string) => {
@@ -33,10 +31,11 @@ export const loginByEmail = async (
             }
         });
 
-        console.log('accessToken', accessToken);
-        console.log('refreshToken', refreshToken);
-
         const user = response.data;
+
+        console.log('[auth.ts] accessToken', accessToken);
+        console.log('[auth.ts] refreshToken', refreshToken);
+
         return { user, tokens: { accessToken, refreshToken } };
     } catch (error) {
         console.error(error);
