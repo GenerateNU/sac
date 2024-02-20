@@ -6,7 +6,7 @@ use clap::Parser;
 #[command(author, version, about, long_about = None)]
 pub struct Args {
     /// Top N results to parse
-    #[clap(short, long, default_value = "2")]
+    #[clap(short, long, default_value = "1024")]
     pub top_n: usize,
     /// Output file
     #[clap(short, long, default_value = "mock.sql")]
