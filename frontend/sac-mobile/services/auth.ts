@@ -42,3 +42,33 @@ export const loginByEmail = async (
         throw new Error('Error logging in');
     }
 };
+
+/**
+ * Registers the user with the given first name, last name, email, and password.
+ * @param firstName The first name of the user.
+ * @param lastName The last name of the user.
+ * @param email The email of the user.
+ * @param password The password of the user.
+ * @returns The user that was registered.
+ */
+export const register = async (
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: string
+): Promise<User> => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/users/`, {
+            firstName,
+            lastName,
+            email,
+            password,
+            college: 'KKCS',
+            year: '3',
+        });
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Error registering');
+    }
+}
