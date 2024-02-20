@@ -8,7 +8,7 @@ use voca_rs::Voca;
 
 use crate::scraper::ScrapedClub;
 
-use crate::domain::category_tag::{Tag, TAGS};
+use crate::domain::tag::{Tag, TAGS};
 
 #[derive(Debug, PartialEq, EnumIter, Display)]
 pub enum RecruitmentCycle {
@@ -33,26 +33,26 @@ pub enum RecruitmentType {
 }
 
 #[derive(Debug)]
-pub struct Club<'a> {
-    pub name: &'a String,
-    pub preview: &'a String,
+pub struct Club {
+    pub name: String,
+    pub preview: String,
     pub description: String,
     pub num_members: usize,
     pub is_recruiting: bool,
     pub recruitment_cycle: RecruitmentCycle,
     pub recruitment_type: RecruitmentType,
-    pub tags: Vec<&'a Tag>,
+    pub tags: Vec<&'static &'static Tag>,
 }
 
-impl<'a> From<&'a ScrapedClub> for Club<'a> {
+impl<'a> From<&'a ScrapedClub> for Club {
     fn from(scraped: &'a ScrapedClub) -> Self {
         let mut rng = thread_rng();
 
         let num_tags = rng.gen_range(1..8);
 
         Club {
-            name: &scraped.name,
-            preview: &scraped.preview,
+            name: scraped.name.clone().replace("(Tentative) ", ""),
+            preview: scraped.preview.clone(),
             description: scraped.description._strip_tags().replace("&nbsp;", " "),
             num_members: rng.gen_range(1..1024),
             is_recruiting: rng.gen_bool(0.5),
