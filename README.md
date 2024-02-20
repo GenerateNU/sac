@@ -11,10 +11,6 @@
     <img src="https://github.com/GenerateNU/sac/actions/workflows/backend.yml/badge.svg"
       alt="Backend Workflow Status" />
   </a>
-  <a href="https://github.com/GenerateNU/sac/actions/workflows/mobile.yml">
-    <img src="https://github.com/GenerateNU/sac/actions/workflows/mobile.yml/badge.svg"
-      alt="Mobile Workflow Status" />
-  </a>
 
   <a href="https://github.com/GenerateNU/sac/actions/workflows/backend_codeql.yml">
     <img src="https://github.com/GenerateNU/sac/actions/workflows/backend_codeql.yml/badge.svg"
@@ -44,6 +40,11 @@
       alt="Mobile CodeQL Workflow Status" />
   </a>
 
+  <a href="https://github.com/GenerateNU/sac/actions/workflows/mobile.yml">
+    <img src="https://github.com/GenerateNU/sac/actions/workflows/mobile.yml/badge.svg"
+      alt="Mobile Workflow Status" />
+  </a>
+  
   <br />
   
   <a href="https://github.com/GenerateNU/sac/actions/workflows/web_codeql.yml">
