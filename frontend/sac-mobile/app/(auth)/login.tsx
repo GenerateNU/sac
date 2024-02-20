@@ -40,9 +40,9 @@ const Login = () => {
             router.push('/(app)/');
         } catch (e: unknown) {
             if (e instanceof ZodError) {
-                Alert.alert('Error 2', e.errors[0].message);
+                Alert.alert('Validation Error', e.errors[0].message); // use a better way to display errors
             } else {
-                Alert.alert('Error 1');
+                console.error('An unexpected error occurred:', e);
             }
         }
     };
