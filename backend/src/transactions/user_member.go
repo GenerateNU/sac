@@ -1,8 +1,6 @@
 package transactions
 
 import (
-	"slices"
-
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/google/uuid"
@@ -20,7 +18,12 @@ func CreateMember(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error
 		return err
 	}
 
-	if err := db.Model(&user).Association("Member").Append(club); err != nil {
+	// this doesnt mean the user is a member of the club, it could be empty
+	if err := db.Model(&user).Association("Member").Find(&club); err == nil {
+		return &errors.AlreadyMemberOfClub
+	}
+
+	if err := db.Model(&user).Association("Member").Append(&club); err != nil {
 		return &errors.FailedToUpdateUser
 	}
 
@@ -38,19 +41,27 @@ func DeleteMember(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error
 		return err
 	}
 
-	userMemberClubIDs := make([]uuid.UUID, len(user.Member))
-
-	for i, club := range user.Member {
-		userMemberClubIDs[i] = club.ID
-	}
-
-	if !slices.Contains(userMemberClubIDs, club.ID) {
+	if err := db.Model(&user).Association("Member").Find(&club); err != nil {
 		return &errors.UserNotMemberOfClub
 	}
 
-	if err := db.Model(&user).Association("Member").Delete(club); err != nil {
+	if err := db.Model(&user).Association("Member").Delete(&club); err != nil {
 		return &errors.FailedToUpdateUser
 	}
+
+	// userMemberClubIDs := make([]uuid.UUID, len(user.Member))
+
+	// for i, club := range user.Member {
+	// 	userMemberClubIDs[i] = club.ID
+	// }
+
+	// if !slices.Contains(userMemberClubIDs, club.ID) {
+	// 	return &errors.UserNotMemberOfClub
+	// }
+
+	// if err := db.Model(&user).Association("Member").Delete(club); err != nil {
+	// 	return &errors.FailedToUpdateUser
+	// }
 
 	return nil
 }

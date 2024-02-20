@@ -85,7 +85,6 @@ func MigrateDB(settings config.Settings, db *gorm.DB) error {
 		return err
 	}
 
-	// Check if the database already has a super user
 	var superUser models.User
 	if err := db.Where("role = ?", models.Super).First(&superUser).Error; err != nil {
 		if err := createSuperUser(settings, db); err != nil {
@@ -130,6 +129,27 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 		}
 
 		SuperUserUUID = superUser.ID
+
+		membership := models.Membership{
+			ClubID:         superClub.ID,
+			UserID:         superUser.ID,
+			MembershipType: models.MembershipTypeAdmin,
+		}
+
+		if err := tx.Create(&membership).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		follower := models.Follower{
+			ClubID: superClub.ID,
+			UserID: superUser.ID,
+		}
+
+		if err := tx.Create(&follower).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
 
 		return tx.Commit().Error
 	}

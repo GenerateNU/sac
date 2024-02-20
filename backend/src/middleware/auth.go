@@ -67,10 +67,6 @@ func (m *MiddlewareService) Authorize(requiredPermissions ...auth.Permission) fu
 			return c.Next()
 		}
 
-		if c.Cookies("access_token") == "" || c.Cookies("refresh_token") == "" {
-			return errors.Unauthorized.FiberError(c)
-		}
-
 		role, err := auth.GetRoleFromToken(c.Cookies("access_token"), m.AuthSettings.AccessKey)
 		if err != nil {
 			return errors.FailedToParseAccessToken.FiberError(c)

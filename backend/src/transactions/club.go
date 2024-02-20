@@ -67,7 +67,20 @@ func CreateClub(db *gorm.DB, userId uuid.UUID, club models.Club) (*models.Club, 
 		return nil, &errors.FailedToCreateClub
 	}
 
+	// TODO: remove this
 	if err := tx.Model(&club).Association("Admin").Append(user); err != nil {
+		tx.Rollback()
+		return nil, &errors.FailedToCreateClub
+	}
+
+	// add the user to the club's members as an admin
+	membership := models.Membership{
+		ClubID:         club.ID,
+		UserID:         user.ID,
+		MembershipType: models.MembershipTypeAdmin,
+	}
+
+	if err := tx.Create(&membership).Error; err != nil {
 		tx.Rollback()
 		return nil, &errors.FailedToCreateClub
 	}

@@ -113,7 +113,7 @@ func (a *AuthController) Refresh(c *fiber.Ctx) error {
 		return err.FiberError(c)
 	}
 
-	// Set the access token in the response (e.g., in a cookie or JSON response)
+	// Set the access token in the response
 	c.Cookie(auth.CreateCookie("access_token", *accessToken, time.Now().Add(time.Minute*60)))
 
 	return utilities.FiberMessage(c, fiber.StatusOK, "success")

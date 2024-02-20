@@ -93,14 +93,52 @@ type CreateUserTagsBody struct {
 	Tags []uuid.UUID `json:"tags" validate:"required"`
 }
 
-// create a user should make them join the sac club
 func (u *User) AfterCreate(tx *gorm.DB) (err error) {
-	sac := &Club{}
-	tx.Where("name = ?", "SAC").First(sac)
-	err = tx.Model(u).Association("Member").Append(sac)
-	if err != nil {
-		tx.Rollback()
-	}
+	if u.NUID != "000000000" {
+		sac := &Club{}
+		if err := tx.Where("name = ?", "SAC").First(sac).Error; err != nil {
+			return err
+		}
 
-	return err
+		if err := tx.Model(u).Association("Member").Append(sac); err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		if err := tx.Model(u).Association("Follower").Append(sac); err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		if err := tx.Model(&Club{}).Where("id = ?", sac.ID).Update("num_members", gorm.Expr("num_members + 1")).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+	return nil
+}
+
+func (u *User) AfterDelete(tx *gorm.DB) (err error) {
+	if u.NUID != "000000000" {
+		sac := &Club{}
+		if err := tx.Where("name = ?", "SAC").First(sac).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Model(u).Association("Member").Delete(sac); err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		if err := tx.Model(u).Association("Follower").Delete(sac); err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		if err := tx.Model(&Club{}).Where("id = ?", sac.ID).Update("num_members", gorm.Expr("num_members - 1")).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+	return nil
 }
