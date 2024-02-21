@@ -11,7 +11,7 @@ const docTemplate = `{
         "title": "{{.Title}}",
         "contact": {
             "name": "David Oduneye and Garrett Ladley",
-            "email": "oduneye.d@northeastern.edu and ladley.g@northeastern.edu"
+            "email": "generatesac@gmail.com"
         },
         "version": "{{.Version}}"
     },

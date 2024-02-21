@@ -727,7 +727,7 @@ definitions:
 host: 127.0.0.1:8080
 info:
   contact:
-    email: oduneye.d@northeastern.edu and ladley.g@northeastern.edu
+    email: generatesac@gmail.com
     name: David Oduneye and Garrett Ladley
   description: Backend Server for SAC App
   title: SAC API

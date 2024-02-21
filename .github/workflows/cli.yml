@@ -1,15 +1,17 @@
 name: CLI
 
+permissions: read-all
+
 on:
   push:
     paths:
-      - "cli/**"
-      - ".github/workflows/cli.yml"
+      - cli/**
+      - .github/workflows/cli.yml
   pull_request:
     types: [opened]
     paths:
-      - "cli/**"
-      - ".github/workflows/cli.yml"
+      - cli/**
+      - .github/workflows/cli.yml
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
