@@ -6,7 +6,7 @@ on:
       - "frontend/sac-web/**"
       - ".github/workflows/mweb_codeql.yml"
   pull_request:
-    types: opened
+    types: [opened]
     paths:
       - "frontend/sac-web/**"
       - ".github/workflows/web_codeql.yml"

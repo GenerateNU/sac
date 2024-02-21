@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"fmt"
-
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
@@ -37,7 +35,6 @@ func (cl *ClubController) GetAllClubs(c *fiber.Ctx) error {
 	queryParams.Page = 1   // default page
 
 	if err := c.QueryParser(&queryParams); err != nil {
-		fmt.Println(err)
 		return errors.FailedtoParseQueryParams.FiberError(c)
 	}
 

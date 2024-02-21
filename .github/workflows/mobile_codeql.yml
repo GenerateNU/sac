@@ -6,7 +6,7 @@ on:
       - "frontend/sac-mobile/**"
       - ".github/workflows/mobile_codeql.yml"
   pull_request:
-    types: opened
+    types: [opened]
     paths:
       - "frontend/sac-mobile/**"
       - ".github/workflows/mobile_codeql.yml"
