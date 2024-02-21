@@ -1,0 +1,2714 @@
+basePath: /api/v1
+definitions:
+  errors.Error:
+    properties:
+      message:
+        type: string
+      statusCode:
+        type: integer
+    type: object
+  models.Category:
+    properties:
+      created_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      name:
+        maxLength: 255
+        type: string
+      updated_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+    required:
+    - name
+    type: object
+  models.CategoryRequestBody:
+    properties:
+      name:
+        maxLength: 255
+        type: string
+    required:
+    - name
+    type: object
+  models.Club:
+    properties:
+      application_link:
+        maxLength: 255
+        type: string
+      created_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      description:
+        description: MongoDB URL
+        maxLength: 255
+        type: string
+      id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      is_recruiting:
+        type: boolean
+      logo:
+        description: S3 URL
+        maxLength: 255
+        type: string
+      name:
+        maxLength: 255
+        type: string
+      num_members:
+        minimum: 1
+        type: integer
+      preview:
+        maxLength: 255
+        type: string
+      recruitment_cycle:
+        allOf:
+        - $ref: '#/definitions/models.RecruitmentCycle'
+        enum:
+        - fall
+        - spring
+        - fallSpring
+        - always
+        maxLength: 255
+      recruitment_type:
+        allOf:
+        - $ref: '#/definitions/models.RecruitmentType'
+        enum:
+        - unrestricted
+        - tryout
+        - application
+        maxLength: 255
+      tags:
+        items:
+          $ref: '#/definitions/models.Tag'
+        type: array
+      updated_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+    required:
+    - application_link
+    - description
+    - is_recruiting
+    - name
+    - num_members
+    - preview
+    - recruitment_cycle
+    - recruitment_type
+    type: object
+  models.College:
+    enum:
+    - CAMD
+    - DMSB
+    - KCCS
+    - CE
+    - BCHS
+    - SL
+    - CPS
+    - CS
+    - CSSH
+    type: string
+    x-enum-comments:
+      BCHS: Bouvé College of Health Sciences
+      CAMD: College of Arts, Media and Design
+      CE: College of Engineering
+      CPS: College of Professional Studies
+      CS: College of Science
+      CSSH: College of Social Sciences and Humanities
+      DMSB: D'Amore-McKim School of Business
+      KCCS: Khoury College of Computer Sciences
+      SL: School of Law
+    x-enum-varnames:
+    - CAMD
+    - DMSB
+    - KCCS
+    - CE
+    - BCHS
+    - SL
+    - CPS
+    - CS
+    - CSSH
+  models.Contact:
+    properties:
+      content:
+        maxLength: 255
+        type: string
+      created_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      type:
+        allOf:
+        - $ref: '#/definitions/models.ContactType'
+        enum:
+        - facebook
+        - instagram
+        - twitter
+        - linkedin
+        - youtube
+        - github
+        - slack
+        - discord
+        - email
+        - customSite
+        maxLength: 255
+      updated_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+    required:
+    - content
+    - type
+    type: object
+  models.ContactType:
+    enum:
+    - facebook
+    - instagram
+    - twitter
+    - linkedin
+    - youtube
+    - github
+    - slack
+    - discord
+    - email
+    - customSite
+    type: string
+    x-enum-varnames:
+    - Facebook
+    - Instagram
+    - Twitter
+    - LinkedIn
+    - YouTube
+    - GitHub
+    - Slack
+    - Discord
+    - Email
+    - CustomSite
+  models.CreateClubRequestBody:
+    properties:
+      application_link:
+        maxLength: 255
+        type: string
+      description:
+        description: MongoDB URL
+        maxLength: 255
+        type: string
+      is_recruiting:
+        type: boolean
+      logo:
+        description: S3 URL
+        maxLength: 255
+        type: string
+      name:
+        maxLength: 255
+        type: string
+      preview:
+        maxLength: 255
+        type: string
+      recruitment_cycle:
+        allOf:
+        - $ref: '#/definitions/models.RecruitmentCycle'
+        enum:
+        - fall
+        - spring
+        - fallSpring
+        - always
+        maxLength: 255
+      recruitment_type:
+        allOf:
+        - $ref: '#/definitions/models.RecruitmentType'
+        enum:
+        - unrestricted
+        - tryout
+        - application
+        maxLength: 255
+      user_id:
+        type: string
+    required:
+    - application_link
+    - description
+    - is_recruiting
+    - name
+    - preview
+    - recruitment_cycle
+    - recruitment_type
+    - user_id
+    type: object
+  models.CreateClubTagsRequestBody:
+    properties:
+      tags:
+        items:
+          type: string
+        type: array
+    required:
+    - tags
+    type: object
+  models.CreateEventRequestBody:
+    properties:
+      content:
+        maxLength: 255
+        type: string
+      end_time:
+        type: string
+      event_type:
+        allOf:
+        - $ref: '#/definitions/models.EventType'
+        maxLength: 255
+      is_recurring:
+        type: boolean
+      location:
+        maxLength: 255
+        type: string
+      name:
+        maxLength: 255
+        type: string
+      preview:
+        maxLength: 255
+        type: string
+      series:
+        allOf:
+        - $ref: '#/definitions/models.CreateSeriesRequestBody'
+        description: TODO validate if isRecurring, then series is required
+      start_time:
+        type: string
+    required:
+    - content
+    - end_time
+    - event_type
+    - is_recurring
+    - location
+    - name
+    - preview
+    - start_time
+    type: object
+  models.CreateSeriesRequestBody:
+    properties:
+      day_of_month:
+        maximum: 31
+        minimum: 1
+        type: integer
+      day_of_week:
+        maximum: 7
+        minimum: 1
+        type: integer
+      max_occurrences:
+        minimum: 2
+        type: integer
+      recurring_type:
+        allOf:
+        - $ref: '#/definitions/models.RecurringType'
+        maxLength: 255
+      separation_count:
+        minimum: 0
+        type: integer
+      week_of_month:
+        maximum: 5
+        minimum: 1
+        type: integer
+    type: object
+  models.CreateUserRequestBody:
+    properties:
+      college:
+        allOf:
+        - $ref: '#/definitions/models.College'
+        enum:
+        - CAMD
+        - DMSB
+        - KCCS
+        - CE
+        - BCHS
+        - SL
+        - CPS
+        - CS
+        - CSSH
+      email:
+        maxLength: 255
+        type: string
+      first_name:
+        maxLength: 255
+        type: string
+      last_name:
+        maxLength: 255
+        type: string
+      nuid:
+        type: string
+      password:
+        type: string
+      year:
+        allOf:
+        - $ref: '#/definitions/models.Year'
+        maximum: 6
+        minimum: 1
+    required:
+    - college
+    - email
+    - first_name
+    - last_name
+    - nuid
+    - password
+    - year
+    type: object
+  models.CreateUserTagsBody:
+    properties:
+      tags:
+        items:
+          type: string
+        type: array
+    required:
+    - tags
+    type: object
+  models.Event:
+    properties:
+      content:
+        maxLength: 255
+        type: string
+      created_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      end_time:
+        type: string
+      event_type:
+        allOf:
+        - $ref: '#/definitions/models.EventType'
+        maxLength: 255
+      id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      is_recurring:
+        type: boolean
+      location:
+        maxLength: 255
+        type: string
+      name:
+        maxLength: 255
+        type: string
+      preview:
+        maxLength: 255
+        type: string
+      start_time:
+        type: string
+      updated_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+    required:
+    - content
+    - end_time
+    - event_type
+    - location
+    - name
+    - preview
+    - start_time
+    type: object
+  models.EventType:
+    enum:
+    - open
+    - membersOnly
+    type: string
+    x-enum-varnames:
+    - Open
+    - MembersOnly
+  models.LoginUserResponseBody:
+    properties:
+      email:
+        type: string
+      password:
+        maxLength: 255
+        minLength: 8
+        type: string
+    required:
+    - email
+    type: object
+  models.PutContactRequestBody:
+    properties:
+      content:
+        maxLength: 255
+        type: string
+      type:
+        allOf:
+        - $ref: '#/definitions/models.ContactType'
+        enum:
+        - facebook
+        - instagram
+        - twitter
+        - linkedin
+        - youtube
+        - github
+        - slack
+        - discord
+        - email
+        - customSite
+        maxLength: 255
+    required:
+    - content
+    - type
+    type: object
+  models.RecruitmentCycle:
+    enum:
+    - fall
+    - spring
+    - fallSpring
+    - always
+    type: string
+    x-enum-varnames:
+    - Fall
+    - Spring
+    - FallSpring
+    - Always
+  models.RecruitmentType:
+    enum:
+    - unrestricted
+    - tryout
+    - application
+    type: string
+    x-enum-varnames:
+    - Unrestricted
+    - Tryout
+    - Application
+  models.RecurringType:
+    enum:
+    - daily
+    - weekly
+    - monthly
+    type: string
+    x-enum-varnames:
+    - Daily
+    - Weekly
+    - Monthly
+  models.Series:
+    properties:
+      created_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      day_of_month:
+        maximum: 31
+        minimum: 1
+        type: integer
+      day_of_week:
+        maximum: 7
+        minimum: 1
+        type: integer
+      events:
+        items:
+          $ref: '#/definitions/models.Event'
+        type: array
+      id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      max_occurrences:
+        minimum: 1
+        type: integer
+      recurring_type:
+        allOf:
+        - $ref: '#/definitions/models.RecurringType'
+        maxLength: 255
+      separation_count:
+        minimum: 0
+        type: integer
+      updated_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      week_of_month:
+        maximum: 5
+        minimum: 1
+        type: integer
+    type: object
+  models.Tag:
+    properties:
+      category_id:
+        type: string
+      created_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      name:
+        maxLength: 255
+        type: string
+      updated_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+    required:
+    - category_id
+    - name
+    type: object
+  models.TagRequestBody:
+    properties:
+      category_id:
+        type: string
+      name:
+        maxLength: 255
+        type: string
+    required:
+    - category_id
+    - name
+    type: object
+  models.UpdateClubRequestBody:
+    properties:
+      application_link:
+        maxLength: 255
+        type: string
+      description:
+        description: MongoDB URL
+        maxLength: 255
+        type: string
+      is_recruiting:
+        type: boolean
+      logo:
+        description: S3 URL
+        maxLength: 255
+        type: string
+      name:
+        maxLength: 255
+        type: string
+      preview:
+        maxLength: 255
+        type: string
+      recruitment_cycle:
+        allOf:
+        - $ref: '#/definitions/models.RecruitmentCycle'
+        enum:
+        - fall
+        - spring
+        - fallSpring
+        - always
+        maxLength: 255
+      recruitment_type:
+        allOf:
+        - $ref: '#/definitions/models.RecruitmentType'
+        enum:
+        - unrestricted
+        - tryout
+        - application
+        maxLength: 255
+    required:
+    - application_link
+    - recruitment_cycle
+    - recruitment_type
+    type: object
+  models.UpdatePasswordRequestBody:
+    properties:
+      new_password:
+        type: string
+      old_password:
+        type: string
+    required:
+    - new_password
+    - old_password
+    type: object
+  models.UpdateSeriesRequestBody:
+    properties:
+      day_of_month:
+        maximum: 31
+        minimum: 1
+        type: integer
+      day_of_week:
+        maximum: 7
+        minimum: 1
+        type: integer
+      max_occurrences:
+        minimum: 2
+        type: integer
+      recurring_type:
+        allOf:
+        - $ref: '#/definitions/models.RecurringType'
+        maxLength: 255
+      separation_count:
+        minimum: 0
+        type: integer
+      week_of_month:
+        maximum: 5
+        minimum: 1
+        type: integer
+    type: object
+  models.UpdateUserRequestBody:
+    properties:
+      college:
+        allOf:
+        - $ref: '#/definitions/models.College'
+        enum:
+        - CAMD
+        - DMSB
+        - KCCS
+        - CE
+        - BCHS
+        - SL
+        - CPS
+        - CS
+        - CSSH
+      email:
+        maxLength: 255
+        type: string
+      first_name:
+        maxLength: 255
+        type: string
+      last_name:
+        maxLength: 255
+        type: string
+      nuid:
+        type: string
+      year:
+        allOf:
+        - $ref: '#/definitions/models.Year'
+        maximum: 6
+        minimum: 1
+    type: object
+  models.User:
+    properties:
+      clubs_followed:
+        items:
+          $ref: '#/definitions/models.Club'
+        type: array
+      college:
+        allOf:
+        - $ref: '#/definitions/models.College'
+        maxLength: 255
+      created_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      email:
+        maxLength: 255
+        type: string
+      first_name:
+        maxLength: 255
+        type: string
+      id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      last_name:
+        maxLength: 255
+        type: string
+      nuid:
+        type: string
+      role:
+        enum:
+        - super
+        - student
+        type: string
+      updated_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      year:
+        allOf:
+        - $ref: '#/definitions/models.Year'
+        maximum: 6
+        minimum: 1
+    required:
+    - college
+    - email
+    - first_name
+    - last_name
+    - nuid
+    - role
+    - year
+    type: object
+  models.Year:
+    enum:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    type: integer
+    x-enum-varnames:
+    - First
+    - Second
+    - Third
+    - Fourth
+    - Fifth
+    - Graduate
+  utilities.SuccessResponse:
+    properties:
+      message:
+        type: string
+    type: object
+host: 127.0.0.1:8080
+info:
+  contact:
+    email: generatesac@gmail.com
+    name: David Oduneye and Garrett Ladley
+  description: Backend Server for SAC App
+  title: SAC API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Logs in a user
+      operationId: login-user
+      parameters:
+      - description: Login Body
+        in: body
+        name: loginBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginUserResponseBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utilities.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Logs in a user
+      tags:
+      - auth
+  /auth/logout:
+    get:
+      consumes:
+      - application/json
+      description: Logs out a user
+      operationId: logout-user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utilities.SuccessResponse'
+      summary: Logs out a user
+      tags:
+      - auth
+  /auth/me:
+    get:
+      description: Returns the current user associated with an auth session
+      operationId: get-current-user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve the current user given an auth session
+      tags:
+      - auth
+  /auth/refresh:
+    get:
+      consumes:
+      - application/json
+      description: Refreshes a user's access token
+      operationId: refresh-user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utilities.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Refreshes a user's access token
+      tags:
+      - auth
+  /auth/update-password:
+    post:
+      consumes:
+      - application/json
+      description: Updates a user's password
+      operationId: update-password
+      parameters:
+      - description: User Body
+        in: body
+        name: userBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdatePasswordRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utilities.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Updates a user's password
+      tags:
+      - auth
+  /category/:
+    get:
+      description: Retrieves all categories
+      operationId: get-categories
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Category'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Retrieve all categories
+      tags:
+      - category
+    post:
+      consumes:
+      - application/json
+      description: Creates a category
+      operationId: create-category
+      parameters:
+      - description: Category Body
+        in: body
+        name: categoryBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.CategoryRequestBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Category'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Creates a category
+      tags:
+      - category
+  /category/{categoryID}:
+    delete:
+      description: Deletes a category
+      operationId: delete-category
+      parameters:
+      - description: Category ID
+        in: path
+        name: categoryID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Deletes a category
+      tags:
+      - category
+    get:
+      description: Retrieves a category
+      operationId: get-category
+      parameters:
+      - description: Category ID
+        in: path
+        name: categoryID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Category'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Retrieve a category
+      tags:
+      - category
+    put:
+      consumes:
+      - application/json
+      description: Updates a category
+      operationId: update-category
+      parameters:
+      - description: Category ID
+        in: path
+        name: categoryID
+        required: true
+        type: string
+      - description: Category Body
+        in: body
+        name: categoryBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.CategoryRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Category'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Updates a category
+      tags:
+      - category
+  /category/{categoryID}/tags:
+    get:
+      description: Retrieves all tags associated with a category
+      operationId: get-tags-by-category
+      parameters:
+      - description: Category ID
+        in: path
+        name: categoryID
+        required: true
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Tag'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve all tags by category
+      tags:
+      - category-tag
+  /category/{categoryID}/tags/{tagID}:
+    get:
+      description: Retrieves a tag associated with a category
+      operationId: get-tag-by-category
+      parameters:
+      - description: Category ID
+        in: path
+        name: categoryID
+        required: true
+        type: string
+      - description: Tag ID
+        in: path
+        name: tagID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Tag'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve a tag by category
+      tags:
+      - category-tag
+  /club/:
+    get:
+      description: Retrieves all clubs
+      operationId: get-all-clubs
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Club'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve all clubs
+      tags:
+      - club
+    post:
+      consumes:
+      - application/json
+      description: Creates a club
+      operationId: create-club
+      parameters:
+      - description: Club
+        in: body
+        name: club
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateClubRequestBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Club'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Create a club
+      tags:
+      - club
+  /club/{clubID}:
+    delete:
+      description: Deletes a club
+      operationId: delete-club
+      parameters:
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Delete a club
+      tags:
+      - club
+    get:
+      description: Retrieves a club
+      operationId: get-club
+      parameters:
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Club'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve a club
+      tags:
+      - club
+    put:
+      consumes:
+      - application/json
+      description: Updates a club
+      operationId: update-club
+      parameters:
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      - description: Club
+        in: body
+        name: club
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateClubRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Club'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Update a club
+      tags:
+      - club
+  /club/{clubID}/contacts:
+    get:
+      description: Retrieves all contacts associated with a club
+      operationId: get-contacts-by-club
+      parameters:
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Contact'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve all contacts for a club
+      tags:
+      - club-contact
+    post:
+      consumes:
+      - application/json
+      description: Creates a contact
+      operationId: create-contact
+      parameters:
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      - description: Contact Body
+        in: body
+        name: contactBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.PutContactRequestBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Contact'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Creates a contact
+      tags:
+      - club-contact
+  /club/{clubID}/events:
+    get:
+      description: Retrieves all events associated with a club
+      operationId: get-events-by-club
+      parameters:
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Event'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve all events for a club
+      tags:
+      - club-event
+  /club/{clubID}/followers:
+    get:
+      description: Retrieves all followers associated with a club
+      operationId: get-followers-by-club
+      parameters:
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve all followers for a club
+      tags:
+      - club-follower
+  /club/{clubID}/members:
+    get:
+      description: Retrieves all members associated with a club
+      operationId: get-members-by-club
+      parameters:
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve all members for a club
+      tags:
+      - club-member
+  /club/{clubID}/tags:
+    get:
+      description: Retrieves all tags associated with a club
+      operationId: get-tags-by-club
+      parameters:
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Tag'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve all tags for a club
+      tags:
+      - club-tag
+    post:
+      consumes:
+      - application/json
+      description: Creates tags for a club
+      operationId: create-club-tags
+      parameters:
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      - description: Club Tags Body
+        in: body
+        name: clubTagsBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateClubTagsRequestBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            items:
+              $ref: '#/definitions/models.Tag'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Create club tags
+      tags:
+      - club-tag
+  /club/{clubID}/tags/{tagID}:
+    delete:
+      description: Deletes a tag associated with a club
+      operationId: delete-tag-by-club
+      parameters:
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      - description: Tag ID
+        in: path
+        name: tagID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Delete a tag for a club
+      tags:
+      - club-tag
+  /contact/:
+    get:
+      description: Retrieves all contacts
+      operationId: get-contacts
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Contact'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Retrieve all contacts
+      tags:
+      - contact
+    post:
+      consumes:
+      - application/json
+      description: Creates a contact
+      operationId: create-contact
+      parameters:
+      - description: Contact Body
+        in: body
+        name: contactBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.Contact'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Contact'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Creates a contact
+      tags:
+      - contact
+  /event/:
+    get:
+      description: Retrieves all events
+      operationId: get-all-events
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Event'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve all events
+      tags:
+      - event
+    post:
+      consumes:
+      - application/json
+      description: Creates an event
+      operationId: create-event
+      parameters:
+      - description: Event Body
+        in: body
+        name: event
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateEventRequestBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Event'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Create an event
+      tags:
+      - event
+  /event/{eventID}:
+    delete:
+      description: Deletes an event
+      operationId: delete-event
+      parameters:
+      - description: Event ID
+        in: path
+        name: eventID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Delete an event
+      tags:
+      - event
+    get:
+      description: Retrieves an event
+      operationId: get-event
+      parameters:
+      - description: Event ID
+        in: path
+        name: eventID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Event'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve an event
+      tags:
+      - event
+  /event/{eventID}/series:
+    delete:
+      description: Deletes all series associated with an event
+      operationId: delete-series-by-event
+      parameters:
+      - description: Event ID
+        in: path
+        name: eventID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Delete all series by event
+      tags:
+      - event
+    get:
+      description: Retrieves all series associated with an event
+      operationId: get-series-by-event
+      parameters:
+      - description: Event ID
+        in: path
+        name: eventID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Series'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve all series by event
+      tags:
+      - event
+    post:
+      consumes:
+      - application/json
+      description: Creates a series
+      operationId: create-series
+      parameters:
+      - description: Event ID
+        in: path
+        name: eventID
+        required: true
+        type: string
+      - description: Series Body
+        in: body
+        name: seriesBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateSeriesRequestBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Series'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Create a series
+      tags:
+      - event
+  /event/{eventID}/series/{seriesID}:
+    put:
+      consumes:
+      - application/json
+      description: Updates a series by ID
+      operationId: update-series-by-id
+      parameters:
+      - description: Event ID
+        in: path
+        name: eventID
+        required: true
+        type: string
+      - description: Series ID
+        in: path
+        name: seriesID
+        required: true
+        type: string
+      - description: Series Body
+        in: body
+        name: seriesBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateSeriesRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Series'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Update a series by ID
+      tags:
+      - event
+  /series/{seriesID}:
+    delete:
+      description: Deletes a series by ID
+      operationId: delete-series-by-id
+      parameters:
+      - description: Series ID
+        in: path
+        name: seriesID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Delete a series by ID
+      tags:
+      - event
+    get:
+      description: Retrieves a series by ID
+      operationId: get-series-by-id
+      parameters:
+      - description: Series ID
+        in: path
+        name: seriesID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Series'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve a series by ID
+      tags:
+      - event
+  /tags:
+    get:
+      description: Retrieves all tags
+      operationId: get-all-tags
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Tag'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve all tags
+      tags:
+      - tag
+  /tags/{tagID}:
+    delete:
+      description: Deletes a tag
+      operationId: delete-tag
+      parameters:
+      - description: Tag ID
+        in: path
+        name: tagID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Delete a tag
+      tags:
+      - tag
+    get:
+      description: Retrieves a tag
+      operationId: get-tag
+      parameters:
+      - description: Tag ID
+        in: path
+        name: tagID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Tag'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve a tag
+      tags:
+      - tag
+    put:
+      consumes:
+      - application/json
+      description: Updates a tag
+      operationId: update-tag
+      parameters:
+      - description: Tag ID
+        in: path
+        name: tagID
+        required: true
+        type: string
+      - description: Tag
+        in: body
+        name: tag
+        required: true
+        schema:
+          $ref: '#/definitions/models.TagRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Tag'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Update a tag
+      tags:
+      - tag
+  /user/:
+    post:
+      consumes:
+      - application/json
+      description: Creates a user
+      operationId: create-user
+      parameters:
+      - description: User Body
+        in: body
+        name: userBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateUserRequestBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Create a user
+      tags:
+      - user
+  /user/{userID}:
+    delete:
+      description: Deletes a user
+      operationId: delete-user
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Delete a user
+      tags:
+      - user
+    get:
+      description: Retrieves a user
+      operationId: get-user
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve a user
+      tags:
+      - user
+    put:
+      consumes:
+      - application/json
+      description: Updates a user
+      operationId: update-user
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      - description: User Body
+        in: body
+        name: userBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateUserRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Update a user
+      tags:
+      - user
+  /user/{userID}/following:
+    get:
+      description: Retrieves all clubs a user is following
+      operationId: get-following
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Club'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve all clubs a user is following
+      tags:
+      - user-follower
+  /user/{userID}/following/{clubID}:
+    delete:
+      consumes:
+      - application/json
+      description: Unfollow a club
+      operationId: delete-following
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/utilities.SuccessResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Unfollow a club
+      tags:
+      - user-follower
+    post:
+      consumes:
+      - application/json
+      description: Follow a club
+      operationId: create-following
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/utilities.SuccessResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Follow a club
+      tags:
+      - user-follower
+  /user/{userID}/membership:
+    get:
+      description: Retrieves all clubs a user is a member of
+      operationId: get-membership
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Club'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve all clubs a user is a member of
+      tags:
+      - user-member
+  /user/{userID}/membership/{clubID}:
+    delete:
+      consumes:
+      - application/json
+      description: Leave a club
+      operationId: delete-membership
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/utilities.SuccessResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Leave a club
+      tags:
+      - user-member
+    post:
+      consumes:
+      - application/json
+      description: Join a club
+      operationId: create-membership
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/utilities.SuccessResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Join a club
+      tags:
+      - user-member
+  /user/{userID}/tags:
+    get:
+      description: Retrieves all tags associated with a user
+      operationId: get-tags-by-user
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Tag'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve all tags for a user
+      tags:
+      - user-tag
+    post:
+      consumes:
+      - application/json
+      description: Creates tags for a user
+      operationId: create-user-tags
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      - description: User Tags Body
+        in: body
+        name: userTagsBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateUserTagsBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            items:
+              $ref: '#/definitions/models.Tag'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Create user tags
+      tags:
+      - user-tag
+swagger: "2.0"
