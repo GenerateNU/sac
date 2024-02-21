@@ -14,7 +14,7 @@ import (
 func UpsertPointOfContact(db *gorm.DB, pointOfContact *models.PointOfContact) (*models.PointOfContact, *errors.Error) {
 	pocExist, errPOCExist := GetPointOfContact(db, pointOfContact.ID, pointOfContact.ClubID)
 	if errPOCExist != nil {
-		db.Model(&pointOfContact).Association("File").Replace(pocExist, pointOfContact)
+		db.Model(&pointOfContact).Where("id = ?", pocExist.ID).Association("File").Replace(pocExist, pointOfContact)
 	} else {
 		db.Model(&pointOfContact).Association("File").Append(pointOfContact)
 	}
