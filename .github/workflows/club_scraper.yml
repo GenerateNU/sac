@@ -1,0 +1,105 @@
+name: Club Scraper
+
+permissions: read-all
+
+on:
+  push:
+    paths:
+      - scraper/club/**
+      - .github/workflows/club_scraper.yml
+  pull_request:
+    types: [opened]
+    paths:
+      - scraper/club/**
+      - .github/workflows/club_scraper.yml
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  MANIFEST_PATH: ./scraper/clubs/Cargo.toml
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --manifest-path ${{ env.MANIFEST_PATH }}
+  fmt:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - run: rustup component add rustfmt
+      - uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --manifest-path ${{ env.MANIFEST_PATH }} --all -- --check
+
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - run: rustup component add clippy
+      - uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --manifest-path ${{ env.MANIFEST_PATH }} --all-targets --all-features -- -D warnings
+
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - uses: Swatinem/rust-cache@v1
+        with:
+          key: ${{ runner.os }}-check
+      - uses: actions-rs/cargo@v1
+        with:
+          command: check
+          args: --manifest-path ${{ env.MANIFEST_PATH }}
+        env:
+          RUSTFLAGS: -D warnings
+
+  coverage:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - run: cargo install cargo-tarpaulin
+      - uses: actions-rs/cargo@v1
+        with:
+          command: tarpaulin
+          args: --manifest-path ${{ env.MANIFEST_PATH }} --verbose --workspace
