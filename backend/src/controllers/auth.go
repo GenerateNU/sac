@@ -165,7 +165,7 @@ func (a *AuthController) Logout(c *fiber.Ctx) error {
 // @Failure     401   {object}       errors.Error
 // @Failure     404   {object}       errors.Error
 // @Failure     500   {object}       errors.Error
-// @Router		/auth/update-password  [post]
+// @Router		/auth/update-password/:userID  [post]
 func (a *AuthController) UpdatePassword(c *fiber.Ctx) error {
 	var userBody models.UpdatePasswordRequestBody
 
@@ -173,13 +173,7 @@ func (a *AuthController) UpdatePassword(c *fiber.Ctx) error {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
-	claims, err := auth.From(c)
-	if err != nil {
-		return err.FiberError(c)
-	}
-
-	err = a.authService.UpdatePassword(claims.Issuer, userBody)
-	if err != nil {
+	if err := a.authService.UpdatePassword(c.Params("userID"), userBody); err != nil {
 		return err.FiberError(c)
 	}
 

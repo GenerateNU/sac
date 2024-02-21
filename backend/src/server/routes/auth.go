@@ -3,12 +3,13 @@ package routes
 import (
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/controllers"
+	"github.com/GenerateNU/sac/backend/src/middleware"
 	"github.com/GenerateNU/sac/backend/src/services"
 	"github.com/gofiber/fiber/v2"
 )
 
-func Auth(router fiber.Router, authService services.AuthServiceInterface, authSettings config.AuthSettings) {
-	authController := controllers.NewAuthController(authService, authSettings)
+func Auth(router fiber.Router, authService services.AuthServiceInterface, settings config.AuthSettings, authMiddleware *middleware.AuthMiddlewareService) {
+	authController := controllers.NewAuthController(authService, settings)
 
 	// api/v1/auth/*
 	auth := router.Group("/auth")
@@ -17,5 +18,6 @@ func Auth(router fiber.Router, authService services.AuthServiceInterface, authSe
 	auth.Get("/logout", authController.Logout)
 	auth.Get("/refresh", authController.Refresh)
 	auth.Get("/me", authController.Me)
-	auth.Post("/update-password", authController.UpdatePassword)
+	auth.Post("/update-password/:userID", authMiddleware.UserAuthorizeById, authController.UpdatePassword)
+	// auth.Post("/reset-password/:userID", middleware.Skip(authMiddleware.UserAuthorizeById), authController.ResetPassword)
 }

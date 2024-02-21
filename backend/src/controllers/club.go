@@ -15,7 +15,7 @@ func NewClubController(clubService services.ClubServiceInterface) *ClubControlle
 	return &ClubController{clubService: clubService}
 }
 
-// GetAllClubs godoc
+// GetClubs godoc
 //
 // @Summary		Retrieve all clubs
 // @Description	Retrieves all clubs
@@ -28,7 +28,7 @@ func NewClubController(clubService services.ClubServiceInterface) *ClubControlle
 // @Failure     400   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
 // @Router		/club/  [get]
-func (cl *ClubController) GetAllClubs(c *fiber.Ctx) error {
+func (cl *ClubController) GetClubs(c *fiber.Ctx) error {
 	var queryParams models.ClubQueryParams
 
 	queryParams.Limit = 10 // default limit
