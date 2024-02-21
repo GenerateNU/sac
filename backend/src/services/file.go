@@ -140,17 +140,17 @@ func (f *FileService) CreateFile(fileBody models.FileBody, file models.File, dat
 
 	// if file type and file id are populated, if both are then search to see if id exists in corresponding table. Throw error
 	// if entry does not exist
-	associationType := fileBody.AssociationType
-	associationID := fileBody.AssociationID
-	print(associationID.String())
+	ownerType := fileBody.OwnerType
+	ownerID := fileBody.OwnerID
+	print(ownerID.String())
 
 	possibleTypes := []string{"users", "clubs", "events", "point_of_contacts"}
 
-	if associationID != uuid.Nil {
-		if !isInArray(possibleTypes, associationType) {
+	if ownerID != uuid.Nil {
+		if !isInArray(possibleTypes, ownerType) {
 			return nil, &errors.InvalidAssociationType
 		}
-		result := f.DB.Table(associationType).Where("id = ?", associationID).RowsAffected
+		result := f.DB.Table(ownerType).Where("id = ?", ownerID).RowsAffected
 		if result == 0 {
 			return nil, &errors.FailedToFindAssociationID
 		}

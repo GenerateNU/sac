@@ -34,20 +34,15 @@ func (u *ClubService) UpsertPointOfContact(clubId string, pointOfContactBody mod
 	}
 	pointOfContact, err := utilities.MapRequestToModel(pointOfContactBody, &models.PointOfContact{})
 	if err != nil {
+		print(err.Error())
 		return nil, &errors.FailedToMapRequestToModel
 	}
 	clubIdAsUUID, idErr := utilities.ValidateID(clubId)
 	var file models.File
-	if (pointOfContact.PhotoFileID != uuid.Nil) {
-		result := u.DB.Where("id = ?", pointOfContact.PhotoFileID).RowsAffected
-		if result == 0 {
-			return nil, &errors.InvalidFileID
-		}
-		
-		if err := u.DB.First(&file, "id = ?", pointOfContact.PhotoFileID).Error; err != nil {
+	if pointOfContactBody.PhotoFileID != uuid.Nil {
+		if err := u.DB.First(&file, "id = ?", pointOfContactBody.PhotoFileID).Error; err != nil {
 			return nil, &errors.CannotFindFile
 		}
-		
 	}
 	pointOfContact.ClubID = *clubIdAsUUID
 	if idErr != nil {
@@ -55,14 +50,16 @@ func (u *ClubService) UpsertPointOfContact(clubId string, pointOfContactBody mod
 	}
 	poc, upsertErr := transactions.UpsertPointOfContact(u.DB, pointOfContact)
 
-	if (upsertErr != nil) {
+	if upsertErr != nil {
 		return poc, upsertErr
 	}
 
-	if (pointOfContact.PhotoFileID != uuid.Nil) {
-		file.AssociationType = "point_of_contact"
-		file.AssociationID = poc.ID
+	if pointOfContactBody.PhotoFileID != uuid.Nil {
+		file.OwnerType = "point_of_contact"
+		file.OwnerID = poc.ID
 	}
+	u.DB.Save(&file)
+	pointOfContact.PhotoFile = &file
 	return poc, nil
 }
 

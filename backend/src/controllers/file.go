@@ -45,7 +45,7 @@ func (f *FileController) CreateFile(c *fiber.Ctx) error {
 		return errors.FailedToValidatedData.FiberError(c)
 	}
 	defer fileData.Close()
-	print(file.AssociationID.String())
+	print(file.OwnerID.String())
 	fileCreated, errFile := f.fileService.CreateFile(fileRequestBody, file, formFile, fileData)
 	if errFile != nil {
 		return errFile.FiberError(c)

@@ -7,18 +7,24 @@ import (
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
+	// "gorm.io/gorm/clause"
 )
 
 // Upsert Point of Contact
 func UpsertPointOfContact(db *gorm.DB, pointOfContact *models.PointOfContact) (*models.PointOfContact, *errors.Error) {
-	err := db.Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "email"}, {Name: "club_id"}},
-		DoUpdates: clause.AssignmentColumns([]string{"name", "photo_file_id", "email", "position"}),
-	}).Create(&pointOfContact).Error
-	if err != nil {
-		return nil, &errors.FailedToUpsertPointOfContact
+	pocExist, errPOCExist := GetPointOfContact(db, pointOfContact.ID, pointOfContact.ClubID)
+	if errPOCExist != nil {
+		db.Model(&pointOfContact).Association("File").Replace(pocExist, pointOfContact)
+	} else {
+		db.Model(&pointOfContact).Association("File").Append(pointOfContact)
 	}
+	// err := db.Clauses(clause.OnConflict{
+	// 	Columns:   []clause.Column{{Name: "email"}, {Name: "club_id"}},
+	// 	DoUpdates: clause.AssignmentColumns([]string{"name", "email", "position"}),
+	// }).Create(&pointOfContact).Error
+	// if err != nil {
+	// 	return nil, &errors.FailedToUpsertPointOfContact
+	// }
 	return pointOfContact, nil
 }
 

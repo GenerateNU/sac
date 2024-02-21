@@ -12,11 +12,11 @@ type File struct {
 	Tags      []*Tag `gorm:"many2many:file_tags;" json:"tags"`
 	S3Url     string `gorm:"type:varchar(255);default:NULL" json:"photo" validate:"url,max=255"`
 
-	AssociationType string    `gorm:"type:varchar(255)" json:"association_type"`                // association with files (club/event/user)
-	AssociationID   uuid.UUID `gorm:"type:varchar(255)" json:"association_id" validate:"min=1"` // association id (club/event/user)
+	OwnerType string    `json:"owner_type"` // association with files (club/event/user)
+	OwnerID   uuid.UUID `json:"owner_id"`   // association id (club/event/user)
 }
 
 type FileBody struct {
-	AssociationType string    `gorm:"type:varchar(255)" json:"association_type"`                // association with files (club/event/user)
-	AssociationID   uuid.UUID `gorm:"type:varchar(255)" json:"association_id" validate:"min=1"` // association id (club/event/user)
+	OwnerType string    `gorm:"type:varchar(255)" json:"owner_type"`                // association with files (club/event/user)
+	OwnerID   uuid.UUID `gorm:"type:varchar(255)" json:"owner_id" validate:"min=1"` // association id (club/event/user)
 }
