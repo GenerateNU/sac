@@ -1,8 +1,6 @@
 package transactions
 
 import (
-	"slices"
-
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/google/uuid"
@@ -10,14 +8,27 @@ import (
 )
 
 func CreateFollowing(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error {
-	user, err := GetUser(db, userId)
+	tx := db.Begin()
+
+	user, err := GetUser(tx, userId)
 	if err != nil {
 		return err
 	}
 
-	club, err := GetClub(db, clubId)
+	club, err := GetClub(tx, clubId)
 	if err != nil {
 		return err
+	}
+
+	var count int64
+	if err := tx.Model(&models.Follower{}).Where("user_id = ? AND club_id = ?", userId, clubId).Count(&count).Error; err != nil {
+		tx.Rollback()
+		return &errors.FailedToGetUserFollowing
+	}
+
+	if count > 0 {
+		tx.Rollback()
+		return &errors.UserAlreadyFollowingClub
 	}
 
 	if err := db.Model(&user).Association("Follower").Append(club); err != nil {
@@ -28,23 +39,26 @@ func CreateFollowing(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Er
 }
 
 func DeleteFollowing(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error {
-	user, err := GetUser(db, userId, PreloadFollwer())
+	tx := db.Begin()
+
+	user, err := GetUser(tx, userId)
 	if err != nil {
 		return err
 	}
 
-	club, err := GetClub(db, clubId, PreloadFollwer())
+	club, err := GetClub(tx, clubId)
 	if err != nil {
 		return err
 	}
 
-	userFollowingClubIDs := make([]uuid.UUID, len(user.Follower))
-
-	for i, club := range user.Follower {
-		userFollowingClubIDs[i] = club.ID
+	var count int64
+	if err := tx.Model(&models.Follower{}).Where("user_id = ? AND club_id = ?", userId, clubId).Count(&count).Error; err != nil {
+		tx.Rollback()
+		return &errors.FailedToGetUserFollowing
 	}
 
-	if !slices.Contains(userFollowingClubIDs, club.ID) {
+	if count == 0 {
+		tx.Rollback()
 		return &errors.UserNotFollowingClub
 	}
 

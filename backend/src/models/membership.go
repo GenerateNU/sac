@@ -16,35 +16,11 @@ func (Membership) TableName() string {
 }
 
 type Membership struct {
-	UserID uuid.UUID `gorm:"type:uuid;not null;primary_key" json:"user_id" validate:"required,uuid4"`
-	ClubID uuid.UUID `gorm:"type:uuid;not null;primary_key" json:"club_id" validate:"required,uuid4"`
+	UserID uuid.UUID `gorm:"type:uuid;not null;primary_key;unique_index:idx_user_club_members" json:"user_id" validate:"required,uuid4"`
+	ClubID uuid.UUID `gorm:"type:uuid;not null;primary_key;unique_index:idx_user_club_members" json:"club_id" validate:"required,uuid4"`
 
 	Club *Club `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	User *User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 
 	MembershipType MembershipType `gorm:"type:varchar(255);not null;default:member" json:"membership_type" validate:"required,oneof=member admin"`
 }
-
-// func (m *Membership) AfterUpdate(tx *gorm.DB) (err error) {
-// 	if err := tx.Model(&Club{}).Where("id = ?", m.ClubID).Update("num_members", gorm.Expr("num_members + 1")).Error; err != nil {
-// 		return err
-// 	}
-
-// 	if err := tx.Model(&Club{}).Where("id = ?", m.ClubID).Association("Follower").Append(&m.User); err != nil {
-// 		return err
-// 	}
-
-// 	return nil
-// }
-
-// func (m *Membership) AfterDelete(tx *gorm.DB) (err error) {
-// 	if err := tx.Model(&Club{}).Where("id = ?", m.ClubID).Update("num_members", gorm.Expr("num_members - 1")).Error; err != nil {
-// 		return err
-// 	}
-
-// 	if err := tx.Model(&Club{}).Where("id = ?", m.ClubID).Association("Follower").Delete(&m.User); err != nil {
-// 		return err
-// 	}
-
-// 	return nil
-// }

@@ -94,51 +94,49 @@ type CreateUserTagsBody struct {
 }
 
 func (u *User) AfterCreate(tx *gorm.DB) (err error) {
-	if u.NUID != "000000000" {
-		sac := &Club{}
-		if err := tx.Where("name = ?", "SAC").First(sac).Error; err != nil {
-			return err
-		}
-
-		if err := tx.Model(u).Association("Member").Append(sac); err != nil {
-			tx.Rollback()
-			return err
-		}
-
-		if err := tx.Model(u).Association("Follower").Append(sac); err != nil {
-			tx.Rollback()
-			return err
-		}
-
-		if err := tx.Model(&Club{}).Where("id = ?", sac.ID).Update("num_members", gorm.Expr("num_members + 1")).Error; err != nil {
-			tx.Rollback()
-			return err
-		}
+	sac := &Club{}
+	if err := tx.Where("name = ?", "SAC").First(sac).Error; err != nil {
+		return err
 	}
+
+	if err := tx.Model(u).Association("Member").Append(sac); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Model(u).Association("Follower").Append(sac); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Model(&Club{}).Where("id = ?", sac.ID).Update("num_members", gorm.Expr("num_members + 1")).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
 	return nil
 }
 
 func (u *User) AfterDelete(tx *gorm.DB) (err error) {
-	if u.NUID != "000000000" {
-		sac := &Club{}
-		if err := tx.Where("name = ?", "SAC").First(sac).Error; err != nil {
-			return err
-		}
-
-		if err := tx.Model(u).Association("Member").Delete(sac); err != nil {
-			tx.Rollback()
-			return err
-		}
-
-		if err := tx.Model(u).Association("Follower").Delete(sac); err != nil {
-			tx.Rollback()
-			return err
-		}
-
-		if err := tx.Model(&Club{}).Where("id = ?", sac.ID).Update("num_members", gorm.Expr("num_members - 1")).Error; err != nil {
-			tx.Rollback()
-			return err
-		}
+	sac := &Club{}
+	if err := tx.Where("name = ?", "SAC").First(sac).Error; err != nil {
+		return err
 	}
+
+	if err := tx.Model(u).Association("Member").Delete(sac); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Model(u).Association("Follower").Delete(sac); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Model(&Club{}).Where("id = ?", sac.ID).Update("num_members", gorm.Expr("num_members - 1")).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
 	return nil
 }

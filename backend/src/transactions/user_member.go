@@ -8,22 +8,47 @@ import (
 )
 
 func CreateMember(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error {
-	user, err := GetUser(db, userId)
+	tx := db.Begin()
+
+	user, err := GetUser(tx, userId)
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
 
-	club, err := GetClub(db, clubId)
+	club, err := GetClub(tx, clubId)
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
 
-	// this doesnt mean the user is a member of the club, it could be empty
-	if err := db.Model(&user).Association("Member").Find(&club); err == nil {
+	var count int64
+	if err := tx.Model(&models.Membership{}).Where("user_id = ? AND club_id = ?", userId, clubId).Count(&count).Error; err != nil {
+		tx.Rollback()	
+		return &errors.FailedToGetUserMemberships
+	}
+
+	if count > 0 {
+		tx.Rollback()
 		return &errors.AlreadyMemberOfClub
 	}
 
-	if err := db.Model(&user).Association("Member").Append(&club); err != nil {
+	if err := tx.Model(&user).Association("Member").Append(club); err != nil {
+		tx.Rollback()
+		return &errors.FailedToUpdateUser
+	}
+
+	if err := tx.Model(&user).Association("Follower").Append(club); err != nil {
+		tx.Rollback()
+		return &errors.FailedToUpdateUser
+	}
+
+	if err := tx.Model(&club).Update("num_members", gorm.Expr("num_members + 1")).Error; err != nil {
+		tx.Rollback()
+		return &errors.FailedToUpdateUser
+	}
+
+	if err := tx.Commit().Error; err != nil {
 		return &errors.FailedToUpdateUser
 	}
 
@@ -31,37 +56,49 @@ func CreateMember(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error
 }
 
 func DeleteMember(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error {
-	user, err := GetUser(db, userId, PreloadMember())
+	tx := db.Begin()
+
+	user, err := GetUser(tx, userId)
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
 
-	club, err := GetClub(db, clubId, PreloadMember())
+	club, err := GetClub(tx, clubId)
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
 
-	if err := db.Model(&user).Association("Member").Find(&club); err != nil {
+	var count int64
+	if err := tx.Model(&models.Membership{}).Where("user_id = ? AND club_id = ?", userId, clubId).Count(&count).Error; err != nil {
+		tx.Rollback()
+		return &errors.FailedToGetUserMemberships
+	}
+
+	if count == 0 {
+		tx.Rollback()
 		return &errors.UserNotMemberOfClub
 	}
 
-	if err := db.Model(&user).Association("Member").Delete(&club); err != nil {
+	if err := tx.Model(&user).Association("Member").Delete(club); err != nil {
+		tx.Rollback()
 		return &errors.FailedToUpdateUser
 	}
 
-	// userMemberClubIDs := make([]uuid.UUID, len(user.Member))
+	if err := tx.Model(&user).Association("Follower").Delete(club); err != nil {
+		tx.Rollback()
+		return &errors.FailedToUpdateUser
+	}
 
-	// for i, club := range user.Member {
-	// 	userMemberClubIDs[i] = club.ID
-	// }
+	if err := tx.Model(&club).Update("num_members", gorm.Expr("num_members - 1")).Error; err != nil {
+		tx.Rollback()
+		return &errors.FailedToUpdateUser
+	}
 
-	// if !slices.Contains(userMemberClubIDs, club.ID) {
-	// 	return &errors.UserNotMemberOfClub
-	// }
-
-	// if err := db.Model(&user).Association("Member").Delete(club); err != nil {
-	// 	return &errors.FailedToUpdateUser
-	// }
+	if err := tx.Commit().Error; err != nil {
+		return &errors.FailedToUpdateUser
+	}
 
 	return nil
 }

@@ -63,4 +63,8 @@ var (
 		StatusCode: fiber.StatusNotFound,
 		Message:    "user not following club",
 	}
+	UserAlreadyFollowingClub = Error{
+		StatusCode: fiber.StatusConflict,
+		Message:    "user already following club",
+	}
 )

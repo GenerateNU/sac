@@ -60,7 +60,7 @@ func CreateClub(db *gorm.DB, userId uuid.UUID, club models.Club) (*models.Club, 
 		return nil, err
 	}
 
-	tx := db.Begin()
+	tx := db.Begin().Session(&gorm.Session{SkipHooks: true})
 
 	if err := tx.Create(&club).Error; err != nil {
 		tx.Rollback()
@@ -73,7 +73,6 @@ func CreateClub(db *gorm.DB, userId uuid.UUID, club models.Club) (*models.Club, 
 		return nil, &errors.FailedToCreateClub
 	}
 
-	// add the user to the club's members as an admin
 	membership := models.Membership{
 		ClubID:         club.ID,
 		UserID:         user.ID,
@@ -81,6 +80,21 @@ func CreateClub(db *gorm.DB, userId uuid.UUID, club models.Club) (*models.Club, 
 	}
 
 	if err := tx.Create(&membership).Error; err != nil {
+		tx.Rollback()
+		return nil, &errors.FailedToCreateClub
+	}
+
+	follower := models.Follower{
+		ClubID: club.ID,
+		UserID: user.ID,
+	}
+
+	if err := tx.Create(&follower).Error; err != nil {
+		tx.Rollback()
+		return nil, &errors.FailedToCreateClub
+	}
+
+	if err := tx.Model(&club).Update("num_members", gorm.Expr("num_members + 1")).Error; err != nil {
 		tx.Rollback()
 		return nil, &errors.FailedToCreateClub
 	}
