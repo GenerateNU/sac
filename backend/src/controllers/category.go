@@ -20,17 +20,19 @@ func NewCategoryController(categoryService services.CategoryServiceInterface) *C
 
 // CreateCategory godoc
 //
-// @Summary		Create a category
-// @Description	Creates a category that is used to group tags
+// @Summary		Creates a category
+// @Description	Creates a category
 // @ID			create-category
 // @Tags      	category
+// @Accept		json
 // @Produce		json
+// @Param		categoryBody	body	models.CategoryRequestBody	true	"Category Body"
 // @Success		201	  {object}	  models.Category
-// @Failure		400	  {string}	  string "failed to process the request"
-// @Failure 	400	  {string}	  string "failed to validate data"
-// @Failure		400	  {string}	  string "category with that name already exists"
-// @Failure     500   {string}    string "failed to create category"
-// @Router		/api/v1/category/  [post]
+// @Failure     400   {string}    errors.Error
+// @Failure     401   {string}    errors.Error
+// @Failure     404   {string}    errors.Error
+// @Failure     500   {string}    errors.Error
+// @Router		/category/  [post]
 func (cat *CategoryController) CreateCategory(c *fiber.Ctx) error {
 	var categoryBody models.CategoryRequestBody
 
@@ -49,13 +51,17 @@ func (cat *CategoryController) CreateCategory(c *fiber.Ctx) error {
 // GetCategories godoc
 //
 // @Summary		Retrieve all categories
-// @Description	Retrieves all existing categories
+// @Description	Retrieves all categories
 // @ID			get-categories
 // @Tags      	category
 // @Produce		json
-// @Success		200	  {object}	  []models.Category
-// @Failure     500   {string}    string "unable to retrieve categories"
-// @Router		/api/v1/category/  [get]
+// @Param		limit		query	int	    false	"Limit"
+// @Param		page		query	int	    false	"Page"
+// @Success		200	  {object}	    []models.Category
+// @Failure     400   {string}      errors.Error
+// @Failure     404   {string}      errors.Error
+// @Failure     500   {string}      errors.Error
+// @Router		/category/  [get]
 func (cat *CategoryController) GetCategories(c *fiber.Ctx) error {
 	defaultLimit := 10
 	defaultPage := 1
@@ -71,16 +77,16 @@ func (cat *CategoryController) GetCategories(c *fiber.Ctx) error {
 // GetCategory godoc
 //
 // @Summary		Retrieve a category
-// @Description	Retrieve a category by its ID
+// @Description	Retrieves a category
 // @ID			get-category
 // @Tags      	category
 // @Produce		json
-// @Param		id	path	string	true	"Category ID"
-// @Success		200	  {object}	  models.Category
-// @Failure 	400   {string}    string "failed to validate id"
-// @Failure     404   {string}    string "faied to find category"
-// @Failure     500   {string}    string "failed to retrieve category"
-// @Router		/api/v1/category/{id}  [get]
+// @Param		categoryID	path	string	true	"Category ID"
+// @Success		200	  {object}	    models.Category
+// @Failure     400   {string}      errors.Error
+// @Failure     404   {string}      errors.Error
+// @Failure     500   {string}      errors.Error
+// @Router		/category/{categoryID}  [get]
 func (cat *CategoryController) GetCategory(c *fiber.Ctx) error {
 	category, err := cat.categoryService.GetCategory(c.Params("categoryID"))
 	if err != nil {
@@ -92,17 +98,18 @@ func (cat *CategoryController) GetCategory(c *fiber.Ctx) error {
 
 // DeleteCategory godoc
 //
-// @Summary		Delete a category
-// @Description	Delete a category by ID
+// @Summary		Deletes a category
+// @Description	Deletes a category
 // @ID			delete-category
 // @Tags      	category
 // @Produce		json
-// @Param		id	path	string	true	"Category ID"
-// @Success		204	  {string}	  string "no content"
-// @Failure 	400   {string}    string "failed to validate id"
-// @Failure     404   {string}    string "failed to find category"
-// @Failure     500   {string}    string "failed to delete category"
-// @Router		/api/v1/category/{id}  [delete]
+// @Param		categoryID	path	string	true	"Category ID"
+// @Success		204	  {string}	    utilities.SuccessResponse
+// @Failure     400   {string}      errors.Error
+// @Failure     401   {string}      errors.Error
+// @Failure     404   {string}      errors.Error
+// @Failure     500   {string}      errors.Error
+// @Router		/category/{categoryID}  [delete]
 func (cat *CategoryController) DeleteCategory(c *fiber.Ctx) error {
 	if err := cat.categoryService.DeleteCategory(c.Params("categoryID")); err != nil {
 		return err.FiberError(c)
@@ -117,13 +124,16 @@ func (cat *CategoryController) DeleteCategory(c *fiber.Ctx) error {
 // @Description	Updates a category
 // @ID			update-category
 // @Tags      	category
+// @Accept		json
 // @Produce		json
-// @Param		id	path	string	true	"Category ID"
-// @Success		200	  {object}	  models.Category
-// @Failure 	400   {string}    string "failed to validate id"
-// @Failure     404   {string}    string "failed to find category"
-// @Failure     500   {string}    string "failed to update category"
-// @Router		/api/v1/category/{id}  [patch]
+// @Param		categoryID	path	string	true	"Category ID"
+// @Param		categoryBody	body	models.CategoryRequestBody	true	"Category Body"
+// @Success		200	  {object}	    models.Category
+// @Failure     400   {string}      errors.Error
+// @Failure     401   {string}      errors.Error
+// @Failure     404   {string}      errors.Error
+// @Failure     500   {string}      errors.Error
+// @Router		/category/{categoryID}  [put]
 func (cat *CategoryController) UpdateCategory(c *fiber.Ctx) error {
 	var category models.CategoryRequestBody
 

@@ -7,13 +7,13 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/database"
+	_ "github.com/GenerateNU/sac/backend/src/docs"
 	"github.com/GenerateNU/sac/backend/src/server"
 )
 
 // @title SAC API
 // @version 1.0
 // @description Backend Server for SAC App
-
 // @contact.name	David Oduneye and Garrett Ladley
 // @contact.email	generatesac@gmail.com
 // @host 127.0.0.1:8080

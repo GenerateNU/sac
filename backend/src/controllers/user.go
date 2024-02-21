@@ -18,18 +18,21 @@ func NewUserController(userService services.UserServiceInterface) *UserControlle
 	return &UserController{userService: userService}
 }
 
-// Create User godoc
+// CreateUser godoc
 //
-// @Summary		Creates a User
+// @Summary		Create a user
 // @Description	Creates a user
 // @ID			create-user
 // @Tags      	user
-// @Accept      json
+// @Accept		json
 // @Produce		json
+// @Param		userBody	body	models.CreateUserRequestBody	true	"User Body"
 // @Success		201	  {object}	  models.User
-// @Failure     400   {string}    string "failed to create user"
-// @Failure     500   {string}    string "internal server error"
-// @Router		/api/v1/users/  [post]
+// @Failure     400   {object}    errors.Error
+// @Failure     401   {object}    errors.Error
+// @Failure     404   {object}    errors.Error
+// @Failure     500   {object}    errors.Error
+// @Router		/user/  [post]
 func (u *UserController) CreateUser(c *fiber.Ctx) error {
 	var userBody models.CreateUserRequestBody
 
@@ -45,16 +48,19 @@ func (u *UserController) CreateUser(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(user)
 }
 
-// GetAllUsers godoc
+// GetUsers godoc
 //
-// @Summary		Gets all users
-// @Description	Returns all users
-// @ID			get-all-users
+// @Summary		Retrieve all users
+// @Description	Retrieves all users
+// @ID			get-users
 // @Tags      	user
 // @Produce		json
-// @Success		200	  {object}	  []models.User
-// @Failure     500   {string}    string "failed to get all users"
-// @Router		/api/v1/users/  [get]
+// @Param		limit		query	int	    false	"Limit"
+// @Param		page		query	int	    false	"Page"
+// @Success		200	  {object}	    []models.User
+// @Failure     401   {object}      errors.Error
+// @Failure     400   {object}      errors.Error
+// @Failure     500   {object}      errors.Error
 func (u *UserController) GetUsers(c *fiber.Ctx) error {
 	defaultLimit := 10
 	defaultPage := 1
@@ -69,17 +75,18 @@ func (u *UserController) GetUsers(c *fiber.Ctx) error {
 
 // GetUser godoc
 //
-// @Summary		Gets a user
-// @Description	Returns a user
-// @ID			get-user-by-id
+// @Summary		Retrieve a user
+// @Description	Retrieves a user
+// @ID			get-user
 // @Tags      	user
 // @Produce		json
-// @Param		id	path	string	true	"User ID"
-// @Success		200	  {object}	  models.User
-// @Failure     404   {string}    string "user not found"
-// @Failure		400   {string}    string "failed to validate id"
-// @Failure     500   {string}    string "failed to get user"
-// @Router		/api/v1/users/{id}  [get]
+// @Param		userID	path	string	true	"User ID"
+// @Success		200	  {object}	    models.User
+// @Failure     400   {object}      errors.Error
+// @Failure     401   {object}      errors.Error
+// @Failure     404   {object}      errors.Error
+// @Failure     500   {object}      errors.Error
+// @Router		/user/{userID}  [get]
 func (u *UserController) GetUser(c *fiber.Ctx) error {
 	user, err := u.userService.GetUser(c.Params("userID"))
 	if err != nil {
@@ -91,19 +98,20 @@ func (u *UserController) GetUser(c *fiber.Ctx) error {
 
 // UpdateUser godoc
 //
-// @Summary		Updates a user
+// @Summary		Update a user
 // @Description	Updates a user
-// @ID			update-user-by-id
+// @ID			update-user
 // @Tags      	user
+// @Accept		json
 // @Produce		json
-// @Param		id	path	string	true	"User ID"
+// @Param		userID		path	string	true	"User ID"
+// @Param		userBody	body	models.UpdateUserRequestBody	true	"User Body"
 // @Success		200	  {object}	  models.User
-// @Failure     404   {string}    string "user not found"
-// @Failure 	400   {string}    string "invalid request body"
-// @Failure		400   {string}    string "failed to validate id"
-// @Failure		500   {string}	  string "database error"
-// @Failure		500   {string} 	  string "failed to hash password"
-// @Router		/api/v1/users/{id}  [patch]
+// @Failure     400   {object}    errors.Error
+// @Failure     401   {object}    errors.Error
+// @Failure     404   {object}    errors.Error
+// @Failure     500   {object}    errors.Error
+// @Router		/user/{userID}  [put]
 func (u *UserController) UpdateUser(c *fiber.Ctx) error {
 	var user models.UpdateUserRequestBody
 
@@ -122,15 +130,18 @@ func (u *UserController) UpdateUser(c *fiber.Ctx) error {
 
 // DeleteUser godoc
 //
-// @Summary		Deletes the given userID
-// @Description	Returns nil
+// @Summary		Delete a user
+// @Description	Deletes a user
 // @ID			delete-user
 // @Tags      	user
 // @Produce		json
-// @Param		id	path	string	true	"User ID"
-// @Success		204   {string}     string "no content"
-// @Failure     500   {string}     string "failed to get all users"
-// @Router		/api/v1/users/{id}  [delete]
+// @Param		userID	path	string	true	"User ID"
+// @Success		204	  {string}	    utilities.SuccessResponse
+// @Failure     400   {object}      errors.Error
+// @Failure     401   {object}      errors.Error
+// @Failure     404   {object}      errors.Error
+// @Failure     500   {object}      errors.Error
+// @Router		/user/{userID}  [delete]
 func (u *UserController) DeleteUser(c *fiber.Ctx) error {
 	err := u.userService.DeleteUser(c.Params("userID"))
 	if err != nil {
