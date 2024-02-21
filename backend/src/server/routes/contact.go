@@ -13,6 +13,9 @@ func Contact(router fiber.Router, contactService services.ContactServiceInterfac
 	contacts := router.Group("/contacts")
 
 	contacts.Get("/", contactController.GetContacts)
-	contacts.Get("/:contactID", contactController.GetContact)
-	contacts.Delete("/:contactID", contactController.DeleteContact)
+
+	contactID := contacts.Group("/:contactID")
+
+	contactID.Get("/", contactController.GetContact)
+	contactID.Delete("/", contactController.DeleteContact)
 }

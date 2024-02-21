@@ -14,18 +14,19 @@ func Event(router fiber.Router, eventService services.EventServiceInterface) {
 
 	events.Get("/", eventController.GetAllEvents)
 	events.Post("/", eventController.CreateEvent)
+	events.Patch("/", eventController.UpdateEvent)
 
 	// api/v1/events/:eventID/*
 	eventID := events.Group("/:eventID")
 
 	eventID.Get("/", eventController.GetEvent)
-	eventID.Get("/series", eventController.GetSeriesByEventID)
-	events.Patch("/", eventController.UpdateEvent)
 	eventID.Delete("/", eventController.DeleteEvent)
-	eventID.Delete("/series", eventController.DeleteSeriesByEventID)
 
 	// api/v1/events/:eventID/series/*
 	series := router.Group("/series")
+
+	series.Get("/", eventController.GetSeriesByEventID)
+	series.Delete("/", eventController.DeleteSeriesByEventID)
 
 	// api/v1/events/:eventID/series/:seriesID/*
 	seriesID := series.Group("/:seriesID")

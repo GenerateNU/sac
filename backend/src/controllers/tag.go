@@ -32,7 +32,7 @@ func NewTagController(tagService services.TagServiceInterface) *TagController {
 // @Failure     401   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/tags  [get]
+// @Router		/tags/  [post]
 func (t *TagController) CreateTag(c *fiber.Ctx) error {
 	var tagBody models.TagRequestBody
 
@@ -60,7 +60,7 @@ func (t *TagController) CreateTag(c *fiber.Ctx) error {
 // @Failure     400   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/tags/{tagID}  [get]
+// @Router		/tags/{tagID}/  [get]
 func (t *TagController) GetTag(c *fiber.Ctx) error {
 	tag, err := t.tagService.GetTag(c.Params("tagID"))
 	if err != nil {
@@ -85,7 +85,7 @@ func (t *TagController) GetTag(c *fiber.Ctx) error {
 // @Failure     401   {object}    errors.Error
 // @Failure     404   {object}    errors.Error
 // @Failure     500   {object}    errors.Error
-// @Router		/tags/{tagID}  [put]
+// @Router		/tags/{tagID}/  [patch]
 func (t *TagController) UpdateTag(c *fiber.Ctx) error {
 	var tagBody models.TagRequestBody
 
@@ -114,7 +114,7 @@ func (t *TagController) UpdateTag(c *fiber.Ctx) error {
 // @Failure     401   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/tags/{tagID}  [delete]
+// @Router		/tags/{tagID}/  [delete]
 func (t *TagController) DeleteTag(c *fiber.Ctx) error {
 	err := t.tagService.DeleteTag(c.Params("tagID"))
 	if err != nil {

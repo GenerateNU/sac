@@ -13,9 +13,12 @@ func Category(router fiber.Router, categoryService services.CategoryServiceInter
 
 	categories.Post("/", categoryController.CreateCategory)
 	categories.Get("/", categoryController.GetCategories)
-	categories.Get("/:categoryID", categoryController.GetCategory)
-	categories.Delete("/:categoryID", categoryController.DeleteCategory)
-	categories.Patch("/:categoryID", categoryController.UpdateCategory)
+
+	categoryID := categories.Group("/:categoryID")
+
+	categoryID.Get("/", categoryController.GetCategory)
+	categoryID.Delete("/", categoryController.DeleteCategory)
+	categoryID.Patch("/", categoryController.UpdateCategory)
 
 	return categories
 }
