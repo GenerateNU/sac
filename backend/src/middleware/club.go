@@ -10,7 +10,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func (m *MiddlewareService) ClubAuthorizeById(c *fiber.Ctx) error {
+// Authorizes admins of the specific club to make this request, skips check if super user
+func (m *AuthMiddlewareService) ClubAuthorizeById(c *fiber.Ctx) error {
+	if m.IsSuper(c) {
+		return c.Next()
+	}
+
 	clubUUID, err := utilities.ValidateID(c.Params("clubID"))
 	if err != nil {
 		return errors.FailedToValidateID.FiberError(c)

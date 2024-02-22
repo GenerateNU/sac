@@ -10,7 +10,7 @@ database:
   databasename: sac
   requiressl: false
 superuser:
-  password: password
+  password: Password#!1
 auth:
   accesskey: g(r|##*?>\Qp}h37e+,T2
   accesstokenexpiry: 60 # in minutes
