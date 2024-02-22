@@ -14,7 +14,7 @@ type AuthServiceInterface interface {
 	GetRole(id string) (*models.UserRole, *errors.Error)
 	Me(id string) (*models.User, *errors.Error)
 	Login(userBody models.LoginUserResponseBody) (*models.User, *errors.Error)
-	UpdatePassword(id string, userBody models.UpdatePasswordRequestBody) *errors.Error
+	UpdatePassword(id string, passwordBody models.UpdatePasswordRequestBody) *errors.Error
 }
 
 type AuthService struct {
@@ -77,28 +77,28 @@ func (a *AuthService) GetRole(id string) (*models.UserRole, *errors.Error) {
 	return &role, nil
 }
 
-func (a *AuthService) UpdatePassword(id string, userBody models.UpdatePasswordRequestBody) *errors.Error {
+func (a *AuthService) UpdatePassword(id string, passwordBody models.UpdatePasswordRequestBody) *errors.Error {
 	idAsUint, idErr := utilities.ValidateID(id)
 	if idErr != nil {
 		return idErr
 	}
 
 	// TODO: Validate password
-	// if err := a.Validate.Struct(userBody); err != nil {
-	// 	return &errors.FailedToValidateUser
-	// }
+	if err := a.Validate.Struct(passwordBody); err != nil {
+		return &errors.FailedToValidateUser
+	}
 
 	passwordHash, err := transactions.GetUserPasswordHash(a.DB, *idAsUint)
 	if err != nil {
 		return err
 	}
 
-	correct, passwordErr := auth.ComparePasswordAndHash(userBody.OldPassword, passwordHash)
+	correct, passwordErr := auth.ComparePasswordAndHash(passwordBody.OldPassword, passwordHash)
 	if passwordErr != nil || !correct {
 		return &errors.FailedToValidateUser
 	}
 
-	hash, hashErr := auth.ComputePasswordHash(userBody.NewPassword)
+	hash, hashErr := auth.ComputePasswordHash(passwordBody.NewPassword)
 	if hashErr != nil {
 		return &errors.FailedToValidateUser
 	}

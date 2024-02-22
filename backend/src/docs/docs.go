@@ -182,7 +182,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/update-password": {
+        "/auth/update-password/:userID": {
             "post": {
                 "description": "Updates a user's password",
                 "consumes": [
@@ -2097,6 +2097,59 @@ const docTemplate = `{
                             "$ref": "#/definitions/errors.Error"
                         }
                     },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/tags/": {
+            "post": {
+                "description": "Creates a tag",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tag"
+                ],
+                "summary": "Create a tag",
+                "operationId": "create-tag",
+                "parameters": [
+                    {
+                        "description": "Tag Body",
+                        "name": "tagBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateTagRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Tag"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
@@ -2192,7 +2245,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.TagRequestBody"
+                            "$ref": "#/definitions/models.UpdateTagRequestBody"
                         }
                     }
                 ],
@@ -3399,6 +3452,22 @@ const docTemplate = `{
                 }
             }
         },
+        "models.CreateTagRequestBody": {
+            "type": "object",
+            "required": [
+                "category_id",
+                "name"
+            ],
+            "properties": {
+                "category_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 255
+                }
+            }
+        },
         "models.CreateUserRequestBody": {
             "type": "object",
             "required": [
@@ -3714,22 +3783,6 @@ const docTemplate = `{
                 }
             }
         },
-        "models.TagRequestBody": {
-            "type": "object",
-            "required": [
-                "category_id",
-                "name"
-            ],
-            "properties": {
-                "category_id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 255
-                }
-            }
-        },
         "models.UpdateClubRequestBody": {
             "type": "object",
             "required": [
@@ -3840,6 +3893,18 @@ const docTemplate = `{
                     "type": "integer",
                     "maximum": 5,
                     "minimum": 1
+                }
+            }
+        },
+        "models.UpdateTagRequestBody": {
+            "type": "object",
+            "properties": {
+                "category_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 255
                 }
             }
         },

@@ -307,6 +307,17 @@ definitions:
         minimum: 1
         type: integer
     type: object
+  models.CreateTagRequestBody:
+    properties:
+      category_id:
+        type: string
+      name:
+        maxLength: 255
+        type: string
+    required:
+    - category_id
+    - name
+    type: object
   models.CreateUserRequestBody:
     properties:
       college:
@@ -533,17 +544,6 @@ definitions:
     - category_id
     - name
     type: object
-  models.TagRequestBody:
-    properties:
-      category_id:
-        type: string
-      name:
-        maxLength: 255
-        type: string
-    required:
-    - category_id
-    - name
-    type: object
   models.UpdateClubRequestBody:
     properties:
       application_link:
@@ -621,6 +621,14 @@ definitions:
         maximum: 5
         minimum: 1
         type: integer
+    type: object
+  models.UpdateTagRequestBody:
+    properties:
+      category_id:
+        type: string
+      name:
+        maxLength: 255
+        type: string
     type: object
   models.UpdateUserRequestBody:
     properties:
@@ -842,7 +850,7 @@ paths:
       summary: Refreshes a user's access token
       tags:
       - auth
-  /auth/update-password:
+  /auth/update-password/:userID:
     post:
       consumes:
       - application/json
@@ -2120,6 +2128,41 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve all tags
+      tags:
+      - tag
+  /tags/:
+    post:
+      consumes:
+      - application/json
+      description: Creates a tag
+      operationId: create-tag
+      parameters:
+      - description: Tag Body
+        in: body
+        name: tagBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateTagRequestBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Tag'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
         "401":
           description: Unauthorized
           schema:
@@ -2132,7 +2175,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/errors.Error'
-      summary: Retrieve all tags
+      summary: Create a tag
       tags:
       - tag
   /tags/{tagID}:
@@ -2218,7 +2261,7 @@ paths:
         name: tag
         required: true
         schema:
-          $ref: '#/definitions/models.TagRequestBody'
+          $ref: '#/definitions/models.UpdateTagRequestBody'
       produces:
       - application/json
       responses:

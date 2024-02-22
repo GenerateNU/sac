@@ -62,7 +62,7 @@ func (cat *CategoryController) CreateCategory(c *fiber.Ctx) error {
 // @Failure     404   {string}      errors.Error
 // @Failure     500   {string}      errors.Error
 // @Router		/category/  [get]
-func (cat *CategoryController) GetCategories(c *fiber.Ctx) error {
+func (cat *CategoryController) GetAllCategories(c *fiber.Ctx) error {
 	defaultLimit := 10
 	defaultPage := 1
 
