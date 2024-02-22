@@ -57,7 +57,7 @@ func newFiberApp() *fiber.App {
 	})
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "*",
+		AllowOrigins:     "http://localhost:8080",
 		AllowCredentials: true,
 	}))
 	app.Use(requestid.New())
