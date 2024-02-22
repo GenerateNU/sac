@@ -13,7 +13,7 @@ func UserFollower(usersRouter fiber.Router, userFollowerService services.UserFol
 
 	userFollower.Get("/", userFollowerController.GetAllFollowing)
 
-	clubID := userFollower.Group("/:clubID") 
+	clubID := userFollower.Group("/:clubID")
 
 	// api/v1/users/:userID/follower/*
 	clubID.Post("/", userFollowerController.CreateFollowing)

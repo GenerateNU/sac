@@ -10,7 +10,7 @@ func UserMember(usersRouter fiber.Router, userMembershipService services.UserMem
 	userMemberController := controllers.NewUserMemberController(userMembershipService)
 
 	userMember := usersRouter.Group("/:userID/member")
-	
+
 	userMember.Get("/", userMemberController.GetMembership)
 
 	clubID := userMember.Group("/:clubID")
