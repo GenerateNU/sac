@@ -45,7 +45,7 @@ func (a *AuthController) Me(c *fiber.Ctx) error {
 		return err.FiberError(c)
 	}
 
-	return c.JSON(user)
+	return c.Status(fiber.StatusOK).JSON(user)
 }
 
 // Login godoc
@@ -76,7 +76,7 @@ func (a *AuthController) Login(c *fiber.Ctx) error {
 
 	accessToken, refreshToken, err := auth.CreateTokenPair(user.ID.String(), string(user.Role), a.AuthSettings)
 	if err != nil {
-		return err.FiberError(c)
+		return errors.Unauthorized.FiberError(c)
 	}
 
 	// Set the tokens in the response
@@ -106,17 +106,17 @@ func (a *AuthController) Refresh(c *fiber.Ctx) error {
 	// Extract id from refresh token
 	claims, err := auth.ExtractRefreshClaims(refreshTokenValue, a.AuthSettings.RefreshKey)
 	if err != nil {
-		return err.FiberError(c)
+		return errors.Unauthorized.FiberError(c)
 	}
 
 	role, err := a.authService.GetRole(claims.Issuer)
 	if err != nil {
-		return err.FiberError(c)
+		return errors.Unauthorized.FiberError(c)
 	}
 
 	accessToken, err := auth.RefreshAccessToken(refreshTokenValue, string(*role), a.AuthSettings.RefreshKey, a.AuthSettings.AccessTokenExpiry, a.AuthSettings.AccessKey)
 	if err != nil {
-		return err.FiberError(c)
+		return errors.Unauthorized.FiberError(c)
 	}
 
 	// Set the access token in the response (e.g., in a cookie or JSON response)
@@ -165,6 +165,7 @@ func (a *AuthController) Logout(c *fiber.Ctx) error {
 // @Failure     401   {object}       errors.Error
 // @Failure     404   {object}       errors.Error
 // @Failure     500   {object}       errors.Error
+// @Failure     429   {object}
 // @Router		/auth/update-password/:userID  [post]
 func (a *AuthController) UpdatePassword(c *fiber.Ctx) error {
 	var userBody models.UpdatePasswordRequestBody

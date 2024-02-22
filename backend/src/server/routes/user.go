@@ -23,13 +23,14 @@ func User(router fiber.Router, userService services.UserServiceInterface, authMi
 
 	// api/v1/users/*
 	users := router.Group("/users")
+
 	users.Post("/", userController.CreateUser)
 	users.Get("/", authMiddleware.Authorize(p.ReadAll), userController.GetUsers)
 
 	// api/v1/users/:userID/*
 	usersID := users.Group("/:userID")
-	usersID.Use(authMiddleware.UserAuthorizeById)
 
+	usersID.Use(authMiddleware.UserAuthorizeById)
 	usersID.Get("/", userController.GetUser)
 	usersID.Patch("/", userController.UpdateUser)
 	usersID.Delete("/", userController.DeleteUser)

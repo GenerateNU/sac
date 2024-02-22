@@ -12,7 +12,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"gorm.io/gorm"
@@ -65,7 +64,6 @@ func newFiberApp() *fiber.App {
 	app.Use(logger.New(logger.Config{
 		Format: "[${time}] ${ip}:${port} ${pid} ${locals:requestid} ${status} - ${latency} ${method} ${path}\n",
 	}))
-	app.Use(limiter.New()) // TODO: currently wrapping the whole app, makes more sense for specific endpoints like update password
 
 	return app
 }

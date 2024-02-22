@@ -23,11 +23,10 @@ func ClubRoutes(router fiber.Router, db *gorm.DB, validate *validator.Validate, 
 func Club(router fiber.Router, clubService services.ClubServiceInterface, authMiddleware *middleware.AuthMiddlewareService) fiber.Router {
 	clubController := controllers.NewClubController(clubService)
 
+	// api/v1/clubs/*
 	clubs := router.Group("/clubs")
 
 	clubs.Get("/", clubController.GetClubs)
-
-	// TODO: design issue if we want to allow "anyone" (that an admin allows) to create a club
 	clubs.Post("/", authMiddleware.Authorize(p.CreateAll), clubController.CreateClub)
 
 	// api/v1/clubs/:clubID/*
