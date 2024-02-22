@@ -34,7 +34,6 @@ func NewAuthController(authService services.AuthServiceInterface, authSettings c
 // @Failure     401   {object}       errors.Error
 // @Failure     404   {object}       errors.Error
 // @Failure     500   {object}       errors.Error
-// @Security    cookie
 // @Router		/auth/me  [get]
 func (a *AuthController) Me(c *fiber.Ctx) error {
 	claims, err := auth.From(c)
