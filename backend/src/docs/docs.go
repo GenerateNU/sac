@@ -97,6 +97,11 @@ const docTemplate = `{
         },
         "/auth/me": {
             "get": {
+                "security": [
+                    {
+                        "cookie": []
+                    }
+                ],
                 "description": "Returns the current user associated with an auth session",
                 "produces": [
                     "application/json"
@@ -1997,6 +2002,13 @@ const docTemplate = `{
                 "summary": "Delete a series by ID",
                 "operationId": "delete-series-by-id",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Event ID",
+                        "name": "eventID",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Series ID",

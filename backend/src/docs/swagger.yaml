@@ -807,6 +807,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/errors.Error'
+      security:
+      - cookie: []
       summary: Retrieve the current user given an auth session
       tags:
       - auth
@@ -2012,6 +2014,11 @@ paths:
       description: Deletes a series by ID
       operationId: delete-series-by-id
       parameters:
+      - description: Event ID
+        in: path
+        name: eventID
+        required: true
+        type: string
       - description: Series ID
         in: path
         name: seriesID

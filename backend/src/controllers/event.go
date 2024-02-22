@@ -207,6 +207,7 @@ func (e *EventController) UpdateSeriesByID(c *fiber.Ctx) error {
 // @ID			delete-series-by-id
 // @Tags      	event
 // @Produce		json
+// @Param		eventID  	path	string	true	"Event ID"
 // @Param		seriesID	path	string	true	"Series ID"
 // @Success		204	  {string}	    utilities.SuccessResponse
 // @Failure     400   {object}      errors.Error
