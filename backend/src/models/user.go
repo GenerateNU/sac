@@ -48,6 +48,7 @@ type User struct {
 	College      College  `gorm:"type:varchar(255)" json:"college" validate:"required,max=255"`
 	Year         Year     `gorm:"type:smallint" json:"year" validate:"required,min=1,max=6"`
 
+	Majors            []Major   `gorm:"many2many:user_majors;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"majors,omitempty" validate:"-"`
 	Tag               []Tag     `gorm:"many2many:user_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	Admin             []Club    `gorm:"many2many:user_club_admins;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	Member            []Club    `gorm:"many2many:user_club_members;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
@@ -60,22 +61,24 @@ type User struct {
 }
 
 type CreateUserRequestBody struct {
-	NUID      string  `json:"nuid" validate:"required,numeric,len=9"`
-	FirstName string  `json:"first_name" validate:"required,max=255"`
-	LastName  string  `json:"last_name" validate:"required,max=255"`
-	Email     string  `json:"email" validate:"required,email,neu_email,max=255"`
-	Password  string  `json:"password" validate:"required,password"`
-	College   College `json:"college" validate:"required,oneof=CAMD DMSB KCCS CE BCHS SL CPS CS CSSH"`
-	Year      Year    `json:"year" validate:"required,min=1,max=6"`
+	NUID      string      `json:"nuid" validate:"required,numeric,len=9"`
+	FirstName string      `json:"first_name" validate:"required,max=255"`
+	LastName  string      `json:"last_name" validate:"required,max=255"`
+	Email     string      `json:"email" validate:"required,email,neu_email,max=255"`
+	Password  string      `json:"password" validate:"required,password"`
+	College   College     `json:"college" validate:"required,oneof=CAMD DMSB KCCS CE BCHS SL CPS CS CSSH"`
+	Year      Year        `json:"year" validate:"required,min=1,max=6"`
+	Majors    []uuid.UUID `json:"majors" validate:"omitempty"`
 }
 
 type UpdateUserRequestBody struct {
-	NUID      string  `json:"nuid" validate:"omitempty,numeric,len=9"`
-	FirstName string  `json:"first_name" validate:"omitempty,max=255"`
-	LastName  string  `json:"last_name" validate:"omitempty,max=255"`
-	Email     string  `json:"email" validate:"omitempty,email,neu_email,max=255"`
-	College   College `json:"college" validate:"omitempty,oneof=CAMD DMSB KCCS CE BCHS SL CPS CS CSSH"`
-	Year      Year    `json:"year" validate:"omitempty,min=1,max=6"`
+	NUID      string      `json:"nuid" validate:"omitempty,numeric,len=9"`
+	FirstName string      `json:"first_name" validate:"omitempty,max=255"`
+	LastName  string      `json:"last_name" validate:"omitempty,max=255"`
+	Email     string      `json:"email" validate:"omitempty,email,neu_email,max=255"`
+	College   College     `json:"college" validate:"omitempty,oneof=CAMD DMSB KCCS CE BCHS SL CPS CS CSSH"`
+	Year      Year        `json:"year" validate:"omitempty,min=1,max=6"`
+	Majors    []uuid.UUID `json:"majors" validate:"omitempty"`
 }
 
 type LoginUserResponseBody struct {
@@ -90,4 +93,8 @@ type UpdatePasswordRequestBody struct {
 
 type CreateUserTagsBody struct {
 	Tags []uuid.UUID `json:"tags" validate:"required"`
+}
+
+type CreateUserMajorsBody struct {
+	Majors []uuid.UUID `json:"majors" validate:"required"`
 }

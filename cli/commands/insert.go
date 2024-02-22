@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 
 	"github.com/lib/pq"
 	"github.com/urfave/cli/v2"
@@ -62,20 +63,31 @@ func InsertDB() error {
 		fmt.Println("Database exists with tables.")
 	}
 
-	migrationSQL, err := os.ReadFile(MIGRATION_FILE)
+	migrationFiles, err := os.ReadDir(MIGRATION_DIR)
 	if err != nil {
-		return fmt.Errorf("error reading migration file: %w", err)
+		return fmt.Errorf("error reading migration files: %w", err)
 	}
 
-	_, err = db.Exec(string(migrationSQL))
-	if err != nil {
-		if pqErr, ok := err.(*pq.Error); ok {
-			fmt.Println("PostgreSQL Error:")
-			fmt.Println("Code:", pqErr.Code)
-			fmt.Println("Message:", pqErr.Message)
-		} else {
-			return fmt.Errorf("error executing migration: %w", err)
+	for _, file := range migrationFiles {
+		fmt.Println("Running migration file:", file.Name())
+
+		migrationSQL, err := os.ReadFile(filepath.Join(MIGRATION_DIR, file.Name()))
+		if err != nil {
+			return fmt.Errorf("error reading migration file: %w", err)
 		}
+
+		_, err = db.Exec(string(migrationSQL))
+		if err != nil {
+			if pqErr, ok := err.(*pq.Error); ok {
+				fmt.Println("PostgreSQL Error:")
+				fmt.Println("Code:", pqErr.Code)
+				fmt.Println("Message:", pqErr.Message)
+			} else {
+				return fmt.Errorf("error executing migration: %w", err)
+			}
+		}
+
+		fmt.Println("Migration file", file.Name(), "executed successfully.")
 	}
 
 	fmt.Println("Data inserted successfully.")
