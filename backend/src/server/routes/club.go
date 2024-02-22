@@ -14,7 +14,7 @@ func ClubRoutes(router fiber.Router, db *gorm.DB, validate *validator.Validate, 
 	clubIDRouter := Club(router, services.NewClubService(db, validate), authMiddleware)
 
 	ClubTag(clubIDRouter, services.NewClubTagService(db, validate), authMiddleware)
-	ClubFollower(clubIDRouter, services.NewClubFollowerService(db))
+	ClubFollower(clubIDRouter, services.NewClubFollowerService(db), authMiddleware)
 	ClubMember(clubIDRouter, services.NewClubMemberService(db, validate), authMiddleware)
 	ClubContact(clubIDRouter, services.NewClubContactService(db, validate), authMiddleware)
 	ClubEvent(clubIDRouter, services.NewClubEventService(db))

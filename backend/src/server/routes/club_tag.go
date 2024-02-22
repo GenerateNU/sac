@@ -12,7 +12,7 @@ func ClubTag(router fiber.Router, clubTagService services.ClubTagServiceInterfac
 
 	clubTags := router.Group("/tags")
 
-	clubTags.Post("/", authMiddleware.ClubAuthorizeById, clubTagController.CreateClubTags)
 	clubTags.Get("/", clubTagController.GetClubTags)
+	clubTags.Post("/", authMiddleware.ClubAuthorizeById, clubTagController.CreateClubTags)
 	clubTags.Delete("/:tagID", authMiddleware.ClubAuthorizeById, clubTagController.DeleteClubTag)
 }
