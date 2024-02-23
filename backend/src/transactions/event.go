@@ -45,17 +45,18 @@ func GetSeriesID(db *gorm.DB, eventID uuid.UUID) (*uuid.UUID, *errors.Error) {
 		}
 	}
 
-	var SeriesID uuid.UUID
+	var seriesID string
 
-	if err := db.Model(&models.EventSeries{}).Where("event_id = ?", eventID).Select("series_id").Find(&SeriesID).Error; err != nil {
+	if err := db.Model(&models.EventSeries{}).Where("event_id = ?", event.ID).Select("series_id").Find(&seriesID).Error; err != nil {
 		return nil, &errors.FailedToGetEventSeries
 	}
 
-	if SeriesID.String() == "" {
-		return nil, &errors.SeriesNotFound
+	parsedSeriesID, err := uuid.Parse(seriesID)
+	if err != nil {
+		return nil, &errors.FailedToGetEventSeries
 	}
 
-	return &SeriesID, nil
+	return &parsedSeriesID, nil
 }
 
 func GetSeriesByEventID(db *gorm.DB, id uuid.UUID) ([]models.Event, *errors.Error) {
@@ -138,11 +139,7 @@ func UpdateEvent(db *gorm.DB, id uuid.UUID, event models.Event) (*models.Event, 
 	return &existingEvent, nil
 }
 
-func UpdateSeries(db *gorm.DB, eventID uuid.UUID, seriesID uuid.UUID, series models.Series) ([]models.Event, *errors.Error) {
-	if _, err := GetEvent(db, eventID); err != nil {
-		return nil, err
-	}
-
+func UpdateSeries(db *gorm.DB, seriesID uuid.UUID, series models.Series) ([]models.Event, *errors.Error) {
 	if _, err := GetSeriesByID(db, seriesID); err != nil {
 		return nil, err
 	}
@@ -194,6 +191,11 @@ func DeleteSeriesByID(db *gorm.DB, seriesID uuid.UUID) *errors.Error {
 	} else if len(eventIDs) < 1 {
 		tx.Rollback()
 		return &errors.SeriesNotFound
+	}
+
+	if result := tx.Delete(&models.Series{}, seriesID); result.RowsAffected == 0 {
+		tx.Rollback()
+		return &errors.FailedToDeleteSeries
 	}
 
 	if result := tx.Delete(&models.Event{}, eventIDs); result.RowsAffected == 0 {

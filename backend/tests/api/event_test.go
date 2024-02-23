@@ -1,14 +1,5 @@
 package tests
 
-/* TEST CASES:
-test createEventSeries fails on:
-	the stuff from above
-	invalid recurringType (ex. Annually)
-	invalid separationCount
-
-test updateEvent fails on:
-
-*/
 import (
 	stdliberrors "errors"
 	"fmt"
@@ -40,7 +31,20 @@ func SampleEventFactory() *map[string]interface{} {
 	}
 }
 
-func SampleEventSeriesFactory() *map[string]interface{} {
+func SampleSeriesFactory() *map[string]interface{} {
+	return CustomSampleSeriesFactory(
+		models.CreateSeriesRequestBody{
+			RecurringType:   "weekly",
+			MaxOccurrences:  10,
+			SeparationCount: 0,
+			DayOfWeek:       3,
+			WeekOfMonth:     2,
+			DayOfMonth:      1,
+		},
+	)
+}
+
+func CustomSampleSeriesFactory(series models.CreateSeriesRequestBody) *map[string]interface{} {
 	return &map[string]interface{}{
 		"name":         "Software Development",
 		"preview":      "CS4500 at northeastern",
@@ -50,39 +54,37 @@ func SampleEventSeriesFactory() *map[string]interface{} {
 		"location":     "ISEC",
 		"event_type":   "membersOnly",
 		"is_recurring": true,
-		"series": models.CreateSeriesRequestBody{
-			RecurringType:   "weekly",
-			MaxOccurrences:  10,
-			SeparationCount: 0,
-			DayOfWeek:       3,
-			WeekOfMonth:     2,
-			DayOfMonth:      1,
-		},
+		"series":       series,
 	}
 }
 
-func CompareEvents(eaa h.ExistingAppAssert, event1, event2 models.Event) {
-	eaa.Assert.Equal(event1.ID, event2.ID)
-	eaa.Assert.Equal(event1.Name, event2.Name)
-	eaa.Assert.Equal(event1.Preview, event2.Preview)
-	eaa.Assert.Equal(event1.Content, event2.Content)
-	eaa.Assert.Equal(event1.StartTime.Compare(event2.StartTime), 0)
-	eaa.Assert.Equal(event1.EndTime.Compare(event2.EndTime), 0)
-	eaa.Assert.Equal(event1.Location, event2.Location)
-	eaa.Assert.Equal(event1.IsRecurring, event2.IsRecurring)
+func CompareEventSlices(eaa h.ExistingAppAssert, dbEvents, respEvents []models.Event) {
+	for i, respEvent := range respEvents {
+		dbEvent := dbEvents[i]
+		CompareEvents(eaa, dbEvent, respEvent)
+	}
+}
+
+func CompareEvents(eaa h.ExistingAppAssert, dbEvent, respEvent models.Event) {
+	eaa.Assert.Equal(dbEvent.ID, respEvent.ID)
+	eaa.Assert.Equal(dbEvent.Name, respEvent.Name)
+	eaa.Assert.Equal(dbEvent.Preview, respEvent.Preview)
+	eaa.Assert.Equal(dbEvent.Content, respEvent.Content)
+	eaa.Assert.Equal(dbEvent.StartTime.Compare(respEvent.StartTime), 0)
+	eaa.Assert.Equal(dbEvent.EndTime.Compare(respEvent.EndTime), 0)
+	eaa.Assert.Equal(dbEvent.Location, respEvent.Location)
+	eaa.Assert.Equal(dbEvent.IsRecurring, respEvent.IsRecurring)
 }
 
 func GetRespAndDBEvents(eaa h.ExistingAppAssert, resp *http.Response) ([]models.Event, []models.Event) {
 	var respEventList []models.Event
 
-	err := json.NewDecoder(resp.Body).Decode(&respEventList) 
-
+	err := json.NewDecoder(resp.Body).Decode(&respEventList)
 	eaa.Assert.NilError(err)
 
 	var dbEvents []models.Event
 
 	err = eaa.App.Conn.Order("created_at desc").Find(&dbEvents).Error
-
 	eaa.Assert.NilError(err)
 
 	eaa.Assert.Equal(len(respEventList), len(dbEvents))
@@ -91,11 +93,11 @@ func GetRespAndDBEvents(eaa h.ExistingAppAssert, resp *http.Response) ([]models.
 }
 
 func AssertEventListBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, body *map[string]interface{}) []uuid.UUID {
-	respEventList, dbEvents := GetRespAndDBEvents(eaa, resp)
+	respEvents, dbEvents := GetRespAndDBEvents(eaa, resp)
 
 	var uuidList []uuid.UUID
 
-	for i, respEvent := range respEventList {
+	for i, respEvent := range respEvents {
 		dbEvent := dbEvents[i]
 
 		CompareEvents(eaa, dbEvent, respEvent)
@@ -106,7 +108,7 @@ func AssertEventListBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, bod
 	return uuidList
 }
 
-func AssertEventBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, body *map[string]interface{}) uuid.UUID {	
+func AssertEventBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, body *map[string]interface{}) uuid.UUID {
 	var respEvent models.Event
 
 	err := json.NewDecoder(resp.Body).Decode(&respEvent)
@@ -166,14 +168,41 @@ func CreateSampleEvent(existingAppAssert h.ExistingAppAssert, factoryFunction Ev
 	return newAppAssert, sampleEventUUIDs
 }
 
+func AssertNumEventsRemainsAtN(eaa h.ExistingAppAssert, resp *http.Response, n int) {
+	var dbEvents []models.Event
+
+	err := eaa.App.Conn.Order("created_at desc").Find(&dbEvents).Error
+
+	eaa.Assert.NilError(err)
+
+	eaa.Assert.Equal(n, len(dbEvents))
+}
+
 func TestCreateEventWorks(t *testing.T) {
 	existingAppAssert, _ := CreateSampleEvent(h.InitTest(t), SampleEventFactory)
 	existingAppAssert.Close()
 }
 
 func TestCreateEventSeriesWorks(t *testing.T) {
-	existingAppAssert, _ := CreateSampleEvent(h.InitTest(t), SampleEventSeriesFactory)
+	existingAppAssert, _ := CreateSampleEvent(h.InitTest(t), SampleSeriesFactory)
 	existingAppAssert.Close()
+}
+
+func TestGetEventWorks(t *testing.T) {
+	existingAppAssert, eventUUID := CreateSampleEvent(h.InitTest(t), SampleEventFactory)
+
+	existingAppAssert.TestOnStatusAndTester(h.TestRequest{
+		Method: fiber.MethodGet,
+		Path:   fmt.Sprintf("/api/v1/events/%s", eventUUID),
+		Role:   &models.Super,
+	},
+		h.TesterWithStatus{
+			Status: fiber.StatusOK,
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				AssertEventBodyRespDB(eaa, resp, SampleEventFactory())
+			},
+		},
+	).Close()
 }
 
 func TestGetEventsWorks(t *testing.T) {
@@ -199,14 +228,40 @@ func TestGetEventsWorks(t *testing.T) {
 	).Close()
 }
 
-func AssertNumEventsRemainsAtN(eaa h.ExistingAppAssert, resp *http.Response, n int) {
-	var dbEvents []models.Event
+func TestGetSeriesByEventIDWorks(t *testing.T) {
+	existingAppAssert, eventUUIDs := CreateSampleEvent(h.InitTest(t), SampleSeriesFactory)
 
-	err := eaa.App.Conn.Order("created_at desc").Find(&dbEvents).Error
+	existingAppAssert.TestOnStatusAndTester(h.TestRequest{
+		Method: fiber.MethodGet,
+		Path:   fmt.Sprintf("/api/v1/events/%s/series", eventUUIDs[2]),
+		Role:   &models.Super,
+	},
+		h.TesterWithStatus{
+			Status: fiber.StatusOK,
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				respEvents, dbEvents := GetRespAndDBEvents(eaa, resp)
+				CompareEventSlices(eaa, dbEvents, respEvents)
+			},
+		},
+	).Close()
+}
 
-	eaa.Assert.NilError(err)
+func TestGetSeriesByIDWorks(t *testing.T) {
+	existingAppAssert, eventUUIDs := CreateSampleEvent(h.InitTest(t), SampleSeriesFactory)
 
-	eaa.Assert.Equal(n, len(dbEvents))
+	existingAppAssert.TestOnStatusAndTester(h.TestRequest{
+		Method: fiber.MethodGet,
+		Path:   fmt.Sprintf("/api/v1/events/%s/series", eventUUIDs[2]),
+		Role:   &models.Super,
+	},
+		h.TesterWithStatus{
+			Status: fiber.StatusOK,
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				respEvents, dbEvents := GetRespAndDBEvents(eaa, resp)
+				CompareEventSlices(eaa, dbEvents, respEvents)
+			},
+		},
+	).Close()
 }
 
 func AssertCreateBadEventDataFails(t *testing.T, jsonKey string, badValues []interface{}, expectedErr errors.Error) {
@@ -272,6 +327,112 @@ func TestCreateEventFailsOnInvalidEventType(t *testing.T) {
 			"open membersOnly",
 		},
 		errors.FailedToValidateEvent,
+	)
+}
+
+func AssertCreateBadEventSeriesDataFails(t *testing.T, badSeries models.CreateSeriesRequestBody, expectedErr errors.Error) {
+	appAssert, _, _ := CreateSampleStudent(t, nil)
+
+	sampleSeriesPermutation := CustomSampleSeriesFactory(badSeries)
+
+	appAssert.TestOnErrorAndTester(
+		h.TestRequest{
+			Method: fiber.MethodPost,
+			Path:   "/api/v1/events/",
+			Body:   sampleSeriesPermutation,
+			Role:   &models.Super,
+		},
+		h.ErrorWithTester{
+			Error: expectedErr,
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				AssertNumEventsRemainsAtN(eaa, resp, 0)
+			},
+		},
+	)
+	appAssert.Close()
+}
+
+func TestCreateSeriesFailsOnInvalidRecurringType(t *testing.T) {
+	AssertCreateBadEventSeriesDataFails(t,
+		models.CreateSeriesRequestBody{
+			RecurringType:   "annually",
+			MaxOccurrences:  10,
+			SeparationCount: 0,
+			DayOfWeek:       3,
+			WeekOfMonth:     2,
+			DayOfMonth:      1,
+		},
+		errors.FailedToValidateEventSeries,
+	)
+}
+
+func TestCreateSeriesFailsOnInvalidMaxOccurrences(t *testing.T) {
+	AssertCreateBadEventSeriesDataFails(t,
+		models.CreateSeriesRequestBody{
+			RecurringType:   "weekly",
+			MaxOccurrences:  -1,
+			SeparationCount: 0,
+			DayOfWeek:       3,
+			WeekOfMonth:     2,
+			DayOfMonth:      1,
+		},
+		errors.FailedToValidateEventSeries,
+	)
+}
+
+func TestCreateSeriesFailsOnInvalidSeparationCount(t *testing.T) {
+	AssertCreateBadEventSeriesDataFails(t,
+		models.CreateSeriesRequestBody{
+			RecurringType:   "weekly",
+			MaxOccurrences:  10,
+			SeparationCount: -1,
+			DayOfWeek:       3,
+			WeekOfMonth:     2,
+			DayOfMonth:      1,
+		},
+		errors.FailedToValidateEventSeries,
+	)
+}
+
+func TestCreateSeriesFailsOnInvalidDayOfWeek(t *testing.T) {
+	AssertCreateBadEventSeriesDataFails(t,
+		models.CreateSeriesRequestBody{
+			RecurringType:   "weekly",
+			MaxOccurrences:  10,
+			SeparationCount: 0,
+			DayOfWeek:       8,
+			WeekOfMonth:     2,
+			DayOfMonth:      1,
+		},
+		errors.FailedToValidateEventSeries,
+	)
+}
+
+func TestCreateSeriesFailsOnInvalidWeekOfMonth(t *testing.T) {
+	AssertCreateBadEventSeriesDataFails(t,
+		models.CreateSeriesRequestBody{
+			RecurringType:   "weekly",
+			MaxOccurrences:  10,
+			SeparationCount: 0,
+			DayOfWeek:       5,
+			WeekOfMonth:     -5,
+			DayOfMonth:      1,
+		},
+		errors.FailedToValidateEventSeries,
+	)
+}
+
+func TestCreateSeriesFailsOnInvalidDayOfMonth(t *testing.T) {
+	AssertCreateBadEventSeriesDataFails(t,
+		models.CreateSeriesRequestBody{
+			RecurringType:   "weekly",
+			MaxOccurrences:  10,
+			SeparationCount: 0,
+			DayOfWeek:       5,
+			WeekOfMonth:     2,
+			DayOfMonth:      42,
+		},
+		errors.FailedToValidateEventSeries,
 	)
 }
 

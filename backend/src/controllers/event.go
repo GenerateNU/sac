@@ -90,7 +90,7 @@ func (e *EventController) UpdateSeriesByID(c *fiber.Ctx) error {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
-	updatedSeries, err := e.eventService.UpdateSeries(c.Params("eventID"), c.Params("seriesID"), seriesBody)
+	updatedSeries, err := e.eventService.UpdateSeries(c.Params("seriesID"), seriesBody)
 	if err != nil {
 		return err.FiberError(c)
 	}

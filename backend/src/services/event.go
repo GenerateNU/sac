@@ -17,7 +17,7 @@ type EventServiceInterface interface {
 	GetSeriesByID(seriesID string) ([]models.Event, *errors.Error)
 	CreateEvent(eventBodies models.CreateEventRequestBody) ([]models.Event, *errors.Error)
 	UpdateEvent(eventID string, eventBody models.UpdateEventRequestBody) (*models.Event, *errors.Error)
-	UpdateSeries(eventID string, seriesID string, seriesBody models.UpdateSeriesRequestBody) ([]models.Event, *errors.Error)
+	UpdateSeries(seriesID string, seriesBody models.UpdateSeriesRequestBody) ([]models.Event, *errors.Error)
 	DeleteEvent(eventID string) *errors.Error
 	DeleteSeriesByEventID(seriesID string) *errors.Error
 	DeleteSeriesByID(seriesID string) *errors.Error
@@ -84,7 +84,7 @@ func (e *EventService) CreateEvent(eventBody models.CreateEventRequestBody) ([]m
 	}
 
 	// Create other events in series and update field in series (for join table)
-	events := createEventSlice(event, *series)
+	events := CreateEventSlice(event, *series)
 	series.Events = events
 
 	return transactions.CreateEventSeries(e.DB, *series)
@@ -137,20 +137,10 @@ func (e *EventService) UpdateEvent(id string, eventBody models.UpdateEventReques
 		EventType: eventBody.EventType,
 	}
 
-	// updatedEvent, err := utilities.MapRequestToModel(eventBody, &models.UpdateEventRequestBody{})
-	// if err != nil {
-	// 	return nil, &errors.FailedToMapRequestToModel
-	// }
-
 	return transactions.UpdateEvent(e.DB, *idAsUUID, *updatedEvent)
 }
 
-func (e *EventService) UpdateSeries(eventID string, seriesID string, seriesBody models.UpdateSeriesRequestBody) ([]models.Event, *errors.Error) {
-	eventIDAsUUID, idErr := utilities.ValidateID(eventID)
-	if idErr != nil {
-		return nil, idErr
-	}
-
+func (e *EventService) UpdateSeries(seriesID string, seriesBody models.UpdateSeriesRequestBody) ([]models.Event, *errors.Error) {
 	seriesIDAsUUID, idErr := utilities.ValidateID(seriesID)
 	if idErr != nil {
 		return nil, idErr
@@ -165,7 +155,7 @@ func (e *EventService) UpdateSeries(eventID string, seriesID string, seriesBody 
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	return transactions.UpdateSeries(e.DB, *eventIDAsUUID, *seriesIDAsUUID, *series)
+	return transactions.UpdateSeries(e.DB, *seriesIDAsUUID, *series)
 }
 
 func (e *EventService) DeleteEvent(id string) *errors.Error {
@@ -195,12 +185,10 @@ func (e *EventService) DeleteSeriesByID(id string) *errors.Error {
 	return transactions.DeleteSeriesByID(e.DB, *idAsUUID)
 }
 
-// Helper to create other events in a given series using the given firstEvent
-func createEventSlice(firstEvent *models.Event, series models.Series) []models.Event {
+func CreateEventSlice(firstEvent *models.Event, series models.Series) []models.Event {
 	eventBodies := []models.Event{*firstEvent}
 	months, days := 0, 0
 
-	// currently 0-indexed (separation count 0 means every week/day/month)
 	switch series.RecurringType {
 	case "daily":
 		days = series.SeparationCount + 1
