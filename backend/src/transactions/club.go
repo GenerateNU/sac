@@ -5,6 +5,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/GenerateNU/sac/backend/src/search"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -49,6 +50,23 @@ func GetClubs(db *gorm.DB, queryParams *models.ClubQueryParams) ([]models.Club, 
 	result := query.Limit(queryParams.Limit).Offset(offset).Find(&clubs)
 	if result.Error != nil {
 		return nil, &errors.FailedToGetClubs
+	}
+
+	return clubs, nil
+}
+
+// FIXME: replace queryparams with searchparams
+// FIXME: this probably needs to be sorted by scores?
+func SearchClubs(db *gorm.DB, pinecone *search.PineconeClient, queryParams *models.ClubSearchParams) ([]models.Club, *errors.Error) {
+	results, err := pinecone.Search(queryParams, queryParams.NumResults)
+	if err != nil {
+		return nil, err
+	}
+
+	var clubs []models.Club
+
+	if err := db.Where("id IN ?", results).Find(&clubs).Error; err != nil {
+		return nil, &errors.ClubNotFound
 	}
 
 	return clubs, nil

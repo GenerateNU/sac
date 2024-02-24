@@ -7,6 +7,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/database"
+	"github.com/GenerateNU/sac/backend/src/search"
 	"github.com/GenerateNU/sac/backend/src/server"
 )
 
@@ -44,13 +45,16 @@ func main() {
 	}
 
 	// FIXME: put somewhere else and architect so it doesnt panic
+	// FIXME: theres a cli command for this
 	//database.SeedDatabase(db)
 
-	app := server.Init(db, *config)
+	openAI := search.NewOpenAIClient(config.OpenAISettings)
+	pinecone := search.NewPineconeClient(openAI, config.PineconeSettings)
+	app := server.Init(db, pinecone, *config)
 
 	// FIXME: no fucking clue how but there is a vector database and it has club data
-	// DO NOT FUCK WITH THIS - TOMMOROW we make a new normal pinecone client and we go from there
-
+	// FIXME: DO NOT FUCK WITH THIS - TOMMOROW we make a new normal pinecone client and we go from there
+	// FIXME: DO NOT FUCK WITH DO NOT FUCK WITH DO NOT FUCK WITH
 	/**openAIClient := search.NewOpenAIClient(config.OpenAISettings)
 
 	pineconeClient, err := search.NewPineconeDevelopmentClient(openAIClient, config.PineconeSettings)

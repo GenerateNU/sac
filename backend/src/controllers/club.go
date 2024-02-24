@@ -36,6 +36,22 @@ func (cl *ClubController) GetAllClubs(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(clubs)
 }
 
+func (cl *ClubController) SearchClubs(c *fiber.Ctx) error {
+	var queryParams models.ClubSearchParams
+
+	if err := c.QueryParser(&queryParams); err != nil {
+		fmt.Println(err)
+		return errors.FailedtoParseQueryParams.FiberError(c)
+	}
+
+	clubs, err := cl.clubService.SearchClubs(&queryParams)
+	if err != nil {
+		return err.FiberError(c)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(clubs)
+}
+
 func (cl *ClubController) CreateClub(c *fiber.Ctx) error {
 	var clubBody models.CreateClubRequestBody
 	if err := c.BodyParser(&clubBody); err != nil {
