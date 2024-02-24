@@ -64,7 +64,7 @@ func (e *EventService) CreateEvent(eventBody models.CreateEventRequestBody) ([]m
 		EndTime:     eventBody.EndTime,
 		Location:    eventBody.Location,
 		EventType:   eventBody.EventType,
-		IsRecurring: * eventBody.IsRecurring,
+		IsRecurring: *eventBody.IsRecurring,
 	}
 
 	if !event.IsRecurring {
@@ -151,7 +151,7 @@ func (e *EventService) UpdateSeries(seriesID string, seriesBody models.UpdateSer
 		return nil, &errors.FailedToValidateEventSeries
 	}
 
-	series, err := utilities.MapRequestToModel(seriesBody.SeriesDetails, &models.Series{})
+	series, err := utilities.MapRequestToModel(seriesBody, &models.Series{})
 	if err != nil {
 		return nil, &errors.FailedToMapRequestToModel
 	}
@@ -169,7 +169,7 @@ func (e *EventService) UpdateSeriesByEventID(eventID string, seriesBody models.U
 		return nil, &errors.FailedToValidateEventSeries
 	}
 
-	series, err := utilities.MapRequestToModel(seriesBody.SeriesDetails, &models.Series{})
+	series, err := utilities.MapRequestToModel(seriesBody, &models.Series{})
 	if err != nil {
 		return nil, &errors.FailedToMapRequestToModel
 	}

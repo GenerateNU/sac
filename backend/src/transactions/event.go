@@ -139,6 +139,23 @@ func UpdateEvent(db *gorm.DB, id uuid.UUID, event models.Event) ([]models.Event,
 	return []models.Event{existingEvent}, nil
 }
 
+func UpdateSeries(db *gorm.DB, seriesID uuid.UUID, series models.Series, eventDetails models.UpdateEventRequestBody) ([]models.Event, *errors.Error) {
+	_, err := GetSeriesByID(db, seriesID)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := db.Model(&models.Series{}).Where("id = ?", seriesID).Updates(series).Error; err != nil {
+		return nil, &errors.FailedToUpdateSeries
+	}
+
+	events, err := GetSeriesByID(db, seriesID)
+	if err != nil {
+		return nil, err
+	}
+	return events, nil
+}
+
 func UpdateSeriesByEventID(db *gorm.DB, eventID uuid.UUID, series models.Series, eventDetails models.UpdateEventRequestBody) ([]models.Event, *errors.Error) {
 	seriesID, err := GetSeriesID(db, eventID)
 	if err != nil {
@@ -150,30 +167,6 @@ func UpdateSeriesByEventID(db *gorm.DB, eventID uuid.UUID, series models.Series,
 		return nil, err
 	}
 
-	return events, nil
-}
-
-func UpdateSeries(db *gorm.DB, seriesID uuid.UUID, series models.Series, eventDetails models.UpdateEventRequestBody) ([]models.Event, *errors.Error) {
-	oldEvents, err := GetSeriesByID(db, seriesID)
-	if err != nil {
-		return nil, err
-	}
-
-	var eventIDs []uuid.UUID
-	for _, event := range oldEvents {
-		eventIDs = append(eventIDs, event.ID)
-	}
-
-	// if err := db.Model
-
-	if err := db.Model(&models.Series{}).Where("id = ?", seriesID).Updates(series).Error; err != nil {
-		return nil, &errors.FailedToUpdateSeries
-	}
-
-	events, err := GetSeriesByID(db, seriesID)
-	if err != nil {
-		return nil, err
-	}
 	return events, nil
 }
 

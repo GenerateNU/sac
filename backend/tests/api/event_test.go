@@ -33,7 +33,7 @@ func SampleEventFactory() *map[string]interface{} {
 
 func SampleSeriesFactory() *map[string]interface{} {
 	return CustomSampleSeriesFactory(
-		models.SeriesRequestBody{
+		models.CreateSeriesRequestBody{
 			RecurringType:   "daily",
 			MaxOccurrences:  10,
 			SeparationCount: 4,
@@ -44,7 +44,7 @@ func SampleSeriesFactory() *map[string]interface{} {
 	)
 }
 
-func CustomSampleSeriesFactory(series models.SeriesRequestBody) *map[string]interface{} {
+func CustomSampleSeriesFactory(series models.CreateSeriesRequestBody) *map[string]interface{} {
 	return &map[string]interface{}{
 		"name":         "Software Development",
 		"preview":      "CS4500 at northeastern",
@@ -322,7 +322,7 @@ func TestCreateEventFailsOnInvalidEventType(t *testing.T) {
 	)
 }
 
-func AssertCreateBadEventSeriesDataFails(t *testing.T, badSeries models.SeriesRequestBody, expectedErr errors.Error) {
+func AssertCreateBadEventSeriesDataFails(t *testing.T, badSeries models.CreateSeriesRequestBody, expectedErr errors.Error) {
 	appAssert, _, _ := CreateSampleStudent(t, nil)
 
 	sampleSeriesPermutation := CustomSampleSeriesFactory(badSeries)
@@ -346,7 +346,7 @@ func AssertCreateBadEventSeriesDataFails(t *testing.T, badSeries models.SeriesRe
 
 func TestCreateSeriesFailsOnInvalidRecurringType(t *testing.T) {
 	AssertCreateBadEventSeriesDataFails(t,
-		models.SeriesRequestBody{
+		models.CreateSeriesRequestBody{
 			RecurringType:   "annually",
 			MaxOccurrences:  10,
 			SeparationCount: 0,
@@ -360,7 +360,7 @@ func TestCreateSeriesFailsOnInvalidRecurringType(t *testing.T) {
 
 func TestCreateSeriesFailsOnInvalidMaxOccurrences(t *testing.T) {
 	AssertCreateBadEventSeriesDataFails(t,
-		models.SeriesRequestBody{
+		models.CreateSeriesRequestBody{
 			RecurringType:   "weekly",
 			MaxOccurrences:  -1,
 			SeparationCount: 0,
@@ -374,7 +374,7 @@ func TestCreateSeriesFailsOnInvalidMaxOccurrences(t *testing.T) {
 
 func TestCreateSeriesFailsOnInvalidSeparationCount(t *testing.T) {
 	AssertCreateBadEventSeriesDataFails(t,
-		models.SeriesRequestBody{
+		models.CreateSeriesRequestBody{
 			RecurringType:   "weekly",
 			MaxOccurrences:  10,
 			SeparationCount: -1,
@@ -388,7 +388,7 @@ func TestCreateSeriesFailsOnInvalidSeparationCount(t *testing.T) {
 
 func TestCreateSeriesFailsOnInvalidDayOfWeek(t *testing.T) {
 	AssertCreateBadEventSeriesDataFails(t,
-		models.SeriesRequestBody{
+		models.CreateSeriesRequestBody{
 			RecurringType:   "weekly",
 			MaxOccurrences:  10,
 			SeparationCount: 0,
@@ -402,7 +402,7 @@ func TestCreateSeriesFailsOnInvalidDayOfWeek(t *testing.T) {
 
 func TestCreateSeriesFailsOnInvalidWeekOfMonth(t *testing.T) {
 	AssertCreateBadEventSeriesDataFails(t,
-		models.SeriesRequestBody{
+		models.CreateSeriesRequestBody{
 			RecurringType:   "weekly",
 			MaxOccurrences:  10,
 			SeparationCount: 0,
@@ -416,7 +416,7 @@ func TestCreateSeriesFailsOnInvalidWeekOfMonth(t *testing.T) {
 
 func TestCreateSeriesFailsOnInvalidDayOfMonth(t *testing.T) {
 	AssertCreateBadEventSeriesDataFails(t,
-		models.SeriesRequestBody{
+		models.CreateSeriesRequestBody{
 			RecurringType:   "weekly",
 			MaxOccurrences:  10,
 			SeparationCount: 0,

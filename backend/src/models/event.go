@@ -88,10 +88,10 @@ type CreateEventRequestBody struct {
 	Notification []Notification `json:"-" validate:"-"`
 
 	// TODO validate if isRecurring, then series is required
-	Series SeriesRequestBody `json:"series" validate:"-"`
+	Series CreateSeriesRequestBody `json:"series" validate:"-"`
 }
 
-type SeriesRequestBody struct {
+type CreateSeriesRequestBody struct {
 	RecurringType   RecurringType `json:"recurring_type" validate:"required,max=255,oneof=daily weekly monthly"`
 	SeparationCount int           `json:"separation_count" validate:"required,min=0"`
 	MaxOccurrences  int           `json:"max_occurrences" validate:"required,min=2"`
@@ -118,6 +118,12 @@ type UpdateEventRequestBody struct {
 
 // TODO: probably need to make changes to this to update the events as well
 type UpdateSeriesRequestBody struct {
-	EventDetails  UpdateEventRequestBody
-	SeriesDetails SeriesRequestBody
+	RecurringType   RecurringType `json:"recurring_type" validate:"omitempty,max=255,oneof=daily weekly monthly"`
+	SeparationCount int           `json:"separation_count" validate:"omitempty,min=0"`
+	MaxOccurrences  int           `json:"max_occurrences" validate:"omitempty,min=2"`
+	DayOfWeek       int           `json:"day_of_week" validate:"omitempty,min=1,max=7"`
+	WeekOfMonth     int           `json:"week_of_month" validate:"omitempty,min=1,max=5"`
+	DayOfMonth      int           `json:"day_of_month" validate:"omitempty,min=1,max=31"`
+
+	EventDetails UpdateEventRequestBody `json:"event_details" validate:"omitempty"`
 }
