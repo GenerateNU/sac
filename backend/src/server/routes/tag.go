@@ -1,21 +1,21 @@
 package routes
 
 import (
+	p "github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/controllers"
+	"github.com/GenerateNU/sac/backend/src/middleware"
 	"github.com/GenerateNU/sac/backend/src/services"
 	"github.com/gofiber/fiber/v2"
 )
 
-func Tag(router fiber.Router, tagService services.TagServiceInterface) {
+func Tag(router fiber.Router, tagService services.TagServiceInterface, authMiddleware *middleware.AuthMiddlewareService) {
 	tagController := controllers.NewTagController(tagService)
 
 	tags := router.Group("/tags")
 
-	tags.Post("/", tagController.CreateTag)
-
-	tagID := tags.Group("/:tagID")
-
-	tagID.Get("/", tagController.GetTag)
-	tagID.Patch("/", tagController.UpdateTag)
-	tagID.Delete("/", tagController.DeleteTag)
+	tags.Get("/", tagController.GetTags)
+	tags.Get("/:tagID", tagController.GetTag)
+	tags.Post("/", authMiddleware.Authorize(p.CreateAll), tagController.CreateTag)
+	tags.Patch("/:tagID", authMiddleware.Authorize(p.WriteAll), tagController.UpdateTag)
+	tags.Delete("/:tagID", authMiddleware.Authorize(p.DeleteAll), tagController.DeleteTag)
 }

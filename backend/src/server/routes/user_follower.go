@@ -6,16 +6,13 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func UserFollower(usersRouter fiber.Router, userFollowerService services.UserFollowerServiceInterface) {
+func UserFollower(userRouter fiber.Router, userFollowerService services.UserFollowerServiceInterface) {
 	userFollowerController := controllers.NewUserFollowerController(userFollowerService)
 
-	userFollower := usersRouter.Group("/:userID/follower")
+	// api/v1/users/:userID/follower/*
+	userFollower := userRouter.Group("/follower")
 
 	userFollower.Get("/", userFollowerController.GetAllFollowing)
-
-	clubID := userFollower.Group("/:clubID")
-
-	// api/v1/users/:userID/follower/*
-	clubID.Post("/", userFollowerController.CreateFollowing)
-	clubID.Delete("/", userFollowerController.DeleteFollowing)
+	userFollower.Post("/:clubID", userFollowerController.CreateFollowing)
+	userFollower.Delete("/:clubID", userFollowerController.DeleteFollowing)
 }

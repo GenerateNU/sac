@@ -15,7 +15,7 @@ func NewClubController(clubService services.ClubServiceInterface) *ClubControlle
 	return &ClubController{clubService: clubService}
 }
 
-// GetAllClubs godoc
+// GetClubs godoc
 //
 // @Summary		Retrieve all clubs
 // @Description	Retrieves all clubs

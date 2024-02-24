@@ -9,7 +9,7 @@ import (
 func UserMember(usersRouter fiber.Router, userMembershipService services.UserMemberServiceInterface) {
 	userMemberController := controllers.NewUserMemberController(userMembershipService)
 
-	userMember := usersRouter.Group("/:userID/member")
+	userMember := usersRouter.Group("/member")
 
 	userMember.Get("/", userMemberController.GetMembership)
 

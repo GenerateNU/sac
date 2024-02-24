@@ -9,7 +9,8 @@ import (
 func UserTag(usersRouter fiber.Router, userTagService services.UserTagServiceInterface) {
 	userTagController := controllers.NewUserTagController(userTagService)
 
-	userTags := usersRouter.Group("/:userID/tags")
+	// api/v1/user/:userID/tags/*
+	userTags := usersRouter.Group("/tags")
 
 	userTags.Post("/", userTagController.CreateUserTags)
 	userTags.Get("/", userTagController.GetUserTags)
