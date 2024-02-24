@@ -117,7 +117,6 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 			return err
 		}
 
-
 		superClub := SuperClub()
 		if err := tx.Create(&superClub).Error; err != nil {
 			tx.Rollback()
@@ -156,10 +155,9 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 			tx.Rollback()
 			return err
 		}
-		
-		
+
 		return tx.Commit().Error
 	}
-	
+
 	return nil
 }

@@ -24,7 +24,7 @@ func CreateMember(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error
 
 	var count int64
 	if err := tx.Model(&models.Membership{}).Where("user_id = ? AND club_id = ?", userId, clubId).Count(&count).Error; err != nil {
-		tx.Rollback()	
+		tx.Rollback()
 		return &errors.FailedToGetUserMemberships
 	}
 

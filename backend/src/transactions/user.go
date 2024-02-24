@@ -107,13 +107,13 @@ func UpdatePassword(db *gorm.DB, id uuid.UUID, passwordHash string) *errors.Erro
 }
 
 func DeleteUser(db *gorm.DB, id uuid.UUID) *errors.Error {
-	result := db.Delete(&models.User{}, id)
-	if result.RowsAffected == 0 {
-		if result.Error == nil {
+	if err := db.Delete(&models.User{}, id).Error; err != nil {
+		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
 			return &errors.UserNotFound
 		} else {
 			return &errors.FailedToDeleteUser
 		}
 	}
+
 	return nil
 }
