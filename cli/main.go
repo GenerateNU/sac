@@ -20,6 +20,7 @@ func main() {
 			commands.InsertCommand(),
 			commands.DropCommand(),
 			commands.RunBackendCommand(),
+			commands.RunFrontendCommand(),
 			commands.TestCommand(), // TODO: frontend tests
 			commands.FormatCommand(),
 			commands.LintCommand(),

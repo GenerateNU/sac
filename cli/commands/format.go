@@ -2,88 +2,84 @@ package commands
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
-	"sync"
 
 	"github.com/urfave/cli/v2"
 )
 
 func FormatCommand() *cli.Command {
 	command := cli.Command{
-		Name:    "format",
-		Usage:   "Runs formatting tools",
-		Aliases: []string{"f"},
-		Flags: []cli.Flag{
-			&cli.StringFlag{
+		Name:     "format",
+		Aliases:  []string{"f"},
+		Usage:    "Runs formatting tools",
+		Category: "CI",
+		Subcommands: []*cli.Command{
+			{
 				Name:    "frontend",
+				Usage:   "Format the frontend",
 				Aliases: []string{"f"},
-				Value:   "",
-				Usage:   "Formats a specific frontend folder",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:    "target",
+						Aliases: []string{"t"},
+						Value:   "mobile",
+						Usage:   "Format a specific frontend type (web or mobile)",
+					},
+				},
+				Action: func(c *cli.Context) error {
+					if c.Args().Len() > 0 {
+						return cli.Exit("Invalid arguments", 1)
+					}
+
+					target := c.String("target")
+					if target != "web" && target != "mobile" {
+						return cli.Exit("Invalid frontend type: must be 'web' or 'mobile'", 1)
+					}
+
+					err := FormatFrontend(target)
+					if err != nil {
+						return cli.Exit(err.Error(), 1)
+					}
+
+					return nil
+				},
 			},
-			&cli.BoolFlag{
+			{
 				Name:    "backend",
+				Usage:   "Format the backend",
 				Aliases: []string{"b"},
-				Usage:   "Formats the backend",
+				Action: func(c *cli.Context) error {
+					if c.Args().Len() > 0 {
+						return cli.Exit("Invalid arguments", 1)
+					}
+
+					err := FormatBackend()
+					if err != nil {
+						return cli.Exit(err.Error(), 1)
+					}
+
+					return nil
+				},
 			},
-		},
-		Action: func(c *cli.Context) error {
-			if c.Args().Len() > 0 {
-				return cli.Exit("Invalid arguments", 1)
-			}
-
-			if c.String("frontend") == "" && !c.Bool("backend") {
-				return cli.Exit("Must specify frontend or backend", 1)
-			}
-
-			folder := c.String("frontend")
-			runFrontend := folder != ""
-			runBackend := c.Bool("backend")
-
-			err := Format(folder, runFrontend, runBackend)
-			if err != nil {
-				return cli.Exit(err.Error(), 1)
-			}
-
-			return nil
 		},
 	}
 
 	return &command
 }
 
-func Format(folder string, runFrontend bool, runBackend bool) error {
-	var wg sync.WaitGroup
-
-	// Start the backend if specified
-	if runBackend {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			err := BackendFormat()
-			if err != nil {
-				fmt.Println(err)
-			}
-		}()
+func FormatFrontend(target string) error {
+	switch target {
+	case "web":
+		return FormatWeb()
+	case "mobile":
+		return FormatMobile()
+	default:
+		return FormatMobile()
 	}
-
-	// Start the frontend if specified
-	if runFrontend {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			err := FrontendFormat(folder)
-			if err != nil {
-				fmt.Println(err)
-			}
-		}()
-	}
-
-	wg.Wait()
-
-	return nil
 }
 
-func BackendFormat() error {
+func FormatBackend() error {
 	fmt.Println("Formatting backend")
 
 	cmd := exec.Command("gofumpt", "-l", "-w", ".")
@@ -98,7 +94,21 @@ func BackendFormat() error {
 	return nil
 }
 
-func FrontendFormat(folder string) error {
-	fmt.Println("UNIMPLEMENTED")
+func FormatWeb() error {
+	return nil
+}
+
+func FormatMobile() error {
+	mobileCmd := exec.Command("yarn", "run", "format")
+	mobileCmd.Dir = FRONTEND_DIR + "/sac-mobile"
+
+	mobileCmd.Stdout = os.Stdout
+	mobileCmd.Stderr = os.Stderr
+	mobileCmd.Stdin = os.Stdin
+
+	if err := mobileCmd.Run(); err != nil {
+		return err
+	}
+
 	return nil
 }

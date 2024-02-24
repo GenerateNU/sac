@@ -11,8 +11,9 @@ import (
 
 func RunBackendCommand() *cli.Command {
 	command := cli.Command{
-		Name:  "be",
-		Usage: "Run the backend",
+		Name:     "be",
+		Usage:    "Run the backend",
+		Category: "Development",
 		Action: func(c *cli.Context) error {
 			if c.Args().Len() > 0 {
 				return cli.Exit("Invalid arguments", 1)

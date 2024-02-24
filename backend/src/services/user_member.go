@@ -27,7 +27,6 @@ func (u *UserMemberService) CreateMembership(userID string, clubID string) *erro
 	if err != nil {
 		return err
 	}
-
 	clubIdAsUUID, err := utilities.ValidateID(clubID)
 	if err != nil {
 		return err
