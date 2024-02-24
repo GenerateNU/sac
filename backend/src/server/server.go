@@ -33,8 +33,9 @@ func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 
 	middlewareService := middleware.NewMiddlewareService(db, validate, settings.Auth)
 
+	// FIXME: reenable auth
 	apiv1 := app.Group("/api/v1")
-	apiv1.Use(middlewareService.Authenticate)
+	//apiv1.Use(middlewareService.Authenticate)
 
 	routes.Utility(app)
 

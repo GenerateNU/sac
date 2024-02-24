@@ -43,6 +43,9 @@ func main() {
 		panic(fmt.Sprintf("Error connecting to database: %s", err.Error()))
 	}
 
+	// FIXME: put somewhere else and architect so it doesnt panic
+	//database.SeedDatabase(db)
+
 	app := server.Init(db, *config)
 
 	err = app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
