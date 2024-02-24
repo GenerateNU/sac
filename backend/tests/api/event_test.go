@@ -33,10 +33,10 @@ func SampleEventFactory() *map[string]interface{} {
 
 func SampleSeriesFactory() *map[string]interface{} {
 	return CustomSampleSeriesFactory(
-		models.CreateSeriesRequestBody{
-			RecurringType:   "weekly",
+		models.SeriesRequestBody{
+			RecurringType:   "daily",
 			MaxOccurrences:  10,
-			SeparationCount: 0,
+			SeparationCount: 4,
 			DayOfWeek:       3,
 			WeekOfMonth:     2,
 			DayOfMonth:      1,
@@ -44,13 +44,13 @@ func SampleSeriesFactory() *map[string]interface{} {
 	)
 }
 
-func CustomSampleSeriesFactory(series models.CreateSeriesRequestBody) *map[string]interface{} {
+func CustomSampleSeriesFactory(series models.SeriesRequestBody) *map[string]interface{} {
 	return &map[string]interface{}{
 		"name":         "Software Development",
 		"preview":      "CS4500 at northeastern",
 		"content":      "Software development with ben lerner",
-		"start_time":   "2023-12-20T18:00:00Z",
-		"end_time":     "2023-12-20T21:00:00Z",
+		"start_time":   "2024-03-20T18:00:00Z",
+		"end_time":     "2024-03-20T21:00:00Z",
 		"location":     "ISEC",
 		"event_type":   "membersOnly",
 		"is_recurring": true,
@@ -147,7 +147,7 @@ func AssertSampleEventBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response) [
 	return AssertEventListBodyRespDB(eaa, resp, sampleEvent)
 }
 
-func CreateSampleEvent(existingAppAssert h.ExistingAppAssert, factoryFunction EventFactory) (eaa h.ExistingAppAssert, eventUUID []uuid.UUID) {
+func CreateSampleEvent(existingAppAssert h.ExistingAppAssert, factoryFunction EventFactory) (h.ExistingAppAssert, []uuid.UUID) {
 	var sampleEventUUIDs []uuid.UUID
 
 	newAppAssert := existingAppAssert.TestOnStatusAndTester(
@@ -178,6 +178,16 @@ func AssertNumEventsRemainsAtN(eaa h.ExistingAppAssert, resp *http.Response, n i
 	eaa.Assert.Equal(n, len(dbEvents))
 }
 
+func AssertNumSeriesRemainsAtN(eaa h.ExistingAppAssert, resp *http.Response, n int) {
+	var dbSeries []models.Series
+
+	err := eaa.App.Conn.Order("created_at desc").Find(&dbSeries).Error
+
+	eaa.Assert.NilError(err)
+
+	eaa.Assert.Equal(n, len(dbSeries))
+}
+
 func TestCreateEventWorks(t *testing.T) {
 	existingAppAssert, _ := CreateSampleEvent(h.InitTest(t), SampleEventFactory)
 	existingAppAssert.Close()
@@ -193,13 +203,13 @@ func TestGetEventWorks(t *testing.T) {
 
 	existingAppAssert.TestOnStatusAndTester(h.TestRequest{
 		Method: fiber.MethodGet,
-		Path:   fmt.Sprintf("/api/v1/events/%s", eventUUID),
+		Path:   fmt.Sprintf("/api/v1/events/%s", eventUUID[0]),
 		Role:   &models.Super,
 	},
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
 			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
-				AssertEventBodyRespDB(eaa, resp, SampleEventFactory())
+				AssertEventListBodyRespDB(eaa, resp, SampleEventFactory())
 			},
 		},
 	).Close()
@@ -229,24 +239,6 @@ func TestGetEventsWorks(t *testing.T) {
 }
 
 func TestGetSeriesByEventIDWorks(t *testing.T) {
-	existingAppAssert, eventUUIDs := CreateSampleEvent(h.InitTest(t), SampleSeriesFactory)
-
-	existingAppAssert.TestOnStatusAndTester(h.TestRequest{
-		Method: fiber.MethodGet,
-		Path:   fmt.Sprintf("/api/v1/events/%s/series", eventUUIDs[2]),
-		Role:   &models.Super,
-	},
-		h.TesterWithStatus{
-			Status: fiber.StatusOK,
-			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
-				respEvents, dbEvents := GetRespAndDBEvents(eaa, resp)
-				CompareEventSlices(eaa, dbEvents, respEvents)
-			},
-		},
-	).Close()
-}
-
-func TestGetSeriesByIDWorks(t *testing.T) {
 	existingAppAssert, eventUUIDs := CreateSampleEvent(h.InitTest(t), SampleSeriesFactory)
 
 	existingAppAssert.TestOnStatusAndTester(h.TestRequest{
@@ -330,7 +322,7 @@ func TestCreateEventFailsOnInvalidEventType(t *testing.T) {
 	)
 }
 
-func AssertCreateBadEventSeriesDataFails(t *testing.T, badSeries models.CreateSeriesRequestBody, expectedErr errors.Error) {
+func AssertCreateBadEventSeriesDataFails(t *testing.T, badSeries models.SeriesRequestBody, expectedErr errors.Error) {
 	appAssert, _, _ := CreateSampleStudent(t, nil)
 
 	sampleSeriesPermutation := CustomSampleSeriesFactory(badSeries)
@@ -354,7 +346,7 @@ func AssertCreateBadEventSeriesDataFails(t *testing.T, badSeries models.CreateSe
 
 func TestCreateSeriesFailsOnInvalidRecurringType(t *testing.T) {
 	AssertCreateBadEventSeriesDataFails(t,
-		models.CreateSeriesRequestBody{
+		models.SeriesRequestBody{
 			RecurringType:   "annually",
 			MaxOccurrences:  10,
 			SeparationCount: 0,
@@ -368,7 +360,7 @@ func TestCreateSeriesFailsOnInvalidRecurringType(t *testing.T) {
 
 func TestCreateSeriesFailsOnInvalidMaxOccurrences(t *testing.T) {
 	AssertCreateBadEventSeriesDataFails(t,
-		models.CreateSeriesRequestBody{
+		models.SeriesRequestBody{
 			RecurringType:   "weekly",
 			MaxOccurrences:  -1,
 			SeparationCount: 0,
@@ -382,7 +374,7 @@ func TestCreateSeriesFailsOnInvalidMaxOccurrences(t *testing.T) {
 
 func TestCreateSeriesFailsOnInvalidSeparationCount(t *testing.T) {
 	AssertCreateBadEventSeriesDataFails(t,
-		models.CreateSeriesRequestBody{
+		models.SeriesRequestBody{
 			RecurringType:   "weekly",
 			MaxOccurrences:  10,
 			SeparationCount: -1,
@@ -396,7 +388,7 @@ func TestCreateSeriesFailsOnInvalidSeparationCount(t *testing.T) {
 
 func TestCreateSeriesFailsOnInvalidDayOfWeek(t *testing.T) {
 	AssertCreateBadEventSeriesDataFails(t,
-		models.CreateSeriesRequestBody{
+		models.SeriesRequestBody{
 			RecurringType:   "weekly",
 			MaxOccurrences:  10,
 			SeparationCount: 0,
@@ -410,7 +402,7 @@ func TestCreateSeriesFailsOnInvalidDayOfWeek(t *testing.T) {
 
 func TestCreateSeriesFailsOnInvalidWeekOfMonth(t *testing.T) {
 	AssertCreateBadEventSeriesDataFails(t,
-		models.CreateSeriesRequestBody{
+		models.SeriesRequestBody{
 			RecurringType:   "weekly",
 			MaxOccurrences:  10,
 			SeparationCount: 0,
@@ -424,7 +416,7 @@ func TestCreateSeriesFailsOnInvalidWeekOfMonth(t *testing.T) {
 
 func TestCreateSeriesFailsOnInvalidDayOfMonth(t *testing.T) {
 	AssertCreateBadEventSeriesDataFails(t,
-		models.CreateSeriesRequestBody{
+		models.SeriesRequestBody{
 			RecurringType:   "weekly",
 			MaxOccurrences:  10,
 			SeparationCount: 0,
@@ -453,7 +445,7 @@ func TestUpdateEventWorks(t *testing.T) {
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
 			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
-				AssertEventBodyRespDB(eaa, resp, updatedEvent)
+				AssertEventListBodyRespDB(eaa, resp, updatedEvent)
 			},
 		},
 	).Close()
@@ -522,7 +514,7 @@ func TestUpdateEventFailsBadRequest(t *testing.T) {
 		appAssert = appAssert.TestOnError(
 			h.TestRequest{
 				Method: fiber.MethodPatch,
-				Path:   fmt.Sprintf("/api/v1/clubs/%s", badRequest),
+				Path:   fmt.Sprintf("/api/v1/events/%s", badRequest),
 				Body:   SampleEventFactory(),
 				Role:   &models.Super,
 			},
@@ -556,45 +548,76 @@ func TestUpdateEventFailsOnEventIdNotExist(t *testing.T) {
 	).Close()
 }
 
-func TestDeleteEventWorks(t *testing.T) {
-	appAssert, eventUUID := CreateSampleEvent(h.InitTest(t), SampleEventFactory)
+func AssertDeleteWorks(t *testing.T, factoryFunction EventFactory, requestPath string, tester h.Tester) {
+	appAssert, eventUUIDs := CreateSampleEvent(h.InitTest(t), factoryFunction)
 
 	appAssert.TestOnStatusAndTester(
 		h.TestRequest{
 			Method: fiber.MethodDelete,
-			Path:   fmt.Sprintf("/api/v1/events/%s", eventUUID),
+			Path:   fmt.Sprintf(requestPath, eventUUIDs[0]),
+			Role:   &models.Super,
 		},
 		h.TesterWithStatus{
 			Status: fiber.StatusNoContent,
-			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
-				AssertNumEventsRemainsAtN(eaa, resp, 0)
-			},
+			Tester: tester,
+		},
+	).Close()
+}
+
+func TestDeleteEventWorks(t *testing.T) {
+	AssertDeleteWorks(t, SampleEventFactory, "/api/v1/events/%s", func(eaa h.ExistingAppAssert, resp *http.Response) {
+		AssertNumEventsRemainsAtN(eaa, resp, 0)
+	})
+}
+
+func TestDeleteSeriesByEventIDWorks(t *testing.T) {
+	AssertDeleteWorks(t, SampleEventFactory, "/api/v1/events/%s", func(eaa h.ExistingAppAssert, resp *http.Response) {
+		AssertNumEventsRemainsAtN(eaa, resp, 0)
+		AssertNumSeriesRemainsAtN(eaa, resp, 0)
+	})
+}
+
+func AssertDeleteNotExistFails(t *testing.T, factoryFunction EventFactory, requestPath string, tester h.Tester, badUUID uuid.UUID) {
+	appAssert, _ := CreateSampleEvent(h.InitTest(t), factoryFunction)
+
+	appAssert.TestOnErrorAndTester(
+		h.TestRequest{
+			Method: fiber.MethodDelete,
+			Path:   fmt.Sprintf("/api/v1/events/%s", badUUID),
+			Role:   &models.Super,
+		},
+		h.ErrorWithTester{
+			Error:  errors.EventNotFound,
+			Tester: tester,
 		},
 	).Close()
 }
 
 func TestDeleteEventNotExist(t *testing.T) {
 	uuid := uuid.New()
-	h.InitTest(t).TestOnErrorAndTester(
-		h.TestRequest{
-			Method: fiber.MethodDelete,
-			Path:   fmt.Sprintf("/api/v1/events/%s", uuid),
-			Role:   &models.Super,
-		},
-		h.ErrorWithTester{
-			Error: errors.EventNotFound,
-			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
-				var event []models.Event
-				err := eaa.App.Conn.Where("id = ?", uuid).First(&event).Error
-				eaa.Assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
 
-				AssertNumEventsRemainsAtN(eaa, resp, 0)
-			},
-		},
-	).Close()
+	AssertDeleteNotExistFails(t, SampleEventFactory, "/api/v1/events/%s", func(eaa h.ExistingAppAssert, resp *http.Response) {
+		var event []models.Event
+		err := eaa.App.Conn.Where("id = ?", uuid).First(&event).Error
+		eaa.Assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
+
+		AssertNumEventsRemainsAtN(eaa, resp, 1)
+	}, uuid)
 }
 
-func TestDeleteEventBadRequest(t *testing.T) {
+func TestDeleteSeriesNotExist(t *testing.T) {
+	uuid := uuid.New()
+
+	AssertDeleteNotExistFails(t, SampleSeriesFactory, "/api/v1/events/%s/series", func(eaa h.ExistingAppAssert, resp *http.Response) {
+		var events []models.Event
+		err := eaa.App.Conn.Where("id = ?", uuid).First(&events).Error
+		eaa.Assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
+
+		AssertNumSeriesRemainsAtN(eaa, resp, 1)
+	}, uuid)
+}
+
+func AssertDeleteBadRequestFails(t *testing.T, requestPath string) {
 	appAssert := h.InitTest(t)
 
 	badRequests := []string{
@@ -609,7 +632,7 @@ func TestDeleteEventBadRequest(t *testing.T) {
 		appAssert = appAssert.TestOnError(
 			h.TestRequest{
 				Method: fiber.MethodDelete,
-				Path:   fmt.Sprintf("/api/v1/events/%s", badRequest),
+				Path:   fmt.Sprintf(requestPath, badRequest),
 				Role:   &models.Super,
 			},
 			errors.FailedToValidateID,
@@ -617,4 +640,12 @@ func TestDeleteEventBadRequest(t *testing.T) {
 	}
 
 	appAssert.Close()
+}
+
+func TestDeleteEventBadRequest(t *testing.T) {
+	AssertDeleteBadRequestFails(t, "/api/v1/events/%s")
+}
+
+func TestDeleteSeriesBadRequest(t *testing.T) {
+	AssertDeleteBadRequestFails(t, "/api/v1/events/%s/series")
 }

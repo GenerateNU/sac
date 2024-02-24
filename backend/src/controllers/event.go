@@ -98,6 +98,20 @@ func (e *EventController) UpdateSeriesByID(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(updatedSeries)
 }
 
+func (e *EventController) UpdateSeriesByEventID(c *fiber.Ctx) error {
+	var seriesBody models.UpdateSeriesRequestBody
+	if err := c.BodyParser(&seriesBody); err != nil {
+		return errors.FailedToParseRequestBody.FiberError(c)
+	}
+
+	updatedSeries, err := e.eventService.UpdateSeriesByEventID(c.Params("eventID"), seriesBody)
+	if err != nil {
+		return err.FiberError(c)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(updatedSeries)
+}
+
 func (e *EventController) DeleteSeriesByID(c *fiber.Ctx) error {
 	if err := e.eventService.DeleteSeriesByID(c.Params("seriesID")); err != nil {
 		return err.FiberError(c)

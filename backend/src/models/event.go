@@ -50,7 +50,6 @@ type Series struct {
 	WeekOfMonth     int           `gorm:"type:int" json:"week_of_month" validate:"min=1,max=5"`
 	DayOfMonth      int           `gorm:"type:int" json:"day_of_month" validate:"min=1,max=31"`
 	Events          []Event       `gorm:"many2many:event_series;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"events" validate:"-"`
-	// Events          []Event       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"events" validate:"-"`
 }
 
 // TODO: add not null to required fields on all gorm models
@@ -89,10 +88,10 @@ type CreateEventRequestBody struct {
 	Notification []Notification `json:"-" validate:"-"`
 
 	// TODO validate if isRecurring, then series is required
-	Series CreateSeriesRequestBody `json:"series" validate:"-"`
+	Series SeriesRequestBody `json:"series" validate:"-"`
 }
 
-type CreateSeriesRequestBody struct {
+type SeriesRequestBody struct {
 	RecurringType   RecurringType `json:"recurring_type" validate:"required,max=255,oneof=daily weekly monthly"`
 	SeparationCount int           `json:"separation_count" validate:"required,min=0"`
 	MaxOccurrences  int           `json:"max_occurrences" validate:"required,min=2"`
@@ -110,19 +109,15 @@ type UpdateEventRequestBody struct {
 	Location  string    `json:"location" validate:"omitempty,max=255"`
 	EventType EventType `gorm:"type:varchar(255);default:open" json:"event_type" validate:"omitempty,max=255,oneof=open membersOnly"`
 
-	RSVP         []User         `json:"-" validate:"-"`
-	Waitlist     []User         `json:"-" validate:"-"`
-	Club         []Club         `json:"-" validate:"-"`
-	Tag          []Tag          `json:"-" validate:"-"`
-	Notification []Notification `json:"-" validate:"-"`
+	RSVP         []User         `json:"-" validate:"omitempty"`
+	Waitlist     []User         `json:"-" validate:"omitempty"`
+	Club         []Club         `json:"-" validate:"omitempty"`
+	Tag          []Tag          `json:"-" validate:"omitempty"`
+	Notification []Notification `json:"-" validate:"omitempty"`
 }
 
 // TODO: probably need to make changes to this to update the events as well
 type UpdateSeriesRequestBody struct {
-	RecurringType   RecurringType `json:"recurring_type" validate:"omitempty,max=255,oneof=daily weekly monthly"`
-	SeparationCount int           `json:"separation_count" validate:"omitempty,min=0"`
-	MaxOccurrences  int           `json:"max_occurrences" validate:"omitempty,min=2"`
-	DayOfWeek       int           `json:"day_of_week" validate:"omitempty,min=1,max=7"`
-	WeekOfMonth     int           `json:"week_of_month" validate:"omitempty,min=1,max=5"`
-	DayOfMonth      int           `json:"day_of_month" validate:"omitempty,min=1,max=31"`
+	EventDetails  UpdateEventRequestBody
+	SeriesDetails SeriesRequestBody
 }
