@@ -590,8 +590,12 @@ definitions:
   models.UpdatePasswordRequestBody:
     properties:
       new_password:
+        maxLength: 255
+        minLength: 8
         type: string
       old_password:
+        maxLength: 255
+        minLength: 8
         type: string
     required:
     - new_password
@@ -815,8 +819,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/errors.Error'
-      security:
-      - cookie: []
       summary: Retrieve the current user given an auth session
       tags:
       - auth
@@ -848,13 +850,18 @@ paths:
       summary: Refreshes a user's access token
       tags:
       - auth
-  /auth/update-password/:userID:
+  /auth/update-password/{userID}:
     post:
       consumes:
       - application/json
       description: Updates a user's password
       operationId: update-password
       parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
       - description: User Body
         in: body
         name: userBody
@@ -878,6 +885,10 @@ paths:
             $ref: '#/definitions/errors.Error'
         "404":
           description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "429":
+          description: Too Many Requests
           schema:
             $ref: '#/definitions/errors.Error'
         "500":
@@ -2142,8 +2153,8 @@ paths:
       summary: Update a series by ID
       tags:
       - event
-  /tags/:
-    post:
+  /tags:
+    get:
       description: Retrieves all tags
       operationId: get-all-tags
       parameters:

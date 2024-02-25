@@ -119,7 +119,7 @@ func (a *AuthController) Refresh(c *fiber.Ctx) error {
 		return errors.Unauthorized.FiberError(c)
 	}
 
-	// Set the access token in the response (e.g., in a cookie or JSON response)
+	// Set the access token in the response
 	c.Cookie(auth.CreateCookie("access_token", *accessToken, time.Now().Add(time.Minute*60)))
 
 	return utilities.FiberMessage(c, fiber.StatusOK, "success")
@@ -159,14 +159,15 @@ func (a *AuthController) Logout(c *fiber.Ctx) error {
 // @Tags      	auth
 // @Accept		json
 // @Produce		json
+// @Param		userID		path	string	true	"User ID"
 // @Param		userBody	body	 models.UpdatePasswordRequestBody	true	"User Body"
 // @Success		200	  {object}	     utilities.SuccessResponse
 // @Failure     400   {object}       errors.Error
 // @Failure     401   {object}       errors.Error
 // @Failure     404   {object}       errors.Error
+// @Failure     429   {object}       errors.Error
 // @Failure     500   {object}       errors.Error
-// @Failure     429   {object}
-// @Router		/auth/update-password/:userID  [post]
+// @Router		/auth/update-password/{userID} [post]
 func (a *AuthController) UpdatePassword(c *fiber.Ctx) error {
 	var userBody models.UpdatePasswordRequestBody
 

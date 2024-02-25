@@ -12,7 +12,7 @@ func UserFollower(userRouter fiber.Router, userFollowerService services.UserFoll
 	// api/v1/users/:userID/follower/*
 	userFollower := userRouter.Group("/follower")
 
-	userFollower.Get("/", userFollowerController.GetAllFollowing)
+	userFollower.Get("/", userFollowerController.GetFollowing)
 	userFollower.Post("/:clubID", userFollowerController.CreateFollowing)
 	userFollower.Delete("/:clubID", userFollowerController.DeleteFollowing)
 }

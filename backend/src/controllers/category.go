@@ -86,13 +86,7 @@ func (cat *CategoryController) GetCategories(c *fiber.Ctx) error {
 // @Failure     400   {string}      errors.Error
 // @Failure     404   {string}      errors.Error
 // @Failure     500   {string}      errors.Error
-// @Router		/category/{categoryID}  [get]
-// @Param		id	path	string	true	"Category ID"
-// @Success		200	  {object}	  models.Category
-// @Failure 	400   {string}    string "failed to validate id"
-// @Failure     404   {string}    string "faied to find category"
-// @Failure     500   {string}    string "failed to retrieve category"
-// @Router		/api/v1/category/{id}  [get]
+// @Router		/categories/{categoryID}/  [get]
 func (cat *CategoryController) GetCategory(c *fiber.Ctx) error {
 	category, err := cat.categoryService.GetCategory(c.Params("categoryID"))
 	if err != nil {

@@ -7,10 +7,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func ClubTag(router fiber.Router, clubTagService services.ClubTagServiceInterface, authMiddleware *middleware.AuthMiddlewareService) {
+func ClubTag(clubIDRouter fiber.Router, clubTagService services.ClubTagServiceInterface, authMiddleware *middleware.AuthMiddlewareService) {
 	clubTagController := controllers.NewClubTagController(clubTagService)
 
-	clubTags := router.Group("/tags")
+	clubTags := clubIDRouter.Group("/tags")
 
 	clubTags.Get("/", clubTagController.GetClubTags)
 	clubTags.Post("/", authMiddleware.ClubAuthorizeById, clubTagController.CreateClubTags)

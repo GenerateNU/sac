@@ -25,6 +25,7 @@ import (
 // @contact.email	oduneye.d@northeastern.edu and ladley.g@northeastern.edu
 // @host 127.0.0.1:8080
 // @BasePath /
+// @schemes http https
 func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 	app := newFiberApp()
 
