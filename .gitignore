@@ -4,3 +4,4 @@ sac-cli
 node_modules
 .vscode
 .trunk
+.env.dev
