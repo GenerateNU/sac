@@ -73,7 +73,7 @@ func (uf *UserFollowerController) DeleteFollowing(c *fiber.Ctx) error {
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
 // @Router		/users/{userID}/follower/  [get]
-func (uf *UserFollowerController) GetAllFollowing(c *fiber.Ctx) error {
+func (uf *UserFollowerController) GetFollowing(c *fiber.Ctx) error {
 	clubs, err := uf.userFollowerService.GetFollowing(c.Params("userID"))
 	if err != nil {
 		return err.FiberError(c)

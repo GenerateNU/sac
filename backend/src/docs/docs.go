@@ -97,7 +97,6 @@ const docTemplate = `{
         },
         "/auth/me": {
             "get": {
-
                 "description": "Returns the current user associated with an auth session",
                 "produces": [
                     "application/json"
@@ -183,7 +182,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/update-password/:userID": {
+        "/auth/update-password/{userID}": {
             "post": {
                 "description": "Updates a user's password",
                 "consumes": [
@@ -198,6 +197,13 @@ const docTemplate = `{
                 "summary": "Updates a user's password",
                 "operationId": "update-password",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "User Body",
                         "name": "userBody",
@@ -229,6 +235,12 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
                         "schema": {
                             "$ref": "#/definitions/errors.Error"
                         }
@@ -2118,8 +2130,8 @@ const docTemplate = `{
                 }
             }
         },
-        "/tags/": {
-            "post": {
+        "/tags": {
+            "get": {
                 "description": "Retrieves all tags",
                 "produces": [
                     "application/json"
@@ -2280,70 +2292,6 @@ const docTemplate = `{
                     }
                 }
             },
-            "put": {
-                "description": "Updates a tag",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "tag"
-                ],
-                "summary": "Update a tag",
-                "operationId": "update-tag",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Tag ID",
-                        "name": "tagID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Tag",
-                        "name": "tag",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.UpdateTagRequestBody"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Tag"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    }
-                }
-            },
             "delete": {
                 "description": "Deletes a tag",
                 "produces": [
@@ -2423,7 +2371,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.TagRequestBody"
+                            "$ref": "#/definitions/models.UpdateTagRequestBody"
                         }
                     }
                 ],
@@ -4033,10 +3981,14 @@ const docTemplate = `{
             ],
             "properties": {
                 "new_password": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 8
                 },
                 "old_password": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 8
                 }
             }
         },
