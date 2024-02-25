@@ -26,7 +26,7 @@ func Club(router fiber.Router, clubService services.ClubServiceInterface, authMi
 	// api/v1/clubs/*
 	clubs := router.Group("/clubs")
 
-	clubs.Get("/", clubController.GetClubs)
+	clubs.Get("/", clubController.GetAllClubs)
 	clubs.Post("/", authMiddleware.Authorize(p.CreateAll), clubController.CreateClub)
 
 	// api/v1/clubs/:clubID/*
