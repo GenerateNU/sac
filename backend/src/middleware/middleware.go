@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"time"
+
 	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/go-playground/validator/v10"
@@ -15,6 +17,7 @@ type AuthMiddlewareInterface interface {
 	Authorize(requiredPermissions ...auth.Permission) func(c *fiber.Ctx) error
 	Skip(h fiber.Handler) fiber.Handler
 	IsSuper(c *fiber.Ctx) bool
+	Limiter(rate int, duration time.Duration) func(c *fiber.Ctx) error
 }
 
 type AuthMiddlewareService struct {
