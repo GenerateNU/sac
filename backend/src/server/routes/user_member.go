@@ -9,13 +9,10 @@ import (
 func UserMember(usersRouter fiber.Router, userMembershipService services.UserMemberServiceInterface) {
 	userMemberController := controllers.NewUserMemberController(userMembershipService)
 
+	// api/v1/users/:userID/member/*
 	userMember := usersRouter.Group("/member")
 
 	userMember.Get("/", userMemberController.GetMembership)
-
-	clubID := userMember.Group("/:clubID")
-
-	// api/v1/users/:userID/member/:clubID*
-	clubID.Post("/", userMemberController.CreateMembership)
-	clubID.Delete("/", userMemberController.DeleteMembership)
+	userMember.Post("/:clubID", userMemberController.CreateMembership)
+	userMember.Delete("/:clubID", userMemberController.DeleteMembership)
 }
