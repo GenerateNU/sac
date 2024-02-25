@@ -49,7 +49,8 @@ func main() {
 	//database.SeedDatabase(db)
 
 	openAI := search.NewOpenAIClient(config.OpenAISettings)
-	pinecone := search.NewPineconeClient(openAI, config.PineconeSettings)
+	pinecone, err := search.NewPineconeDevelopmentClient(openAI, config.PineconeSettings)
+	pinecone.Seed(db)
 	app := server.Init(db, pinecone, *config)
 
 	// FIXME: no fucking clue how but there is a vector database and it has club data

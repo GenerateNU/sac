@@ -171,9 +171,27 @@ func (c *PineconeClient) Seed(db *gorm.DB) error {
 		return err
 	}
 
+	var searchables []Searchable
 	for _, club := range clubs {
-		print(fmt.Sprintf("Uploading club %s to pinecone...\n", club.ID))
-		err := c.Upsert(&club)
+		searchables = append(searchables, &club)
+	}
+
+	var chunks [][]Searchable
+	chunkSize := 50
+
+	for i := 0; i < len(searchables); i += chunkSize {
+		end := i + chunkSize
+
+		if end > len(searchables) {
+			end = len(searchables)
+		}
+
+		chunks = append(chunks, searchables[i:end])
+	}
+
+	for i, chunk := range chunks {
+		print(fmt.Sprintf("Uploading chunk #%d (of %d) to pinecone...\n", i, len(chunks)))
+		err := c.Upsert(chunk)
 		if err != nil {
 			return stdliberrors.New("Club upsert failed...")
 		}
@@ -201,22 +219,29 @@ type PineconeUpsertRequestBody struct {
 }
 
 // TODO: get rid of print debug
-func (c *PineconeClient) Upsert(item Searchable) *errors.Error {
-	values, embeddingErr := c.openAIClient.CreateEmbedding(item.EmbeddingString())
+func (c *PineconeClient) Upsert(items []Searchable) *errors.Error {
+	if len(items) == 0 {
+		return nil
+	}
+
+	embeddings, embeddingErr := c.openAIClient.CreateEmbedding(items)
 	if embeddingErr != nil {
 		print("OpenAI embedding failed")
 		return &errors.FailedToUpsertToPinecone
 	}
 
+	vectors := []Vector{}
+	for i, item := range items {
+		vectors = append(vectors, Vector{
+			ID:     item.SearchId(),
+			Values: embeddings[i].Embedding,
+		})
+	}
+
 	upsertBody, err := json.Marshal(
 		PineconeUpsertRequestBody{
-			Vectors: []Vector{
-				{
-					ID:     item.SearchId(),
-					Values: values,
-				},
-			},
-			Namespace: item.Namespace(),
+			Vectors:   vectors,
+			Namespace: items[0].Namespace(),
 		})
 	if err != nil {
 		print("JSON marshaling failed")
@@ -266,11 +291,20 @@ func NewPineconeDeleteRequestBody(ids []string, namespace string, deleteAll bool
 	}
 }
 
-func (c *PineconeClient) Delete(item Searchable) *errors.Error {
+func (c *PineconeClient) Delete(items []Searchable) *errors.Error {
+	if len(items) == 0 {
+		return nil
+	}
+
+	itemIds := []string{}
+	for _, item := range items {
+		itemIds = append(itemIds, item.SearchId())
+	}
+
 	deleteBody, err := json.Marshal(
 		PineconeDeleteRequestBody{
-			IDs:       []string{item.SearchId()},
-			Namespace: item.Namespace(),
+			IDs:       itemIds,
+			Namespace: items[0].Namespace(),
 			DeleteAll: false,
 		})
 	if err != nil {
@@ -318,7 +352,7 @@ type PineconeSearchResponseBody struct {
 }
 
 func (c *PineconeClient) Search(item Searchable, topK int) ([]string, *errors.Error) {
-	values, embeddingErr := c.openAIClient.CreateEmbedding(item.EmbeddingString())
+	values, embeddingErr := c.openAIClient.CreateEmbedding([]Searchable{item})
 	if embeddingErr != nil {
 		return []string{}, embeddingErr
 	}
@@ -328,7 +362,7 @@ func (c *PineconeClient) Search(item Searchable, topK int) ([]string, *errors.Er
 			IncludeValues:   false,
 			IncludeMetadata: false,
 			TopK:            topK,
-			Vector:          values,
+			Vector:          values[0].Embedding,
 			Namespace:       item.Namespace(),
 		})
 	if err != nil {
