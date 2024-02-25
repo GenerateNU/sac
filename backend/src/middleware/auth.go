@@ -11,7 +11,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
-	"github.com/gofiber/fiber/v2/middleware/skip"
 )
 
 var paths = []string{
@@ -19,21 +18,6 @@ var paths = []string{
 	"/api/v1/auth/refresh",
 	"/api/v1/users/",
 	"/api/v1/auth/logout",
-}
-
-// Deprecated
-func (m *AuthMiddlewareService) Skip(h fiber.Handler) fiber.Handler {
-	return skip.New(h, func(c *fiber.Ctx) bool {
-		claims, err := auth.From(c)
-		if err != nil {
-			_ = err.FiberError(c)
-			return false
-		}
-		if claims == nil {
-			return false
-		}
-		return claims.Role == string(models.Super)
-	})
 }
 
 func (m *AuthMiddlewareService) DisableAuth(h fiber.Handler) fiber.Handler {
