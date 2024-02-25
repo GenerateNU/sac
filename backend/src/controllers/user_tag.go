@@ -28,7 +28,7 @@ func NewUserTagController(userTagService services.UserTagServiceInterface) *User
 // @Failure     401   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/user/{userID}/tags  [get]
+// @Router		/users/{userID}/tags/  [get]
 func (ut *UserTagController) GetUserTags(c *fiber.Ctx) error {
 	tags, err := ut.userTagService.GetUserTags(c.Params("userID"))
 	if err != nil {
@@ -52,7 +52,7 @@ func (ut *UserTagController) GetUserTags(c *fiber.Ctx) error {
 // @Failure     401   {object}    errors.Error
 // @Failure     404   {object}    errors.Error
 // @Failure     500   {object}    errors.Error
-// @Router		/user/{userID}/tags  [post]
+// @Router		/users/{userID}/tags/  [post]
 func (ut *UserTagController) CreateUserTags(c *fiber.Ctx) error {
 	var requestBody models.CreateUserTagsBody
 	if err := c.BodyParser(&requestBody); err != nil {

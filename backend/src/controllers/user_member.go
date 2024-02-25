@@ -27,7 +27,7 @@ func NewUserMemberController(clubMemberService services.UserMemberServiceInterfa
 // @Failure     401   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/user/{userID}/membership/{clubID}  [post]
+// @Router		/users/{userID}/member/{clubID}/  [post]
 func (um *UserMemberController) CreateMembership(c *fiber.Ctx) error {
 	err := um.clubMemberService.CreateMembership(c.Params("userID"), c.Params("clubID"))
 	if err != nil {
@@ -51,7 +51,7 @@ func (um *UserMemberController) CreateMembership(c *fiber.Ctx) error {
 // @Failure     401   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/user/{userID}/membership/{clubID}  [delete]
+// @Router		/users/{userID}/member/{clubID}/  [delete]
 func (um *UserMemberController) DeleteMembership(c *fiber.Ctx) error {
 	err := um.clubMemberService.DeleteMembership(c.Params("userID"), c.Params("clubID"))
 	if err != nil {
@@ -74,7 +74,7 @@ func (um *UserMemberController) DeleteMembership(c *fiber.Ctx) error {
 // @Failure     401   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/user/{userID}/membership  [get]
+// @Router		/users/{userID}/member/  [get]
 func (um *UserMemberController) GetMembership(c *fiber.Ctx) error {
 	followers, err := um.clubMemberService.GetMembership(c.Params("userID"))
 	if err != nil {

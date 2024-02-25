@@ -30,7 +30,7 @@ func NewClubTagController(clubTagService services.ClubTagServiceInterface) *Club
 // @Failure     401   {object}    errors.Error
 // @Failure     404   {object}    errors.Error
 // @Failure     500   {object}    errors.Error
-// @Router		/club/{clubID}/tags  [post]
+// @Router		/clubs/{clubID}/tags/  [post]
 func (l *ClubTagController) CreateClubTags(c *fiber.Ctx) error {
 	var clubTagsBody models.CreateClubTagsRequestBody
 	if err := c.BodyParser(&clubTagsBody); err != nil {
@@ -57,7 +57,7 @@ func (l *ClubTagController) CreateClubTags(c *fiber.Ctx) error {
 // @Failure     400   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/club/{clubID}/tags  [get]
+// @Router		/clubs/{clubID}/tags/  [get]
 func (l *ClubTagController) GetClubTags(c *fiber.Ctx) error {
 	clubTags, err := l.clubTagService.GetClubTags(c.Params("clubID"))
 	if err != nil {
@@ -81,7 +81,7 @@ func (l *ClubTagController) GetClubTags(c *fiber.Ctx) error {
 // @Failure     401   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/club/{clubID}/tags/{tagID}  [delete]
+// @Router		/clubs/{clubID}/tags/{tagID}/  [delete]
 func (l *ClubTagController) DeleteClubTag(c *fiber.Ctx) error {
 	err := l.clubTagService.DeleteClubTag(c.Params("clubID"), c.Params("tagID"))
 	if err != nil {

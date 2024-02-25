@@ -30,7 +30,7 @@ func NewEventController(eventService services.EventServiceInterface) *EventContr
 // @Failure     400   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/event/  [get]
+// @Router		/events/  [get]
 func (e *EventController) GetAllEvents(c *fiber.Ctx) error {
 	defaultLimit := 10
 	defaultPage := 1
@@ -55,7 +55,7 @@ func (e *EventController) GetAllEvents(c *fiber.Ctx) error {
 // @Failure     400   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/event/{eventID}  [get]
+// @Router		/events/{eventID}/  [get]
 func (e *EventController) GetEvent(c *fiber.Ctx) error {
 	event, err := e.eventService.GetEvent(c.Params("eventID"))
 	if err != nil {
@@ -77,7 +77,7 @@ func (e *EventController) GetEvent(c *fiber.Ctx) error {
 // @Failure     400   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/event/{eventID}/series  [get]
+// @Router		/events/{eventID}/series/  [get]
 func (e *EventController) GetSeriesByEventID(c *fiber.Ctx) error {
 	events, err := e.eventService.GetSeriesByEventID(c.Params("eventID"))
 	if err != nil {
@@ -94,12 +94,13 @@ func (e *EventController) GetSeriesByEventID(c *fiber.Ctx) error {
 // @ID			get-series-by-id
 // @Tags      	event
 // @Produce		json
+// @Param		eventID  	path	string	true	"Event ID"
 // @Param		seriesID	path	string	true	"Series ID"
 // @Success		200	  {object}	    models.Series
 // @Failure     400   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/series/{seriesID}  [get]
+// @Router		/events/{eventID}/series/{seriesID}/  [get]
 func (e *EventController) GetSeriesByID(c *fiber.Ctx) error {
 	events, err := e.eventService.GetSeriesByID(c.Params("seriesID"))
 	if err != nil {
@@ -123,7 +124,7 @@ func (e *EventController) GetSeriesByID(c *fiber.Ctx) error {
 // @Failure     401   {object}    errors.Error
 // @Failure     404   {object}    errors.Error
 // @Failure     500   {object}    errors.Error
-// @Router		/event/  [post]
+// @Router		/events/  [post]
 func (e *EventController) CreateEvent(c *fiber.Ctx) error {
 	var eventBody models.CreateEventRequestBody
 	if err := c.BodyParser(&eventBody); err != nil {
@@ -153,7 +154,7 @@ func (e *EventController) CreateEvent(c *fiber.Ctx) error {
 // @Failure     401   {object}    errors.Error
 // @Failure     404   {object}    errors.Error
 // @Failure     500   {object}    errors.Error
-// @Router		/event/{eventID}/series  [post]
+// @Router		/events/{eventID}/series/  [patch]
 func (e *EventController) UpdateEvent(c *fiber.Ctx) error {
 	var eventBody models.UpdateEventRequestBody
 	if err := c.BodyParser(&eventBody); err != nil {
@@ -176,7 +177,7 @@ func (e *EventController) UpdateEvent(c *fiber.Ctx) error {
 // @Tags      	event
 // @Accept		json
 // @Produce		json
-// @Param		eventID	path	string	true	"Event ID"
+// @Param		eventID	    path	string	true	"Event ID"
 // @Param		seriesID	path	string	true	"Series ID"
 // @Param		seriesBody	body	models.UpdateSeriesRequestBody	true	"Series Body"
 // @Success		200	  {object}	  models.Series
@@ -184,7 +185,7 @@ func (e *EventController) UpdateEvent(c *fiber.Ctx) error {
 // @Failure     401   {object}    errors.Error
 // @Failure     404   {object}    errors.Error
 // @Failure     500   {object}    errors.Error
-// @Router		/event/{eventID}/series/{seriesID}  [put]
+// @Router		/events/{eventID}/series/{seriesID}/  [patch]
 func (e *EventController) UpdateSeriesByID(c *fiber.Ctx) error {
 	var seriesBody models.UpdateSeriesRequestBody
 	if err := c.BodyParser(&seriesBody); err != nil {
@@ -220,13 +221,14 @@ func (e *EventController) UpdateSeriesByEventID(c *fiber.Ctx) error {
 // @ID			delete-series-by-id
 // @Tags      	event
 // @Produce		json
+// @Param		eventID  	path	string	true	"Event ID"
 // @Param		seriesID	path	string	true	"Series ID"
 // @Success		204	  {string}	    utilities.SuccessResponse
 // @Failure     400   {object}      errors.Error
 // @Failure     401   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/series/{seriesID}  [delete]
+// @Router		/events/{eventID}/series/{seriesID}/  [delete]
 func (e *EventController) DeleteSeriesByID(c *fiber.Ctx) error {
 	if err := e.eventService.DeleteSeriesByID(c.Params("seriesID")); err != nil {
 		return err.FiberError(c)
@@ -248,7 +250,7 @@ func (e *EventController) DeleteSeriesByID(c *fiber.Ctx) error {
 // @Failure     401   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/event/{eventID}/series  [delete]
+// @Router		/events/{eventID}/series/  [delete]
 func (e *EventController) DeleteSeriesByEventID(c *fiber.Ctx) error {
 	if err := e.eventService.DeleteSeriesByEventID(c.Params("eventID")); err != nil {
 		return err.FiberError(c)
@@ -270,7 +272,7 @@ func (e *EventController) DeleteSeriesByEventID(c *fiber.Ctx) error {
 // @Failure     401   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/event/{eventID}  [delete]
+// @Router		/events/{eventID}/  [delete]
 func (l *EventController) DeleteEvent(c *fiber.Ctx) error {
 	if err := l.eventService.DeleteEvent(c.Params("eventID")); err != nil {
 		return err.FiberError(c)
