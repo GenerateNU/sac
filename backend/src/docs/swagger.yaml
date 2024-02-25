@@ -664,10 +664,6 @@ definitions:
     type: object
   models.User:
     properties:
-      clubs_followed:
-        items:
-          $ref: '#/definitions/models.Club'
-        type: array
       college:
         allOf:
         - $ref: '#/definitions/models.College'
@@ -819,6 +815,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/errors.Error'
+      security:
+      - cookie: []
       summary: Retrieve the current user given an auth session
       tags:
       - auth
@@ -889,7 +887,7 @@ paths:
       summary: Updates a user's password
       tags:
       - auth
-  /category/:
+  /categories/:
     get:
       description: Retrieves all categories
       operationId: get-categories
@@ -964,7 +962,7 @@ paths:
       summary: Creates a category
       tags:
       - category
-  /category/{categoryID}:
+  /categories/{categoryID}/:
     delete:
       description: Deletes a category
       operationId: delete-category
@@ -1031,7 +1029,7 @@ paths:
       summary: Retrieve a category
       tags:
       - category
-    put:
+    patch:
       consumes:
       - application/json
       description: Updates a category
@@ -1074,7 +1072,7 @@ paths:
       summary: Updates a category
       tags:
       - category
-  /category/{categoryID}/tags:
+  /categories/{categoryID}/tags/:
     get:
       description: Retrieves all tags associated with a category
       operationId: get-tags-by-category
@@ -1116,7 +1114,7 @@ paths:
       summary: Retrieve all tags by category
       tags:
       - category-tag
-  /category/{categoryID}/tags/{tagID}:
+  /categories/{categoryID}/tags/{tagID}/:
     get:
       description: Retrieves a tag associated with a category
       operationId: get-tag-by-category
@@ -1153,7 +1151,7 @@ paths:
       summary: Retrieve a tag by category
       tags:
       - category-tag
-  /club/:
+  /clubs/:
     get:
       description: Retrieves all clubs
       operationId: get-all-clubs
@@ -1224,7 +1222,7 @@ paths:
       summary: Create a club
       tags:
       - club
-  /club/{clubID}:
+  /clubs/{clubID}/:
     delete:
       description: Deletes a club
       operationId: delete-club
@@ -1291,7 +1289,7 @@ paths:
       summary: Retrieve a club
       tags:
       - club
-    put:
+    patch:
       consumes:
       - application/json
       description: Updates a club
@@ -1334,7 +1332,7 @@ paths:
       summary: Update a club
       tags:
       - club
-  /club/{clubID}/contacts:
+  /clubs/{clubID}/contacts/:
     get:
       description: Retrieves all contacts associated with a club
       operationId: get-contacts-by-club
@@ -1368,11 +1366,11 @@ paths:
       summary: Retrieve all contacts for a club
       tags:
       - club-contact
-    post:
+    put:
       consumes:
       - application/json
       description: Creates a contact
-      operationId: create-contact
+      operationId: put-contact
       parameters:
       - description: Club ID
         in: path
@@ -1411,7 +1409,7 @@ paths:
       summary: Creates a contact
       tags:
       - club-contact
-  /club/{clubID}/events:
+  /clubs/{clubID}/events/:
     get:
       description: Retrieves all events associated with a club
       operationId: get-events-by-club
@@ -1453,7 +1451,7 @@ paths:
       summary: Retrieve all events for a club
       tags:
       - club-event
-  /club/{clubID}/followers:
+  /clubs/{clubID}/followers/:
     get:
       description: Retrieves all followers associated with a club
       operationId: get-followers-by-club
@@ -1495,7 +1493,7 @@ paths:
       summary: Retrieve all followers for a club
       tags:
       - club-follower
-  /club/{clubID}/members:
+  /clubs/{clubID}/members/:
     get:
       description: Retrieves all members associated with a club
       operationId: get-members-by-club
@@ -1541,7 +1539,7 @@ paths:
       summary: Retrieve all members for a club
       tags:
       - club-member
-  /club/{clubID}/tags:
+  /clubs/{clubID}/tags/:
     get:
       description: Retrieves all tags associated with a club
       operationId: get-tags-by-club
@@ -1620,7 +1618,7 @@ paths:
       summary: Create club tags
       tags:
       - club-tag
-  /club/{clubID}/tags/{tagID}:
+  /clubs/{clubID}/tags/{tagID}/:
     delete:
       description: Deletes a tag associated with a club
       operationId: delete-tag-by-club
@@ -1661,7 +1659,7 @@ paths:
       summary: Delete a tag for a club
       tags:
       - club-tag
-  /contact/:
+  /contacts/:
     get:
       description: Retrieves all contacts
       operationId: get-contacts
@@ -1698,18 +1696,18 @@ paths:
       summary: Retrieve all contacts
       tags:
       - contact
-    post:
+  /contacts/{contactID}/:
+    delete:
       consumes:
       - application/json
-      description: Creates a contact
-      operationId: create-contact
+      description: Deletes a contact
+      operationId: delete-contact
       parameters:
-      - description: Contact Body
-        in: body
-        name: contactBody
+      - description: Contact ID
+        in: path
+        name: contactID
         required: true
-        schema:
-          $ref: '#/definitions/models.Contact'
+        type: string
       produces:
       - application/json
       responses:
@@ -1729,10 +1727,43 @@ paths:
           description: Internal Server Error
           schema:
             type: string
-      summary: Creates a contact
+      summary: Deletes a contact
       tags:
       - contact
-  /event/:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a contact by id
+      operationId: get-contact
+      parameters:
+      - description: Contact ID
+        in: path
+        name: contactID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Contact'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Retrieves a contact
+      tags:
+      - contact
+  /events/:
     get:
       description: Retrieves all events
       operationId: get-all-events
@@ -1807,7 +1838,7 @@ paths:
       summary: Create an event
       tags:
       - event
-  /event/{eventID}:
+  /events/{eventID}/:
     delete:
       description: Deletes an event
       operationId: delete-event
@@ -1874,7 +1905,7 @@ paths:
       summary: Retrieve an event
       tags:
       - event
-  /event/{eventID}/series:
+  /events/{eventID}/series/:
     delete:
       description: Deletes all series associated with an event
       operationId: delete-series-by-event
@@ -1943,7 +1974,7 @@ paths:
       summary: Retrieve all series by event
       tags:
       - event
-    post:
+    patch:
       consumes:
       - application/json
       description: Creates a series
@@ -1986,8 +2017,84 @@ paths:
       summary: Create a series
       tags:
       - event
-  /event/{eventID}/series/{seriesID}:
-    put:
+  /events/{eventID}/series/{seriesID}/:
+    delete:
+      description: Deletes a series by ID
+      operationId: delete-series-by-id
+      parameters:
+      - description: Event ID
+        in: path
+        name: eventID
+        required: true
+        type: string
+      - description: Series ID
+        in: path
+        name: seriesID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Delete a series by ID
+      tags:
+      - event
+    get:
+      description: Retrieves a series by ID
+      operationId: get-series-by-id
+      parameters:
+      - description: Event ID
+        in: path
+        name: eventID
+        required: true
+        type: string
+      - description: Series ID
+        in: path
+        name: seriesID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Series'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve a series by ID
+      tags:
+      - event
+    patch:
       consumes:
       - application/json
       description: Updates a series by ID
@@ -2035,75 +2142,8 @@ paths:
       summary: Update a series by ID
       tags:
       - event
-  /series/{seriesID}:
-    delete:
-      description: Deletes a series by ID
-      operationId: delete-series-by-id
-      parameters:
-      - description: Series ID
-        in: path
-        name: seriesID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-          schema:
-            type: string
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
-      summary: Delete a series by ID
-      tags:
-      - event
-    get:
-      description: Retrieves a series by ID
-      operationId: get-series-by-id
-      parameters:
-      - description: Series ID
-        in: path
-        name: seriesID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Series'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
-      summary: Retrieve a series by ID
-      tags:
-      - event
-  /tags:
-    get:
+  /tags/:
+    post:
       description: Retrieves all tags
       operationId: get-all-tags
       parameters:
@@ -2178,7 +2218,7 @@ paths:
       summary: Create a tag
       tags:
       - tag
-  /tags/{tagID}:
+  /tags/{tagID}/:
     delete:
       description: Deletes a tag
       operationId: delete-tag
@@ -2245,7 +2285,7 @@ paths:
       summary: Retrieve a tag
       tags:
       - tag
-    put:
+    patch:
       consumes:
       - application/json
       description: Updates a tag
@@ -2288,7 +2328,43 @@ paths:
       summary: Update a tag
       tags:
       - tag
-  /user/:
+  /users/:
+    get:
+      description: Retrieves all users
+      operationId: get-users
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve all users
+      tags:
+      - user
     post:
       consumes:
       - application/json
@@ -2327,7 +2403,7 @@ paths:
       summary: Create a user
       tags:
       - user
-  /user/{userID}:
+  /users/{userID}/:
     delete:
       description: Deletes a user
       operationId: delete-user
@@ -2398,7 +2474,7 @@ paths:
       summary: Retrieve a user
       tags:
       - user
-    put:
+    patch:
       consumes:
       - application/json
       description: Updates a user
@@ -2441,7 +2517,7 @@ paths:
       summary: Update a user
       tags:
       - user
-  /user/{userID}/following:
+  /users/{userID}/follower/:
     get:
       description: Retrieves all clubs a user is following
       operationId: get-following
@@ -2479,7 +2555,7 @@ paths:
       summary: Retrieve all clubs a user is following
       tags:
       - user-follower
-  /user/{userID}/following/{clubID}:
+  /users/{userID}/follower/{clubID}/:
     delete:
       consumes:
       - application/json
@@ -2556,7 +2632,7 @@ paths:
       summary: Follow a club
       tags:
       - user-follower
-  /user/{userID}/membership:
+  /users/{userID}/member/:
     get:
       description: Retrieves all clubs a user is a member of
       operationId: get-membership
@@ -2594,7 +2670,7 @@ paths:
       summary: Retrieve all clubs a user is a member of
       tags:
       - user-member
-  /user/{userID}/membership/{clubID}:
+  /users/{userID}/member/{clubID}/:
     delete:
       consumes:
       - application/json
@@ -2671,7 +2747,7 @@ paths:
       summary: Join a club
       tags:
       - user-member
-  /user/{userID}/tags:
+  /users/{userID}/tags/:
     get:
       description: Retrieves all tags associated with a user
       operationId: get-tags-by-user
