@@ -26,8 +26,9 @@ import (
 // @contact.email	oduneye.d@northeastern.edu and ladley.g@northeastern.edu
 // @host 127.0.0.1:8080
 // @BasePath /
+// @schemes http https
 func Init(db *gorm.DB, settings config.Settings, pineconeClient search.PineconeClient) *fiber.App {
-	app := newFiberApp()
+	app := newFiberApp(settings.Application)
 
 	validate, err := utilities.RegisterCustomValidators()
 	if err != nil {
@@ -51,14 +52,14 @@ func Init(db *gorm.DB, settings config.Settings, pineconeClient search.PineconeC
 	return app
 }
 
-func newFiberApp() *fiber.App {
+func newFiberApp(appSettings config.ApplicationSettings) *fiber.App {
 	app := fiber.New(fiber.Config{
 		JSONEncoder: json.Marshal,
 		JSONDecoder: json.Unmarshal,
 	})
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:8080",
+		AllowOrigins:     fmt.Sprintf("http://%s:%d", appSettings.Host, appSettings.Port),
 		AllowCredentials: true,
 	}))
 	app.Use(requestid.New())

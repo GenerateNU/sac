@@ -23,10 +23,14 @@ func Category(router fiber.Router, categoryService services.CategoryServiceInter
 	categories := router.Group("/categories")
 
 	categories.Post("/", authMiddleware.Authorize(auth.CreateAll), categoryController.CreateCategory)
-	categories.Get("/", categoryController.GetAllCategories)
-	categories.Get("/:categoryID", categoryController.GetCategory)
-	categories.Delete("/:categoryID", authMiddleware.Authorize(auth.DeleteAll), categoryController.DeleteCategory)
-	categories.Patch("/:categoryID", authMiddleware.Authorize(auth.WriteAll), categoryController.UpdateCategory)
+	categories.Get("/", categoryController.GetCategories)
 
-	return categories
+	// api/v1/categories/:categoryID/*
+	categoriesID := categories.Group("/:categoryID")
+
+	categoriesID.Get("/", categoryController.GetCategory)
+	categoriesID.Delete("/", authMiddleware.Authorize(auth.DeleteAll), categoryController.DeleteCategory)
+	categoriesID.Patch("/", authMiddleware.Authorize(auth.WriteAll), categoryController.UpdateCategory)
+
+	return categoriesID
 }

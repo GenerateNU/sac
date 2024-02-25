@@ -1,13 +1,16 @@
 package middleware
 
 import (
+	"fmt"
 	"slices"
+	"time"
 
 	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/skip"
 )
 
@@ -31,6 +34,12 @@ func (m *AuthMiddlewareService) Skip(h fiber.Handler) fiber.Handler {
 		}
 		return claims.Role == string(models.Super)
 	})
+}
+
+func (m *AuthMiddlewareService) DisableAuth(h fiber.Handler) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		return h(c)
+	}
 }
 
 func (m *AuthMiddlewareService) IsSuper(c *fiber.Ctx) bool {
@@ -95,4 +104,19 @@ func (m *AuthMiddlewareService) Authorize(requiredPermissions ...auth.Permission
 
 		return c.Next()
 	}
+}
+
+func (m *AuthMiddlewareService) Limiter(rate int, expiration time.Duration) func(c *fiber.Ctx) error {
+	return limiter.New(limiter.Config{
+		Max:        rate,
+		Expiration: expiration,
+		KeyGenerator: func(c *fiber.Ctx) string {
+			return fmt.Sprintf("%s-%s", c.IP(), c.Path())
+		},
+		LimitReached: func(c *fiber.Ctx) error {
+			return c.Status(fiber.StatusTooManyRequests).JSON(fiber.Map{
+				"error": "Too many requests",
+			})
+		},
+	})
 }

@@ -29,7 +29,7 @@ func NewClubFollowerController(clubFollowerService services.ClubFollowerServiceI
 // @Failure     400   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/club/{clubID}/followers  [get]
+// @Router		/clubs/{clubID}/followers/  [get]
 func (cf *ClubFollowerController) GetClubFollowers(c *fiber.Ctx) error {
 	defaultLimit := 10
 	defaultPage := 1

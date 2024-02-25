@@ -27,7 +27,7 @@ func NewUserFollowerController(userFollowerService services.UserFollowerServiceI
 // @Failure     401   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/user/{userID}/following/{clubID}  [post]
+// @Router		/users/{userID}/follower/{clubID}/  [post]
 func (uf *UserFollowerController) CreateFollowing(c *fiber.Ctx) error {
 	err := uf.userFollowerService.CreateFollowing(c.Params("userID"), c.Params("clubID"))
 	if err != nil {
@@ -50,7 +50,7 @@ func (uf *UserFollowerController) CreateFollowing(c *fiber.Ctx) error {
 // @Failure     401   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/user/{userID}/following/{clubID}  [delete]
+// @Router		/users/{userID}/follower/{clubID}/  [delete]
 func (uf *UserFollowerController) DeleteFollowing(c *fiber.Ctx) error {
 	err := uf.userFollowerService.DeleteFollowing(c.Params("userID"), c.Params("clubID"))
 	if err != nil {
@@ -72,8 +72,8 @@ func (uf *UserFollowerController) DeleteFollowing(c *fiber.Ctx) error {
 // @Failure     401   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/user/{userID}/following  [get]
-func (uf *UserFollowerController) GetAllFollowing(c *fiber.Ctx) error {
+// @Router		/users/{userID}/follower/  [get]
+func (uf *UserFollowerController) GetFollowing(c *fiber.Ctx) error {
 	clubs, err := uf.userFollowerService.GetFollowing(c.Params("userID"))
 	if err != nil {
 		return err.FiberError(c)

@@ -32,7 +32,7 @@ func NewUserController(userService services.UserServiceInterface) *UserControlle
 // @Failure     401   {object}    errors.Error
 // @Failure     404   {object}    errors.Error
 // @Failure     500   {object}    errors.Error
-// @Router		/user/  [post]
+// @Router		/users/  [post]
 func (u *UserController) CreateUser(c *fiber.Ctx) error {
 	var userBody models.CreateUserRequestBody
 
@@ -61,6 +61,7 @@ func (u *UserController) CreateUser(c *fiber.Ctx) error {
 // @Failure     401   {object}      errors.Error
 // @Failure     400   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
+// @Router		/users/  [get]
 func (u *UserController) GetUsers(c *fiber.Ctx) error {
 	defaultLimit := 10
 	defaultPage := 1
@@ -86,7 +87,7 @@ func (u *UserController) GetUsers(c *fiber.Ctx) error {
 // @Failure     401   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/user/{userID}  [get]
+// @Router		/users/{userID}/  [get]
 func (u *UserController) GetUser(c *fiber.Ctx) error {
 	user, err := u.userService.GetUser(c.Params("userID"))
 	if err != nil {
@@ -111,7 +112,7 @@ func (u *UserController) GetUser(c *fiber.Ctx) error {
 // @Failure     401   {object}    errors.Error
 // @Failure     404   {object}    errors.Error
 // @Failure     500   {object}    errors.Error
-// @Router		/user/{userID}  [put]
+// @Router		/users/{userID}/  [patch]
 func (u *UserController) UpdateUser(c *fiber.Ctx) error {
 	var user models.UpdateUserRequestBody
 
@@ -141,7 +142,7 @@ func (u *UserController) UpdateUser(c *fiber.Ctx) error {
 // @Failure     401   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/user/{userID}  [delete]
+// @Router		/users/{userID}/  [delete]
 func (u *UserController) DeleteUser(c *fiber.Ctx) error {
 	err := u.userService.DeleteUser(c.Params("userID"))
 	if err != nil {
