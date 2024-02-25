@@ -70,7 +70,7 @@ function RootLayoutNav() {
         if (isLoggedIn === null) return;
 
         if (!isLoggedIn) {
-            router.push('/(auth)/login');
+            router.push('/(auth)/welcome');
             return;
         }
 

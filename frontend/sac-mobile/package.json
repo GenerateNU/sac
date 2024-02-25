@@ -21,7 +21,7 @@
         "axios": "^1.6.7",
         "clsx": "^2.1.0",
         "eslint": "^8.56.0",
-        "expo": "~50.0.5",
+        "expo": "^50.0.7",
         "expo-dev-client": "~3.3.8",
         "expo-font": "~11.10.2",
         "expo-linking": "~6.2.2",
