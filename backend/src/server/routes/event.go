@@ -31,6 +31,9 @@ func Event(router fiber.Router, eventService services.EventServiceInterface, aut
 	series.Get("/", eventController.GetSeriesByEventID)
 	series.Delete("/", eventController.DeleteSeriesByEventID)
 
+	series.Get("/", eventController.GetSeriesByEventID)
+	series.Delete("/", eventController.DeleteSeriesByEventID)
+
 	// api/v1/events/:eventID/series/:seriesID/*
 	seriesID := series.Group("/:seriesID")
 

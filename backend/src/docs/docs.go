@@ -97,6 +97,7 @@ const docTemplate = `{
         },
         "/auth/me": {
             "get": {
+
                 "description": "Returns the current user associated with an auth session",
                 "produces": [
                     "application/json"
