@@ -41,6 +41,7 @@ func (m *AuthMiddlewareService) DisableAuth(h fiber.Handler) fiber.Handler {
 		return h(c)
 	}
 }
+
 func (m *AuthMiddlewareService) IsSuper(c *fiber.Ctx) bool {
 	claims, err := auth.From(c)
 	if err != nil {
