@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"strconv"
+
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
@@ -16,9 +18,7 @@ func NewTagController(tagService services.TagServiceInterface) *TagController {
 	return &TagController{tagService: tagService}
 }
 
-// GetAllTags godoc
-
-// CreateTag creates a new tag.
+// GetTags godoc
 //
 // @Summary		Retrieve all tags
 // @Description	Retrieves all tags
@@ -29,12 +29,38 @@ func NewTagController(tagService services.TagServiceInterface) *TagController {
 // @Param		page		query	int	    false	"Page"
 // @Success		200	  {object}	    []models.Tag
 // @Failure     400   {object}      errors.Error
-// @Failure     401   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
 // @Router		/tags  [get]
+func (t *TagController) GetTags(c *fiber.Ctx) error {
+	defaultLimit := 10
+	defaultPage := 1
+
+	tags, err := t.tagService.GetTags(c.Query("limit", strconv.Itoa(defaultLimit)), c.Query("page", strconv.Itoa(defaultPage)))
+	if err != nil {
+		return err.FiberError(c)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(&tags)
+}
+
+// CreateTag godoc
+//
+// @Summary		Create a tag
+// @Description	Creates a tag
+// @ID			create-tag
+// @Tags      	tag
+// @Accept		json
+// @Produce		json
+// @Param		tagBody	body	models.CreateTagRequestBody	true	"Tag Body"
+// @Success		201	  {object}	  models.Tag
+// @Failure     400   {object}    errors.Error
+// @Failure     401   {object}    errors.Error
+// @Failure     404   {object}    errors.Error
+// @Failure     500   {object}    errors.Error
+// @Router		/tags/  [post]
 func (t *TagController) CreateTag(c *fiber.Ctx) error {
-	var tagBody models.TagRequestBody
+	var tagBody models.CreateTagRequestBody
 
 	if err := c.BodyParser(&tagBody); err != nil {
 		return errors.FailedToParseRequestBody.FiberError(c)
@@ -60,7 +86,7 @@ func (t *TagController) CreateTag(c *fiber.Ctx) error {
 // @Failure     400   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/tags/{tagID}  [get]
+// @Router		/tags/{tagID}/  [get]
 func (t *TagController) GetTag(c *fiber.Ctx) error {
 	tag, err := t.tagService.GetTag(c.Params("tagID"))
 	if err != nil {
@@ -79,15 +105,15 @@ func (t *TagController) GetTag(c *fiber.Ctx) error {
 // @Accept		json
 // @Produce		json
 // @Param		tagID	path	string	true	"Tag ID"
-// @Param		tag	body	models.TagRequestBody	true	"Tag"
+// @Param		tag	body	models.UpdateTagRequestBody	true	"Tag"
 // @Success		200	  {object}	  models.Tag
 // @Failure     400   {object}    errors.Error
 // @Failure     401   {object}    errors.Error
 // @Failure     404   {object}    errors.Error
 // @Failure     500   {object}    errors.Error
-// @Router		/tags/{tagID}  [put]
+// @Router		/tags/{tagID}/  [patch]
 func (t *TagController) UpdateTag(c *fiber.Ctx) error {
-	var tagBody models.TagRequestBody
+	var tagBody models.UpdateTagRequestBody
 
 	if err := c.BodyParser(&tagBody); err != nil {
 		return errors.FailedToParseRequestBody.FiberError(c)
@@ -114,7 +140,7 @@ func (t *TagController) UpdateTag(c *fiber.Ctx) error {
 // @Failure     401   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/tags/{tagID}  [delete]
+// @Router		/tags/{tagID}/  [delete]
 func (t *TagController) DeleteTag(c *fiber.Ctx) error {
 	err := t.tagService.DeleteTag(c.Params("tagID"))
 	if err != nil {

@@ -30,7 +30,7 @@ func NewCategoryTagController(categoryTagService services.CategoryTagServiceInte
 // @Failure     400   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/category/{categoryID}/tags  [get]
+// @Router		/categories/{categoryID}/tags/  [get]
 func (ct *CategoryTagController) GetTagsByCategory(c *fiber.Ctx) error {
 	defaultLimit := 10
 	defaultPage := 1
@@ -56,7 +56,7 @@ func (ct *CategoryTagController) GetTagsByCategory(c *fiber.Ctx) error {
 // @Failure     400   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/category/{categoryID}/tags/{tagID}  [get]
+// @Router		/categories/{categoryID}/tags/{tagID}/  [get]
 func (ct *CategoryTagController) GetTagByCategory(c *fiber.Ctx) error {
 	tag, err := ct.categoryTagService.GetTagByCategory(c.Params("categoryID"), c.Params("tagID"))
 	if err != nil {

@@ -27,7 +27,7 @@ func NewClubContactController(clubContactService services.ClubContactServiceInte
 // @Failure     400   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/club/{clubID}/contacts  [get]
+// @Router		/clubs/{clubID}/contacts/  [get]
 func (cc *ClubContactController) GetClubContacts(c *fiber.Ctx) error {
 	contacts, err := cc.clubContactService.GetClubContacts(c.Params("clubID"))
 	if err != nil {
@@ -37,11 +37,11 @@ func (cc *ClubContactController) GetClubContacts(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(contacts)
 }
 
-// PostContact godoc
+// PutContact godoc
 //
 // @Summary		Creates a contact
 // @Description	Creates a contact
-// @ID			create-contact
+// @ID			put-contact
 // @Tags      	club-contact
 // @Accept		json
 // @Produce		json
@@ -52,7 +52,7 @@ func (cc *ClubContactController) GetClubContacts(c *fiber.Ctx) error {
 // @Failure     401   {object}    errors.Error
 // @Failure     404   {object}    errors.Error
 // @Failure     500   {object}    errors.Error
-// @Router		/club/{clubID}/contacts  [post]
+// @Router		/clubs/{clubID}/contacts/  [put]
 func (cc *ClubContactController) PutContact(c *fiber.Ctx) error {
 	var contactBody models.PutContactRequestBody
 

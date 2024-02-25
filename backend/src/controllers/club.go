@@ -15,7 +15,7 @@ func NewClubController(clubService services.ClubServiceInterface) *ClubControlle
 	return &ClubController{clubService: clubService}
 }
 
-// GetAllClubs godoc
+// GetClubs godoc
 //
 // @Summary		Retrieve all clubs
 // @Description	Retrieves all clubs
@@ -27,7 +27,7 @@ func NewClubController(clubService services.ClubServiceInterface) *ClubControlle
 // @Success		200	  {object}	    []models.Club
 // @Failure     400   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/club/  [get]
+// @Router		/clubs/  [get]
 func (cl *ClubController) GetAllClubs(c *fiber.Ctx) error {
 	var queryParams models.ClubQueryParams
 
@@ -60,7 +60,7 @@ func (cl *ClubController) GetAllClubs(c *fiber.Ctx) error {
 // @Failure     401   {object}    errors.Error
 // @Failure     404   {object}    errors.Error
 // @Failure     500   {object}    errors.Error
-// @Router		/club/  [post]
+// @Router		/clubs/  [post]
 func (cl *ClubController) CreateClub(c *fiber.Ctx) error {
 	var clubBody models.CreateClubRequestBody
 	if err := c.BodyParser(&clubBody); err != nil {
@@ -87,7 +87,7 @@ func (cl *ClubController) CreateClub(c *fiber.Ctx) error {
 // @Failure     400   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/club/{clubID}  [get]
+// @Router		/clubs/{clubID}/  [get]
 func (cl *ClubController) GetClub(c *fiber.Ctx) error {
 	club, err := cl.clubService.GetClub(c.Params("clubID"))
 	if err != nil {
@@ -112,7 +112,7 @@ func (cl *ClubController) GetClub(c *fiber.Ctx) error {
 // @Failure     401   {object}    errors.Error
 // @Failure     404   {object}    errors.Error
 // @Failure     500   {object}    errors.Error
-// @Router		/club/{clubID}  [put]
+// @Router		/clubs/{clubID}/  [patch]
 func (cl *ClubController) UpdateClub(c *fiber.Ctx) error {
 	var clubBody models.UpdateClubRequestBody
 
@@ -141,7 +141,7 @@ func (cl *ClubController) UpdateClub(c *fiber.Ctx) error {
 // @Failure     401   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/club/{clubID}  [delete]
+// @Router		/clubs/{clubID}/  [delete]
 func (cl *ClubController) DeleteClub(c *fiber.Ctx) error {
 	err := cl.clubService.DeleteClub(c.Params("clubID"))
 	if err != nil {

@@ -48,6 +48,16 @@ func GetTag(db *gorm.DB, tagID uuid.UUID) (*models.Tag, *errors.Error) {
 	return &tag, nil
 }
 
+func GetTags(db *gorm.DB, limit int, offset int) ([]models.Tag, *errors.Error) {
+	var tags []models.Tag
+
+	if err := db.Limit(limit).Offset(offset).Find(&tags).Error; err != nil {
+		return nil, &errors.FailedToGetTags
+	}
+
+	return tags, nil
+}
+
 func UpdateTag(db *gorm.DB, id uuid.UUID, tag models.Tag) (*models.Tag, *errors.Error) {
 	if err := db.Model(&models.Tag{}).Where("id = ?", id).Updates(tag).First(&tag, id).Error; err != nil {
 		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {

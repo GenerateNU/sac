@@ -32,7 +32,7 @@ func NewCategoryController(categoryService services.CategoryServiceInterface) *C
 // @Failure     401   {string}    errors.Error
 // @Failure     404   {string}    errors.Error
 // @Failure     500   {string}    errors.Error
-// @Router		/category/  [post]
+// @Router		/categories/  [post]
 func (cat *CategoryController) CreateCategory(c *fiber.Ctx) error {
 	var categoryBody models.CategoryRequestBody
 
@@ -61,7 +61,7 @@ func (cat *CategoryController) CreateCategory(c *fiber.Ctx) error {
 // @Failure     400   {string}      errors.Error
 // @Failure     404   {string}      errors.Error
 // @Failure     500   {string}      errors.Error
-// @Router		/category/  [get]
+// @Router		/categories/  [get]
 func (cat *CategoryController) GetCategories(c *fiber.Ctx) error {
 	defaultLimit := 10
 	defaultPage := 1
@@ -87,6 +87,12 @@ func (cat *CategoryController) GetCategories(c *fiber.Ctx) error {
 // @Failure     404   {string}      errors.Error
 // @Failure     500   {string}      errors.Error
 // @Router		/category/{categoryID}  [get]
+// @Param		id	path	string	true	"Category ID"
+// @Success		200	  {object}	  models.Category
+// @Failure 	400   {string}    string "failed to validate id"
+// @Failure     404   {string}    string "faied to find category"
+// @Failure     500   {string}    string "failed to retrieve category"
+// @Router		/api/v1/category/{id}  [get]
 func (cat *CategoryController) GetCategory(c *fiber.Ctx) error {
 	category, err := cat.categoryService.GetCategory(c.Params("categoryID"))
 	if err != nil {
@@ -109,7 +115,7 @@ func (cat *CategoryController) GetCategory(c *fiber.Ctx) error {
 // @Failure     401   {string}      errors.Error
 // @Failure     404   {string}      errors.Error
 // @Failure     500   {string}      errors.Error
-// @Router		/category/{categoryID}  [delete]
+// @Router		/categories/{categoryID}/  [delete]
 func (cat *CategoryController) DeleteCategory(c *fiber.Ctx) error {
 	if err := cat.categoryService.DeleteCategory(c.Params("categoryID")); err != nil {
 		return err.FiberError(c)
@@ -133,7 +139,7 @@ func (cat *CategoryController) DeleteCategory(c *fiber.Ctx) error {
 // @Failure     401   {string}      errors.Error
 // @Failure     404   {string}      errors.Error
 // @Failure     500   {string}      errors.Error
-// @Router		/category/{categoryID}  [put]
+// @Router		/categories/{categoryID}/  [patch]
 func (cat *CategoryController) UpdateCategory(c *fiber.Ctx) error {
 	var category models.CategoryRequestBody
 

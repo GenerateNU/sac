@@ -1,6 +1,8 @@
 package server
 
 import (
+	"fmt"
+
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/middleware"
 	"github.com/GenerateNU/sac/backend/src/server/routes"
@@ -28,38 +30,22 @@ func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 
 	validate, err := utilities.RegisterCustomValidators()
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("Error registering custom validators: %s", err))
 	}
 
-	middlewareService := middleware.NewMiddlewareService(db, validate, settings.Auth)
+	authMiddleware := middleware.NewAuthAuthMiddlewareService(db, validate, settings.Auth)
 
 	apiv1 := app.Group("/api/v1")
-	apiv1.Use(middlewareService.Authenticate)
+	apiv1.Use(authMiddleware.Authenticate)
 
 	routes.Utility(app)
-
-	routes.Auth(apiv1, services.NewAuthService(db, validate), settings.Auth)
-
-	userRouter := routes.User(apiv1, services.NewUserService(db, validate), middlewareService)
-	routes.UserTag(userRouter, services.NewUserTagService(db, validate))
-	routes.UserFollower(userRouter, services.NewUserFollowerService(db, validate))
-	routes.UserMember(userRouter, services.NewUserMemberService(db))
-
-	routes.Contact(apiv1, services.NewContactService(db, validate))
-
-	clubsIDRouter := routes.Club(apiv1, services.NewClubService(db, validate), middlewareService)
-	routes.ClubTag(clubsIDRouter, services.NewClubTagService(db, validate))
-	routes.ClubFollower(clubsIDRouter, services.NewClubFollowerService(db))
-	routes.ClubMember(clubsIDRouter, services.NewClubMemberService(db, validate))
-	routes.ClubContact(clubsIDRouter, services.NewClubContactService(db, validate))
-	routes.ClubEvent(clubsIDRouter, services.NewClubEventService(db), middlewareService)
-
-	routes.Tag(apiv1, services.NewTagService(db, validate))
-
-	categoryRouter := routes.Category(apiv1, services.NewCategoryService(db, validate))
-	routes.CategoryTag(categoryRouter, services.NewCategoryTagService(db, validate))
-
-	routes.Event(apiv1, services.NewEventService(db, validate))
+	routes.Auth(apiv1, services.NewAuthService(db, validate), settings.Auth, authMiddleware)
+	routes.UserRoutes(apiv1, db, validate, authMiddleware)
+	routes.Contact(apiv1, services.NewContactService(db, validate), authMiddleware)
+	routes.ClubRoutes(apiv1, db, validate, authMiddleware)
+	routes.Tag(apiv1, services.NewTagService(db, validate), authMiddleware)
+	routes.CategoryRoutes(apiv1, db, validate, authMiddleware)
+	routes.Event(apiv1, services.NewEventService(db, validate), authMiddleware)
 
 	return app
 }
@@ -71,7 +57,7 @@ func newFiberApp() *fiber.App {
 	})
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "*",
+		AllowOrigins:     "http://localhost:8080",
 		AllowCredentials: true,
 	}))
 	app.Use(requestid.New())

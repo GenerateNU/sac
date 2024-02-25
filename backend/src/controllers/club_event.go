@@ -29,7 +29,7 @@ func NewClubEventController(clubEventService services.ClubEventServiceInterface)
 // @Failure     400   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/club/{clubID}/events  [get]
+// @Router		/clubs/{clubID}/events/  [get]
 func (cl *ClubEventController) GetClubEvents(c *fiber.Ctx) error {
 	defaultLimit := 10
 	defaultPage := 1
