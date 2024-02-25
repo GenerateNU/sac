@@ -819,8 +819,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/errors.Error'
-      security:
-      - cookie: []
       summary: Retrieve the current user given an auth session
       tags:
       - auth
