@@ -8,6 +8,7 @@ import (
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/database"
 	_ "github.com/GenerateNU/sac/backend/src/docs"
+	"github.com/GenerateNU/sac/backend/src/search"
 	"github.com/GenerateNU/sac/backend/src/server"
 )
 
@@ -29,6 +30,9 @@ func main() {
 		panic(fmt.Sprintf("Error getting configuration: %s", err.Error()))
 	}
 
+	openAIClient := search.NewOpenAIClient(config.OpenAISettings)
+	pineconeClient := search.NewPineconeClient(openAIClient, config.PineconeSettings)
+
 	db, err := database.ConfigureDB(*config)
 	if err != nil {
 		panic(fmt.Sprintf("Error configuring database: %s", err.Error()))
@@ -43,7 +47,7 @@ func main() {
 		panic(fmt.Sprintf("Error connecting to database: %s", err.Error()))
 	}
 
-	app := server.Init(db, *config)
+	app := server.Init(db, *config, *pineconeClient)
 
 	err = app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
 	if err != nil {

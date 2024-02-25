@@ -32,7 +32,7 @@ type Club struct {
 
 	Name             string           `gorm:"type:varchar(255)" json:"name" validate:"required,max=255"`
 	Preview          string           `gorm:"type:varchar(255)" json:"preview" validate:"required,max=255"`
-	Description      string           `gorm:"type:varchar(255)" json:"description" validate:"required,http_url,mongo_url,max=255"` // MongoDB URL
+	Description      string           `gorm:"type:varchar(10000)" json:"description" validate:"required,http_url,mongo_url,max=255"` // MongoDB URL
 	NumMembers       int              `gorm:"type:int" json:"num_members" validate:"required,min=1"`
 	IsRecruiting     bool             `gorm:"type:bool;default:false" json:"is_recruiting" validate:"required"`
 	RecruitmentCycle RecruitmentCycle `gorm:"type:varchar(255);default:always" json:"recruitment_cycle" validate:"required,max=255,oneof=fall spring fallSpring always"`
@@ -90,7 +90,32 @@ type ClubQueryParams struct {
 	IsRecruiting     *bool             `query:"is_recruiting"`
 	Limit            int               `query:"limit"`
 	Page             int               `query:"page"`
+	Search           string            `query:"search"`
 }
+
+type ClubSearch struct {
+    SearchString string `query:"search"`
+}
+
+func NewClubSearch(searchQuery string) *ClubSearch {
+    return &ClubSearch{
+        SearchString: searchQuery,
+    }
+}
+
+// dummy searchID
+func (cs *ClubSearch) SearchId() string {
+	return ""
+}
+
+func (cs * ClubSearch) Namespace() string {
+	return "clubs"
+}
+
+func (cs *ClubSearch) EmbeddingString() string {
+	return cs.SearchString
+}
+
 
 func (cqp *ClubQueryParams) IntoWhere() string {
 	conditions := make([]string, 0)

@@ -3,6 +3,7 @@ package services
 import (
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/GenerateNU/sac/backend/src/search"
 	"github.com/GenerateNU/sac/backend/src/transactions"
 	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/go-playground/validator/v10"
@@ -19,12 +20,13 @@ type ClubServiceInterface interface {
 }
 
 type ClubService struct {
+	pineconeClient *search.PineconeClient
 	DB       *gorm.DB
 	Validate *validator.Validate
 }
 
-func NewClubService(db *gorm.DB, validate *validator.Validate) *ClubService {
-	return &ClubService{DB: db, Validate: validate}
+func NewClubService(db *gorm.DB, validate *validator.Validate, pineconeClient search.PineconeClient) *ClubService {
+	return &ClubService{DB: db, Validate: validate, pineconeClient : &pineconeClient}
 }
 
 func (c *ClubService) GetClubs(queryParams *models.ClubQueryParams) ([]models.Club, *errors.Error) {
@@ -36,7 +38,7 @@ func (c *ClubService) GetClubs(queryParams *models.ClubQueryParams) ([]models.Cl
 		return nil, &errors.FailedToValidatePage
 	}
 
-	return transactions.GetClubs(c.DB, queryParams)
+	return transactions.GetClubs(c.DB, queryParams, *c.pineconeClient)
 }
 
 func (c *ClubService) CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, *errors.Error) {
