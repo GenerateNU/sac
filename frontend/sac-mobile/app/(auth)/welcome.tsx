@@ -1,42 +1,65 @@
 import React from 'react';
-import {View, Text, StyleSheet, Button} from 'react-native'; 
+import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+
+import Wordmark from '@/components/Wordmark';
+import Button from '@/components/button';
 import { useAuthStore } from '@/hooks/use-auth';
+import { router } from 'expo-router';
 
 const Welcome = () => {
+
+  const redirect = () => {
+    router.push('/(auth)/login');
+  }
+
     return (
-        <View style={styles.container}>
-          <Text style={styles.wordmark}>Wordmark</Text>
-          <Text style={styles.header}>Welcome to StudCal</Text>
-          <Text style={styles.description}>Discover, follow, and join all the clubs & events Northeastern has to offer</Text>
-          <Button title="Login" />
-        </View>
-      )
+        <SafeAreaView style={styles.container}>
+            <Wordmark />
+            <View style={styles.imageHolder}></View>
+            <Text style={styles.header}>Welcome to StudCal</Text>
+            <Text style={styles.description}>
+                Discover, follow, and join all the clubs & events Northeastern
+                has to offer
+            </Text>
+            <View style={styles.buttonAlign}>
+                <Button title="Get Started" color="white" buttonfunc={redirect}/>
+            </View>
+        </SafeAreaView>
+    );
 };
 
 export default Welcome;
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1, 
-      flexDirection: 'column',
-      marginTop: '5%', 
-      marginBottom: '10%', 
-      marginLeft: 30, 
-      marginRight: 30,
-    },
-    wordmark: {
-      marginTop: 60, 
-      fontSize: 20, 
-      flex: 1, 
+        flexDirection: 'column',
+        marginBottom: '10%',
+        marginLeft: 30,
+        marginRight: 30
     },
     header: {
-      color: 'black',
-      flex: 1.7,
-      fontSize: 60, 
+        color: 'black',
+        height: '20%',
+        fontSize: 50,
+        marginTop: '5%',
+        fontWeight: 'bold'
+    },
+    imageHolder: {
+        backgroundColor: 'black',
+        height: '45%',
+        width: '100%',
+        borderRadius: 20
     },
     description: {
-      color: 'black', 
-      flex: 1, 
-      fontSize: 18,
+        color: 'black',
+        height: '15%',
+        fontSize: 23
     },
-  });
+    button: {
+        height: '10%'
+    },
+    buttonAlign: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end'
+    }
+});
