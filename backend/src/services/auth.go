@@ -24,14 +24,14 @@ type AuthServiceInterface interface {
 type AuthService struct {
 	DB       *gorm.DB
 	Validate *validator.Validate
-	Email *auth.EmailService
+	Email    *auth.EmailService
 }
 
 func NewAuthService(db *gorm.DB, validate *validator.Validate, email *auth.EmailService) *AuthService {
 	return &AuthService{
 		DB:       db,
 		Validate: validate,
-		Email: email,
+		Email:    email,
 	}
 }
 

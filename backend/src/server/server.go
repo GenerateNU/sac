@@ -38,7 +38,6 @@ func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 	authMiddleware := middleware.NewAuthAuthMiddlewareService(db, validate, settings.Auth)
 	emailService := auth.NewEmailService()
 
-
 	apiv1 := app.Group("/api/v1")
 	apiv1.Use(authMiddleware.Authenticate)
 

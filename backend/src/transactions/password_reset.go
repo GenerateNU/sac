@@ -11,8 +11,8 @@ import (
 
 func SavePasswordResetToken(db *gorm.DB, userID uuid.UUID, token string) *errors.Error {
 	passwordReset := models.PasswordReset{
-		UserID: userID,
-		Token:  token,
+		UserID:    userID,
+		Token:     token,
 		ExpiresAt: time.Now().Add(time.Hour * 24).UTC(),
 	}
 
@@ -42,7 +42,6 @@ func GetPasswordResetToken(db *gorm.DB, token string) (*models.PasswordReset, *e
 
 	return &passwordReset, nil
 }
-
 
 func GetActivePasswordResetTokenByUserID(db *gorm.DB, userID uuid.UUID) (*models.PasswordReset, *errors.Error) {
 	passwordReset := models.PasswordReset{}
