@@ -7,6 +7,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/database"
+	"github.com/GenerateNU/sac/backend/src/search"
 	"github.com/GenerateNU/sac/backend/src/server"
 )
 
@@ -34,6 +35,9 @@ func main() {
 		panic(fmt.Sprintf("Error configuring database: %s", err.Error()))
 	}
 
+	openAi := search.NewOpenAIClient(config.OpenAISettings)
+	pinecone := search.NewPineconeClient(openAi, config.PineconeSettings)
+
 	if *onlyMigrate {
 		return
 	}
@@ -43,7 +47,7 @@ func main() {
 		panic(fmt.Sprintf("Error connecting to database: %s", err.Error()))
 	}
 
-	app := server.Init(db, *config)
+	app := server.Init(db, pinecone, *config)
 
 	err = app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
 	if err != nil {

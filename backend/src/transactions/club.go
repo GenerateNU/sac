@@ -5,6 +5,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/GenerateNU/sac/backend/src/search"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -54,7 +55,7 @@ func GetClubs(db *gorm.DB, queryParams *models.ClubQueryParams) ([]models.Club, 
 	return clubs, nil
 }
 
-func CreateClub(db *gorm.DB, userId uuid.UUID, club models.Club) (*models.Club, *errors.Error) {
+func CreateClub(db *gorm.DB, pinecone *search.PineconeClient, userId uuid.UUID, club models.Club) (*models.Club, *errors.Error) {
 	user, err := GetUser(db, userId)
 	if err != nil {
 		return nil, err
@@ -68,6 +69,12 @@ func CreateClub(db *gorm.DB, userId uuid.UUID, club models.Club) (*models.Club, 
 	}
 
 	if err := tx.Model(&club).Association("Admin").Append(user); err != nil {
+		tx.Rollback()
+		return nil, &errors.FailedToCreateClub
+	}
+
+	if err := pinecone.Upsert(&club); err != nil {
+
 		tx.Rollback()
 		return nil, &errors.FailedToCreateClub
 	}
@@ -100,9 +107,13 @@ func GetClub(db *gorm.DB, id uuid.UUID, preloads ...OptionalQuery) (*models.Club
 	return &club, nil
 }
 
-func UpdateClub(db *gorm.DB, id uuid.UUID, club models.Club) (*models.Club, *errors.Error) {
-	result := db.Model(&models.User{}).Where("id = ?", id).Updates(club)
+func UpdateClub(db *gorm.DB, pinecone *search.PineconeClient, id uuid.UUID, club models.Club) (*models.Club, *errors.Error) {
+	tx := db.Begin()
+
+	// TODO: is this block needed? (updating user based off club data)
+	result := tx.Model(&models.User{}).Where("id = ?", id).Updates(club)
 	if result.Error != nil {
+		tx.Rollback()
 		if stdliberrors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, &errors.UserNotFound
 		} else {
@@ -111,8 +122,9 @@ func UpdateClub(db *gorm.DB, id uuid.UUID, club models.Club) (*models.Club, *err
 	}
 	var existingClub models.Club
 
-	err := db.First(&existingClub, id).Error
+	err := tx.First(&existingClub, id).Error
 	if err != nil {
+		tx.Rollback()
 		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &errors.ClubNotFound
 		} else {
@@ -120,20 +132,53 @@ func UpdateClub(db *gorm.DB, id uuid.UUID, club models.Club) (*models.Club, *err
 		}
 	}
 
-	if err := db.Model(&existingClub).Updates(&club).Error; err != nil {
+	if err := tx.Model(&existingClub).Updates(&club).Error; err != nil {
+		tx.Rollback()
 		return nil, &errors.FailedToUpdateUser
+	}
+
+	if pinecone.Upsert(&existingClub) != nil {
+		tx.Rollback()
+		return nil, &errors.FailedToUpsertToPinecone
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return nil, &errors.FailedToUpdateClub
 	}
 
 	return &existingClub, nil
 }
 
-func DeleteClub(db *gorm.DB, id uuid.UUID) *errors.Error {
-	if result := db.Delete(&models.Club{}, id); result.RowsAffected == 0 {
+func DeleteClub(db *gorm.DB, pinecone *search.PineconeClient, id uuid.UUID) *errors.Error {
+	tx := db.Begin()
+
+	var existingClub models.Club
+	err := tx.First(&existingClub, id)
+	if err != nil {
+		tx.Rollback()
+		return &errors.ClubNotFound
+	}
+
+	pineconeErr := pinecone.Delete(&existingClub)
+	if pineconeErr != nil {
+		tx.Rollback()
+		return &errors.FailedToDeleteClub
+	}
+
+	if result := tx.Delete(&models.Club{}, id); result.RowsAffected == 0 {
+		tx.Rollback()
 		if result.Error == nil {
 			return &errors.ClubNotFound
 		} else {
 			return &errors.FailedToDeleteClub
 		}
 	}
+
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return &errors.FailedToDeleteClub
+	}
+
 	return nil
 }

@@ -3,6 +3,7 @@ package services
 import (
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/GenerateNU/sac/backend/src/search"
 	"github.com/GenerateNU/sac/backend/src/transactions"
 	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/go-playground/validator/v10"
@@ -20,11 +21,12 @@ type ClubServiceInterface interface {
 
 type ClubService struct {
 	DB       *gorm.DB
+	Pinecone *search.PineconeClient
 	Validate *validator.Validate
 }
 
-func NewClubService(db *gorm.DB, validate *validator.Validate) *ClubService {
-	return &ClubService{DB: db, Validate: validate}
+func NewClubService(db *gorm.DB, pinecone *search.PineconeClient, validate *validator.Validate) *ClubService {
+	return &ClubService{DB: db, Pinecone: pinecone, Validate: validate}
 }
 
 func (c *ClubService) GetClubs(queryParams *models.ClubQueryParams) ([]models.Club, *errors.Error) {
@@ -49,7 +51,7 @@ func (c *ClubService) CreateClub(clubBody models.CreateClubRequestBody) (*models
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	return transactions.CreateClub(c.DB, clubBody.UserID, *club)
+	return transactions.CreateClub(c.DB, c.Pinecone, clubBody.UserID, *club)
 }
 
 func (c *ClubService) GetClub(id string) (*models.Club, *errors.Error) {
@@ -76,7 +78,7 @@ func (c *ClubService) UpdateClub(id string, clubBody models.UpdateClubRequestBod
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	return transactions.UpdateClub(c.DB, *idAsUUID, *club)
+	return transactions.UpdateClub(c.DB, c.Pinecone, *idAsUUID, *club)
 }
 
 func (c *ClubService) DeleteClub(id string) *errors.Error {
@@ -85,5 +87,5 @@ func (c *ClubService) DeleteClub(id string) *errors.Error {
 		return &errors.FailedToValidateID
 	}
 
-	return transactions.DeleteClub(c.DB, *idAsUUID)
+	return transactions.DeleteClub(c.DB, c.Pinecone, *idAsUUID)
 }

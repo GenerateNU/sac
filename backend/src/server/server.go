@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/middleware"
+	"github.com/GenerateNU/sac/backend/src/search"
 	"github.com/GenerateNU/sac/backend/src/server/routes"
 	"github.com/GenerateNU/sac/backend/src/services"
 	"github.com/GenerateNU/sac/backend/src/utilities"
@@ -23,7 +24,7 @@ import (
 // @contact.email	oduneye.d@northeastern.edu and ladley.g@northeastern.edu
 // @host 127.0.0.1:8080
 // @BasePath /
-func Init(db *gorm.DB, settings config.Settings) *fiber.App {
+func Init(db *gorm.DB, pinecone *search.PineconeClient, settings config.Settings) *fiber.App {
 	app := newFiberApp()
 
 	validate, err := utilities.RegisterCustomValidators()
@@ -47,7 +48,7 @@ func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 
 	routes.Contact(apiv1, services.NewContactService(db, validate))
 
-	clubsIDRouter := routes.Club(apiv1, services.NewClubService(db, validate), middlewareService)
+	clubsIDRouter := routes.Club(apiv1, services.NewClubService(db, pinecone, validate), middlewareService)
 	routes.ClubTag(clubsIDRouter, services.NewClubTagService(db, validate))
 	routes.ClubFollower(clubsIDRouter, services.NewClubFollowerService(db))
 	routes.ClubMember(clubsIDRouter, services.NewClubMemberService(db, validate))
