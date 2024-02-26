@@ -47,9 +47,6 @@ func main() {
 		panic(fmt.Sprintf("Error connecting to database: %s", err.Error()))
 	}
 
-	openAI := search.NewOpenAIClient(config.OpenAISettings)
-	pinecone := search.NewPineconeClient(openAI, config.PineconeSettings)
-
 	app := server.Init(db, pinecone, *config)
 
 	err = app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))

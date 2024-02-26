@@ -73,7 +73,7 @@ func CreateClub(db *gorm.DB, pinecone *search.PineconeClient, userId uuid.UUID, 
 		return nil, &errors.FailedToCreateClub
 	}
 
-	if err := pinecone.Upsert(&club); err != nil {
+	if err := pinecone.Upsert([]search.Searchable{&club}); err != nil {
 
 		tx.Rollback()
 		return nil, &errors.FailedToCreateClub
@@ -137,7 +137,7 @@ func UpdateClub(db *gorm.DB, pinecone *search.PineconeClient, id uuid.UUID, club
 		return nil, &errors.FailedToUpdateUser
 	}
 
-	if pinecone.Upsert(&existingClub) != nil {
+	if pinecone.Upsert([]search.Searchable{&existingClub}) != nil {
 		tx.Rollback()
 		return nil, &errors.FailedToUpsertToPinecone
 	}
@@ -160,7 +160,7 @@ func DeleteClub(db *gorm.DB, pinecone *search.PineconeClient, id uuid.UUID) *err
 		return &errors.ClubNotFound
 	}
 
-	pineconeErr := pinecone.Delete(&existingClub)
+	pineconeErr := pinecone.Delete([]search.Searchable{&existingClub})
 	if pineconeErr != nil {
 		tx.Rollback()
 		return &errors.FailedToDeleteClub

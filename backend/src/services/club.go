@@ -42,10 +42,6 @@ func (c *ClubService) GetClubs(queryParams *models.ClubQueryParams) ([]models.Cl
 	return transactions.GetClubs(c.DB, queryParams)
 }
 
-func (c *ClubService) SearchClubs(searchParams *models.ClubSearchParams) ([]models.Club, *errors.Error) {
-	return transactions.SearchClubs(c.DB, c.Pinecone, searchParams)
-}
-
 func (c *ClubService) CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, *errors.Error) {
 	if err := c.Validate.Struct(clubBody); err != nil {
 		return nil, &errors.FailedToValidateClub
