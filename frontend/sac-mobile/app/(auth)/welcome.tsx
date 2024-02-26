@@ -1,16 +1,16 @@
 import React from 'react';
 import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
+import { router } from 'expo-router';
+
 import Wordmark from '@/components/Wordmark';
 import Button from '@/components/button';
 import { useAuthStore } from '@/hooks/use-auth';
-import { router } from 'expo-router';
 
 const Welcome = () => {
-
-  const redirect = () => {
-    router.push('/(auth)/login');
-  }
+    const redirect = () => {
+        router.push('/(auth)/login');
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -22,7 +22,11 @@ const Welcome = () => {
                 has to offer
             </Text>
             <View style={styles.buttonAlign}>
-                <Button title="Get Started" color="white" buttonfunc={redirect}/>
+                <Button
+                    title="Get Started"
+                    color="white"
+                    onPress={redirect}
+                />
             </View>
         </SafeAreaView>
     );
@@ -56,10 +60,10 @@ const styles = StyleSheet.create({
         fontSize: 23
     },
     button: {
-        height: '10%'
+        height: '5%'
     },
     buttonAlign: {
-      flexDirection: 'row',
-      justifyContent: 'flex-end'
+        flexDirection: 'row',
+        justifyContent: 'flex-end'
     }
 });

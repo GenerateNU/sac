@@ -1,6 +1,7 @@
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ButtonProps } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { router } from 'expo-router';
@@ -8,6 +9,8 @@ import { router } from 'expo-router';
 import { ZodError, z } from 'zod';
 
 import Wordmark from '@/components/Wordmark';
+import Button from '@/components/button';
+import Input from '@/components/input';
 import { useAuthStore } from '@/hooks/use-auth';
 import { loginByEmail } from '@/services/auth';
 
@@ -54,63 +57,77 @@ const Login = () => {
             <View style={styles.innerContainer}>
                 <View className="w-full p-5">
                     <Wordmark textColor="white" />
-                    <Text style={styles.header}>Let's Go</Text>
+                    <Text style={styles.header}>Let's go</Text>
                     <Text style={styles.description}>
                         Discover, follow, and join all the clubs & events
                         Northeastern has to offer
                     </Text>
                 </View>
-                <View>
-                    <Text>Email</Text>
-                    <Controller
-                        control={control}
-                        render={({ field: { onChange, value } }) => (
-                            <TextInput
-                                autoCapitalize="none"
-                                autoCorrect={false}
-                                className="p-2 border border-gray-300"
-                                placeholder="ladley.g@northeastern.edu"
-                                onChangeText={onChange}
-                                value={value}
-                                onSubmitEditing={handleSubmit(onSubmit)}
-                            />
+                <View style={styles.lowerContainer}>
+                    <View>
+                        <Text>Email</Text>
+                        <Controller
+                            control={control}
+                            render={({ field: { onChange, value } }) => (
+                                <TextInput
+                                    autoCapitalize="none"
+                                    autoCorrect={false}
+                                    placeholder="ladley.g@northeastern.edu"
+                                    onChangeText={onChange}
+                                    value={value}
+                                    onSubmitEditing={handleSubmit(onSubmit)}
+                                />
+                            )}
+                            name="email"
+                            rules={{ required: 'Email is required' }}
+                        />
+                        {errors.email && <Text>{errors.email.message}</Text>}
+                    </View>
+                    <View className="w-full mb-4">
+                        <Controller
+                            control={control}
+                            render={({ field: { onChange, value } }) => (
+                                <View>
+                                    <Text>Password</Text>
+                                    <TextInput
+                                        autoCapitalize="none"
+                                        autoCorrect={false}
+                                        placeholder="Password"
+                                        onChangeText={onChange}
+                                        value={value}
+                                        secureTextEntry={true}
+                                        onSubmitEditing={handleSubmit(onSubmit)}
+                                    />
+                                </View>
+                            )}
+                            name="password"
+                            rules={{ required: 'Password is required' }}
+                        />
+                        {errors.password && (
+                            <Text>{errors.password.message}</Text>
                         )}
-                        name="email"
-                        rules={{ required: 'Email is required' }}
-                    />
-                    {errors.email && <Text>{errors.email.message}</Text>}
-                </View>
+                    </View>
 
-                <View className="w-full mb-4">
-                    <Text>Password</Text>
-                    <Controller
-                        control={control}
-                        render={({ field: { onChange, value } }) => (
-                            <TextInput
-                                autoCapitalize="none"
-                                autoCorrect={false}
-                                className="p-2 border border-gray-300"
-                                placeholder="Password"
-                                onChangeText={onChange}
-                                value={value}
-                                secureTextEntry={true}
-                                onSubmitEditing={handleSubmit(onSubmit)}
-                            />
-                        )}
-                        name="password"
-                        rules={{ required: 'Password is required' }}
-                    />
-                    {errors.password && <Text>{errors.password.message}</Text>}
+                    <View style={styles.buttonContainer}>
+                        <Button
+                            backgroundColor="white"
+                            title="Sign up"
+                            borderColor="gray"
+                            onPress={() => router.push('/(auth)/register')}
+                        />
+                        <Button
+                            title="Login"
+                            color="white"
+                            borderColor="gray"
+                            backgroundColor="gray"
+                            onPress={handleSubmit(onSubmit)}
+                        />
+                    </View>
+                    <View style={styles.descriptionContainer}>
+                        <Text className="font-bold">Not a student?</Text>
+                        <Text> Continue as a guest.</Text>
+                    </View>
                 </View>
-
-                <View style={styles.buttonContainer}>
-                    <Button title="Login" onPress={handleSubmit(onSubmit)} />
-                    <Button
-                        title="Register"
-                        onPress={() => router.push('/(auth)/register')}
-                    />
-                </View>
-                <Text>Not a student? Continue as a Guest</Text>
             </View>
         </SafeAreaView>
     );
@@ -120,23 +137,37 @@ const styles = StyleSheet.create({
     header: {
         fontSize: 40,
         fontWeight: 'bold',
-        color: 'white'
+        color: 'white',
+        paddingTop: '5%',
+        paddingBottom: '2.5%'
     },
     description: {
-        fontSize: 20,
-        color: 'white'
+        fontSize: 15,
+        color: 'white',
+        paddingTop: '5%'
     },
     container: {
         backgroundColor: 'grey',
         height: '100%'
     },
     innerContainer: {
-        marginLeft: '5%',
-        marginRight: '5%'
+        flex: 1
     },
     buttonContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
+        justifyContent: 'space-around'
+    },
+    lowerContainer: {
+        backgroundColor: 'white',
+        borderTopLeftRadius: 15,
+        borderTopRightRadius: 15,
+        paddingTop: '10%',
+        flex: 1
+    },
+    descriptionContainer: {
+        marginTop: '5%',
+        flexDirection: 'row',
+        justifyContent: 'center'
     }
 });
 

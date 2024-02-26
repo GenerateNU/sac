@@ -4,7 +4,8 @@ type ButtonProps = {
     title: string;
     backgroundColor?: string;
     color?: string;
-    buttonfunc?: () => void;
+    onPress?: () => void;
+    borderColor?: string;
 };
 
 const Button = (props: ButtonProps) => {
@@ -12,21 +13,29 @@ const Button = (props: ButtonProps) => {
         button: {
             backgroundColor: props.backgroundColor || 'gray',
             fontSize: 24,
-            paddingTop: '5%',
-            paddingBottom: '5%',
             fontWeight: 'bold',
             borderRadius: 15,
-            width: '45%'
+            width: '47.5%',
+            borderColor: 'black'
         },
         title: {
             color: props.color || 'black',
             textAlign: 'center'
+        },
+        border: {
+            borderWidth: 1,
+            borderRadius: 15,
+            borderColor: props.borderColor || 'gray',
+            paddingTop: '6%',
+            paddingBottom: '6%'
         }
     });
 
     return (
-        <Pressable onPress={props.buttonfunc} style={styles.button}>
-            <Text style={styles.title}>{props.title}</Text>
+        <Pressable onPress={props.onPress} style={styles.button}>
+            <View style={styles.border}>
+                <Text style={styles.title}>{props.title}</Text>
+            </View>
         </Pressable>
     );
 };
