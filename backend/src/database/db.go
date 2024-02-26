@@ -1,13 +1,11 @@
 package database
 
 import (
-	"fmt"
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"os"
 )
 
 func ConfigureDB(settings config.Settings) (*gorm.DB, error) {
@@ -147,18 +145,4 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 		return tx.Commit().Error
 	}
 	return nil
-}
-
-// FIXME: this shouldn't run if there's data in the db already, how do we detect that
-func SeedDatabase(db *gorm.DB) {
-	seed, err := os.ReadFile("migrations/data.sql")
-	if err != nil {
-		return
-	}
-
-	seedString := string(seed)
-	print(seedString)
-	if err := db.Exec(seedString).Error; err != nil {
-		panic(fmt.Sprintf("Seeding database failed: %s", err.Error()))
-	}
 }

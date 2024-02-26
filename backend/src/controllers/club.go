@@ -37,14 +37,14 @@ func (cl *ClubController) GetAllClubs(c *fiber.Ctx) error {
 }
 
 func (cl *ClubController) SearchClubs(c *fiber.Ctx) error {
-	var queryParams models.ClubSearchParams
+	var searchParams models.ClubSearchParams
 
-	if err := c.QueryParser(&queryParams); err != nil {
+	if err := c.QueryParser(&searchParams); err != nil {
 		fmt.Println(err)
 		return errors.FailedtoParseQueryParams.FiberError(c)
 	}
 
-	clubs, err := cl.clubService.SearchClubs(&queryParams)
+	clubs, err := cl.clubService.SearchClubs(&searchParams)
 	if err != nil {
 		return err.FiberError(c)
 	}

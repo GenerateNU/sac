@@ -55,10 +55,9 @@ func GetClubs(db *gorm.DB, queryParams *models.ClubQueryParams) ([]models.Club, 
 	return clubs, nil
 }
 
-// FIXME: replace queryparams with searchparams
 // FIXME: this probably needs to be sorted by scores?
-func SearchClubs(db *gorm.DB, pinecone *search.PineconeClient, queryParams *models.ClubSearchParams) ([]models.Club, *errors.Error) {
-	results, err := pinecone.Search(queryParams, queryParams.NumResults)
+func SearchClubs(db *gorm.DB, pinecone *search.PineconeClient, searchParams *models.ClubSearchParams) ([]models.Club, *errors.Error) {
+	results, err := pinecone.Search(searchParams, searchParams.NumResults)
 	if err != nil {
 		return nil, err
 	}

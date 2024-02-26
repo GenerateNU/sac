@@ -28,12 +28,12 @@ type PineconeClientInterface interface {
 }
 
 type PineconeClient struct {
-	Settings config.PineconeSettings
-	// FIXME: this is needed to delete an index for dev client, nicer way to do this though?
+	Settings     config.PineconeSettings
 	IndexName    *mattress.Secret[string]
 	openAIClient *OpenAIClient
 }
 
+// Connects to an existing Pinecone index, using the host and keys provided in settings.
 func NewPineconeClient(openAIClient *OpenAIClient, settings config.PineconeSettings) *PineconeClient {
 	return &PineconeClient{
 		Settings:     settings,
@@ -61,15 +61,14 @@ type PineconeCreateIndexResponseBody struct {
 	Host string `json:"host"`
 }
 
-// FIXME: eeuuuuhhhh
-func NewPineconeDevelopmentClient(openAIClient *OpenAIClient, settings config.PineconeSettings) (*PineconeClient, error) {
-	// Create a new index
+// Similar to NewPineconeClient, but instead of connecting to an existing index, creates a new one.
+func NewPineconeClientCreateIndex(openAIClient *OpenAIClient, settings config.PineconeSettings) (*PineconeClient, error) {
 	newIndexUUID, err := uuid.NewUUID()
 	if err != nil {
-		print("UUID failed")
 		return nil, err
 	}
 	newIndexName := fmt.Sprintf("dev-%s", newIndexUUID.String())
+
 	createIndexBody, err := json.Marshal(
 		PineconeCreateIndexRequestBody{
 			Name:      newIndexName,
@@ -82,8 +81,8 @@ func NewPineconeDevelopmentClient(openAIClient *OpenAIClient, settings config.Pi
 				},
 			},
 		})
+
 	if err != nil {
-		print("Json marshaling failed")
 		return nil, err
 	}
 
@@ -91,7 +90,6 @@ func NewPineconeDevelopmentClient(openAIClient *OpenAIClient, settings config.Pi
 		"https://api.pinecone.io/indexes",
 		bytes.NewBuffer(createIndexBody))
 	if err != nil {
-		print("Request creation failed")
 		return nil, err
 	}
 
@@ -102,20 +100,17 @@ func NewPineconeDevelopmentClient(openAIClient *OpenAIClient, settings config.Pi
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		print("Sending request failed")
 		return nil, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != fiber.StatusCreated {
-		print("Creating pinecone index did not return right status code.")
 		return nil, nil
 	}
 
 	var body PineconeCreateIndexResponseBody
 	err = json.NewDecoder(resp.Body).Decode(&body)
 	if err != nil {
-		print("JSON decoding failed")
 		return nil, err
 	}
 
@@ -135,8 +130,9 @@ type PineconeDeleteIndexRequestBody struct {
 	IndexName string `json:"index_name"`
 }
 
-// FIXME: euhhhh, needs code review
-func (c *PineconeClient) DeletePineconeDevelopmentClient() error {
+// FIXME: This is broken
+// Deletes the index this pinecone client is connected to.
+func (c *PineconeClient) DeleteIndex() error {
 	req, err := http.NewRequest(fiber.MethodDelete,
 		fmt.Sprintf("https://api.pinecone.io/indexes/%s", c.IndexName.Expose()),
 		nil)
@@ -155,7 +151,6 @@ func (c *PineconeClient) DeletePineconeDevelopmentClient() error {
 	}
 	defer resp.Body.Close()
 
-	// FIXME: what do we do here
 	if resp.StatusCode != fiber.StatusAccepted {
 		return nil
 	}
@@ -163,7 +158,7 @@ func (c *PineconeClient) DeletePineconeDevelopmentClient() error {
 	return nil
 }
 
-// FIXME: euuhhhhh
+// Seeds the pinecone index with the clubs currently in the database.
 func (c *PineconeClient) Seed(db *gorm.DB) error {
 	var clubs []models.Club
 
@@ -190,7 +185,7 @@ func (c *PineconeClient) Seed(db *gorm.DB) error {
 	}
 
 	for i, chunk := range chunks {
-		print(fmt.Sprintf("Uploading chunk #%d (of %d) to pinecone...\n", i, len(chunks)))
+		print(fmt.Sprintf("Uploading chunk #%d (of %d) to pinecone...\n", i+1, len(chunks)))
 		err := c.Upsert(chunk)
 		if err != nil {
 			return stdliberrors.New("Club upsert failed...")

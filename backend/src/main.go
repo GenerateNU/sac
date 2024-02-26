@@ -44,32 +44,10 @@ func main() {
 		panic(fmt.Sprintf("Error connecting to database: %s", err.Error()))
 	}
 
-	// FIXME: put somewhere else and architect so it doesnt panic
-	// FIXME: theres a cli command for this
-	//database.SeedDatabase(db)
-
 	openAI := search.NewOpenAIClient(config.OpenAISettings)
-	pinecone, err := search.NewPineconeDevelopmentClient(openAI, config.PineconeSettings)
-	pinecone.Seed(db)
+	pinecone := search.NewPineconeClient(openAI, config.PineconeSettings)
+
 	app := server.Init(db, pinecone, *config)
-
-	// FIXME: no fucking clue how but there is a vector database and it has club data
-	// FIXME: DO NOT FUCK WITH THIS - TOMMOROW we make a new normal pinecone client and we go from there
-	// FIXME: DO NOT FUCK WITH DO NOT FUCK WITH DO NOT FUCK WITH
-	/**openAIClient := search.NewOpenAIClient(config.OpenAISettings)
-
-	pineconeClient, err := search.NewPineconeDevelopmentClient(openAIClient, config.PineconeSettings)
-	if err != nil {
-		// FIXME: omfg come on what do we do here
-		print(err.Error())
-		return
-	}
-	//	defer pineconeClient.DeletePineconeDevelopmentClient()
-
-	err = pineconeClient.Seed(db)
-	if err != nil {
-		print(err.Error())
-	}**/
 
 	err = app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
 	if err != nil {
