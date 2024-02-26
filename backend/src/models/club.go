@@ -94,13 +94,13 @@ type ClubQueryParams struct {
 }
 
 type ClubSearch struct {
-    SearchString string `query:"search"`
+	SearchString string `query:"search"`
 }
 
 func NewClubSearch(searchQuery string) *ClubSearch {
-    return &ClubSearch{
-        SearchString: searchQuery,
-    }
+	return &ClubSearch{
+		SearchString: searchQuery,
+	}
 }
 
 // dummy searchID
@@ -108,14 +108,13 @@ func (cs *ClubSearch) SearchId() string {
 	return ""
 }
 
-func (cs * ClubSearch) Namespace() string {
+func (cs *ClubSearch) Namespace() string {
 	return "clubs"
 }
 
 func (cs *ClubSearch) EmbeddingString() string {
 	return cs.SearchString
 }
-
 
 func (cqp *ClubQueryParams) IntoWhere() string {
 	conditions := make([]string, 0)

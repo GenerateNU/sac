@@ -44,24 +44,14 @@ func GetClubs(db *gorm.DB, queryParams *models.ClubQueryParams, pineconeClient s
 			Group("clubs.id")                                 // ensure unique club records
 	}
 
-
 	if queryParams.Search != "" {
 		clubSearch := models.NewClubSearch(queryParams.Search)
-
-
-		resultIDs, err := pineconeClient.Search(clubSearch, 10);
+		resultIDs, err := pineconeClient.Search(clubSearch, 10)
 		if err != nil {
 			return nil, &errors.FailedToSearchToPinecone
 		}
 
 		query = query.Where("id IN ?", resultIDs)
-
-		// =====================================
-		// some kind of call to 'CreateEmbedding'
-		// Use 'search' to search for similar vectors in the pinecone database
-		// calculate cosine similarity for all vectors returned by pinecone
-		// return results > a certain score (add it to the query)
-		// ====================================
 	}
 
 	var clubs []models.Club
