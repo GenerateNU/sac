@@ -6,8 +6,7 @@ pub fn dump(clubs: Vec<Club>, file: &mut File, parent: uuid::Uuid) -> Result<(),
     for club in clubs {
         writeln!(
             file,
-            r#"INSERT INTO "clubs" ("id", "name", "preview", "description", "num_members", "is_recruiting", "recruitment_cycle", "recruitment_type", "parent") VALUES ('{}', '{}', '{}', '{}', {}, {}, '{}', '{}', '{}');"#,
-            club.id,
+            r#"INSERT INTO "clubs" ("name", "preview", "description", "num_members", "is_recruiting", "recruitment_cycle", "recruitment_type", "parent") VALUES ('{}', '{}', '{}', {}, {}, '{}', '{}', '{}');"#,
             club.name.replace('\'', "''"),
             club.preview.replace('\'', "''"),
             club.description.replace('\'', "''"),

@@ -34,7 +34,6 @@ pub enum RecruitmentType {
 
 #[derive(Debug)]
 pub struct Club {
-    pub id: uuid::Uuid,
     pub name: String,
     pub preview: String,
     pub description: String,
@@ -52,7 +51,6 @@ impl<'a> From<&'a ScrapedClub> for Club {
         let num_tags = rng.gen_range(1..8);
 
         Club {
-            id: uuid::Uuid::new_v4(),
             name: scraped.name.clone().replace("(Tentative) ", ""),
             preview: scraped.preview.clone(),
             description: scraped.description._strip_tags().replace("&nbsp;", " "),
