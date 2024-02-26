@@ -39,7 +39,9 @@ func spawnApp() (*TestApp, error) {
 	}
 
 	return &TestApp{
-		App:      server.Init(connectionWithDB, *configuration),
+		// FIXME: passing nil for the pinecone client might cause serious issues idk
+		// can we actually put a pinecone clieint but with like bogus values (for inde host and api key)
+		App:      server.Init(connectionWithDB, nil, *configuration),
 		Address:  fmt.Sprintf("http://%s", listener.Addr().String()),
 		Conn:     connectionWithDB,
 		Settings: *configuration,

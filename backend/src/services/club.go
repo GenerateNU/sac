@@ -13,6 +13,7 @@ import (
 
 type ClubServiceInterface interface {
 	GetClubs(queryParams *models.ClubQueryParams) ([]models.Club, *errors.Error)
+	SearchClubs(queryParams *models.ClubSearchParams) ([]models.Club, *errors.Error)
 	GetClub(id string) (*models.Club, *errors.Error)
 	CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, *errors.Error)
 	UpdateClub(id string, clubBody models.UpdateClubRequestBody) (*models.Club, *errors.Error)
@@ -39,6 +40,10 @@ func (c *ClubService) GetClubs(queryParams *models.ClubQueryParams) ([]models.Cl
 	}
 
 	return transactions.GetClubs(c.DB, queryParams)
+}
+
+func (c *ClubService) SearchClubs(searchParams *models.ClubSearchParams) ([]models.Club, *errors.Error) {
+	return transactions.SearchClubs(c.DB, c.Pinecone, searchParams)
 }
 
 func (c *ClubService) CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, *errors.Error) {

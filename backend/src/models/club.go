@@ -30,9 +30,11 @@ type Club struct {
 
 	SoftDeletedAt gorm.DeletedAt `gorm:"type:timestamptz;default:NULL" json:"-" validate:"-"`
 
-	Name             string           `gorm:"type:varchar(255)" json:"name" validate:"required,max=255"`
-	Preview          string           `gorm:"type:varchar(255)" json:"preview" validate:"required,max=255"`
-	Description      string           `gorm:"type:varchar(8191)" json:"description" validate:"required,http_url,mongo_url,max=255"` // MongoDB URL
+	Name    string `gorm:"type:varchar(255)" json:"name" validate:"required,max=255"`
+	Preview string `gorm:"type:varchar(255)" json:"preview" validate:"required,max=255"`
+	// FIXME: make description a mongodb url again
+	/*Description      string           `gorm:"type:varchar(255)" json:"description" validate:"required,http_url,mongo_url,max=255"` // MongoDB URL*/
+	Description      string           `gorm:"type:text" json:"description" validate:"required"`
 	NumMembers       int              `gorm:"type:int" json:"num_members" validate:"required,min=1"`
 	IsRecruiting     bool             `gorm:"type:bool;default:false" json:"is_recruiting" validate:"required"`
 	RecruitmentCycle RecruitmentCycle `gorm:"type:varchar(255);default:always" json:"recruitment_cycle" validate:"required,max=255,oneof=fall spring fallSpring always"`
@@ -112,6 +114,24 @@ func (cqp *ClubQueryParams) IntoWhere() string {
 		return ""
 	}
 	return "WHERE " + strings.Join(conditions, " AND ")
+}
+
+// FIXME: this type is used for both decoding the request and for searching, is this bad design? (SRP says yes but like idk)
+type ClubSearchParams struct {
+	Query      string `query:"query"`
+	NumResults int    `query:"num_results"`
+}
+
+func (csp *ClubSearchParams) Namespace() string {
+	return "clubs"
+}
+
+func (*ClubSearchParams) SearchId() string {
+	return ""
+}
+
+func (csp *ClubSearchParams) EmbeddingString() string {
+	return csp.Query
 }
 
 func (c *Club) AfterCreate(tx *gorm.DB) (err error) {
