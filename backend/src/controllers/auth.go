@@ -181,3 +181,59 @@ func (a *AuthController) UpdatePassword(c *fiber.Ctx) error {
 
 	return utilities.FiberMessage(c, fiber.StatusOK, "success")
 }
+
+// ForgotPassword godoc
+//
+// @Summary		Generates a password reset token
+// @Description	Generates a password reset token
+// @ID			forgot-password
+// @Tags      	auth
+// @Accept		json
+// @Produce		json
+// @Param		userBody	body	 models.PasswordResetRequestBody	true	"User Body"
+// @Success		200	  {object}	     utilities.SuccessResponse
+// @Failure     400   {object}       errors.Error
+// @Failure     429   {object}       errors.Error
+// @Failure     500   {object}       errors.Error
+// @Router		/auth/forgot-password  [post]
+func (a *AuthController) ForgotPassword(c *fiber.Ctx) error {
+	var userBody models.PasswordResetRequestBody
+
+	if err := c.BodyParser(&userBody); err != nil {
+		return errors.FailedToParseRequestBody.FiberError(c)
+	}
+
+	if err := a.authService.ForgotPassword(userBody); err != nil {
+		return err.FiberError(c)
+	}
+
+	return utilities.FiberMessage(c, fiber.StatusOK, "success")
+}
+
+// VerifyPasswordResetToken godoc
+//
+// @Summary		Verifies a password reset token
+// @Description	Verifies a password reset token
+// @ID			verify-password-reset-token
+// @Tags      	auth
+// @Accept		json
+// @Produce		json
+// @Param		tokenBody	body	 models.VerifyPasswordResetTokenRequestBody	true	"Token Body"
+// @Success		200	  {object}	     utilities.SuccessResponse
+// @Failure     400   {object}       errors.Error
+// @Failure     429   {object}       errors.Error
+// @Failure     500   {object}       errors.Error
+// @Router		/auth/verify-reset  [post]
+func (a *AuthController) VerifyPasswordResetToken(c *fiber.Ctx) error {
+	var tokenBody models.VerifyPasswordResetTokenRequestBody
+
+	if err := c.BodyParser(&tokenBody); err != nil {
+		return errors.FailedToParseRequestBody.FiberError(c)
+	}
+
+	if err := a.authService.VerifyPasswordResetToken(tokenBody); err != nil {
+		return err.FiberError(c)
+	}
+
+	return utilities.FiberMessage(c, fiber.StatusOK, "success")
+}

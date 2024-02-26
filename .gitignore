@@ -5,3 +5,4 @@ node_modules
 .vscode
 .trunk
 .env.dev
+.env.prod

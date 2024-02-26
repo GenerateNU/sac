@@ -18,12 +18,9 @@ var paths = []string{
 	"/api/v1/auth/refresh",
 	"/api/v1/users/",
 	"/api/v1/auth/logout",
-}
-
-func (m *AuthMiddlewareService) DisableAuth(h fiber.Handler) fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		return h(c)
-	}
+	"/api/v1/auth/forgot-password",
+	"/api/v1/auth/verify-reset",
+	"/api/v1/auth/verify-email",
 }
 
 func (m *AuthMiddlewareService) IsSuper(c *fiber.Ctx) bool {

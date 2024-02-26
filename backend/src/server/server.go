@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 
+	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/middleware"
 	"github.com/GenerateNU/sac/backend/src/server/routes"
@@ -35,12 +36,14 @@ func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 	}
 
 	authMiddleware := middleware.NewAuthAuthMiddlewareService(db, validate, settings.Auth)
+	emailService := auth.NewEmailService()
+
 
 	apiv1 := app.Group("/api/v1")
 	apiv1.Use(authMiddleware.Authenticate)
 
 	routes.Utility(app)
-	routes.Auth(apiv1, services.NewAuthService(db, validate), settings.Auth, authMiddleware)
+	routes.Auth(apiv1, services.NewAuthService(db, validate, emailService), settings.Auth, authMiddleware)
 	routes.UserRoutes(apiv1, db, validate, authMiddleware)
 	routes.Contact(apiv1, services.NewContactService(db, validate), authMiddleware)
 	routes.ClubRoutes(apiv1, db, validate, authMiddleware)

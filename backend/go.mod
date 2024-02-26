@@ -16,7 +16,6 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/spf13/viper v1.18.2
 	github.com/swaggo/swag v1.16.3
-	golang.org/x/crypto v0.19.0
 	golang.org/x/text v0.14.0
 	gorm.io/driver/postgres v1.5.6
 	gorm.io/gorm v1.25.7
@@ -25,9 +24,13 @@ require (
 require (
 	github.com/awnumar/memcall v0.2.0 // indirect
 	github.com/awnumar/memguard v0.22.4 // indirect
+	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc // indirect
 	github.com/h2non/parth v0.0.0-20190131123155-b4df798d6542 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
+	github.com/pquerna/otp v1.4.0 // indirect
+	github.com/resend/resend-go/v2 v2.5.0 // indirect
 	github.com/tinylib/msgp v1.1.8 // indirect
+	golang.org/x/term v0.17.0 // indirect
 )
 
 require (

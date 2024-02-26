@@ -133,7 +133,7 @@ func (app *TestApp) authStudent() {
 
 func SampleStudentFactory() (models.User, string) {
 	password := "1234567890&"
-	hashedPassword, err := auth.ComputePasswordHash(password)
+	hashedPassword, err := auth.ComputeHash(password)
 	if err != nil {
 		panic(err)
 	}

@@ -76,6 +76,7 @@ func MigrateDB(settings config.Settings, db *gorm.DB) error {
 		&models.PointOfContact{},
 		&models.Tag{},
 		&models.User{},
+		&models.PasswordReset{},
 		&models.Series{},
 		&models.EventInstanceException{},
 		&models.EventSeries{},

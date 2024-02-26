@@ -67,4 +67,12 @@ var (
 		StatusCode: fiber.StatusUnauthorized,
 		Message:    "failed to validate access token",
 	}
+	FailedToGenerateToken = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to generate token",
+	}
+	FailedToSendEmail = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to send email",
+	}
 )

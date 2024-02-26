@@ -40,7 +40,7 @@ func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	passwordHash, err := auth.ComputePasswordHash(userBody.Password)
+	passwordHash, err := auth.ComputeHash(userBody.Password)
 	if err != nil {
 		return nil, &errors.FailedToComputePasswordHash
 	}

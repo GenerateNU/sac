@@ -64,7 +64,7 @@ type CreateUserRequestBody struct {
 	FirstName string  `json:"first_name" validate:"required,max=255"`
 	LastName  string  `json:"last_name" validate:"required,max=255"`
 	Email     string  `json:"email" validate:"required,email,neu_email,max=255"`
-	Password  string  `json:"password" validate:"required,password"`
+	Password  string  `json:"password" validate:"required,password,min=8,max=255"`
 	College   College `json:"college" validate:"required,oneof=CAMD DMSB KCCS CE BCHS SL CPS CS CSSH"`
 	Year      Year    `json:"year" validate:"required,min=1,max=6"`
 }

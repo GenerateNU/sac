@@ -19,7 +19,16 @@ type params struct {
 	keyLength   uint32
 }
 
-func ComputePasswordHash(password string) (*string, error) {
+func GeneratePasswordResetToken() (string, error) {
+	token := make([]byte, 64)
+	if _, err := rand.Read(token); err != nil {
+		return "", err
+	}
+
+	return base64.RawURLEncoding.EncodeToString(token), nil
+}
+
+func ComputeHash(data string) (*string, error) {
 	p := &params{
 		memory:      64 * 1024,
 		iterations:  3,
@@ -34,7 +43,7 @@ func ComputePasswordHash(password string) (*string, error) {
 		return nil, err
 	}
 
-	hash := argon2.IDKey([]byte(password),
+	hash := argon2.IDKey([]byte(data),
 		salt,
 		p.iterations,
 		p.memory,
@@ -56,13 +65,13 @@ var (
 	ErrIncompatibleVersion = errors.New("incompatible version of argon2")
 )
 
-func ComparePasswordAndHash(password string, encodedHash string) (bool, error) {
+func CompareHash(data string, encodedHash string) (bool, error) {
 	p, salt, hash, err := decodeHash(encodedHash)
 	if err != nil {
 		return false, err
 	}
 
-	otherHash := argon2.IDKey([]byte(password), salt, p.iterations, p.memory, p.parallelism, p.keyLength)
+	otherHash := argon2.IDKey([]byte(data), salt, p.iterations, p.memory, p.parallelism, p.keyLength)
 
 	if subtle.ConstantTimeCompare(hash, otherHash) == 1 {
 		return true, nil

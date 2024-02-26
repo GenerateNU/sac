@@ -21,5 +21,6 @@ func Auth(router fiber.Router, authService services.AuthServiceInterface, settin
 	auth.Get("/refresh", authController.Refresh)
 	auth.Get("/me", authController.Me)
 	auth.Post("/update-password/:userID", authMiddleware.Limiter(2, 1*time.Minute), authMiddleware.UserAuthorizeById, authController.UpdatePassword)
-	// auth.Post("/reset-password/:userID", middleware.Skip(authMiddleware.UserAuthorizeById), authController.ResetPassword)
+	auth.Post("/forgot-password", authController.ForgotPassword)
+	auth.Post("/verify-reset", authController.VerifyPasswordResetToken)
 }
