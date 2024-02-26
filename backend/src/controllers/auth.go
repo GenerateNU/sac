@@ -159,14 +159,15 @@ func (a *AuthController) Logout(c *fiber.Ctx) error {
 // @Tags      	auth
 // @Accept		json
 // @Produce		json
+// @Param		userID		path	string	true	"User ID"
 // @Param		userBody	body	 models.UpdatePasswordRequestBody	true	"User Body"
 // @Success		200	  {object}	     utilities.SuccessResponse
 // @Failure     400   {object}       errors.Error
 // @Failure     401   {object}       errors.Error
 // @Failure     404   {object}       errors.Error
+// @Failure     429   {object}       errors.Error
 // @Failure     500   {object}       errors.Error
-// @Failure     429   {object}
-// @Router		/auth/update-password/:userID  [post]
+// @Router		/auth/update-password/{userID} [post]
 func (a *AuthController) UpdatePassword(c *fiber.Ctx) error {
 	var userBody models.UpdatePasswordRequestBody
 

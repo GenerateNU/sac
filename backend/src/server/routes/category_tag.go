@@ -6,10 +6,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func CategoryTag(router fiber.Router, categoryTagService services.CategoryTagServiceInterface) {
+func CategoryTag(categoryIDRoute fiber.Router, categoryTagService services.CategoryTagServiceInterface) {
 	categoryTagController := controllers.NewCategoryTagController(categoryTagService)
 
-	categoryTags := router.Group("/:categoryID/tags")
+	// api/v1/categories/:categoryID/tags/*
+	categoryTags := categoryIDRoute.Group("/tags")
 
 	categoryTags.Get("/", categoryTagController.GetTagsByCategory)
 	categoryTags.Get("/:tagID", categoryTagController.GetTagByCategory)

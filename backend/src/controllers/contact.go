@@ -15,20 +15,20 @@ func NewContactController(contactService services.ContactServiceInterface) *Cont
 	return &ContactController{contactService: contactService}
 }
 
-// CreateContact godoc
+// GetContact godoc
 //
-// @Summary		Creates a contact
-// @Description	Creates a contact
-// @ID			create-contact
+// @Summary		Retrieves a contact
+// @Description	Retrieves a contact by id
+// @ID			get-contact
 // @Tags      	contact
 // @Accept		json
 // @Produce		json
-// @Param		contactBody	body	models.Contact	true	"Contact Body"
+// @Param		contactID	path	string	true	"Contact ID"
 // @Success		201	  {object}	  models.Contact
 // @Failure     400   {string}    errors.Error
 // @Failure     404   {string}    errors.Error
 // @Failure     500   {string}    errors.Error
-// @Router		/contact/  [post]
+// @Router		/contacts/{contactID}/  [get]
 func (co *ContactController) GetContact(c *fiber.Ctx) error {
 	contact, err := co.contactService.GetContact(c.Params("contactID"))
 	if err != nil {
@@ -51,7 +51,7 @@ func (co *ContactController) GetContact(c *fiber.Ctx) error {
 // @Failure     400   {string}    errors.Error
 // @Failure     404   {string}    errors.Error
 // @Failure     500   {string}    errors.Error
-// @Router		/contact/  [get]
+// @Router		/contacts/  [get]
 func (co *ContactController) GetContacts(c *fiber.Ctx) error {
 	defaultLimit := 10
 	defaultPage := 1
@@ -64,20 +64,20 @@ func (co *ContactController) GetContacts(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(contacts)
 }
 
-// CreateContact godoc
+// DeleteContact godoc
 //
-// @Summary		Creates a contact
-// @Description	Creates a contact
-// @ID			create-contact
+// @Summary		Deletes a contact
+// @Description	Deletes a contact
+// @ID			delete-contact
 // @Tags      	contact
 // @Accept		json
 // @Produce		json
-// @Param		contactBody	body	models.Contact	true	"Contact Body"
+// @Param		contactID	path	string	true	"Contact ID"
 // @Success		201	  {object}	  models.Contact
 // @Failure     400   {string}    errors.Error
 // @Failure     404   {string}    errors.Error
 // @Failure     500   {string}    errors.Error
-// @Router		/contact/  [post]
+// @Router		/contacts/{contactID}/  [delete]
 func (co *ContactController) DeleteContact(c *fiber.Ctx) error {
 	err := co.contactService.DeleteContact(c.Params("contactID"))
 	if err != nil {
