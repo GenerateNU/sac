@@ -1,8 +1,6 @@
 package services
 
 import (
-	"fmt"
-
 	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
@@ -16,7 +14,7 @@ type AuthServiceInterface interface {
 	GetRole(id string) (*models.UserRole, *errors.Error)
 	Me(id string) (*models.User, *errors.Error)
 	Login(userBody models.LoginUserResponseBody) (*models.User, *errors.Error)
-	UpdatePassword(id string, userBody models.UpdatePasswordRequestBody) *errors.Error
+	UpdatePassword(id string, passwordBody models.UpdatePasswordRequestBody) *errors.Error
 }
 
 type AuthService struct {
@@ -39,7 +37,7 @@ func (a *AuthService) Me(id string) (*models.User, *errors.Error) {
 
 	user, err := transactions.GetUser(a.DB, *idAsUint)
 	if err != nil {
-		return nil, &errors.UserNotFound
+		return nil, err
 	}
 
 	return user, nil
@@ -52,15 +50,11 @@ func (a *AuthService) Login(userBody models.LoginUserResponseBody) (*models.User
 
 	user, err := transactions.GetUserByEmail(a.DB, userBody.Email)
 	if err != nil {
-		return nil, &errors.UserNotFound
+		return nil, err
 	}
 
 	correct, passwordErr := auth.ComparePasswordAndHash(userBody.Password, user.PasswordHash)
-	if passwordErr != nil {
-		return nil, &errors.FailedToValidateUser
-	}
-
-	if !correct {
+	if passwordErr != nil || !correct {
 		return nil, &errors.FailedToValidateUser
 	}
 
@@ -75,7 +69,7 @@ func (a *AuthService) GetRole(id string) (*models.UserRole, *errors.Error) {
 
 	user, err := transactions.GetUser(a.DB, *idAsUint)
 	if err != nil {
-		return nil, &errors.UserNotFound
+		return nil, err
 	}
 
 	role := user.Role
@@ -83,33 +77,28 @@ func (a *AuthService) GetRole(id string) (*models.UserRole, *errors.Error) {
 	return &role, nil
 }
 
-func (a *AuthService) UpdatePassword(id string, userBody models.UpdatePasswordRequestBody) *errors.Error {
+func (a *AuthService) UpdatePassword(id string, passwordBody models.UpdatePasswordRequestBody) *errors.Error {
 	idAsUint, idErr := utilities.ValidateID(id)
 	if idErr != nil {
 		return idErr
 	}
 
 	// TODO: Validate password
-	// if err := a.Validate.Struct(userBody); err != nil {
-	// 	return &errors.FailedToValidateUser
-	// }
+	if err := a.Validate.Struct(passwordBody); err != nil {
+		return &errors.FailedToValidateUser
+	}
 
 	passwordHash, err := transactions.GetUserPasswordHash(a.DB, *idAsUint)
 	if err != nil {
-		return &errors.UserNotFound
+		return err
 	}
 
-	correct, passwordErr := auth.ComparePasswordAndHash(userBody.OldPassword, passwordHash)
-	if passwordErr != nil {
-		fmt.Println("err", passwordErr)
+	correct, passwordErr := auth.ComparePasswordAndHash(passwordBody.OldPassword, passwordHash)
+	if passwordErr != nil || !correct {
 		return &errors.FailedToValidateUser
 	}
 
-	if !correct {
-		return &errors.FailedToValidateUser
-	}
-
-	hash, hashErr := auth.ComputePasswordHash(userBody.NewPassword)
+	hash, hashErr := auth.ComputePasswordHash(passwordBody.NewPassword)
 	if hashErr != nil {
 		return &errors.FailedToValidateUser
 	}

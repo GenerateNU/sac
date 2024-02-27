@@ -1,14 +1,16 @@
 package middleware
 
 import (
+	"fmt"
 	"slices"
+	"time"
 
 	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/skip"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
 )
 
 var paths = []string{
@@ -18,33 +20,37 @@ var paths = []string{
 	"/api/v1/auth/logout",
 }
 
-func SuperSkipper(h fiber.Handler) fiber.Handler {
-	return skip.New(h, func(c *fiber.Ctx) bool {
-		claims, err := auth.From(c)
-		if err != nil {
-			_ = err.FiberError(c)
-			return false
-		}
-		if claims == nil {
-			return false
-		}
-		return claims.Role == string(models.Super)
-	})
+func (m *AuthMiddlewareService) DisableAuth(h fiber.Handler) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		return h(c)
+	}
 }
 
-func (m *MiddlewareService) Authenticate(c *fiber.Ctx) error {
+func (m *AuthMiddlewareService) IsSuper(c *fiber.Ctx) bool {
+	claims, err := auth.From(c)
+	if err != nil {
+		_ = err.FiberError(c)
+		return false
+	}
+	if claims == nil {
+		return false
+	}
+	return claims.Role == string(models.Super)
+}
+
+func (m *AuthMiddlewareService) Authenticate(c *fiber.Ctx) error {
 	if slices.Contains(paths, c.Path()) {
 		return c.Next()
 	}
 
 	token, err := auth.ParseAccessToken(c.Cookies("access_token"), m.AuthSettings.AccessKey)
 	if err != nil {
-		return errors.FailedToParseAccessToken.FiberError(c)
+		return errors.Unauthorized.FiberError(c)
 	}
 
 	claims, ok := token.Claims.(*auth.CustomClaims)
 	if !ok || !token.Valid {
-		return errors.FailedToValidateAccessToken.FiberError(c)
+		return errors.Unauthorized.FiberError(c)
 	}
 
 	if auth.IsBlacklisted(c.Cookies("access_token")) {
@@ -56,7 +62,7 @@ func (m *MiddlewareService) Authenticate(c *fiber.Ctx) error {
 	return c.Next()
 }
 
-func (m *MiddlewareService) Authorize(requiredPermissions ...auth.Permission) func(c *fiber.Ctx) error {
+func (m *AuthMiddlewareService) Authorize(requiredPermissions ...auth.Permission) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 		claims, fromErr := auth.From(c)
 		if fromErr != nil {
@@ -67,13 +73,9 @@ func (m *MiddlewareService) Authorize(requiredPermissions ...auth.Permission) fu
 			return c.Next()
 		}
 
-		if c.Cookies("access_token") == "" || c.Cookies("refresh_token") == "" {
-			return errors.Unauthorized.FiberError(c)
-		}
-
 		role, err := auth.GetRoleFromToken(c.Cookies("access_token"), m.AuthSettings.AccessKey)
 		if err != nil {
-			return errors.FailedToParseAccessToken.FiberError(c)
+			return errors.Unauthorized.FiberError(c)
 		}
 
 		userPermissions := auth.GetPermissions(models.UserRole(*role))
@@ -86,4 +88,19 @@ func (m *MiddlewareService) Authorize(requiredPermissions ...auth.Permission) fu
 
 		return c.Next()
 	}
+}
+
+func (m *AuthMiddlewareService) Limiter(rate int, expiration time.Duration) func(c *fiber.Ctx) error {
+	return limiter.New(limiter.Config{
+		Max:        rate,
+		Expiration: expiration,
+		KeyGenerator: func(c *fiber.Ctx) string {
+			return fmt.Sprintf("%s-%s", c.IP(), c.Path())
+		},
+		LimitReached: func(c *fiber.Ctx) error {
+			return c.Status(fiber.StatusTooManyRequests).JSON(fiber.Map{
+				"error": "Too many requests",
+			})
+		},
+	})
 }

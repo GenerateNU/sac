@@ -26,7 +26,7 @@ func spawnApp() (*TestApp, error) {
 		return nil, err
 	}
 
-	configuration, err := config.GetConfiguration(filepath.Join("..", "..", "..", "config"))
+	configuration, err := config.GetConfiguration(filepath.Join("..", "..", "..", "config"), false)
 	if err != nil {
 		return nil, err
 	}
