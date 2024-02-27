@@ -7,13 +7,13 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/database"
+	_ "github.com/GenerateNU/sac/backend/src/docs"
 	"github.com/GenerateNU/sac/backend/src/server"
 )
 
 // @title SAC API
 // @version 1.0
 // @description Backend Server for SAC App
-
 // @contact.name	David Oduneye and Garrett Ladley
 // @contact.email	generatesac@gmail.com
 // @host 127.0.0.1:8080
@@ -21,10 +21,11 @@ import (
 func main() {
 	onlyMigrate := flag.Bool("only-migrate", false, "Specify if you want to only perform the database migration")
 	configPath := flag.String("config", filepath.Join("..", "..", "config"), "Specify the path to the config directory")
+	useDevDotEnv := flag.Bool("use-dev-dot-env", false, "Specify if you want to use the .env.dev file")
 
 	flag.Parse()
 
-	config, err := config.GetConfiguration(*configPath)
+	config, err := config.GetConfiguration(*configPath, *useDevDotEnv)
 	if err != nil {
 		panic(fmt.Sprintf("Error getting configuration: %s", err.Error()))
 	}

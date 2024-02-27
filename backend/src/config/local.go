@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func readLocal(v *viper.Viper, path string) (*Settings, error) {
+func readLocal(v *viper.Viper, path string, useDevDotEnv bool) (*Settings, error) {
 	var intermediateSettings intermediateSettings
 
 	env := string(EnvironmentLocal)
@@ -27,7 +27,12 @@ func readLocal(v *viper.Viper, path string) (*Settings, error) {
 		return nil, fmt.Errorf("failed to convert intermediate settings into final settings: %w", err)
 	}
 
-	err = godotenv.Load(fmt.Sprintf("%s/.env.template", path))
+	if useDevDotEnv {
+		err = godotenv.Load(fmt.Sprintf("%s/.env.dev", path))
+	} else {
+		err = godotenv.Load(fmt.Sprintf("%s/.env.template", path))
+	}
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to load %s/.env.template: %w", path, err)
 	}

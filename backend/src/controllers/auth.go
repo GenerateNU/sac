@@ -24,14 +24,17 @@ func NewAuthController(authService services.AuthServiceInterface, authSettings c
 
 // Me godoc
 //
-// @Summary		Gets the current user
-// @Description	Returns the current user
+// @Summary		Retrieve the current user given an auth session
+// @Description	Returns the current user associated with an auth session
 // @ID			get-current-user
-// @Tags      	user
+// @Tags      	auth
 // @Produce		json
-// @Success		200	  {object}	  models.User
-// @Failure     401   {string}    string "failed to get current user"
-// @Router		/api/v1/auth/me  [get]
+// @Success		200	  {object}	     models.User
+// @Failure     400   {object}       errors.Error
+// @Failure     401   {object}       errors.Error
+// @Failure     404   {object}       errors.Error
+// @Failure     500   {object}       errors.Error
+// @Router		/auth/me  [get]
 func (a *AuthController) Me(c *fiber.Ctx) error {
 	claims, err := auth.From(c)
 	if err != nil {
@@ -42,7 +45,7 @@ func (a *AuthController) Me(c *fiber.Ctx) error {
 		return err.FiberError(c)
 	}
 
-	return c.JSON(user)
+	return c.Status(fiber.StatusOK).JSON(user)
 }
 
 // Login godoc
@@ -50,14 +53,15 @@ func (a *AuthController) Me(c *fiber.Ctx) error {
 // @Summary		Logs in a user
 // @Description	Logs in a user
 // @ID			login-user
-// @Tags      	user
+// @Tags      	auth
 // @Accept		json
 // @Produce		json
-// @Param		userBody	body	[]string	true	"User Body"
-// @Success		200	  {object}	  string "success"
-// @Failure     400   {string}    string "failed to parse body"
-// @Failure     401   {string}    string "failed to login user"
-// @Router		/api/v1/auth/login  [post]
+// @Param		loginBody	body	models.LoginUserResponseBody	true	"Login Body"
+// @Success		200	  {object}	    utilities.SuccessResponse
+// @Failure     400   {object}      errors.Error
+// @Failure     404   {object}		errors.Error
+// @Failure     500   {object}      errors.Error
+// @Router		/auth/login  [post]
 func (a *AuthController) Login(c *fiber.Ctx) error {
 	var userBody models.LoginUserResponseBody
 
@@ -72,7 +76,7 @@ func (a *AuthController) Login(c *fiber.Ctx) error {
 
 	accessToken, refreshToken, err := auth.CreateTokenPair(user.ID.String(), string(user.Role), a.AuthSettings)
 	if err != nil {
-		return err.FiberError(c)
+		return errors.Unauthorized.FiberError(c)
 	}
 
 	// Set the tokens in the response
@@ -87,12 +91,14 @@ func (a *AuthController) Login(c *fiber.Ctx) error {
 // @Summary		Refreshes a user's access token
 // @Description	Refreshes a user's access token
 // @ID			refresh-user
-// @Tags      	user
+// @Tags      	auth
 // @Accept		json
 // @Produce		json
-// @Success		200	  {object}	  string "success"
-// @Failure     401   {string}    string "failed to refresh access token"
-// @Router		/api/v1/auth/refresh  [get]
+// @Success		200	  {object}	  utilities.SuccessResponse
+// @Failure     400   {object}    errors.Error
+// @Failure     404   {object}    errors.Error
+// @Failure     500   {object}    errors.Error
+// @Router		/auth/refresh  [get]
 func (a *AuthController) Refresh(c *fiber.Ctx) error {
 	// Extract token values from cookies
 	refreshTokenValue := c.Cookies("refresh_token")
@@ -100,20 +106,20 @@ func (a *AuthController) Refresh(c *fiber.Ctx) error {
 	// Extract id from refresh token
 	claims, err := auth.ExtractRefreshClaims(refreshTokenValue, a.AuthSettings.RefreshKey)
 	if err != nil {
-		return err.FiberError(c)
+		return errors.Unauthorized.FiberError(c)
 	}
 
 	role, err := a.authService.GetRole(claims.Issuer)
 	if err != nil {
-		return err.FiberError(c)
+		return errors.Unauthorized.FiberError(c)
 	}
 
 	accessToken, err := auth.RefreshAccessToken(refreshTokenValue, string(*role), a.AuthSettings.RefreshKey, a.AuthSettings.AccessTokenExpiry, a.AuthSettings.AccessKey)
 	if err != nil {
-		return err.FiberError(c)
+		return errors.Unauthorized.FiberError(c)
 	}
 
-	// Set the access token in the response (e.g., in a cookie or JSON response)
+	// Set the access token in the response
 	c.Cookie(auth.CreateCookie("access_token", *accessToken, time.Now().Add(time.Minute*60)))
 
 	return utilities.FiberMessage(c, fiber.StatusOK, "success")
@@ -124,12 +130,11 @@ func (a *AuthController) Refresh(c *fiber.Ctx) error {
 // @Summary		Logs out a user
 // @Description	Logs out a user
 // @ID			logout-user
-// @Tags      	user
+// @Tags      	auth
 // @Accept		json
 // @Produce		json
-// @Success		200	  {object}	  string
-// @Failure     401   {string}    string "failed to logout user"
-// @Router		/api/v1/auth/logout  [get]
+// @Success		200	  {object}	  utilities.SuccessResponse
+// @Router		/auth/logout  [get]
 func (a *AuthController) Logout(c *fiber.Ctx) error {
 	// Extract token values from cookies
 	accessTokenValue := c.Cookies("access_token")
@@ -151,14 +156,18 @@ func (a *AuthController) Logout(c *fiber.Ctx) error {
 // @Summary		Updates a user's password
 // @Description	Updates a user's password
 // @ID			update-password
-// @Tags      	user
+// @Tags      	auth
 // @Accept		json
 // @Produce		json
-// @Param		userBody	body	[]string	true	"User Body"
-// @Success		200	  {object}	  string "success"
-// @Failure     400   {string}    string "failed to parse body"
-// @Failure     401   {string}    string "failed to update password"
-// @Router		/api/v1/auth/update-password  [post]
+// @Param		userID		path	string	true	"User ID"
+// @Param		userBody	body	 models.UpdatePasswordRequestBody	true	"User Body"
+// @Success		200	  {object}	     utilities.SuccessResponse
+// @Failure     400   {object}       errors.Error
+// @Failure     401   {object}       errors.Error
+// @Failure     404   {object}       errors.Error
+// @Failure     429   {object}       errors.Error
+// @Failure     500   {object}       errors.Error
+// @Router		/auth/update-password/{userID} [post]
 func (a *AuthController) UpdatePassword(c *fiber.Ctx) error {
 	var userBody models.UpdatePasswordRequestBody
 
@@ -166,13 +175,7 @@ func (a *AuthController) UpdatePassword(c *fiber.Ctx) error {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
-	claims, err := auth.From(c)
-	if err != nil {
-		return err.FiberError(c)
-	}
-
-	err = a.authService.UpdatePassword(claims.Issuer, userBody)
-	if err != nil {
+	if err := a.authService.UpdatePassword(c.Params("userID"), userBody); err != nil {
 		return err.FiberError(c)
 	}
 

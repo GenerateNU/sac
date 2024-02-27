@@ -5,82 +5,90 @@ import "github.com/GenerateNU/sac/backend/src/models"
 type Permission string
 
 const (
-	UserReadAll Permission = "user:readAll"
-	UserRead    Permission = "user:read"
-	UserWrite   Permission = "user:write"
-	UserDelete  Permission = "user:delete"
+	// User Management
+	UserRead          Permission = "user:read"
+	UserWrite         Permission = "user:write"
+	UserDelete        Permission = "user:delete"
+	UserManageProfile Permission = "user:manage_profile"
+	UserReadAll       Permission = "user:read_all"
 
-	TagReadAll Permission = "tag:readAll"
-	TagRead    Permission = "tag:read"
-	TagWrite   Permission = "tag:write"
-	TagCreate  Permission = "tag:create"
-	TagDelete  Permission = "tag:delete"
+	// Tag Management
+	TagRead   Permission = "tag:read"
+	TagCreate Permission = "tag:create"
+	TagWrite  Permission = "tag:write"
+	TagDelete Permission = "tag:delete"
 
-	ClubReadAll Permission = "club:readAll"
-	ClubRead    Permission = "club:read"
-	ClubWrite   Permission = "club:write"
-	ClubCreate  Permission = "club:create"
-	ClubDelete  Permission = "club:delete"
+	// Club Management
+	ClubRead            Permission = "club:read"
+	ClubCreate          Permission = "club:create"
+	ClubWrite           Permission = "club:write"
+	ClubDelete          Permission = "club:delete"
+	ClubManageMembers   Permission = "club:manage_members"
+	ClubManageFollowers Permission = "club:manage_followers"
 
-	PointOfContactReadAll Permission = "pointOfContact:readAll"
-	PointOfContactRead    Permission = "pointOfContact:read"
-	PointOfContactCreate  Permission = "pointOfContact:create"
-	PointOfContactWrite   Permission = "pointOfContact:write"
-	PointOfContactDelete  Permission = "pointOfContact:delete"
+	// Point of Contact Management
+	PointOfContactRead   Permission = "pointOfContact:read"
+	PointOfContactCreate Permission = "pointOfContact:create"
+	PointOfContactWrite  Permission = "pointOfContact:write"
+	PointOfContactDelete Permission = "pointOfContact:delete"
 
-	CommentReadAll Permission = "comment:readAll"
-	CommentRead    Permission = "comment:read"
-	CommentCreate  Permission = "comment:create"
-	CommentWrite   Permission = "comment:write"
-	CommentDelete  Permission = "comment:delete"
+	// Comment Management
+	CommentRead   Permission = "comment:read"
+	CommentCreate Permission = "comment:create"
+	CommentWrite  Permission = "comment:write"
+	CommentDelete Permission = "comment:delete"
 
-	EventReadAll Permission = "event:readAll"
-	EventRead    Permission = "event:read"
-	EventWrite   Permission = "event:write"
-	EventCreate  Permission = "event:create"
-	EventDelete  Permission = "event:delete"
+	// Event Management
+	EventRead        Permission = "event:read"
+	EventCreate      Permission = "event:create"
+	EventWrite       Permission = "event:write"
+	EventDelete      Permission = "event:delete"
+	EventManageRSVPs Permission = "event:manage_rsvps"
 
-	ContactReadAll Permission = "contact:readAll"
-	ContactRead    Permission = "contact:read"
-	ContactWrite   Permission = "contact:write"
-	ContactCreate  Permission = "contact:create"
-	ContactDelete  Permission = "contact:delete"
+	// Contact Management
+	ContactRead   Permission = "contact:read"
+	ContactCreate Permission = "contact:create"
+	ContactWrite  Permission = "contact:write"
+	ContactDelete Permission = "contact:delete"
 
-	CategoryReadAll Permission = "category:readAll"
-	CategoryRead    Permission = "category:read"
-	CategoryWrite   Permission = "category:write"
-	CategoryCreate  Permission = "category:create"
-	CategoryDelete  Permission = "category:delete"
+	// Category Management
+	CategoryRead   Permission = "category:read"
+	CategoryCreate Permission = "category:create"
+	CategoryWrite  Permission = "category:write"
+	CategoryDelete Permission = "category:delete"
 
-	NotificationReadAll Permission = "notification:readAll"
-	NotificationRead    Permission = "notification:read"
-	NotificationWrite   Permission = "notification:write"
-	NotificationCreate  Permission = "notification:create"
-	NotificationDelete  Permission = "notification:delete"
+	// Notification Management
+	NotificationRead   Permission = "notification:read"
+	NotificationCreate Permission = "notification:create"
+	NotificationWrite  Permission = "notification:write"
+	NotificationDelete Permission = "notification:delete"
+
+	// Global Permissions (for convenience)
+	ReadAll   Permission = "all:read"
+	CreateAll Permission = "all:create"
+	WriteAll  Permission = "all:write"
+	DeleteAll Permission = "all:delete"
 )
 
 var rolePermissions = map[models.UserRole][]Permission{
 	models.Super: {
-		UserRead, UserReadAll, UserWrite, UserDelete,
+		UserRead, UserWrite, UserDelete, UserManageProfile, UserReadAll,
 		TagRead, TagCreate, TagWrite, TagDelete,
-		ClubRead, ClubCreate, ClubWrite, ClubDelete,
+		ClubRead, ClubCreate, ClubWrite, ClubDelete, ClubManageMembers, ClubManageFollowers,
 		PointOfContactRead, PointOfContactCreate, PointOfContactWrite, PointOfContactDelete,
 		CommentRead, CommentCreate, CommentWrite, CommentDelete,
-		EventRead, EventCreate, EventWrite, EventDelete,
+		EventRead, EventCreate, EventWrite, EventDelete, EventManageRSVPs,
 		ContactRead, ContactCreate, ContactWrite, ContactDelete,
 		CategoryRead, CategoryCreate, CategoryWrite, CategoryDelete,
 		NotificationRead, NotificationCreate, NotificationWrite, NotificationDelete,
-		UserReadAll, TagReadAll, ClubReadAll, PointOfContactReadAll, CommentReadAll, EventReadAll, ContactReadAll, CategoryReadAll, NotificationReadAll,
+		ReadAll, CreateAll, WriteAll, DeleteAll,
 	},
 	models.Student: {
-		UserRead,
+		UserRead, UserManageProfile,
 		TagRead,
-		ClubRead,
-		PointOfContactRead,
-		CommentRead,
-		EventRead,
-		ContactRead,
-		CategoryRead,
+		ClubRead, EventRead,
+		CommentRead, CommentCreate,
+		ContactRead, PointOfContactRead,
 		NotificationRead,
 	},
 }
