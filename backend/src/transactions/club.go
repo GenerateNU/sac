@@ -27,7 +27,7 @@ func GetAdminIDs(db *gorm.DB, clubID uuid.UUID) ([]uuid.UUID, *errors.Error) {
 	return adminUUIDs, nil
 }
 
-func GetClubs(db *gorm.DB, queryParams *models.ClubQueryParams, pineconeClient search.PineconeClient) ([]models.Club, *errors.Error) {
+func GetClubs(db *gorm.DB, pinecone search.PineconeClientInterface, queryParams *models.ClubQueryParams) ([]models.Club, *errors.Error) {
 	query := db.Model(&models.Club{})
 
 	if queryParams.Tags != nil && len(queryParams.Tags) > 0 {
@@ -46,7 +46,7 @@ func GetClubs(db *gorm.DB, queryParams *models.ClubQueryParams, pineconeClient s
 
 	if queryParams.Search != "" {
 		clubSearch := models.NewClubSearch(queryParams.Search)
-		resultIDs, err := pineconeClient.Search(clubSearch, 10)
+		resultIDs, err := pinecone.Search(clubSearch, 10)
 		if err != nil {
 			return nil, &errors.FailedToSearchToPinecone
 		}

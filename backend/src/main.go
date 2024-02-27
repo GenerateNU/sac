@@ -21,6 +21,7 @@ import (
 // @BasePath /api/v1
 func main() {
 	onlyMigrate := flag.Bool("only-migrate", false, "Specify if you want to only perform the database migration")
+	onlySeedPinecone := flag.Bool("seed-pinecone", false, "Specify if want to only perform the pinecone database seeding")
 	configPath := flag.String("config", filepath.Join("..", "..", "config"), "Specify the path to the config directory")
 	useDevDotEnv := flag.Bool("use-dev-dot-env", false, "Specify if you want to use the .env.dev file")
 
@@ -40,6 +41,15 @@ func main() {
 	pinecone := search.NewPineconeClient(openAi, config.PineconeSettings)
 
 	if *onlyMigrate {
+		return
+	}
+
+	if *onlySeedPinecone {
+		err := pinecone.Seed(db)
+		if err != nil {
+			fmt.Printf("Error seeding PineconeDB: %s\n", err.Error())
+			return
+		}
 		return
 	}
 

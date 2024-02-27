@@ -20,7 +20,6 @@ type ClubServiceInterface interface {
 }
 
 type ClubService struct {
-	pineconeClient *search.PineconeClient
 	DB       *gorm.DB
 	Pinecone search.PineconeClientInterface
 	Validate *validator.Validate
@@ -39,7 +38,7 @@ func (c *ClubService) GetClubs(queryParams *models.ClubQueryParams) ([]models.Cl
 		return nil, &errors.FailedToValidatePage
 	}
 
-	return transactions.GetClubs(c.DB, queryParams, *c.pineconeClient)
+	return transactions.GetClubs(c.DB, c.Pinecone, queryParams)
 }
 
 func (c *ClubService) CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, *errors.Error) {

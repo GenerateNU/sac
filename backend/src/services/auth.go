@@ -53,7 +53,6 @@ func (a *AuthService) Login(userBody models.LoginUserResponseBody) (*models.User
 		return nil, getUserByEmailErr
 	}
 
-
 	correct, err := auth.ComparePasswordAndHash(userBody.Password, user.PasswordHash)
 	if err != nil || !correct {
 		return nil, &errors.FailedToValidateUser
