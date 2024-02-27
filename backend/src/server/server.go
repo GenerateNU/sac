@@ -27,7 +27,7 @@ import (
 // @host 127.0.0.1:8080
 // @BasePath /
 func Init(db *gorm.DB, pinecone search.PineconeClientInterface, settings config.Settings) *fiber.App {
-	app := newFiberApp()
+	app := newFiberApp(settings.Application)
 
 	validate, err := utilities.RegisterCustomValidators()
 	if err != nil {
@@ -43,7 +43,7 @@ func Init(db *gorm.DB, pinecone search.PineconeClientInterface, settings config.
 	routes.Auth(apiv1, services.NewAuthService(db, validate), settings.Auth, authMiddleware)
 	routes.UserRoutes(apiv1, db, validate, authMiddleware)
 	routes.Contact(apiv1, services.NewContactService(db, validate), authMiddleware)
-	routes.ClubRoutes(apiv1, db, validate, authMiddleware)
+	routes.ClubRoutes(apiv1, db, pinecone, validate, authMiddleware)
 	routes.Tag(apiv1, services.NewTagService(db, validate), authMiddleware)
 	routes.CategoryRoutes(apiv1, db, validate, authMiddleware)
 	routes.Event(apiv1, services.NewEventService(db, validate), authMiddleware)
