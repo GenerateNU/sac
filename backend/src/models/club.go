@@ -116,24 +116,6 @@ func (cqp *ClubQueryParams) IntoWhere() string {
 	return "WHERE " + strings.Join(conditions, " AND ")
 }
 
-// FIXME: this type is used for both decoding the request and for searching, is this bad design? (SRP says yes but like idk)
-type ClubSearchParams struct {
-	Query      string `query:"query"`
-	NumResults int    `query:"num_results"`
-}
-
-func (csp *ClubSearchParams) Namespace() string {
-	return "clubs"
-}
-
-func (*ClubSearchParams) SearchId() string {
-	return ""
-}
-
-func (csp *ClubSearchParams) EmbeddingString() string {
-	return csp.Query
-}
-
 func (c *Club) AfterCreate(tx *gorm.DB) (err error) {
 	tx.Model(&c).Update("num_members", c.NumMembers+1)
 	return

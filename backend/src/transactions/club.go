@@ -55,7 +55,7 @@ func GetClubs(db *gorm.DB, queryParams *models.ClubQueryParams) ([]models.Club, 
 	return clubs, nil
 }
 
-func CreateClub(db *gorm.DB, pinecone *search.PineconeClient, userId uuid.UUID, club models.Club) (*models.Club, *errors.Error) {
+func CreateClub(db *gorm.DB, pinecone search.PineconeClientInterface, userId uuid.UUID, club models.Club) (*models.Club, *errors.Error) {
 	user, err := GetUser(db, userId)
 	if err != nil {
 		return nil, err
@@ -107,7 +107,7 @@ func GetClub(db *gorm.DB, id uuid.UUID, preloads ...OptionalQuery) (*models.Club
 	return &club, nil
 }
 
-func UpdateClub(db *gorm.DB, pinecone *search.PineconeClient, id uuid.UUID, club models.Club) (*models.Club, *errors.Error) {
+func UpdateClub(db *gorm.DB, pinecone search.PineconeClientInterface, id uuid.UUID, club models.Club) (*models.Club, *errors.Error) {
 	tx := db.Begin()
 
 	// TODO: is this block needed? (updating user based off club data)
@@ -150,7 +150,7 @@ func UpdateClub(db *gorm.DB, pinecone *search.PineconeClient, id uuid.UUID, club
 	return &existingClub, nil
 }
 
-func DeleteClub(db *gorm.DB, pinecone *search.PineconeClient, id uuid.UUID) *errors.Error {
+func DeleteClub(db *gorm.DB, pinecone search.PineconeClientInterface, id uuid.UUID) *errors.Error {
 	tx := db.Begin()
 
 	var existingClub models.Club

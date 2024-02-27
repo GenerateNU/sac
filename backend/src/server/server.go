@@ -24,7 +24,7 @@ import (
 // @contact.email	oduneye.d@northeastern.edu and ladley.g@northeastern.edu
 // @host 127.0.0.1:8080
 // @BasePath /
-func Init(db *gorm.DB, pinecone *search.PineconeClient, settings config.Settings) *fiber.App {
+func Init(db *gorm.DB, pinecone search.PineconeClientInterface, settings config.Settings) *fiber.App {
 	app := newFiberApp()
 
 	validate, err := utilities.RegisterCustomValidators()
@@ -34,9 +34,8 @@ func Init(db *gorm.DB, pinecone *search.PineconeClient, settings config.Settings
 
 	middlewareService := middleware.NewMiddlewareService(db, validate, settings.Auth)
 
-	// FIXME: reenable auth
 	apiv1 := app.Group("/api/v1")
-	//apiv1.Use(middlewareService.Authenticate)
+	apiv1.Use(middlewareService.Authenticate)
 
 	routes.Utility(app)
 

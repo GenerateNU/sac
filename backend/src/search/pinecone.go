@@ -3,7 +3,6 @@ package search
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"net/http"
 
 	"github.com/garrettladley/mattress"
@@ -22,8 +21,8 @@ import (
 )
 
 type PineconeClientInterface interface {
-	Upsert(item Searchable) *errors.Error
-	Delete(item Searchable) *errors.Error
+	Upsert(items []Searchable) *errors.Error
+	Delete(items []Searchable) *errors.Error
 	Search(item Searchable, topK int) ([]string, *errors.Error)
 }
 
@@ -130,34 +129,6 @@ type PineconeDeleteIndexRequestBody struct {
 	IndexName string `json:"index_name"`
 }
 
-// FIXME: This is broken
-// Deletes the index this pinecone client is connected to.
-func (c *PineconeClient) DeleteIndex() error {
-	req, err := http.NewRequest(fiber.MethodDelete,
-		fmt.Sprintf("https://api.pinecone.io/indexes/%s", c.IndexName.Expose()),
-		nil)
-	if err != nil {
-		return err
-	}
-
-	req = utilities.ApplyModifiers(req,
-		utilities.HeaderKV("Api-Key", c.Settings.APIKey.Expose()),
-		utilities.AcceptJSON(),
-		utilities.JSON())
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != fiber.StatusAccepted {
-		return nil
-	}
-
-	return nil
-}
-
 // Seeds the pinecone index with the clubs currently in the database.
 func (c *PineconeClient) Seed(db *gorm.DB) error {
 	var clubs []models.Club
@@ -213,7 +184,6 @@ type PineconeUpsertRequestBody struct {
 	Namespace string   `json:"namespace"`
 }
 
-// TODO: get rid of print debug
 func (c *PineconeClient) Upsert(items []Searchable) *errors.Error {
 	if len(items) == 0 {
 		return nil
@@ -221,7 +191,6 @@ func (c *PineconeClient) Upsert(items []Searchable) *errors.Error {
 
 	embeddings, embeddingErr := c.openAIClient.CreateEmbedding(items)
 	if embeddingErr != nil {
-		print("OpenAI embedding failed")
 		return &errors.FailedToUpsertToPinecone
 	}
 
@@ -239,7 +208,6 @@ func (c *PineconeClient) Upsert(items []Searchable) *errors.Error {
 			Namespace: items[0].Namespace(),
 		})
 	if err != nil {
-		print("JSON marshaling failed")
 		return &errors.FailedToUpsertToPinecone
 	}
 
@@ -247,7 +215,6 @@ func (c *PineconeClient) Upsert(items []Searchable) *errors.Error {
 		fmt.Sprintf("%s/vectors/upsert", c.Settings.IndexHost.Expose()),
 		bytes.NewBuffer(upsertBody))
 	if err != nil {
-		print("Failed to create request")
 		return &errors.FailedToUpsertToPinecone
 	}
 
@@ -255,17 +222,11 @@ func (c *PineconeClient) Upsert(items []Searchable) *errors.Error {
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		print("Failed to send request")
 		return &errors.FailedToUpsertToPinecone
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != fiber.StatusOK {
-		println("Pinecone returned a", resp.StatusCode, "status code")
-		respBodyBytes, _ := io.ReadAll(resp.Body)
-		respBody := string(respBodyBytes)
-		println("Response body:\n", respBody)
-
 		return &errors.FailedToUpsertToPinecone
 	}
 

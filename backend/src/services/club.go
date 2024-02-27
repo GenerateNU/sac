@@ -13,7 +13,6 @@ import (
 
 type ClubServiceInterface interface {
 	GetClubs(queryParams *models.ClubQueryParams) ([]models.Club, *errors.Error)
-	SearchClubs(queryParams *models.ClubSearchParams) ([]models.Club, *errors.Error)
 	GetClub(id string) (*models.Club, *errors.Error)
 	CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, *errors.Error)
 	UpdateClub(id string, clubBody models.UpdateClubRequestBody) (*models.Club, *errors.Error)
@@ -22,11 +21,11 @@ type ClubServiceInterface interface {
 
 type ClubService struct {
 	DB       *gorm.DB
-	Pinecone *search.PineconeClient
+	Pinecone search.PineconeClientInterface
 	Validate *validator.Validate
 }
 
-func NewClubService(db *gorm.DB, pinecone *search.PineconeClient, validate *validator.Validate) *ClubService {
+func NewClubService(db *gorm.DB, pinecone search.PineconeClientInterface, validate *validator.Validate) *ClubService {
 	return &ClubService{DB: db, Pinecone: pinecone, Validate: validate}
 }
 
