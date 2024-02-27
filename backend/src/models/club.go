@@ -92,6 +92,30 @@ type ClubQueryParams struct {
 	IsRecruiting     *bool             `query:"is_recruiting"`
 	Limit            int               `query:"limit"`
 	Page             int               `query:"page"`
+	Search           string            `query:"search"`
+}
+
+type ClubSearch struct {
+	SearchString string `query:"search"`
+}
+
+func NewClubSearch(searchQuery string) *ClubSearch {
+	return &ClubSearch{
+		SearchString: searchQuery,
+	}
+}
+
+// dummy searchID
+func (cs *ClubSearch) SearchId() string {
+	return ""
+}
+
+func (cs *ClubSearch) Namespace() string {
+	return "clubs"
+}
+
+func (cs *ClubSearch) EmbeddingString() string {
+	return cs.SearchString
 }
 
 func (cqp *ClubQueryParams) IntoWhere() string {

@@ -3,9 +3,10 @@ package transactions
 import (
 	stdliberrors "errors"
 
+	"github.com/GenerateNU/sac/backend/src/search"
+
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
-	"github.com/GenerateNU/sac/backend/src/search"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -26,7 +27,7 @@ func GetAdminIDs(db *gorm.DB, clubID uuid.UUID) ([]uuid.UUID, *errors.Error) {
 	return adminUUIDs, nil
 }
 
-func GetClubs(db *gorm.DB, queryParams *models.ClubQueryParams) ([]models.Club, *errors.Error) {
+func GetClubs(db *gorm.DB, queryParams *models.ClubQueryParams, pineconeClient search.PineconeClient) ([]models.Club, *errors.Error) {
 	query := db.Model(&models.Club{})
 
 	if queryParams.Tags != nil && len(queryParams.Tags) > 0 {
@@ -39,8 +40,18 @@ func GetClubs(db *gorm.DB, queryParams *models.ClubQueryParams) ([]models.Club, 
 
 	if queryParams.Tags != nil && len(queryParams.Tags) > 0 {
 		query = query.Joins("JOIN club_tags ON club_tags.club_id = clubs.id").
-			Where("club_tags.tag_id IN ?", queryParams.Tags).
-			Group("clubs.id") // ensure unique club records
+			Where("club_tags.tag_id IN ?", queryParams.Tags). // add search function here
+			Group("clubs.id")                                 // ensure unique club records
+	}
+
+	if queryParams.Search != "" {
+		clubSearch := models.NewClubSearch(queryParams.Search)
+		resultIDs, err := pineconeClient.Search(clubSearch, 10)
+		if err != nil {
+			return nil, &errors.FailedToSearchToPinecone
+		}
+
+		query = query.Where("id IN ?", resultIDs)
 	}
 
 	var clubs []models.Club
