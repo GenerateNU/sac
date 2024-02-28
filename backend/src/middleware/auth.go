@@ -13,14 +13,18 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 )
 
-var paths = []string{
-	"/api/v1/auth/login",
-	"/api/v1/auth/refresh",
-	"/api/v1/users/",
-	"/api/v1/auth/logout",
-	"/api/v1/auth/forgot-password",
-	"/api/v1/auth/verify-reset",
-	"/api/v1/auth/verify-email",
+
+func getExcludedPaths() []string {
+	return []string{
+		"/api/v1/auth/login",
+		"/api/v1/auth/refresh",
+		"/api/v1/users/",
+		"/api/v1/auth/logout",
+		"/api/v1/auth/forgot-password",
+		"/api/v1/auth/send-code/",
+		"/api/v1/auth/verify-email",
+		"/api/v1/auth/verify-reset",
+	}
 }
 
 func (m *AuthMiddlewareService) IsSuper(c *fiber.Ctx) bool {
@@ -36,7 +40,7 @@ func (m *AuthMiddlewareService) IsSuper(c *fiber.Ctx) bool {
 }
 
 func (m *AuthMiddlewareService) Authenticate(c *fiber.Ctx) error {
-	if slices.Contains(paths, c.Path()) {
+	if slices.Contains(getExcludedPaths(), c.Path()) {
 		return c.Next()
 	}
 

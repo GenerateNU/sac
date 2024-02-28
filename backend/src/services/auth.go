@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/GenerateNU/sac/backend/src/auth"
@@ -17,6 +18,8 @@ type AuthServiceInterface interface {
 	Me(id string) (*models.User, *errors.Error)
 	Login(userBody models.LoginUserResponseBody) (*models.User, *errors.Error)
 	UpdatePassword(id string, passwordBody models.UpdatePasswordRequestBody) *errors.Error
+	SendCode(userID string) *errors.Error
+	VerifyEmail(emailBody models.VerifyEmailRequestBody) *errors.Error
 	ForgotPassword(userBody models.PasswordResetRequestBody) *errors.Error
 	VerifyPasswordResetToken(passwordBody models.VerifyPasswordResetTokenRequestBody) *errors.Error
 }
@@ -24,14 +27,14 @@ type AuthServiceInterface interface {
 type AuthService struct {
 	DB       *gorm.DB
 	Validate *validator.Validate
-	Email *auth.EmailService
+	Email    *auth.EmailService
 }
 
 func NewAuthService(db *gorm.DB, validate *validator.Validate, email *auth.EmailService) *AuthService {
 	return &AuthService{
 		DB:       db,
 		Validate: validate,
-		Email: email,
+		Email:    email,
 	}
 }
 
@@ -93,24 +96,40 @@ func (a *AuthService) UpdatePassword(id string, passwordBody models.UpdatePasswo
 		return &errors.FailedToValidateUser
 	}
 
-	passwordHash, err := transactions.GetUserPasswordHash(a.DB, *idAsUint)
+	tx := a.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	passwordHash, err := transactions.GetUserPasswordHash(tx, *idAsUint)
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
 
 	correct, passwordErr := auth.CompareHash(passwordBody.OldPassword, passwordHash)
 	if passwordErr != nil || !correct {
+		tx.Rollback()
 		return &errors.FailedToValidateUser
 	}
 
 	hash, hashErr := auth.ComputeHash(passwordBody.NewPassword)
 	if hashErr != nil {
+		tx.Rollback()
 		return &errors.FailedToValidateUser
 	}
 
-	updateErr := transactions.UpdatePassword(a.DB, *idAsUint, *hash)
+	updateErr := transactions.UpdatePassword(tx, *idAsUint, *hash)
 	if updateErr != nil {
+		tx.Rollback()
 		return updateErr
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return &errors.FailedToUpdatePassword
 	}
 
 	return nil
@@ -121,12 +140,19 @@ func (a *AuthService) ForgotPassword(userBody models.PasswordResetRequestBody) *
 		return &errors.FailedToValidateUser
 	}
 
-	user, err := transactions.GetUserByEmail(a.DB, userBody.Email)
+	tx := a.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	user, err := transactions.GetUserByEmail(tx, userBody.Email)
 	if err != nil {
 		return nil // Do not return error if user does not exist
 	}
 
-	// check if user has a password reset token, if not, generate one, if yes, use the existing one
+	// Check for existing or generate new password reset token
 	activeToken, tokenErr := transactions.GetActivePasswordResetTokenByUserID(a.DB, user.ID)
 	if tokenErr != nil {
 		if tokenErr != &errors.PasswordResetTokenNotFound {
@@ -134,29 +160,47 @@ func (a *AuthService) ForgotPassword(userBody models.PasswordResetRequestBody) *
 		}
 	}
 
+	fmt.Println("activeToken", activeToken)
+
 	if activeToken != nil {
+		sendErr := a.Email.SendPasswordResetEmail(user.FirstName, user.Email, activeToken.Token)
+		if sendErr != nil {
+			tx.Rollback()
+			return &errors.FailedToSendEmail
+		}
+
+		if err := tx.Commit().Error; err != nil {
+			tx.Rollback()
+			return &errors.FailedToGenerateToken
+		}
+
 		return nil
 	}
 
+	// Generate token if none exists
 	token, generateErr := auth.GeneratePasswordResetToken()
 	if generateErr != nil {
+		tx.Rollback()
 		return &errors.FailedToGenerateToken
 	}
 
-	// save token to db
-	saveErr := transactions.SavePasswordResetToken(a.DB, user.ID, token)
+	// Save token to database
+	saveErr := transactions.SavePasswordResetToken(tx, user.ID, token)
 	if saveErr != nil {
+		tx.Rollback()
 		return saveErr
 	}
 
-	// PLEASE NOTE: don't overuse this email service in testing (we only have 1000 free emails per month)
+	// Send email
 	sendErr := a.Email.SendPasswordResetEmail(user.FirstName, user.Email, token)
 	if sendErr != nil {
-		deleteErr := transactions.DeletePasswordResetToken(a.DB, token)
-		if deleteErr != nil {
-			return deleteErr
-		}
+		tx.Rollback()
 		return &errors.FailedToSendEmail
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return &errors.FailedToGenerateToken
 	}
 
 	return nil
@@ -167,28 +211,149 @@ func (a *AuthService) VerifyPasswordResetToken(passwordBody models.VerifyPasswor
 		return &errors.FailedToValidateUser
 	}
 
-	token, tokenErr := transactions.GetPasswordResetToken(a.DB, passwordBody.Token)
+	tx := a.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	token, tokenErr := transactions.GetPasswordResetToken(tx, passwordBody.Token)
 	if tokenErr != nil {
+		tx.Rollback()
 		return tokenErr
 	}
 
 	if token.ExpiresAt.Before(time.Now().UTC()) {
+		tx.Rollback()
 		return &errors.TokenExpired
 	}
 
 	hash, hashErr := auth.ComputeHash(passwordBody.NewPassword)
 	if hashErr != nil {
+		tx.Rollback()
 		return &errors.FailedToValidateUser
 	}
 
-	updateErr := transactions.UpdatePassword(a.DB, token.UserID, *hash)
+	updateErr := transactions.UpdatePassword(tx, token.UserID, *hash)
 	if updateErr != nil {
+		tx.Rollback()
 		return updateErr
 	}
 
-	deleteErr := transactions.DeletePasswordResetToken(a.DB, passwordBody.Token)
+	deleteErr := transactions.DeletePasswordResetToken(tx, passwordBody.Token)
 	if deleteErr != nil {
+		tx.Rollback()
 		return deleteErr
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return &errors.FailedToUpdatePassword
+	}
+
+	return nil
+}
+
+func (a *AuthService) SendCode(userID string) *errors.Error {
+	idAsUint, idErr := utilities.ValidateID(userID)
+	if idErr != nil {
+		return idErr
+	}
+
+	tx := a.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	user, err := transactions.GetUser(tx, *idAsUint)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	otp, otpErr := auth.GenerateOTP(6)
+	if otpErr != nil {
+		tx.Rollback()
+		return &errors.FailedToGenerateOTP
+	}
+
+	saveErr := transactions.SaveOTP(tx, user.ID, otp)
+	if saveErr != nil {
+		tx.Rollback()
+		return saveErr
+	}
+
+	sendErr := a.Email.SendEmailVerification(user.Email, otp)
+	if sendErr != nil {
+		tx.Rollback()
+		return &errors.FailedToSendEmail
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return &errors.FailedToSendCode
+	}
+
+	return nil
+}
+
+func (a *AuthService) VerifyEmail(emailBody models.VerifyEmailRequestBody) *errors.Error {
+	if err := a.Validate.Struct(emailBody); err != nil {
+		return &errors.FailedToValidateUser
+	}
+
+	tx := a.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	user, err := transactions.GetUserByEmail(tx, emailBody.Email)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if user.IsVerified {
+		tx.Rollback()
+		return &errors.EmailAlreadyVerified
+	}
+
+	otp, otpErr := transactions.GetOTP(tx, user.ID)
+	if otpErr != nil {
+		tx.Rollback()
+		return otpErr
+	}
+
+	if otp.Token != emailBody.Token {
+		tx.Rollback()
+		return &errors.InvalidOTP
+	}
+
+	if otp.ExpiresAt.Before(time.Now().UTC()) {
+		tx.Rollback()
+		return &errors.OTPExpired
+	}
+
+	updateErr := transactions.UpdateEmailVerification(tx, user.ID)
+	if updateErr != nil {
+		tx.Rollback()
+		return updateErr
+	}
+
+	deleteErr := transactions.DeleteOTP(tx, user.ID)
+	if deleteErr != nil {
+		tx.Rollback()
+		return deleteErr
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return &errors.FailedToUpdateEmailVerification
 	}
 
 	return nil

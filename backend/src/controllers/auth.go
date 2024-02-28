@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/GenerateNU/sac/backend/src/auth"
@@ -231,7 +232,59 @@ func (a *AuthController) VerifyPasswordResetToken(c *fiber.Ctx) error {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
+	fmt.Println("tokenBody", tokenBody)
+
 	if err := a.authService.VerifyPasswordResetToken(tokenBody); err != nil {
+		return err.FiberError(c)
+	}
+
+	return utilities.FiberMessage(c, fiber.StatusOK, "success")
+}
+
+// SendCode godoc
+//
+// @Summary		Sends a verification code
+// @Description	Sends a verification code
+// @ID			send-verification-code
+// @Tags      	auth
+// @Accept		json
+// @Produce		json
+// @Param		userID		path	string	true	"User ID"
+// @Success		200	  {object}	     utilities.SuccessResponse
+// @Failure     400   {object}       errors.Error
+// @Failure     429   {object}       errors.Error
+// @Failure     500   {object}       errors.Error
+// @Router		/auth/send-code/{userID}  [post]
+func (a *AuthController) SendCode(c *fiber.Ctx) error {
+	if err := a.authService.SendCode(c.Params("userID")); err != nil {
+		return err.FiberError(c)
+	}
+
+	return utilities.FiberMessage(c, fiber.StatusOK, "success")
+}
+
+// VerifyEmail godoc
+//
+// @Summary		Verifies an email
+// @Description	Verifies an email
+// @ID			verify-email
+// @Tags      	auth
+// @Accept		json
+// @Produce		json
+// @Param		tokenBody	body	 models.VerifyEmailRequestBody	true
+// @Success		200	  {object}	     utilities.SuccessResponse
+// @Failure     400   {object}       errors.Error
+// @Failure     429   {object}       errors.Error
+// @Failure     500   {object}       errors.Error
+// @Router		/auth/verify-email  [post]
+func (a *AuthController) VerifyEmail(c *fiber.Ctx) error {
+	var tokenBody models.VerifyEmailRequestBody
+
+	if err := c.BodyParser(&tokenBody); err != nil {
+		return errors.FailedToParseRequestBody.FiberError(c)
+	}
+
+	if err := a.authService.VerifyEmail(tokenBody); err != nil {
 		return err.FiberError(c)
 	}
 

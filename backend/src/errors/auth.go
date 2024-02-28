@@ -31,4 +31,41 @@ var (
 		StatusCode: fiber.StatusNotFound,
 		Message:    "password reset token not found",
 	}
+	EmailAlreadyVerified = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "email already verified",
+	}
+	FailedToGenerateOTP = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to generate otp",
+	}
+	FailedToSaveOTP = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to save otp",
+	}
+	FailedToGetOTP = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get otp",
+	}
+	InvalidOTP = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "invalid otp",
+	}
+	OTPExpired = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "otp expired",
+	}
+	FailedToUpdateEmailVerification = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to update email verification",
+	}
+	FailedToDeleteOTP = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to delete otp",
+	}
+	FailedToSendCode = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to send code",
+	}
+	
 )
