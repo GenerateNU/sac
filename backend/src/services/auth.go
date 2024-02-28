@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/GenerateNU/sac/backend/src/auth"
@@ -159,8 +158,6 @@ func (a *AuthService) ForgotPassword(userBody models.PasswordResetRequestBody) *
 			return tokenErr
 		}
 	}
-
-	fmt.Println("activeToken", activeToken)
 
 	if activeToken != nil {
 		sendErr := a.Email.SendPasswordResetEmail(user.FirstName, user.Email, activeToken.Token)

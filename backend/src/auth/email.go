@@ -28,7 +28,6 @@ func (e *EmailService) SendPasswordResetEmail(name, email, token string) error {
 
 	_, err := e.Client.Emails.Send(params)
 	if err != nil {
-		fmt.Println("error sending email", err)
 		return err
 	}
 
@@ -45,7 +44,6 @@ func (e *EmailService) SendEmailVerification(email, code string) error {
 
 	_, err := e.Client.Emails.Send(params)
 	if err != nil {
-		fmt.Println("error sending email", err)
 		return err
 	}
 

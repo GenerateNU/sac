@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/GenerateNU/sac/backend/src/auth"
@@ -231,8 +230,6 @@ func (a *AuthController) VerifyPasswordResetToken(c *fiber.Ctx) error {
 	if err := c.BodyParser(&tokenBody); err != nil {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
-
-	fmt.Println("tokenBody", tokenBody)
 
 	if err := a.authService.VerifyPasswordResetToken(tokenBody); err != nil {
 		return err.FiberError(c)

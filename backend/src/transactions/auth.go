@@ -11,10 +11,10 @@ import (
 
 func SaveOTP(db *gorm.DB, userID uuid.UUID, otp string) *errors.Error {
 	otpModel := models.Verification{
-		UserID: userID,
-		Token:   otp,
+		UserID:    userID,
+		Token:     otp,
 		ExpiresAt: time.Now().Add(time.Minute * 30).UTC(),
-		Type: models.EmailVerificationType,
+		Type:      models.EmailVerificationType,
 	}
 
 	if err := db.Create(&otpModel).Error; err != nil {

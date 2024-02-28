@@ -13,7 +13,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 )
 
-
 func getExcludedPaths() []string {
 	return []string{
 		"/api/v1/auth/login",

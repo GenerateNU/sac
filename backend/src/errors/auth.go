@@ -67,5 +67,4 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to send code",
 	}
-	
 )
