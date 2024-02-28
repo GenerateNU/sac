@@ -37,7 +37,7 @@ func Init(db *gorm.DB, pinecone search.PineconeClientInterface, settings config.
 	authMiddleware := middleware.NewAuthAuthMiddlewareService(db, validate, settings.Auth)
 
 	apiv1 := app.Group("/api/v1")
-	apiv1.Use(authMiddleware.Authenticate)
+	// apiv1.Use(authMiddleware.Authenticate)
 
 	routes.Utility(app)
 	routes.Auth(apiv1, services.NewAuthService(db, validate), settings.Auth, authMiddleware)
@@ -58,7 +58,7 @@ func newFiberApp(appSettings config.ApplicationSettings) *fiber.App {
 	})
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     fmt.Sprintf("http://%s:%d", appSettings.Host, appSettings.Port),
+		AllowOrigins:     "http://localhost:5173",
 		AllowCredentials: true,
 	}))
 	app.Use(requestid.New())

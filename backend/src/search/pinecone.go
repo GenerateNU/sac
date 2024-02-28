@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/garrettladley/mattress"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 
 	"github.com/goccy/go-json"
@@ -38,95 +37,6 @@ func NewPineconeClient(openAIClient *OpenAIClient, settings config.PineconeSetti
 		Settings:     settings,
 		openAIClient: openAIClient,
 	}
-}
-
-type PineconePodRequest struct {
-	Environment string `json:"environment"`
-	PodType     string `json:"pod_type"`
-}
-
-type PineconeSpecRequest struct {
-	Pod PineconePodRequest `json:"pod"`
-}
-
-type PineconeCreateIndexRequestBody struct {
-	Name      string              `json:"name"`
-	Dimension int32               `json:"dimension"`
-	Cosine    string              `json:"metric"`
-	Spec      PineconeSpecRequest `json:"spec"`
-}
-
-type PineconeCreateIndexResponseBody struct {
-	Host string `json:"host"`
-}
-
-// Similar to NewPineconeClient, but instead of connecting to an existing index, creates a new one.
-func NewPineconeClientCreateIndex(openAIClient *OpenAIClient, settings config.PineconeSettings) (*PineconeClient, error) {
-	newIndexUUID, err := uuid.NewUUID()
-	if err != nil {
-		return nil, err
-	}
-	newIndexName := fmt.Sprintf("dev-%s", newIndexUUID.String())
-
-	createIndexBody, err := json.Marshal(
-		PineconeCreateIndexRequestBody{
-			Name:      newIndexName,
-			Dimension: 1536,
-			Cosine:    "cosine",
-			Spec: PineconeSpecRequest{
-				Pod: PineconePodRequest{
-					Environment: "gcp-starter",
-					PodType:     "p1.x1",
-				},
-			},
-		})
-
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(fiber.MethodPost,
-		"https://api.pinecone.io/indexes",
-		bytes.NewBuffer(createIndexBody))
-	if err != nil {
-		return nil, err
-	}
-
-	req = utilities.ApplyModifiers(req,
-		utilities.HeaderKV("Api-Key", settings.APIKey.Expose()),
-		utilities.AcceptJSON(),
-		utilities.JSON())
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != fiber.StatusCreated {
-		return nil, nil
-	}
-
-	var body PineconeCreateIndexResponseBody
-	err = json.NewDecoder(resp.Body).Decode(&body)
-	if err != nil {
-		return nil, err
-	}
-
-	indexHostSecret, err := mattress.NewSecret(fmt.Sprintf("https://%s", body.Host))
-	indexNameSecret, err := mattress.NewSecret(newIndexName)
-	return &PineconeClient{
-		Settings: config.PineconeSettings{
-			IndexHost: indexHostSecret,
-			APIKey:    settings.APIKey,
-		},
-		IndexName:    indexNameSecret,
-		openAIClient: openAIClient,
-	}, nil
-}
-
-type PineconeDeleteIndexRequestBody struct {
-	IndexName string `json:"index_name"`
 }
 
 // Seeds the pinecone index with the clubs currently in the database.
@@ -184,6 +94,7 @@ type PineconeUpsertRequestBody struct {
 	Namespace string   `json:"namespace"`
 }
 
+// Inserts the given list of searchables to the Pinecone index.
 func (c *PineconeClient) Upsert(items []Searchable) *errors.Error {
 	if len(items) == 0 {
 		return nil
@@ -239,14 +150,7 @@ type PineconeDeleteRequestBody struct {
 	DeleteAll bool     `json:"deleteAll"`
 }
 
-func NewPineconeDeleteRequestBody(ids []string, namespace string, deleteAll bool) *PineconeDeleteRequestBody {
-	return &PineconeDeleteRequestBody{
-		IDs:       ids,
-		Namespace: namespace,
-		DeleteAll: deleteAll,
-	}
-}
-
+// Deletes the given list of searchables from the Pinecone index.
 func (c *PineconeClient) Delete(items []Searchable) *errors.Error {
 	if len(items) == 0 {
 		return nil
@@ -307,6 +211,8 @@ type PineconeSearchResponseBody struct {
 	Namespace string  `json:"namespace"`
 }
 
+// Runs a search on the Pinecone index given a searchable item, and returns the topK most similar
+// elements' ids.
 func (c *PineconeClient) Search(item Searchable, topK int) ([]string, *errors.Error) {
 	values, embeddingErr := c.openAIClient.CreateEmbedding([]Searchable{item})
 	if embeddingErr != nil {
