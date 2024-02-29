@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/resend/resend-go/v2"
 )
 
@@ -18,34 +19,61 @@ func NewEmailService() *EmailService {
 	}
 }
 
-func (e *EmailService) SendPasswordResetEmail(name, email, token string) error {
+func (e *EmailService) SendPasswordResetEmail(name, email, token string) *errors.Error {
+	template, err := getTemplateString("password_reset")
+	if err != nil {
+		return &errors.FailedToGetTemplate
+	}
+
 	params := &resend.SendEmailRequest{
 		From:    "onboarding@resend.dev",
 		To:      []string{email},
 		Subject: "Password Reset",
-		Html:    fmt.Sprintf("<p>Hello %s, <br> Forgot your password? you can reset your password by clicking on this link: <a href='https://sac.resend.dev/reset-password/%s'>Reset Password</a> You can also copy and paste the following link into your browser: https://sac.resend.dev/reset-password/%s <br><br> If you did not request a password reset, please ignore this email.</p>", name, token, token),
+		Html:    fmt.Sprintf(*template, name, token, token),
 	}
 
-	_, err := e.Client.Emails.Send(params)
+	_, err = e.Client.Emails.Send(params)
 	if err != nil {
-		return err
+		return &errors.FailedToSendEmail
 	}
 
 	return nil
 }
 
-func (e *EmailService) SendEmailVerification(email, code string) error {
+func (e *EmailService) SendEmailVerification(email, code string) *errors.Error {
+	template, err := getTemplateString("email_verification")
+	if err != nil {
+		return &errors.FailedToGetTemplate
+	}
+
 	params := &resend.SendEmailRequest{
 		From:    "onboarding@resend.dev",
 		To:      []string{"generatesac@gmail.com"},
 		Subject: "Email Verification",
-		Html:    fmt.Sprintf("<h1>Confirm your email</h1> <br><br> <p>Your confirmation code is below - please enter this code in the app to confirm your email address. <br> <strong>%s</strong></p>", code),
+		Html:    fmt.Sprintf(*template, code),
 	}
 
-	_, err := e.Client.Emails.Send(params)
+	_, err = e.Client.Emails.Send(params)
 	if err != nil {
-		return err
+		return &errors.FailedToSendEmail
 	}
 
 	return nil
+}
+
+func getTemplateString(name string) (*string, error) {
+	// TODO: use default file location
+	cwd, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+
+	htmlBytes, err := os.ReadFile(fmt.Sprintf("%v/templates/emails/%s.html", cwd, name))
+	if err != nil {
+		return nil, err
+	}
+
+	htmlString := string(htmlBytes)
+
+	return &htmlString, nil
 }

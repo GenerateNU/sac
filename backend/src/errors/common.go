@@ -71,8 +71,4 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to generate token",
 	}
-	FailedToSendEmail = Error{
-		StatusCode: fiber.StatusInternalServerError,
-		Message:    "failed to send email",
-	}
 )
