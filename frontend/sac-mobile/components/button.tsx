@@ -8,7 +8,7 @@ type ButtonProps = {
     borderColor?: string;
 };
 
-const Button = (props: ButtonProps) => {
+export const Button = (props: ButtonProps) => {
     const styles = StyleSheet.create({
         button: {
             backgroundColor: props.backgroundColor || 'gray',
@@ -39,5 +39,3 @@ const Button = (props: ButtonProps) => {
         </Pressable>
     );
 };
-
-export default Button;

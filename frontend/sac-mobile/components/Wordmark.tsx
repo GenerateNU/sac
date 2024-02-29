@@ -5,7 +5,7 @@ type WordmarkProps = {
     backgroundColor?: string;
 }
 
-const Wordmark = (props: WordmarkProps) => {
+export const Wordmark = (props: WordmarkProps) => {
     const styles = StyleSheet.create({
         wordmark: {
             fontSize: 24,
@@ -25,5 +25,3 @@ const Wordmark = (props: WordmarkProps) => {
         </View>
     );
 };
-
-export default Wordmark;

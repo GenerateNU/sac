@@ -8,8 +8,8 @@ import { router } from 'expo-router';
 
 import { ZodError, z } from 'zod';
 
-import Wordmark from '@/components/Wordmark';
-import Button from '@/components/button';
+import {Wordmark} from '@/components/Wordmark';
+import {Button} from '@/components/button';
 import Input from '@/components/input';
 import { useAuthStore } from '@/hooks/use-auth';
 import { loginByEmail } from '@/services/auth';
@@ -55,7 +55,7 @@ const Login = () => {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.innerContainer}>
-                <View className="w-full p-5">
+                <View style={styles.topContainer} className="w-full p-5">
                     <Wordmark textColor="white" />
                     <Text style={styles.header}>Let's go</Text>
                     <Text style={styles.description}>
@@ -138,13 +138,13 @@ const styles = StyleSheet.create({
         fontSize: 40,
         fontWeight: 'bold',
         color: 'white',
-        paddingTop: '5%',
+        paddingTop: '2%',
         paddingBottom: '2.5%'
     },
     description: {
-        fontSize: 15,
+        fontSize: 20,
         color: 'white',
-        paddingTop: '5%'
+        paddingTop: '2%'
     },
     container: {
         backgroundColor: 'grey',
@@ -161,13 +161,16 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderTopLeftRadius: 15,
         borderTopRightRadius: 15,
-        paddingTop: '10%',
-        flex: 1
+        flex: 1,
+        padding: '7%'
     },
     descriptionContainer: {
         marginTop: '5%',
         flexDirection: 'row',
         justifyContent: 'center'
+    },
+    topContainer: {
+        margin: '3%',
     }
 });
 

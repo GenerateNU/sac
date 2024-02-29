@@ -1,10 +1,14 @@
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, Button, Text, TextInput, View } from 'react-native';
+import { Alert, Text, TextInput, View, StyleSheet, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { router } from 'expo-router';
 
 import { ZodError, z } from 'zod';
+import { Wordmark } from '@/components/Wordmark';
+import { Button } from '@/components/button';
+import {Header} from '@/components/header';
 
 type RegisterFormData = {
     firstName: string;
@@ -48,7 +52,24 @@ const Register = () => {
     };
 
     return (
-        <View className="items-center justify-center flex-1 p-4">
+        <SafeAreaView style={styles.container}>
+            <View style={styles.topContainer}>
+                <View style={styles.wordmarkButton}>
+                <View style={styles.wordmark}><Wordmark textColor="white"/></View>
+                <View style={styles.button} className="mt-4">
+                <Button
+                    title="Login"
+                    backgroundColor="white"
+                    color="black"
+                    borderColor="white"
+                    onPress={() => router.push('/(auth)/login')}
+                    />
+                </View>
+                </View>
+                <Header text="Sign up" fontSize="40" color="white"></Header>
+                <Text style={styles.description}>Discover, follow, and join all the clubs & events Northeastern has to offer</Text>
+            </View>
+            <ScrollView style={styles.lowerContainer}>
             <View className="w-full mb-4">
                 <Text>First Name</Text>
                 <Controller
@@ -56,7 +77,7 @@ const Register = () => {
                     render={({ field: { onChange, value } }) => (
                         <TextInput
                             className="p-2 border border-gray-300"
-                            placeholder="Ladley"
+                            placeholder="Garrett"
                             onChangeText={onChange}
                             value={value}
                             onSubmitEditing={handleSubmit(onSubmit)}
@@ -75,7 +96,7 @@ const Register = () => {
                     render={({ field: { onChange, value } }) => (
                         <TextInput
                             className="p-2 border border-gray-300"
-                            placeholder="G"
+                            placeholder="Ladley"
                             onChangeText={onChange}
                             value={value}
                             onSubmitEditing={handleSubmit(onSubmit)}
@@ -126,15 +147,67 @@ const Register = () => {
                 {errors.password && <Text>{errors.password.message}</Text>}
             </View>
 
-            <Button title="Submit" onPress={handleSubmit(onSubmit)} />
-            <View className="mt-4">
-                <Button
-                    title="Login"
-                    onPress={() => router.push('/(auth)/login')}
+            <View className="w-full mb-4">
+                <Text>Password Confirmation</Text>
+                <Controller
+                    control={control}
+                    render={({ field: { onChange, value } }) => (
+                        <TextInput
+                            className="p-2 border border-gray-300"
+                            placeholder="Confirm your password"
+                            onChangeText={onChange}
+                            value={value}
+                            secureTextEntry={true}
+                            onSubmitEditing={handleSubmit(onSubmit)}
+                        />
+                    )}
+                    name="password"
+                    rules={{ required: 'Password is required' }}
                 />
+                {errors.password && <Text>{errors.password.message}</Text>}
             </View>
-        </View>
+
+            <View style={styles.submit}><Button title="Submit" color="white" onPress={handleSubmit(onSubmit)} /></View>
+            </ScrollView>
+        </SafeAreaView>
     );
 };
 
 export default Register;
+
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: 'gray',
+        flex: 1,
+    },
+    lowerContainer: {
+        backgroundColor: 'white',
+        borderRadius: 20,
+        flex: 1,
+        padding: '8%'
+    },
+    description: {
+        fontSize: 20,
+        color: 'white',
+        paddingTop: '4%'
+    },
+    topContainer: {
+        margin: '8%',
+    },
+    wordmarkButton: {
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+    },
+    wordmark: {
+        flex: 1,
+    },
+    button: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        height: '50%',
+    },
+    submit: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+    }
+})

@@ -3,8 +3,8 @@ import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 import { router } from 'expo-router';
 
-import Wordmark from '@/components/Wordmark';
-import Button from '@/components/button';
+import {Wordmark} from '@/components/Wordmark';
+import {Button } from '@/components/button';
 import { useAuthStore } from '@/hooks/use-auth';
 
 const Welcome = () => {
