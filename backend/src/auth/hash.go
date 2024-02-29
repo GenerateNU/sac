@@ -19,27 +19,31 @@ type params struct {
 	keyLength   uint32
 }
 
-func GeneratePasswordResetToken() (string, error) {
+func GenerateURLSafeToken() (*string, error) {
 	token := make([]byte, 64)
 	if _, err := rand.Read(token); err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return base64.RawURLEncoding.EncodeToString(token), nil
+	encodedToken := base64.RawURLEncoding.EncodeToString(token)
+
+	return &encodedToken, nil
 }
 
-func GenerateOTP(length int) (string, error) {
+func GenerateOTP(length int) (*string, error) {
 	digits := "0123456789"
 	otp := make([]byte, length)
 	if _, err := rand.Read(otp); err != nil {
-		return "", err
+		return nil, err
 	}
 
 	for i := 0; i < length; i++ {
 		otp[i] = digits[int(otp[i])%10]
 	}
 
-	return string(otp), nil
+	outOtp := string(otp)
+
+	return &outOtp, nil
 }
 
 func ComputeHash(data string) (*string, error) {

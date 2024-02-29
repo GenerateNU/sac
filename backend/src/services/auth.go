@@ -175,21 +175,21 @@ func (a *AuthService) ForgotPassword(userBody models.PasswordResetRequestBody) *
 	}
 
 	// Generate token if none exists
-	token, generateErr := auth.GeneratePasswordResetToken()
+	token, generateErr := auth.GenerateURLSafeToken()
 	if generateErr != nil {
 		tx.Rollback()
 		return &errors.FailedToGenerateToken
 	}
 
 	// Save token to database
-	saveErr := transactions.SavePasswordResetToken(tx, user.ID, token)
+	saveErr := transactions.SavePasswordResetToken(tx, user.ID, *token)
 	if saveErr != nil {
 		tx.Rollback()
 		return saveErr
 	}
 
 	// Send email
-	sendErr := a.Email.SendPasswordResetEmail(user.FirstName, user.Email, token)
+	sendErr := a.Email.SendPasswordResetEmail(user.FirstName, user.Email, *token)
 	if sendErr != nil {
 		tx.Rollback()
 		return &errors.FailedToSendEmail
@@ -277,13 +277,13 @@ func (a *AuthService) SendCode(userID string) *errors.Error {
 		return &errors.FailedToGenerateOTP
 	}
 
-	saveErr := transactions.SaveOTP(tx, user.ID, otp)
+	saveErr := transactions.SaveOTP(tx, user.ID, *otp)
 	if saveErr != nil {
 		tx.Rollback()
 		return saveErr
 	}
 
-	sendErr := a.Email.SendEmailVerification(user.Email, otp)
+	sendErr := a.Email.SendEmailVerification(user.Email, *otp)
 	if sendErr != nil {
 		tx.Rollback()
 		return &errors.FailedToSendEmail
