@@ -6,9 +6,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 
 import { ZodError, z } from 'zod';
-import { Wordmark } from '@/components/Wordmark';
-import { Button } from '@/components/button';
+import {Wordmark} from '@/components/Wordmark';
+import {Button} from '@/components/button';
 import {Header} from '@/components/header';
+import {DropdownComponent} from '@/components/dropdown';
 
 type RegisterFormData = {
     firstName: string;
@@ -16,6 +17,14 @@ type RegisterFormData = {
     email: string;
     password: string;
 };
+
+const graduationYear = [
+    {label: "2024", value: "2024"},
+    {label: "2025", value: "2025"},
+    {label: "2026", value: "2026"},
+    {label: "2027", value: "2027"},
+    {label: "2028", value: "2028"},
+]
 
 const registerSchema = z.object({
     firstName: z
@@ -52,7 +61,7 @@ const Register = () => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView edges={['top']} style={styles.container}>
             <View style={styles.topContainer}>
                 <View style={styles.wordmarkButton}>
                 <View style={styles.wordmark}><Wordmark textColor="white"/></View>
@@ -66,22 +75,24 @@ const Register = () => {
                     />
                 </View>
                 </View>
-                <Header text="Sign up" fontSize="40" color="white"></Header>
+                <View style={styles.header}><Header text="Sign up" fontSize="40" color="white"></Header></View>
                 <Text style={styles.description}>Discover, follow, and join all the clubs & events Northeastern has to offer</Text>
             </View>
             <ScrollView style={styles.lowerContainer}>
             <View className="w-full mb-4">
-                <Text>First Name</Text>
                 <Controller
                     control={control}
                     render={({ field: { onChange, value } }) => (
-                        <TextInput
-                            className="p-2 border border-gray-300"
-                            placeholder="Garrett"
-                            onChangeText={onChange}
-                            value={value}
-                            onSubmitEditing={handleSubmit(onSubmit)}
-                        />
+                        <View>
+                            <Text>First Name</Text>
+                            <TextInput
+                                className="p-2 border border-gray-300"
+                                placeholder="Garrett"
+                                onChangeText={onChange}
+                                value={value}
+                                onSubmitEditing={handleSubmit(onSubmit)}
+                            />
+                        </View>
                     )}
                     name="firstName"
                     rules={{ required: 'First name is required' }}
@@ -167,6 +178,13 @@ const Register = () => {
                 {errors.password && <Text>{errors.password.message}</Text>}
             </View>
 
+            <View>
+                <DropdownComponent
+                title="Intended Graduation Year"
+                item={graduationYear}
+                placeholder="Select Year"
+                />
+            </View>
             <View style={styles.submit}><Button title="Submit" color="white" onPress={handleSubmit(onSubmit)} /></View>
             </ScrollView>
         </SafeAreaView>
@@ -174,6 +192,7 @@ const Register = () => {
 };
 
 export default Register;
+
 
 const styles = StyleSheet.create({
     container: {
@@ -189,7 +208,7 @@ const styles = StyleSheet.create({
     description: {
         fontSize: 20,
         color: 'white',
-        paddingTop: '4%'
+        paddingTop: '4%',
     },
     topContainer: {
         margin: '8%',
@@ -209,5 +228,8 @@ const styles = StyleSheet.create({
     submit: {
         flexDirection: 'row',
         justifyContent: 'center',
+    },
+    header: {
+        marginTop: '9%'
     }
 })

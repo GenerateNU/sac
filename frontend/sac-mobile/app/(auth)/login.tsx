@@ -10,7 +10,7 @@ import { ZodError, z } from 'zod';
 
 import {Wordmark} from '@/components/Wordmark';
 import {Button} from '@/components/button';
-import Input from '@/components/input';
+import {Input} from '@/components/input';
 import { useAuthStore } from '@/hooks/use-auth';
 import { loginByEmail } from '@/services/auth';
 
@@ -51,9 +51,8 @@ const Login = () => {
             }
         }
     };
-    // className="items-center justify-center flex-1 p-4"
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView edges={['top']} style={styles.container}>
             <View style={styles.innerContainer}>
                 <View style={styles.topContainer} className="w-full p-5">
                     <Wordmark textColor="white" />
@@ -162,7 +161,7 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 15,
         borderTopRightRadius: 15,
         flex: 1,
-        padding: '7%'
+        padding: '7%',
     },
     descriptionContainer: {
         marginTop: '5%',

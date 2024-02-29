@@ -5,7 +5,7 @@ type InputProps = {
     placeholder: string;
 };
 
-const Input = (props: InputProps) => {
+export const Input = (props: InputProps) => {
     const styles = StyleSheet.create({
         input: {
             borderRadius: 20, 
@@ -21,7 +21,4 @@ const Input = (props: InputProps) => {
         </View>
     );
 };
-
-export default Input; 
-
 

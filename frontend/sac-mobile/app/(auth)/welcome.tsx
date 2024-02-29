@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     imageHolder: {
-        backgroundColor: 'black',
+        backgroundColor: 'gray',
         height: '45%',
         width: '100%',
         borderRadius: 20
