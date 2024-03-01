@@ -66,10 +66,6 @@ func (c *OpenAIClient) CreateEmbedding(payload string) ([]float32, *errors.Error
 
 	defer resp.Body.Close()
 
-	if err != nil {
-		return nil, &errors.FailedToCreateEmbedding
-	}
-
 	var embeddingResultBody CreateEmbeddingResponseBody
 
 	err = json.NewDecoder(resp.Body).Decode(&embeddingResultBody)

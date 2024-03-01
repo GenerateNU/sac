@@ -1,21 +1,26 @@
-package auth
+package email
 
 import (
 	"fmt"
 	"os"
 
+	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/resend/resend-go/v2"
 )
+
+type EmailServiceInterface interface {
+	SendPasswordResetEmail(name, email, token string) *errors.Error
+	SendEmailVerification(email, code string) *errors.Error
+}
 
 type EmailService struct {
 	Client *resend.Client
 }
 
-func NewEmailService() *EmailService {
-	client := resend.NewClient(os.Getenv("SAC_RESEND_API_KEY"))
+func NewEmailClient(settings config.ResendSettings) *EmailService {
 	return &EmailService{
-		Client: client,
+		Client: resend.NewClient(settings.APIKey.Expose()),
 	}
 }
 

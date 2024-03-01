@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/GenerateNU/sac/backend/src/auth"
+	"github.com/GenerateNU/sac/backend/src/email"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
@@ -26,10 +27,10 @@ type AuthServiceInterface interface {
 type AuthService struct {
 	DB       *gorm.DB
 	Validate *validator.Validate
-	Email    *auth.EmailService
+	Email    *email.EmailService
 }
 
-func NewAuthService(db *gorm.DB, validate *validator.Validate, email *auth.EmailService) *AuthService {
+func NewAuthService(db *gorm.DB, validate *validator.Validate, email *email.EmailService) *AuthService {
 	return &AuthService{
 		DB:       db,
 		Validate: validate,
