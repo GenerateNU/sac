@@ -1,6 +1,7 @@
 package transactions
 
 import (
+	stdliberrors "errors"
 	"time"
 
 	"github.com/GenerateNU/sac/backend/src/errors"
@@ -27,6 +28,10 @@ func SaveOTP(db *gorm.DB, userID uuid.UUID, otp string) *errors.Error {
 func GetOTP(db *gorm.DB, userID uuid.UUID) (*models.Verification, *errors.Error) {
 	var otp models.Verification
 	if err := db.Where("user_id = ? AND type = ?", userID, models.EmailVerificationType).First(&otp).Error; err != nil {
+		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, &errors.OTPNotFound
+		}
+
 		return nil, &errors.FailedToGetOTP
 	}
 

@@ -67,4 +67,8 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to send code",
 	}
+	OTPNotFound = Error{
+		StatusCode: fiber.StatusNotFound,
+		Message:    "otp not found",
+	}
 )
