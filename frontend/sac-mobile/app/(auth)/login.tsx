@@ -8,8 +8,8 @@ import { router } from 'expo-router';
 
 import { ZodError, z } from 'zod';
 
-import {Wordmark} from '@/components/Wordmark';
-import {Button} from '@/components/button';
+import Wordmark from '@/components/Wordmark';
+import Button from '@/components/button';
 import {Input} from '@/components/input';
 import { useAuthStore } from '@/hooks/use-auth';
 import { loginByEmail } from '@/services/auth';
@@ -51,18 +51,19 @@ const Login = () => {
             }
         }
     };
+
     return (
-        <SafeAreaView edges={['top']} style={styles.container}>
-            <View style={styles.innerContainer}>
-                <View style={styles.topContainer} className="w-full p-5">
-                    <Wordmark textColor="white" />
-                    <Text style={styles.header}>Let's go</Text>
-                    <Text style={styles.description}>
-                        Discover, follow, and join all the clubs & events
-                        Northeastern has to offer
-                    </Text>
+        <SafeAreaView className='bg-neutral-500 h-[100%]' edges={['top']}>
+            <View className='flex-1'>
+                <View className="px-[8%] pb-[5%]">
+                        <Wordmark textColor="white" />
+                        <Text style={styles.header}>Let's go</Text>
+                        <Text style={styles.description}>
+                            Discover, follow, and join all the clubs & events
+                            Northeastern has to offer
+                        </Text>
                 </View>
-                <View style={styles.lowerContainer}>
+                <View  className='bg-white pt-[10%] flex-1 rounded-tl-3xl rounded-tr-3xl px-[8%]'>
                     <View>
                         <Text>Email</Text>
                         <Controller
@@ -126,6 +127,7 @@ const Login = () => {
                         <Text className="font-bold">Not a student?</Text>
                         <Text> Continue as a guest.</Text>
                     </View>
+                    <Input title="First Name" placeholder="John" />
                 </View>
             </View>
         </SafeAreaView>
@@ -140,18 +142,16 @@ const styles = StyleSheet.create({
         paddingTop: '2%',
         paddingBottom: '2.5%'
     },
+    alignContainer: {
+        paddingLeft: '5%',
+        paddingRight: '5%'
+    },
     description: {
         fontSize: 20,
         color: 'white',
         paddingTop: '2%'
     },
-    container: {
-        backgroundColor: 'grey',
-        height: '100%'
-    },
-    innerContainer: {
-        flex: 1
-    },
+
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-around'

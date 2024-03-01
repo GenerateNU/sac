@@ -8,17 +8,24 @@ type InputProps = {
 export const Input = (props: InputProps) => {
     const styles = StyleSheet.create({
         input: {
-            borderRadius: 20, 
-            borderWidth: 1, 
+            borderRadius: 10,
+            borderWidth: 1,
             paddingTop: '5%',
             paddingBottom: '5%',
+            width: '100%'
         }
-    })
+    });
     return (
-        <View>
+        <View >
             <Text>{props.title}</Text>
-            <TextInput style={styles.input} placeholder={props.placeholder}></TextInput>
+            <View className="items-center">
+                <TextInput
+                    style={styles.input}
+                    placeholder={props.placeholder}
+                ></TextInput>
+            </View>
         </View>
     );
 };
 
+export default Input;

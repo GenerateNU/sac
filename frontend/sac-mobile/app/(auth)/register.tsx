@@ -6,8 +6,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 
 import { ZodError, z } from 'zod';
-import {Wordmark} from '@/components/Wordmark';
-import {Button} from '@/components/button';
+import Wordmark from '@/components/Wordmark';
+import Button from '@/components/button';
 import {Header} from '@/components/header';
 import {DropdownComponent} from '@/components/dropdown';
 

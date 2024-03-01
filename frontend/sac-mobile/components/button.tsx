@@ -8,7 +8,7 @@ type ButtonProps = {
     borderColor?: string;
 };
 
-export const Button = (props: ButtonProps) => {
+export default const Button = (props: ButtonProps) => {
     const styles = StyleSheet.create({
         button: {
             backgroundColor: props.backgroundColor || 'gray',

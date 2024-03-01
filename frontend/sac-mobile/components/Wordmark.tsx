@@ -5,11 +5,11 @@ type WordmarkProps = {
     backgroundColor?: string;
 }
 
-export const Wordmark = (props: WordmarkProps) => {
+export default const Wordmark = (props: WordmarkProps) => {
     const styles = StyleSheet.create({
         wordmark: {
             fontSize: 24,
-            paddingTop: '7.5%',
+            paddingTop: '2.5%',
             paddingBottom: '7.5%',
             fontWeight: 'bold',
             color: props.textColor
