@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     },
     description: {
         height: '15%',
-        fontSize: 23
+        fontSize: 24
     },
     button: {
         height: '5%'

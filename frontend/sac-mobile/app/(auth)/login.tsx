@@ -56,20 +56,20 @@ const Login = () => {
         <SafeAreaView className="bg-neutral-500 h-[100%]" edges={['top']}>
             <View className="flex-1">
                 <View className="px-[8%] pb-[10%]">
-                    <Wordmark textColor="white" />
-                    <View className="pt-[10%] pb-[5%]">
+                    <View className="pt-[1%]"><Wordmark textColor="white" /></View>
+                    <View className="pt-[10%] pb-[6.5%]">
                         <Header
                             text="Let's go"
                             fontSize="45"
                             color="white"
                         ></Header>
                     </View>
-                    <Text className="text-white pt-[2%] text-lg leading-5">
+                    <Text className="text-white pt-[3%] text-lg leading-5">
                         Discover, follow, and join all the clubs & events
                         Northeastern has to offer
                     </Text>
                 </View>
-                <View className="bg-white pt-[10%] pb-[2%] flex-1 pt-[12%] rounded-tl-3xl rounded-tr-3xl px-[8%]">
+                <View className="bg-white pt-[13.5%] pb-[2%] flex-1 rounded-tl-3xl rounded-tr-3xl px-[8%]">
                     <View>
                         <Controller
                             control={control}
@@ -114,11 +114,12 @@ const Login = () => {
                         <Text>Forgot password?</Text>
                     </View>
 
-                    <View className="flex-row justify-around">
+                    <View className="flex-row justify-between">
                         <Button
                             backgroundColor="white"
                             title="Sign up"
                             borderColor="gray"
+                            fullWidth={false}
                             onPress={() => router.push('/(auth)/register')}
                         />
                         <Button
@@ -126,10 +127,11 @@ const Login = () => {
                             color="white"
                             borderColor="gray"
                             backgroundColor="gray"
+                            fullWidth={false}
                             onPress={handleSubmit(onSubmit)}
                         />
                     </View>
-                    <View className="mt-[5%] flex-row justify-center">
+                    <View className="mt-[9%] flex-row justify-center">
                         <Text className="font-bold">Not a student?</Text>
                         <Text> Continue as a guest.</Text>
                     </View>

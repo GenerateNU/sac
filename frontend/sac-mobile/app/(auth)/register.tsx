@@ -3,6 +3,7 @@ import { Controller, useForm } from 'react-hook-form';
 import {
     Alert,
     ScrollView,
+    ScrollViewBase,
     StyleSheet,
     Text,
     TextInput,
@@ -20,20 +21,33 @@ import { DropdownComponent } from '@/components/dropdown';
 import Header from '@/components/header';
 import Input from '@/components/input';
 
+// list of items for dropdown menu
+type Item = {
+    label: string,
+    value: string,
+}
+
+// list of graduation year
+const graduationYear = () => {
+    var year = new Date().getFullYear();
+    const graduationYear: Item[] = [];
+    for (let i = 0; i < 5; i++) {
+        graduationYear.push({
+            label: String(year + i),
+            value: String(year + i)
+        });
+    }
+    return graduationYear;
+}
+
 type RegisterFormData = {
     firstName: string;
     lastName: string;
     email: string;
     password: string;
+    passwordConfirm: string;
+    id: string;
 };
-
-const graduationYear = [
-    { label: '2024', value: '2024' },
-    { label: '2025', value: '2025' },
-    { label: '2026', value: '2026' },
-    { label: '2027', value: '2027' },
-    { label: '2028', value: '2028' }
-];
 
 const registerSchema = z.object({
     firstName: z
@@ -70,28 +84,28 @@ const Register = () => {
     };
 
     return (
+        <ScrollView className="scroll-smooth">
         <SafeAreaView
             edges={['top']}
-            style={styles.container}
             className="bg-neutral-500"
         >
-            <View className="px-[8%] pb-[10%]">
+            <View className="px-[8%] pb-[9%]">
                 <Wordmark
                     textColor="white"
                     button={true}
                     func={() => router.push('/(auth)/login')}
                     title="Login"
                 />
-                <View className="pt-[10%] pb-[5%]">
+                <View className="pt-[9%] pb-[6%]">
                     <Header text="Sign up" fontSize="45" color="white"></Header>
                 </View>
-                <Text style={styles.description}>
+                <Text className="text-lg text-white">
                     Discover, follow, and join all the clubs & events
                     Northeastern has to offer
                 </Text>
             </View>
-            <View style={styles.lowerContainer}>
-                <View className="w-full mb-4">
+            <View className="bg-white px-[8%] pt-[13%] rounded-t-3xl">
+                <View className="w-full mb-7">
                     <Controller
                         control={control}
                         render={({ field: { onChange, value } }) => (
@@ -112,7 +126,7 @@ const Register = () => {
                     )}
                 </View>
 
-                <View className="w-full mb-4">
+                <View className="w-full mb-7">
                     <Controller
                         control={control}
                         render={({ field: { onChange, value } }) => (
@@ -131,7 +145,7 @@ const Register = () => {
                     {errors.lastName && <Text>{errors.lastName.message}</Text>}
                 </View>
 
-                <View className="w-full mb-4">
+                <View className="w-full mb-7">
                     <Controller
                         control={control}
                         render={({ field: { onChange, value } }) => (
@@ -150,7 +164,7 @@ const Register = () => {
                     {errors.email && <Text>{errors.email.message}</Text>}
                 </View>
 
-                <View className="w-full mb-4">
+                <View className="w-full mb-7">
                     <Controller
                         control={control}
                         render={({ field: { onChange, value } }) => (
@@ -163,13 +177,21 @@ const Register = () => {
                                 onSubmitEditing={handleSubmit(onSubmit)}
                             />
                         )}
-                        name="password"
+                        name="id"
                         rules={{ required: 'Password is required' }}
                     />
                     {errors.password && <Text>{errors.password.message}</Text>}
                 </View>
 
-                <View className="w-full mb-4">
+                <View className="mb-6">
+                    <DropdownComponent
+                        title="Intended Graduation Year"
+                        item={graduationYear()}
+                        placeholder="Select Year"
+                    />
+                </View>
+
+                <View className="w-full mb-7">
                     <Controller
                         control={control}
                         render={({ field: { onChange, value } }) => (
@@ -189,78 +211,37 @@ const Register = () => {
                     {errors.password && <Text>{errors.password.message}</Text>}
                 </View>
 
-                <View className="w-full mb-4">
+                <View className="w-full mb-7">
                     <Controller
                         control={control}
                         render={({ field: { onChange, value } }) => (
                             <Input
                                 title="Password Confirmation"
                                 autoCorrect={false}
-                                placeholder="Password"
+                                placeholder="Confirm your password"
                                 onChangeText={onChange}
                                 value={value}
                                 onSubmitEditing={handleSubmit(onSubmit)}
                                 secureTextEntry={true}
                             />
                         )}
-                        name="password"
+                        name="passwordConfirm"
                         rules={{ required: 'Password is required' }}
                     />
                     {errors.password && <Text>{errors.password.message}</Text>}
                 </View>
-
-                <View>
-                    <DropdownComponent
-                        title="Intended Graduation Year"
-                        item={graduationYear}
-                        placeholder="Select Year"
-                    />
-                </View>
-                <View style={styles.submit}>
+                <View className="pt-[2%] pb-[25%]">
                     <Button
                         title="Submit"
+                        fullWidth={true}
                         color="white"
                         onPress={handleSubmit(onSubmit)}
                     />
                 </View>
             </View>
         </SafeAreaView>
+        </ScrollView>
     );
 };
 
 export default Register;
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1
-    },
-    lowerContainer: {
-        backgroundColor: 'white',
-        borderRadius: 20,
-        flex: 1,
-        padding: '8%'
-    },
-    description: {
-        fontSize: 20,
-        color: 'white'
-    },
-    wordmarkButton: {
-        flexDirection: 'row',
-        justifyContent: 'space-evenly'
-    },
-    wordmark: {
-        flex: 1
-    },
-    button: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        height: '50%'
-    },
-    submit: {
-        flexDirection: 'row',
-        justifyContent: 'center'
-    },
-    header: {
-        marginTop: '9%'
-    }
-});
