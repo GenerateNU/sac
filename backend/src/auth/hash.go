@@ -19,14 +19,13 @@ type params struct {
 	keyLength   uint32
 }
 
-func GenerateURLSafeToken() (*string, error) {
-	token := make([]byte, 64)
+func GenerateURLSafeToken(length int) (*string, error) {
+	token := make([]byte, length)
 	if _, err := rand.Read(token); err != nil {
 		return nil, err
 	}
 
 	encodedToken := base64.RawURLEncoding.EncodeToString(token)
-
 	return &encodedToken, nil
 }
 

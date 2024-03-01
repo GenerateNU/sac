@@ -29,7 +29,7 @@ func (e *EmailService) SendPasswordResetEmail(name, email, token string) *errors
 		From:    "onboarding@resend.dev",
 		To:      []string{email},
 		Subject: "Password Reset",
-		Html:    fmt.Sprintf(*template, name, token, token),
+		Html:    fmt.Sprintf(*template, name, token),
 	}
 
 	_, err = e.Client.Emails.Send(params)
@@ -48,7 +48,7 @@ func (e *EmailService) SendEmailVerification(email, code string) *errors.Error {
 
 	params := &resend.SendEmailRequest{
 		From:    "onboarding@resend.dev",
-		To:      []string{"generatesac@gmail.com"},
+		To:      []string{email},
 		Subject: "Email Verification",
 		Html:    fmt.Sprintf(*template, code),
 	}

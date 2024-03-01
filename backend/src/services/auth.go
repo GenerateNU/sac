@@ -175,7 +175,7 @@ func (a *AuthService) ForgotPassword(userBody models.PasswordResetRequestBody) *
 	}
 
 	// Generate token if none exists
-	token, generateErr := auth.GenerateURLSafeToken()
+	token, generateErr := auth.GenerateURLSafeToken(64)
 	if generateErr != nil {
 		tx.Rollback()
 		return &errors.FailedToGenerateToken
@@ -192,7 +192,7 @@ func (a *AuthService) ForgotPassword(userBody models.PasswordResetRequestBody) *
 	sendErr := a.Email.SendPasswordResetEmail(user.FirstName, user.Email, *token)
 	if sendErr != nil {
 		tx.Rollback()
-		return &errors.FailedToSendEmail
+		return sendErr
 	}
 
 	if err := tx.Commit().Error; err != nil {
