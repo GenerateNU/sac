@@ -3,9 +3,8 @@ import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 import { router } from 'expo-router';
 
-import {Wordmark} from '@/components/Wordmark';
-import {Button } from '@/components/button';
-import { useAuthStore } from '@/hooks/use-auth';
+import Wordmark from '@/components/Wordmark';
+import Button from '@/components/button';
 
 const Welcome = () => {
     const redirect = () => {
@@ -38,24 +37,23 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'column',
         marginBottom: '10%',
-        marginLeft: 30,
-        marginRight: 30
+        marginLeft: "8%",
+        marginRight: "8%"
     },
     header: {
-        color: 'black',
         height: '20%',
         fontSize: 50,
-        marginTop: '5%',
+        marginTop: '10%',
         fontWeight: 'bold'
     },
     imageHolder: {
         backgroundColor: 'gray',
         height: '45%',
         width: '100%',
-        borderRadius: 20
+        borderRadius: 20,
+        marginTop: '5%'
     },
     description: {
-        color: 'black',
         height: '15%',
         fontSize: 23
     },

@@ -8,7 +8,7 @@ type ButtonProps = {
     borderColor?: string;
 };
 
-export const Button = (props: ButtonProps) => {
+const Button = (props: ButtonProps) => {
     const styles = StyleSheet.create({
         button: {
             backgroundColor: props.backgroundColor || 'gray',
@@ -25,17 +25,22 @@ export const Button = (props: ButtonProps) => {
         border: {
             borderWidth: 1,
             borderRadius: 15,
-            borderColor: props.borderColor || 'gray',
-            paddingTop: '6%',
-            paddingBottom: '6%'
+            borderColor: props.borderColor || 'gray'
         }
     });
 
     return (
         <Pressable onPress={props.onPress} style={styles.button}>
-            <View style={styles.border}>
-                <Text style={styles.title}>{props.title}</Text>
+            <View
+                className="border-1 rounded-xl pt-[10%]"
+                style={styles.border}
+            >
+                <Text className="pb-[10%] px-[5%]" style={styles.title}>
+                    {props.title}
+                </Text>
             </View>
         </Pressable>
     );
 };
+
+export default Button;
