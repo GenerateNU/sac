@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import {View, ScrollView, Text, StyleSheet, DimensionValue} from 'react-native';
+import React, { useState} from 'react';
+import {ScrollView, Text, StyleSheet, DimensionValue} from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 
 // Library Component
@@ -22,16 +22,7 @@ type ListOfItem = {
 }
 
 export const DropdownComponent = (props: ListOfItem) => {
-  const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
-
-  const renderLabel = () => {
-    if (value || isFocus) {
-      return;
-    }
-    return null;
-  };
-
   const borderColor = props.error ? 'red' : 'black';
   const borderWidth = props.error ? 1 : 0.5;
 
@@ -64,22 +55,22 @@ export const DropdownComponent = (props: ListOfItem) => {
       borderRadius: 12,
       marginTop: '2%',
       borderColor: '#CDCBCB',
+      overflow: 'hidden',
+      borderWidth: 1,
     },
     itemTextStyle: {
       fontSize: 14,
       paddingHorizontal: '3.5%',
-      borderBottomColor: 'grey',
     },
     itemContainerStyle: {
-      borderBottomWidth: 0.8,
+      borderBottomWidth: 1,
       borderColor: '#CDCBCB',
-    }
+    },
   });
 
   return (
-    <ScrollView style={styles.container}>
-        <Text className="pb-[2%]">{props.title}</Text>
-      {renderLabel()}
+    <ScrollView style={styles.container} >
+      <Text className="pb-[2%]">{props.title}</Text>
       <Dropdown
         style={[styles.dropdown, isFocus && { borderColor: 'black' }]}
         placeholderStyle={styles.placeholderStyle}

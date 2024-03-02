@@ -17,6 +17,7 @@ import Button from '@/components/button';
 import { DropdownComponent } from '@/components/dropdown';
 import Header from '@/components/header';
 import Input from '@/components/input';
+import Error from '@/components/error';
 
 // list of items for dropdown menu
 type Item = {
@@ -122,7 +123,7 @@ const Register = () => {
                         rules={{ required: 'First name is required' }}
                     />
                     {errors.firstName && (
-                        <Text>{errors.firstName.message}</Text>
+                        <Error message={errors.firstName.message}/>
                     )}
                 </View>
 
@@ -143,7 +144,7 @@ const Register = () => {
                         name="lastName"
                         rules={{ required: 'Last name is required' }}
                     />
-                    {errors.lastName && <Text>{errors.lastName.message}</Text>}
+                    {errors.lastName && <Error message={errors.lastName.message}/>}
                 </View>
 
                 <View className="w-full mb-[8.5%]">
@@ -163,7 +164,7 @@ const Register = () => {
                         name="email"
                         rules={{ required: 'Email is required' }}
                     />
-                    {errors.email && <Text>{errors.email.message}</Text>}
+                    {errors.email && <Error message={errors.email.message}/>}
                 </View>
 
                 <View className="w-full mb-[8.5%]">
@@ -183,7 +184,7 @@ const Register = () => {
                         name="id"
                         rules={{ required: 'NUID is required' }}
                     />
-                    {errors.id && <Text>{errors.id.message}</Text>}
+                    {errors.id && <Error message={errors.id.message}/>}
                 </View>
                 <View className="mb-[7%]">
                     <Controller
@@ -203,7 +204,7 @@ const Register = () => {
                         name="graduationYear"
                         rules={{ required: 'Graduation year is required' }}
                     />
-                    {errors.graduationYear && <Text className="mt-[-2%]">{errors.graduationYear.message}</Text>}
+                    {errors.graduationYear && <View className="mt-[-3.5%]"><Error message={errors.graduationYear.message}/></View>}
                 </View>
 
                 <View className="w-full mb-[8.5%]">
@@ -224,7 +225,7 @@ const Register = () => {
                         name="password"
                         rules={{ required: 'Password is required' }}
                     />
-                    {errors.password && <Text>{errors.password.message}</Text>}
+                    {errors.password && <Error message={errors.password.message}/>}
                 </View>
 
                 <View className="w-full mb-[8.5%]">
@@ -245,7 +246,7 @@ const Register = () => {
                         name="passwordConfirm"
                         rules={{ required: 'Please confirm your password' }}
                     />
-                    {errors.passwordConfirm && <Text>{errors.passwordConfirm.message}</Text>}
+                    {errors.passwordConfirm && <Error message={errors.passwordConfirm.message}/>}
                 </View>
                 <View className="pt-[2%] pb-[25%]">
                     <Button

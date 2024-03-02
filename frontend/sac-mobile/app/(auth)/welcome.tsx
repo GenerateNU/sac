@@ -16,7 +16,7 @@ const Welcome = () => {
             <Wordmark />
             <View style={styles.imageHolder}></View>
             <Text style={styles.header}>Welcome to StudCal</Text>
-            <Text style={styles.description}>
+            <Text className="leading-8" style={styles.description}>
                 Discover, follow, and join all the clubs & events Northeastern
                 has to offer
             </Text>
@@ -36,15 +36,15 @@ export default Welcome;
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'column',
-        marginBottom: '10%',
+        marginBottom: '8%',
         marginLeft: "8%",
         marginRight: "8%"
     },
     header: {
-        height: '20%',
+        height: '18%',
         fontSize: 50,
         marginTop: '10%',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     imageHolder: {
         backgroundColor: 'gray',
@@ -55,9 +55,10 @@ const styles = StyleSheet.create({
     },
     description: {
         height: '15%',
-        fontSize: 24
+        fontSize: 25
     },
     button: {
+        marginTop: '3%',
         height: '5%'
     },
     buttonAlign: {

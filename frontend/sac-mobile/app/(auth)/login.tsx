@@ -1,16 +1,14 @@
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
 import { router } from 'expo-router';
-
 import { ZodError, z } from 'zod';
-
 import Wordmark from '@/components/Wordmark';
 import Button from '@/components/button';
 import Header from '@/components/header';
 import Input from '@/components/input';
+import Error from '@/components/error';
 import { useAuthStore } from '@/hooks/use-auth';
 import { loginByEmail } from '@/services/auth';
 
@@ -87,7 +85,7 @@ const Login = () => {
                             name="email"
                             rules={{ required: 'Email is required' }}
                         />
-                        {errors.email && <Text>{errors.email.message}</Text>}
+                        {errors.email && <Error message={errors.email.message}/>}
                     </View>
                     <View className="w-full mt-[8%] mb-[3%]">
                         <Controller
@@ -107,9 +105,7 @@ const Login = () => {
                             name="password"
                             rules={{ required: 'Password is required' }}
                         />
-                        {errors.password && (
-                            <Text>{errors.password.message}</Text>
-                        )}
+                        {errors.password && <Error message={errors.password.message}/>}
                     </View>
 
                     <View className="pb-[8%] flex-row justify-end">
