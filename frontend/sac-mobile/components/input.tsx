@@ -9,20 +9,16 @@ type InputProps = {
     value: string;
     secureTextEntry?: boolean;
     onSubmitEditing: () => void;
+    error?: boolean;
 };
 
 const Input = (props: InputProps) => {
-    const styles = StyleSheet.create({
-        input: {
-            borderRadius: 10,
-            borderWidth: 1
-        }
-    });
+    const borderColor = props.error ? 'border-red-600' : 'border-gray-500';
     return (
         <View>
             <Text className="pb-[2%]">{props.title}</Text>
             <TextInput
-                className="pt-[4.5%] pb-[4.5%] pl-[5%] w-full border border-gray-500 rounded-xl"
+                className={`pt-[4.5%] pb-[4.5%] pl-[5%] w-full border rounded-xl ${borderColor}`}
                 autoCapitalize={props.autoCapitalize || 'none'}
                 autoCorrect={props.autoCorrect}
                 placeholder={props.placeholder}

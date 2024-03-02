@@ -3,10 +3,7 @@ import { Controller, useForm } from 'react-hook-form';
 import {
     Alert,
     ScrollView,
-    ScrollViewBase,
-    StyleSheet,
     Text,
-    TextInput,
     View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -40,13 +37,15 @@ const graduationYear = () => {
     return graduationYear;
 }
 
+// register form data
 type RegisterFormData = {
     firstName: string;
     lastName: string;
     email: string;
+    id: string;
     password: string;
     passwordConfirm: string;
-    id: string;
+    graduationYear: string;
 };
 
 const registerSchema = z.object({
@@ -99,13 +98,13 @@ const Register = () => {
                 <View className="pt-[9%] pb-[6%]">
                     <Header text="Sign up" fontSize="45" color="white"></Header>
                 </View>
-                <Text className="text-lg text-white">
+                <Text className="text-lg leading-6 text-white">
                     Discover, follow, and join all the clubs & events
                     Northeastern has to offer
                 </Text>
             </View>
             <View className="bg-white px-[8%] pt-[13%] rounded-t-3xl">
-                <View className="w-full mb-7">
+                <View className="w-full mb-[8.5%]">
                     <Controller
                         control={control}
                         render={({ field: { onChange, value } }) => (
@@ -116,6 +115,7 @@ const Register = () => {
                                 onChangeText={onChange}
                                 value={value}
                                 onSubmitEditing={handleSubmit(onSubmit)}
+                                error={!!errors.firstName}
                             />
                         )}
                         name="firstName"
@@ -126,7 +126,7 @@ const Register = () => {
                     )}
                 </View>
 
-                <View className="w-full mb-7">
+                <View className="w-full mb-[8.5%]">
                     <Controller
                         control={control}
                         render={({ field: { onChange, value } }) => (
@@ -137,6 +137,7 @@ const Register = () => {
                                 onChangeText={onChange}
                                 value={value}
                                 onSubmitEditing={handleSubmit(onSubmit)}
+                                error={!!errors.lastName}
                             />
                         )}
                         name="lastName"
@@ -145,7 +146,7 @@ const Register = () => {
                     {errors.lastName && <Text>{errors.lastName.message}</Text>}
                 </View>
 
-                <View className="w-full mb-7">
+                <View className="w-full mb-[8.5%]">
                     <Controller
                         control={control}
                         render={({ field: { onChange, value } }) => (
@@ -156,6 +157,7 @@ const Register = () => {
                                 onChangeText={onChange}
                                 value={value}
                                 onSubmitEditing={handleSubmit(onSubmit)}
+                                error={!!errors.email}
                             />
                         )}
                         name="email"
@@ -164,7 +166,7 @@ const Register = () => {
                     {errors.email && <Text>{errors.email.message}</Text>}
                 </View>
 
-                <View className="w-full mb-7">
+                <View className="w-full mb-[8.5%]">
                     <Controller
                         control={control}
                         render={({ field: { onChange, value } }) => (
@@ -175,23 +177,36 @@ const Register = () => {
                                 onChangeText={onChange}
                                 value={value}
                                 onSubmitEditing={handleSubmit(onSubmit)}
+                                error={!!errors.id}
                             />
                         )}
                         name="id"
-                        rules={{ required: 'Password is required' }}
+                        rules={{ required: 'NUID is required' }}
                     />
-                    {errors.password && <Text>{errors.password.message}</Text>}
+                    {errors.id && <Text>{errors.id.message}</Text>}
+                </View>
+                <View className="mb-[7%]">
+                    <Controller
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                            <DropdownComponent
+                                title="Intended Graduation Year"
+                                item={graduationYear()}
+                                placeholder="Select Year"
+                                onChangeText={onChange}
+                                value={value}
+                                onSubmitEditing={handleSubmit(onSubmit)}
+                                height="8.5%"
+                                error={!!errors.graduationYear}
+                            />
+                        )}
+                        name="graduationYear"
+                        rules={{ required: 'Graduation year is required' }}
+                    />
+                    {errors.graduationYear && <Text className="mt-[-2%]">{errors.graduationYear.message}</Text>}
                 </View>
 
-                <View className="mb-6">
-                    <DropdownComponent
-                        title="Intended Graduation Year"
-                        item={graduationYear()}
-                        placeholder="Select Year"
-                    />
-                </View>
-
-                <View className="w-full mb-7">
+                <View className="w-full mb-[8.5%]">
                     <Controller
                         control={control}
                         render={({ field: { onChange, value } }) => (
@@ -203,6 +218,7 @@ const Register = () => {
                                 value={value}
                                 onSubmitEditing={handleSubmit(onSubmit)}
                                 secureTextEntry={true}
+                                error={!!errors.password}
                             />
                         )}
                         name="password"
@@ -211,7 +227,7 @@ const Register = () => {
                     {errors.password && <Text>{errors.password.message}</Text>}
                 </View>
 
-                <View className="w-full mb-7">
+                <View className="w-full mb-[8.5%]">
                     <Controller
                         control={control}
                         render={({ field: { onChange, value } }) => (
@@ -223,18 +239,20 @@ const Register = () => {
                                 value={value}
                                 onSubmitEditing={handleSubmit(onSubmit)}
                                 secureTextEntry={true}
+                                error={!!errors.passwordConfirm}
                             />
                         )}
                         name="passwordConfirm"
-                        rules={{ required: 'Password is required' }}
+                        rules={{ required: 'Please confirm your password' }}
                     />
-                    {errors.password && <Text>{errors.password.message}</Text>}
+                    {errors.passwordConfirm && <Text>{errors.passwordConfirm.message}</Text>}
                 </View>
                 <View className="pt-[2%] pb-[25%]">
                     <Button
                         title="Submit"
                         fullWidth={true}
                         color="white"
+                        padding="5%"
                         onPress={handleSubmit(onSubmit)}
                     />
                 </View>

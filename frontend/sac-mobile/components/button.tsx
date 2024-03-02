@@ -1,15 +1,17 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { DimensionValue, Pressable, StyleSheet, Text, View } from 'react-native';
 
 type ButtonProps = {
-    title: string;
-    backgroundColor?: string;
-    color?: string;
+    title: string; // text of the button
+    backgroundColor?: string; // background color
+    color?: string; // text color
     onPress?: () => void;
     borderColor?: string;
     fullWidth?: boolean;
+    padding?: DimensionValue; // padding
 };
 
 const Button = (props: ButtonProps) => {
+    const padding = props.padding + '%'
     const styles = StyleSheet.create({
         button: {
             backgroundColor: props.backgroundColor || 'gray',
@@ -26,13 +28,15 @@ const Button = (props: ButtonProps) => {
         border: {
             borderWidth: 1,
             borderColor: props.borderColor || 'gray',
+            paddingTop: props.padding || '9%',
+            paddingBottom: props.padding || '9%',
         }
     });
 
     return (
         <Pressable onPress={props.onPress} style={styles.button}>
             <View
-                className="border-1 rounded-xl pt-4 pb-4"
+                className="border-1 rounded-xl"
                 style={styles.border}
             >
                 <Text className="px-[5%]" style={styles.title}>

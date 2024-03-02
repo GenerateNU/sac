@@ -57,19 +57,19 @@ const Login = () => {
             <View className="flex-1">
                 <View className="px-[8%] pb-[10%]">
                     <View className="pt-[1%]"><Wordmark textColor="white" /></View>
-                    <View className="pt-[10%] pb-[6.5%]">
+                    <View className="pt-[9.5%] pb-[6%]">
                         <Header
                             text="Let's go"
                             fontSize="45"
                             color="white"
                         ></Header>
                     </View>
-                    <Text className="text-white pt-[3%] text-lg leading-5">
+                    <Text className="text-white pt-[0.9%] text-lg leading-6">
                         Discover, follow, and join all the clubs & events
                         Northeastern has to offer
                     </Text>
                 </View>
-                <View className="bg-white pt-[13.5%] pb-[2%] flex-1 rounded-tl-3xl rounded-tr-3xl px-[8%]">
+                <View className="bg-white pt-[13%] pb-[2%] flex-1 rounded-tl-3xl rounded-tr-3xl px-[8%]">
                     <View>
                         <Controller
                             control={control}
@@ -81,6 +81,7 @@ const Login = () => {
                                     onChangeText={onChange}
                                     value={value}
                                     onSubmitEditing={handleSubmit(onSubmit)}
+                                    error={!!errors.email}
                                 />
                             )}
                             name="email"
@@ -100,6 +101,7 @@ const Login = () => {
                                     value={value}
                                     secureTextEntry={true}
                                     onSubmitEditing={handleSubmit(onSubmit)}
+                                    error={!!errors.password}
                                 />
                             )}
                             name="password"
@@ -133,7 +135,7 @@ const Login = () => {
                     </View>
                     <View className="mt-[9%] flex-row justify-center">
                         <Text className="font-bold">Not a student?</Text>
-                        <Text> Continue as a guest.</Text>
+                        <Text> Continue as a <Text className="underline">guest</Text></Text>
                     </View>
                 </View>
             </View>
