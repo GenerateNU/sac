@@ -1,17 +1,9 @@
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import {
-    Alert,
-    ScrollView,
-    Text,
-    View
-} from 'react-native';
+import {Alert,ScrollView,Text, View} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
 import { router } from 'expo-router';
-
 import { ZodError, z } from 'zod';
-
 import Wordmark from '@/components/Wordmark';
 import Button from '@/components/button';
 import { DropdownComponent } from '@/components/dropdown';
@@ -44,9 +36,9 @@ type RegisterFormData = {
     lastName: string;
     email: string;
     id: string;
+    graduationYear: string;
     password: string;
     passwordConfirm: string;
-    graduationYear: string;
 };
 
 const registerSchema = z.object({
@@ -59,7 +51,7 @@ const registerSchema = z.object({
     email: z.string().email({ message: 'Invalid email' }),
     password: z
         .string()
-        .min(8, { message: 'Password must be at least 8 characters long' })
+        .min(8, { message: 'Password must be at least 8 characters long' }),
 });
 
 const Register = () => {
@@ -77,10 +69,18 @@ const Register = () => {
         } catch (error) {
             if (error instanceof ZodError) {
                 Alert.alert('Validation Error', error.errors[0].message);
-            } else {
+            }
+            else {
                 console.error('An unexpected error occurred:', error);
             }
         }
+    };
+
+    const validateName = (value: string) => {
+        if (value.length < 2) {
+            return 'First name should have more than 2 characters';
+        }
+        return true;
     };
 
     return (
@@ -113,14 +113,26 @@ const Register = () => {
                                 title="First Name"
                                 autoCorrect={false}
                                 placeholder="Garrett"
-                                onChangeText={onChange}
+                                onChangeText={(text) => onChange(text)}
                                 value={value}
                                 onSubmitEditing={handleSubmit(onSubmit)}
                                 error={!!errors.firstName}
                             />
                         )}
                         name="firstName"
-                        rules={{ required: 'First name is required' }}
+                        rules={{
+                            required: 'First name is required',
+                            validate: (value) => {
+                                const isValid = /^[a-zA-Z]+$/.test(value);
+                                if (!isValid) {
+                                    return 'Please enter proper first name';
+                                }
+                                else if (value.length < 2) {
+                                    return 'First name must be at least 2 characters long';
+                                }
+                                return true;
+                            },
+                        }}
                     />
                     {errors.firstName && (
                         <Error message={errors.firstName.message}/>
@@ -142,7 +154,19 @@ const Register = () => {
                             />
                         )}
                         name="lastName"
-                        rules={{ required: 'Last name is required' }}
+                        rules={{
+                            required: 'Last name is required',
+                            validate: (value) => {
+                                const isValid = /^[a-zA-Z]+$/.test(value);
+                                if (!isValid) {
+                                    return 'Please enter proper last name';
+                                }
+                                else if (value.length < 2) {
+                                    return 'Last name must be at least 2 characters long';
+                                }
+                                return true;
+                            },
+                        }}
                     />
                     {errors.lastName && <Error message={errors.lastName.message}/>}
                 </View>
@@ -162,7 +186,15 @@ const Register = () => {
                             />
                         )}
                         name="email"
-                        rules={{ required: 'Email is required' }}
+                        rules={{
+                            required: 'Email is required',
+                            validate: (value) => {
+                                if (!value.endsWith('@northeastern.edu')) {
+                                    return 'Please enter your Northeastern email';
+                                }
+                                return true;
+                            },
+                        }}
                     />
                     {errors.email && <Error message={errors.email.message}/>}
                 </View>
@@ -182,7 +214,18 @@ const Register = () => {
                             />
                         )}
                         name="id"
-                        rules={{ required: 'NUID is required' }}
+                        rules={{
+                            required: 'NUID is required',
+                            validate: (value) => {
+                                if (/[^\d]/.test(value)) {
+                                    return 'Please enter a proper NUID number';
+                                }
+                                if (value.length != 9) {
+                                    return 'Please enter 9 digit number';
+                                }
+                                return true;
+                            },
+                        }}
                     />
                     {errors.id && <Error message={errors.id.message}/>}
                 </View>
@@ -204,7 +247,7 @@ const Register = () => {
                         name="graduationYear"
                         rules={{ required: 'Graduation year is required' }}
                     />
-                    {errors.graduationYear && <View className="mt-[-3.5%]"><Error message={errors.graduationYear.message}/></View>}
+                    {errors.graduationYear && <Error message={errors.graduationYear.message}/>}
                 </View>
 
                 <View className="w-full mb-[8.5%]">
@@ -223,7 +266,15 @@ const Register = () => {
                             />
                         )}
                         name="password"
-                        rules={{ required: 'Password is required' }}
+                        rules={{
+                            required: 'Password is required',
+                            validate: (value) => {
+                                if (value.length < 8) {
+                                    return 'Password must have at least 8 characters';
+                                }
+                                return true;
+                            },
+                        }}
                     />
                     {errors.password && <Error message={errors.password.message}/>}
                 </View>
@@ -240,13 +291,23 @@ const Register = () => {
                                 value={value}
                                 onSubmitEditing={handleSubmit(onSubmit)}
                                 secureTextEntry={true}
-                                error={!!errors.passwordConfirm}
+                                error={!!errors.password}
                             />
                         )}
                         name="passwordConfirm"
-                        rules={{ required: 'Please confirm your password' }}
+                        rules={{
+                            required: 'Please confirm your password',
+                            validate: (value) => {
+                                const password = control._getWatch('password');
+                                if (value !== password) {
+                                    return 'Passwords do not match';
+                                }
+                                return true;
+                            },
+                        }}
                     />
-                    {errors.passwordConfirm && <Error message={errors.passwordConfirm.message}/>}
+                    {errors.passwordConfirm
+                    && <Error message={errors.passwordConfirm.message}/>}
                 </View>
                 <View className="pt-[2%] pb-[25%]">
                     <Button

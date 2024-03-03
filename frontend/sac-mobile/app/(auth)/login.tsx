@@ -83,7 +83,7 @@ const Login = () => {
                                 />
                             )}
                             name="email"
-                            rules={{ required: 'Email is required' }}
+                            rules={{required: 'Email is required'}}
                         />
                         {errors.email && <Error message={errors.email.message}/>}
                     </View>
@@ -103,7 +103,7 @@ const Login = () => {
                                 />
                             )}
                             name="password"
-                            rules={{ required: 'Password is required' }}
+                            rules={{required: 'Password is required'}}
                         />
                         {errors.password && <Error message={errors.password.message}/>}
                     </View>
