@@ -29,7 +29,7 @@ export const DropdownComponent = (props: ListOfItem) => {
   const styles = StyleSheet.create({
     container: {
       backgroundColor: 'white',
-      height: 78,
+      height: props.height || 78,
     },
     dropdown: {
       height: '85%',

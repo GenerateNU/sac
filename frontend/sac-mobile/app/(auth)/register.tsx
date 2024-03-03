@@ -76,15 +76,8 @@ const Register = () => {
         }
     };
 
-    const validateName = (value: string) => {
-        if (value.length < 2) {
-            return 'First name should have more than 2 characters';
-        }
-        return true;
-    };
-
     return (
-        <ScrollView className="scroll-smooth">
+        <ScrollView>
         <SafeAreaView
             edges={['top']}
             className="bg-neutral-500"
