@@ -9,21 +9,6 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-var backendCmd = &cli.Command{
-	Name:  "backend",
-	Usage: "Starts the backend server in development mode",
-	Action: func(c *cli.Context) error {
-		cmd := exec.Command("go", "run", "backend/main.go", "--use-dev-dot-env")
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		err := cmd.Run()
-		if err != nil {
-			return fmt.Errorf("error starting backend: %w", err)
-		}
-		return nil
-	},
-}
-
 func BackendCommand() *cli.Command {
 	command := &cli.Command{
 		Name:    "backend",
@@ -37,7 +22,10 @@ func BackendCommand() *cli.Command {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			RunBackend()
+			err := RunBackend()
+			if err != nil {
+				return cli.Exit(err.Error(), 1)
+			}
 
 			return nil
 		},
