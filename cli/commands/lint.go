@@ -89,7 +89,7 @@ func LintFrontend(target string, fix bool) error {
 func LintBackend() error {
 	fmt.Println("Linting backend")
 
-	cmd := exec.Command("golangci-lint", "run", "--fix")
+	cmd := exec.Command("go", "vet", "./...")
 	cmd.Dir = BACKEND_DIR
 
 	err := cmd.Run()
