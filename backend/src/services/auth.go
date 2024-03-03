@@ -272,6 +272,11 @@ func (a *AuthService) SendCode(userID string) *errors.Error {
 		return err
 	}
 
+	if user.IsVerified {
+		tx.Rollback()
+		return &errors.EmailAlreadyVerified
+	}
+
 	otp, otpErr := auth.GenerateOTP(6)
 	if otpErr != nil {
 		tx.Rollback()
