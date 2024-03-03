@@ -69,7 +69,7 @@ func (c *PineconeClient) Seed(db *gorm.DB) error {
 		print(fmt.Sprintf("Uploading chunk #%d (of %d) to pinecone...\n", i+1, len(chunks)))
 		err := c.Upsert(chunk)
 		if err != nil {
-			return stdliberrors.New("Club upsert failed...")
+			return stdliberrors.New("club upsert failed")
 		}
 	}
 

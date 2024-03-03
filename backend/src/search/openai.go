@@ -71,10 +71,6 @@ func (c *OpenAIClient) CreateEmbedding(items []Searchable) ([]Embedding, *errors
 
 	defer resp.Body.Close()
 
-	if err != nil {
-		return nil, &errors.FailedToCreateEmbedding
-	}
-
 	var embeddingResultBody CreateEmbeddingResponseBody
 
 	err = json.NewDecoder(resp.Body).Decode(&embeddingResultBody)
