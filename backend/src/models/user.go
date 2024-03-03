@@ -119,17 +119,7 @@ func (u *User) AfterCreate(tx *gorm.DB) (err error) {
 
 func (u *User) AfterDelete(tx *gorm.DB) (err error) {
 	sac := &Club{}
-	if err := tx.Where("name = ?", "SAC").First(sac).Error; err != nil {
-		return err
-	}
-
-	if err := tx.Model(u).Association("Member").Delete(sac); err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	if err := tx.Model(u).Association("Follower").Delete(sac); err != nil {
-		tx.Rollback()
+    if err := tx.Where("name = ?", "SAC").First(sac).Error; err != nil {
 		return err
 	}
 
