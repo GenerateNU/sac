@@ -4,7 +4,7 @@ go 1.22.0
 
 require (
 	github.com/garrettladley/mattress v0.3.2
-	github.com/go-playground/validator/v10 v10.18.0
+	github.com/go-playground/validator/v10 v10.19.0
 	github.com/goccy/go-json v0.10.2
 	github.com/gofiber/fiber/v2 v2.52.2
 	github.com/gofiber/swagger v1.0.0
