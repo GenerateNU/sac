@@ -8,7 +8,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func RunFrontendCommand() *cli.Command {
+func FrontendCommand() *cli.Command {
 	command := cli.Command{
 		Name:     "fe",
 		Usage:    "Run the frontend",
