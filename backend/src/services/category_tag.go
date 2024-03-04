@@ -4,9 +4,8 @@ import (
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
+	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
-	"github.com/go-playground/validator/v10"
-	"gorm.io/gorm"
 )
 
 type CategoryTagServiceInterface interface {
@@ -15,12 +14,11 @@ type CategoryTagServiceInterface interface {
 }
 
 type CategoryTagService struct {
-	DB       *gorm.DB
-	Validate *validator.Validate
+	types.ServiceParams
 }
 
-func NewCategoryTagService(db *gorm.DB, validate *validator.Validate) *CategoryTagService {
-	return &CategoryTagService{DB: db, Validate: validate}
+func NewCategoryTagService(params types.ServiceParams) *CategoryTagService {
+	return &CategoryTagService{params}
 }
 
 func (t *CategoryTagService) GetTagsByCategory(categoryID string, limit string, page string) ([]models.Tag, *errors.Error) {

@@ -3,19 +3,18 @@ package routes
 import (
 	p "github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/controllers"
-	"github.com/GenerateNU/sac/backend/src/middleware"
 	"github.com/GenerateNU/sac/backend/src/services"
-	"github.com/gofiber/fiber/v2"
+	"github.com/GenerateNU/sac/backend/src/types"
 )
 
-func Tag(router fiber.Router, tagService services.TagServiceInterface, authMiddleware *middleware.AuthMiddlewareService) {
-	tagController := controllers.NewTagController(tagService)
+func Tag(tagParams types.RouteParams) {
+	tagController := controllers.NewTagController(services.NewTagService(tagParams.ServiceParams))
 
-	tags := router.Group("/tags")
+	tags := tagParams.Router.Group("/tags")
 
 	tags.Get("/", tagController.GetTags)
 	tags.Get("/:tagID", tagController.GetTag)
-	tags.Post("/", authMiddleware.Authorize(p.CreateAll), tagController.CreateTag)
-	tags.Patch("/:tagID", authMiddleware.Authorize(p.WriteAll), tagController.UpdateTag)
-	tags.Delete("/:tagID", authMiddleware.Authorize(p.DeleteAll), tagController.DeleteTag)
+	tags.Post("/", tagParams.AuthMiddleware.Authorize(p.CreateAll), tagController.CreateTag)
+	tags.Patch("/:tagID", tagParams.AuthMiddleware.Authorize(p.WriteAll), tagController.UpdateTag)
+	tags.Delete("/:tagID", tagParams.AuthMiddleware.Authorize(p.DeleteAll), tagController.DeleteTag)
 }

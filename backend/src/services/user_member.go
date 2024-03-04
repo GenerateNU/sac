@@ -4,8 +4,8 @@ import (
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
+	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
-	"gorm.io/gorm"
 )
 
 type UserMemberServiceInterface interface {
@@ -15,11 +15,11 @@ type UserMemberServiceInterface interface {
 }
 
 type UserMemberService struct {
-	DB *gorm.DB
+	types.ServiceParams
 }
 
-func NewUserMemberService(db *gorm.DB) *UserMemberService {
-	return &UserMemberService{DB: db}
+func NewUserMemberService(params types.ServiceParams) UserMemberServiceInterface {
+	return &UserMemberService{params}
 }
 
 func (u *UserMemberService) CreateMembership(userID string, clubID string) *errors.Error {

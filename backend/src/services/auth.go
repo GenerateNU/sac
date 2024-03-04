@@ -4,13 +4,11 @@ import (
 	"time"
 
 	"github.com/GenerateNU/sac/backend/src/auth"
-	"github.com/GenerateNU/sac/backend/src/email"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
+	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
-	"github.com/go-playground/validator/v10"
-	"gorm.io/gorm"
 )
 
 type AuthServiceInterface interface {
@@ -25,17 +23,11 @@ type AuthServiceInterface interface {
 }
 
 type AuthService struct {
-	DB       *gorm.DB
-	Validate *validator.Validate
-	Email    *email.EmailService
+	types.ServiceParams
 }
 
-func NewAuthService(db *gorm.DB, validate *validator.Validate, email *email.EmailService) *AuthService {
-	return &AuthService{
-		DB:       db,
-		Validate: validate,
-		Email:    email,
-	}
+func NewAuthService(serviceParams types.ServiceParams) *AuthService {
+	return &AuthService{serviceParams}
 }
 
 func (a *AuthService) Me(id string) (*models.User, *errors.Error) {

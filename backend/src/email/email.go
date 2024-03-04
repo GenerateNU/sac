@@ -12,6 +12,8 @@ import (
 type EmailServiceInterface interface {
 	SendPasswordResetEmail(name, email, token string) *errors.Error
 	SendEmailVerification(email, code string) *errors.Error
+	SendWelcomeEmail(name, email string) *errors.Error
+	SendPasswordChangedEmail(name, email string) *errors.Error
 }
 
 type EmailService struct {
@@ -56,6 +58,48 @@ func (e *EmailService) SendEmailVerification(email, code string) *errors.Error {
 		To:      []string{email},
 		Subject: "Email Verification",
 		Html:    fmt.Sprintf(*template, code),
+	}
+
+	_, err = e.Client.Emails.Send(params)
+	if err != nil {
+		return &errors.FailedToSendEmail
+	}
+
+	return nil
+}
+
+func (e *EmailService) SendWelcomeEmail(name, email string) *errors.Error {
+	template, err := getTemplateString("welcome")
+	if err != nil {
+		return &errors.FailedToGetTemplate
+	}
+
+	params := &resend.SendEmailRequest{
+		From:    "onboarding@resend.dev",
+		To:      []string{email},
+		Subject: "Welcome to Resend",
+		Html:    fmt.Sprintf(*template, name),
+	}
+
+	_, err = e.Client.Emails.Send(params)
+	if err != nil {
+		return &errors.FailedToSendEmail
+	}
+
+	return nil
+}
+
+func (e *EmailService) SendPasswordChangedEmail(name, email string) *errors.Error {
+	template, err := getTemplateString("password_change_complete")
+	if err != nil {
+		return &errors.FailedToGetTemplate
+	}
+
+	params := &resend.SendEmailRequest{
+		From:    "onboarding@resend.dev",
+		To:      []string{email},
+		Subject: "Password Changed",
+		Html:    fmt.Sprintf(*template, name),
 	}
 
 	_, err = e.Client.Emails.Send(params)
