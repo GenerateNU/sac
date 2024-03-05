@@ -67,12 +67,12 @@ func (c *ClubService) UpdateClub(id string, clubBody models.UpdateClubRequestBod
 		return nil, idErr
 	}
 
-	if err := c.Validate.Struct(clubBody); err != nil {
+	if utilities.AtLeastOne(clubBody, models.UpdateClubRequestBody{}) {
 		return nil, &errors.FailedToValidateClub
 	}
 
-	if err := utilities.AtLeastOne(clubBody, models.UpdateClubRequestBody{}); err != nil {
-		return nil, err
+	if err := c.Validate.Struct(clubBody); err != nil {
+		return nil, &errors.FailedToValidateClub
 	}
 
 	club, err := utilities.MapRequestToModel(clubBody, &models.Club{})

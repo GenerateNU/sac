@@ -42,12 +42,8 @@ func RegisterCustomValidators() (*validator.Validate, error) {
 	return validate, nil
 }
 
-func AtLeastOne[Model any](body Model, model Model) *errors.Error {
-	if reflect.DeepEqual(body, model) {
-		return &errors.FailedToValidateAtLeastOneField
-	}
-
-	return nil
+func AtLeastOne[Model any](body Model, model Model) bool {
+	return reflect.DeepEqual(body, model)
 }
 
 func validateEmail(fl validator.FieldLevel) bool {

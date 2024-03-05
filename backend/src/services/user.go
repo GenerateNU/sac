@@ -82,12 +82,12 @@ func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBod
 		return nil, idErr
 	}
 
-	if err := u.Validate.Struct(userBody); err != nil {
+	if utilities.AtLeastOne(userBody, models.UpdateUserRequestBody{}) {
 		return nil, &errors.FailedToValidateUser
 	}
 
-	if err := utilities.AtLeastOne(userBody, models.UpdateUserRequestBody{}); err != nil {
-		return nil, err
+	if err := u.Validate.Struct(userBody); err != nil {
+		return nil, &errors.FailedToValidateUser
 	}
 
 	user, err := utilities.MapRequestToModel(userBody, &models.User{})
