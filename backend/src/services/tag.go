@@ -72,6 +72,10 @@ func (t *TagService) UpdateTag(tagID string, tagBody models.UpdateTagRequestBody
 		return nil, idErr
 	}
 
+	if utilities.AtLeastOne(tagBody, models.UpdateTagRequestBody{}) {
+		return nil, &errors.FailedToValidateTag
+	}
+
 	if err := t.Validate.Struct(tagBody); err != nil {
 		return nil, &errors.FailedToValidateTag
 	}

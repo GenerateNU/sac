@@ -11,7 +11,7 @@ import (
 func main() {
 	app := &cli.App{
 		Name:  "sac-cli",
-		Usage: "CLI for SAC",
+		Usage: "CLI for the GenerateNU SAC",
 		Commands: []*cli.Command{
 			commands.SwaggerCommand(),
 			commands.ClearDBCommand(),
@@ -19,8 +19,8 @@ func main() {
 			commands.ResetCommand(),
 			commands.InsertCommand(),
 			commands.DropCommand(),
-			commands.RunBackendCommand(),
-			commands.RunFrontendCommand(),
+			commands.BackendCommand(),
+			commands.FrontendCommand(),
 			commands.TestCommand(), // TODO: frontend tests
 			commands.FormatCommand(),
 			commands.LintCommand(),
