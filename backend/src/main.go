@@ -23,7 +23,7 @@ func CheckServerRunning(host string, port uint16) error {
 	return nil
 }
 
-func ExitIfError(format string, a ...interface{}) {
+func Exit(format string, a ...interface{}) {
 	fmt.Fprintf(os.Stderr, format, a...)
 	os.Exit(0)
 }
@@ -37,17 +37,17 @@ func main() {
 
 	config, err := config.GetConfiguration(*configPath, *useDevDotEnv)
 	if err != nil {
-		ExitIfError("Error getting configuration: %s", err.Error())
+		Exit("Error getting configuration: %s", err.Error())
 	}
 
 	err = CheckServerRunning(config.Application.Host, config.Application.Port)
 	if err == nil {
-		ExitIfError("A server is already running on %s:%d.\n", config.Application.Host, config.Application.Port)
+		Exit("A server is already running on %s:%d.\n", config.Application.Host, config.Application.Port)
 	}
 
 	db, err := database.ConfigureDB(*config)
 	if err != nil {
-		ExitIfError("Error migrating database: %s", err.Error())
+		Exit("Error migrating database: %s", err.Error())
 	}
 
 	if *onlyMigrate {
@@ -56,13 +56,13 @@ func main() {
 
 	err = database.ConnPooling(db)
 	if err != nil {
-		ExitIfError("Error with connection pooling: %s", err.Error())
+		Exit("Error with connection pooling: %s", err.Error())
 	}
 
 	app := server.Init(db, *config)
 
 	err = app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
 	if err != nil {
-		ExitIfError("Error starting server: %s", err.Error())
+		Exit("Error starting server: %s", err.Error())
 	}
 }
