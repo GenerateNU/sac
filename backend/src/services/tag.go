@@ -80,7 +80,6 @@ func (t *TagService) UpdateTag(tagID string, tagBody models.UpdateTagRequestBody
 		return nil, err
 	}
 
-
 	tag, err := utilities.MapRequestToModel(tagBody, &models.Tag{})
 	if err != nil {
 		return nil, &errors.FailedToMapRequestToModel
