@@ -15,8 +15,8 @@ func GetClubEvents(db *gorm.DB, clubID uuid.UUID, limit int, offset int) ([]mode
 
 	var events []models.Event
 
-	if err := db.Model(&club).Association("Event").Find(&events); err != nil {
-		return nil, &errors.FailedToGetClubMembers
+	if err := db.Model(&club).Limit(limit).Offset(offset).Association("Event").Find(&events); err != nil {
+		return nil, &errors.FailedToGetClubEvents
 	}
 
 	return events, nil
