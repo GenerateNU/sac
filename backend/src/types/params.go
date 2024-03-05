@@ -9,6 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
+
 type RouteParams struct {
 	Router         fiber.Router
 	Settings       config.AuthSettings
