@@ -123,6 +123,10 @@ func (e *EventService) UpdateEvent(id string, eventBody models.UpdateEventReques
 		return nil, idErr
 	}
 
+	if utilities.AtLeastOne(eventBody, models.UpdateEventRequestBody{}) {
+		return nil, &errors.FailedToValidateTag
+	}
+
 	if err := e.Validate.Struct(eventBody); err != nil {
 		return nil, &errors.FailedToValidateEvent
 	}
