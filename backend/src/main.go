@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	"net"
+	"os"
 	"path/filepath"
 
 	"github.com/GenerateNU/sac/backend/src/config"
@@ -11,13 +13,21 @@ import (
 	"github.com/GenerateNU/sac/backend/src/server"
 )
 
-// @title SAC API
-// @version 1.0
-// @description Backend Server for SAC App
-// @contact.name	David Oduneye and Garrett Ladley
-// @contact.email	generatesac@gmail.com
-// @host 127.0.0.1:8080
-// @BasePath /api/v1
+func CheckServerRunning(host string, port uint16) error {
+	address := fmt.Sprintf("%s:%d", host, port)
+	conn, err := net.Dial("tcp", address)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+	return nil
+}
+
+func ExitIfError(format string, a ...interface{}) {
+	fmt.Fprintf(os.Stderr, format, a...)
+	os.Exit(0)
+}
+
 func main() {
 	onlyMigrate := flag.Bool("only-migrate", false, "Specify if you want to only perform the database migration")
 	configPath := flag.String("config", filepath.Join("..", "..", "config"), "Specify the path to the config directory")
@@ -27,12 +37,17 @@ func main() {
 
 	config, err := config.GetConfiguration(*configPath, *useDevDotEnv)
 	if err != nil {
-		panic(fmt.Sprintf("Error getting configuration: %s", err.Error()))
+		ExitIfError("Error getting configuration: %s", err.Error())
+	}
+
+	err = CheckServerRunning(config.Application.Host, config.Application.Port)
+	if err == nil {
+		ExitIfError("A server is already running on %s:%d.\n", config.Application.Host, config.Application.Port)
 	}
 
 	db, err := database.ConfigureDB(*config)
 	if err != nil {
-		panic(fmt.Sprintf("Error configuring database: %s", err.Error()))
+		ExitIfError("Error migrating database: %s", err.Error())
 	}
 
 	if *onlyMigrate {
@@ -41,13 +56,13 @@ func main() {
 
 	err = database.ConnPooling(db)
 	if err != nil {
-		panic(fmt.Sprintf("Error connecting to database: %s", err.Error()))
+		ExitIfError("Error with connection pooling: %s", err.Error())
 	}
 
 	app := server.Init(db, *config)
 
 	err = app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
 	if err != nil {
-		panic(fmt.Sprintf("Error starting server: %s", err.Error()))
+		ExitIfError("Error starting server: %s", err.Error())
 	}
 }
