@@ -82,6 +82,10 @@ func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBod
 		return nil, idErr
 	}
 
+	if utilities.AtLeastOne(userBody, models.UpdateUserRequestBody{}) {
+		return nil, &errors.FailedToValidateUser
+	}
+
 	if err := u.Validate.Struct(userBody); err != nil {
 		return nil, &errors.FailedToValidateUser
 	}
