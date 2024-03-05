@@ -45,7 +45,6 @@ func DeleteUserTag(db *gorm.DB, id uuid.UUID, tagID uuid.UUID) *errors.Error {
 		return err
 	}
 
-
 	if err := db.Model(&user).Association("Tag").Delete(&tag); err != nil {
 		return &errors.FailedToUpdateUser
 	}
