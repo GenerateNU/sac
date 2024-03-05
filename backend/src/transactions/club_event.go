@@ -8,10 +8,15 @@ import (
 )
 
 func GetClubEvents(db *gorm.DB, clubID uuid.UUID, limit int, offset int) ([]models.Event, *errors.Error) {
+	club, err := GetClub(db, clubID)
+	if err != nil {
+		return nil, err
+	}
+
 	var events []models.Event
 
-	if err := db.Where("club_id = ?", clubID).Limit(limit).Offset(offset).Find(&events).Error; err != nil {
-		return nil, &errors.FailedToGetEvents
+	if err := db.Model(&club).Association("Event").Find(&events); err != nil {
+		return nil, &errors.FailedToGetClubMembers
 	}
 
 	return events, nil
