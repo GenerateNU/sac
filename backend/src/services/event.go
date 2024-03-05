@@ -127,6 +127,10 @@ func (e *EventService) UpdateEvent(id string, eventBody models.UpdateEventReques
 		return nil, &errors.FailedToValidateEvent
 	}
 
+	if err := utilities.AtLeastOne(eventBody, models.UpdateEventRequestBody{}); err != nil {
+		return nil, err
+	}
+
 	event, err := utilities.MapRequestToModel(eventBody, &models.UpdateEventRequestBody{})
 	if err != nil {
 		return nil, &errors.FailedToMapRequestToModel

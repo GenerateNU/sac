@@ -86,6 +86,10 @@ func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBod
 		return nil, &errors.FailedToValidateUser
 	}
 
+	if err := utilities.AtLeastOne(userBody, models.UpdateUserRequestBody{}); err != nil {
+		return nil, err
+	}
+
 	user, err := utilities.MapRequestToModel(userBody, &models.User{})
 	if err != nil {
 		return nil, &errors.FailedToMapRequestToModel

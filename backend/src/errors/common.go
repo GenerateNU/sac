@@ -3,6 +3,10 @@ package errors
 import "github.com/gofiber/fiber/v2"
 
 var (
+	FailedToValidateAtLeastOneField = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "failed to validate at least one field",
+	}
 	FailedToParseRequestBody = Error{
 		StatusCode: fiber.StatusBadRequest,
 		Message:    "failed to parse request body",

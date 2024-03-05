@@ -71,6 +71,10 @@ func (c *ClubService) UpdateClub(id string, clubBody models.UpdateClubRequestBod
 		return nil, &errors.FailedToValidateClub
 	}
 
+	if err := utilities.AtLeastOne(clubBody, models.UpdateClubRequestBody{}); err != nil {
+		return nil, err
+	}
+
 	club, err := utilities.MapRequestToModel(clubBody, &models.Club{})
 	if err != nil {
 		return nil, &errors.FailedToMapRequestToModel

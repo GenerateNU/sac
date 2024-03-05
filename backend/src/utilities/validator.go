@@ -1,6 +1,7 @@
 package utilities
 
 import (
+	"reflect"
 	"regexp"
 	"strconv"
 
@@ -39,6 +40,14 @@ func RegisterCustomValidators() (*validator.Validate, error) {
 	}
 
 	return validate, nil
+}
+
+func AtLeastOne[Model any](body Model, model Model) *errors.Error {
+	if reflect.DeepEqual(body, model) {
+		return &errors.FailedToValidateAtLeastOneField
+	}
+
+	return nil
 }
 
 func validateEmail(fl validator.FieldLevel) bool {
