@@ -14,4 +14,7 @@ func UserTag(usersRouter fiber.Router, userTagService services.UserTagServiceInt
 
 	userTags.Post("/", userTagController.CreateUserTags)
 	userTags.Get("/", userTagController.GetUserTags)
+	
+	tagID := userTags.Group("/:tagID")
+	tagID.Delete("/", userTagController.DeleteUserTag)
 }
