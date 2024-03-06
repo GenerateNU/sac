@@ -31,6 +31,7 @@ func NewCategoryController(categoryService services.CategoryServiceInterface) *C
 // @Failure     400   {string}    errors.Error
 // @Failure     401   {string}    errors.Error
 // @Failure     404   {string}    errors.Error
+// @Failure     409   {string}    errors.Error
 // @Failure     500   {string}    errors.Error
 // @Router		/categories/  [post]
 func (cat *CategoryController) CreateCategory(c *fiber.Ctx) error {

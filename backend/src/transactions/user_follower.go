@@ -1,8 +1,6 @@
 package transactions
 
 import (
-	"slices"
-
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/google/uuid"
@@ -21,35 +19,25 @@ func CreateFollowing(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Er
 	}
 
 	if err := db.Model(&user).Association("Follower").Append(club); err != nil {
-		return &errors.FailedToUpdateUser
+		return &errors.FailedToFollowClub
 	}
 
 	return nil
 }
 
 func DeleteFollowing(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error {
-	user, err := GetUser(db, userId, PreloadFollwer())
+	user, err := GetUser(db, userId)
 	if err != nil {
 		return err
 	}
 
-	club, err := GetClub(db, clubId, PreloadFollwer())
+	club, err := GetClub(db, clubId)
 	if err != nil {
 		return err
-	}
-
-	userFollowingClubIDs := make([]uuid.UUID, len(user.Follower))
-
-	for i, club := range user.Follower {
-		userFollowingClubIDs[i] = club.ID
-	}
-
-	if !slices.Contains(userFollowingClubIDs, club.ID) {
-		return &errors.UserNotFollowingClub
 	}
 
 	if err := db.Model(&user).Association("Follower").Delete(club); err != nil {
-		return &errors.FailedToUpdateUser
+		return &errors.UserNotFollowingClub
 	}
 
 	return nil

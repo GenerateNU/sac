@@ -63,4 +63,8 @@ var (
 		StatusCode: fiber.StatusNotFound,
 		Message:    "user not following club",
 	}
+	FailedToFollowClub = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to follow club",
+	}
 )
