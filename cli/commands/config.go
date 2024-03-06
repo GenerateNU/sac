@@ -8,10 +8,10 @@ import (
 )
 
 var (
-	ROOT_DIR, _    = utils.GetRootDir()
-	FRONTEND_DIR   = filepath.Join(ROOT_DIR, "/frontend")
-	BACKEND_DIR	= filepath.Join(ROOT_DIR, "/backend/")
-	BACKEND_SRC_DIR    = filepath.Join(ROOT_DIR, "/backend/src")
-	CONFIG, _      = config.GetConfiguration(filepath.Join(ROOT_DIR, "/config"), false)
-	MIGRATION_FILE = filepath.Join(BACKEND_SRC_DIR, "/migrations/data.sql")
+	ROOT_DIR, _     = utils.GetRootDir()
+	FRONTEND_DIR    = filepath.Join(ROOT_DIR, "/frontend")
+	BACKEND_DIR     = filepath.Join(ROOT_DIR, "/backend/")
+	BACKEND_SRC_DIR = filepath.Join(ROOT_DIR, "/backend/src")
+	CONFIG, _       = config.GetConfiguration(filepath.Join(ROOT_DIR, "/config"), false)
+	MIGRATION_FILE  = filepath.Join(BACKEND_SRC_DIR, "/migrations/data.sql")
 )
