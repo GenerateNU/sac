@@ -98,17 +98,14 @@ func (u *User) AfterCreate(tx *gorm.DB) (err error) {
 	}
 
 	if err := tx.Model(u).Association("Member").Append(sac); err != nil {
-		tx.Rollback()
 		return err
 	}
 
 	if err := tx.Model(u).Association("Follower").Append(sac); err != nil {
-		tx.Rollback()
 		return err
 	}
 
 	if err := tx.Model(&Club{}).Where("id = ?", sac.ID).Update("num_members", gorm.Expr("num_members + 1")).Error; err != nil {
-		tx.Rollback()
 		return err
 	}
 
@@ -117,12 +114,11 @@ func (u *User) AfterCreate(tx *gorm.DB) (err error) {
 
 func (u *User) AfterDelete(tx *gorm.DB) (err error) {
 	sac := &Club{}
-    if err := tx.Where("name = ?", "SAC").First(sac).Error; err != nil {
+	if err := tx.Where("name = ?", "SAC").First(sac).Error; err != nil {
 		return err
 	}
 
 	if err := tx.Model(&Club{}).Where("id = ?", sac.ID).Update("num_members", gorm.Expr("num_members - 1")).Error; err != nil {
-		tx.Rollback()
 		return err
 	}
 

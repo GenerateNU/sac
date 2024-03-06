@@ -34,9 +34,9 @@ func TestCreateFollowingWorks(t *testing.T) {
 
 				eaa.Assert.NilError(err)
 
-				eaa.Assert.Equal(1, len(user.Follower))
+				eaa.Assert.Equal(2, len(user.Follower))
 
-				eaa.Assert.Equal(clubUUID, user.Follower[0].ID)
+				eaa.Assert.Equal(clubUUID, user.Follower[1].ID)
 
 				var club models.Club
 
@@ -128,7 +128,7 @@ func TestDeleteFollowingWorks(t *testing.T) {
 
 				eaa.Assert.NilError(err)
 
-				eaa.Assert.Equal(0, len(user.Follower))
+				eaa.Assert.Equal(1, len(user.Follower))
 
 				var club models.Club
 
@@ -259,7 +259,7 @@ func TestGetFollowingWorks(t *testing.T) {
 
 				eaa.Assert.NilError(err)
 
-				eaa.Assert.Equal(1, len(clubs))
+				eaa.Assert.Equal(2, len(clubs))
 
 				var dbClubs []models.Club
 
@@ -267,7 +267,7 @@ func TestGetFollowingWorks(t *testing.T) {
 
 				eaa.Assert.NilError(err)
 
-				eaa.Assert.Equal(1, len(clubs))
+				eaa.Assert.Equal(2, len(clubs))
 			},
 		},
 	).Close()

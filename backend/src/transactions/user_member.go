@@ -8,29 +8,25 @@ import (
 )
 
 func CreateMember(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error {
+	user, err := GetUser(db, userId)
+	if err != nil {
+		return err
+	}
+
+	club, err := GetClub(db, clubId)
+	if err != nil {
+		return err
+	}
+
 	tx := db.Begin()
-
-	user, err := GetUser(tx, userId)
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	club, err := GetClub(tx, clubId)
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
 
 	var count int64
 	if err := tx.Model(&models.Membership{}).Where("user_id = ? AND club_id = ?", userId, clubId).Count(&count).Error; err != nil {
-		tx.Rollback()
 		return &errors.FailedToGetUserMemberships
 	}
 
 	if count > 0 {
-		tx.Rollback()
-		return &errors.AlreadyMemberOfClub
+		return nil
 	}
 
 	if err := tx.Model(&user).Association("Member").Append(club); err != nil {
@@ -38,9 +34,9 @@ func CreateMember(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error
 		return &errors.FailedToUpdateUser
 	}
 
-	if err := tx.Model(&user).Association("Follower").Append(club); err != nil {
+	if err := CreateFollowing(tx, userId, clubId); err != nil {
 		tx.Rollback()
-		return &errors.FailedToUpdateUser
+		return err
 	}
 
 	if err := tx.Model(&club).Update("num_members", gorm.Expr("num_members + 1")).Error; err != nil {
@@ -56,39 +52,26 @@ func CreateMember(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error
 }
 
 func DeleteMember(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error {
+	user, err := GetUser(db, userId)
+	if err != nil {
+		return err
+	}
+
+	club, err := GetClub(db, clubId)
+	if err != nil {
+		return err
+	}
+
 	tx := db.Begin()
-
-	user, err := GetUser(tx, userId)
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	club, err := GetClub(tx, clubId)
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	var count int64
-	if err := tx.Model(&models.Membership{}).Where("user_id = ? AND club_id = ?", userId, clubId).Count(&count).Error; err != nil {
-		tx.Rollback()
-		return &errors.FailedToGetUserMemberships
-	}
-
-	if count == 0 {
-		tx.Rollback()
-		return &errors.UserNotMemberOfClub
-	}
 
 	if err := tx.Model(&user).Association("Member").Delete(club); err != nil {
 		tx.Rollback()
 		return &errors.FailedToUpdateUser
 	}
 
-	if err := tx.Model(&user).Association("Follower").Delete(club); err != nil {
+	if err := DeleteFollowing(tx, userId, clubId); err != nil {
 		tx.Rollback()
-		return &errors.FailedToUpdateUser
+		return err
 	}
 
 	if err := tx.Model(&club).Update("num_members", gorm.Expr("num_members - 1")).Error; err != nil {

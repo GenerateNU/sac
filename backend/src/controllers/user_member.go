@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/GenerateNU/sac/backend/src/services"
+	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -34,7 +35,7 @@ func (um *UserMemberController) CreateMembership(c *fiber.Ctx) error {
 		return err.FiberError(c)
 	}
 
-	return c.SendStatus(fiber.StatusCreated)
+	return utilities.FiberMessage(c, fiber.StatusCreated, "Successfully joined club")
 }
 
 // DeleteMembership godoc
