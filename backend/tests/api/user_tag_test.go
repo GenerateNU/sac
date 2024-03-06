@@ -464,7 +464,6 @@ func TestDeleteUserTagFailsOnInvalidTagUUID(t *testing.T) {
 	}
 
 	appAssert.Close()
-
 }
 
 func TestDeleteUserTagDoesNotAlterTagListOnNonAssociation(t *testing.T) {
