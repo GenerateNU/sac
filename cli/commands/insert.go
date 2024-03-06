@@ -53,7 +53,7 @@ func InsertDB() error {
 
 		migrateCmd := exec.Command("go", "run", "main.go", "--only-migrate")
 
-		migrateCmd.Dir = BACKEND_DIR
+		migrateCmd.Dir = BACKEND_SRC_DIR
 
 		if err := migrateCmd.Run(); err != nil {
 			return fmt.Errorf("error running migration: %w", err)
