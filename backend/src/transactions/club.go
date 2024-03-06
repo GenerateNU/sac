@@ -54,8 +54,8 @@ func GetClubs(db *gorm.DB, queryParams *models.ClubQueryParams) ([]models.Club, 
 	return clubs, nil
 }
 
-func CreateClub(db *gorm.DB, userId uuid.UUID, club models.Club) (*models.Club, *errors.Error) {
-	user, err := GetUser(db, userId)
+func CreateClub(db *gorm.DB, userID uuid.UUID, club models.Club) (*models.Club, *errors.Error) {
+	user, err := GetUser(db, userID)
 	if err != nil {
 		return nil, err
 	}

@@ -35,9 +35,7 @@ func (c *ContactService) GetContacts(limit string, page string) ([]models.Contac
 		return nil, &errors.FailedToValidatePage
 	}
 
-	offset := (*pageAsInt - 1) * *limitAsInt
-
-	return transactions.GetContacts(c.DB, *limitAsInt, offset)
+	return transactions.GetContacts(c.DB, *limitAsInt, *pageAsInt)
 }
 
 func (c *ContactService) GetContact(contactID string) (*models.Contact, *errors.Error) {
