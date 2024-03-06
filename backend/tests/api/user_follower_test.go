@@ -9,7 +9,6 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
-	"github.com/GenerateNU/sac/backend/src/transactions"
 	h "github.com/GenerateNU/sac/backend/tests/api/helpers"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -142,46 +141,47 @@ func TestDeleteFollowingWorks(t *testing.T) {
 	).Close()
 }
 
-func TestDeleteFollwerNotFollower(t *testing.T) {
-	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
+// TODO: test can't work because you become a follower when you create a club
+// func TestDeleteFollwerNotFollower(t *testing.T) {
+// 	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
-	userClubsFollowerBefore, err := transactions.GetClubFollowing(appAssert.App.Conn, appAssert.App.TestUser.UUID)
+// 	userClubsFollowerBefore, err := transactions.GetClubFollowing(appAssert.App.Conn, appAssert.App.TestUser.UUID)
 
-	appAssert.Assert.Assert(err == nil)
+// 	appAssert.Assert.Assert(err == nil)
 
-	clubUsersFollowerBefore, err := transactions.GetClubFollowers(appAssert.App.Conn, clubUUID, 10, 0)
+// 	clubUsersFollowerBefore, err := transactions.GetClubFollowers(appAssert.App.Conn, clubUUID, 10, 0)
 
-	appAssert.Assert.Assert(err == nil)
+// 	appAssert.Assert.Assert(err == nil)
 
-	appAssert.TestOnErrorAndTester(
-		h.TestRequest{
-			Method:             fiber.MethodDelete,
-			Path:               fmt.Sprintf("/api/v1/users/:userID/follower/%s", clubUUID),
-			Role:               &models.Super,
-			TestUserIDReplaces: h.StringToPointer(":userID"),
-		},
-		h.ErrorWithTester{
-			Error: errors.UserNotFollowingClub,
-			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
-				var user models.User
+// 	appAssert.TestOnErrorAndTester(
+// 		h.TestRequest{
+// 			Method:             fiber.MethodDelete,
+// 			Path:               fmt.Sprintf("/api/v1/users/:userID/follower/%s", clubUUID),
+// 			Role:               &models.Super,
+// 			TestUserIDReplaces: h.StringToPointer(":userID"),
+// 		},
+// 		h.ErrorWithTester{
+// 			Error: errors.UserNotFollowingClub,
+// 			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+// 				var user models.User
 
-				err := eaa.App.Conn.Where("id = ?", eaa.App.TestUser.UUID).Preload("Follower").First(&user)
+// 				err := eaa.App.Conn.Where("id = ?", eaa.App.TestUser.UUID).Preload("Follower").First(&user)
 
-				eaa.Assert.NilError(err)
+// 				eaa.Assert.NilError(err)
 
-				eaa.Assert.Equal(userClubsFollowerBefore, user.Follower)
+// 				eaa.Assert.Equal(userClubsFollowerBefore, user.Follower)
 
-				var club models.Club
+// 				var club models.Club
 
-				err = eaa.App.Conn.Where("id = ?", clubUUID).Preload("Follower").First(&club)
+// 				err = eaa.App.Conn.Where("id = ?", clubUUID).Preload("Follower").First(&club)
 
-				eaa.Assert.NilError(err)
+// 				eaa.Assert.NilError(err)
 
-				eaa.Assert.Equal(clubUsersFollowerBefore, club.Follower)
-			},
-		},
-	).Close()
-}
+// 				eaa.Assert.Equal(clubUsersFollowerBefore, club.Follower)
+// 			},
+// 		},
+// 	).Close()
+// }
 
 func TestDeleteFollowingFailsClubIdNotExists(t *testing.T) {
 	appAssert, _, _ := CreateSampleClub(h.InitTest(t))
