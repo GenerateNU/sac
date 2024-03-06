@@ -10,8 +10,10 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetEvents(db *gorm.DB, limit int, offset int) ([]models.Event, *errors.Error) {
+func GetEvents(db *gorm.DB, limit int, page int) ([]models.Event, *errors.Error) {
 	var events []models.Event
+
+	offset := (page - 1) * limit
 
 	if db.Limit(limit).Offset(offset).Find(&events).Error != nil {
 		return nil, &errors.FailedToGetEvents

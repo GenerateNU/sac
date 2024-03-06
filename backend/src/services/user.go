@@ -62,9 +62,7 @@ func (u *UserService) GetUsers(limit string, page string) ([]models.User, *error
 		return nil, &errors.FailedToValidatePage
 	}
 
-	offset := (*pageAsInt - 1) * *limitAsInt
-
-	return transactions.GetUsers(u.DB, *limitAsInt, offset)
+	return transactions.GetUsers(u.DB, *limitAsInt, *pageAsInt)
 }
 
 func (u *UserService) GetUser(id string) (*models.User, *errors.Error) {

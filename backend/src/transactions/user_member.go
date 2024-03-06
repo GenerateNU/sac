@@ -7,13 +7,13 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateMember(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error {
-	user, err := GetUser(db, userId)
+func CreateMember(db *gorm.DB, userID uuid.UUID, clubID uuid.UUID) *errors.Error {
+	user, err := GetUser(db, userID)
 	if err != nil {
 		return err
 	}
 
-	club, err := GetClub(db, clubId)
+	club, err := GetClub(db, clubID)
 	if err != nil {
 		return err
 	}
@@ -21,7 +21,7 @@ func CreateMember(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error
 	tx := db.Begin()
 
 	var count int64
-	if err := tx.Model(&models.Membership{}).Where("user_id = ? AND club_id = ?", userId, clubId).Count(&count).Error; err != nil {
+	if err := tx.Model(&models.Membership{}).Where("user_id = ? AND club_id = ?", userID, clubID).Count(&count).Error; err != nil {
 		return &errors.FailedToGetUserMemberships
 	}
 
@@ -34,7 +34,7 @@ func CreateMember(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error
 		return &errors.FailedToUpdateUser
 	}
 
-	if err := CreateFollowing(tx, userId, clubId); err != nil {
+	if err := CreateFollowing(tx, userID, clubID); err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -51,13 +51,13 @@ func CreateMember(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error
 	return nil
 }
 
-func DeleteMember(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error {
-	user, err := GetUser(db, userId)
+func DeleteMember(db *gorm.DB, userID uuid.UUID, clubID uuid.UUID) *errors.Error {
+	user, err := GetUser(db, userID)
 	if err != nil {
 		return err
 	}
 
-	club, err := GetClub(db, clubId)
+	club, err := GetClub(db, clubID)
 	if err != nil {
 		return err
 	}
@@ -69,7 +69,7 @@ func DeleteMember(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error
 		return &errors.FailedToUpdateUser
 	}
 
-	if err := DeleteFollowing(tx, userId, clubId); err != nil {
+	if err := DeleteFollowing(tx, userID, clubID); err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -86,10 +86,10 @@ func DeleteMember(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error
 	return nil
 }
 
-func GetClubMembership(db *gorm.DB, userId uuid.UUID) ([]models.Club, *errors.Error) {
+func GetClubMembership(db *gorm.DB, userID uuid.UUID) ([]models.Club, *errors.Error) {
 	var clubs []models.Club
 
-	user, err := GetUser(db, userId)
+	user, err := GetUser(db, userID)
 	if err != nil {
 		return nil, err
 	}

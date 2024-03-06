@@ -43,9 +43,7 @@ func (e *EventService) GetEvents(limit string, page string) ([]models.Event, *er
 		return nil, &errors.FailedToValidatePage
 	}
 
-	offset := (*pageAsInt - 1) * *limitAsInt
-
-	return transactions.GetEvents(e.DB, *limitAsInt, offset)
+	return transactions.GetEvents(e.DB, *limitAsInt, *pageAsInt)
 }
 
 // TODO: add logic for creating the []event here

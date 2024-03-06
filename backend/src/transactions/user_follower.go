@@ -7,13 +7,13 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateFollowing(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error {
-	user, err := GetUser(db, userId)
+func CreateFollowing(db *gorm.DB, userID uuid.UUID, clubID uuid.UUID) *errors.Error {
+	user, err := GetUser(db, userID)
 	if err != nil {
 		return err
 	}
 
-	club, err := GetClub(db, clubId)
+	club, err := GetClub(db, clubID)
 	if err != nil {
 		return err
 	}
@@ -25,13 +25,13 @@ func CreateFollowing(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Er
 	return nil
 }
 
-func DeleteFollowing(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error {
-	user, err := GetUser(db, userId)
+func DeleteFollowing(db *gorm.DB, userID uuid.UUID, clubID uuid.UUID) *errors.Error {
+	user, err := GetUser(db, userID)
 	if err != nil {
 		return err
 	}
 
-	club, err := GetClub(db, clubId)
+	club, err := GetClub(db, clubID)
 	if err != nil {
 		return err
 	}
@@ -43,10 +43,10 @@ func DeleteFollowing(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Er
 	return nil
 }
 
-func GetClubFollowing(db *gorm.DB, userId uuid.UUID) ([]models.Club, *errors.Error) {
+func GetClubFollowing(db *gorm.DB, userID uuid.UUID) ([]models.Club, *errors.Error) {
 	var clubs []models.Club
 
-	user, err := GetUser(db, userId)
+	user, err := GetUser(db, userID)
 	if err != nil {
 		return nil, err
 	}

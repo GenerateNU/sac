@@ -32,8 +32,10 @@ func GetUserByEmail(db *gorm.DB, email string) (*models.User, *errors.Error) {
 	return &user, nil
 }
 
-func GetUsers(db *gorm.DB, limit int, offset int) ([]models.User, *errors.Error) {
+func GetUsers(db *gorm.DB, limit int, page int) ([]models.User, *errors.Error) {
 	var users []models.User
+
+	offset := (page - 1) * limit
 
 	if err := db.Omit("password_hash").Limit(limit).Offset(offset).Find(&users).Error; err != nil {
 		return nil, &errors.FailedToGetUsers
