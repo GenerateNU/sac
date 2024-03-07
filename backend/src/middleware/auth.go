@@ -13,17 +13,12 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 )
 
-var paths = []string{
-	"/api/v1/auth/login",
-	"/api/v1/auth/refresh",
-	"/api/v1/users/",
-	"/api/v1/auth/logout",
-}
-
-func (m *AuthMiddlewareService) DisableAuth(h fiber.Handler) fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		return h(c)
-	}
+var pathsWhitelist = []map[string]string{
+	{"/api/v1/auth/refresh": "GET"},
+	{"/api/v1/auth/logout": "GET"},
+	{"/api/v1/auth/me": "GET"},
+	{"/api/v1/auth/login": "POST"},
+	{"/api/v1/users/": "POST"},
 }
 
 func (m *AuthMiddlewareService) IsSuper(c *fiber.Ctx) bool {
@@ -39,8 +34,14 @@ func (m *AuthMiddlewareService) IsSuper(c *fiber.Ctx) bool {
 }
 
 func (m *AuthMiddlewareService) Authenticate(c *fiber.Ctx) error {
-	if slices.Contains(paths, c.Path()) {
+	if c.Method() == "OPTIONS" {
 		return c.Next()
+	}
+
+	for _, path := range pathsWhitelist {
+		if c.Path() == path["path"] && c.Method() == path["method"] {
+			return c.Next()
+		}
 	}
 
 	token, err := auth.ParseAccessToken(c.Cookies("access_token"), m.AuthSettings.AccessKey)
@@ -66,7 +67,7 @@ func (m *AuthMiddlewareService) Authorize(requiredPermissions ...auth.Permission
 	return func(c *fiber.Ctx) error {
 		claims, fromErr := auth.From(c)
 		if fromErr != nil {
-			return fromErr.FiberError(c)
+			return errors.Unauthorized.FiberError(c)
 		}
 
 		if claims != nil && claims.Role == string(models.Super) {

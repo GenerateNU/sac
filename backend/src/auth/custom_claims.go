@@ -14,7 +14,7 @@ type CustomClaims struct {
 func From(c *fiber.Ctx) (*CustomClaims, *errors.Error) {
 	rawClaims := c.Locals("claims")
 	if rawClaims == nil {
-		return nil, nil
+		return nil, &errors.FailedToGetClaims
 	}
 
 	claims, ok := rawClaims.(*CustomClaims)

@@ -11,4 +11,8 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to cast to custom claims",
 	}
+	FailedToGetClaims = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get claims",
+	}
 )
