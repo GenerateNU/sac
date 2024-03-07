@@ -1,64 +1,52 @@
 package transactions
 
 import (
-	"slices"
-
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
-func CreateFollowing(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error {
-	user, err := GetUser(db, userId)
+func CreateFollowing(db *gorm.DB, userID uuid.UUID, clubID uuid.UUID) *errors.Error {
+	user, err := GetUser(db, userID)
 	if err != nil {
 		return err
 	}
 
-	club, err := GetClub(db, clubId)
+	club, err := GetClub(db, clubID)
 	if err != nil {
 		return err
 	}
 
 	if err := db.Model(&user).Association("Follower").Append(club); err != nil {
-		return &errors.FailedToUpdateUser
+		return &errors.FailedToFollowClub
 	}
 
 	return nil
 }
 
-func DeleteFollowing(db *gorm.DB, userId uuid.UUID, clubId uuid.UUID) *errors.Error {
-	user, err := GetUser(db, userId, PreloadFollwer())
+func DeleteFollowing(db *gorm.DB, userID uuid.UUID, clubID uuid.UUID) *errors.Error {
+	user, err := GetUser(db, userID)
 	if err != nil {
 		return err
 	}
 
-	club, err := GetClub(db, clubId, PreloadFollwer())
+	club, err := GetClub(db, clubID)
 	if err != nil {
 		return err
-	}
-
-	userFollowingClubIDs := make([]uuid.UUID, len(user.Follower))
-
-	for i, club := range user.Follower {
-		userFollowingClubIDs[i] = club.ID
-	}
-
-	if !slices.Contains(userFollowingClubIDs, club.ID) {
-		return &errors.UserNotFollowingClub
 	}
 
 	if err := db.Model(&user).Association("Follower").Delete(club); err != nil {
-		return &errors.FailedToUpdateUser
+		return &errors.UserNotFollowingClub
 	}
 
 	return nil
 }
 
-func GetClubFollowing(db *gorm.DB, userId uuid.UUID) ([]models.Club, *errors.Error) {
+func GetClubFollowing(db *gorm.DB, userID uuid.UUID) ([]models.Club, *errors.Error) {
 	var clubs []models.Club
 
-	user, err := GetUser(db, userId)
+	user, err := GetUser(db, userID)
 	if err != nil {
 		return nil, err
 	}

@@ -50,9 +50,7 @@ func (t *TagService) GetTags(limit string, page string) ([]models.Tag, *errors.E
 		return nil, &errors.FailedToValidatePage
 	}
 
-	offset := (*pageAsInt - 1) * *limitAsInt
-
-	return transactions.GetTags(t.DB, *limitAsInt, offset)
+	return transactions.GetTags(t.DB, *limitAsInt, *pageAsInt)
 }
 
 func (t *TagService) GetTag(tagID string) (*models.Tag, *errors.Error) {
