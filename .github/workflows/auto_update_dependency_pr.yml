@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: docker://chinthakagodawita/autoupdate-action:v1
         env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          GITHUB_TOKEN: "${{ secrets.PAT_FOR_AUTO_UPDATE_DEPENDENCY_PR }}"
           PR_FILTER: "labelled"
           PR_LABELS: "dependencies"
           MERGE_CONFLICT_ACTION: "fail"
