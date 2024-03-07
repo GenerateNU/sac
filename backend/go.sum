@@ -16,8 +16,8 @@ github.com/fsnotify/fsnotify v1.7.0 h1:8JEhPFa5W2WU7YfeZzPNqzMP6Lwt7L2715Ggo0nos
 github.com/fsnotify/fsnotify v1.7.0/go.mod h1:40Bi/Hjc2AVfZrqy+aj+yEI+/bRxZnMJyTJwOpGvigM=
 github.com/gabriel-vasile/mimetype v1.4.3 h1:in2uUcidCuFcDKtdcBxlR0rJ1+fsokWf+uqxgUFjbI0=
 github.com/gabriel-vasile/mimetype v1.4.3/go.mod h1:d8uq/6HKRL6CGdk+aubisF/M5GcPfT7nKyLpA0lbSSk=
-github.com/garrettladley/mattress v0.3.2 h1:JsWsEwjXzlJXX7F/Zzmq7Xby1VAwzTJGGvf7DXPj4Jk=
-github.com/garrettladley/mattress v0.3.2/go.mod h1:OWKIRc9wC3gtD3Ng/nUuNEiR1TJvRYLmn/KZYw9nl5Q=
+github.com/garrettladley/mattress v0.4.0 h1:ZB3iqyc5q6bqIryNfsh2FMcbMdnV1XEryvqivouceQE=
+github.com/garrettladley/mattress v0.4.0/go.mod h1:OWKIRc9wC3gtD3Ng/nUuNEiR1TJvRYLmn/KZYw9nl5Q=
 github.com/go-openapi/jsonpointer v0.20.2 h1:mQc3nmndL8ZBzStEo3JYF8wzmeWffDH4VbXz58sAx6Q=
 github.com/go-openapi/jsonpointer v0.20.2/go.mod h1:bHen+N0u1KEO3YlmqOjTT9Adn1RfD91Ar825/PuiRVs=
 github.com/go-openapi/jsonreference v0.20.4 h1:bKlDxQxQJgwpUSgOENiMPzCTBVuc7vTdXSSgNeAhojU=
