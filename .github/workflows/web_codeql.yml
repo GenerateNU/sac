@@ -37,3 +37,5 @@ jobs:
           working-directory: frontend/sac-web
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
+        with:
+          category: web

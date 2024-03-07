@@ -40,3 +40,5 @@ jobs:
           cd ./backend/ && go build -o backend src/main.go
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
+        with:
+          category: backend
