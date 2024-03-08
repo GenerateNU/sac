@@ -15,7 +15,7 @@ jobs:
         id: metadata
         uses: dependabot/fetch-metadata@v1
         with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          github-token: ${{secrets.PAT_FOR_DEPENDABOT_AUTO_MERGE}}
       - name: Enable Auto-Merge for Dependabot PRs
         if: steps.metadata.outputs.update-type == 'version-update:semver-minor' || steps.metadata.outputs.update-type == 'version-update:semver-patch'
         run: gh pr merge --auto --delete-branch --squash "$PR_URL"
