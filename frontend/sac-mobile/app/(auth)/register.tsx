@@ -5,6 +5,7 @@ import { Alert, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 
 import { ZodError, z } from 'zod';
+
 import Button from '@/components/button';
 
 type RegisterFormData = {
@@ -130,14 +131,14 @@ const Register = () => {
             <Button
                 onPress={handleSubmit(onSubmit)}
                 variant="secondary"
-                size={"sm"}
+                size={'sm'}
             >
                 Register
             </Button>
             <View className="mt-4">
                 <Button
                     variant="outline"
-                    size={"sm"}
+                    size={'sm'}
                     onPress={() => router.push('/(auth)/login')}
                 >
                     Login

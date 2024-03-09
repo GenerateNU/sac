@@ -6,9 +6,9 @@ import { router } from 'expo-router';
 
 import { ZodError, z } from 'zod';
 
+import Button from '@/components/button';
 import { useAuthStore } from '@/hooks/use-auth';
 import { loginByEmail } from '@/services/auth';
-import Button from '@/components/button';
 
 type LoginFormData = {
     email: string;
@@ -96,7 +96,7 @@ const Login = () => {
             <Button
                 onPress={handleSubmit(onSubmit)}
                 variant="secondary"
-                size={"sm"}
+                size={'sm'}
             >
                 Login
             </Button>
@@ -105,7 +105,7 @@ const Login = () => {
                 <Button
                     onPress={() => router.push('/(auth)/register')}
                     variant="outline"
-                    size={"sm"}
+                    size={'sm'}
                 >
                     Register
                 </Button>
