@@ -17,7 +17,7 @@ type ListOfItem = {
     value: string;
     onSubmitEditing: () => void;
     search?: boolean; // true for enable search
-    height: DimensionValue;
+    height?: DimensionValue;
     error?: boolean;
 }
 

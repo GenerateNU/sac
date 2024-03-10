@@ -233,7 +233,6 @@ const Register = () => {
                                 onChangeText={onChange}
                                 value={value}
                                 onSubmitEditing={handleSubmit(onSubmit)}
-                                height="8.5%"
                                 error={!!errors.graduationYear}
                             />
                         )}
