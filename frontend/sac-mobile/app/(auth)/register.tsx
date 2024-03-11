@@ -1,10 +1,12 @@
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, Button, Text, TextInput, View } from 'react-native';
+import { Alert, Text, TextInput, View } from 'react-native';
 
 import { router } from 'expo-router';
 
 import { ZodError, z } from 'zod';
+
+import { Button } from '@/components/button';
 
 type RegisterFormData = {
     firstName: string;
@@ -126,12 +128,21 @@ const Register = () => {
                 {errors.password && <Text>{errors.password.message}</Text>}
             </View>
 
-            <Button title="Submit" onPress={handleSubmit(onSubmit)} />
+            <Button
+                onPress={handleSubmit(onSubmit)}
+                variant="secondary"
+                size={'sm'}
+            >
+                Register
+            </Button>
             <View className="mt-4">
                 <Button
-                    title="Login"
+                    variant="outline"
+                    size={'sm'}
                     onPress={() => router.push('/(auth)/login')}
-                />
+                >
+                    Login
+                </Button>
             </View>
         </View>
     );

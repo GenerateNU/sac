@@ -63,4 +63,12 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to get club events",
 	}
+	FailedToJoinClub = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to join club",
+	}
+	AlreadyMemberOfClub = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "already member of club",
+	}
 )

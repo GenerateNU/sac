@@ -7,16 +7,14 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetClubEvents(db *gorm.DB, clubID uuid.UUID, limit int, offset int) ([]models.Event, *errors.Error) {
-	club, err := GetClub(db, clubID)
-	if err != nil {
-		return nil, err
-	}
 
+func GetClubEvents(db *gorm.DB, clubID uuid.UUID, limit int, page int) ([]models.Event, *errors.Error) {
 	var events []models.Event
 
-	if err := db.Model(&club).Limit(limit).Offset(offset).Association("Event").Find(&events); err != nil {
-		return nil, &errors.FailedToGetClubEvents
+	offset := (page - 1) * limit
+
+	if err := db.Where("club_id = ?", clubID).Limit(limit).Offset(offset).Find(&events).Error; err != nil {
+		return nil, &errors.FailedToGetEvents
 	}
 
 	return events, nil

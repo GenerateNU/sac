@@ -54,7 +54,7 @@ type Series struct {
 
 // TODO: add not null to required fields on all gorm models
 type EventSeries struct {
-	EventID  uuid.UUID `gorm:"not null; type:uuid; primary_key;" json:"event_id" validate:"uuid4"`
+	EventID  uuid.UUID `gorm:"not null; type:uuid; primaryKey;" json:"event_id" validate:"uuid4"`
 	Event    Event     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	SeriesID uuid.UUID `gorm:"not null; type:uuid;" json:"series_id" validate:"uuid4"`
 	Series   Series    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`

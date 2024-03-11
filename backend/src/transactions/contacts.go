@@ -9,8 +9,11 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetContacts(db *gorm.DB, limit int, offset int) ([]models.Contact, *errors.Error) {
+func GetContacts(db *gorm.DB, limit int, page int) ([]models.Contact, *errors.Error) {
 	var contacts []models.Contact
+
+	offset := (page - 1) * limit
+
 	result := db.Limit(limit).Offset(offset).Find(&contacts)
 	if result.Error != nil {
 		return nil, &errors.FailedToGetContacts

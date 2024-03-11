@@ -106,6 +106,10 @@ func (existingAppAssert ExistingAppAssert) TestOnStatus(request TestRequest, sta
 func (request *TestRequest) testOn(existingAppAssert ExistingAppAssert, status int, key string, value string) (ExistingAppAssert, *http.Response) {
 	appAssert, resp := request.test(existingAppAssert)
 
+	if resp.StatusCode == 204 {
+		return appAssert, resp
+	}
+
 	var respBody map[string]interface{}
 
 	err := json.NewDecoder(resp.Body).Decode(&respBody)
