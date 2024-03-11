@@ -451,6 +451,29 @@ func TestUpdateEventWorks(t *testing.T) {
 	).Close()
 }
 
+func TestUpdateEventSeriesWorks(t *testing.T) {
+	appAssert, eventUUID := CreateSampleEvent(h.InitTest(t), SampleSeriesFactory)
+
+	updatedSeries := SampleSeriesFactory()
+	(*updatedSeries)["name"] = "Updated Name"
+	(*updatedSeries)["preview"] = "Updated Preview"
+
+	appAssert.TestOnStatusAndTester(
+		h.TestRequest{
+			Method: fiber.MethodPatch,
+			Path:   fmt.Sprintf("/api/v1/events/%s", eventUUID),
+			Body:   updatedSeries,
+			Role:   &models.Super,
+		},
+		h.TesterWithStatus{
+			Status: fiber.StatusOK,
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				AssertEventListBodyRespDB(eaa, resp, updatedSeries)
+			},
+		},
+	).Close()
+}
+
 func TestUpdateEventFailsOnInvalidBody(t *testing.T) {
 	appAssert, eventUUID := CreateSampleEvent(h.InitTest(t), SampleEventFactory)
 

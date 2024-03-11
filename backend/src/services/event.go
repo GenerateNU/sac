@@ -156,7 +156,20 @@ func (e *EventService) UpdateSeries(seriesID string, seriesBody models.UpdateSer
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	return transactions.UpdateSeries(e.DB, *seriesIDAsUUID, *series, seriesBody.EventDetails)
+	updatedEventBody := &models.Event{
+		Name:      seriesBody.EventDetails.Name,
+		Preview:   seriesBody.EventDetails.Preview,
+		Content:   seriesBody.EventDetails.Content,
+		StartTime: seriesBody.EventDetails.StartTime,
+		EndTime:   seriesBody.EventDetails.EndTime,
+		Location:  seriesBody.EventDetails.Location,
+		EventType: seriesBody.EventDetails.EventType,
+	}
+
+	newEvents := CreateEventSlice(updatedEventBody, *series)
+	series.Events = newEvents
+
+	return transactions.UpdateSeries(e.DB, *seriesIDAsUUID, *series)
 }
 
 func (e *EventService) UpdateSeriesByEventID(eventID string, seriesBody models.UpdateSeriesRequestBody) ([]models.Event, *errors.Error) {
@@ -174,7 +187,20 @@ func (e *EventService) UpdateSeriesByEventID(eventID string, seriesBody models.U
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	return transactions.UpdateSeriesByEventID(e.DB, *eventIDAsUUID, *series, seriesBody.EventDetails)
+	updatedEventBody := &models.Event{
+		Name:      seriesBody.EventDetails.Name,
+		Preview:   seriesBody.EventDetails.Preview,
+		Content:   seriesBody.EventDetails.Content,
+		StartTime: seriesBody.EventDetails.StartTime,
+		EndTime:   seriesBody.EventDetails.EndTime,
+		Location:  seriesBody.EventDetails.Location,
+		EventType: seriesBody.EventDetails.EventType,
+	}
+
+	newEvents := CreateEventSlice(updatedEventBody, *series)
+	series.Events = newEvents
+
+	return transactions.UpdateSeriesByEventID(e.DB, *eventIDAsUUID, *series)
 }
 
 func (e *EventService) DeleteEvent(id string) *errors.Error {
