@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 
-import Button from '@/components/button';
+import { Button } from '@/components/button';
 import { useAuthStore } from '@/hooks/use-auth';
 
 const Home = () => {
