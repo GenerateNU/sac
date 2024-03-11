@@ -77,11 +77,11 @@ const Register = () => {
     };
 
     return (
-        <ScrollView>
         <SafeAreaView
             edges={['top']}
             className="bg-neutral-500"
         >
+            <ScrollView>
             <View className="px-[8%] pb-[9%]">
                 <Wordmark
                     textColor="white"
@@ -311,8 +311,8 @@ const Register = () => {
                     />
                 </View>
             </View>
+            </ScrollView>
         </SafeAreaView>
-        </ScrollView>
     );
 };
 
