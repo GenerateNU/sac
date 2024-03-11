@@ -99,11 +99,11 @@ func tagRoutes(router fiber.Router, tagService services.TagServiceInterface) {
 func clubRoutes(router fiber.Router, clubService services.ClubServiceInterface) {
 	clubController := controllers.NewClubController(clubService)
 
-	pointOfContact := router.Group("/clubs/:id/poc")
+	pointOfContact := router.Group("/clubs/:clubID/poc")
 	pointOfContact.Get("/", clubController.GetAllPointOfContact)
-	pointOfContact.Get("/:pocId", clubController.GetPointOfContact)
+	pointOfContact.Get("/:pocID", clubController.GetPointOfContact)
 	pointOfContact.Put("/", clubController.UpsertPointOfContact)
-	pointOfContact.Delete("/:pocId", clubController.DeletePointOfContact)
+	pointOfContact.Delete("/:pocID", clubController.DeletePointOfContact)
 }
 
 func fileRoutes(router fiber.Router, fileService services.FileServiceInterface) {

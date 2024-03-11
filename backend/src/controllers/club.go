@@ -7,7 +7,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// Point of Contact
 type ClubController struct {
 	clubService services.ClubServiceInterface
 }
@@ -29,17 +28,19 @@ func NewClubController(clubService services.ClubServiceInterface) *ClubControlle
 // @Failure     400   {string}    string "failed to validate club id"
 // @Failure     500   {string}    string "failed to map response to model"
 // @Failure     500   {string}    string "failed to upsert point of contact"
-// @Router		api/v1/clubs/:id/poc/:pocId  [put]
-
+// @Router		api/v1/clubs/:clubID/poc/:pocID  [put]
 func (u *ClubController) UpsertPointOfContact(c *fiber.Ctx) error {
 	var pointOfContactBody models.CreatePointOfContactBody
+
 	if err := c.BodyParser(&pointOfContactBody); err != nil {
 		return errors.Error{StatusCode: fiber.StatusBadRequest, Message: errors.FailedToParseRequestBody}.FiberError(c)
 	}
-	pointOfContact, err := u.clubService.UpsertPointOfContact(c.Params("id"), pointOfContactBody)
+
+	pointOfContact, err := u.clubService.UpsertPointOfContact(c.Params("clubID"), pointOfContactBody)
 	if err != nil {
 		return err.FiberError(c)
 	}
+
 	return c.Status(fiber.StatusOK).JSON(pointOfContact)
 }
 
@@ -56,14 +57,13 @@ func (u *ClubController) UpsertPointOfContact(c *fiber.Ctx) error {
 // @Failure     404   {string}    string "point of contact not found"
 // @Failure		400   {string}    string "failed to validate point of contact"
 // @Failure     500   {string}    string "failed to get point of contact"
-// @Router		api/v1/clubs/:id/poc/:pocId [get]
-
+// @Router		api/v1/clubs/:clubID/poc/:pocId [get]
 func (u *ClubController) GetAllPointOfContact(c *fiber.Ctx) error {
-	clubId := c.Params("id")
-	pointOfContact, err := u.clubService.GetAllPointOfContacts(clubId)
+	pointOfContact, err := u.clubService.GetAllPointOfContacts(c.Params("clubID"))
 	if err != nil {
 		return err.FiberError(c)
 	}
+
 	return c.Status(fiber.StatusOK).JSON(pointOfContact)
 }
 
@@ -79,12 +79,9 @@ func (u *ClubController) GetAllPointOfContact(c *fiber.Ctx) error {
 // @Failure     404   {string}    string "point of contact not found"
 // @Failure		400   {string}    string "failed to validate point of contact"
 // @Failure     500   {string}    string "failed to get point of contact"
-// @Router		api/v1/clubs/:id/poc/:pocId [get]
-
+// @Router		api/v1/clubs/:clubID/poc/:pocID [get]
 func (u *ClubController) GetPointOfContact(c *fiber.Ctx) error {
-	clubId := c.Params("id")
-	pocId := c.Params("pocId")
-	pointOfContact, err := u.clubService.GetPointOfContact(pocId, clubId)
+	pointOfContact, err := u.clubService.GetPointOfContact(c.Params("clubID"), c.Params("pocID"))
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -101,14 +98,12 @@ func (u *ClubController) GetPointOfContact(c *fiber.Ctx) error {
 // @Produce		json
 // @Success		204    {string}        {no content}
 // @Failure     500    {string}        {fail to delete point of contact}
-// @Router		api/v1/clubs/:id/poc/:pocId [delete]
-
+// @Router		api/v1/clubs/:clubID/poc/:pocID [delete]
 func (u *ClubController) DeletePointOfContact(c *fiber.Ctx) error {
-	clubId := c.Params("id")
-	pocId := c.Params("pocId")
-	err := u.clubService.DeletePointOfContact(pocId, clubId)
+	err := u.clubService.DeletePointOfContact(c.Params("clubID"), c.Params("pocID"))
 	if err != nil {
 		return err.FiberError(c)
 	}
+
 	return c.SendStatus(fiber.StatusNoContent)
 }
