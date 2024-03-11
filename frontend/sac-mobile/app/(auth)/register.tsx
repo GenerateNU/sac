@@ -6,7 +6,7 @@ import { router } from 'expo-router';
 
 import { ZodError, z } from 'zod';
 
-import Button from '@/components/button';
+import { Button } from '@/components/button';
 
 type RegisterFormData = {
     firstName: string;
