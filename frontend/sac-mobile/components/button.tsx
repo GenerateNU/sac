@@ -32,14 +32,9 @@ const buttonStyles = cva(
 
 export interface ButtonProps
     extends TouchableOpacityProps,
-    VariantProps<typeof buttonStyles> { }
+        VariantProps<typeof buttonStyles> {}
 
-const Button = ({
-    children,
-    variant,
-    size,
-    ...props
-}: ButtonProps) => {
+const Button = ({ children, variant, size, ...props }: ButtonProps) => {
     return (
         <TouchableOpacity
             className={cn(buttonStyles({ variant, size }), props.className)}
@@ -57,6 +52,6 @@ const Button = ({
     );
 };
 
-Button.displayName = "Button"
+Button.displayName = 'Button';
 
 export { Button, buttonVariants };
