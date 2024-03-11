@@ -7,7 +7,6 @@ import (
 	"gorm.io/gorm"
 )
 
-
 func GetClubEvents(db *gorm.DB, clubID uuid.UUID, limit int, page int) ([]models.Event, *errors.Error) {
 	var events []models.Event
 
