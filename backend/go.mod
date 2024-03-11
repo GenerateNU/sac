@@ -18,7 +18,7 @@ require (
 	github.com/swaggo/swag v1.16.3
 	golang.org/x/crypto v0.21.0
 	golang.org/x/text v0.14.0
-	gorm.io/driver/postgres v1.5.6
+	gorm.io/driver/postgres v1.5.7
 	gorm.io/gorm v1.25.7
 )
 
