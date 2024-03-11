@@ -33,7 +33,7 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: "go"
+          languages: go
           queries: security-and-quality
       - name: Build
         run: |
@@ -41,4 +41,4 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
-          category: "/language:go"
+          category: cli

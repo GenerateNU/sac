@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetTagsByCategory(db *gorm.DB, categoryID uuid.UUID, limit int, offset int) ([]models.Tag, *errors.Error) {
+func GetTagsByCategory(db *gorm.DB, categoryID uuid.UUID, limit int, page int) ([]models.Tag, *errors.Error) {
 	var category models.Category
 
 	if err := db.Where("id = ?", categoryID).First(&category).Error; err != nil {
@@ -22,6 +22,9 @@ func GetTagsByCategory(db *gorm.DB, categoryID uuid.UUID, limit int, offset int)
 	}
 
 	var tags []models.Tag
+
+	offset := (page - 1) * limit
+
 	if err := db.Where("category_id = ?", categoryID).Limit(limit).Offset(offset).Find(&tags).Error; err != nil {
 		return nil, &errors.FailedToGetTags
 	}

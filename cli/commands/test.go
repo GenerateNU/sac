@@ -95,7 +95,7 @@ func Test(folder string, runFrontend bool, runBackend bool) error {
 
 func BackendTest() error {
 	cmd := exec.Command("go", "test", "./...")
-	cmd.Dir = fmt.Sprintf("%s/..", BACKEND_DIR)
+	cmd.Dir = BACKEND_SRC_DIR
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {

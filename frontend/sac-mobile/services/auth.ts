@@ -1,7 +1,7 @@
 import axios from 'axios';
 
+import { API_BASE_URL } from '@/lib/const';
 import { College, Tokens, User, Year } from '@/types/user';
-import { API_BASE_URL } from '@/utils/const';
 
 /**
  * Logins the user with the given email and password.

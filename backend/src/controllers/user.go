@@ -31,6 +31,7 @@ func NewUserController(userService services.UserServiceInterface) *UserControlle
 // @Failure     400   {object}    errors.Error
 // @Failure     401   {object}    errors.Error
 // @Failure     404   {object}    errors.Error
+// @Failure     409   {object}    errors.Error
 // @Failure     500   {object}    errors.Error
 // @Router		/users/  [post]
 func (u *UserController) CreateUser(c *fiber.Ctx) error {
