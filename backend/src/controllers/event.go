@@ -172,8 +172,10 @@ func (e *EventController) UpdateEvent(c *fiber.Ctx) error {
 // UpdateSeriesByID godoc
 //
 // @Summary		Update a series by ID
-// @Description	Updates a series by ID. If individual events have been edited prior, 
-// 				this update will override the previous changes
+// @Description	Updates a series by ID. If individual events have been edited prior,
+//
+//	this update will override the previous changes
+//
 // @ID			update-series-by-id
 // @Tags      	event
 // @Accept		json
