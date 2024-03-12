@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {Alert,ScrollView,Text, View} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -36,7 +36,7 @@ type RegisterFormData = {
     lastName: string;
     email: string;
     id: string;
-    graduationYear: string;
+    graduationYear: Item;
     password: string;
     passwordConfirm: string;
 };
@@ -49,10 +49,12 @@ const registerSchema = z.object({
         .string()
         .min(2, { message: 'Last name must be at least 2 characters long' }),
     email: z.string().email({ message: 'Invalid email' }),
+    id: z.string().length(9, { message: 'NUID must have 9 digits' }),
     password: z
         .string()
         .min(8, { message: 'Password must be at least 8 characters long' }),
 });
+
 
 const Register = () => {
     const {
@@ -63,8 +65,13 @@ const Register = () => {
 
     const onSubmit = (data: RegisterFormData) => {
         try {
-            registerSchema.parse(data);
-            Alert.alert('Form Submitted', JSON.stringify(data));
+            const { graduationYear, passwordConfirm, ...rest } = data;
+            const updatedData = {
+                ...rest,
+                graduationYear: graduationYear.value
+            };
+            registerSchema.parse(updatedData);
+            Alert.alert('Form Submitted', JSON.stringify(updatedData));
             router.push('/(app)/');
         } catch (error) {
             if (error instanceof ZodError) {
@@ -78,8 +85,8 @@ const Register = () => {
 
     return (
         <SafeAreaView
-            edges={['top']}
             className="bg-neutral-500"
+            edges={['top']}
         >
             <ScrollView>
             <View className="px-[8%] pb-[9%]">

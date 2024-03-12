@@ -9,12 +9,13 @@ type Item = {
     label: string, 
     value: string,
 }
+
 type ListOfItem = {
     title: string,
     item: Array<Item>,   // list of dropdown items
     placeholder: string, // placeholder
     onChangeText: (...event: any[]) => void;
-    value: string;
+    value: Item;
     onSubmitEditing: () => void;
     search?: boolean; // true for enable search
     height?: DimensionValue;
