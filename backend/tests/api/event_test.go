@@ -452,16 +452,31 @@ func TestUpdateEventWorks(t *testing.T) {
 }
 
 func TestUpdateEventSeriesWorks(t *testing.T) {
-	appAssert, eventUUID := CreateSampleEvent(h.InitTest(t), SampleSeriesFactory)
+	appAssert, eventUUIDs := CreateSampleEvent(h.InitTest(t), SampleSeriesFactory)
 
-	updatedSeries := SampleSeriesFactory()
-	(*updatedSeries)["name"] = "Updated Name"
-	(*updatedSeries)["preview"] = "Updated Preview"
+	updatedSeries := &map[string]interface{}{
+		"recurring_type":   "daily",
+		"max_occurrences":  5,
+		"separation_count": 4,
+		"day_of_week":      3,
+		"week_of_month":    2,
+		"day_of_month":     1,
+		"event_details": &map[string]interface{}{
+			"name":         "eece test",
+			"preview":      "the best class ever",
+			"content":      "EECE2322",
+			"start_time":   "2023-09-20T16:34:50Z",
+			"end_time":     "2023-09-20T18:34:50Z",
+			"location":     "Richards 224",
+			"event_type":   "open",
+			"is_recurring": true,
+		},
+	}
 
 	appAssert.TestOnStatusAndTester(
 		h.TestRequest{
 			Method: fiber.MethodPatch,
-			Path:   fmt.Sprintf("/api/v1/events/%s", eventUUID),
+			Path:   fmt.Sprintf("/api/v1/events/%s/series", eventUUIDs[0]),
 			Body:   updatedSeries,
 			Role:   &models.Super,
 		},
@@ -569,6 +584,32 @@ func TestUpdateEventFailsOnEventIdNotExist(t *testing.T) {
 			},
 		},
 	).Close()
+}
+
+func TestUpdateSeriesFailsBadRequest(t *testing.T) {
+	appAssert := h.InitTest(t)
+
+	badRequests := []string{
+		"0",
+		"-1",
+		"1.1",
+		"foo",
+		"null",
+	}
+
+	for _, badRequest := range badRequests {
+		appAssert = appAssert.TestOnError(
+			h.TestRequest{
+				Method: fiber.MethodPatch,
+				Path:   fmt.Sprintf("/api/v1/events/%s/series", badRequest),
+				Body:   SampleEventFactory(),
+				Role:   &models.Super,
+			},
+			errors.FailedToValidateID,
+		)
+	}
+
+	appAssert.Close()
 }
 
 func AssertDeleteWorks(t *testing.T, factoryFunction EventFactory, requestPath string, tester h.Tester) {
