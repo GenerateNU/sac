@@ -48,7 +48,8 @@ func CleanTestDBs() error {
 		return fmt.Errorf("failed to get current user: %w", err)
 	}
 
-	rows, err := db.Query("SELECT datname FROM pg_database WHERE datistemplate = false AND datname != 'postgres' AND datname != $1 AND datname != $2 AND datname LIKE 'sac_test_%';", currentUser.Username, CONFIG.Database.DatabaseName)
+	query := "SELECT datname FROM pg_database WHERE datistemplate = false AND datname != 'postgres' AND datname != $1 AND datname != $2 AND datname LIKE 'sac_test_%';"
+	rows, err := db.Query(query, currentUser.Username, CONFIG.Database.DatabaseName)
 	if err != nil {
 		return err
 	}
@@ -56,6 +57,7 @@ func CleanTestDBs() error {
 	defer rows.Close()
 
 	var wg sync.WaitGroup
+	var dropped, failed int
 
 	for rows.Next() {
 		var dbName string
@@ -71,17 +73,23 @@ func CleanTestDBs() error {
 
 			fmt.Printf("Dropping database %s\n", dbName)
 
-			if _, err := db.Exec(fmt.Sprintf("DROP DATABASE %s", dbName)); err != nil {
+			_, err := db.Exec(fmt.Sprintf("DROP DATABASE %s", dbName))
+			if err != nil {
 				fmt.Printf("Failed to drop database %s: %v\n", dbName, err)
+				failed++
+			} else {
+				dropped++
 			}
 		}(dbName)
 	}
 
-	if err := rows.Err(); err != nil {
-		return err
-	}
-
 	wg.Wait()
+
+	fmt.Printf("\nSummary:\n  - Databases dropped: %d\n  - Databases failed to drop: %d\n", dropped, failed)
+
+	if failed > 0 {
+		return fmt.Errorf("failed to drop %d database(s)", failed)
+	}
 
 	return nil
 }

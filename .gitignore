@@ -1,5 +1,7 @@
 .DS_Store
 .env
 sac-cli
+node_modules
 .vscode
 .trunk
+.env.dev

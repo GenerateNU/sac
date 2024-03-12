@@ -10,9 +10,10 @@ import (
 )
 
 type TagServiceInterface interface {
-	CreateTag(tagBody models.TagRequestBody) (*models.Tag, *errors.Error)
+	GetTags(limit string, page string) ([]models.Tag, *errors.Error)
+	CreateTag(tagBody models.CreateTagRequestBody) (*models.Tag, *errors.Error)
 	GetTag(id string) (*models.Tag, *errors.Error)
-	UpdateTag(id string, tagBody models.TagRequestBody) (*models.Tag, *errors.Error)
+	UpdateTag(id string, tagBody models.UpdateTagRequestBody) (*models.Tag, *errors.Error)
 	DeleteTag(id string) *errors.Error
 }
 
@@ -25,7 +26,7 @@ func NewTagService(db *gorm.DB, validate *validator.Validate) *TagService {
 	return &TagService{DB: db, Validate: validate}
 }
 
-func (t *TagService) CreateTag(tagBody models.TagRequestBody) (*models.Tag, *errors.Error) {
+func (t *TagService) CreateTag(tagBody models.CreateTagRequestBody) (*models.Tag, *errors.Error) {
 	if err := t.Validate.Struct(tagBody); err != nil {
 		return nil, &errors.FailedToValidateTag
 	}
@@ -38,6 +39,20 @@ func (t *TagService) CreateTag(tagBody models.TagRequestBody) (*models.Tag, *err
 	return transactions.CreateTag(t.DB, *tag)
 }
 
+func (t *TagService) GetTags(limit string, page string) ([]models.Tag, *errors.Error) {
+	limitAsInt, err := utilities.ValidateNonNegative(limit)
+	if err != nil {
+		return nil, &errors.FailedToValidateLimit
+	}
+
+	pageAsInt, err := utilities.ValidateNonNegative(page)
+	if err != nil {
+		return nil, &errors.FailedToValidatePage
+	}
+
+	return transactions.GetTags(t.DB, *limitAsInt, *pageAsInt)
+}
+
 func (t *TagService) GetTag(tagID string) (*models.Tag, *errors.Error) {
 	tagIDAsUUID, idErr := utilities.ValidateID(tagID)
 
@@ -48,11 +63,15 @@ func (t *TagService) GetTag(tagID string) (*models.Tag, *errors.Error) {
 	return transactions.GetTag(t.DB, *tagIDAsUUID)
 }
 
-func (t *TagService) UpdateTag(tagID string, tagBody models.TagRequestBody) (*models.Tag, *errors.Error) {
+func (t *TagService) UpdateTag(tagID string, tagBody models.UpdateTagRequestBody) (*models.Tag, *errors.Error) {
 	tagIDAsUUID, idErr := utilities.ValidateID(tagID)
 
 	if idErr != nil {
 		return nil, idErr
+	}
+
+	if utilities.AtLeastOne(tagBody, models.UpdateTagRequestBody{}) {
+		return nil, &errors.FailedToValidateTag
 	}
 
 	if err := t.Validate.Struct(tagBody); err != nil {

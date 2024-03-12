@@ -185,15 +185,15 @@ func AssertClubBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, body *ma
 	eaa.Assert.Equal(dbClub.ApplicationLink, respClub.ApplicationLink)
 	eaa.Assert.Equal(dbClub.Logo, respClub.Logo)
 
-	var dbAdmins []models.User
+	var dbAdmins []models.Membership
 
-	err = eaa.App.Conn.Model(&dbClub).Association("Admin").Find(&dbAdmins)
+	err = eaa.App.Conn.Where("club_id = ? AND membership_type = ?", dbClub.ID, models.MembershipTypeAdmin).Find(&dbAdmins).Error
 
 	eaa.Assert.NilError(err)
 
 	eaa.Assert.Equal(1, len(dbAdmins))
 
-	eaa.Assert.Equal(*(*body)["user_id"].(*uuid.UUID), dbAdmins[0].ID)
+	eaa.Assert.Equal(*(*body)["user_id"].(*uuid.UUID), dbAdmins[0].UserID)
 	eaa.Assert.Equal((*body)["name"].(string), dbClub.Name)
 	eaa.Assert.Equal((*body)["preview"].(string), dbClub.Preview)
 	eaa.Assert.Equal((*body)["description"].(string), dbClub.Description)
@@ -515,15 +515,15 @@ func TestUpdateClubFailsOnInvalidBody(t *testing.T) {
 
 					dbClub := dbClubs[0]
 
-					var dbAdmins []models.User
+					var dbAdmins []models.Membership
 
-					err = eaa.App.Conn.Model(&dbClub).Association("Admin").Find(&dbAdmins)
+					err = eaa.App.Conn.Where("club_id = ? AND membership_type = ?", dbClub.ID, models.MembershipTypeAdmin).Find(&dbAdmins).Error
 
 					eaa.Assert.NilError(err)
 
 					eaa.Assert.Equal(1, len(dbAdmins))
 
-					eaa.Assert.Equal(*(*body)["user_id"].(*uuid.UUID), dbAdmins[0].ID)
+					eaa.Assert.Equal(*(*body)["user_id"].(*uuid.UUID), dbAdmins[0].UserID)
 					eaa.Assert.Equal((*body)["name"].(string), dbClub.Name)
 					eaa.Assert.Equal((*body)["preview"].(string), dbClub.Preview)
 					eaa.Assert.Equal((*body)["description"].(string), dbClub.Description)

@@ -1,15 +1,17 @@
 name: Backend
 
+permissions: read-all
+
 on:
   push:
     paths:
-      - "backend/**"
-      - ".github/workflows/backend.yml"
+      - backend/**
+      - .github/workflows/backend.yml
   pull_request:
     types: [opened]
     paths:
-      - "backend/**"
-      - ".github/workflows/backend.yml"
+      - backend/**
+      - .github/workflows/backend.yml
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

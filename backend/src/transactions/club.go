@@ -141,20 +141,33 @@ func GetClubs(db *gorm.DB, queryParams *models.ClubQueryParams) ([]models.Club, 
 	return clubs, nil
 }
 
-func CreateClub(db *gorm.DB, userId uuid.UUID, club models.Club) (*models.Club, *errors.Error) {
-	user, err := GetUser(db, userId)
+func CreateClub(db *gorm.DB, userID uuid.UUID, club models.Club) (*models.Club, *errors.Error) {
+	user, err := GetUser(db, userID)
 	if err != nil {
 		return nil, err
 	}
 
 	tx := db.Begin()
 
+	club.NumMembers = 1
+
 	if err := tx.Create(&club).Error; err != nil {
 		tx.Rollback()
 		return nil, &errors.FailedToCreateClub
 	}
 
-	if err := tx.Model(&club).Association("Admin").Append(user); err != nil {
+	membership := models.Membership{
+		ClubID:         club.ID,
+		UserID:         user.ID,
+		MembershipType: models.MembershipTypeAdmin,
+	}
+
+	if err := tx.Create(&membership).Error; err != nil {
+		tx.Rollback()
+		return nil, &errors.FailedToCreateClub
+	}
+
+	if err := tx.Model(&user).Association("Follower").Append(&club); err != nil {
 		tx.Rollback()
 		return nil, &errors.FailedToCreateClub
 	}

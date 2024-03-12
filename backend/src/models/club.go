@@ -30,7 +30,7 @@ type Club struct {
 
 	SoftDeletedAt gorm.DeletedAt `gorm:"type:timestamptz;default:NULL" json:"-" validate:"-"`
 
-	Name             string           `gorm:"type:varchar(255)" json:"name" validate:"required,max=255"`
+	Name             string           `gorm:"type:varchar(255);unique" json:"name" validate:"required,max=255"`
 	Preview          string           `gorm:"type:varchar(255)" json:"preview" validate:"required,max=255"`
 	Description      string           `gorm:"type:varchar(255)" json:"description" validate:"required,http_url,mongo_url,max=255"` // MongoDB URL
 	NumMembers       int              `gorm:"type:int" json:"num_members" validate:"required,min=1"`
@@ -112,16 +112,6 @@ func (cqp *ClubQueryParams) IntoWhere() string {
 		return ""
 	}
 	return "WHERE " + strings.Join(conditions, " AND ")
-}
-
-func (c *Club) AfterCreate(tx *gorm.DB) (err error) {
-	tx.Model(&c).Update("num_members", c.NumMembers+1)
-	return
-}
-
-func (c *Club) AfterDelete(tx *gorm.DB) (err error) {
-	tx.Model(&c).Update("num_members", c.NumMembers-1)
-	return
 }
 
 func (c *Club) SearchId() string {

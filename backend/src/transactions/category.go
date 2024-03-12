@@ -23,8 +23,10 @@ func CreateCategory(db *gorm.DB, category models.Category) (*models.Category, *e
 	return &category, nil
 }
 
-func GetCategories(db *gorm.DB, limit int, offset int) ([]models.Category, *errors.Error) {
+func GetCategories(db *gorm.DB, limit int, page int) ([]models.Category, *errors.Error) {
 	var categories []models.Category
+
+	offset := (page - 1) * limit
 
 	if err := db.Limit(limit).Offset(offset).Find(&categories).Error; err != nil {
 		return nil, &errors.FailedToGetCategories

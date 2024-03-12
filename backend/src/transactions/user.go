@@ -32,8 +32,10 @@ func GetUserByEmail(db *gorm.DB, email string) (*models.User, *errors.Error) {
 	return &user, nil
 }
 
-func GetUsers(db *gorm.DB, limit int, offset int) ([]models.User, *errors.Error) {
+func GetUsers(db *gorm.DB, limit int, page int) ([]models.User, *errors.Error) {
 	var users []models.User
+
+	offset := (page - 1) * limit
 
 	if err := db.Omit("password_hash").Limit(limit).Offset(offset).Find(&users).Error; err != nil {
 		return nil, &errors.FailedToGetUsers
@@ -62,17 +64,17 @@ func GetUser(db *gorm.DB, id uuid.UUID, preloads ...OptionalQuery) (*models.User
 	return &user, nil
 }
 
-func GetUserPasswordHash(db *gorm.DB, id uuid.UUID) (string, *errors.Error) {
+func GetUserPasswordHash(db *gorm.DB, id uuid.UUID) (*string, *errors.Error) {
 	var user models.User
 	if err := db.Select("password_hash").First(&user, id).Error; err != nil {
 		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
-			return "", &errors.UserNotFound
+			return nil, &errors.UserNotFound
 		} else {
-			return "", &errors.FailedToGetUser
+			return nil, &errors.FailedToGetUser
 		}
 	}
 
-	return user.PasswordHash, nil
+	return &user.PasswordHash, nil
 }
 
 func UpdateUser(db *gorm.DB, id uuid.UUID, user models.User) (*models.User, *errors.Error) {
@@ -107,8 +109,7 @@ func UpdatePassword(db *gorm.DB, id uuid.UUID, passwordHash string) *errors.Erro
 }
 
 func DeleteUser(db *gorm.DB, id uuid.UUID) *errors.Error {
-	result := db.Delete(&models.User{}, id)
-	if result.RowsAffected == 0 {
+	if result := db.Delete(&models.User{}, id); result.RowsAffected == 0 {
 		if result.Error == nil {
 			return &errors.UserNotFound
 		} else {

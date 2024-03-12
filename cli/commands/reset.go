@@ -52,7 +52,7 @@ func ResetData() error {
 	}
 
 	cmd := exec.Command("sleep", "1")
-	cmd.Dir = BACKEND_DIR
+	cmd.Dir = BACKEND_SRC_DIR
 
 	err = cmd.Run()
 	if err != nil {
@@ -65,7 +65,7 @@ func ResetData() error {
 	}
 
 	cmd = exec.Command("sleep", "1")
-	cmd.Dir = BACKEND_DIR
+	cmd.Dir = BACKEND_SRC_DIR
 
 	err = cmd.Run()
 	if err != nil {
@@ -91,7 +91,7 @@ func ResetMigration() error {
 	}
 
 	cmd := exec.Command("sleep", "1")
-	cmd.Dir = BACKEND_DIR
+	cmd.Dir = BACKEND_SRC_DIR
 
 	err = cmd.Run()
 	if err != nil {

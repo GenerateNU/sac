@@ -142,6 +142,10 @@ func (c *ClubService) UpdateClub(id string, clubBody models.UpdateClubRequestBod
 		return nil, idErr
 	}
 
+	if utilities.AtLeastOne(clubBody, models.UpdateClubRequestBody{}) {
+		return nil, &errors.FailedToValidateClub
+	}
+
 	if err := c.Validate.Struct(clubBody); err != nil {
 		return nil, &errors.FailedToValidateClub
 	}

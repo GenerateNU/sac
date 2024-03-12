@@ -17,18 +17,20 @@ func NewClubTagController(clubTagService services.ClubTagServiceInterface) *Club
 
 // CreateClubTags godoc
 //
-// @Summary		Create Club Tags
-// @Description	Adds Tags to a Club
+// @Summary		Create club tags
+// @Description	Creates tags for a club
 // @ID			create-club-tags
-// @Tags      	club
-// @Accept      json
+// @Tags      	club-tag
+// @Accept		json
 // @Produce		json
+// @Param		clubID		path	string	true	"Club ID"
+// @Param		clubTagsBody	body	models.CreateClubTagsRequestBody	true	"Club Tags Body"
 // @Success		201	  {object}	  []models.Tag
-// @Failure     404   {string}    string "club not found"
-// @Failure 	400   {string}    string "invalid request body"
-// @Failure		400   {string}    string "failed to validate id"
-// @Failure		500   {string}	  string "database error"
-// @Router		/api/v1/clubs/:id/tags  [post]
+// @Failure     400   {object}    errors.Error
+// @Failure     401   {object}    errors.Error
+// @Failure     404   {object}    errors.Error
+// @Failure     500   {object}    errors.Error
+// @Router		/clubs/{clubID}/tags/  [post]
 func (l *ClubTagController) CreateClubTags(c *fiber.Ctx) error {
 	var clubTagsBody models.CreateClubTagsRequestBody
 	if err := c.BodyParser(&clubTagsBody); err != nil {
@@ -45,17 +47,17 @@ func (l *ClubTagController) CreateClubTags(c *fiber.Ctx) error {
 
 // GetClubTags godoc
 //
-// @Summary		Get Club Tags
-// @Description	Retrieves the tags for a club
-// @ID			get-club-tags
-// @Tags      	club
+// @Summary		Retrieve all tags for a club
+// @Description	Retrieves all tags associated with a club
+// @ID			get-tags-by-club
+// @Tags      	club-tag
 // @Produce		json
-// @Success		200	  {object}	  []models.Tag
-// @Failure     404   {string}    string "club not found"
-// @Failure 	400   {string}    string "invalid request body"
-// @Failure		400   {string}    string "failed to validate id"
-// @Failure		500   {string}	  string "database error"
-// @Router		/api/v1/clubs/:id/tags  [get]
+// @Param		clubID	path	string	true	"Club ID"
+// @Success		200	  {object}	    []models.Tag
+// @Failure     400   {object}      errors.Error
+// @Failure     404   {object}      errors.Error
+// @Failure     500   {object}      errors.Error
+// @Router		/clubs/{clubID}/tags/  [get]
 func (l *ClubTagController) GetClubTags(c *fiber.Ctx) error {
 	clubTags, err := l.clubTagService.GetClubTags(c.Params("clubID"))
 	if err != nil {
@@ -65,18 +67,21 @@ func (l *ClubTagController) GetClubTags(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(clubTags)
 }
 
-// DeleteClubTags godoc
+// DeleteClubTag godoc
 //
-// @Summary		Delete Club Tags
-// @Description	Deletes the tags for a club
-// @ID			delete-club-tags
-// @Tags      	club
-// @Success		204
-// @Failure     404   {string}    string "club not found"
-// @Failure 	400   {string}    string "invalid request body"
-// @Failure		400   {string}    string "failed to validate id"
-// @Failure		500   {string}	  string "database error"
-// @Router		/api/v1/clubs/:id/tags/:tagId  [delete]
+// @Summary		Delete a tag for a club
+// @Description	Deletes a tag associated with a club
+// @ID			delete-tag-by-club
+// @Tags      	club-tag
+// @Produce		json
+// @Param		clubID	path	string	true	"Club ID"
+// @Param		tagID	path	string	true	"Tag ID"
+// @Success		204	  {string}	    utilites.SuccessResponse
+// @Failure     400   {object}      errors.Error
+// @Failure     401   {object}      errors.Error
+// @Failure     404   {object}      errors.Error
+// @Failure     500   {object}      errors.Error
+// @Router		/clubs/{clubID}/tags/{tagID}/  [delete]
 func (l *ClubTagController) DeleteClubTag(c *fiber.Ctx) error {
 	err := l.clubTagService.DeleteClubTag(c.Params("clubID"), c.Params("tagID"))
 	if err != nil {

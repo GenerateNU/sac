@@ -2,104 +2,94 @@ package commands
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
-	"sync"
 
 	"github.com/urfave/cli/v2"
 )
 
 func LintCommand() *cli.Command {
 	command := cli.Command{
-		Name:    "lint",
-		Aliases: []string{"l"},
-		Usage:   "Runs linting tools",
-		Flags: []cli.Flag{
-			&cli.StringFlag{
+		Name:     "lint",
+		Aliases:  []string{"l"},
+		Usage:    "Runs linting tools",
+		Category: "CI",
+		Subcommands: []*cli.Command{
+			{
 				Name:    "frontend",
+				Usage:   "Lint the frontend",
 				Aliases: []string{"f"},
-				Value:   "",
-				Usage:   "Lint a specific frontend folder",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:    "target",
+						Aliases: []string{"t"},
+						Value:   "mobile",
+						Usage:   "Lint a specific frontend type (web or mobile)",
+					},
+					&cli.BoolFlag{
+						Name:    "fix",
+						Aliases: []string{"f"},
+						Usage:   "Fix linting errors",
+					},
+				},
+				Action: func(c *cli.Context) error {
+					if c.Args().Len() > 0 {
+						return cli.Exit("Invalid arguments", 1)
+					}
+
+					target := c.String("target")
+					if target != "web" && target != "mobile" {
+						return cli.Exit("Invalid frontend type: must be 'web' or 'mobile'", 1)
+					}
+
+					fix := c.Bool("fix")
+
+					err := LintFrontend(target, fix)
+					if err != nil {
+						return cli.Exit(err.Error(), 1)
+					}
+
+					return nil
+				},
 			},
-			&cli.BoolFlag{
+			{
 				Name:    "backend",
-				Aliases: []string{"b"},
 				Usage:   "Lint the backend",
+				Aliases: []string{"b"},
+				Action: func(c *cli.Context) error {
+					if c.Args().Len() > 0 {
+						return cli.Exit("Invalid arguments", 1)
+					}
+
+					err := LintBackend()
+					if err != nil {
+						return cli.Exit(err.Error(), 1)
+					}
+
+					return nil
+				},
 			},
-		},
-		Action: func(c *cli.Context) error {
-			if c.Args().Len() > 0 {
-				return cli.Exit("Invalid arguments", 1)
-			}
-
-			if c.String("frontend") == "" && !c.Bool("backend") {
-				return cli.Exit("Must specify frontend or backend", 1)
-			}
-
-			folder := c.String("frontend")
-			runFrontend := folder != ""
-			runBackend := c.Bool("backend")
-
-			err := Lint(folder, runFrontend, runBackend)
-			if err != nil {
-				return cli.Exit(err.Error(), 1)
-			}
-
-			return nil
 		},
 	}
 
 	return &command
 }
 
-func Lint(folder string, runFrontend bool, runBackend bool) error {
-	var wg sync.WaitGroup
-	errChan := make(chan error, 1)
-	var errOccurred bool // Flag to indicate whether an error has occurred
-
-	// Start the backend if specified
-	if runBackend && !errOccurred {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			err := BackendLint()
-			if err != nil {
-				errChan <- err
-				errOccurred = true
-			}
-		}()
+func LintFrontend(target string, fix bool) error {
+	switch target {
+	case "web":
+		return LintWeb(fix)
+	case "mobile":
+		return LintMobile(fix)
+	default:
+		return LintMobile(fix)
 	}
-
-	// Start the frontend if specified
-	if runFrontend && !errOccurred {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			err := FrontendLint(folder)
-			if err != nil {
-				errChan <- err
-				errOccurred = true
-			}
-		}()
-	}
-
-	go func() {
-		wg.Wait()
-		close(errChan)
-	}()
-
-	for err := range errChan {
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
 
-func BackendLint() error {
+func LintBackend() error {
 	fmt.Println("Linting backend")
 
-	cmd := exec.Command("golangci-lint", "run", "--fix")
+	cmd := exec.Command("go", "vet", "./...")
 	cmd.Dir = BACKEND_DIR
 
 	err := cmd.Run()
@@ -112,7 +102,26 @@ func BackendLint() error {
 	return nil
 }
 
-func FrontendLint(folder string) error {
-	fmt.Println("UNIMPLEMENTED")
+func LintWeb(fix bool) error {
+	return nil
+}
+
+func LintMobile(fix bool) error {
+	var mobileCmd *exec.Cmd
+	if fix {
+		mobileCmd = exec.Command("yarn", "run", "lint", "--fix")
+	} else {
+		mobileCmd = exec.Command("yarn", "run", "lint")
+	}
+	mobileCmd.Dir = FRONTEND_DIR + "/sac-mobile"
+
+	mobileCmd.Stdout = os.Stdout
+	mobileCmd.Stderr = os.Stderr
+	mobileCmd.Stdin = os.Stdin
+
+	if err := mobileCmd.Run(); err != nil {
+		return err
+	}
+
 	return nil
 }

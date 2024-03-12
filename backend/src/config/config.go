@@ -66,7 +66,7 @@ const (
 	EnvironmentProduction Environment = "production"
 )
 
-func GetConfiguration(path string) (*Settings, error) {
+func GetConfiguration(path string, useDevDotEnv bool) (*Settings, error) {
 	var environment Environment
 	if env := os.Getenv("APP_ENVIRONMENT"); env != "" {
 		environment = Environment(env)
@@ -78,7 +78,7 @@ func GetConfiguration(path string) (*Settings, error) {
 	v.SetConfigType("yaml")
 	v.AddConfigPath(path)
 	if environment == EnvironmentLocal {
-		return readLocal(v, path)
+		return readLocal(v, path, useDevDotEnv)
 	} else {
 		return readProd(v)
 	}

@@ -10,6 +10,7 @@ import (
 func MigrateCommand() *cli.Command {
 	command := cli.Command{
 		Name:     "migrate",
+		Aliases:  []string{"m"},
 		Usage:    "Migrate the database, creating tables and relationships",
 		Category: "Database Operations",
 		Action: func(c *cli.Context) error {
@@ -32,7 +33,7 @@ func Migrate() error {
 	fmt.Println("Migrating database")
 
 	goCmd := exec.Command("go", "run", "main.go", "--only-migrate")
-	goCmd.Dir = BACKEND_DIR
+	goCmd.Dir = BACKEND_SRC_DIR
 
 	output, err := goCmd.CombinedOutput()
 	if err != nil {

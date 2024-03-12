@@ -86,7 +86,6 @@ func MigrateDB(settings config.Settings, db *gorm.DB) error {
 		return err
 	}
 
-	// Check if the database already has a super user
 	var superUser models.User
 	if err := db.Where("role = ?", models.Super).First(&superUser).Error; err != nil {
 		if err := createSuperUser(settings, db); err != nil {
@@ -113,9 +112,20 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 	var user models.User
 
 	if err := db.Where("nuid = ?", superUser.NUID).First(&user).Error; err != nil {
-		tx := db.Begin()
+		tx := db.Begin().Session(&gorm.Session{SkipHooks: true})
 
 		if err := tx.Error; err != nil {
+			return err
+		}
+
+		superClub := SuperClub()
+		if err := tx.Create(&superClub).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		if err := tx.Model(&superClub).Update("num_members", gorm.Expr("num_members + 1")).Error; err != nil {
+			tx.Rollback()
 			return err
 		}
 
@@ -125,13 +135,6 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 		}
 
 		SuperUserUUID = superUser.ID
-
-		superClub := SuperClub()
-
-		if err := tx.Create(&superClub).Error; err != nil {
-			tx.Rollback()
-			return err
-		}
 
 		membership := models.Membership{
 			ClubID:         superClub.ID,
@@ -144,7 +147,18 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 			return err
 		}
 
+		follower := models.Follower{
+			ClubID: superClub.ID,
+			UserID: superUser.ID,
+		}
+
+		if err := tx.Create(&follower).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+
 		return tx.Commit().Error
 	}
+
 	return nil
 }

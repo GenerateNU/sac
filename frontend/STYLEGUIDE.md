@@ -5,7 +5,7 @@
 1. [General](#general)
 2. [Naming](#naming)
 3. [Imports](#imports)
-4. [Components](#components)
+4. [Components](#components-and-screens--pages)
 
 ## General
 
