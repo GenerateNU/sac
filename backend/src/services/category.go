@@ -57,9 +57,7 @@ func (c *CategoryService) GetCategories(limit string, page string) ([]models.Cat
 		return nil, &errors.FailedToValidatePage
 	}
 
-	offset := (*pageAsInt - 1) * *limitAsInt
-
-	return transactions.GetCategories(c.DB, *limitAsInt, offset)
+	return transactions.GetCategories(c.DB, *limitAsInt, *pageAsInt)
 }
 
 func (c *CategoryService) GetCategory(id string) (*models.Category, *errors.Error) {

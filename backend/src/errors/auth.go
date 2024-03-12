@@ -11,4 +11,8 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to cast to custom claims",
 	}
+	FailedToValidateUpdatePasswordBody = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "failed to validate update password body",
+	}
 )

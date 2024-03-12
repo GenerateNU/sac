@@ -139,7 +139,7 @@ func (e *EventController) CreateEvent(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(event)
 }
 
-// CreateSeries godoc
+// UpdateEvent godoc
 //
 // @Summary		Create a series
 // @Description	Creates a series
@@ -148,7 +148,7 @@ func (e *EventController) CreateEvent(c *fiber.Ctx) error {
 // @Accept		json
 // @Produce		json
 // @Param		eventID	path	string	true	"Event ID"
-// @Param		seriesBody	body	models.CreateSeriesRequestBody	true	"Series Body"
+// @Param		seriesBody	body	models.UpdateEventRequestBody	true	"Series Body"
 // @Success		201	  {object}	  models.Series
 // @Failure     400   {object}    errors.Error
 // @Failure     401   {object}    errors.Error

@@ -36,7 +36,7 @@ func BackendCommand() *cli.Command {
 
 func RunBackend() error {
 	cmd := exec.Command("go", "run", "main.go")
-	cmd.Dir = BACKEND_DIR
+	cmd.Dir = BACKEND_SRC_DIR
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
