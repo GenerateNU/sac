@@ -15,7 +15,9 @@ func GetClubFollowers(db *gorm.DB, clubID uuid.UUID, limit int, page int) ([]mod
 
 	var users []models.User
 
-	if err := db.Model(&club).Association("Follower").Find(&users); err != nil {
+	offset := (page - 1) * limit
+
+	if err := db.Limit(limit).Offset(offset).Model(&club).Association("Follower").Find(&users); err != nil {
 		return nil, &errors.FailedToGetClubFollowers
 	}
 

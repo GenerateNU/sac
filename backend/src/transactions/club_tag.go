@@ -35,13 +35,13 @@ func GetClubTags(db *gorm.DB, id uuid.UUID) ([]models.Tag, *errors.Error) {
 	return tags, nil
 }
 
-func DeleteClubTag(db *gorm.DB, id uuid.UUID, tagId uuid.UUID) *errors.Error {
+func DeleteClubTag(db *gorm.DB, id uuid.UUID, tagID uuid.UUID) *errors.Error {
 	club, err := GetClub(db, id)
 	if err != nil {
 		return err
 	}
 
-	tag, err := GetTag(db, tagId)
+	tag, err := GetTag(db, tagID)
 	if err != nil {
 		return err
 	}

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/GenerateNU/sac/backend/src/services"
+	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -33,7 +34,7 @@ func (uf *UserFollowerController) CreateFollowing(c *fiber.Ctx) error {
 	if err != nil {
 		return err.FiberError(c)
 	}
-	return c.SendStatus(fiber.StatusCreated)
+	return utilities.FiberMessage(c, fiber.StatusCreated, "Successfully followed club")
 }
 
 // DeleteFollowing godoc

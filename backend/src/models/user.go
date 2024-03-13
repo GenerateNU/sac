@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type UserRole string
@@ -70,10 +71,8 @@ type CreateUserRequestBody struct {
 }
 
 type UpdateUserRequestBody struct {
-	NUID      string  `json:"nuid" validate:"omitempty,numeric,len=9"`
 	FirstName string  `json:"first_name" validate:"omitempty,max=255"`
 	LastName  string  `json:"last_name" validate:"omitempty,max=255"`
-	Email     string  `json:"email" validate:"omitempty,email,neu_email,max=255"`
 	College   College `json:"college" validate:"omitempty,oneof=CAMD DMSB KCCS CE BCHS SL CPS CS CSSH"`
 	Year      Year    `json:"year" validate:"omitempty,min=1,max=6"`
 }
@@ -90,4 +89,38 @@ type UpdatePasswordRequestBody struct {
 
 type CreateUserTagsBody struct {
 	Tags []uuid.UUID `json:"tags" validate:"required"`
+}
+
+func (u *User) AfterCreate(tx *gorm.DB) (err error) {
+	sac := &Club{}
+	if err := tx.Where("name = ?", "SAC").First(sac).Error; err != nil {
+		return err
+	}
+
+	if err := tx.Model(u).Association("Member").Append(sac); err != nil {
+		return err
+	}
+
+	if err := tx.Model(u).Association("Follower").Append(sac); err != nil {
+		return err
+	}
+
+	if err := tx.Model(&Club{}).Where("id = ?", sac.ID).Update("num_members", gorm.Expr("num_members + 1")).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (u *User) AfterDelete(tx *gorm.DB) (err error) {
+	sac := &Club{}
+	if err := tx.Where("name = ?", "SAC").First(sac).Error; err != nil {
+		return err
+	}
+
+	if err := tx.Model(&Club{}).Where("id = ?", sac.ID).Update("num_members", gorm.Expr("num_members - 1")).Error; err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -140,16 +140,6 @@ func (cqp *ClubQueryParams) IntoWhere() string {
 	return "WHERE " + strings.Join(conditions, " AND ")
 }
 
-func (c *Club) AfterCreate(tx *gorm.DB) (err error) {
-	tx.Model(&c).Update("num_members", c.NumMembers+1)
-	return
-}
-
-func (c *Club) AfterDelete(tx *gorm.DB) (err error) {
-	tx.Model(&c).Update("num_members", c.NumMembers-1)
-	return
-}
-
 func (c *Club) SearchId() string {
 	return c.ID.String()
 }
