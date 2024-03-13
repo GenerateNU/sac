@@ -95,7 +95,7 @@ func GetRespAndDBEvents(eaa h.ExistingAppAssert, resp *http.Response) ([]models.
 func AssertEventListBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, body *map[string]interface{}) []uuid.UUID {
 	respEvents, dbEvents := GetRespAndDBEvents(eaa, resp)
 
-	var uuidList []uuid.UUID
+	uuidList := []uuid.UUID{}
 
 	for i, respEvent := range respEvents {
 		dbEvent := dbEvents[i]
