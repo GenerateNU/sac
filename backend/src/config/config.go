@@ -3,7 +3,6 @@ package config
 import (
 	"os"
 
-	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
 
@@ -22,7 +21,6 @@ type intermediateSettings struct {
 	Database    intermediateDatabaseSettings  `yaml:"database"`
 	SuperUser   intermediateSuperUserSettings `yaml:"superuser"`
 	Auth        intermediateAuthSettings      `yaml:"authsecret"`
-	AWS         AWSSettings
 }
 
 func (int *intermediateSettings) into() (*Settings, error) {
@@ -47,16 +45,6 @@ func (int *intermediateSettings) into() (*Settings, error) {
 		SuperUser:   *superUserSettings,
 		Auth:        *authSettings,
 	}, nil
-}
-
-func configAWS() AWSSettings {
-	if err := godotenv.Load(); err != nil {
-		panic(err)
-	}
-	return AWSSettings{
-		BUCKET_NAME: os.Getenv("BUCKET_NAME"),
-		ID:          os.Getenv("AWS_ID"),
-		SECRET:      os.Getenv("AWS_SECRET")}
 }
 
 type Environment string

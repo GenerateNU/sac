@@ -7,10 +7,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func ClubContact(clubsIDRouter fiber.Router, clubContactService services.ClubContactServiceInterface, authMiddleware *middleware.AuthMiddlewareService) {
+func ClubContact(clubIDRouter fiber.Router, clubContactService services.ClubContactServiceInterface, authMiddleware *middleware.AuthMiddlewareService) {
 	clubContactController := controllers.NewClubContactController(clubContactService)
 
-	clubContacts := clubsIDRouter.Group("/contacts")
+	clubContacts := clubIDRouter.Group("/contacts")
 
 	// api/v1/clubs/:clubID/contacts/*
 	clubContacts.Get("/", clubContactController.GetClubContacts)

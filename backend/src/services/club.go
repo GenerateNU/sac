@@ -6,15 +6,10 @@ import (
 	"github.com/GenerateNU/sac/backend/src/transactions"
 	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/go-playground/validator/v10"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type ClubServiceInterface interface {
-	UpsertPointOfContact(clubId string, pointOfContactBody models.CreatePointOfContactBody) (*models.PointOfContact, *errors.Error)
-	GetAllPointOfContacts(clubId string) ([]models.PointOfContact, *errors.Error)
-	GetPointOfContact(pocId string, clubId string) (*models.PointOfContact, *errors.Error)
-	DeletePointOfContact(pocId string, clubId string) *errors.Error
 	GetClubs(queryParams *models.ClubQueryParams) ([]models.Club, *errors.Error)
 	GetClub(id string) (*models.Club, *errors.Error)
 	CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, *errors.Error)
@@ -25,77 +20,6 @@ type ClubServiceInterface interface {
 type ClubService struct {
 	DB       *gorm.DB
 	Validate *validator.Validate
-}
-
-// Upsert A Point of Contact
-func (u *ClubService) UpsertPointOfContact(clubId string, pointOfContactBody models.CreatePointOfContactBody) (*models.PointOfContact, *errors.Error) {
-	if err := u.Validate.Struct(pointOfContactBody); err != nil {
-		return nil, &errors.FailedToValidatePointOfContact
-	}
-	pointOfContact, err := utilities.MapRequestToModel(pointOfContactBody, &models.PointOfContact{})
-	if err != nil {
-		print(err.Error())
-		return nil, &errors.FailedToMapRequestToModel
-	}
-	clubIdAsUUID, idErr := utilities.ValidateID(clubId)
-	var file models.File
-	if pointOfContactBody.PhotoFileID != uuid.Nil {
-		if err := u.DB.First(&file, "id = ?", pointOfContactBody.PhotoFileID).Error; err != nil {
-			return nil, &errors.CannotFindFile
-		}
-	}
-	pointOfContact.ClubID = *clubIdAsUUID
-	if idErr != nil {
-		return nil, &errors.FailedToValidateClub
-	}
-	poc, upsertErr := transactions.UpsertPointOfContact(u.DB, pointOfContact)
-
-	if upsertErr != nil {
-		return poc, upsertErr
-	}
-
-	if pointOfContactBody.PhotoFileID != uuid.Nil {
-		file.OwnerType = "point_of_contact"
-		file.OwnerID = poc.ID
-	}
-	u.DB.Save(&file)
-	pointOfContact.PhotoFile = &file
-	return poc, nil
-}
-
-// Get All Point of Contact
-func (u *ClubService) GetAllPointOfContacts(clubId string) ([]models.PointOfContact, *errors.Error) {
-	clubIdAsUUID, err := utilities.ValidateID(clubId)
-	if err != nil {
-		return nil, &errors.FailedToValidateClub
-	}
-	return transactions.GetAllPointOfContacts(u.DB, *clubIdAsUUID)
-}
-
-// Get A Point of Contact
-func (u *ClubService) GetPointOfContact(pocId string, clubId string) (*models.PointOfContact, *errors.Error) {
-	clubIdAsUUID, errID := utilities.ValidateID(clubId)
-	if errID != nil {
-		return nil, &errors.FailedToValidateClub
-	}
-	pocIdAsUUID, err := utilities.ValidateID(pocId)
-	if err != nil {
-		return nil, &errors.FailedToValidatePointOfContactId
-	}
-	return transactions.GetPointOfContact(u.DB, *pocIdAsUUID, *clubIdAsUUID)
-}
-
-// Delete A Point of Contact
-func (u *ClubService) DeletePointOfContact(pocId string, clubId string) *errors.Error {
-	clubIdAsUUID, errID := utilities.ValidateID(clubId)
-	if errID != nil {
-		return &errors.FailedToValidateClub
-	}
-	pocIdAsUUID, err := utilities.ValidateID(pocId)
-	if err != nil {
-		return &errors.FailedToValidatePointOfContactId
-	}
-	return transactions.DeletePointOfContact(u.DB, *pocIdAsUUID, *clubIdAsUUID)
 }
 
 func NewClubService(db *gorm.DB, validate *validator.Validate) *ClubService {

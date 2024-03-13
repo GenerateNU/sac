@@ -1,14 +1,15 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 
+	"github.com/GenerateNU/sac/backend/src/aws"
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/middleware"
 	"github.com/GenerateNU/sac/backend/src/server/routes"
 	"github.com/GenerateNU/sac/backend/src/services"
 	"github.com/GenerateNU/sac/backend/src/utilities"
-	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -34,6 +35,7 @@ func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 	}
 
 	authMiddleware := middleware.NewAuthAuthMiddlewareService(db, validate, settings.Auth)
+	awsClient := aws.NewAWSClient(settings.AWS)
 
 	apiv1 := app.Group("/api/v1")
 	apiv1.Use(authMiddleware.Authenticate)
@@ -41,13 +43,14 @@ func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 	routes.Utility(app)
 	routes.Auth(apiv1, services.NewAuthService(db, validate), settings.Auth, authMiddleware)
 	routes.UserRoutes(apiv1, db, validate, authMiddleware)
-	routes.Contact(apiv1, services.NewContactService(db, validate), authMiddleware)
 	routes.ClubRoutes(apiv1, db, validate, authMiddleware)
+	routes.Contact(apiv1, services.NewContactService(db, validate), authMiddleware)
+	routes.PointOfContact(apiv1, services.NewPointOfContactService(db, validate))
 	routes.Tag(apiv1, services.NewTagService(db, validate), authMiddleware)
 	routes.CategoryRoutes(apiv1, db, validate, authMiddleware)
 	routes.Event(apiv1, services.NewEventService(db, validate), authMiddleware)
-	fileRouter := routes.File(apiv1, services.NewFileService(db, config.ConfigAWS(), validate))
-	routes.File(fileRouter, services.NewFileService(db, config.ConfigAWS(), validate))
+	routes.File(apiv1, services.NewFileService(db, validate, awsClient))
+	// fileRouter := routes.File(apiv1, services.NewFileService(db, config.ConfigAWS(), validate))
 
 	return app
 }

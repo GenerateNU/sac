@@ -27,6 +27,7 @@ func PutClubContact(db *gorm.DB, contact models.Contact) (*models.Contact, *erro
 
 func GetClubContacts(db *gorm.DB, clubID uuid.UUID) ([]models.Contact, *errors.Error) {
 	var club models.Club
+	
 	if err := db.Preload("Contact").First(&club, clubID).Error; err != nil {
 		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &errors.ClubNotFound

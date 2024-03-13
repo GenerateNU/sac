@@ -15,13 +15,25 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to create AWS session",
 	}
-	FailedToUploadToS3 = Error{
+	FailedToUploadFile = Error{
 		StatusCode: fiber.StatusInternalServerError,
-		Message:    "failed to upload to S3 Bucket",
+		Message:    "failed to upload file",
 	}
 	FailedToCreateFileInDB = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to create file in database",
+	}
+	FailedToDeleteFile = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to delete file",
+	}
+	FailedToReadFile = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to read file",
+	}
+	FailedToValidateFile = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "failed to validate file",
 	}
 	FailedToGetFile = Error{
 		StatusCode: fiber.StatusBadRequest,

@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 
-
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
@@ -27,9 +26,6 @@ func readLocal(v *viper.Viper, path string, useDevDotEnv bool) (*Settings, error
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert intermediate settings into final settings: %w", err)
 	}
-	
-	AWSSettings := ConfigAWS()
-	intermediateSettings.AWS = AWSSettings
 
 	if useDevDotEnv {
 		err = godotenv.Load(fmt.Sprintf("%s/.env.dev", path))
@@ -54,6 +50,13 @@ func readLocal(v *viper.Viper, path string, useDevDotEnv bool) (*Settings, error
 	}
 
 	settings.OpenAISettings = *openAISettings
+
+	awsSettings, err := readAWSSettings()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read AWS settings: %w", err)
+	}
+
+	settings.AWS = *awsSettings
 
 	return settings, nil
 }

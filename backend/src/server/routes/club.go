@@ -18,6 +18,7 @@ func ClubRoutes(router fiber.Router, db *gorm.DB, validate *validator.Validate, 
 	ClubMember(clubIDRouter, services.NewClubMemberService(db, validate), authMiddleware)
 	ClubContact(clubIDRouter, services.NewClubContactService(db, validate), authMiddleware)
 	ClubEvent(clubIDRouter, services.NewClubEventService(db))
+	ClubPointOfContact(clubIDRouter, services.NewClubPointOfContactService(db, validate), authMiddleware)
 }
 
 func Club(router fiber.Router, clubService services.ClubServiceInterface, authMiddleware *middleware.AuthMiddlewareService) fiber.Router {
@@ -35,13 +36,6 @@ func Club(router fiber.Router, clubService services.ClubServiceInterface, authMi
 	clubsID.Get("/", clubController.GetClub)
 	clubsID.Patch("/", authMiddleware.ClubAuthorizeById, clubController.UpdateClub)
 	clubsID.Delete("/", authMiddleware.Authorize(p.DeleteAll), clubController.DeleteClub)
-
-	// api/v1/clubs/:clubID/poc/*
-	pointOfContact := router.Group("/clubs/:clubID/poc")
-	pointOfContact.Get("/", clubController.GetAllPointOfContact)
-	pointOfContact.Get("/:pocID", clubController.GetPointOfContact)
-	pointOfContact.Put("/", clubController.UpsertPointOfContact)
-	pointOfContact.Delete("/:pocID", clubController.DeletePointOfContact)
 
 	return clubsID
 }

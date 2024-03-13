@@ -1,10 +1,6 @@
 package controllers
 
 import (
-	"net/http"
-
-	"strings"
-
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
@@ -19,73 +15,36 @@ func NewFileController(fileService services.FileServiceInterface) *FileControlle
 	return &FileController{fileService: fileService}
 }
 
-// Create File
+// CreateFile godoc
+//
+// @Summary		Create a file
+// @Description	Creates a file
+// @ID			create-file
+// @Tags      	file
+// @Accept		multipart/form-data
+// @Accept		json
+// @Produce		json
+// @Param		file	body	models.CreateFileRequestBody	true	"File"
+// @Success		201	  {object}	  models.File
+// @Failure     400   {object}    errors.Error
+// @Failure     500   {object}    errors.Error
+// @Router		/files/  [post]
 func (f *FileController) CreateFile(c *fiber.Ctx) error {
-	var fileRequestBody models.FileBody
+	var fileBody models.CreateFileRequestBody
 
-	if err := c.BodyParser(&fileRequestBody); err != nil {
+	if parseErr := c.BodyParser(&fileBody); parseErr != nil {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
-	var file models.File
-	formFile, err := c.FormFile("img")
-	if err != nil {
-		return errors.FailedToProcessRequest.FiberError(c)
+	formFile, parseErr := c.FormFile("file")
+	if parseErr != nil {
+		return errors.FailedToParseRequestBody.FiberError(c)
 	}
-	fileData, err := formFile.Open()
-	if err != nil {
-		return errors.FailedToOpenFile.FiberError(c)
-	}
-	buff := make([]byte, 512)
-	if _, err = fileData.Read(buff); err != nil {
-		return errors.InvalidImageFormat.FiberError(c)
-	}
-
-	if !((http.DetectContentType(buff) == "image/png") || (http.DetectContentType(buff) == "image/jpeg")) {
-		return errors.FailedToValidatedData.FiberError(c)
-	}
-	defer fileData.Close()
-	print(file.OwnerID.String())
-	fileCreated, errFile := f.fileService.CreateFile(fileRequestBody, file, formFile, fileData)
-	if errFile != nil {
-		return errFile.FiberError(c)
-	}
-	return c.Status(fiber.StatusOK).JSON(fileCreated)
-}
-
-// Get File
-func (f *FileController) GetFile(c *fiber.Ctx) error {
-	fileID := c.Params("fileID")
-	file, err := f.fileService.GetFile(fileID)
+	
+	file, err := f.fileService.CreateFile(&fileBody, formFile)
 	if err != nil {
 		return err.FiberError(c)
 	}
-	arr := strings.SplitAfter(file.FileName, ".")
-	lenArr := len(arr)
-	print(arr[lenArr-1])
-	c.Set("Content-Type", "image/jpeg")
-	return c.Send(file.FileData)
-}
 
-// Get File Info
-func (f *FileController) GetFileInfo(c *fiber.Ctx) error {
-	days := c.Params("days")
-	if days == "" {
-		days = "7"
-	}
-	fileID := c.Params("fileID")
-	fileInfo, err := f.fileService.GetFileInfo(fileID, days)
-	if err != nil {
-		return err.FiberError(c)
-	}
-	return c.Status(fiber.StatusOK).JSON(fileInfo)
-}
-
-// Delete File
-func (f *FileController) DeleteFile(c *fiber.Ctx) error {
-	fileID := c.Params("fileID")
-	if err := f.fileService.DeleteFile(fileID, false); err != nil {
-		return err
-	}
-	return c.SendStatus(fiber.StatusNoContent)
+	return c.Status(fiber.StatusCreated).JSON(file)
 }

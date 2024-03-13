@@ -89,8 +89,6 @@ func readProd(v *viper.Viper) (*Settings, error) {
 	if err != nil {
 		return nil, errors.New("failed to create secret from refresh token")
 	}
-
-	AWSSettings := ConfigAWS()
   
 	pineconeSettings, err := readPineconeSettings()
 	if err != nil {
@@ -100,6 +98,11 @@ func readProd(v *viper.Viper) (*Settings, error) {
 	openAISettings, err := readOpenAISettings()
 	if err != nil {
 		return nil, fmt.Errorf("failed to read OpenAI settings: %w", err)
+	}
+
+	awsSettings, err := readAWSSettings()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read AWS settings: %w", err)
 	}
 
 	return &Settings{
@@ -125,8 +128,8 @@ func readProd(v *viper.Viper) (*Settings, error) {
 			AccessTokenExpiry:  uint(authAccessExpiryInt),
 			RefreshTokenExpiry: uint(authRefreshExpiryInt),
 		},
-		AWS: AWSSettings,
 		PineconeSettings: *pineconeSettings,
 		OpenAISettings:   *openAISettings,
+		AWS:              *awsSettings,
 	}, nil
 }

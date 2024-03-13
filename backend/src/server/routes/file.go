@@ -11,8 +11,8 @@ func File(router fiber.Router, fileService services.FileServiceInterface) fiber.
 
 	files := router.Group("/files")
 	files.Post("/", fileController.CreateFile)
-	files.Get("/:fileID", fileController.GetFile)
-	files.Delete("/:fileID", fileController.DeleteFile)
+	// files.Get("/:fileID", fileController.GetFile)
+	// files.Delete("/:fileID", fileController.DeleteFile)
 
 	return files
 }

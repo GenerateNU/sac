@@ -35,8 +35,16 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to get a point of contact",
 	}
+	FailedToGetPointOfContacts = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get point of contacts",
+	}
 	FailedToValidatePointOfContactId = Error{
 		StatusCode: fiber.StatusBadRequest,
 		Message:    "failed to validate point of contact id",
+	}
+	FailedToGetPointOfContact = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get point of contact",
 	}
 )
