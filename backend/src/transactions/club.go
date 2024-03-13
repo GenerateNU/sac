@@ -98,7 +98,6 @@ func CreateClub(db *gorm.DB, pinecone search.PineconeClientInterface, userId uui
 	}
 
 	if err := pinecone.Upsert([]search.Searchable{&club}); err != nil {
-
 		tx.Rollback()
 		return nil, &errors.FailedToCreateClub
 	}

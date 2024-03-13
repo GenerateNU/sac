@@ -48,8 +48,8 @@ func (c *PineconeClient) Seed(db *gorm.DB) error {
 	}
 
 	searchables := make([]Searchable, len(clubs))
-	for _, club := range clubs {
-		searchables = append(searchables, &club)
+	for i := range clubs {
+		searchables = append(searchables, &clubs[i])
 	}
 
 	var chunks [][]Searchable
