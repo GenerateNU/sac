@@ -2,12 +2,13 @@ import React from 'react';
 import { Text, View} from 'react-native';
 
 import { useAuthStore } from '@/hooks/use-auth';
+import { Button } from '@/components/button';
 
 const Home = () => {
     const { logout } = useAuthStore();
     return (
         <View className="items-center justify-center flex-1">
-            <Text onPress={logout}>Logout</Text>
+            <Button onPress={logout}>Logout</Button>
             <Text>Home</Text>
         </View>
     );

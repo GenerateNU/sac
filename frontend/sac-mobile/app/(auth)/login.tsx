@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { ZodError, z } from 'zod';
 import Wordmark from '@/components/Wordmark';
-import Button from '@/components/button';
+import { Button } from '@/components/button';
 import Header from '@/components/header';
 import Input from '@/components/input';
 import Error from '@/components/error';
@@ -114,20 +114,17 @@ const Login = () => {
 
                     <View className="flex-row justify-between">
                         <Button
-                            backgroundColor="white"
-                            title="Sign up"
-                            borderColor="gray"
-                            fullWidth={false}
+                            children="Sign up"
+                            size="lg"
+                            variant="outline"
                             onPress={() => router.push('/(auth)/register')}
-                        />
+                        ></Button>
                         <Button
-                            title="Login"
-                            color="white"
-                            borderColor="gray"
-                            backgroundColor="gray"
-                            fullWidth={false}
+                            children="Log in"
+                            size="lg"
+                            variant="default"
                             onPress={handleSubmit(onSubmit)}
-                        />
+                        ></Button>
                     </View>
                     <View className="mt-[9%] flex-row justify-center">
                         <Text className="font-bold">Not a student?</Text>

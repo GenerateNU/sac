@@ -1,5 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { Button } from '@/components/button';
+
 type WordmarkProps = {
     textColor?: string;
     backgroundColor?: string;
@@ -27,15 +29,14 @@ const Wordmark = (props: WordmarkProps) => {
                 <Text style={styles.wordmark}>Wordmark</Text>
             </View>
             {props.button && (
-                <Pressable onPress={props.func}>
-                    <View
-                        className="bg-white rounded-xl"
-                    >
-                        <Text className="px-[5%] pt-[3%] pb-[3%] ">
-                            {props.title}
-                        </Text>
-                    </View>
-                </Pressable>
+                <Button
+                    onPress={props.func}
+                    children= {props.title}
+                    variant="secondary"
+                    size="sm"
+                >
+                </Button>
+
             )}
         </View>
     );

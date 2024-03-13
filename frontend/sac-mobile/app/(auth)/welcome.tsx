@@ -4,7 +4,7 @@ import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 
 import Wordmark from '@/components/Wordmark';
-import Button from '@/components/button';
+import { Button } from '@/components/button';
 
 const Welcome = () => {
     const redirect = () => {
@@ -22,9 +22,10 @@ const Welcome = () => {
             </Text>
             <View style={styles.buttonAlign}>
                 <Button
-                    title="Get Started"
-                    color="white"
-                    onPress={redirect}
+                    children="Get Started"
+                    size="lg"
+                    variant="default"
+                    onPress={() => router.push('/(auth)/login')}
                 />
             </View>
         </SafeAreaView>

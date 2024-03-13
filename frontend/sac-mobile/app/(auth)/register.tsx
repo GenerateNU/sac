@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { ZodError, z } from 'zod';
 import Wordmark from '@/components/Wordmark';
-import Button from '@/components/button';
+import { Button } from '@/components/button';
 import { DropdownComponent } from '@/components/dropdown';
 import Header from '@/components/header';
 import Input from '@/components/input';
@@ -308,14 +308,12 @@ const Register = () => {
                     {errors.passwordConfirm
                     && <Error message={errors.passwordConfirm.message}/>}
                 </View>
-                <View className="pt-[2%] pb-[25%]">
+                <View className="pt-[2%] pb-[15%]">
                     <Button
-                        title="Submit"
-                        fullWidth={true}
-                        color="white"
-                        padding="5%"
-                        onPress={handleSubmit(onSubmit)}
-                    />
+                    onPress={handleSubmit(onSubmit)}
+                    children="Submit"
+                    size="screenwide"
+                    ></Button>
                 </View>
             </View>
             </ScrollView>
