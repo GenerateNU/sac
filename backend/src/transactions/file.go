@@ -7,15 +7,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// OwnerID   uuid.UUID `gorm:"uniqueIndex:compositeindex;index;not null;foreignKey:OwnerID" json:"-" validate:"uuid4"`
-// OwnerType string    `gorm:"uniqueIndex:compositeindex;index;not null;type:varchar(255)" json:"-" validate:"required,max=255"`
-
-// FileName string `gorm:"type:varchar(255)" json:"file_name" validate:"required,max=255"`
-// FileType string `gorm:"type:varchar(255)" json:"file_type" validate:"required,max=255"`
-// FileSize int    `gorm:"type:int" json:"file_size" validate:"required,min=1"`
-// FileURL  string `gorm:"type:varchar(255)" json:"file_url" validate:"required,max=255"`
-// ObjectKey string `gorm:"type:varchar(255)" json:"object_key" validate:"required,max=255"`
-
 func CreateFile(db *gorm.DB, ownerID uuid.UUID, ownerType string, fileInfo models.FileInfo) (*models.File, *errors.Error) {
 	file := &models.File{
 		OwnerID:   ownerID,
@@ -32,4 +23,21 @@ func CreateFile(db *gorm.DB, ownerID uuid.UUID, ownerType string, fileInfo model
 	}
 
 	return file, nil
+}
+
+func DeleteFile(db *gorm.DB, fileID uuid.UUID) *errors.Error {
+	if err := db.Delete(&models.File{}, fileID).Error; err != nil {
+		return &errors.FailedToDeleteFile
+	}
+
+	return nil
+}
+
+func GetFile(db *gorm.DB, fileID uuid.UUID) (*models.File, *errors.Error) {
+	var file models.File
+	if err := db.First(&file, fileID).Error; err != nil {
+		return nil, &errors.FailedToGetFile
+	}
+
+	return &file, nil
 }

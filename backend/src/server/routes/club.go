@@ -2,6 +2,7 @@ package routes
 
 import (
 	p "github.com/GenerateNU/sac/backend/src/auth"
+	"github.com/GenerateNU/sac/backend/src/aws"
 	"github.com/GenerateNU/sac/backend/src/controllers"
 	"github.com/GenerateNU/sac/backend/src/middleware"
 	"github.com/GenerateNU/sac/backend/src/services"
@@ -10,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func ClubRoutes(router fiber.Router, db *gorm.DB, validate *validator.Validate, authMiddleware *middleware.AuthMiddlewareService) {
+func ClubRoutes(router fiber.Router, db *gorm.DB, validate *validator.Validate, authMiddleware *middleware.AuthMiddlewareService, awsClient *aws.AWSClient) {
 	clubIDRouter := Club(router, services.NewClubService(db, validate), authMiddleware)
 
 	ClubTag(clubIDRouter, services.NewClubTagService(db, validate), authMiddleware)
@@ -18,7 +19,7 @@ func ClubRoutes(router fiber.Router, db *gorm.DB, validate *validator.Validate, 
 	ClubMember(clubIDRouter, services.NewClubMemberService(db, validate), authMiddleware)
 	ClubContact(clubIDRouter, services.NewClubContactService(db, validate), authMiddleware)
 	ClubEvent(clubIDRouter, services.NewClubEventService(db))
-	ClubPointOfContact(clubIDRouter, services.NewClubPointOfContactService(db, validate), authMiddleware)
+	ClubPointOfContact(clubIDRouter, services.NewClubPointOfContactService(db, validate, awsClient), authMiddleware)
 }
 
 func Club(router fiber.Router, clubService services.ClubServiceInterface, authMiddleware *middleware.AuthMiddlewareService) fiber.Router {

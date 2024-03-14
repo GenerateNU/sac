@@ -43,7 +43,7 @@ func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 	routes.Utility(app)
 	routes.Auth(apiv1, services.NewAuthService(db, validate), settings.Auth, authMiddleware)
 	routes.UserRoutes(apiv1, db, validate, authMiddleware)
-	routes.ClubRoutes(apiv1, db, validate, authMiddleware)
+	routes.ClubRoutes(apiv1, db, validate, authMiddleware, awsClient)
 	routes.Contact(apiv1, services.NewContactService(db, validate), authMiddleware)
 	routes.PointOfContact(apiv1, services.NewPointOfContactService(db, validate))
 	routes.Tag(apiv1, services.NewTagService(db, validate), authMiddleware)

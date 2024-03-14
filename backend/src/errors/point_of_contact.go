@@ -23,6 +23,10 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to validate point of contact",
 	}
+	FailedToCreatePointOfContact = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to create point of contact",
+	}
 	FailedToValidateEmail = Error{
 		StatusCode: fiber.StatusBadRequest,
 		Message:    "failed to validate email",

@@ -22,6 +22,7 @@ func ClubPointOfContact(clubIDRouter fiber.Router, clubPointOfContactService ser
 	// api/v1/clubs/:clubID/poc/*
 	clubPointOfContacts.Get("/", clubPointOfContactController.GetClubPointOfContacts)
 	clubPointOfContacts.Get("/:pocID", clubPointOfContactController.GetClubPointOfContact)
+	clubPointOfContacts.Post("/", authMiddleware.ClubAuthorizeById, clubPointOfContactController.CreateClubPointOfContact)
 	// clubPointOfContacts.Put("/", authMiddleware.ClubAuthorizeById, clubPointOfContactController.UpdateClubPointOfContact)
 	clubPointOfContacts.Delete("/:pocID", authMiddleware.ClubAuthorizeById, clubPointOfContactController.DeleteClubPointOfContact)
 }

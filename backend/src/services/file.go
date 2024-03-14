@@ -9,6 +9,7 @@ import (
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
+	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -16,8 +17,8 @@ import (
 
 type FileServiceInterface interface {
 	CreateFile(fileBody *models.CreateFileRequestBody, fileHeader *multipart.FileHeader) (*models.File, *errors.Error)
-	// DeleteFile(fileID string) *errors.Error
-	// GetFile(fileID string) (*models.File, *errors.Error)
+	DeleteFile(fileID string) *errors.Error
+	GetFileInfo(fileID string) (*models.File, *errors.Error)
 }
 
 type FileService struct {
@@ -30,10 +31,16 @@ func NewFileService(db *gorm.DB, validate *validator.Validate, client *aws.AWSCl
 	return &FileService{DB: db, Validate: validate, AWSClient: client}
 }
 
-// validate size
-// validate file type
-// validate file name
+func (f *FileService) GetFileInfo(fileID string) (*models.File, *errors.Error) {
+	fileIdAsUUID, err := utilities.ValidateID(fileID)
+	if err != nil {
+		return nil, &errors.FailedToValidateFile
+	}
 
+	return transactions.GetFile(f.DB, *fileIdAsUUID)
+}
+
+// TODO: specific file type validation
 func (f *FileService) CreateFile(fileBody *models.CreateFileRequestBody, fileHeader *multipart.FileHeader) (*models.File, *errors.Error) {
 	if err := f.Validate.Struct(fileBody); err != nil {
 		return nil, &errors.FailedToValidateFile
@@ -71,6 +78,25 @@ func (f *FileService) CreateFile(fileBody *models.CreateFileRequestBody, fileHea
 	}
 
 	return transactions.CreateFile(f.DB, fileBody.OwnerID, fileBody.OwnerType, fileInfo)
+}
+
+func (f *FileService) DeleteFile(fileID string) *errors.Error {
+	fileIdAsUUID, err := utilities.ValidateID(fileID)
+	if err != nil {
+		return &errors.FailedToValidateFile
+	}
+
+	file, err := transactions.GetFile(f.DB, *fileIdAsUUID)
+	if err != nil {
+		return err
+	}
+
+	clientErr := f.AWSClient.DeleteFile(file.FileURL)
+	if clientErr != nil {
+		return clientErr
+	}
+
+	return transactions.DeleteFile(f.DB, *fileIdAsUUID)
 }
 
 func generateUniqueFileName(fileName string) string {

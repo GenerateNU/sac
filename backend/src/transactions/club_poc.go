@@ -9,23 +9,20 @@ import (
 	"gorm.io/gorm"
 )
 
-// // Upsert Point of Contact
-// func UpsertPointOfContact(db *gorm.DB, pointOfContact *models.PointOfContact) (*models.PointOfContact, *errors.Error) {
-// 	pocExist, errPOCExist := GetPointOfContact(db, pointOfContact.ID, pointOfContact.ClubID)
-// 	if errPOCExist != nil {
-// 		db.Model(&pointOfContact).Where("id = ?", pocExist.ID).Association("File").Replace(pocExist, pointOfContact)
-// 	} else {
-// 		db.Model(&pointOfContact).Association("File").Append(pointOfContact)
-// 	}
-// 	// err := db.Clauses(clause.OnConflict{
-// 	// 	Columns:   []clause.Column{{Name: "email"}, {Name: "club_id"}},
-// 	// 	DoUpdates: clause.AssignmentColumns([]string{"name", "email", "position"}),
-// 	// }).Create(&pointOfContact).Error
-// 	// if err != nil {
-// 	// 	return nil, &errors.FailedToUpsertPointOfContact
-// 	// }
-// 	return pointOfContact, nil
-// }
+func CreateClubPointOfContact(db *gorm.DB, clubID uuid.UUID, pointOfContactBody models.CreatePointOfContactBody, fileID uuid.UUID) (*models.PointOfContact, *errors.Error) {
+	pointOfContact := models.PointOfContact{
+		Name:        pointOfContactBody.Name,
+		Email:       pointOfContactBody.Email,
+		Position:    pointOfContactBody.Position,
+		ClubID:      clubID,
+		PhotoFileID: fileID,
+	}
+
+	if err := db.Create(&pointOfContact).Error; err != nil {
+		return nil, &errors.FailedToCreatePointOfContact
+	}
+	return &pointOfContact, nil
+}
 
 func GetClubPointOfContacts(db *gorm.DB, clubID uuid.UUID) ([]models.PointOfContact, *errors.Error) {
 	var pointOfContacts []models.PointOfContact
@@ -45,21 +42,23 @@ func GetClubPointOfContacts(db *gorm.DB, clubID uuid.UUID) ([]models.PointOfCont
 	}
 }
 
+// also get the file associated with the point of contact
 func GetClubPointOfContact(db *gorm.DB, pocID uuid.UUID, clubID uuid.UUID) (*models.PointOfContact, *errors.Error) {
+	var pointOfContact models.PointOfContact
 	var club models.Club
+
 	if err := db.First(&club, clubID).Error; err != nil {
 		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, &errors.ClubNotFound
-		} else {
 			return nil, &errors.FailedToGetClub
+		} else {
+			return nil, &errors.FailedToGetPointOfContact
 		}
 	} else {
-		var pointOfContact models.PointOfContact
-		if err := db.First(&pointOfContact, pocID).Error; err != nil {
+		if err = db.Where("id = ?", pocID).First(&pointOfContact).Error; err != nil {
 			if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
 				return nil, &errors.PointOfContactNotFound
 			} else {
-				return nil, &errors.FailedToGetAPointOfContact
+				return nil, &errors.FailedToGetPointOfContact
 			}
 		}
 		return &pointOfContact, nil
@@ -67,23 +66,25 @@ func GetClubPointOfContact(db *gorm.DB, pocID uuid.UUID, clubID uuid.UUID) (*mod
 }
 
 func DeleteClubPointOfContact(db *gorm.DB, pocID uuid.UUID, clubID uuid.UUID) *errors.Error {
-	var deletedPointOfContact models.PointOfContact
+	var pointOfContact models.PointOfContact
 	var club models.Club
 
 	if err := db.First(&club, clubID).Error; err != nil {
 		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
-			return &errors.FailedToDeletePointOfContact
-		} else {
 			return &errors.FailedToGetClub
+		} else {
+			return &errors.FailedToDeletePointOfContact
 		}
 	} else {
-		result := db.Where("id = ?", pocID).Delete(&deletedPointOfContact)
-		if result.RowsAffected == 0 {
-			if result.Error == nil {
+		if err = db.Where("id = ?", pocID).First(&pointOfContact).Error; err != nil {
+			if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
 				return &errors.PointOfContactNotFound
 			} else {
 				return &errors.FailedToDeletePointOfContact
 			}
+		}
+		if err = db.Delete(&pointOfContact).Error; err != nil {
+			return &errors.FailedToDeletePointOfContact
 		}
 		return nil
 	}

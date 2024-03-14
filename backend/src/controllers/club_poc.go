@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"github.com/GenerateNU/sac/backend/src/errors"
+	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
 	"github.com/gofiber/fiber/v2"
 )
@@ -12,22 +14,6 @@ type ClubPointOfContactController struct {
 func NewClubPointOfContactController(clubPointOfContactService services.ClubPointOfContactServiceInterface) *ClubPointOfContactController {
 	return &ClubPointOfContactController{clubPointOfContactService: clubPointOfContactService}
 }
-
-
-// func (u *ClubPointOfContactController) UpsertClubPointOfContact(c *fiber.Ctx) error {
-// 	var pointOfContactBody models.CreatePointOfContactBody
-
-// 	if err := c.BodyParser(&pointOfContactBody); err != nil {
-// 		return errors.FailedToParseRequestBody.FiberError(c)
-// 	}
-
-// 	pointOfContact, err := u.clubPointOfContactService.UpsertPointOfContact(c.Params("clubID"), pointOfContactBody)
-// 	if err != nil {
-// 		return err.FiberError(c)
-// 	}
-
-// 	return c.Status(fiber.StatusOK).JSON(pointOfContact)
-// }
 
 // GetClubPointOfContacts godoc
 //
@@ -72,6 +58,41 @@ func (u *ClubPointOfContactController) GetClubPointOfContact(c *fiber.Ctx) error
 	}
 
 	return c.Status(fiber.StatusOK).JSON(pointOfContact)
+}
+
+// CreateClubPointOfContact godoc
+//
+// @Summary		Create a point of contact for a club
+// @Description	Creates a point of contact associated with a club
+// @ID			create-point-of-contact-by-club
+// @Tags      	club-point-of-contact
+// @Accept		multipart/form-data
+// @Produce		json
+// @Param		clubID	path	string	true	"Club ID"
+// @Param		pocID	path	string	true	"Point of Contact ID"
+// @Success		201	  {object}	    models.PointOfContact
+// @Failure     400   {object}      errors.Error
+// @Failure     404   {object}      errors.Error
+// @Failure     500   {object}      errors.Error
+// @Router		/clubs/{clubID}/poc/  [post]
+func (u *ClubPointOfContactController) CreateClubPointOfContact(c *fiber.Ctx) error {
+	var pointOfContactBody models.CreatePointOfContactBody
+
+	if parseErr := c.BodyParser(&pointOfContactBody); parseErr != nil {
+		return errors.FailedToParseRequestBody.FiberError(c)
+	}
+
+	formFile, parseErr := c.FormFile("file")
+	if parseErr != nil {
+		return errors.FailedToParseRequestBody.FiberError(c)
+	}
+
+	pointOfContact, err := u.clubPointOfContactService.CreateClubPointOfContact(c.Params("clubID"), pointOfContactBody, formFile)
+	if err != nil {
+		return err.FiberError(c)
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(pointOfContact)
 }
 
 // DeleteClubPointOfContact godoc
