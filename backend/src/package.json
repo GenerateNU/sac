@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "@react-navigation/stack": "^6.3.23"
-  },
-  "devDependencies": {
-    "@types/react": "^18.2.58"
-  }
-}

@@ -6,7 +6,6 @@ import { router } from 'expo-router';
 import { ZodError, z } from 'zod';
 import Wordmark from '@/components/Wordmark';
 import { Button } from '@/components/button';
-import Header from '@/components/header';
 import Input from '@/components/input';
 import Error from '@/components/error';
 import { useAuthStore } from '@/hooks/use-auth';
@@ -54,15 +53,11 @@ const Login = () => {
         <SafeAreaView className="bg-neutral-500 h-[100%]" edges={['top']}>
             <View className="flex-1">
                 <View className="px-[8%] pb-[10%]">
-                    <View className="pt-[1%]"><Wordmark textColor="white" /></View>
+                    <View className="pt-[1%]"><Wordmark textColor="text-white" /></View>
                     <View className="pt-[9.5%] pb-[6%]">
-                        <Header
-                            text="Let's go"
-                            fontSize="45"
-                            color="white"
-                        ></Header>
+                    <Text className="text-white font-bold text-5xl">Let's go</Text>
                     </View>
-                    <Text className="text-white pt-[0.9%] text-lg leading-6">
+                    <Text className="text-white pt-[0.8%] text-lg leading-6">
                         Discover, follow, and join all the clubs & events
                         Northeastern has to offer
                     </Text>
@@ -114,17 +109,15 @@ const Login = () => {
 
                     <View className="flex-row justify-between">
                         <Button
-                            children="Sign up"
                             size="lg"
                             variant="outline"
                             onPress={() => router.push('/(auth)/register')}
-                        ></Button>
+                        >Sign up</Button>
                         <Button
-                            children="Log in"
                             size="lg"
                             variant="default"
                             onPress={handleSubmit(onSubmit)}
-                        ></Button>
+                        >Log in</Button>
                     </View>
                     <View className="mt-[9%] flex-row justify-center">
                         <Text className="font-bold">Not a student?</Text>

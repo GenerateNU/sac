@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Button } from '@/components/button';
 
-type WordmarkProps = {
+interface WordmarkProps {
     textColor?: string;
     backgroundColor?: string;
     button?: boolean;
@@ -11,30 +11,17 @@ type WordmarkProps = {
 };
 
 const Wordmark = (props: WordmarkProps) => {
-    const styles = StyleSheet.create({
-        wordmark: {
-            fontSize: 24,
-            fontWeight: 'bold',
-            color: props.textColor
-        },
-        wordmarkView: {
-            backgroundColor: props.backgroundColor,
-            flexDirection: 'row'
-        }
-    });
-
     return (
-        <View className="flex flex-row justify-between mx-auto w-full items-center pt-[2.5%] pb-[5.5%]">
+        <View className="flex flex-row justify-between mx-auto w-full items-center pt-[3%] pb-[5.5%]">
             <View>
-                <Text style={styles.wordmark}>Wordmark</Text>
+                <Text className={`text-2xl font-bold ${props.textColor}`}>Wordmark</Text>
             </View>
             {props.button && (
                 <Button
                     onPress={props.func}
-                    children= {props.title}
                     variant="secondary"
                     size="sm"
-                >
+                >{props.title}
                 </Button>
 
             )}

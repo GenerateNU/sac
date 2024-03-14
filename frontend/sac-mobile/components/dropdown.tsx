@@ -10,7 +10,7 @@ type Item = {
     value: string,
 }
 
-type ListOfItem = {
+interface DropdownProps {
     title: string,
     item: Array<Item>,   // list of dropdown items
     placeholder: string, // placeholder
@@ -22,7 +22,7 @@ type ListOfItem = {
     error?: boolean;
 }
 
-export const DropdownComponent = (props: ListOfItem) => {
+export const DropdownComponent = (props: DropdownProps) => {
   const [isFocus, setIsFocus] = useState(false);
   const borderColor = props.error ? 'red' : 'black';
   const borderWidth = props.error ? 1 : 0.5;

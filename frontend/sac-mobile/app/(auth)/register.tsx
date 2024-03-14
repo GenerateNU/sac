@@ -7,7 +7,6 @@ import { ZodError, z } from 'zod';
 import Wordmark from '@/components/Wordmark';
 import { Button } from '@/components/button';
 import { DropdownComponent } from '@/components/dropdown';
-import Header from '@/components/header';
 import Input from '@/components/input';
 import Error from '@/components/error';
 
@@ -91,13 +90,13 @@ const Register = () => {
             <ScrollView>
             <View className="px-[8%] pb-[9%]">
                 <Wordmark
-                    textColor="white"
+                    textColor="text-white"
                     button={true}
                     func={() => router.push('/(auth)/login')}
                     title="Login"
                 />
-                <View className="pt-[9%] pb-[6%]">
-                    <Header text="Sign up" fontSize="45" color="white"></Header>
+                <View className="pt-[9%] pb-[7.5%]">
+                    <Text className="text-white font-bold text-5xl">Sign up</Text>
                 </View>
                 <Text className="text-lg leading-6 text-white">
                     Discover, follow, and join all the clubs & events
@@ -311,9 +310,8 @@ const Register = () => {
                 <View className="pt-[2%] pb-[15%]">
                     <Button
                     onPress={handleSubmit(onSubmit)}
-                    children="Submit"
                     size="screenwide"
-                    ></Button>
+                    >Submit</Button>
                 </View>
             </View>
             </ScrollView>
