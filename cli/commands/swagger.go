@@ -15,7 +15,7 @@ func SwaggerCommand() *cli.Command {
 		Usage:   "Runs `swag init` to update Swagger documentation for the backend API",
 		Action: func(c *cli.Context) error {
 			cmd := exec.Command("swag", "init")
-			cmd.Dir = BACKEND_DIR
+			cmd.Dir = BACKEND_SRC_DIR
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			err := cmd.Run()
@@ -31,7 +31,7 @@ func SwaggerCommand() *cli.Command {
 
 func Swagger() error {
 	cmd := exec.Command("swag", "init")
-	cmd.Dir = BACKEND_DIR
+	cmd.Dir = BACKEND_SRC_DIR
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {

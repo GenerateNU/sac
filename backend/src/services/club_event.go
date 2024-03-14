@@ -36,7 +36,5 @@ func (c *ClubEventService) GetClubEvents(clubID string, limit string, page strin
 		return nil, &errors.FailedToValidatePage
 	}
 
-	offset := (*pageAsInt - 1) * *limitAsInt
-
-	return transactions.GetClubEvents(c.DB, *idAsUUID, *limitAsInt, offset)
+	return transactions.GetClubEvents(c.DB, *idAsUUID, *limitAsInt, *pageAsInt)
 }

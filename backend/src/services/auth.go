@@ -84,7 +84,7 @@ func (a *AuthService) UpdatePassword(id string, passwordBody models.UpdatePasswo
 	}
 
 	if err := a.Validate.Struct(passwordBody); err != nil {
-		return &errors.FailedToValidateUser
+		return &errors.FailedToValidateUpdatePasswordBody
 	}
 
 	passwordHash, err := transactions.GetUserPasswordHash(a.DB, *idAsUint)
@@ -92,7 +92,7 @@ func (a *AuthService) UpdatePassword(id string, passwordBody models.UpdatePasswo
 		return err
 	}
 
-	correct, passwordErr := auth.ComparePasswordAndHash(passwordBody.OldPassword, passwordHash)
+	correct, passwordErr := auth.ComparePasswordAndHash(passwordBody.OldPassword, *passwordHash)
 	if passwordErr != nil || !correct {
 		return &errors.FailedToValidateUser
 	}

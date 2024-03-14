@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type UserRole string
@@ -88,4 +89,38 @@ type UpdatePasswordRequestBody struct {
 
 type CreateUserTagsBody struct {
 	Tags []uuid.UUID `json:"tags" validate:"required"`
+}
+
+func (u *User) AfterCreate(tx *gorm.DB) (err error) {
+	sac := &Club{}
+	if err := tx.Where("name = ?", "SAC").First(sac).Error; err != nil {
+		return err
+	}
+
+	if err := tx.Model(u).Association("Member").Append(sac); err != nil {
+		return err
+	}
+
+	if err := tx.Model(u).Association("Follower").Append(sac); err != nil {
+		return err
+	}
+
+	if err := tx.Model(&Club{}).Where("id = ?", sac.ID).Update("num_members", gorm.Expr("num_members + 1")).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (u *User) AfterDelete(tx *gorm.DB) (err error) {
+	sac := &Club{}
+	if err := tx.Where("name = ?", "SAC").First(sac).Error; err != nil {
+		return err
+	}
+
+	if err := tx.Model(&Club{}).Where("id = ?", sac.ID).Update("num_members", gorm.Expr("num_members - 1")).Error; err != nil {
+		return err
+	}
+
+	return nil
 }

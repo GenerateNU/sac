@@ -54,7 +54,7 @@ type Series struct {
 
 // TODO: add not null to required fields on all gorm models
 type EventSeries struct {
-	EventID  uuid.UUID `gorm:"not null; type:uuid; primary_key;" json:"event_id" validate:"uuid4"`
+	EventID  uuid.UUID `gorm:"not null; type:uuid; primaryKey;" json:"event_id" validate:"uuid4"`
 	Event    Event     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	SeriesID uuid.UUID `gorm:"not null; type:uuid;" json:"series_id" validate:"uuid4"`
 	Series   Series    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
@@ -100,19 +100,13 @@ type CreateEventRequestBody struct {
 }
 
 type UpdateEventRequestBody struct {
-	Name      string    `json:"name" validate:"required,max=255"`
-	Preview   string    `json:"preview" validate:"required,max=255"`
-	Content   string    `json:"content" validate:"required,max=255"`
-	StartTime time.Time `json:"start_time" validate:"required,datetime,ltecsfield=EndTime"`
-	EndTime   time.Time `json:"end_time" validate:"required,datetime,gtecsfield=StartTime"`
-	Location  string    `json:"location" validate:"required,max=255"`
-	EventType EventType `gorm:"type:varchar(255);default:open" json:"event_type" validate:"required,max=255"`
-
-	RSVP         []User         `json:"-" validate:"-"`
-	Waitlist     []User         `json:"-" validate:"-"`
-	Club         []Club         `json:"-" validate:"-"`
-	Tag          []Tag          `json:"-" validate:"-"`
-	Notification []Notification `json:"-" validate:"-"`
+	Name      string    `json:"name" validate:"max=255"`
+	Preview   string    `json:"preview" validate:"max=255"`
+	Content   string    `json:"content" validate:"max=255"`
+	StartTime time.Time `json:"start_time" validate:"ltecsfield=EndTime"`
+	EndTime   time.Time `json:"end_time" validate:"gtecsfield=StartTime"`
+	Location  string    `json:"location" validate:"max=255"`
+	EventType EventType `gorm:"type:varchar(255);default:open" json:"event_type" validate:"max=255"`
 }
 
 type UpdateSeriesRequestBody struct {

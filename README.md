@@ -35,15 +35,16 @@
 
   <br />
 
+  <a href="https://github.com/GenerateNU/sac/actions/workflows/mobile.yml">
+    <img src="https://github.com/GenerateNU/sac/actions/workflows/mobile.yml/badge.svg"
+      alt="Mobile Workflow Status" />
+  </a>
+
   <a href="https://github.com/GenerateNU/sac/actions/workflows/mobile_codeql.yml">
     <img src="https://github.com/GenerateNU/sac/actions/workflows/mobile_codeql.yml/badge.svg"
       alt="Mobile CodeQL Workflow Status" />
   </a>
 
-  <a href="https://github.com/GenerateNU/sac/actions/workflows/mobile.yml">
-    <img src="https://github.com/GenerateNU/sac/actions/workflows/mobile.yml/badge.svg"
-      alt="Mobile Workflow Status" />
-  </a>
   
   <br />
   
@@ -61,6 +62,6 @@
 
 <div align="center">
   <a href="https://github.com/GenerateNU/sac/graphs/contributors">
-    <img src="https://contrib.rocks/image?repo=GenerateNU/sac" height="50px"/>
+    <img src="https://contrib.rocks/image?repo=GenerateNU/sac" height="50px" alt="Contributors Image" />
   </a>
 </div>
