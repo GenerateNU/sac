@@ -214,6 +214,15 @@ type PineconeSearchResponseBody struct {
 // Runs a search on the Pinecone index given a searchable item, and returns the topK most similar
 // elements' ids.
 func (c *PineconeClient) Search(item Searchable, topK int) ([]string, *errors.Error) {
+	moderation, _err := c.openAIClient.CreateModeration([]Searchable{item})
+	if _err != nil {
+		return []string{}, _err
+	}
+
+	if moderation[0].Flagged {
+		return []string{}, &errors.PotentiallyHarmfulSearch
+	}
+
 	values, embeddingErr := c.openAIClient.CreateEmbedding([]Searchable{item})
 	if embeddingErr != nil {
 		return []string{}, embeddingErr

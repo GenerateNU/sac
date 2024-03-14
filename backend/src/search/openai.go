@@ -2,6 +2,7 @@ package search
 
 import (
 	"bytes"
+	"io"
 	"net/http"
 
 	"github.com/goccy/go-json"
@@ -83,4 +84,70 @@ func (c *OpenAIClient) CreateEmbedding(items []Searchable) ([]Embedding, *errors
 	}
 
 	return embeddingResultBody.Data, nil
+}
+
+type CreateModerationRequestBody struct {
+	Input []string `json:"input"`
+	Model string   `json:"model"`
+}
+
+type CreateModerationResponseBody struct {
+	Results []ModerationResult `json:"results"`
+}
+
+type ModerationResult struct {
+	Flagged bool `json:"flagged"`
+}
+
+func (c *OpenAIClient) CreateModeration(items []Searchable) ([]ModerationResult, *errors.Error) {
+	searchStrings := []string{}
+	for _, item := range items {
+		searchStrings = append(searchStrings, item.EmbeddingString())
+	}
+
+	moderationBody, err := json.Marshal(
+		CreateModerationRequestBody{
+			Input: searchStrings,
+			Model: "text-moderation-stable",
+		})
+	if err != nil {
+		return nil, &errors.FailedToCreateModeration
+	}
+
+	req, err := http.NewRequest(fiber.MethodPost,
+		"https://api.openai.com/v1/moderations",
+		bytes.NewBuffer(moderationBody))
+	if err != nil {
+		return nil, &errors.FailedToCreateModeration
+	}
+
+	req = utilities.ApplyModifiers(req,
+		utilities.Authorization(c.Settings.APIKey.Expose()),
+		utilities.JSON(),
+	)
+
+	resp, err := http.DefaultClient.Do(req)
+
+	respBody, err := io.ReadAll(resp.Body)
+	respBodyString := string(respBody)
+	print(respBodyString)
+
+	if err != nil {
+		return nil, &errors.FailedToCreateModeration
+	}
+
+	defer resp.Body.Close()
+
+	var moderationResultBody CreateModerationResponseBody
+
+	err = json.NewDecoder(resp.Body).Decode(&moderationResultBody)
+	if err != nil {
+		return nil, &errors.FailedToCreateModeration
+	}
+
+	if len(moderationResultBody.Results) < 1 {
+		return nil, &errors.FailedToCreateModeration
+	}
+
+	return moderationResultBody.Results, nil
 }
