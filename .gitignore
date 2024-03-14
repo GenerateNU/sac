@@ -1,7 +1,19 @@
+# MacOS
 .DS_Store
-.env
+
+# Cli
 sac-cli
-node_modules
+
+# VSCode
 .vscode
 .trunk
+
+# Node modules
+node_modules
+
+# Environment files
+.env
 .env.dev
+
+# Debug files
+backend/tests/api/__debug_*

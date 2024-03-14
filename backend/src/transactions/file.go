@@ -16,14 +16,15 @@ import (
 // FileURL  string `gorm:"type:varchar(255)" json:"file_url" validate:"required,max=255"`
 // ObjectKey string `gorm:"type:varchar(255)" json:"object_key" validate:"required,max=255"`
 
-func CreateFile(db *gorm.DB, ownerID uuid.UUID, ownerType string, fileURL string) (*models.File, *errors.Error) {
+func CreateFile(db *gorm.DB, ownerID uuid.UUID, ownerType string, fileInfo models.FileInfo) (*models.File, *errors.Error) {
 	file := &models.File{
 		OwnerID:   ownerID,
 		OwnerType: ownerType,
-		FileURL:   fileURL,
-		FileType:  "fileType",
-		FileSize:  0,
-		FileName:  "fileName",
+		FileName:  fileInfo.FileName,
+		FileType:  fileInfo.FileType,
+		FileSize:  fileInfo.FileSize,
+		FileURL:   fileInfo.FileURL,
+		ObjectKey: fileInfo.ObjectKey,
 	}
 
 	if err := db.Create(file).Error; err != nil {

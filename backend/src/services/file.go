@@ -38,19 +38,14 @@ func (f *FileService) CreateFile(fileBody *models.CreateFileRequestBody, fileHea
 	if err := f.Validate.Struct(fileBody); err != nil {
 		return nil, &errors.FailedToValidateFile
 	}
+	
+	if fileHeader.Size > 5000000 {
+		return nil, &errors.InvalidFileSize
+	}
 
 	file, err := fileHeader.Open()
 	if err != nil {
 		return nil, &errors.FailedToOpenFile
-	}
-
-	fmt.Println(fileBody.OwnerID)
-	fmt.Println(fileBody.OwnerType)	
-	fmt.Println(fileHeader.Filename)
-	fmt.Println(fileHeader.Size)
-	
-	if fileHeader.Size > 5000000 {
-		return nil, &errors.InvalidFileSize
 	}
 
 	fileBytes, err := io.ReadAll(file)
@@ -62,12 +57,20 @@ func (f *FileService) CreateFile(fileBody *models.CreateFileRequestBody, fileHea
 
 	fileName := generateUniqueFileName(fileHeader.Filename)
 
-	fileURL, clientErr := f.AWSClient.UploadFile(fileBytes, fileName, "test")
+	fileURL, clientErr := f.AWSClient.UploadFile(fileBytes, fileName, fileBody.OwnerType)
 	if clientErr != nil {
 		return nil, clientErr
 	}
 
-	return transactions.CreateFile(f.DB, fileBody.OwnerID, fileBody.OwnerType, *fileURL)
+	fileInfo := models.FileInfo{
+		FileName: fileHeader.Filename,
+		FileType: fileHeader.Header.Get("Content-Type"),
+		FileSize: int(fileHeader.Size),
+		FileURL: *fileURL,
+		ObjectKey: fileName,
+	}
+
+	return transactions.CreateFile(f.DB, fileBody.OwnerID, fileBody.OwnerType, fileInfo)
 }
 
 func generateUniqueFileName(fileName string) string {

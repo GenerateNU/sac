@@ -4,6 +4,14 @@ import (
 	"github.com/google/uuid"
 )
 
+type FileInfo struct {
+	FileName string
+	FileType string
+	FileSize int   
+	FileURL  string
+	ObjectKey string
+}
+
 type File struct {
 	Model
 
