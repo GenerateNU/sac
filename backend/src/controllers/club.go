@@ -21,7 +21,6 @@ func NewClubController(clubService services.ClubServiceInterface) *ClubControlle
 // @Description	Retrieves all clubs
 // @ID			get-all-clubs
 // @Tags      	club
-// @Accept		json
 // @Produce		json
 // @Param		limit		query	int	    false	"Limit"
 // @Param		page		query	int	    false	"Page"
@@ -64,7 +63,7 @@ func (cl *ClubController) GetClubs(c *fiber.Ctx) error {
 // @Router		/clubs/  [post]
 func (cl *ClubController) CreateClub(c *fiber.Ctx) error {
 	var clubBody models.CreateClubRequestBody
-	
+
 	if err := c.BodyParser(&clubBody); err != nil {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}

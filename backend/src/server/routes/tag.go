@@ -14,8 +14,11 @@ func Tag(router fiber.Router, tagService services.TagServiceInterface, authMiddl
 	tags := router.Group("/tags")
 
 	tags.Get("/", tagController.GetTags)
-	tags.Get("/:tagID", tagController.GetTag)
 	tags.Post("/", authMiddleware.Authorize(p.CreateAll), tagController.CreateTag)
-	tags.Patch("/:tagID", authMiddleware.Authorize(p.WriteAll), tagController.UpdateTag)
-	tags.Delete("/:tagID", authMiddleware.Authorize(p.DeleteAll), tagController.DeleteTag)
+
+	tagID := tags.Group("/:tagID")
+
+	tagID.Get("/", tagController.GetTag)
+	tagID.Patch("/", authMiddleware.Authorize(p.WriteAll), tagController.UpdateTag)
+	tagID.Delete("/", authMiddleware.Authorize(p.DeleteAll), tagController.DeleteTag)
 }

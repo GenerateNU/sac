@@ -11,11 +11,11 @@ import (
 )
 
 func UserRoutes(router fiber.Router, db *gorm.DB, validate *validator.Validate, authMiddleware *middleware.AuthMiddlewareService) {
-	userIDRouter := User(router, services.NewUserService(db, validate), authMiddleware)
+	usersRouter := User(router, services.NewUserService(db, validate), authMiddleware)
 
-	UserTag(userIDRouter, services.NewUserTagService(db, validate))
-	UserFollower(userIDRouter, services.NewUserFollowerService(db, validate))
-	UserMember(userIDRouter, services.NewUserMemberService(db))
+	UserTag(usersRouter, services.NewUserTagService(db, validate))
+	UserFollower(usersRouter, services.NewUserFollowerService(db, validate))
+	UserMember(usersRouter, services.NewUserMemberService(db))
 }
 
 func User(router fiber.Router, userService services.UserServiceInterface, authMiddleware *middleware.AuthMiddlewareService) fiber.Router {

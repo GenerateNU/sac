@@ -7,10 +7,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func ClubFollower(clubIDRouter fiber.Router, clubFollowerService services.ClubFollowerServiceInterface, authMiddleware *middleware.AuthMiddlewareService) {
+func ClubFollower(clubsIDRouter fiber.Router, clubFollowerService services.ClubFollowerServiceInterface, authMiddleware *middleware.AuthMiddlewareService) {
 	clubFollowerController := controllers.NewClubFollowerController(clubFollowerService)
 
-	clubFollower := clubIDRouter.Group("/followers")
+	clubFollower := clubsIDRouter.Group("/followers")
 
 	// api/clubs/:clubID/followers/*
 	clubFollower.Get("/", authMiddleware.ClubAuthorizeById, clubFollowerController.GetClubFollowers)
