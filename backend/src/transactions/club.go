@@ -177,7 +177,7 @@ func DeleteClub(db *gorm.DB, pinecone search.PineconeClientInterface, id uuid.UU
 	tx := db.Begin()
 
 	var existingClub models.Club
-	err := tx.First(&existingClub, id)
+	err := tx.First(&existingClub, id).Error
 	if err != nil {
 		tx.Rollback()
 		return &errors.ClubNotFound
