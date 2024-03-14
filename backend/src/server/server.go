@@ -1,8 +1,10 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 
+	"github.com/GenerateNU/sac/backend/src/aws"
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/middleware"
 	"github.com/GenerateNU/sac/backend/src/server/routes"
@@ -48,7 +50,6 @@ func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 	routes.CategoryRoutes(apiv1, db, validate, authMiddleware)
 	routes.Event(apiv1, services.NewEventService(db, validate), authMiddleware)
 	routes.File(apiv1, services.NewFileService(db, validate, awsClient))
-	// fileRouter := routes.File(apiv1, services.NewFileService(db, config.ConfigAWS(), validate))
 
 	return app
 }

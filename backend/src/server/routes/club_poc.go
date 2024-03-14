@@ -17,12 +17,12 @@ import (
 func ClubPointOfContact(clubIDRouter fiber.Router, clubPointOfContactService services.ClubPointOfContactServiceInterface, authMiddleware *middleware.AuthMiddlewareService) {
 	clubPointOfContactController := controllers.NewClubPointOfContactController(clubPointOfContactService)
 	
-	clubPointOfContacts := clubIDRouter.Group("/poc")
+	clubPointOfContact := clubIDRouter.Group("/poc")
 
 	// api/v1/clubs/:clubID/poc/*
-	clubPointOfContacts.Get("/", clubPointOfContactController.GetClubPointOfContacts)
-	clubPointOfContacts.Get("/:pocID", clubPointOfContactController.GetClubPointOfContact)
-	clubPointOfContacts.Post("/", authMiddleware.ClubAuthorizeById, clubPointOfContactController.CreateClubPointOfContact)
+	clubPointOfContact.Get("/", clubPointOfContactController.GetClubPointOfContacts)
+	clubPointOfContact.Get("/:pocID", clubPointOfContactController.GetClubPointOfContact)
+	clubPointOfContact.Post("/", authMiddleware.ClubAuthorizeById, clubPointOfContactController.CreateClubPointOfContact)
 	// clubPointOfContacts.Put("/", authMiddleware.ClubAuthorizeById, clubPointOfContactController.UpdateClubPointOfContact)
-	clubPointOfContacts.Delete("/:pocID", authMiddleware.ClubAuthorizeById, clubPointOfContactController.DeleteClubPointOfContact)
+	clubPointOfContact.Delete("/:pocID", authMiddleware.ClubAuthorizeById, clubPointOfContactController.DeleteClubPointOfContact)
 }

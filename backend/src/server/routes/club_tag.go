@@ -10,9 +10,9 @@ import (
 func ClubTag(clubIDRouter fiber.Router, clubTagService services.ClubTagServiceInterface, authMiddleware *middleware.AuthMiddlewareService) {
 	clubTagController := controllers.NewClubTagController(clubTagService)
 
-	clubTags := clubIDRouter.Group("/tags")
+	clubTag := clubIDRouter.Group("/tags")
 
-	clubTags.Get("/", clubTagController.GetClubTags)
-	clubTags.Post("/", authMiddleware.ClubAuthorizeById, clubTagController.CreateClubTags)
-	clubTags.Delete("/:tagID", authMiddleware.ClubAuthorizeById, clubTagController.DeleteClubTag)
+	clubTag.Get("/", clubTagController.GetClubTags)
+	clubTag.Post("/", authMiddleware.ClubAuthorizeById, clubTagController.CreateClubTags)
+	clubTag.Delete("/:tagID", authMiddleware.ClubAuthorizeById, clubTagController.DeleteClubTag)
 }

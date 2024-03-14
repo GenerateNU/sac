@@ -26,17 +26,17 @@ func Club(router fiber.Router, clubService services.ClubServiceInterface, authMi
 	clubController := controllers.NewClubController(clubService)
 
 	// api/v1/clubs/*
-	clubs := router.Group("/clubs")
+	club := router.Group("/clubs")
 
-	clubs.Get("/", clubController.GetClubs)
-	clubs.Post("/", authMiddleware.Authorize(p.CreateAll), clubController.CreateClub)
+	club.Get("/", clubController.GetClubs)
+	club.Post("/", authMiddleware.Authorize(p.CreateAll), clubController.CreateClub)
 
 	// api/v1/clubs/:clubID/*
-	clubsID := clubs.Group("/:clubID")
+	clubID := club.Group("/:clubID")
 
-	clubsID.Get("/", clubController.GetClub)
-	clubsID.Patch("/", authMiddleware.ClubAuthorizeById, clubController.UpdateClub)
-	clubsID.Delete("/", authMiddleware.Authorize(p.DeleteAll), clubController.DeleteClub)
+	clubID.Get("/", clubController.GetClub)
+	clubID.Patch("/", authMiddleware.ClubAuthorizeById, clubController.UpdateClub)
+	clubID.Delete("/", authMiddleware.Authorize(p.DeleteAll), clubController.DeleteClub)
 
-	return clubsID
+	return clubID
 }

@@ -11,12 +11,12 @@ import (
 func Tag(router fiber.Router, tagService services.TagServiceInterface, authMiddleware *middleware.AuthMiddlewareService) {
 	tagController := controllers.NewTagController(tagService)
 
-	tags := router.Group("/tags")
+	tag := router.Group("/tags")
 
-	tags.Get("/", tagController.GetTags)
-	tags.Post("/", authMiddleware.Authorize(p.CreateAll), tagController.CreateTag)
+	tag.Get("/", tagController.GetTags)
+	tag.Post("/", authMiddleware.Authorize(p.CreateAll), tagController.CreateTag)
 
-	tagID := tags.Group("/:tagID")
+	tagID := tag.Group("/:tagID")
 
 	tagID.Get("/", tagController.GetTag)
 	tagID.Patch("/", authMiddleware.Authorize(p.WriteAll), tagController.UpdateTag)

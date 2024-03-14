@@ -6,11 +6,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func UserTag(usersRouter fiber.Router, userTagService services.UserTagServiceInterface) {
+func UserTag(userIDRouter fiber.Router, userTagService services.UserTagServiceInterface) {
 	userTagController := controllers.NewUserTagController(userTagService)
 
 	// api/v1/users/:userID/tags/*
-	userTags := usersRouter.Group("/tags")
+	userTags := userIDRouter.Group("/tags")
 
 	userTags.Post("/", userTagController.CreateUserTags)
 	userTags.Get("/", userTagController.GetUserTags)

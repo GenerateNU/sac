@@ -11,9 +11,9 @@ func Contact(router fiber.Router, contactService services.ContactServiceInterfac
 	contactController := controllers.NewContactController(contactService)
 
 	// api/v1/contacts/*
-	contacts := router.Group("/contacts")
+	contact := router.Group("/contacts")
 
-	contacts.Get("/", contactController.GetContacts)
-	contacts.Get("/:contactID", contactController.GetContact)
-	contacts.Delete("/:contactID", authMiddleware.UserAuthorizeById, contactController.DeleteContact)
+	contact.Get("/", contactController.GetContacts)
+	contact.Get("/:contactID", contactController.GetContact)
+	contact.Delete("/:contactID", authMiddleware.UserAuthorizeById, contactController.DeleteContact)
 }
