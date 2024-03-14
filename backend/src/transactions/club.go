@@ -48,7 +48,7 @@ func GetClubs(db *gorm.DB, pinecone search.PineconeClientInterface, queryParams 
 		clubSearch := models.NewClubSearch(queryParams.Search)
 		resultIDs, err := pinecone.Search(clubSearch, 10)
 		if err != nil {
-			return nil, &errors.FailedToSearchToPinecone
+			return nil, err
 		}
 
 		query = query.Where("id IN ?", resultIDs)
@@ -177,7 +177,7 @@ func DeleteClub(db *gorm.DB, pinecone search.PineconeClientInterface, id uuid.UU
 	tx := db.Begin()
 
 	var existingClub models.Club
-	err := tx.First(&existingClub, id)
+	err := tx.First(&existingClub, id).Error
 	if err != nil {
 		tx.Rollback()
 		return &errors.ClubNotFound

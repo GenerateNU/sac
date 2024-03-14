@@ -2,7 +2,6 @@ package search
 
 import (
 	"bytes"
-	"io"
 	"net/http"
 
 	"github.com/goccy/go-json"
@@ -127,10 +126,6 @@ func (c *OpenAIClient) CreateModeration(items []Searchable) ([]ModerationResult,
 	)
 
 	resp, err := http.DefaultClient.Do(req)
-
-	respBody, err := io.ReadAll(resp.Body)
-	respBodyString := string(respBody)
-	print(respBodyString)
 
 	if err != nil {
 		return nil, &errors.FailedToCreateModeration
