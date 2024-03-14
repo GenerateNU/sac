@@ -34,7 +34,7 @@ type RegisterFormData = {
     firstName: string;
     lastName: string;
     email: string;
-    id: string;
+    nuid: string;
     graduationYear: Item;
     password: string;
     passwordConfirm: string;
@@ -48,7 +48,7 @@ const registerSchema = z.object({
         .string()
         .min(2, { message: 'Last name must be at least 2 characters long' }),
     email: z.string().email({ message: 'Invalid email' }),
-    id: z.string().length(9, { message: 'NUID must have 9 digits' }),
+    nuid: z.string().length(9, { message: 'NUID must have 9 digits' }),
     password: z
         .string()
         .min(8, { message: 'Password must be at least 8 characters long' }),
@@ -209,14 +209,14 @@ const Register = () => {
                                 onChangeText={onChange}
                                 value={value}
                                 onSubmitEditing={handleSubmit(onSubmit)}
-                                error={!!errors.id}
+                                error={!!errors.nuid}
                             />
                         )}
-                        name="id"
+                        name="nuid"
                         rules={{
                             required: 'NUID is required',
                             validate: (value) => {
-                                if (/[^\d]/.test(value)) {
+                                if (!/^00\d+/.test(value) || /[^\d]/.test(value)) {
                                     return 'Please enter a proper NUID number';
                                 }
                                 if (value.length != 9) {
@@ -226,7 +226,7 @@ const Register = () => {
                             },
                         }}
                     />
-                    {errors.id && <Error message={errors.id.message}/>}
+                    {errors.nuid && <Error message={errors.nuid.message}/>}
                 </View>
                 <View className="mb-[7%]">
                     <Controller
@@ -267,9 +267,16 @@ const Register = () => {
                         rules={{
                             required: 'Password is required',
                             validate: (value) => {
+                                let specialChars =/[`!@#$%^&*()_\-+=\[\]{};':"\\|,.<>\/?~ ]/;
                                 if (value.length < 8) {
                                     return 'Password must have at least 8 characters';
                                 }
+                                else if (!specialChars.test(value)) {
+                                    return 'Please contain at least one special character';
+                                }
+                                else if (!/^.*[0-9]+.*$/.test(value)) {
+                                    return 'Please contain at least one number';
+                                }                               
                                 return true;
                             },
                         }}
