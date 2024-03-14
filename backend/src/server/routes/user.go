@@ -35,5 +35,9 @@ func User(router fiber.Router, userService services.UserServiceInterface, authMi
 	userID.Patch("/", userController.UpdateUser)
 	userID.Delete("/", userController.DeleteUser)
 
+<<<<<<< HEAD
 	return userID
+=======
+	return usersID
+>>>>>>> main
 }
