@@ -5,7 +5,11 @@ module.exports = {
         './components/**/*.{js,ts,jsx,tsx,mdx}'
     ],
     theme: {
-        extend: {}
+        extend: {
+            colors: {
+                'card-bg': '#D9D9D9'
+            }
+        }
     },
     plugins: []
 };

@@ -4,6 +4,7 @@ import { Button } from '@/components/button';
 
 import { useAuthStore } from '@/hooks/use-auth';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Card } from '@/components/card';
 
 const Home = () => {
     const { logout } = useAuthStore();
@@ -25,24 +26,13 @@ const Home = () => {
                         <Text className="text-black font-bold">Club Description</Text>
                         <Text className="text-black">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</Text>
                     </View>
-                    <ScrollView horizontal={true} className = "pb-[10%]">
+                    <ScrollView horizontal={true} className = "pb-[10%] size-40">
                         <View className="flex-row">
                             {/* To be replaced by event components */}
-                            <Button variant="outline" size="sm" className="mr-2">
+                            <Card variant="default" size="default" className="mr-2">
                                 <Text className="text-black">Event 1</Text>
-                            </Button>
-                            <Button variant="outline" size="sm" className="mr-2">
-                                <Text className="text-black">Event 2</Text>
-                            </Button>
-                            <Button variant="outline" size="sm" className="mr-2">
-                                <Text className="text-black">Event 3</Text>
-                            </Button>
-                            <Button variant="outline" size="sm" className="mr-2">
-                                <Text className="text-black">Event 4</Text>
-                            </Button>
-                            <Button variant="outline" size="sm" className="mr-2">
-                                <Text className="text-black">Event 5</Text>
-                            </Button>
+                            </Card>
+                            
                         </View>
                     </ScrollView>
 
