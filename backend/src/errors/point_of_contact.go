@@ -11,6 +11,18 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to get all point of contact",
 	}
+	FailedToGetClubPointOfContacts = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get club point of contacts",
+	}
+	FailedToGetClubPointOfContact = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get club point of contact",
+	}
+	FailedToDeleteClubPointOfContact = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to delete club point of contact",
+	}
 	PointOfContactNotFound = Error{
 		StatusCode: fiber.StatusBadRequest,
 		Message:    "point of contact not found",

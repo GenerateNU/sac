@@ -3,12 +3,13 @@ package services
 import (
 	"mime/multipart"
 
-	"github.com/GenerateNU/sac/backend/src/aws"
 	"github.com/GenerateNU/sac/backend/src/errors"
+	"github.com/GenerateNU/sac/backend/src/file"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
 	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -22,11 +23,11 @@ type ClubPointOfContactServiceInterface interface {
 type ClubPointOfContactService struct {
 	DB       *gorm.DB
 	Validate *validator.Validate
-	AWSClient *aws.AWSClient
+	AWSProvider *file.AWSProvider
 }
 
-func NewClubPointOfContactService(db *gorm.DB, validate *validator.Validate, client *aws.AWSClient) ClubPointOfContactServiceInterface {
-	return &ClubPointOfContactService{DB: db, Validate: validate, AWSClient: client}
+func NewClubPointOfContactService(db *gorm.DB, validate *validator.Validate, client *file.AWSProvider) ClubPointOfContactServiceInterface {
+	return &ClubPointOfContactService{DB: db, Validate: validate, AWSProvider: client}
 }
 
 func (cpoc *ClubPointOfContactService) GetClubPointOfContacts(clubID string) ([]models.PointOfContact, *errors.Error) {
@@ -37,7 +38,7 @@ func (cpoc *ClubPointOfContactService) GetClubPointOfContacts(clubID string) ([]
 
 	return transactions.GetClubPointOfContacts(cpoc.DB, *clubIdAsUUID)
 }
-
+ 
 func (cpoc *ClubPointOfContactService) CreateClubPointOfContact(clubID string, pointOfContactBody models.CreatePointOfContactBody, fileHeader *multipart.FileHeader) (*models.PointOfContact, *errors.Error) {
 	if err := cpoc.Validate.Struct(pointOfContactBody); err != nil {
 		return nil, &errors.FailedToValidatePointOfContact
@@ -48,16 +49,44 @@ func (cpoc *ClubPointOfContactService) CreateClubPointOfContact(clubID string, p
 		return nil, &errors.FailedToValidateClub
 	}
 
-	fileService := NewFileService(cpoc.DB, cpoc.Validate, cpoc.AWSClient)
-	file, err := fileService.CreateFile(&models.CreateFileRequestBody{
-		OwnerType: "club_point_of_contact",
-		OwnerID:   *clubIdAsUUID,
-	}, fileHeader)	
+	// pocExists, err := transactions.ClubPointOfContactExists(cpoc.DB, *clubIdAsUUID, pointOfContactBody.Email)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	fileInfo, err := cpoc.AWSProvider.UploadFile("club_point_of_contact", fileHeader)
 	if err != nil {
 		return nil, err
 	}
 
-	return transactions.CreateClubPointOfContact(cpoc.DB, *clubIdAsUUID, pointOfContactBody, file.ID)
+	tx := cpoc.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	// 1. once upload is successful, create file in db
+	file, err := transactions.CreateFile(tx, uuid.Nil, "club_point_of_contact", *fileInfo)
+	if err != nil {
+		return nil, err
+	}
+
+	// 2. create point of contact
+	poc, err := transactions.CreateClubPointOfContact(tx, *clubIdAsUUID, pointOfContactBody, file.ID)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	// 3. update file with point of contact id
+	if err := tx.Model(&file).Update("owner_id", poc.ID).Error; err != nil {
+		tx.Rollback()
+		return nil, &errors.FailedToUpdateFile
+	}
+
+	tx.Commit()
+	return poc, nil
 }
 
 func (cpoc *ClubPointOfContactService) GetClubPointOfContact(clubID, pocID string) (*models.PointOfContact, *errors.Error) {
@@ -71,7 +100,7 @@ func (cpoc *ClubPointOfContactService) GetClubPointOfContact(clubID, pocID strin
 		return nil, &errors.FailedToValidatePointOfContactId
 	}
 
-	return transactions.GetClubPointOfContact(cpoc.DB, *pocIdAsUUID, *clubIdAsUUID)
+	return transactions.GetClubPointOfContact(cpoc.DB, *clubIdAsUUID, *pocIdAsUUID)
 }
 
 func (cpoc *ClubPointOfContactService) DeleteClubPointOfContact(clubID, pocID string) *errors.Error {
@@ -85,5 +114,18 @@ func (cpoc *ClubPointOfContactService) DeleteClubPointOfContact(clubID, pocID st
 		return &errors.FailedToValidatePointOfContactId
 	}
 
-	return transactions.DeleteClubPointOfContact(cpoc.DB, *pocIdAsUUID, *clubIdAsUUID)
+	pointOfContact, err := transactions.GetClubPointOfContact(cpoc.DB, *clubIdAsUUID, *pocIdAsUUID)
+	if err != nil {
+		return err
+	}
+
+	if pointOfContact.PhotoFileID != uuid.Nil {
+		if err := cpoc.AWSProvider.DeleteFile(pointOfContact.PhotoFileID.String()); err != nil {
+			return err
+		}
+	} else {
+		return &errors.FailedToGetFile
+	}
+
+	return transactions.DeleteClubPointOfContact(cpoc.DB, *clubIdAsUUID, *pocIdAsUUID)
 }

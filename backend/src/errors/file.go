@@ -15,6 +15,10 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to create AWS session",
 	}
+	FailedToUpdateFile = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to update file",
+	}
 	FailedToUploadFile = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to upload file",

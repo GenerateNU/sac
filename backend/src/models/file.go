@@ -7,7 +7,7 @@ import (
 type FileInfo struct {
 	FileName string
 	FileType string
-	FileSize int   
+	FileSize int
 	FileURL  string
 	ObjectKey string
 }
@@ -15,7 +15,7 @@ type FileInfo struct {
 type File struct {
 	Model
 
-	OwnerID   uuid.UUID `gorm:"uniqueIndex:compositeindex;index;not null;foreignKey:OwnerID" json:"-" validate:"uuid4"`
+	OwnerID   uuid.UUID `gorm:"uniqueIndex:compositeindex;index;not null;type:uuid" json:"-" validate:"required,uuid4"`
 	OwnerType string    `gorm:"uniqueIndex:compositeindex;index;not null;type:varchar(255)" json:"-" validate:"required,max=255"`
 
 	FileName string `gorm:"type:varchar(255)" json:"file_name" validate:"required,max=255"`

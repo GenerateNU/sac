@@ -14,7 +14,7 @@ type PointOfContact struct {
 	ClubID uuid.UUID `gorm:"uniqueIndex:compositeindex;index;not null;foreignKey:ClubID" json:"-" validate:"min=1"`
 	PhotoFileID uuid.UUID `gorm:"uniqueIndex:compositeindex;index;not null;foreignKey:PhotoFileID" json:"-" validate:"uuid4"`
 	
-	PhotoFile File `gorm:"foreignKey:PhotoFileID" json:"-"`
+	PhotoFile File `gorm:"polymorphic:Owner;"`
 }
 
 type CreatePointOfContactBody struct {

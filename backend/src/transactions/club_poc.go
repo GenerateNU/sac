@@ -26,66 +26,35 @@ func CreateClubPointOfContact(db *gorm.DB, clubID uuid.UUID, pointOfContactBody 
 
 func GetClubPointOfContacts(db *gorm.DB, clubID uuid.UUID) ([]models.PointOfContact, *errors.Error) {
 	var pointOfContacts []models.PointOfContact
-	var club models.Club
 
-	if err := db.First(&club, clubID).Error; err != nil {
-		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, &errors.FailedToGetAllPointOfContact
-		} else {
-			return nil, &errors.FailedToGetClub
-		}
-	} else {
-		if err = db.Find(&pointOfContacts).Error; err != nil {
-			return nil, &errors.FailedToGetAllPointOfContact
-		}
-		return pointOfContacts, nil
+	result := db.Preload("PhotoFile").Where("club_id = ?", clubID).Find(&pointOfContacts)
+	if result.Error != nil {
+		return nil, &errors.FailedToGetClubPointOfContacts
 	}
+
+	return pointOfContacts, nil
 }
 
-// also get the file associated with the point of contact
-func GetClubPointOfContact(db *gorm.DB, pocID uuid.UUID, clubID uuid.UUID) (*models.PointOfContact, *errors.Error) {
+func GetClubPointOfContact(db *gorm.DB, clubID uuid.UUID, pocID uuid.UUID) (*models.PointOfContact, *errors.Error) {
 	var pointOfContact models.PointOfContact
-	var club models.Club
-
-	if err := db.First(&club, clubID).Error; err != nil {
+	if err := db.Preload("PhotoFile").First(&pointOfContact, "id = ? AND club_id = ?", pocID, clubID).Error; err != nil {
 		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, &errors.FailedToGetClub
+			return nil, &errors.PointOfContactNotFound
 		} else {
-			return nil, &errors.FailedToGetPointOfContact
+			return nil, &errors.FailedToGetClubPointOfContact
 		}
-	} else {
-		if err = db.Where("id = ?", pocID).First(&pointOfContact).Error; err != nil {
-			if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
-				return nil, &errors.PointOfContactNotFound
-			} else {
-				return nil, &errors.FailedToGetPointOfContact
-			}
-		}
-		return &pointOfContact, nil
 	}
+
+	return &pointOfContact, nil
 }
 
-func DeleteClubPointOfContact(db *gorm.DB, pocID uuid.UUID, clubID uuid.UUID) *errors.Error {
-	var pointOfContact models.PointOfContact
-	var club models.Club
-
-	if err := db.First(&club, clubID).Error; err != nil {
-		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
-			return &errors.FailedToGetClub
+func DeleteClubPointOfContact(db *gorm.DB, clubID uuid.UUID, pocID uuid.UUID) *errors.Error {
+	if result := db.Delete(&models.PointOfContact{}, "id = ? AND club_id = ?", pocID, clubID); result.RowsAffected == 0 {
+		if result.Error == nil {
+			return &errors.PointOfContactNotFound
 		} else {
-			return &errors.FailedToDeletePointOfContact
+			return &errors.FailedToDeleteClubPointOfContact
 		}
-	} else {
-		if err = db.Where("id = ?", pocID).First(&pointOfContact).Error; err != nil {
-			if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
-				return &errors.PointOfContactNotFound
-			} else {
-				return &errors.FailedToDeletePointOfContact
-			}
-		}
-		if err = db.Delete(&pointOfContact).Error; err != nil {
-			return &errors.FailedToDeletePointOfContact
-		}
-		return nil
 	}
+	return nil
 }
