@@ -1,15 +1,12 @@
-import React from 'react'; 
+import React from 'react';
+import { Text } from 'react-native';
 
-import {Text, DimensionValue} from 'react-native'; 
-
-interface ErrorMessageProps  {
-    message: string | undefined; 
+interface ErrorMessageProps {
+    message: string | undefined;
 }
 
-const Error = ({message}: ErrorMessageProps) => {
-    return (
-        <Text className="text-red-600 pt-[2%]">{message}</Text>
-    )
-}
+const Error = ({ message }: ErrorMessageProps) => {
+    return <Text className="text-red-600 pt-[2%]">{message}</Text>;
+};
 
 export default Error;

@@ -1,8 +1,8 @@
 import React from 'react';
-import { Text, View} from 'react-native';
+import { Text, View } from 'react-native';
 
-import { useAuthStore } from '@/hooks/use-auth';
 import { Button } from '@/components/button';
+import { useAuthStore } from '@/hooks/use-auth';
 
 const Home = () => {
     const { logout } = useAuthStore();

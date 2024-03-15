@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { Text, TextInput, View } from 'react-native';
 
 interface InputProps {
     title: string;
@@ -10,9 +10,9 @@ interface InputProps {
     secureTextEntry?: boolean;
     onSubmitEditing: () => void;
     error?: boolean;
-};
+}
 
-const Input = ({title, error, ...props}: InputProps) => {
+const Input = ({ title, error, autoCorrect, value, onSubmitEditing, onChangeText, ...props }: InputProps) => {
     const borderColor = error ? 'border-red-600' : 'border-gray-500';
     return (
         <View>
@@ -20,12 +20,12 @@ const Input = ({title, error, ...props}: InputProps) => {
             <TextInput
                 className={`pt-[4.5%] pb-[4.5%] pl-[5%] w-full border rounded-xl ${borderColor}`}
                 autoCapitalize={props.autoCapitalize || 'none'}
-                autoCorrect={props.autoCorrect}
+                autoCorrect={autoCorrect}
                 placeholder={props.placeholder}
-                onChangeText={props.onChangeText}
-                value={props.value}
+                onChangeText={onChangeText}
+                value={value}
                 secureTextEntry={props.secureTextEntry || false}
-                onSubmitEditing={props.onSubmitEditing}
+                onSubmitEditing={onSubmitEditing}
             />
         </View>
     );
