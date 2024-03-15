@@ -12,25 +12,7 @@ import { DropdownComponent } from '@/components/dropdown';
 import Error from '@/components/error';
 import Input from '@/components/input';
 import Wordmark from '@/components/wordmarks';
-
-// list of items for dropdown menu
-type Item = {
-    label: string;
-    value: string;
-};
-
-// list of graduation year
-const graduationYear = () => {
-    var year = new Date().getFullYear();
-    const graduationYear: Item[] = [];
-    for (let i = 0; i < 5; i++) {
-        graduationYear.push({
-            label: String(year + i),
-            value: String(year + i)
-        });
-    }
-    return graduationYear;
-};
+import { Item, graduationYear } from '@/lib/utils';
 
 // register form data
 type RegisterFormData = {
