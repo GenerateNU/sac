@@ -20,6 +20,7 @@ interface DropdownProps {
     search?: boolean; // true for enable search
     height?: DimensionValue;
     error?: boolean;
+    color?: string;
 }
 
 export const DropdownComponent = (props: DropdownProps) => {
@@ -29,7 +30,7 @@ export const DropdownComponent = (props: DropdownProps) => {
 
     const styles = StyleSheet.create({
         container: {
-            backgroundColor: 'white',
+            backgroundColor: props.color || 'white',
             height: props.height || 78
         },
         dropdown: {

@@ -12,7 +12,7 @@ import Error from '@/components/error';
 import Input from '@/components/input';
 import { useAuthStore } from '@/hooks/use-auth';
 import { loginByEmail } from '@/services/auth';
-import Wordmark from '@/components/wordmarks';
+import Wordmark from '@/components/wordmark';
 
 type LoginFormData = {
     email: string;

@@ -26,6 +26,20 @@ const AuthLayout = () => {
                     headerShown: false
                 }}
             />
+            <Stack.Screen
+                name="majorAndCollege"
+                options={{
+                    title: 'Major And College',
+                    headerShown: false
+                }}
+            />
+            <Stack.Screen
+                name="tags"
+                options={{
+                    title: 'Tags',
+                    headerShown: false
+                }}
+            />
         </Stack>
     );
 };

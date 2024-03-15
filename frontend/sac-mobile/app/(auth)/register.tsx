@@ -11,7 +11,7 @@ import { Button } from '@/components/button';
 import { DropdownComponent } from '@/components/dropdown';
 import Error from '@/components/error';
 import Input from '@/components/input';
-import Wordmark from '@/components/wordmarks';
+import Wordmark from '@/components/wordmark';
 import { Item, graduationYear } from '@/lib/utils';
 
 // register form data
@@ -55,7 +55,7 @@ const Register = () => {
             };
             registerSchema.parse(updatedData);
             Alert.alert('Form Submitted', JSON.stringify(updatedData));
-            router.push('/(app)/');
+            router.push('/(auth)/majorAndCollege');
         } catch (error) {
             if (error instanceof ZodError) {
                 Alert.alert('Validation Error', error.errors[0].message);
