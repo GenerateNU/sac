@@ -11,7 +11,7 @@ import { Button } from '@/components/button';
 import { DropdownComponent } from '@/components/dropdown';
 import Error from '@/components/error';
 import Input from '@/components/input';
-import Wordmark from '@/components/wordmark';
+import Wordmark from '@/components/wordmarks';
 
 // list of items for dropdown menu
 type Item = {

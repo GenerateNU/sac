@@ -4,7 +4,7 @@ import { SafeAreaView, Text, View } from 'react-native';
 import { router } from 'expo-router';
 
 import { Button } from '@/components/button';
-import Wordmark from '@/components/wordmark';
+import Wordmark from '@/components/wordmarks';
 
 const Welcome = () => {
     const redirect = () => {

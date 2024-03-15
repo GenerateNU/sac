@@ -10,9 +10,9 @@ import { ZodError, z } from 'zod';
 import { Button } from '@/components/button';
 import Error from '@/components/error';
 import Input from '@/components/input';
-import Wordmark from '@/components/wordmark';
 import { useAuthStore } from '@/hooks/use-auth';
 import { loginByEmail } from '@/services/auth';
+import Wordmark from '@/components/wordmarks';
 
 type LoginFormData = {
     email: string;
