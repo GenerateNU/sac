@@ -1,6 +1,6 @@
 import clsx, { ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-
+import {majorArr} from '@/lib/const';
 /**
  * Nativewind CSS classnames generator
  * @param inputs - a list of classnames
@@ -29,14 +29,13 @@ export const graduationYear = () => {
     return graduationYear;
 };
 
-export const college = [
-    {label: "College of Arts, Media and Design", value: "CAMD"},
-    {label: "D'Amore-McKim School of Business", value: "DMSB"},
-    {label: "Khoury College of Computer Sciences", value: "KCCS"},
-    {label: "College of Engineering", value: "CE"},
-    {label: "Bouvé College of Health Sciences", value: "BCHS"},
-    {label: "School of Law", value: "SL"},
-    {label: "College of Professional Studies", value: "CPS"},
-    {label: "College of Science", value: "CS"},
-    {label: "College of Social Sciences and Humanities", value: "CSSH"},
-]
+export const major = () => {
+    const major: Item[] = [];
+    for (let i = 0; i < majorArr.length; i++) {
+        major.push({
+            label: majorArr[i],
+            value: majorArr[i]
+        });
+    }
+    return major;
+}

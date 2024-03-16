@@ -30,7 +30,6 @@ export const DropdownComponent = (props: DropdownProps) => {
 
     const styles = StyleSheet.create({
         container: {
-            backgroundColor: props.color || 'white',
             height: props.height || 78
         },
         dropdown: {
@@ -86,7 +85,7 @@ export const DropdownComponent = (props: DropdownProps) => {
                 maxHeight={300}
                 labelField="label"
                 valueField="value"
-                placeholder={!isFocus ? props.placeholder : 'Select Year'}
+                placeholder={props.placeholder}
                 searchPlaceholder="Search"
                 onFocus={() => setIsFocus(true)}
                 onBlur={() => setIsFocus(false)}

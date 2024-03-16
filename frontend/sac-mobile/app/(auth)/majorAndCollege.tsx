@@ -6,18 +6,17 @@ import Input from '@/components/input';
 import Error from '@/components/error';
 import { DropdownComponent } from '@/components/dropdown';
 
-import { college } from '@/lib/utils';
-import { Item } from '@/lib/utils';
+import { college } from '@/lib/const';
+import { Item, major } from '@/lib/utils';
 
 import { Controller, useForm } from 'react-hook-form';
 import { router } from 'expo-router';
 import { ZodError, z } from 'zod';
 
 type MajorAndCollegeForm = {
-    major: string; 
+    major: Item;
     college: Item; 
 }
-
 
 const MajorAndCollege = () => {
     const {
@@ -34,9 +33,9 @@ const MajorAndCollege = () => {
 
     const onSubmit = (data: MajorAndCollegeForm) => {
         try {
-            const { college, ...rest } = data;
+            const { major, college } = data;
             const updatedData = {
-                ...rest,
+                major: major.value,
                 college: college.value
             };
             majorAndCollegeSchema.parse(updatedData);
@@ -59,22 +58,24 @@ const MajorAndCollege = () => {
                      Let's learn more about you
                 </Text>
             <View className="w-full mb-[8.5%]">
-                <Controller
-                    control={control}
-                    render={({ field: { onChange, value } }) => (
-                    <Input
-                        title="Major"
-                        autoCorrect={false}
-                        placeholder="Enter your major"
-                        onChangeText={onChange}
-                        value={value}
-                        onSubmitEditing={handleSubmit(onSubmit)}
-                        error={!!errors.major}
+            <Controller
+                            control={control}
+                            render={({ field: { onChange, value } }) => (
+                                <DropdownComponent
+                                    title="Major"
+                                    item={major()}
+                                    placeholder="Select your major"
+                                    onChangeText={onChange}
+                                    value={value}
+                                    search={true}
+                                    onSubmitEditing={handleSubmit(onSubmit)}
+                                    error={!!errors.college}
+                                    color={'#F6F6F6'}
+                                />
+                            )}
+                            name="major"
+                            rules={{ required: 'Major is required' }}
                         />
-                    )}
-                    name="major"
-                    rules={{required: 'Major is required'}}
-                    />
                     {errors.major && <Error message={errors.major.message} />}
             </View>
             <View className="mb-[7%]">
