@@ -2,13 +2,10 @@ import React, { useState } from 'react';
 import { DimensionValue, ScrollView, StyleSheet, Text } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 
+import { Item } from '@/types/item';
+
 // Library Component
 // https://www.npmjs.com/package/react-native-element-dropdown?activeTab=code
-
-type Item = {
-    label: string;
-    value: string;
-};
 
 interface DropdownProps {
     title: string;

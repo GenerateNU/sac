@@ -1,6 +1,8 @@
 import clsx, { ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
+import { Item } from '@/types/item';
+
 /**
  * Nativewind CSS classnames generator
  * @param inputs - a list of classnames
@@ -10,21 +12,18 @@ export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
 
-// list of items for dropdown menu
-export type Item = {
-    label: string;
-    value: string;
-};
-
-// list of graduation year
+/**
+ * Generates an array of graduation years
+ * @returns an Item array of graduation years from the current year to the next 5 years
+ */
 export const graduationYear = () => {
     var year = new Date().getFullYear();
-    const graduationYear: Item[] = [];
+    const graduationYears: Item[] = [];
     for (let i = 0; i < 5; i++) {
-        graduationYear.push({
+        graduationYears.push({
             label: String(year + i),
             value: String(year + i)
         });
     }
-    return graduationYear;
+    return graduationYears;
 };
