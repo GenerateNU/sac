@@ -158,7 +158,7 @@ const Register = () => {
                                 <Input
                                     title="Email"
                                     autoCorrect={false}
-                                    placeholder="ladley.g@northeastern.edu"
+                                    placeholder="Northeastern email"
                                     onChangeText={onChange}
                                     value={value}
                                     onSubmitEditing={handleSubmit(onSubmit)}

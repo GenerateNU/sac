@@ -9,7 +9,7 @@ const buttonVariants = {
         default: ['bg-gray-500', 'text-white'],
         destructive: ['bg-red-500', 'text-white font-bold'],
         secondary: ['bg-white', 'text-gray'],
-        outline: ['border border-gray-600 text-gray-500 font-medium'],
+        outline: ['border border-gray-600 text-gray-500'],
     },
     size: {
         default: 'h-10 px-4 py-2',

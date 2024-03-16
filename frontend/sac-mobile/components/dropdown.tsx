@@ -50,7 +50,8 @@ export const DropdownComponent = (props: DropdownProps) => {
         inputSearchStyle: {
             height: 40,
             fontSize: 14,
-            borderRadius: 11
+            borderRadius: 11,
+            marginLeft: 8,
         },
         containerStyle: {
             borderRadius: 12,
