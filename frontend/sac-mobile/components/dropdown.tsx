@@ -85,7 +85,7 @@ export const DropdownComponent = (props: DropdownProps) => {
                 maxHeight={300}
                 labelField="label"
                 valueField="value"
-                placeholder={!isFocus ? props.placeholder : 'Select Year'}
+                placeholder={props.placeholder}
                 searchPlaceholder="Search"
                 onFocus={() => setIsFocus(true)}
                 onBlur={() => setIsFocus(false)}
