@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Text, View } from 'react-native';
 
 import { useFonts } from 'expo-font';
 import { Stack, router } from 'expo-router';
@@ -9,7 +10,6 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 import { useAuthStore } from '@/hooks/use-auth';
 import { User } from '@/types/user';
-import { View, Text } from 'react-native';
 
 export {
     // Catch any errors thrown by the Layout component.
@@ -46,7 +46,7 @@ export default function RootLayout() {
             <View>
                 <Text>Loading...</Text>
             </View>
-        )
+        );
     }
 
     return <RootLayoutNav />;
@@ -54,7 +54,6 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
     const { isLoggedIn, login } = useAuthStore();
-
 
     useEffect(() => {
         const checkLoginStatus = async () => {
@@ -73,7 +72,10 @@ function RootLayoutNav() {
                     login({ accessToken, refreshToken }, user);
                 }
             } catch (error) {
-                console.error('[RootLayoutNav] Error retrieving tokens:', error);
+                console.error(
+                    '[RootLayoutNav] Error retrieving tokens:',
+                    error
+                );
             }
         };
 

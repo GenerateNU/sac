@@ -22,19 +22,29 @@ type RegisterFormData = {
     passwordConfirm: string;
 };
 
-const registerSchema = z.object({
-    firstName: z
-        .string()
-        .min(2, { message: 'First name must be at least 2 characters long' }),
-    lastName: z
-        .string()
-        .min(2, { message: 'Last name must be at least 2 characters long' }),
-    email: z.string().email({ message: 'Invalid email' }),
-    nuid: z.string().length(9, { message: 'NUID must have 9 digits' }),
-    password: z
-        .string()
-        .min(8, { message: 'Password must be at least 8 characters long' })
-});
+const registerSchema = z
+    .object({
+        firstName: z.string().min(2, {
+            message: 'First name must be at least 2 characters long'
+        }),
+        lastName: z.string().min(2, {
+            message: 'Last name must be at least 2 characters long'
+        }),
+        email: z.string().email({ message: 'Invalid email' }),
+        nuid: z.string().length(9, { message: 'NUID must have 9 digits' }),
+        password: z
+            .string()
+            .min(8, { message: 'Password must be at least 8 characters long' }),
+        passwordConfirm: z.string(),
+        graduationYear: z.object({
+            label: z.string(),
+            value: z.string()
+        })
+    })
+    .refine((data) => data.password === data.passwordConfirm, {
+        message: 'Passwords do not match',
+        path: ['passwordConfirm']
+    });
 
 const RegistrationForm = () => {
     const {
@@ -43,10 +53,17 @@ const RegistrationForm = () => {
         formState: { errors }
     } = useForm<RegisterFormData>();
 
-    const onSubmit = (data: RegisterFormData) => {
+    const onSubmit = ({
+        graduationYear: gradYear,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        passwordConfirm,
+        ...rest
+    }: RegisterFormData) => {
         try {
-            const { graduationYear, passwordConfirm, ...rest } = data;
-            const updatedData = { ...rest, graduationYear: graduationYear.value };
+            const updatedData = {
+                ...rest,
+                graduationYear: gradYear.value
+            };
             registerSchema.parse(updatedData);
             Alert.alert('Form Submitted', JSON.stringify(updatedData));
             router.push('/(app)/');
@@ -174,7 +191,7 @@ const RegistrationForm = () => {
                             if (!/^00\d+/.test(value)) {
                                 return 'Please enter a proper NUID number';
                             }
-                            if (value.length != 9) {
+                            if (value.length !== 9) {
                                 return 'Please enter 9 digit number';
                             }
                             return true;
@@ -224,29 +241,31 @@ const RegistrationForm = () => {
                     rules={{
                         required: 'Password is required',
                         validate: (value) => {
-                            const errors = [];
+                            const validationErrors = [];
 
                             if (value.length < 8) {
-                                errors.push(
+                                validationErrors.push(
                                     'Password must be at least 8 characters long.'
                                 );
                             }
 
                             const specialCharRegex =
-                                /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/; // Excluded space
+                                /[!@#$%^&*()_+\-=;:'",<>.]/;
                             if (!specialCharRegex.test(value)) {
-                                errors.push(
+                                validationErrors.push(
                                     'Password must contain at least one special character.'
                                 );
                             }
 
                             if (!/\d/.test(value)) {
-                                errors.push(
+                                validationErrors.push(
                                     'Password must contain at least one number (0-9).'
                                 );
                             }
 
-                            return errors.length > 0 ? errors.join(' ') : true;
+                            return validationErrors.length > 0
+                                ? validationErrors.join(' ')
+                                : true;
                         }
                     }}
                 />

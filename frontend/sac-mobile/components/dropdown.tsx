@@ -63,6 +63,9 @@ export const DropdownComponent = (props: DropdownProps) => {
         itemContainerStyle: {
             borderBottomWidth: 1,
             borderColor: '#CDCBCB'
+        },
+        isFocus: {
+            borderColor: 'black'
         }
     });
 
@@ -70,7 +73,7 @@ export const DropdownComponent = (props: DropdownProps) => {
         <ScrollView style={styles.container}>
             <Text className="pb-[2%]">{props.title}</Text>
             <Dropdown
-                style={[styles.dropdown, isFocus && { borderColor: 'black' }]}
+                style={[styles.dropdown, isFocus && styles.isFocus]}
                 placeholderStyle={styles.placeholderStyle}
                 selectedTextStyle={styles.selectedTextStyle}
                 inputSearchStyle={styles.inputSearchStyle}
