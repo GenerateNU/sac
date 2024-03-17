@@ -67,7 +67,7 @@ const MajorAndCollege = () => {
                                     value={value}
                                     search={true}
                                     onSubmitEditing={handleSubmit(onSubmit)}
-                                    error={!!errors.college}
+                                    error={!!errors.major}
                                     color={'#F6F6F6'}
                                 />
                             )}
@@ -98,7 +98,7 @@ const MajorAndCollege = () => {
                             <Error message={errors.college.message} />
                         )}
                     </View>
-                    <View className="flex-row justify-end"><Button
+                    <View className="flex-row justify-end pt-[5%]"><Button
                         size="lg"
                         variant="default"
                         onPress={handleSubmit(onSubmit)}
