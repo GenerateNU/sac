@@ -164,8 +164,8 @@ func (c *PineconeClient) Delete(items []Searchable) *errors.Error {
 	}
 
 	itemIds := make([]string, len(items))
-	for _, item := range items {
-		itemIds = append(itemIds, item.SearchId())
+	for i, item := range items {
+		itemIds[i] = item.SearchId()
 	}
 
 	deleteBody, err := json.Marshal(

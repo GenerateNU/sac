@@ -39,8 +39,8 @@ type CreateEmbeddingResponseBody struct {
 
 func (c *OpenAIClient) CreateEmbedding(items []Searchable) ([]Embedding, *errors.Error) {
 	embeddingStrings := make([]string, len(items))
-	for _, item := range items {
-		embeddingStrings = append(embeddingStrings, item.EmbeddingString())
+	for i, item := range items {
+		embeddingStrings[i] = item.EmbeddingString()
 	}
 
 	embeddingBody, err := json.Marshal(
