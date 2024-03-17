@@ -1,6 +1,7 @@
 import clsx, { ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import {majorArr} from '@/lib/const';
+
+import { majorArr } from '@/lib/const';
 import { Item } from '@/types/item';
 
 /**
@@ -37,4 +38,4 @@ export const major = () => {
         });
     }
     return major;
-}
+};

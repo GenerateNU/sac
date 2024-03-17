@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { DimensionValue, ScrollView, StyleSheet, Text } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
+
 import { Item } from '@/types/item';
 
 // Library Component
@@ -47,7 +48,7 @@ export const DropdownComponent = (props: DropdownProps) => {
             height: 40,
             fontSize: 14,
             borderRadius: 11,
-            marginLeft: 8,
+            marginLeft: 8
         },
         containerStyle: {
             borderRadius: 12,

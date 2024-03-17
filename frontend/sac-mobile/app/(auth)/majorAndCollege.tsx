@@ -1,20 +1,23 @@
-import { Alert, Text, View} from 'react-native';
+import { Controller, useForm } from 'react-hook-form';
+import { Alert, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { router } from 'expo-router';
+
+import { ZodError, z } from 'zod';
+
 import { Button } from '@/components/button';
-import Wordmark from '@/components/wordmark';
-import Error from '@/components/error';
 import { DropdownComponent } from '@/components/dropdown';
+import Error from '@/components/error';
+import Wordmark from '@/components/wordmark';
 import { college } from '@/lib/const';
 import { major } from '@/lib/utils';
-import { Controller, useForm } from 'react-hook-form';
-import { router } from 'expo-router';
-import { ZodError, z } from 'zod';
 import { Item } from '@/types/item';
 
 type MajorAndCollegeForm = {
     major: Item;
-    college: Item; 
-}
+    college: Item;
+};
 
 const MajorAndCollege = () => {
     const {
@@ -24,9 +27,8 @@ const MajorAndCollege = () => {
     } = useForm<MajorAndCollegeForm>();
 
     const majorAndCollegeSchema = z.object({
-        major: z
-            .string()
-            .min(2, { message: 'First name must be at least 2 characters long' }),
+        major: z.string(),
+        college: z.string()
     });
 
     const onSubmit = (data: MajorAndCollegeForm) => {
@@ -51,61 +53,65 @@ const MajorAndCollege = () => {
     return (
         <SafeAreaView>
             <View className="px-[8%] pb-[9%]">
-                <Wordmark additionalClasses={"justify-end"}/> 
+                <Wordmark additionalClasses={'justify-end'} />
                 <Text className="font-bold text-5xl pt-[9%] pb-[10%]">
-                     Let's learn more about you
+                    Let's learn more about you
                 </Text>
-            <View className="w-full mb-[8.5%]">
-            <Controller
-                            control={control}
-                            render={({ field: { onChange, value } }) => (
-                                <DropdownComponent
-                                    title="Major"
-                                    item={major()}
-                                    placeholder="Select your major"
-                                    onChangeText={onChange}
-                                    value={value}
-                                    search={true}
-                                    onSubmitEditing={handleSubmit(onSubmit)}
-                                    error={!!errors.major}
-                                    color={'#F6F6F6'}
-                                />
-                            )}
-                            name="major"
-                            rules={{ required: 'Major is required' }}
-                        />
-                    {errors.major && <Error message={errors.major.message} />}
-            </View>
-            <View className="mb-[7%]">
-                        <Controller
-                            control={control}
-                            render={({ field: { onChange, value } }) => (
-                                <DropdownComponent
-                                    title="College"
-                                    item={college}
-                                    placeholder="Select your college"
-                                    onChangeText={onChange}
-                                    value={value}
-                                    onSubmitEditing={handleSubmit(onSubmit)}
-                                    error={!!errors.college}
-                                    color={'#F6F6F6'}
-                                />
-                            )}
-                            name="college"
-                            rules={{ required: 'College is required' }}
-                        />
-                        {errors.college && (
-                            <Error message={errors.college.message} />
+                <View className="w-full mb-[8.5%]">
+                    <Controller
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                            <DropdownComponent
+                                title="Major"
+                                item={major()}
+                                placeholder="Select your major"
+                                onChangeText={onChange}
+                                value={value}
+                                search={true}
+                                onSubmitEditing={handleSubmit(onSubmit)}
+                                error={!!errors.major}
+                                color={'#F6F6F6'}
+                            />
                         )}
-                    </View>
-                    <View className="flex-row justify-end pt-[5%]"><Button
+                        name="major"
+                        rules={{ required: 'Major is required' }}
+                    />
+                    {errors.major && <Error message={errors.major.message} />}
+                </View>
+                <View className="mb-[7%]">
+                    <Controller
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                            <DropdownComponent
+                                title="College"
+                                item={college}
+                                placeholder="Select your college"
+                                onChangeText={onChange}
+                                value={value}
+                                onSubmitEditing={handleSubmit(onSubmit)}
+                                error={!!errors.college}
+                                color={'#F6F6F6'}
+                            />
+                        )}
+                        name="college"
+                        rules={{ required: 'College is required' }}
+                    />
+                    {errors.college && (
+                        <Error message={errors.college.message} />
+                    )}
+                </View>
+                <View className="flex-row justify-end pt-[5%]">
+                    <Button
                         size="lg"
                         variant="default"
                         onPress={handleSubmit(onSubmit)}
-                    >Continue</Button></View>
+                    >
+                        Continue
+                    </Button>
+                </View>
             </View>
         </SafeAreaView>
-    )
-}
+    );
+};
 
 export default MajorAndCollege;

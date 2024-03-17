@@ -1,7 +1,10 @@
 import { Controller, useForm } from 'react-hook-form';
 import { Alert, View } from 'react-native';
+
 import { router } from 'expo-router';
+
 import { ZodError, z } from 'zod';
+
 import { Button } from '@/components/button';
 import { DropdownComponent } from '@/components/dropdown';
 import Error from '@/components/error';
@@ -32,12 +35,16 @@ const registerSchema = z
         password: z
             .string()
             .min(8, { message: 'Password must be at least 8 characters long' }),
-        graduationYear: z.string(),
+        passwordConfirm: z.string(),
+        graduationYear: z.object({
+            label: z.string(),
+            value: z.string()
+        })
     })
-    // .refine((data) => data.password === data.passwordConfirm, {
-    //     message: 'Passwords do not match',
-    //     path: ['passwordConfirm']
-    // });
+    .refine((data) => data.password === data.passwordConfirm, {
+        message: 'Passwords do not match',
+        path: ['passwordConfirm']
+    });
 
 const RegistrationForm = () => {
     const {
@@ -53,11 +60,15 @@ const RegistrationForm = () => {
         ...rest
     }: RegisterFormData) => {
         try {
+            registerSchema.parse({
+                graduationYear: gradYear,
+                passwordConfirm,
+                ...rest
+            });
             const updatedData = {
                 ...rest,
                 graduationYear: gradYear.value
             };
-            registerSchema.parse(updatedData);
             Alert.alert('Form Submitted', JSON.stringify(updatedData));
             router.push('/(auth)/majorAndCollege');
         } catch (error) {

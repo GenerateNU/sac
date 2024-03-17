@@ -1,9 +1,12 @@
 import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { router } from 'expo-router';
+
 import { Button } from '@/components/button';
 import Wordmark from '@/components/wordmark';
+
 import RegistrationForm from './_components/registration-form';
 
 const Register = () => {
@@ -12,8 +15,9 @@ const Register = () => {
             <ScrollView>
                 <View className="px-[8%] pb-[9%]">
                     <View className="flex flex-row justify-between mx-auto w-full items-center pt-[3%] pb-[5.5%]">
-                        <View className="pl-[0.5%]"><Wordmark 
-                        textColor="text-white"/></View>
+                        <View className="pl-[0.5%]">
+                            <Wordmark textColor="text-white" />
+                        </View>
                         <Button
                             onPress={() => router.push('/(auth)/login')}
                             variant="secondary"

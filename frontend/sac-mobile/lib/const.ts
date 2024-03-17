@@ -1,17 +1,16 @@
 export const API_BASE_URL = 'http://localhost:8080/api/v1';
 
-
 export const college = [
-    {label: "College of Arts, Media and Design", value: "CAMD"},
-    {label: "D'Amore-McKim School of Business", value: "DMSB"},
-    {label: "Khoury College of Computer Sciences", value: "KCCS"},
-    {label: "College of Engineering", value: "CE"},
-    {label: "Bouvé College of Health Sciences", value: "BCHS"},
-    {label: "School of Law", value: "SL"},
-    {label: "College of Professional Studies", value: "CPS"},
-    {label: "College of Science", value: "CS"},
-    {label: "College of Social Sciences and Humanities", value: "CSSH"},
-]
+    { label: 'College of Arts, Media and Design', value: 'CAMD' },
+    { label: "D'Amore-McKim School of Business", value: 'DMSB' },
+    { label: 'Khoury College of Computer Sciences', value: 'KCCS' },
+    { label: 'College of Engineering', value: 'CE' },
+    { label: 'Bouvé College of Health Sciences', value: 'BCHS' },
+    { label: 'School of Law', value: 'SL' },
+    { label: 'College of Professional Studies', value: 'CPS' },
+    { label: 'College of Science', value: 'CS' },
+    { label: 'College of Social Sciences and Humanities', value: 'CSSH' }
+];
 
 export const majorArr = [
     'Africana Studies',
