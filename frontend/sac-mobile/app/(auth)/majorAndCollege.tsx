@@ -5,10 +5,11 @@ import Wordmark from '@/components/wordmark';
 import Error from '@/components/error';
 import { DropdownComponent } from '@/components/dropdown';
 import { college } from '@/lib/const';
-import { Item, major } from '@/lib/utils';
+import { major } from '@/lib/utils';
 import { Controller, useForm } from 'react-hook-form';
 import { router } from 'expo-router';
 import { ZodError, z } from 'zod';
+import { Item } from '@/types/item';
 
 type MajorAndCollegeForm = {
     major: Item;

@@ -25,7 +25,7 @@ export const graduationYear = () => {
             value: String(year + i)
         });
     }
-    return graduationYear;
+    return graduationYears;
 };
 
 export const major = () => {
