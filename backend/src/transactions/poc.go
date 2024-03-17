@@ -24,7 +24,8 @@ func GetPointOfContacts(db *gorm.DB, limit int, page int) ([]models.PointOfConta
 
 func GetPointOfContact(db *gorm.DB, id uuid.UUID) (*models.PointOfContact, *errors.Error) {
 	var pointOfContact models.PointOfContact
-	if err := db.First(&pointOfContact, id).Error; err != nil {
+
+	if err := db.Preload("PhotoFile").First(&pointOfContact, id).Error; err != nil {
 		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &errors.PointOfContactNotFound
 		} else {
@@ -33,15 +34,4 @@ func GetPointOfContact(db *gorm.DB, id uuid.UUID) (*models.PointOfContact, *erro
 	}
 
 	return &pointOfContact, nil
-}
-
-func DeletePointOfContact(db *gorm.DB, id uuid.UUID) *errors.Error {
-	if result := db.Delete(&models.PointOfContact{}, id); result.RowsAffected == 0 {
-		if result.Error == nil {
-			return &errors.PointOfContactNotFound
-		} else {
-			return &errors.FailedToDeletePointOfContact
-		}
-	}
-	return nil
 }

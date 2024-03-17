@@ -7,19 +7,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// // api/v1/clubs/:clubID/poc/*
-// pointOfContact := router.Group("/clubs/:clubID/poc")
-// pointOfContact.Get("/", clubController.GetAllPointOfContact)
-// pointOfContact.Get("/:pocID", clubController.GetPointOfContact)
-// pointOfContact.Put("/", clubController.UpsertPointOfContact)
-// pointOfContact.Delete("/:pocID", clubController.DeletePointOfContact)
-
 func ClubPointOfContact(clubIDRouter fiber.Router, clubPointOfContactService services.ClubPointOfContactServiceInterface, authMiddleware *middleware.AuthMiddlewareService) {
 	clubPointOfContactController := controllers.NewClubPointOfContactController(clubPointOfContactService)
 	
-	clubPointOfContact := clubIDRouter.Group("/poc")
+	clubPointOfContact := clubIDRouter.Group("/pocs")
 
-	// api/v1/clubs/:clubID/poc/*
+	// api/v1/clubs/:clubID/pocs/*
 	clubPointOfContact.Get("/", clubPointOfContactController.GetClubPointOfContacts)
 	clubPointOfContact.Get("/:pocID", clubPointOfContactController.GetClubPointOfContact)
 	clubPointOfContact.Post("/", authMiddleware.ClubAuthorizeById, clubPointOfContactController.CreateClubPointOfContact)

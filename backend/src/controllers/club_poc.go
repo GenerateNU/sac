@@ -27,7 +27,7 @@ func NewClubPointOfContactController(clubPointOfContactService services.ClubPoin
 // @Failure     400   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/clubs/{clubID}/poc/  [get]
+// @Router		/clubs/{clubID}/pocs/  [get]
 func (u *ClubPointOfContactController) GetClubPointOfContacts(c *fiber.Ctx) error {
 	pointOfContact, err := u.clubPointOfContactService.GetClubPointOfContacts(c.Params("clubID"))
 	if err != nil {
@@ -50,7 +50,7 @@ func (u *ClubPointOfContactController) GetClubPointOfContacts(c *fiber.Ctx) erro
 // @Failure     400   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
-// @Router		/clubs/{clubID}/poc/{pocID}  [get]
+// @Router		/clubs/{clubID}/pocs/{pocID}  [get]
 func (u *ClubPointOfContactController) GetClubPointOfContact(c *fiber.Ctx) error {
 	pointOfContact, err := u.clubPointOfContactService.GetClubPointOfContact(c.Params("clubID"), c.Params("pocID"))
 	if err != nil {
@@ -69,9 +69,9 @@ func (u *ClubPointOfContactController) GetClubPointOfContact(c *fiber.Ctx) error
 // @Accept		multipart/form-data
 // @Produce		json
 // @Param		clubID	path	string	true	"Club ID"
-// @Param		pocID	path	string	true	"Point of Contact ID"
 // @Success		201	  {object}	    models.PointOfContact
 // @Failure     400   {object}      errors.Error
+// @Failure     401   {object}      errors.Error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
 // @Router		/clubs/{clubID}/poc/  [post]

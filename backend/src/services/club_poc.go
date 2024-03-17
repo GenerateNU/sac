@@ -37,6 +37,20 @@ func (cpoc *ClubPointOfContactService) GetClubPointOfContacts(clubID string) ([]
 
 	return transactions.GetClubPointOfContacts(cpoc.DB, *clubIdAsUUID)
 }
+
+func (cpoc *ClubPointOfContactService) GetClubPointOfContact(clubID, pocID string) (*models.PointOfContact, *errors.Error) {
+	clubIdAsUUID, err := utilities.ValidateID(clubID)
+	if err != nil {
+		return nil, &errors.FailedToValidateClub
+	}
+
+	pocIdAsUUID, err := utilities.ValidateID(pocID)
+	if err != nil {
+		return nil, &errors.FailedToValidatePointOfContactId
+	}
+
+	return transactions.GetClubPointOfContact(cpoc.DB, *clubIdAsUUID, *pocIdAsUUID)
+}
  
 func (cpoc *ClubPointOfContactService) CreateClubPointOfContact(clubID string, pointOfContactBody models.CreatePointOfContactBody, fileHeader *multipart.FileHeader) (*models.PointOfContact, *errors.Error) {
 	if err := cpoc.Validate.Struct(pointOfContactBody); err != nil {
@@ -66,34 +80,21 @@ func (cpoc *ClubPointOfContactService) CreateClubPointOfContact(clubID string, p
 		return nil, err
 	}
 
-	_, err = transactions.CreateFile(tx, poc.ID, "point_of_contacts", *fileInfo)
+	file, err := transactions.CreateFile(tx, poc.ID, "point_of_contacts", *fileInfo)
 	if err != nil {
 		tx.Rollback()
 		return nil, err
 	}
 
 	if err := tx.Commit().Error; err != nil {
-		// delete file from s3
 		cpoc.AWSProvider.DeleteFile(fileInfo.FileURL)
 
 		return nil, &errors.FailedToCreatePointOfContact
 	}
 
+	poc.PhotoFile = *file
+
 	return poc, nil
-}
-
-func (cpoc *ClubPointOfContactService) GetClubPointOfContact(clubID, pocID string) (*models.PointOfContact, *errors.Error) {
-	clubIdAsUUID, err := utilities.ValidateID(clubID)
-	if err != nil {
-		return nil, &errors.FailedToValidateClub
-	}
-
-	pocIdAsUUID, err := utilities.ValidateID(pocID)
-	if err != nil {
-		return nil, &errors.FailedToValidatePointOfContactId
-	}
-
-	return transactions.GetClubPointOfContact(cpoc.DB, *clubIdAsUUID, *pocIdAsUUID)
 }
 
 func (cpoc *ClubPointOfContactService) DeleteClubPointOfContact(clubID, pocID string) *errors.Error {

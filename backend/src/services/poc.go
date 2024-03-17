@@ -12,7 +12,6 @@ import (
 type PointOfContactServiceInterface interface {
 	GetPointOfContacts(limit string, page string) ([]models.PointOfContact, *errors.Error)
 	GetPointOfContact(pocID string) (*models.PointOfContact, *errors.Error)
-	DeletePointOfContact(pocID string) *errors.Error
 }
 
 type PointOfContactService struct {
@@ -45,13 +44,4 @@ func (poc *PointOfContactService) GetPointOfContact(pocID string) (*models.Point
 	}
 
 	return transactions.GetPointOfContact(poc.DB, *idAsUUID)
-}
-
-func (poc *PointOfContactService) DeletePointOfContact(pocID string) *errors.Error {
-	idAsUUID, err := utilities.ValidateID(pocID)
-	if err != nil {
-		return &errors.FailedToValidateID
-	}
-
-	return transactions.DeletePointOfContact(poc.DB, *idAsUUID)
 }
