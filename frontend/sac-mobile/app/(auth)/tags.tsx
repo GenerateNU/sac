@@ -8,55 +8,12 @@ import { ZodError } from 'zod';
 
 import { Button } from '@/components/button';
 import Error from '@/components/error';
+import { tags } from '@/lib/const';
 import Wordmark from '@/components/wordmark';
 
 type TagsData = {
     tags: String[];
 };
-
-const listOfTags = [
-    'Pre-med',
-    'Pre-law',
-    'Judaism',
-    'Christianity',
-    'Hinduism',
-    'Islam',
-    'Latin America',
-    'African American',
-    'Asian American',
-    'LGBTQ',
-    'Performing Arts',
-    'Visual Arts',
-    'Creative Writing',
-    'Music',
-    'Soccer',
-    'Hiking',
-    'Climbing',
-    'Lacrosse',
-    'Mathematics',
-    'Physics',
-    'Biology',
-    'Chemistry',
-    'Environmental Science',
-    'Geology',
-    'Neuroscience',
-    'Psychology',
-    'Software Engineering',
-    'Artificial Intelligence',
-    'Data Science',
-    'Mechanical Engineering',
-    'Electrical Engineering',
-    'Industrial Engineering',
-    'Volunteerism',
-    'Environmental Advocacy',
-    'Human Rights',
-    'Community Outreach',
-    'Journalism',
-    'Broadcasting',
-    'Film',
-    'Public Relations',
-    'Other'
-];
 
 const Tags = () => {
     const [selectedTags, setSelectedTags] = useState<String[]>([]);
@@ -97,21 +54,23 @@ const Tags = () => {
         }
     };
 
+    const emptyTag = selectedTags.length === 0 && buttonClicked ? 'h-[53%]' : 'h-[54%]';
+
     return (
         <SafeAreaView>
             <View className="px-[8%] pt-[4%]">
-                <View className="pb-[3%]">
+                <View className="flex flex-row">
                     <Wordmark />
                 </View>
-                <Text className="text-5xl font-bold">
+                <Text className="text-5xl pt-[6%] font-bold">
                     What are you interested in?
                 </Text>
-                <Text className="text-xl pt-[3%] pb-[4%]">
+                <Text className="text-xl pt-[6%] pb-[7%]">
                     Select one or more
                 </Text>
-                <ScrollView className="h-[62%] pt-[3%]">
-                    <View className="flex-row flex-wrap mb-[3%]">
-                        {listOfTags.map((text, index) => (
+                <ScrollView className={emptyTag}>
+                    <View className="flex-row flex-wrap">
+                        {tags.map((text, index) => (
                             <Button
                                 key={index}
                                 variant={
@@ -128,9 +87,11 @@ const Tags = () => {
                     </View>
                 </ScrollView>
                 {selectedTags.length === 0 && buttonClicked && (
-                    <Error message="Please choose at least one interest" />
+                    <View className="pt-3">
+                        <Error message="Please choose at least one interest" />
+                    </View>
                 )}
-                <View className="flex-row justify-end pt-[5%]">
+                <View className="flex-row justify-end mt-[7%]">
                     <Button size="lg" onPress={handleSubmit(onSubmit)}>
                         Finish
                     </Button>

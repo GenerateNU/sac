@@ -29,13 +29,17 @@ export const graduationYear = () => {
     return graduationYears;
 };
 
+/**
+ * Generates an array of item of major
+ * @returns an Item array of majors
+ */
 export const major = () => {
-    const major: Item[] = [];
+    const majors: Item[] = [];
     for (let i = 0; i < majorArr.length; i++) {
-        major.push({
+        majors.push({
             label: majorArr[i],
             value: majorArr[i]
         });
     }
-    return major;
+    return majors;
 };

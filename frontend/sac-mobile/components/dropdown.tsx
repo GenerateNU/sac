@@ -14,10 +14,9 @@ interface DropdownProps {
     onChangeText: (...event: any[]) => void;
     value: Item;
     onSubmitEditing: () => void;
-    search?: boolean; // true for enable search
+    search?: boolean; // true to enable search
     height?: DimensionValue;
     error?: boolean;
-    color?: string;
 }
 
 export const DropdownComponent = (props: DropdownProps) => {

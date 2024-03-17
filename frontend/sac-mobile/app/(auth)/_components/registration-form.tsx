@@ -55,7 +55,6 @@ const RegistrationForm = () => {
 
     const onSubmit = ({
         graduationYear: gradYear,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         passwordConfirm,
         ...rest
     }: RegisterFormData) => {

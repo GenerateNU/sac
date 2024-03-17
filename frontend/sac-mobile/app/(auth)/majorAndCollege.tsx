@@ -8,6 +8,8 @@ import { ZodError, z } from 'zod';
 
 import { Button } from '@/components/button';
 import { DropdownComponent } from '@/components/dropdown';
+import MultiSelectComponent from '@/components/multiselect';
+
 import Error from '@/components/error';
 import Wordmark from '@/components/wordmark';
 import { college } from '@/lib/const';
@@ -15,7 +17,7 @@ import { major } from '@/lib/utils';
 import { Item } from '@/types/item';
 
 type MajorAndCollegeForm = {
-    major: Item;
+    major: Item[];
     college: Item;
 };
 
@@ -27,14 +29,14 @@ const MajorAndCollege = () => {
     } = useForm<MajorAndCollegeForm>();
 
     const majorAndCollegeSchema = z.object({
-        major: z.string(),
-        college: z.string()
+        college: z.string(),
+        major: z.string().array()
     });
 
-    const onSubmit = ( { major, college }: MajorAndCollegeForm) => {
+    const onSubmit = ({ major, college }: MajorAndCollegeForm) => {
         try {
             const updatedData = {
-                major: major.value,
+                major,
                 college: college.value
             };
             majorAndCollegeSchema.parse(updatedData);
@@ -52,28 +54,29 @@ const MajorAndCollege = () => {
     return (
         <SafeAreaView>
             <View className="px-[8%] pb-[9%]">
-                <View className="flex flex-row justify-end"><Wordmark /></View>
+                <Wordmark />
                 <Text className="font-bold text-5xl pt-[9%] pb-[10%]">
                     Let's learn more about you
                 </Text>
                 <View className="w-full mb-[8.5%]">
                     <Controller
                         control={control}
-                        render={({ field: { onChange, value } }) => (
-                            <DropdownComponent
-                                title="Major"
-                                item={major()}
-                                placeholder="Select your major"
-                                onChangeText={onChange}
-                                value={value}
-                                search={true}
-                                onSubmitEditing={handleSubmit(onSubmit)}
-                                error={!!errors.major}
-                                color={'#F6F6F6'}
-                            />
+                        render={({ field: {onChange, value} }) => (
+                        <MultiSelectComponent
+                            title="Major and Minor"
+                            item={major()}
+                            placeholder="Select up to 4 major or minor"
+                            search={true}
+                            onSubmitEditing={handleSubmit(onSubmit)}
+                            error={!!errors.major}
+                            value={value}
+                            onChange={onChange}
+                        />
                         )}
                         name="major"
-                        rules={{ required: 'Major is required' }}
+                        rules={{
+                            required: 'Major is required',
+                        }}
                     />
                     {errors.major && <Error message={errors.major.message} />}
                 </View>
@@ -89,7 +92,6 @@ const MajorAndCollege = () => {
                                 value={value}
                                 onSubmitEditing={handleSubmit(onSubmit)}
                                 error={!!errors.college}
-                                color={'#F6F6F6'}
                             />
                         )}
                         name="college"
@@ -104,8 +106,7 @@ const MajorAndCollege = () => {
                         size="lg"
                         variant="default"
                         onPress={handleSubmit(onSubmit)}
-                    >
-                        Continue
+                    >Continue
                     </Button>
                 </View>
             </View>
