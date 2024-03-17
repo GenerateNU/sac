@@ -29,6 +29,7 @@ require (
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
 	github.com/tinylib/msgp v1.1.8 // indirect
+	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/sync v0.6.0 // indirect
 )
 

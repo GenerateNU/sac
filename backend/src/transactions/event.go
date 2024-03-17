@@ -22,7 +22,7 @@ func GetEvents(db *gorm.DB, limit int, page int) ([]models.Event, *errors.Error)
 	return events, nil
 }
 
-func GetEvent(db *gorm.DB, eventID uuid.UUID) (*models.Event, *errors.Error) {
+func GetEvent(db *gorm.DB, eventID uuid.UUID) ([]models.Event, *errors.Error) {
 	var event models.Event
 
 	if err := db.First(&event, eventID).Error; err != nil {
@@ -33,7 +33,7 @@ func GetEvent(db *gorm.DB, eventID uuid.UUID) (*models.Event, *errors.Error) {
 		}
 	}
 
-	return &event, nil
+	return []models.Event{event}, nil
 }
 
 func GetSeriesID(db *gorm.DB, eventID uuid.UUID) (*uuid.UUID, *errors.Error) {
@@ -47,17 +47,18 @@ func GetSeriesID(db *gorm.DB, eventID uuid.UUID) (*uuid.UUID, *errors.Error) {
 		}
 	}
 
-	var SeriesID uuid.UUID
+	var seriesID string
 
-	if err := db.Model(&models.EventSeries{}).Where("event_id = ?", eventID).Select("series_id").Find(&SeriesID).Error; err != nil {
+	if err := db.Model(&models.EventSeries{}).Where("event_id = ?", event.ID).Select("series_id").Find(&seriesID).Error; err != nil {
 		return nil, &errors.FailedToGetEventSeries
 	}
 
-	if SeriesID.String() == "" {
-		return nil, &errors.SeriesNotFound
+	parsedSeriesID, err := uuid.Parse(seriesID)
+	if err != nil {
+		return nil, &errors.FailedToGetEventSeries
 	}
 
-	return &SeriesID, nil
+	return &parsedSeriesID, nil
 }
 
 func GetSeriesByEventID(db *gorm.DB, id uuid.UUID) ([]models.Event, *errors.Error) {
@@ -82,7 +83,7 @@ func GetSeriesByID(db *gorm.DB, id uuid.UUID) ([]models.Event, *errors.Error) {
 	return series.Events, nil
 }
 
-func CreateEvent(db *gorm.DB, event models.Event) (*models.Event, *errors.Error) {
+func CreateEvent(db *gorm.DB, event models.Event) ([]models.Event, *errors.Error) {
 	tx := db.Begin()
 
 	if err := tx.Create(&event).Error; err != nil {
@@ -95,7 +96,7 @@ func CreateEvent(db *gorm.DB, event models.Event) (*models.Event, *errors.Error)
 		return nil, &errors.FailedToCreateEvent
 	}
 
-	return &event, nil
+	return []models.Event{event}, nil
 }
 
 func CreateEventSeries(db *gorm.DB, series models.Series) ([]models.Event, *errors.Error) {
@@ -114,7 +115,7 @@ func CreateEventSeries(db *gorm.DB, series models.Series) ([]models.Event, *erro
 	return series.Events, nil
 }
 
-func UpdateEvent(db *gorm.DB, id uuid.UUID, event models.UpdateEventRequestBody) (*models.Event, *errors.Error) {
+func UpdateEvent(db *gorm.DB, id uuid.UUID, event models.Event) ([]models.Event, *errors.Error) {
 	if err := db.Model(&models.Event{}).Where("id = ?", id).Updates(event).Error; err != nil {
 		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &errors.UserNotFound
@@ -137,26 +138,35 @@ func UpdateEvent(db *gorm.DB, id uuid.UUID, event models.UpdateEventRequestBody)
 		return nil, &errors.FailedToUpdateUser
 	}
 
-	return &existingEvent, nil
+	return []models.Event{existingEvent}, nil
 }
 
-func UpdateSeries(db *gorm.DB, eventID uuid.UUID, seriesID uuid.UUID, series models.Series) ([]models.Event, *errors.Error) {
-	if _, err := GetEvent(db, eventID); err != nil {
-		return nil, err
-	}
-
-	if _, err := GetSeriesByID(db, seriesID); err != nil {
-		return nil, err
-	}
-
-	if err := db.Model(&models.Series{}).Where("id = ?", seriesID).Updates(series).Error; err != nil {
-		return nil, &errors.FailedToUpdateSeries
-	}
-
-	events, err := GetSeriesByID(db, seriesID)
+func UpdateSeries(db *gorm.DB, seriesID uuid.UUID, series models.Series) ([]models.Event, *errors.Error) {
+	err := DeleteSeriesByID(db, seriesID)
 	if err != nil {
 		return nil, err
 	}
+
+	series.ID = seriesID
+
+	events, err := CreateEventSeries(db, series)
+	if err != nil {
+		return nil, err
+	}
+	return events, nil
+}
+
+func UpdateSeriesByEventID(db *gorm.DB, eventID uuid.UUID, series models.Series) ([]models.Event, *errors.Error) {
+	seriesID, err := GetSeriesID(db, eventID)
+	if err != nil {
+		return nil, err
+	}
+
+	events, err := UpdateSeries(db, *seriesID, series)
+	if err != nil {
+		return nil, err
+	}
+
 	return events, nil
 }
 
@@ -199,6 +209,11 @@ func DeleteSeriesByID(db *gorm.DB, seriesID uuid.UUID) *errors.Error {
 	}
 
 	if result := tx.Delete(&models.Event{}, eventIDs); result.RowsAffected == 0 {
+		tx.Rollback()
+		return &errors.FailedToDeleteSeries
+	}
+
+	if result := tx.Delete(&models.Series{}, seriesID); result.RowsAffected == 0 {
 		tx.Rollback()
 		return &errors.FailedToDeleteSeries
 	}
