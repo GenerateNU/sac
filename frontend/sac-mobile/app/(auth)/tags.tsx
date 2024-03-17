@@ -2,8 +2,8 @@ import { Alert, Text, View, SafeAreaView, ScrollView } from 'react-native';
 import { Button } from '@/components/button';
 import Wordmark from '@/components/wordmark';
 import React, { useState } from 'react';
-import { ZodError, z } from 'zod';
-import { Controller, useForm } from 'react-hook-form';
+import { ZodError } from 'zod';
+import { useForm } from 'react-hook-form';
 import Error from '@/components/error';
 import { router } from 'expo-router';
 
@@ -31,7 +31,6 @@ const Tags = () => {
     };
 
     const {
-        control,
         handleSubmit,
     } = useForm<TagsData>();
 
@@ -61,20 +60,14 @@ const Tags = () => {
                 <Text className="text-xl pt-[3%] pb-[4%]">Select one or more</Text>
                 <ScrollView className="h-[62%] pt-[3%]">
                     <View className="flex-row flex-wrap mb-[3%]">
-                    {listOfTags.map((text, index) => (
-                    <Controller
-                        control={control}
-                        render={() => (
-                            <Button
-                                key={index}
-                                variant={selectedTags.includes(text) ? "default" : "outline"}
-                                size="tags"
-                                onPress={() => handleTagClick(text)}>
-                            {text}
-                            </Button>
-                        )}
-                        name="tags"
-                    /> ))}
+                        {listOfTags.map((text, index) => (
+                        <Button
+                            key={index}
+                            variant={selectedTags.includes(text) ? "default" : "outline"}
+                            size="tags"
+                            onPress={() => handleTagClick(text)}
+                        >{text}
+                        </Button> ))}
                     </View>
                 </ScrollView>
                 {selectedTags.length === 0 && buttonClicked && (
