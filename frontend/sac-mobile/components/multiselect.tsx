@@ -1,24 +1,22 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { MultiSelect } from 'react-native-element-dropdown';
 import { Item } from '@/types/item';
 
 interface MultiSelectProps {
     title: string;
-    item: Array<Item>; // list of dropdown items
-    placeholder: string; // placeholder
+    item: Array<Item>;
+    placeholder: string;
     onSubmitEditing: () => void;
-    search?: boolean; // true to enable search
+    search?: boolean;
     error?: boolean;
-    value: Array<Item>;
-    onChange?: () => void;
+    value: Item[];
+    onChange: () => void;
 }
 
 const MultiSelectComponent = (props: MultiSelectProps) => {
-    const [selected, setSelected] = useState(Array<Item>);
     const borderColor = props.error ? 'red' : 'black';
     const borderWidth = props.error ? 1 : 0.5;
-
     const styles = StyleSheet.create({
         container: { 
             padding: 0,
@@ -82,10 +80,8 @@ const MultiSelectComponent = (props: MultiSelectProps) => {
             valueField="value"
             placeholder={props.placeholder}
             searchPlaceholder="Search..."
-            value={selected}
-            onChange={(item : Item[]) => {
-              setSelected(item);
-            }}
+            value={props.value}
+            onChange={props.onChange}
             selectedStyle={styles.selectedStyle}
         />
       </View>

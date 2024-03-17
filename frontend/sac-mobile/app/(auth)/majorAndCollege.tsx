@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 
 import { ZodError, z } from 'zod';
-
+import { useState } from 'react';
 import { Button } from '@/components/button';
 import { DropdownComponent } from '@/components/dropdown';
 import MultiSelectComponent from '@/components/multiselect';
@@ -25,7 +25,7 @@ const MajorAndCollege = () => {
     const {
         control,
         handleSubmit,
-        formState: { errors }
+        formState: {errors}
     } = useForm<MajorAndCollegeForm>();
 
     const majorAndCollegeSchema = z.object({
@@ -33,7 +33,7 @@ const MajorAndCollege = () => {
         major: z.string().array()
     });
 
-    const onSubmit = ({ major, college }: MajorAndCollegeForm) => {
+    const onSubmit = ({major, college}: MajorAndCollegeForm) => {
         try {
             const updatedData = {
                 major,
@@ -61,7 +61,7 @@ const MajorAndCollege = () => {
                 <View className="w-full mb-[8.5%]">
                     <Controller
                         control={control}
-                        render={({ field: {onChange, value} }) => (
+                        render={({ field: { onChange, value } }) => (
                         <MultiSelectComponent
                             title="Major and Minor"
                             item={major()}
@@ -69,8 +69,8 @@ const MajorAndCollege = () => {
                             search={true}
                             onSubmitEditing={handleSubmit(onSubmit)}
                             error={!!errors.major}
-                            value={value}
                             onChange={onChange}
+                            value={value}
                         />
                         )}
                         name="major"
