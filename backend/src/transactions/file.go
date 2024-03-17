@@ -1,6 +1,8 @@
 package transactions
 
 import (
+	stdliberrors "errors"
+
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/google/uuid"
@@ -31,6 +33,31 @@ func DeleteFile(db *gorm.DB, fileID uuid.UUID) *errors.Error {
 	}
 
 	return nil
+}
+
+func UpdateFile(db *gorm.DB, fileID uuid.UUID, fileInfo models.FileInfo) (*models.File, *errors.Error) {
+	var existingFile models.File
+
+	err := db.First(&existingFile, fileID).Error
+	if err != nil {
+		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, &errors.FileNotFound
+		} else {
+			return nil, &errors.FailedToGetFile
+		}
+	}
+
+	if err := db.Model(&existingFile).Updates(models.File{
+		FileName: fileInfo.FileName,
+		FileType: fileInfo.FileType,
+		FileSize: fileInfo.FileSize,
+		FileURL:  fileInfo.FileURL,
+		ObjectKey: fileInfo.ObjectKey,
+	}).Error; err != nil {
+		return nil, &errors.FailedToUpdateFile
+	}
+
+	return &existingFile, nil
 }
 
 func GetFile(db *gorm.DB, fileID uuid.UUID) (*models.File, *errors.Error) {

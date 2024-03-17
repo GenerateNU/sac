@@ -11,6 +11,10 @@ var (
 		StatusCode: fiber.StatusBadRequest,
 		Message:    "file size is greater than 5 MB",
 	}
+	FileNotFound = Error{
+		StatusCode: fiber.StatusNotFound,
+		Message:    "file not found",
+	}
 	FailedToCreateAWSSession = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to create AWS session",

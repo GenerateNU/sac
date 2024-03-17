@@ -9,7 +9,6 @@ import (
 	"github.com/GenerateNU/sac/backend/src/transactions"
 	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/go-playground/validator/v10"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -49,12 +48,7 @@ func (cpoc *ClubPointOfContactService) CreateClubPointOfContact(clubID string, p
 		return nil, &errors.FailedToValidateClub
 	}
 
-	// pocExists, err := transactions.ClubPointOfContactExists(cpoc.DB, *clubIdAsUUID, pointOfContactBody.Email)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	fileInfo, err := cpoc.AWSProvider.UploadFile("club_point_of_contact", fileHeader)
+	fileInfo, err := cpoc.AWSProvider.UploadFile("point_of_contacts", fileHeader)
 	if err != nil {
 		return nil, err
 	}
@@ -66,26 +60,25 @@ func (cpoc *ClubPointOfContactService) CreateClubPointOfContact(clubID string, p
 		}
 	}()
 
-	// 1. once upload is successful, create file in db
-	file, err := transactions.CreateFile(tx, uuid.Nil, "club_point_of_contact", *fileInfo)
-	if err != nil {
-		return nil, err
-	}
-
-	// 2. create point of contact
-	poc, err := transactions.CreateClubPointOfContact(tx, *clubIdAsUUID, pointOfContactBody, file.ID)
+	poc, err := transactions.CreateClubPointOfContact(tx, *clubIdAsUUID, pointOfContactBody)
 	if err != nil {
 		tx.Rollback()
 		return nil, err
 	}
 
-	// 3. update file with point of contact id
-	if err := tx.Model(&file).Update("owner_id", poc.ID).Error; err != nil {
+	_, err = transactions.CreateFile(tx, poc.ID, "point_of_contacts", *fileInfo)
+	if err != nil {
 		tx.Rollback()
-		return nil, &errors.FailedToUpdateFile
+		return nil, err
 	}
 
-	tx.Commit()
+	if err := tx.Commit().Error; err != nil {
+		// delete file from s3
+		cpoc.AWSProvider.DeleteFile(fileInfo.FileURL)
+
+		return nil, &errors.FailedToCreatePointOfContact
+	}
+
 	return poc, nil
 }
 
@@ -117,14 +110,37 @@ func (cpoc *ClubPointOfContactService) DeleteClubPointOfContact(clubID, pocID st
 	pointOfContact, err := transactions.GetClubPointOfContact(cpoc.DB, *clubIdAsUUID, *pocIdAsUUID)
 	if err != nil {
 		return err
+	}	
+
+	if err := cpoc.AWSProvider.DeleteFile(pointOfContact.PhotoFile.FileURL); err != nil {
+		return err
 	}
 
-	if pointOfContact.PhotoFileID != uuid.Nil {
-		if err := cpoc.AWSProvider.DeleteFile(pointOfContact.PhotoFileID.String()); err != nil {
-			return err
+	tx := cpoc.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
 		}
-	} else {
-		return &errors.FailedToGetFile
+	}()
+	if err := tx.Error; err != nil {
+		return &errors.FailedToDeleteClubPointOfContact
+	}
+
+	// delete file
+	err = transactions.DeleteFile(tx, pointOfContact.PhotoFile.ID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = transactions.DeleteClubPointOfContact(tx, *clubIdAsUUID, *pocIdAsUUID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return &errors.FailedToDeleteClubPointOfContact
 	}
 
 	return transactions.DeleteClubPointOfContact(cpoc.DB, *clubIdAsUUID, *pocIdAsUUID)

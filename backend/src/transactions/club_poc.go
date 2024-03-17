@@ -9,13 +9,12 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateClubPointOfContact(db *gorm.DB, clubID uuid.UUID, pointOfContactBody models.CreatePointOfContactBody, fileID uuid.UUID) (*models.PointOfContact, *errors.Error) {
+func CreateClubPointOfContact(db *gorm.DB, clubID uuid.UUID, pointOfContactBody models.CreatePointOfContactBody) (*models.PointOfContact, *errors.Error) {
 	pointOfContact := models.PointOfContact{
 		Name:        pointOfContactBody.Name,
 		Email:       pointOfContactBody.Email,
 		Position:    pointOfContactBody.Position,
 		ClubID:      clubID,
-		PhotoFileID: fileID,
 	}
 
 	if err := db.Create(&pointOfContact).Error; err != nil {
@@ -37,6 +36,7 @@ func GetClubPointOfContacts(db *gorm.DB, clubID uuid.UUID) ([]models.PointOfCont
 
 func GetClubPointOfContact(db *gorm.DB, clubID uuid.UUID, pocID uuid.UUID) (*models.PointOfContact, *errors.Error) {
 	var pointOfContact models.PointOfContact
+
 	if err := db.Preload("PhotoFile").First(&pointOfContact, "id = ? AND club_id = ?", pocID, clubID).Error; err != nil {
 		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &errors.PointOfContactNotFound

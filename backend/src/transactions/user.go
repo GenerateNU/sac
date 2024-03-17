@@ -85,7 +85,7 @@ func UpdateUser(db *gorm.DB, id uuid.UUID, user models.User) (*models.User, *err
 		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &errors.UserNotFound
 		} else {
-			return nil, &errors.FailedToUpdateTag
+			return nil, &errors.FailedToUpdateUser
 		}
 	}
 

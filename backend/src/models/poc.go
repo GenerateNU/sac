@@ -12,9 +12,8 @@ type PointOfContact struct {
 	Position string `gorm:"type:varchar(255);" json:"position" validate:"required,max=255"`
 
 	ClubID uuid.UUID `gorm:"uniqueIndex:compositeindex;index;not null;foreignKey:ClubID" json:"-" validate:"min=1"`
-	PhotoFileID uuid.UUID `gorm:"uniqueIndex:compositeindex;index;not null;foreignKey:PhotoFileID" json:"-" validate:"uuid4"`
 	
-	PhotoFile File `gorm:"polymorphic:Owner;"`
+	PhotoFile File `gorm:"polymorphic:Owner;" json:"photo_file"`
 }
 
 type CreatePointOfContactBody struct {
