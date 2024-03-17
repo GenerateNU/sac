@@ -52,7 +52,7 @@ const MajorAndCollege = () => {
     return (
         <SafeAreaView>
             <View className="px-[8%] pb-[9%]">
-                <Wordmark additionalClasses={'justify-end'} />
+                <View className="flex flex-row justify-end"><Wordmark /></View>
                 <Text className="font-bold text-5xl pt-[9%] pb-[10%]">
                     Let's learn more about you
                 </Text>
