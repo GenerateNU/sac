@@ -15,8 +15,6 @@ import (
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/utilities"
-
-	stdliberrors "errors"
 )
 
 type PineconeClientInterface interface {
@@ -40,11 +38,11 @@ func NewPineconeClient(openAIClient *OpenAIClient, settings config.PineconeSetti
 }
 
 // Seeds the pinecone index with the clubs currently in the database.
-func (c *PineconeClient) Seed(db *gorm.DB) error {
+func (c *PineconeClient) Seed(db *gorm.DB) *errors.Error {
 	var clubs []models.Club
 
 	if err := db.Find(&clubs).Error; err != nil {
-		return err
+		return &errors.ClubSeedingFailed
 	}
 
 	searchables := make([]Searchable, len(clubs))
@@ -65,11 +63,12 @@ func (c *PineconeClient) Seed(db *gorm.DB) error {
 		chunks = append(chunks, searchables[i:end])
 	}
 
-	for i, chunk := range chunks {
-		print(fmt.Sprintf("Uploading chunk #%d (of %d) to pinecone...\n", i+1, len(chunks)))
+	for _, chunk := range chunks {
+		// TODO logger
+		// print(fmt.Sprintf("Uploading chunk #%d (of %d) to pinecone...\n", i+1, len(chunks)))
 		err := c.Upsert(chunk)
 		if err != nil {
-			return stdliberrors.New("club upsert failed")
+			return &errors.ClubSeedingFailed
 		}
 	}
 
@@ -156,7 +155,15 @@ func (c *PineconeClient) Delete(items []Searchable) *errors.Error {
 		return nil
 	}
 
-	itemIds := []string{}
+	// Ensure all items are in the same namespace
+	namespace := items[0].Namespace()
+	for _, item := range items {
+		if item.Namespace() != namespace {
+			return &errors.ItemsMustHaveSameNamespace
+		}
+	}
+
+	itemIds := make([]string, len(items))
 	for _, item := range items {
 		itemIds = append(itemIds, item.SearchId())
 	}
@@ -164,7 +171,7 @@ func (c *PineconeClient) Delete(items []Searchable) *errors.Error {
 	deleteBody, err := json.Marshal(
 		PineconeDeleteRequestBody{
 			IDs:       itemIds,
-			Namespace: items[0].Namespace(),
+			Namespace: namespace,
 			DeleteAll: false,
 		})
 	if err != nil {
@@ -224,8 +231,9 @@ func (c *PineconeClient) Search(item Searchable, topK int) ([]string, *errors.Er
 			IncludeValues:   false,
 			IncludeMetadata: false,
 			TopK:            topK,
-			Vector:          values[0].Embedding,
-			Namespace:       item.Namespace(),
+			// Only 1 item was passed to CreateEmbedding, so grab that 1 item and use its embedding.
+			Vector:    values[0].Embedding,
+			Namespace: item.Namespace(),
 		})
 	if err != nil {
 		return []string{}, &errors.FailedToSearchToPinecone

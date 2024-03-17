@@ -52,14 +52,14 @@ func main() {
 		Exit("Error migrating database: %s", err.Error())
 	}
 
-	openAi := search.NewOpenAIClient(config.OpenAISettings)
-	pinecone := search.NewPineconeClient(openAi, config.PineconeSettings)
-
 	if *onlyMigrate {
 		return
 	}
 
 	if *onlySeedPinecone {
+		openAi := search.NewOpenAIClient(config.OpenAISettings)
+		pinecone := search.NewPineconeClient(openAi, config.PineconeSettings)
+
 		err := pinecone.Seed(db)
 		if err != nil {
 			fmt.Printf("Error seeding PineconeDB: %s\n", err.Error())
@@ -73,7 +73,7 @@ func main() {
 		Exit("Error with connection pooling: %s", err.Error())
 	}
 
-	app := server.Init(db, pinecone, *config)
+	app := server.Init(db, *config)
 
 	err = app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
 	if err != nil {

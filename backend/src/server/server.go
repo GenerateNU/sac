@@ -26,13 +26,16 @@ import (
 // @contact.email	oduneye.d@northeastern.edu and ladley.g@northeastern.edu
 // @host 127.0.0.1:8080
 // @BasePath /
-func Init(db *gorm.DB, pinecone search.PineconeClientInterface, settings config.Settings) *fiber.App {
+func Init(db *gorm.DB, settings config.Settings) *fiber.App {
 	app := newFiberApp(settings.Application)
 
 	validate, err := utilities.RegisterCustomValidators()
 	if err != nil {
 		panic(fmt.Sprintf("Error registering custom validators: %s", err))
 	}
+
+	openAi := search.NewOpenAIClient(settings.OpenAISettings)
+	pinecone := search.NewPineconeClient(openAi, settings.PineconeSettings)
 
 	authMiddleware := middleware.NewAuthAuthMiddlewareService(db, validate, settings.Auth)
 
