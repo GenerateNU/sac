@@ -31,9 +31,8 @@ const MajorAndCollege = () => {
         college: z.string()
     });
 
-    const onSubmit = (data: MajorAndCollegeForm) => {
+    const onSubmit = ( { major, college }: MajorAndCollegeForm) => {
         try {
-            const { major, college } = data;
             const updatedData = {
                 major: major.value,
                 college: college.value
