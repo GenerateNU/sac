@@ -2,13 +2,10 @@ import { Alert, Text, View} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@/components/button';
 import Wordmark from '@/components/wordmark';
-import Input from '@/components/input';
 import Error from '@/components/error';
 import { DropdownComponent } from '@/components/dropdown';
-
 import { college } from '@/lib/const';
 import { Item, major } from '@/lib/utils';
-
 import { Controller, useForm } from 'react-hook-form';
 import { router } from 'expo-router';
 import { ZodError, z } from 'zod';

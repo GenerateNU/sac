@@ -2,11 +2,8 @@ import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Alert, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
 import { router } from 'expo-router';
-
 import { ZodError, z } from 'zod';
-
 import { Button } from '@/components/button';
 import Error from '@/components/error';
 import Input from '@/components/input';

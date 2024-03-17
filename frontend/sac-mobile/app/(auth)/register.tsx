@@ -2,11 +2,8 @@ import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Alert, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
 import { router } from 'expo-router';
-
 import { ZodError, z } from 'zod';
-
 import { Button } from '@/components/button';
 import { DropdownComponent } from '@/components/dropdown';
 import Error from '@/components/error';
@@ -72,7 +69,7 @@ const Register = () => {
                     <Wordmark
                         textColor="text-white"
                         func={() => router.push('/(auth)/login')}
-                        title="Login"
+                        buttonText="Login"
                     />
                     <View className="pt-[9%] pb-[7.5%]">
                         <Text className="text-white font-bold text-5xl">

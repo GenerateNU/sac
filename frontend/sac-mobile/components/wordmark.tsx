@@ -1,18 +1,14 @@
 import { Text, View } from 'react-native';
-
 import { Button } from '@/components/button';
-import { cn } from '@/lib/utils';
 
 interface WordmarkProps {
     textColor?: string;
-    backgroundColor?: string;
     func?: () => void;
-    title?: string;
-    // FIX? Naming this to className is not working
+    buttonText?: string;
     additionalClasses?: string;
 }
 
-const Wordmark = ({textColor, backgroundColor, func, title, additionalClasses}: WordmarkProps) => {
+const Wordmark = ({textColor, func, buttonText, additionalClasses}: WordmarkProps) => {
     return (
         <View className={`flex flex-row justify-between mx-auto w-full pt-[3%] pb-[5.5%] ${additionalClasses}`}>
             <View>
@@ -22,7 +18,7 @@ const Wordmark = ({textColor, backgroundColor, func, title, additionalClasses}: 
             </View>
             {func && (
                 <Button onPress={func} variant="secondary" size="sm">
-                    {title}
+                    {buttonText}
                 </Button>
             )}
         </View>
