@@ -1,14 +1,10 @@
 import React, { useState } from 'react';
 import { DimensionValue, ScrollView, StyleSheet, Text } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
+import { Item } from '@/types/item';
 
 // Library Component
 // https://www.npmjs.com/package/react-native-element-dropdown?activeTab=code
-
-type Item = {
-    label: string;
-    value: string;
-};
 
 interface DropdownProps {
     title: string;
@@ -67,6 +63,9 @@ export const DropdownComponent = (props: DropdownProps) => {
         itemContainerStyle: {
             borderBottomWidth: 1,
             borderColor: '#CDCBCB'
+        },
+        isFocus: {
+            borderColor: 'black'
         }
     });
 
@@ -74,7 +73,7 @@ export const DropdownComponent = (props: DropdownProps) => {
         <ScrollView style={styles.container}>
             <Text className="pb-[2%]">{props.title}</Text>
             <Dropdown
-                style={[styles.dropdown, isFocus && { borderColor: 'black' }]}
+                style={[styles.dropdown, isFocus && styles.isFocus]}
                 placeholderStyle={styles.placeholderStyle}
                 selectedTextStyle={styles.selectedTextStyle}
                 inputSearchStyle={styles.inputSearchStyle}
