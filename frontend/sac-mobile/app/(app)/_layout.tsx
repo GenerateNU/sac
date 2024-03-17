@@ -8,6 +8,10 @@ const HomeTabBarIcon = ({ color }: { color: string }) => (
     <MaterialCommunityIcons name="home" size={24} color={color} />
 );
 
+const EventsTabBarIcon = ({ color }: { color: string }) => (
+    <MaterialCommunityIcons name="calendar" size={24} color={color} />
+);
+
 const AppLayout = () => {
     return (
         <Tabs>
@@ -17,6 +21,14 @@ const AppLayout = () => {
                     title: 'Home',
                     headerShown: false,
                     tabBarIcon: HomeTabBarIcon
+                }}
+            />
+            <Tabs.Screen
+                name="event"
+                options={{
+                    title: 'Event',
+                    headerShown: false,
+                    tabBarIcon: EventsTabBarIcon
                 }}
             />
         </Tabs>
