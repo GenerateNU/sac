@@ -26,7 +26,7 @@ const cardStyles = cva(
 
 export interface CardProps
     extends TouchableOpacityProps,
-        VariantProps<typeof cardStyles> {}
+    VariantProps<typeof cardStyles> { }
 
 const Card = ({ children, variant, size, ...props }: CardProps) => {
     return (
@@ -43,7 +43,7 @@ const Card = ({ children, variant, size, ...props }: CardProps) => {
                 <Text className={cn(`text-gray-600`)}>{"April 23, 2024"}</Text>
                 <Text className={cn(`text-gray-600`)}>{"Ryder Hall, Room 294"}</Text>
             </View>
-            
+
         </View>
     );
 };
