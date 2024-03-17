@@ -73,7 +73,10 @@ func main() {
 		Exit("Error with connection pooling: %s", err.Error())
 	}
 
-	app := server.Init(db, *config)
+	openAi := search.NewOpenAIClient(config.OpenAISettings)
+	pinecone := search.NewPineconeClient(openAi, config.PineconeSettings)
+
+	app := server.Init(db, pinecone, *config)
 
 	err = app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
 	if err != nil {
