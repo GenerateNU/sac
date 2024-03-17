@@ -70,14 +70,13 @@ func MigrateDB(settings config.Settings, db *gorm.DB) error {
 		&models.Category{},
 		&models.Club{},
 		&models.Contact{},
+		&models.Series{},
 		&models.Event{},
+		&models.EventSeries{},
 		&models.Notification{},
 		&models.PointOfContact{},
 		&models.Tag{},
 		&models.User{},
-		&models.Series{},
-		&models.EventInstanceException{},
-		&models.EventSeries{},
 		&models.Membership{},
 	)
 	if err != nil {

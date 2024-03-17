@@ -172,12 +172,14 @@ func (e *EventController) UpdateEvent(c *fiber.Ctx) error {
 // UpdateSeriesByID godoc
 //
 // @Summary		Update a series by ID
-// @Description	Updates a series by ID
+// @Description	Updates a series by ID. If individual events have been edited prior,
+//
+//	this update will override the previous changes
+//
 // @ID			update-series-by-id
 // @Tags      	event
 // @Accept		json
 // @Produce		json
-// @Param		eventID	    path	string	true	"Event ID"
 // @Param		seriesID	path	string	true	"Series ID"
 // @Param		seriesBody	body	models.UpdateSeriesRequestBody	true	"Series Body"
 // @Success		200	  {object}	  models.Series
@@ -192,7 +194,37 @@ func (e *EventController) UpdateSeriesByID(c *fiber.Ctx) error {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
-	updatedSeries, err := e.eventService.UpdateSeries(c.Params("eventID"), c.Params("seriesID"), seriesBody)
+	updatedSeries, err := e.eventService.UpdateSeries(c.Params("seriesID"), seriesBody)
+	if err != nil {
+		return err.FiberError(c)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(updatedSeries)
+}
+
+// UpdateSeriesByEventID godoc
+//
+// @Summary		Update a series by event ID
+// @Description	Updates a series by event ID
+// @ID			update-series-by-event-id
+// @Tags      	event
+// @Accept		json
+// @Produce		json
+// @Param		eventID	    path	string	true	"Event ID"
+// @Param		seriesBody	body	models.UpdateSeriesRequestBody	true	"Series Body"
+// @Success		200	  {object}	  models.Series
+// @Failure     400   {object}    errors.Error
+// @Failure     401   {object}    errors.Error
+// @Failure     404   {object}    errors.Error
+// @Failure     500   {object}    errors.Error
+// @Router		/events/{eventID}/series/{seriesID}/  [patch]
+func (e *EventController) UpdateSeriesByEventID(c *fiber.Ctx) error {
+	var seriesBody models.UpdateSeriesRequestBody
+	if err := c.BodyParser(&seriesBody); err != nil {
+		return errors.FailedToParseRequestBody.FiberError(c)
+	}
+
+	updatedSeries, err := e.eventService.UpdateSeriesByEventID(c.Params("eventID"), seriesBody)
 	if err != nil {
 		return err.FiberError(c)
 	}
