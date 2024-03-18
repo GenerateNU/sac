@@ -4,22 +4,13 @@ import { Text, View } from 'react-native';
 import { useEvent } from '@/hooks/use-event';
 
 const Event = () => {
-    const {
-        data: event,
-        isLoading,
-        error
-    } = useEvent('8a3b3e3e-3e3e-3e3e-3e3e-3e3e3e3e3e3e');
+    const { data: event, isLoading, error } = useEvent('tester');
 
-    if (error)
-        return (
-            <View className="flex-1 justify-center items-center">
-                <Text>Error: {error.message}</Text>
-            </View>
-        );
+    // TODO: Handle error once we have error components
+    // TODO: Handle loading state once we have loading components
 
     return (
         <>
-            {isLoading && <Text>Loading...</Text>}
             {event && (
                 <View className="flex-1 justify-center items-center">
                     <Text>{event.name}</Text>

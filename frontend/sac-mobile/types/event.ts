@@ -1,7 +1,8 @@
 import { z } from 'zod';
 
-export const eventSchema = z.object({
-    id: z.string().uuid(),
+import { rootModelSchema } from './root';
+
+const eventSchema = z.object({
     name: z.string().max(255),
     preview: z.string().max(255),
     content: z.string().max(255),
@@ -9,9 +10,8 @@ export const eventSchema = z.object({
     endTime: z.date(),
     location: z.string().max(255),
     eventType: z.enum(['open', 'membersOnly']),
-    isRecurring: z.boolean(),
-    createdAt: z.date(),
-    updatedAt: z.date()
+    isRecurring: z.boolean()
 });
 
-export type Event = z.infer<typeof eventSchema>;
+const Event = eventSchema.merge(rootModelSchema);
+export type Event = z.infer<typeof Event>;
