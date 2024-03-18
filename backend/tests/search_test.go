@@ -96,7 +96,7 @@ func TestPineconeUpsertWorks(t *testing.T) {
 		MatchHeader("content-type", "application/json").
 		MatchType("json").
 		JSON(search.CreateEmbeddingRequestBody{
-			Input: mockSearchString,
+			Input: []string{mockSearchString},
 			Model: "text-embedding-ada-002",
 		}).
 		Reply(200).
@@ -109,7 +109,7 @@ func TestPineconeUpsertWorks(t *testing.T) {
 		})
 
 	client := search.NewPineconeClient(search.NewOpenAIClient(*mockConfig.OpenAI), *mockConfig.Pinecone)
-	err := client.Upsert(&MockSearchableStruct{})
+	err := client.Upsert([]search.Searchable{&MockSearchableStruct{}})
 	assert.Equal(err, nil)
 }
 
@@ -137,7 +137,7 @@ func TestPineconeDeleteWorks(t *testing.T) {
 		Reply(200)
 
 	client := search.NewPineconeClient(search.NewOpenAIClient(*mockConfig.OpenAI), *mockConfig.Pinecone)
-	err := client.Delete(&MockSearchableStruct{})
+	err := client.Delete([]search.Searchable{&MockSearchableStruct{}})
 	assert.Equal(err, nil)
 }
 
@@ -185,7 +185,7 @@ func TestPineconeSearchWorks(t *testing.T) {
 		MatchHeader("content-type", "application/json").
 		MatchType("json").
 		JSON(search.CreateEmbeddingRequestBody{
-			Input: mockSearchString,
+			Input: []string{mockSearchString},
 			Model: "text-embedding-ada-002",
 		}).
 		Reply(200).
@@ -209,7 +209,7 @@ func TestOpenAIEmbeddingWorks(t *testing.T) {
 
 	mockConfig := newMockConfig()
 
-	testString := "test string"
+	mockSearchString := (&MockSearchableStruct{}).EmbeddingString()
 
 	defer gock.Off()
 
@@ -219,7 +219,7 @@ func TestOpenAIEmbeddingWorks(t *testing.T) {
 		MatchHeader("content-type", "application/json").
 		MatchType("json").
 		JSON(search.CreateEmbeddingRequestBody{
-			Input: testString,
+			Input: []string{mockSearchString},
 			Model: "text-embedding-ada-002",
 		}).
 		Reply(200).
@@ -232,7 +232,7 @@ func TestOpenAIEmbeddingWorks(t *testing.T) {
 		})
 
 	client := search.NewOpenAIClient(*mockConfig.OpenAI)
-	vector, err := client.CreateEmbedding(testString)
+	vector, err := client.CreateEmbedding([]search.Searchable{&MockSearchableStruct{}})
 	assert.Equal(err, nil)
-	assert.Equal(vector, []float32{1.0, 1.0, 1.0, 1.0})
+	assert.Equal(vector, []search.Embedding{{Embedding: []float32{1.0, 1.0, 1.0, 1.0}}})
 }

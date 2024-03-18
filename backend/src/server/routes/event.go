@@ -20,16 +20,16 @@ func Event(router fiber.Router, eventService services.EventServiceInterface, aut
 	eventID := events.Group("/:eventID")
 
 	eventID.Get("/", eventController.GetEvent)
-	eventID.Patch("/", authMiddleware.ClubAuthorizeById, eventController.UpdateEvent)
-	eventID.Delete("/", authMiddleware.ClubAuthorizeById, eventController.DeleteEvent)
+	eventID.Get("/series", eventController.GetSeriesByEventID)
+	eventID.Patch("/", eventController.UpdateEvent)
+	eventID.Patch("/series", eventController.UpdateSeriesByEventID)
+	eventID.Delete("/", eventController.DeleteEvent)
+	eventID.Delete("/series", eventController.DeleteSeriesByEventID)
 
-	// api/v1/events/:eventID/series/*
+	// api/v1/events/series/*
 	series := events.Group("/series")
 
-	series.Get("/", eventController.GetSeriesByEventID)
-	series.Delete("/", authMiddleware.ClubAuthorizeById, eventController.DeleteSeriesByEventID)
-
-	// api/v1/events/:eventID/series/:seriesID/*
+	// api/v1/events/series/:seriesID/*
 	seriesID := series.Group("/:seriesID")
 
 	seriesID.Get("/", eventController.GetSeriesByID)

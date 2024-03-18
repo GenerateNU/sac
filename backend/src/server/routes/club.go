@@ -4,14 +4,15 @@ import (
 	p "github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/controllers"
 	"github.com/GenerateNU/sac/backend/src/middleware"
+	"github.com/GenerateNU/sac/backend/src/search"
 	"github.com/GenerateNU/sac/backend/src/services"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
 
-func ClubRoutes(router fiber.Router, db *gorm.DB, validate *validator.Validate, authMiddleware *middleware.AuthMiddlewareService) {
-	clubIDRouter := Club(router, services.NewClubService(db, validate), authMiddleware)
+func ClubRoutes(router fiber.Router, db *gorm.DB, pinecone search.PineconeClientInterface, validate *validator.Validate, authMiddleware *middleware.AuthMiddlewareService) {
+	clubIDRouter := Club(router, services.NewClubService(db, pinecone, validate), authMiddleware)
 
 	ClubTag(clubIDRouter, services.NewClubTagService(db, validate), authMiddleware)
 	ClubFollower(clubIDRouter, services.NewClubFollowerService(db), authMiddleware)
