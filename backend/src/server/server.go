@@ -51,6 +51,7 @@ func Init(db *gorm.DB, pinecone search.PineconeClientInterface, settings config.
 			Validate: validate,
 			Email:    emailService,
 			Clerk:    clerkService,
+			Pinecone: &pinecone,
 		},
 	}
 

@@ -23,5 +23,5 @@ type ServiceParams struct {
 	Validate *validator.Validate
 	Email    *email.EmailService
 	Clerk    *auth.ClerkService
-	Pinecone *search.PineconeClient
+	Pinecone *search.PineconeClientInterface
 }

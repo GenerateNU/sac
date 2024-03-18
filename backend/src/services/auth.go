@@ -296,6 +296,7 @@ func (a *AuthService) SendCode(userID string) *errors.Error {
 	return nil
 }
 
+/* trunk-ignore(golangci-lint/cyclop) */
 func (a *AuthService) VerifyEmail(emailBody models.VerifyEmailRequestBody) *errors.Error {
 	if err := a.Validate.Struct(emailBody); err != nil {
 		return &errors.FailedToValidateUser
