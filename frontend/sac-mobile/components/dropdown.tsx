@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DimensionValue, ScrollView, StyleSheet, Text } from 'react-native';
+import { View, DimensionValue, StyleSheet, Text } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 
 import { Item } from '@/types/item';
@@ -29,7 +29,7 @@ export const DropdownComponent = (props: DropdownProps) => {
             height: props.height || 78
         },
         dropdown: {
-            height: '85%',
+            height: 50,
             borderColor: borderColor,
             borderWidth: borderWidth,
             borderRadius: 12,
@@ -70,7 +70,7 @@ export const DropdownComponent = (props: DropdownProps) => {
     });
 
     return (
-        <ScrollView style={styles.container}>
+        <View style={styles.container}>
             <Text className="pb-[2%]">{props.title}</Text>
             <Dropdown
                 style={[styles.dropdown, isFocus && styles.isFocus]}
@@ -92,6 +92,6 @@ export const DropdownComponent = (props: DropdownProps) => {
                 onChange={props.onChangeText}
                 value={props.value}
             />
-        </ScrollView>
+        </View>
     );
 };

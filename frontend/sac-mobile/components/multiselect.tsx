@@ -39,7 +39,7 @@ const MultiSelectComponent = (props: MultiSelectProps) => {
             height: 320
         },
         dropdown: {
-            height: 52,
+            height: 50,
             borderWidth: borderWidth,
             borderRadius: 12,
             paddingLeft: '5%',
