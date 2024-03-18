@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "test": "jest --passWithNoTests --forceExit --detectOpenHandles --coverage",
+    "lint": "next lint",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "next": "14.1.3",
