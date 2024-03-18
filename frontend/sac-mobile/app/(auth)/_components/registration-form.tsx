@@ -29,7 +29,7 @@ const registerSchema = z
         password: z
             .string()
             .min(8, { message: 'Password must be at least 8 characters long' }),
-        passwordConfirm: z.string(),
+        passwordConfirm: z.string()
     })
     .refine((data) => data.password === data.passwordConfirm, {
         message: 'Passwords do not match',
@@ -43,17 +43,14 @@ const RegistrationForm = () => {
         formState: { errors }
     } = useForm<RegisterFormData>();
 
-    const onSubmit = ({
-        passwordConfirm,
-        ...rest
-    }: RegisterFormData) => {
+    const onSubmit = ({ passwordConfirm, ...rest }: RegisterFormData) => {
         try {
             registerSchema.parse({
                 passwordConfirm,
                 ...rest
             });
             const updatedData = {
-                ...rest,
+                ...rest
             };
             Alert.alert('Form Submitted', JSON.stringify(updatedData));
             router.push('/(auth)/majorAndCollege');

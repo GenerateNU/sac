@@ -122,6 +122,38 @@ export const majorArr = [
     'Theatre'
 ];
 
+export const categories = [
+    {
+        name: "PreProfessional",
+        tags: ["Premed", "Prelaw", "Other"]
+    },
+    {
+        name: "CulturalAndIdentity",
+        tags: ["Judaism", "Christianity", "Hinduism", "Islam", "LatinAmerica", "AfricanAmerican", "AsianAmerican", "LGBTQ", "Other"]
+    },
+    {
+        name: "ArtsAndCreativity",
+        tags: ["PerformingArts", "VisualArts", "CreativeWriting", "Music", "Other"]
+    },
+    {
+        name: "SportsAndRecreation",
+        tags: ["Soccer", "Hiking", "Climbing", "Lacrosse", "Other"]
+    },
+    {
+        name: "ScienceAndTechnology",
+        tags: ["Mathematics", "Physics", "Biology", "Chemistry", "EnvironmentalScience", "Geology", "Neuroscience", "Psychology", "SoftwareEngineering", "ArtificialIntelligence", "DataScience", "MechanicalEngineering", "ElectricalEngineering", "IndustrialEngineering", "Other"]
+    },
+    {
+        name: "CommunityServiceAndAdvocacy",
+        tags: ["Volunteerism", "EnvironmentalAdvocacy", "HumanRights", "CommunityOutreach", "Other"]
+    },
+    {
+        name: "MediaAndCommunication",
+        tags: ["Journalism", "Broadcasting", "Film", "PublicRelations", "Other"]
+    }
+]
+
+
 export const tags = [
     'Pre-med',
     'Pre-law',

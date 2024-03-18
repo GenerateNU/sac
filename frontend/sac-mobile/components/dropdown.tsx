@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, DimensionValue, StyleSheet, Text } from 'react-native';
+import { DimensionValue, StyleSheet, Text, View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 
 import { Item } from '@/types/item';

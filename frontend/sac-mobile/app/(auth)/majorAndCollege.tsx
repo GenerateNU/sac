@@ -9,13 +9,13 @@ import { ZodError, z } from 'zod';
 import { Button } from '@/components/button';
 import { DropdownComponent } from '@/components/dropdown';
 import Error from '@/components/error';
+import Input from '@/components/input';
 import MultiSelectComponent from '@/components/multiselect';
 import Wordmark from '@/components/wordmark';
 import { college } from '@/lib/const';
 import { major } from '@/lib/utils';
-import { Item } from '@/types/item';
 import { graduationYear } from '@/lib/utils';
-import Input from '@/components/input';
+import { Item } from '@/types/item';
 
 type MajorAndCollegeForm = {
     major: Item[];
@@ -35,13 +35,19 @@ const MajorAndCollege = () => {
         college: z.string(),
         major: z.string().array(),
         graduationYear: z.string(),
-        nuid: z.string().length(9, { message: 'NUID must have 9 digits' }),
+        nuid: z.string().length(9, { message: 'NUID must have 9 digits' })
     });
 
-    const onSubmit = ({ major, college, nuid, graduationYear }: MajorAndCollegeForm) => {
+    const onSubmit = ({
+        major,
+        college,
+        nuid,
+        graduationYear
+    }: MajorAndCollegeForm) => {
         try {
             const updatedData = {
-                major, nuid,
+                major,
+                nuid,
                 graduationYear: graduationYear.value,
                 college: college.value
             };
@@ -65,57 +71,57 @@ const MajorAndCollege = () => {
                     Let's learn more about you
                 </Text>
                 <View className="w-full mb-[6%]">
-                <Controller
-                    control={control}
-                    render={({ field: { onChange, value } }) => (
-                        <Input
-                            title="NUID"
-                            autoCorrect={false}
-                            placeholder="9 digit student ID number"
-                            onChangeText={onChange}
-                            value={value}
-                            onSubmitEditing={handleSubmit(onSubmit)}
-                            error={!!errors.nuid}
-                        />
-                    )}
-                    name="nuid"
-                    rules={{
-                        required: 'NUID is required',
-                        validate: (value) => {
-                            if (!/^00\d+/.test(value)) {
-                                return 'Please enter a proper NUID number';
+                    <Controller
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                            <Input
+                                title="NUID"
+                                autoCorrect={false}
+                                placeholder="9 digit student ID number"
+                                onChangeText={onChange}
+                                value={value}
+                                onSubmitEditing={handleSubmit(onSubmit)}
+                                error={!!errors.nuid}
+                            />
+                        )}
+                        name="nuid"
+                        rules={{
+                            required: 'NUID is required',
+                            validate: (value) => {
+                                if (!/^00\d+/.test(value)) {
+                                    return 'Please enter a proper NUID number';
+                                }
+                                if (value.length !== 9) {
+                                    return 'Please enter 9 digit number';
+                                }
+                                return true;
                             }
-                            if (value.length !== 9) {
-                                return 'Please enter 9 digit number';
-                            }
-                            return true;
-                        }
-                    }}
-                />
-                {errors.nuid && <Error message={errors.nuid.message} />}
-            </View>
-            <View className="mb-[6%]">
-                <Controller
-                    control={control}
-                    render={({ field: { onChange, value } }) => (
-                        <DropdownComponent
-                            title="Intended Graduation Year"
-                            item={graduationYear()}
-                            placeholder="Select Year"
-                            onChangeText={onChange}
-                            value={value}
-                            onSubmitEditing={handleSubmit(onSubmit)}
-                            error={!!errors.graduationYear}
-                        />
+                        }}
+                    />
+                    {errors.nuid && <Error message={errors.nuid.message} />}
+                </View>
+                <View className="mb-[6%]">
+                    <Controller
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                            <DropdownComponent
+                                title="Intended Graduation Year"
+                                item={graduationYear()}
+                                placeholder="Select Year"
+                                onChangeText={onChange}
+                                value={value}
+                                onSubmitEditing={handleSubmit(onSubmit)}
+                                error={!!errors.graduationYear}
+                            />
+                        )}
+                        name="graduationYear"
+                        rules={{ required: 'Graduation year is required' }}
+                    />
+                    {errors.graduationYear && (
+                        <Error message={errors.graduationYear.message} />
                     )}
-                    name="graduationYear"
-                    rules={{ required: 'Graduation year is required' }}
-                />
-                {errors.graduationYear && (
-                    <Error message={errors.graduationYear.message} />
-                )}
-            </View>
-            <View className="mb-[6%]">
+                </View>
+                <View className="mb-[6%]">
                     <Controller
                         control={control}
                         render={({ field: { onChange, value } }) => (
