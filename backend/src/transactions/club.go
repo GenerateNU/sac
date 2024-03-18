@@ -34,9 +34,7 @@ func GetClubs(db *gorm.DB, pinecone search.PineconeClientInterface, queryParams 
 		query = query.Preload("Tags")
 	}
 
-	for key, value := range queryParams.IntoWhere() {
-		query = query.Where(key, value)
-	}
+	query = query.Where(queryParams.IntoWhere())
 
 	if queryParams.Tags != nil && len(queryParams.Tags) > 0 {
 		query = query.Joins("JOIN club_tags ON club_tags.club_id = clubs.id").
@@ -46,7 +44,7 @@ func GetClubs(db *gorm.DB, pinecone search.PineconeClientInterface, queryParams 
 
 	if queryParams.Search != "" {
 		clubSearch := models.NewClubSearch(queryParams.Search)
-		resultIDs, err := pinecone.Search(clubSearch, 10)
+		resultIDs, err := pinecone.Search(clubSearch, 25)
 		if err != nil {
 			return nil, err
 		}

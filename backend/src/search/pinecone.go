@@ -266,10 +266,12 @@ func (c *PineconeClient) Search(item Searchable, topK int) ([]string, *errors.Er
 		return []string{}, &errors.FailedToSearchToPinecone
 	}
 
-	resultsToReturn := make([]string, len(results.Matches))
+	resultsToReturn := []string{}
 
-	for i, match := range results.Matches {
-		resultsToReturn[i] = match.Id
+	for _, match := range results.Matches {
+		if match.Score > 0.7 {
+			resultsToReturn = append(resultsToReturn, match.Id)
+		}
 	}
 
 	return resultsToReturn, nil

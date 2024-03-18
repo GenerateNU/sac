@@ -137,7 +137,7 @@ func (cqp *ClubQueryParams) IntoWhere() string {
 	if len(conditions) == 0 {
 		return ""
 	}
-	return "WHERE " + strings.Join(conditions, " AND ")
+	return strings.Join(conditions, " AND ")
 }
 
 func (c *Club) SearchId() string {
