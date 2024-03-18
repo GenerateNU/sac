@@ -5,6 +5,7 @@ import (
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/email"
 	"github.com/GenerateNU/sac/backend/src/middleware"
+	"github.com/GenerateNU/sac/backend/src/search"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
@@ -22,4 +23,5 @@ type ServiceParams struct {
 	Validate *validator.Validate
 	Email    *email.EmailService
 	Clerk    *auth.ClerkService
+	Pinecone *search.PineconeClient
 }
