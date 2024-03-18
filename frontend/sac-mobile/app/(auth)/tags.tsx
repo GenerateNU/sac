@@ -73,7 +73,7 @@ const Tags = () => {
                 </Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     {categoriesMenu.map((category) => (
-                        <View key={category.name}>
+                        <View>
                             <Button
                                 onPress={() => handleCategoryPress(category)}
                                 variant={
@@ -130,7 +130,7 @@ const Tags = () => {
                         <Error message="Please choose at least one interest" />
                     </View>
                 )}
-                <View className="flex-row justify-end mt-[7%]">
+                <View className="flex-row justify-end mt-[8%]">
                     <Button size="lg" onPress={handleSubmit(onSubmit)}>
                         Finish
                     </Button>
