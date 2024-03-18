@@ -124,76 +124,75 @@ export const majorArr = [
 
 export const categories = [
     {
-        name: "PreProfessional",
-        tags: ["Premed", "Prelaw", "Other"]
+        name: 'Pre-Professional',
+        tags: ['Pre-med', 'Pre-law', 'Other']
     },
     {
-        name: "CulturalAndIdentity",
-        tags: ["Judaism", "Christianity", "Hinduism", "Islam", "LatinAmerica", "AfricanAmerican", "AsianAmerican", "LGBTQ", "Other"]
+        name: 'Cultural and Identity',
+        tags: [
+            'Judaism',
+            'Christianity',
+            'Hinduism',
+            'Islam',
+            'Latin America',
+            'African American',
+            'Asian American',
+            'LGBTQ',
+            'Other'
+        ]
     },
     {
-        name: "ArtsAndCreativity",
-        tags: ["PerformingArts", "VisualArts", "CreativeWriting", "Music", "Other"]
+        name: 'Arts and Creativity',
+        tags: [
+            'Performing Arts',
+            'Visual Arts',
+            'Creative Writing',
+            'Music',
+            'Other'
+        ]
     },
     {
-        name: "SportsAndRecreation",
-        tags: ["Soccer", "Hiking", "Climbing", "Lacrosse", "Other"]
+        name: 'Sports and Recreation',
+        tags: ['Soccer', 'Hiking', 'Climbing', 'Lacrosse', 'Other']
     },
     {
-        name: "ScienceAndTechnology",
-        tags: ["Mathematics", "Physics", "Biology", "Chemistry", "EnvironmentalScience", "Geology", "Neuroscience", "Psychology", "SoftwareEngineering", "ArtificialIntelligence", "DataScience", "MechanicalEngineering", "ElectricalEngineering", "IndustrialEngineering", "Other"]
+        name: 'Science and Technology',
+        tags: [
+            'Mathematics',
+            'Physics',
+            'Biology',
+            'Chemistry',
+            'Environmental Science',
+            'Geology',
+            'Neuroscience',
+            'Psychology',
+            'Software Engineering',
+            'Artificial Intelligence',
+            'DataScience',
+            'Mechanical Engineering',
+            'Electrical Engineering',
+            'Industrial Engineering',
+            'Other'
+        ]
     },
     {
-        name: "CommunityServiceAndAdvocacy",
-        tags: ["Volunteerism", "EnvironmentalAdvocacy", "HumanRights", "CommunityOutreach", "Other"]
+        name: 'Community Service and Advocacy',
+        tags: [
+            'Volunteerism',
+            'Environmental Advocacy',
+            'Human Rights',
+            'Community Outreach',
+            'Other'
+        ]
     },
     {
-        name: "MediaAndCommunication",
-        tags: ["Journalism", "Broadcasting", "Film", "PublicRelations", "Other"]
+        name: 'Media and Communication',
+        tags: [
+            'Journalism',
+            'Broadcasting',
+            'Film',
+            'Public Relations',
+            'Other'
+        ]
     }
-]
-
-
-export const tags = [
-    'Pre-med',
-    'Pre-law',
-    'Judaism',
-    'Christianity',
-    'Hinduism',
-    'Islam',
-    'Latin America',
-    'African American',
-    'Asian American',
-    'LGBTQ',
-    'Performing Arts',
-    'Visual Arts',
-    'Creative Writing',
-    'Music',
-    'Soccer',
-    'Hiking',
-    'Climbing',
-    'Lacrosse',
-    'Mathematics',
-    'Physics',
-    'Biology',
-    'Chemistry',
-    'Environmental Science',
-    'Geology',
-    'Neuroscience',
-    'Psychology',
-    'Software Engineering',
-    'Artificial Intelligence',
-    'Data Science',
-    'Mechanical Engineering',
-    'Electrical Engineering',
-    'Industrial Engineering',
-    'Volunteerism',
-    'Environmental Advocacy',
-    'Human Rights',
-    'Community Outreach',
-    'Journalism',
-    'Broadcasting',
-    'Film',
-    'Public Relations',
-    'Other'
 ];

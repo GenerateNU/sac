@@ -9,29 +9,34 @@ import { ZodError } from 'zod';
 import { Button } from '@/components/button';
 import Error from '@/components/error';
 import Wordmark from '@/components/wordmark';
-import { tags } from '@/lib/const';
+import { categories } from '@/lib/const';
+import { Categories } from '@/types/categories';
 
 type TagsData = {
     tags: String[];
 };
 
+let allTags: string[] = [];
+for (let i = 0; i < categories.length; i++) {
+    allTags = allTags.concat(categories[i].tags);
+}
+const categoriesMenu = [{ name: 'All', tags: allTags }, ...categories];
+
 const Tags = () => {
     const [selectedTags, setSelectedTags] = useState<String[]>([]);
     const [buttonClicked, setButtonClicked] = useState<boolean>(false);
+    const [selectedCategory, setSelectedCategory] = useState('All');
 
-    const handleTagClick = (tag: string) => {
-        let updatedTags;
-        // deselect tag: if list of tags already have the tag, filter that tag out from the list
+    const handleCategoryPress = (category: Categories) => {
+        setSelectedCategory(category.name);
+    };
+
+    const handleTagPress = (tag: string) => {
         if (selectedTags.includes(tag)) {
-            updatedTags = selectedTags.filter(
-                (selectedTag) => selectedTag !== tag
-            );
+            setSelectedTags(selectedTags.filter((t) => t !== tag));
+        } else {
+            setSelectedTags([...selectedTags, tag]);
         }
-        // select tag: add it into the end of list
-        else {
-            updatedTags = [...selectedTags, tag];
-        }
-        setSelectedTags(updatedTags);
     };
 
     const { handleSubmit } = useForm<TagsData>();
@@ -54,8 +59,8 @@ const Tags = () => {
         }
     };
 
-    const emptyTag =
-        selectedTags.length === 0 && buttonClicked ? 'h-[53%]' : 'h-[54%]';
+    const heightAdjust =
+        selectedTags.length === 0 && buttonClicked ? 'h-[46%]' : 'h-[47%]';
 
     return (
         <SafeAreaView>
@@ -63,28 +68,61 @@ const Tags = () => {
                 <View className="flex flex-row">
                     <Wordmark />
                 </View>
-                <Text className="text-5xl pt-[6%] font-bold">
+                <Text className="text-5xl pt-[6%] pb-[5%] font-bold">
                     What are you interested in?
                 </Text>
-                <Text className="text-xl pt-[6%] pb-[7%]">
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                    {categoriesMenu.map((category) => (
+                        <View key={category.name}>
+                            <Button
+                                onPress={() => handleCategoryPress(category)}
+                                variant={
+                                    category.name === selectedCategory
+                                        ? 'underline'
+                                        : 'menu'
+                                }
+                                size="menu"
+                            >
+                                {category.name}
+                            </Button>
+                        </View>
+                    ))}
+                </ScrollView>
+
+                <Text className="text-lg pb-[6%] pt-[5%]">
                     Select one or more
                 </Text>
-                <ScrollView className={emptyTag}>
+                <ScrollView className={heightAdjust}>
                     <View className="flex-row flex-wrap">
-                        {tags.map((text, index) => (
-                            <Button
-                                key={index}
-                                variant={
-                                    selectedTags.includes(text)
-                                        ? 'default'
-                                        : 'outline'
-                                }
-                                size="tags"
-                                onPress={() => handleTagClick(text)}
-                            >
-                                {text}
-                            </Button>
-                        ))}
+                        {selectedCategory === 'All'
+                            ? allTags.map((tag) => (
+                                  <Button
+                                      onPress={() => handleTagPress(tag)}
+                                      variant={
+                                          selectedTags.includes(tag)
+                                              ? 'default'
+                                              : 'outline'
+                                      }
+                                      size="tags"
+                                  >
+                                      {tag}
+                                  </Button>
+                              ))
+                            : categories
+                                  .find((c) => c.name === selectedCategory)
+                                  ?.tags.map((tag) => (
+                                      <Button
+                                          onPress={() => handleTagPress(tag)}
+                                          variant={
+                                              selectedTags.includes(tag)
+                                                  ? 'default'
+                                                  : 'outline'
+                                          }
+                                          size="tags"
+                                      >
+                                          {tag}
+                                      </Button>
+                                  ))}
                     </View>
                 </ScrollView>
                 {selectedTags.length === 0 && buttonClicked && (
