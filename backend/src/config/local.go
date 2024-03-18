@@ -51,5 +51,19 @@ func readLocal(v *viper.Viper, path string, useDevDotEnv bool) (*Settings, error
 
 	settings.OpenAISettings = *openAISettings
 
+	resendSettings, err := readResendSettings()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read Resend settings: %w", err)
+	}
+
+	settings.ResendSettings = *resendSettings
+
+	clerkSettings, err := readClerkSettings()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read Clerk settings: %w", err)
+	}
+
+	settings.ClerkSettings = *clerkSettings
+
 	return settings, nil
 }

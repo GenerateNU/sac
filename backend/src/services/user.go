@@ -7,10 +7,8 @@ import (
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
+	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
-
-	"github.com/go-playground/validator/v10"
-	"gorm.io/gorm"
 )
 
 type UserServiceInterface interface {
@@ -22,12 +20,11 @@ type UserServiceInterface interface {
 }
 
 type UserService struct {
-	DB       *gorm.DB
-	Validate *validator.Validate
+	types.ServiceParams
 }
 
-func NewUserService(db *gorm.DB, validate *validator.Validate) *UserService {
-	return &UserService{DB: db, Validate: validate}
+func NewUserService(serviceParams types.ServiceParams) *UserService {
+	return &UserService{serviceParams}
 }
 
 func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models.User, *errors.Error) {
@@ -40,13 +37,16 @@ func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	passwordHash, err := auth.ComputePasswordHash(userBody.Password)
+	passwordHash, err := auth.ComputeHash(userBody.Password)
 	if err != nil {
 		return nil, &errors.FailedToComputePasswordHash
 	}
 
 	user.Email = strings.ToLower(userBody.Email)
 	user.PasswordHash = *passwordHash
+
+	// send email creation event to email service
+	// email.SendWelcomeEmail(user.Name, user.Email)
 
 	return transactions.CreateUser(u.DB, user)
 }

@@ -4,9 +4,8 @@ import (
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
+	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
-	"github.com/go-playground/validator/v10"
-	"gorm.io/gorm"
 )
 
 type ClubTagServiceInterface interface {
@@ -16,12 +15,11 @@ type ClubTagServiceInterface interface {
 }
 
 type ClubTagService struct {
-	DB       *gorm.DB
-	Validate *validator.Validate
+	types.ServiceParams
 }
 
-func NewClubTagService(db *gorm.DB, validate *validator.Validate) ClubTagServiceInterface {
-	return &ClubTagService{DB: db, Validate: validate}
+func NewClubTagService(params types.ServiceParams) ClubTagServiceInterface {
+	return &ClubTagService{params}
 }
 
 func (c *ClubTagService) CreateClubTags(id string, clubTagsBody models.CreateClubTagsRequestBody) ([]models.Tag, *errors.Error) {

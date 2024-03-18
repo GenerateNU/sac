@@ -373,7 +373,7 @@ func AssertUserWithIDBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, bo
 	eaa.Assert.Equal(dbUser.College, respUser.College)
 	eaa.Assert.Equal(dbUser.Year, respUser.Year)
 
-	match, err := auth.ComparePasswordAndHash((*body)["password"].(string), dbUser.PasswordHash)
+	match, err := auth.CompareHash((*body)["password"].(string), dbUser.PasswordHash)
 
 	eaa.Assert.NilError(err)
 

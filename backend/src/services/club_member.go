@@ -4,9 +4,8 @@ import (
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
+	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
-	"github.com/go-playground/validator/v10"
-	"gorm.io/gorm"
 )
 
 type ClubMemberServiceInterface interface {
@@ -14,11 +13,11 @@ type ClubMemberServiceInterface interface {
 }
 
 type ClubMemberService struct {
-	DB *gorm.DB
+	types.ServiceParams
 }
 
-func NewClubMemberService(db *gorm.DB, validate *validator.Validate) *ClubMemberService {
-	return &ClubMemberService{DB: db}
+func NewClubMemberService(params types.ServiceParams) *ClubMemberService {
+	return &ClubMemberService{params}
 }
 
 func (cms *ClubMemberService) GetClubMembers(clubID string, limit string, page string) ([]models.User, *errors.Error) {

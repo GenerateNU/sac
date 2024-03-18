@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 	"os/exec"
 	"sync"
@@ -105,7 +106,7 @@ func BackendTest() error {
 
 	fmt.Println(string(out))
 
-	err = CleanTestDBs()
+	err = CleanTestDBs(context.Background())
 	if err != nil {
 		return cli.Exit(err.Error(), 1)
 	}

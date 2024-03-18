@@ -10,6 +10,9 @@ import Error from '@/components/error';
 import Input from '@/components/input';
 import { useAuthStore } from '@/hooks/use-auth';
 import { loginByEmail } from '@/services/auth';
+import { useSignIn } from '@clerk/clerk-expo';
+import { useState } from 'react';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 type LoginFormData = {
     email: string;
@@ -29,28 +32,40 @@ const LoginForm = () => {
         handleSubmit,
         formState: { errors }
     } = useForm<LoginFormData>();
-    const { login } = useAuthStore();
 
-    const onSubmit = async (data: LoginFormData) => {
+    const { signIn, setActive, isLoaded } = useSignIn();
+    const [loading, setLoading] = useState(false);
+
+    const onSignInPress = async (loginData: LoginFormData) => {
+        if (!isLoaded) {
+            return;
+        }
+
+        setLoading(true);
+
         try {
-            loginSchema.parse(data);
-            const { user, tokens } = await loginByEmail(
-                data.email.toLowerCase(),
-                data.password
-            );
-            login(tokens, user);
-            router.push('/(app)/');
-        } catch (e: unknown) {
-            if (e instanceof ZodError) {
-                Alert.alert('Validation Error', e.errors[0].message); // use a better way to display errors
+            const validData = loginSchema.parse(loginData);
+
+            const completeSignIn = await signIn.create({
+                identifier: validData.email,
+                password: validData.password
+            });
+
+            await setActive({ session: completeSignIn.createdSessionId });
+        } catch (err: any) {
+            if (err instanceof ZodError) {
+                Alert.alert(err.errors[0].message);
             } else {
-                console.error('An unexpected error occurred:', e);
+                Alert.alert('An error occurred', err.message);
             }
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <>
+            {loading && <Spinner visible={loading} />}
             <View>
                 <Controller
                     control={control}
@@ -61,7 +76,7 @@ const LoginForm = () => {
                             placeholder="ladley.g@northeastern.edu"
                             onChangeText={onChange}
                             value={value}
-                            onSubmitEditing={handleSubmit(onSubmit)}
+                            onSubmitEditing={handleSubmit(onSignInPress)}
                             error={!!errors.email}
                         />
                     )}
@@ -81,7 +96,7 @@ const LoginForm = () => {
                             onChangeText={onChange}
                             value={value}
                             secureTextEntry={true}
-                            onSubmitEditing={handleSubmit(onSubmit)}
+                            onSubmitEditing={handleSubmit(onSignInPress)}
                             error={!!errors.password}
                         />
                     )}
@@ -106,7 +121,7 @@ const LoginForm = () => {
                 <Button
                     size="lg"
                     variant="default"
-                    onPress={handleSubmit(onSubmit)}
+                    onPress={handleSubmit(onSignInPress)}
                 >
                     Log in
                 </Button>

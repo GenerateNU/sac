@@ -3,14 +3,14 @@ package routes
 import (
 	"github.com/GenerateNU/sac/backend/src/controllers"
 	"github.com/GenerateNU/sac/backend/src/services"
-	"github.com/gofiber/fiber/v2"
+	"github.com/GenerateNU/sac/backend/src/types"
 )
 
-func UserFollower(userRouter fiber.Router, userFollowerService services.UserFollowerServiceInterface) {
-	userFollowerController := controllers.NewUserFollowerController(userFollowerService)
+func UserFollower(userParams types.RouteParams) {
+	userFollowerController := controllers.NewUserFollowerController(services.NewUserFollowerService(userParams.ServiceParams))
 
 	// api/v1/users/:userID/follower/*
-	userFollower := userRouter.Group("/follower")
+	userFollower := userParams.Router.Group("/follower")
 
 	userFollower.Get("/", userFollowerController.GetFollowing)
 	userFollower.Post("/:clubID", userFollowerController.CreateFollowing)
