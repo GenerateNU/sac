@@ -1,100 +1,81 @@
 import { useEffect } from 'react';
-import { Text, View } from 'react-native';
 
 import { useFonts } from 'expo-font';
-import { Stack, router } from 'expo-router';
-import { getItemAsync } from 'expo-secure-store';
+import { Slot, Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
-import { useAuthStore } from '@/hooks/use-auth';
-import { User } from '@/types/user';
+import { ClerkProvider, useAuth } from '@clerk/clerk-expo';
+import * as SecureStore from 'expo-secure-store';
 
 export {
     // Catch any errors thrown by the Layout component.
     ErrorBoundary
 } from 'expo-router';
 
-export const unstable_settings = {
-    // Ensure that reloading on `/modal` keeps a back button present.
-    initialRouteName: ''
-};
+const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+const tokenCache = {
+    async getToken(key: string) {
+        try {
+            return SecureStore.getItemAsync(key);
+        } catch (error) {
+            console.error('[RootLayoutNav] Error retrieving token:', error);
+            return null;
+        }
+    },
+    async saveToken(key: string, value: string) {
+        try {
+            return SecureStore.setItemAsync(key, value);
+        } catch (error) {
+            console.error('[RootLayoutNav] Error setting token:', error);
+        }
+    }
+};
+
+const InitalLayout = () => {
+    const { isLoaded, isSignedIn } = useAuth();
+    const router = useRouter();
+    const segments = useSegments();
+
+    useEffect(() => {
+        if (!isLoaded) return;
+
+        const inApp = segments[0] === "(app)";
+
+        if (isSignedIn && !inApp) {
+            router.push("/(app)/");
+        } else if (!isSignedIn) {
+            router.push("/(auth)/login");
+        }
+
+        console.log({ isSignedIn, inApp });
+    }, [isSignedIn]);
+
+
+    return <Slot />;
+}
+
+const RootLayout = () => {
     const [loaded, error] = useFonts({
         SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
         ...FontAwesome.font
     });
 
-    // Expo Router uses Error Boundaries to catch errors in the navigation tree.
-    useEffect(() => {
-        if (error) throw error;
-    }, [error]);
+    useEffect(() => { if (error) throw error }, [error]);
+    useEffect(() => { if (loaded) SplashScreen.hideAsync() }, [loaded]);
 
-    useEffect(() => {
-        if (loaded) {
-            SplashScreen.hideAsync();
-        }
-    }, [loaded]);
-
-    if (!loaded) {
-        return (
-            <View>
-                <Text>Loading...</Text>
-            </View>
-        );
-    }
-
-    return <RootLayoutNav />;
-}
-
-function RootLayoutNav() {
-    const { isLoggedIn, login } = useAuthStore();
-
-    useEffect(() => {
-        const checkLoginStatus = async () => {
-            try {
-                const accessToken = await getItemAsync('accessToken');
-                const refreshToken = await getItemAsync('refreshToken');
-                const savedUser = await getItemAsync('user');
-
-                console.log('[root] accessToken:', accessToken);
-                console.log('[root] refreshToken:', refreshToken);
-
-                const user: User = savedUser ? JSON.parse(savedUser) : null;
-
-                if (accessToken && refreshToken) {
-                    // Consider adding token validation (e.g., expiration check)
-                    login({ accessToken, refreshToken }, user);
-                }
-            } catch (error) {
-                console.error(
-                    '[RootLayoutNav] Error retrieving tokens:',
-                    error
-                );
-            }
-        };
-
-        checkLoginStatus();
-    }, [login]);
-
-    useEffect(() => {
-        if (isLoggedIn === null) {
-            router.push('/(auth)/welcome');
-            return;
-        }
-
-        router.push(isLoggedIn ? '/(app)/' : '/(auth)/welcome');
-    }, [isLoggedIn]);
+    if (!loaded) return null;
 
     return (
-        <Stack>
-            <Stack.Screen name="(app)" options={{ headerShown: false }} />
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        </Stack>
+        <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY!} tokenCache={tokenCache}>
+            <InitalLayout />
+        </ClerkProvider>
     );
 }
+
+export default RootLayout;

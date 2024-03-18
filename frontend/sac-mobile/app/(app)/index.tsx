@@ -2,13 +2,18 @@ import React from 'react';
 import { Text, View } from 'react-native';
 
 import { Button } from '@/components/button';
-import { useAuthStore } from '@/hooks/use-auth';
+import { useAuth } from '@clerk/clerk-expo';
 
 const Home = () => {
-    const { logout } = useAuthStore();
+    const { signOut } = useAuth();
+
+    const handleSignOut = async () => {
+        await signOut();
+    }
+
     return (
         <View className="items-center justify-center flex-1">
-            <Button onPress={logout}>Logout</Button>
+            <Button onPress={handleSignOut}>Sign Out</Button>
             <Text>Home</Text>
         </View>
     );
