@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { MultiSelect } from 'react-native-element-dropdown';
 import { Item } from '@/types/item';
@@ -10,13 +10,16 @@ interface MultiSelectProps {
     onSubmitEditing: () => void;
     search?: boolean;
     error?: boolean;
-    value: Item[];
-    onChange: () => void;
+    onChange: (selectedItems: Item[]) => void;
+    maxSelect: number;
 }
 
 const MultiSelectComponent = (props: MultiSelectProps) => {
     const borderColor = props.error ? 'red' : 'black';
     const borderWidth = props.error ? 1 : 0.5;
+    const marginBottom = props.error ? '0.5%' : '2%';
+    const [selected, setSelected] = useState(Array<Item>);
+
     const styles = StyleSheet.create({
         container: { 
             padding: 0,
@@ -40,7 +43,7 @@ const MultiSelectComponent = (props: MultiSelectProps) => {
           borderRadius: 12,
           paddingLeft: '5%', 
           paddingRight: '5%',
-          marginBottom: '2%',
+          marginBottom: marginBottom,
           borderColor: borderColor,
         },
         placeholderStyle: {
@@ -78,10 +81,14 @@ const MultiSelectComponent = (props: MultiSelectProps) => {
             activeColor={'#DCDCDC'}
             labelField="label"
             valueField="value"
+            maxSelect={props.maxSelect}
             placeholder={props.placeholder}
             searchPlaceholder="Search..."
-            value={props.value}
-            onChange={props.onChange}
+            value={selected}
+            onChange={item => {
+              setSelected(item);
+              props.onChange(item);
+            }}
             selectedStyle={styles.selectedStyle}
         />
       </View>

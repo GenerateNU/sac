@@ -61,7 +61,7 @@ const MajorAndCollege = () => {
                 <View className="w-full mb-[8.5%]">
                     <Controller
                         control={control}
-                        render={({ field: { onChange, value } }) => (
+                        render={({ field: { onChange } }) => (
                         <MultiSelectComponent
                             title="Major and Minor"
                             item={major()}
@@ -69,8 +69,10 @@ const MajorAndCollege = () => {
                             search={true}
                             onSubmitEditing={handleSubmit(onSubmit)}
                             error={!!errors.major}
-                            onChange={onChange}
-                            value={value}
+                            maxSelect={4}
+                            onChange={(selectedItems) => {
+                                onChange(selectedItems);
+                            }}
                         />
                         )}
                         name="major"
