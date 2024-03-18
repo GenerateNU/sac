@@ -101,7 +101,7 @@ func (a *AuthService) UpdatePassword(id string, passwordBody models.UpdatePasswo
 		return err
 	}
 
-	correct, passwordErr := auth.CompareHash(passwordBody.OldPassword, passwordHash)
+	correct, passwordErr := auth.CompareHash(passwordBody.OldPassword, *passwordHash)
 	if passwordErr != nil || !correct {
 		tx.Rollback()
 		return &errors.FailedToValidateUser
@@ -127,6 +127,7 @@ func (a *AuthService) UpdatePassword(id string, passwordBody models.UpdatePasswo
 	return nil
 }
 
+/* trunk-ignore(golangci-lint/cyclop) */
 func (a *AuthService) ForgotPassword(userBody models.PasswordResetRequestBody) *errors.Error {
 	if err := a.Validate.Struct(userBody); err != nil {
 		return &errors.FailedToValidateUser

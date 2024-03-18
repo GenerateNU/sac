@@ -110,7 +110,6 @@ func readProd(v *viper.Viper) (*Settings, error) {
 		return nil, fmt.Errorf("failed to read Clerk settings: %w", err)
 	}
 
-
 	return &Settings{
 		Application: ApplicationSettings{
 			Port:    uint16(portInt),

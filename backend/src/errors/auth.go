@@ -7,6 +7,10 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "passed authenticate middleware but claims is nil",
 	}
+	FailedToValidateUpdatePasswordBody = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "failed to validate update password body",
+	}
 	FailedToCastToCustomClaims = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to cast to custom claims",

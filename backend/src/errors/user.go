@@ -66,6 +66,7 @@ var (
 	FailedToUpdatePassword = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to update password",
+	}
 	FailedToFollowClub = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to follow club",
