@@ -5,12 +5,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 
 import { ZodError, z } from 'zod';
-import { useState } from 'react';
+
 import { Button } from '@/components/button';
 import { DropdownComponent } from '@/components/dropdown';
-import MultiSelectComponent from '@/components/multiselect';
-
 import Error from '@/components/error';
+import MultiSelectComponent from '@/components/multiselect';
 import Wordmark from '@/components/wordmark';
 import { college } from '@/lib/const';
 import { major } from '@/lib/utils';
@@ -25,7 +24,7 @@ const MajorAndCollege = () => {
     const {
         control,
         handleSubmit,
-        formState: {errors}
+        formState: { errors }
     } = useForm<MajorAndCollegeForm>();
 
     const majorAndCollegeSchema = z.object({
@@ -33,7 +32,7 @@ const MajorAndCollege = () => {
         major: z.string().array()
     });
 
-    const onSubmit = ({major, college}: MajorAndCollegeForm) => {
+    const onSubmit = ({ major, college }: MajorAndCollegeForm) => {
         try {
             const updatedData = {
                 major,
@@ -62,22 +61,22 @@ const MajorAndCollege = () => {
                     <Controller
                         control={control}
                         render={({ field: { onChange } }) => (
-                        <MultiSelectComponent
-                            title="Major and Minor"
-                            item={major()}
-                            placeholder="Select up to 4 major or minor"
-                            search={true}
-                            onSubmitEditing={handleSubmit(onSubmit)}
-                            error={!!errors.major}
-                            maxSelect={4}
-                            onChange={(selectedItems) => {
-                                onChange(selectedItems);
-                            }}
-                        />
+                            <MultiSelectComponent
+                                title="Major and Minor"
+                                item={major()}
+                                placeholder="Select up to 4 major or minor"
+                                search={true}
+                                onSubmitEditing={handleSubmit(onSubmit)}
+                                error={!!errors.major}
+                                maxSelect={4}
+                                onChange={(selectedItems) => {
+                                    onChange(selectedItems);
+                                }}
+                            />
                         )}
                         name="major"
                         rules={{
-                            required: 'Major is required',
+                            required: 'Major is required'
                         }}
                     />
                     {errors.major && <Error message={errors.major.message} />}
@@ -108,7 +107,8 @@ const MajorAndCollege = () => {
                         size="lg"
                         variant="default"
                         onPress={handleSubmit(onSubmit)}
-                    >Continue
+                    >
+                        Continue
                     </Button>
                 </View>
             </View>

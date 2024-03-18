@@ -8,8 +8,8 @@ import { ZodError } from 'zod';
 
 import { Button } from '@/components/button';
 import Error from '@/components/error';
-import { tags } from '@/lib/const';
 import Wordmark from '@/components/wordmark';
+import { tags } from '@/lib/const';
 
 type TagsData = {
     tags: String[];
@@ -54,7 +54,8 @@ const Tags = () => {
         }
     };
 
-    const emptyTag = selectedTags.length === 0 && buttonClicked ? 'h-[53%]' : 'h-[54%]';
+    const emptyTag =
+        selectedTags.length === 0 && buttonClicked ? 'h-[53%]' : 'h-[54%]';
 
     return (
         <SafeAreaView>
