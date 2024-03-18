@@ -85,7 +85,7 @@ func (a *AuthService) UpdatePassword(id string, passwordBody models.UpdatePasswo
 	}
 
 	if err := a.Validate.Struct(passwordBody); err != nil {
-		return &errors.FailedToValidateUser
+		return &errors.FailedToValidateUpdatePasswordBody
 	}
 
 	tx := a.DB.Begin()

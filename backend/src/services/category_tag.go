@@ -37,9 +37,7 @@ func (t *CategoryTagService) GetTagsByCategory(categoryID string, limit string, 
 		return nil, &errors.FailedToValidatePage
 	}
 
-	offset := (*pageAsInt - 1) * *limitAsInt
-
-	return transactions.GetTagsByCategory(t.DB, *categoryIDAsUUID, *limitAsInt, offset)
+	return transactions.GetTagsByCategory(t.DB, *categoryIDAsUUID, *limitAsInt, *pageAsInt)
 }
 
 func (t *CategoryTagService) GetTagByCategory(categoryID string, tagID string) (*models.Tag, *errors.Error) {

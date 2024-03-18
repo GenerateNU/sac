@@ -14,4 +14,7 @@ func UserTag(userParams types.RouteParams) {
 
 	userTags.Post("/", userTagController.CreateUserTags)
 	userTags.Get("/", userTagController.GetUserTags)
+
+	tagID := userTags.Group("/:tagID")
+	tagID.Delete("/", userTagController.DeleteUserTag)
 }

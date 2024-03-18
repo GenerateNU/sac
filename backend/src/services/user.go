@@ -62,9 +62,7 @@ func (u *UserService) GetUsers(limit string, page string) ([]models.User, *error
 		return nil, &errors.FailedToValidatePage
 	}
 
-	offset := (*pageAsInt - 1) * *limitAsInt
-
-	return transactions.GetUsers(u.DB, *limitAsInt, offset)
+	return transactions.GetUsers(u.DB, *limitAsInt, *pageAsInt)
 }
 
 func (u *UserService) GetUser(id string) (*models.User, *errors.Error) {
@@ -80,6 +78,10 @@ func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBod
 	idAsUUID, idErr := utilities.ValidateID(id)
 	if idErr != nil {
 		return nil, idErr
+	}
+
+	if utilities.AtLeastOne(userBody, models.UpdateUserRequestBody{}) {
+		return nil, &errors.FailedToValidateUser
 	}
 
 	if err := u.Validate.Struct(userBody); err != nil {

@@ -1,11 +1,12 @@
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, Button, Text, TextInput, View } from 'react-native';
+import { Alert, Text, TextInput, View } from 'react-native';
 
 import { router } from 'expo-router';
 
 import { ZodError, z } from 'zod';
 
+import { Button } from '@/components/button';
 import { useAuthStore } from '@/hooks/use-auth';
 import { loginByEmail } from '@/services/auth';
 
@@ -92,13 +93,22 @@ const Login = () => {
                 {errors.password && <Text>{errors.password.message}</Text>}
             </View>
 
-            <Button title="Submit" onPress={handleSubmit(onSubmit)} />
+            <Button
+                onPress={handleSubmit(onSubmit)}
+                variant="secondary"
+                size={'sm'}
+            >
+                Login
+            </Button>
 
             <View className="mt-4">
                 <Button
-                    title="Register"
                     onPress={() => router.push('/(auth)/register')}
-                />
+                    variant="outline"
+                    size={'sm'}
+                >
+                    Register
+                </Button>
             </View>
         </View>
     );

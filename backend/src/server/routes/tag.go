@@ -13,8 +13,11 @@ func Tag(tagParams types.RouteParams) {
 	tags := tagParams.Router.Group("/tags")
 
 	tags.Get("/", tagController.GetTags)
-	tags.Get("/:tagID", tagController.GetTag)
-	tags.Post("/", tagParams.AuthMiddleware.Authorize(p.CreateAll), tagController.CreateTag)
-	tags.Patch("/:tagID", tagParams.AuthMiddleware.Authorize(p.WriteAll), tagController.UpdateTag)
-	tags.Delete("/:tagID", tagParams.AuthMiddleware.Authorize(p.DeleteAll), tagController.DeleteTag)
+	tags.Post("/", tagParams.authMiddleware.Authorize(p.CreateAll), tagController.CreateTag)
+
+	tagID := tags.Group("/:tagID")
+
+	tagID.Get("/", tagController.GetTag)
+	tagID.Patch("/", tagParams.authMiddleware.Authorize(p.WriteAll), tagController.UpdateTag)
+	tagID.Delete("/", tagParams.authMiddleware.Authorize(p.DeleteAll), tagController.DeleteTag)
 }

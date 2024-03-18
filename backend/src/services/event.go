@@ -40,9 +40,7 @@ func (e *EventService) GetEvents(limit string, page string) ([]models.Event, *er
 		return nil, &errors.FailedToValidatePage
 	}
 
-	offset := (*pageAsInt - 1) * *limitAsInt
-
-	return transactions.GetEvents(e.DB, *limitAsInt, offset)
+	return transactions.GetEvents(e.DB, *limitAsInt, *pageAsInt)
 }
 
 // TODO: add logic for creating the []event here
@@ -118,6 +116,10 @@ func (e *EventService) UpdateEvent(id string, eventBody models.UpdateEventReques
 	idAsUUID, idErr := utilities.ValidateID(id)
 	if idErr != nil {
 		return nil, idErr
+	}
+
+	if utilities.AtLeastOne(eventBody, models.UpdateEventRequestBody{}) {
+		return nil, &errors.FailedToValidateTag
 	}
 
 	if err := e.Validate.Struct(eventBody); err != nil {

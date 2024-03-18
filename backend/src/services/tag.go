@@ -48,9 +48,7 @@ func (t *TagService) GetTags(limit string, page string) ([]models.Tag, *errors.E
 		return nil, &errors.FailedToValidatePage
 	}
 
-	offset := (*pageAsInt - 1) * *limitAsInt
-
-	return transactions.GetTags(t.DB, *limitAsInt, offset)
+	return transactions.GetTags(t.DB, *limitAsInt, *pageAsInt)
 }
 
 func (t *TagService) GetTag(tagID string) (*models.Tag, *errors.Error) {
@@ -68,6 +66,10 @@ func (t *TagService) UpdateTag(tagID string, tagBody models.UpdateTagRequestBody
 
 	if idErr != nil {
 		return nil, idErr
+	}
+
+	if utilities.AtLeastOne(tagBody, models.UpdateTagRequestBody{}) {
+		return nil, &errors.FailedToValidateTag
 	}
 
 	if err := t.Validate.Struct(tagBody); err != nil {

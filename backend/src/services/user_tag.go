@@ -11,6 +11,7 @@ import (
 type UserTagServiceInterface interface {
 	GetUserTags(id string) ([]models.Tag, *errors.Error)
 	CreateUserTags(id string, tagIDs models.CreateUserTagsBody) ([]models.Tag, *errors.Error)
+	DeleteUserTag(id string, tagID string) *errors.Error
 }
 
 type UserTagService struct {
@@ -49,4 +50,19 @@ func (u *UserTagService) CreateUserTags(id string, tagIDs models.CreateUserTagsB
 
 	// Update the user to reflect the new tags:
 	return transactions.CreateUserTags(u.DB, *idAsUUID, tags)
+}
+
+func (u *UserTagService) DeleteUserTag(id string, tagID string) *errors.Error {
+	// Validate the userID:
+	userIDAsUUID, err := utilities.ValidateID(id)
+	if err != nil {
+		return err
+	}
+
+	tagIDAsUUID, err := utilities.ValidateID(tagID)
+	if err != nil {
+		return err
+	}
+
+	return transactions.DeleteUserTag(u.DB, *userIDAsUUID, *tagIDAsUUID)
 }

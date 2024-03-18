@@ -3,10 +3,10 @@ module github.com/GenerateNU/sac/backend
 go 1.22.0
 
 require (
-	github.com/garrettladley/mattress v0.3.2
-	github.com/go-playground/validator/v10 v10.18.0
+	github.com/garrettladley/mattress v0.4.0
+	github.com/go-playground/validator/v10 v10.19.0
 	github.com/goccy/go-json v0.10.2
-	github.com/gofiber/fiber/v2 v2.52.1
+	github.com/gofiber/fiber/v2 v2.52.2
 	github.com/gofiber/swagger v1.0.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.6.0
@@ -19,7 +19,7 @@ require (
 	github.com/swaggo/swag v1.16.3
 	golang.org/x/crypto v0.21.0
 	golang.org/x/text v0.14.0
-	gorm.io/driver/postgres v1.5.6
+	gorm.io/driver/postgres v1.5.7
 	gorm.io/gorm v1.25.7
 )
 

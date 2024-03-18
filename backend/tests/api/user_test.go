@@ -46,7 +46,7 @@ func TestGetUsersWorksForSuper(t *testing.T) {
 				eaa.Assert.Equal(models.College("KCCS"), respUser.College)
 				eaa.Assert.Equal(models.Year(1), respUser.Year)
 
-				dbUsers, err := transactions.GetUsers(eaa.App.Conn, 1, 0)
+				dbUsers, err := transactions.GetUsers(eaa.App.Conn, 1, 1)
 
 				eaa.Assert.NilError(&err)
 

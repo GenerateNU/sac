@@ -33,3 +33,21 @@ func CreateUserTags(db *gorm.DB, id uuid.UUID, tags []models.Tag) ([]models.Tag,
 
 	return tags, nil
 }
+
+func DeleteUserTag(db *gorm.DB, id uuid.UUID, tagID uuid.UUID) *errors.Error {
+	user, err := GetUser(db, id, PreloadTag())
+	if err != nil {
+		return err
+	}
+
+	tag, err := GetTag(db, tagID)
+	if err != nil {
+		return err
+	}
+
+	if err := db.Model(&user).Association("Tag").Delete(&tag); err != nil {
+		return &errors.FailedToUpdateUser
+	}
+
+	return nil
+}

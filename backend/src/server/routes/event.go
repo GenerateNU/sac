@@ -19,19 +19,14 @@ func Event(eventParams types.RouteParams) {
 	eventID := events.Group("/:eventID")
 
 	eventID.Get("/", eventController.GetEvent)
-	eventID.Get("/series", eventController.GetSeriesByEventID)
-	events.Patch("/", eventParams.AuthMiddleware.ClubAuthorizeById, eventController.UpdateEvent)
-	eventID.Delete("/", eventParams.AuthMiddleware.ClubAuthorizeById, eventController.DeleteEvent)
-	eventID.Delete("/series", eventParams.AuthMiddleware.ClubAuthorizeById, eventController.DeleteSeriesByEventID)
+	eventID.Patch("/", eventParams.authMiddleware.ClubAuthorizeById, eventController.UpdateEvent)
+	eventID.Delete("/", eventParams.authMiddleware.ClubAuthorizeById, eventController.DeleteEvent)
 
 	// api/v1/events/:eventID/series/*
 	series := events.Group("/series")
 
 	series.Get("/", eventController.GetSeriesByEventID)
-	series.Delete("/", eventController.DeleteSeriesByEventID)
-
-	series.Get("/", eventController.GetSeriesByEventID)
-	series.Delete("/", eventController.DeleteSeriesByEventID)
+	series.Delete("/", eventParams.authMiddleware.ClubAuthorizeById, eventController.DeleteSeriesByEventID)
 
 	// api/v1/events/:eventID/series/:seriesID/*
 	seriesID := series.Group("/:seriesID")
