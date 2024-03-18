@@ -1,6 +1,6 @@
 module github.com/GenerateNU/sac/cli
 
-go 1.22.0
+go 1.22.1
 
 require (
 	github.com/GenerateNU/sac/backend v0.0.0-20240208151800-c7c93bbd1bb7

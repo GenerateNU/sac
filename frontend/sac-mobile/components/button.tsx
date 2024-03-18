@@ -6,16 +6,17 @@ import { cn } from '@/lib/utils';
 
 const buttonVariants = {
     variant: {
-        default: ['bg-blue-500', 'text-white'],
+        default: ['bg-gray-500', 'text-white'],
         destructive: ['bg-red-500', 'text-white font-bold'],
-        secondary: ['bg-gray-500', 'text-white italic'],
-        outline: ['border border-gray-500 text-gray-500 font-bold']
+        secondary: ['bg-white', 'text-gray'],
+        outline: ['border border-gray-600 text-gray-500 font-medium']
     },
     size: {
         default: 'h-10 px-4 py-2',
-        sm: 'h-9 rounded-md px-3',
-        lg: 'h-11 rounded-md px-8',
-        icon: 'h-10 w-10'
+        sm: 'h-9 rounded-xl px-[5%]',
+        lg: 'h-12 rounded-xl px-8 py-[4%] w-[47%]',
+        icon: 'h-10 w-10',
+        screenwide: 'h-12 rounded-xl px-8 py-[4%]'
     }
 };
 

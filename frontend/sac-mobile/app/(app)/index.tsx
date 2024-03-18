@@ -8,9 +8,7 @@ const Home = () => {
     const { logout } = useAuthStore();
     return (
         <View className="items-center justify-center flex-1">
-            <Button onPress={logout} size={'sm'}>
-                Logout
-            </Button>
+            <Button onPress={logout}>Logout</Button>
             <Text>Home</Text>
         </View>
     );

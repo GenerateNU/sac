@@ -25,8 +25,8 @@ func NewOpenAIClient(settings config.OpenAISettings) *OpenAIClient {
 }
 
 type CreateEmbeddingRequestBody struct {
-	Input string `json:"input"`
-	Model string `json:"model"`
+	Input []string `json:"input"`
+	Model string   `json:"model"`
 }
 
 type Embedding struct {
@@ -37,10 +37,15 @@ type CreateEmbeddingResponseBody struct {
 	Data []Embedding `json:"data"`
 }
 
-func (c *OpenAIClient) CreateEmbedding(payload string) ([]float32, *errors.Error) {
+func (c *OpenAIClient) CreateEmbedding(items []Searchable) ([]Embedding, *errors.Error) {
+	embeddingStrings := make([]string, len(items))
+	for i, item := range items {
+		embeddingStrings[i] = item.EmbeddingString()
+	}
+
 	embeddingBody, err := json.Marshal(
 		CreateEmbeddingRequestBody{
-			Input: payload,
+			Input: embeddingStrings,
 			Model: "text-embedding-ada-002",
 		})
 	if err != nil {
@@ -77,7 +82,5 @@ func (c *OpenAIClient) CreateEmbedding(payload string) ([]float32, *errors.Error
 		return nil, &errors.FailedToCreateEmbedding
 	}
 
-	EMBEDDING_INDEX := 0
-
-	return embeddingResultBody.Data[EMBEDDING_INDEX].Embedding, nil
+	return embeddingResultBody.Data, nil
 }

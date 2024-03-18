@@ -5,30 +5,74 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/garrettladley/mattress"
+	"gorm.io/gorm"
+
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/errors"
+	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/utilities"
 )
 
 type PineconeClientInterface interface {
-	Upsert(item Searchable) *errors.Error
-	Delete(item Searchable) *errors.Error
+	Upsert(items []Searchable) *errors.Error
+	Delete(items []Searchable) *errors.Error
 	Search(item Searchable, topK int) ([]string, *errors.Error)
 }
 
 type PineconeClient struct {
 	Settings     config.PineconeSettings
+	IndexName    *mattress.Secret[string]
 	openAIClient *OpenAIClient
 }
 
+// Connects to an existing Pinecone index, using the host and keys provided in settings.
 func NewPineconeClient(openAIClient *OpenAIClient, settings config.PineconeSettings) *PineconeClient {
 	return &PineconeClient{
 		Settings:     settings,
 		openAIClient: openAIClient,
 	}
+}
+
+// Seeds the pinecone index with the clubs currently in the database.
+func (c *PineconeClient) Seed(db *gorm.DB) *errors.Error {
+	var clubs []models.Club
+
+	if err := db.Find(&clubs).Error; err != nil {
+		return &errors.ClubSeedingFailed
+	}
+
+	searchables := make([]Searchable, len(clubs))
+	for i := range clubs {
+		searchables = append(searchables, &clubs[i])
+	}
+
+	var chunks [][]Searchable
+	chunkSize := 50
+
+	for i := 0; i < len(searchables); i += chunkSize {
+		end := i + chunkSize
+
+		if end > len(searchables) {
+			end = len(searchables)
+		}
+
+		chunks = append(chunks, searchables[i:end])
+	}
+
+	for _, chunk := range chunks {
+		// TODO logger
+		// print(fmt.Sprintf("Uploading chunk #%d (of %d) to pinecone...\n", i+1, len(chunks)))
+		err := c.Upsert(chunk)
+		if err != nil {
+			return &errors.ClubSeedingFailed
+		}
+	}
+
+	return nil
 }
 
 func (c *PineconeClient) pineconeRequest(req *http.Request) *http.Request {
@@ -49,21 +93,29 @@ type PineconeUpsertRequestBody struct {
 	Namespace string   `json:"namespace"`
 }
 
-func (c *PineconeClient) Upsert(item Searchable) *errors.Error {
-	values, embeddingErr := c.openAIClient.CreateEmbedding(item.EmbeddingString())
+// Inserts the given list of searchables to the Pinecone index.
+func (c *PineconeClient) Upsert(items []Searchable) *errors.Error {
+	if len(items) == 0 {
+		return nil
+	}
+
+	embeddings, embeddingErr := c.openAIClient.CreateEmbedding(items)
 	if embeddingErr != nil {
 		return &errors.FailedToUpsertToPinecone
 	}
 
+	vectors := []Vector{}
+	for i, item := range items {
+		vectors = append(vectors, Vector{
+			ID:     item.SearchId(),
+			Values: embeddings[i].Embedding,
+		})
+	}
+
 	upsertBody, err := json.Marshal(
 		PineconeUpsertRequestBody{
-			Vectors: []Vector{
-				{
-					ID:     item.SearchId(),
-					Values: values,
-				},
-			},
-			Namespace: item.Namespace(),
+			Vectors:   vectors,
+			Namespace: items[0].Namespace(),
 		})
 	if err != nil {
 		return &errors.FailedToUpsertToPinecone
@@ -82,6 +134,7 @@ func (c *PineconeClient) Upsert(item Searchable) *errors.Error {
 	if err != nil {
 		return &errors.FailedToUpsertToPinecone
 	}
+	defer resp.Body.Close()
 
 	if resp.StatusCode != fiber.StatusOK {
 		return &errors.FailedToUpsertToPinecone
@@ -96,19 +149,29 @@ type PineconeDeleteRequestBody struct {
 	DeleteAll bool     `json:"deleteAll"`
 }
 
-func NewPineconeDeleteRequestBody(ids []string, namespace string, deleteAll bool) *PineconeDeleteRequestBody {
-	return &PineconeDeleteRequestBody{
-		IDs:       ids,
-		Namespace: namespace,
-		DeleteAll: deleteAll,
+// Deletes the given list of searchables from the Pinecone index.
+func (c *PineconeClient) Delete(items []Searchable) *errors.Error {
+	if len(items) == 0 {
+		return nil
 	}
-}
 
-func (c *PineconeClient) Delete(item Searchable) *errors.Error {
+	// Ensure all items are in the same namespace
+	namespace := items[0].Namespace()
+	for _, item := range items {
+		if item.Namespace() != namespace {
+			return &errors.ItemsMustHaveSameNamespace
+		}
+	}
+
+	itemIds := make([]string, len(items))
+	for i, item := range items {
+		itemIds[i] = item.SearchId()
+	}
+
 	deleteBody, err := json.Marshal(
 		PineconeDeleteRequestBody{
-			IDs:       []string{item.SearchId()},
-			Namespace: item.Namespace(),
+			IDs:       itemIds,
+			Namespace: namespace,
 			DeleteAll: false,
 		})
 	if err != nil {
@@ -155,8 +218,10 @@ type PineconeSearchResponseBody struct {
 	Namespace string  `json:"namespace"`
 }
 
+// Runs a search on the Pinecone index given a searchable item, and returns the topK most similar
+// elements' ids.
 func (c *PineconeClient) Search(item Searchable, topK int) ([]string, *errors.Error) {
-	values, embeddingErr := c.openAIClient.CreateEmbedding(item.EmbeddingString())
+	values, embeddingErr := c.openAIClient.CreateEmbedding([]Searchable{item})
 	if embeddingErr != nil {
 		return []string{}, embeddingErr
 	}
@@ -166,8 +231,9 @@ func (c *PineconeClient) Search(item Searchable, topK int) ([]string, *errors.Er
 			IncludeValues:   false,
 			IncludeMetadata: false,
 			TopK:            topK,
-			Vector:          values,
-			Namespace:       item.Namespace(),
+			// Only 1 item was passed to CreateEmbedding, so grab that 1 item and use its embedding.
+			Vector:    values[0].Embedding,
+			Namespace: item.Namespace(),
 		})
 	if err != nil {
 		return []string{}, &errors.FailedToSearchToPinecone

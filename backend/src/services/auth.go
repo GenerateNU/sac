@@ -49,9 +49,9 @@ func (a *AuthService) Login(userBody models.LoginUserResponseBody) (*models.User
 		return nil, &errors.FailedToValidateUser
 	}
 
-	user, err := transactions.GetUserByEmail(a.DB, userBody.Email)
-	if err != nil {
-		return nil, err
+	user, getUserByEmailErr := transactions.GetUserByEmail(a.DB, userBody.Email)
+	if getUserByEmailErr != nil {
+		return nil, getUserByEmailErr
 	}
 
 	correct, passwordErr := auth.CompareHash(userBody.Password, user.PasswordHash)

@@ -33,7 +33,7 @@ func (c *ClubService) GetClubs(queryParams *models.ClubQueryParams) ([]models.Cl
 		return nil, &errors.FailedToValidatePage
 	}
 
-	return transactions.GetClubs(c.DB, queryParams)
+	return transactions.GetClubs(c.DB, c.Pinecone, queryParams)
 }
 
 func (c *ClubService) CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, *errors.Error) {
@@ -46,7 +46,7 @@ func (c *ClubService) CreateClub(clubBody models.CreateClubRequestBody) (*models
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	return transactions.CreateClub(c.DB, clubBody.UserID, *club)
+	return transactions.CreateClub(c.DB, c.Pinecone, clubBody.UserID, *club)
 }
 
 func (c *ClubService) GetClub(id string) (*models.Club, *errors.Error) {
@@ -77,7 +77,7 @@ func (c *ClubService) UpdateClub(id string, clubBody models.UpdateClubRequestBod
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	return transactions.UpdateClub(c.DB, *idAsUUID, *club)
+	return transactions.UpdateClub(c.DB, c.Pinecone, *idAsUUID, *club)
 }
 
 func (c *ClubService) DeleteClub(id string) *errors.Error {
@@ -86,5 +86,5 @@ func (c *ClubService) DeleteClub(id string) *errors.Error {
 		return &errors.FailedToValidateID
 	}
 
-	return transactions.DeleteClub(c.DB, *idAsUUID)
+	return transactions.DeleteClub(c.DB, c.Pinecone, *idAsUUID)
 }

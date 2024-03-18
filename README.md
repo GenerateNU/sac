@@ -45,8 +45,12 @@
       alt="Mobile CodeQL Workflow Status" />
   </a>
 
-  
   <br />
+
+  <a href="https://github.com/GenerateNU/sac/actions/workflows/web.yml">
+    <img src="https://github.com/GenerateNU/sac/actions/workflows/web.yml/badge.svg"
+      alt="Web Workflow Status" />
+  </a>
   
   <a href="https://github.com/GenerateNU/sac/actions/workflows/web_codeql.yml">
     <img src="https://github.com/GenerateNU/sac/actions/workflows/web_codeql.yml/badge.svg"

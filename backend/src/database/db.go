@@ -3,7 +3,6 @@ package database
 import (
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/models"
-
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -71,7 +70,9 @@ func MigrateDB(settings config.Settings, db *gorm.DB) error {
 		&models.Category{},
 		&models.Club{},
 		&models.Contact{},
+		&models.Series{},
 		&models.Event{},
+		&models.EventSeries{},
 		&models.Notification{},
 		&models.PointOfContact{},
 		&models.Tag{},

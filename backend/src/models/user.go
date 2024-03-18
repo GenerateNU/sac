@@ -80,7 +80,7 @@ type UpdateUserRequestBody struct {
 
 type LoginUserResponseBody struct {
 	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"min=8,max=255,password"`
+	Password string `json:"password"` // validate:"min=8,max=255,password"`
 }
 
 type UpdatePasswordRequestBody struct {
