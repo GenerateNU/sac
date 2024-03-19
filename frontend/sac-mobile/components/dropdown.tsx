@@ -54,7 +54,7 @@ export const DropdownComponent = (props: DropdownProps) => {
             marginTop: '2%',
             borderColor: '#CDCBCB',
             overflow: 'hidden',
-            borderWidth: 1,
+            borderWidth: 1
         },
         itemTextStyle: {
             fontSize: 14,

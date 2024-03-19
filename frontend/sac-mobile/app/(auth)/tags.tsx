@@ -10,12 +10,13 @@ import { Button } from '@/components/button';
 import Error from '@/components/error';
 import Wordmark from '@/components/wordmark';
 import { categories } from '@/lib/const';
-import { Categories } from '@/types/categories';
+import { Category } from '@/types/categories';
 
 type TagsData = {
     tags: String[];
 };
 
+// combine all tags of different categories into one for All tab
 let allTags: string[] = [];
 for (let i = 0; i < categories.length; i++) {
     allTags = allTags.concat(categories[i].tags);
@@ -23,23 +24,26 @@ for (let i = 0; i < categories.length; i++) {
 const categoriesMenu = [{ name: 'All', tags: allTags }, ...categories];
 
 const Tags = () => {
+    const { handleSubmit } = useForm<TagsData>();
     const [selectedTags, setSelectedTags] = useState<String[]>([]);
     const [buttonClicked, setButtonClicked] = useState<boolean>(false);
     const [selectedCategory, setSelectedCategory] = useState('All');
 
-    const handleCategoryPress = (category: Categories) => {
+    // when a category is selected, set selected category to the category's name
+    const handleCategoryPress = (category: Category) => {
         setSelectedCategory(category.name);
     };
 
     const handleTagPress = (tag: string) => {
+        // if a tag is selected and tag has been selected before, filter it out
         if (selectedTags.includes(tag)) {
             setSelectedTags(selectedTags.filter((t) => t !== tag));
-        } else {
+        }
+        // appended into selectedTags list
+        else {
             setSelectedTags([...selectedTags, tag]);
         }
     };
-
-    const { handleSubmit } = useForm<TagsData>();
 
     const onSubmit = (data: TagsData) => {
         setButtonClicked(true);
@@ -126,7 +130,7 @@ const Tags = () => {
                     </View>
                 </ScrollView>
                 {selectedTags.length === 0 && buttonClicked && (
-                    <View className="pt-3">
+                    <View className="pt-[2%]">
                         <Error message="Please choose at least one interest" />
                     </View>
                 )}

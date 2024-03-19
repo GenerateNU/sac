@@ -36,7 +36,7 @@ const MultiSelectComponent = (props: MultiSelectProps) => {
         containerStyle: {
             borderRadius: 14,
             marginTop: 6,
-            height: '88%',
+            height: '88%'
         },
         dropdown: {
             height: 50,

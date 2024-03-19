@@ -1,5 +1,5 @@
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, Text, View } from 'react-native';
+import { Alert, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { router } from 'expo-router';
@@ -67,10 +67,76 @@ const MajorAndCollege = () => {
         <SafeAreaView>
             <View className="px-[8%] pb-[9%]">
                 <Wordmark />
-                <Text className="font-bold text-5xl pt-[5%] pb-[5%]">
+                <Text className="font-bold text-5xl pt-[15%] pb-[5%]">
                     Let's learn more about you
                 </Text>
-                <View className="w-full mb-[6%]">
+                <View className="mb-[6%]">
+                    <Controller
+                        control={control}
+                        render={({ field: { onChange } }) => (
+                            <MultiSelectComponent
+                                title="Major and Minor"
+                                item={major()}
+                                placeholder="Select up to 4 major & minor"
+                                search={true}
+                                onSubmitEditing={handleSubmit(onSubmit)}
+                                error={!!errors.major}
+                                maxSelect={4}
+                                onChange={(selectedItems) => {
+                                    onChange(selectedItems);
+                                }}
+                            />
+                        )}
+                        name="major"
+                        rules={{
+                            required: 'Major is required'
+                        }}
+                    />
+                    {errors.major && <Error message={errors.major.message} />}
+                </View>
+                <View className="mb-[6%]">
+                    <Controller
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                            <DropdownComponent
+                                title="College"
+                                item={college}
+                                placeholder="Select your college"
+                                onChangeText={onChange}
+                                value={value}
+                                onSubmitEditing={handleSubmit(onSubmit)}
+                                error={!!errors.college}
+                            />
+                        )}
+                        name="college"
+                        rules={{ required: 'College is required' }}
+                    />
+                    {errors.college && (
+                        <Error message={errors.college.message} />
+                    )}
+                </View>
+                <View className="mb-[6%]">
+                    <Controller
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                            <DropdownComponent
+                                title="Intended Graduation Year"
+                                item={graduationYear()}
+                                placeholder="Select Year"
+                                onChangeText={onChange}
+                                value={value}
+                                onSubmitEditing={handleSubmit(onSubmit)}
+                                error={!!errors.graduationYear}
+                            />
+                        )}
+                        name="graduationYear"
+                        rules={{ required: 'Graduation year is required' }}
+                    />
+                    {errors.graduationYear && (
+                        <Error message={errors.graduationYear.message} />
+                    )}
+                </View>
+                <View className="mb-[7%]">
                     <Controller
                         control={control}
                         render={({ field: { onChange, value } }) => (
@@ -99,72 +165,6 @@ const MajorAndCollege = () => {
                         }}
                     />
                     {errors.nuid && <Error message={errors.nuid.message} />}
-                </View>
-                <View className="mb-[6%]">
-                    <Controller
-                        control={control}
-                        render={({ field: { onChange, value } }) => (
-                            <DropdownComponent
-                                title="Intended Graduation Year"
-                                item={graduationYear()}
-                                placeholder="Select Year"
-                                onChangeText={onChange}
-                                value={value}
-                                onSubmitEditing={handleSubmit(onSubmit)}
-                                error={!!errors.graduationYear}
-                            />
-                        )}
-                        name="graduationYear"
-                        rules={{ required: 'Graduation year is required' }}
-                    />
-                    {errors.graduationYear && (
-                        <Error message={errors.graduationYear.message} />
-                    )}
-                </View>
-                <View className="mb-[6%]">
-                    <Controller
-                        control={control}
-                        render={({ field: { onChange, value } }) => (
-                            <DropdownComponent
-                                title="College"
-                                item={college}
-                                placeholder="Select your college"
-                                onChangeText={onChange}
-                                value={value}
-                                onSubmitEditing={handleSubmit(onSubmit)}
-                                error={!!errors.college}
-                            />
-                        )}
-                        name="college"
-                        rules={{ required: 'College is required' }}
-                    />
-                    {errors.college && (
-                        <Error message={errors.college.message} />
-                    )}
-                </View>
-                <View className="w-full">
-                    <Controller
-                        control={control}
-                        render={({ field: { onChange } }) => (
-                            <MultiSelectComponent
-                                title="Major and Minor"
-                                item={major()}
-                                placeholder="Select up to 4 major or minor"
-                                search={true}
-                                onSubmitEditing={handleSubmit(onSubmit)}
-                                error={!!errors.major}
-                                maxSelect={4}
-                                onChange={(selectedItems) => {
-                                    onChange(selectedItems);
-                                }}
-                            />
-                        )}
-                        name="major"
-                        rules={{
-                            required: 'Major is required'
-                        }}
-                    />
-                    {errors.major && <Error message={errors.major.message} />}
                 </View>
                 <View className="flex-row justify-end pt-[5%]">
                     <Button
