@@ -11,13 +11,19 @@
 - [Node.js](https://nodejs.org/en/)
 - [Yarn](https://yarnpkg.com/)
 - [Go](https://golang.org/)
-   > Do not install through brew, use the official website
+  - Do not install through brew, use the official website
 - [Docker](https://www.docker.com/)
 - [PostgreSQL](https://www.postgresql.org/)
   - Install through brew: `brew install postgresql@15`
   - It requires you to add all the exports to path so read the end of the installation carefully!
 - [Trunk](https://marketplace.visualstudio.com/items?itemName=Trunk.io) (Recommended!)
   - Visual Studio Code extension for linting/formatting
+- [Air](https://github.com/cosmtrek/air?tab=readme-ov-file#installation)
+  - Live reload for Go apps
+- [gofumpt](https://github.com/mvdan/gofumpt)
+  - A stricter gofmt
+- [golangci-lint](https://golangci-lint.run/welcome/install/)
+  - A Go linters aggregator
 
 # Setup
 
@@ -121,45 +127,14 @@
    ```console
    go run main.go // run server
    go test ./... // run tests
-   go fmt ./... // format code
-   go vet ./... // lint code
+   gofumpt -l -w . // format code
+   golangci-lint run --fix // lint code
    ```
 
 ### SAC CLI
 
    To install use `./install.sh` and then run `sac-cli` to see all commands.
 
-   ```console
-   NAME:
-      sac-cli - CLI for SAC
-
-   USAGE:
-      sac-cli [global options] command [command options] 
-
-   COMMANDS:
-      swagger, swag  Updates the swagger documentation
-      test, t        Runs tests
-      help, h        Shows a list of commands or help for one command
-      CI:
-         format, f  Runs formatting tools
-         lint, l    Runs linting tools
-            * can use --fix to fix linting errors for frontend
-      Database Operations:
-         clean, c    Remove databases used for testing
-         migrate, m  Migrate the database, creating tables and relationships
-         reset, r    Resets the database, dropping all tables, clearing data, and re-running migrations
-            * can use --data to just reset data and not drop tables
-         insert, i   Inserts mock data into the database
-         drop, d     Drop data with a migration or drops the entire database
-            * can use --data to just drop data and not drop tables
-
-      Development:
-         be  Run the backend
-         fe  Run the frontend
-
-   GLOBAL OPTIONS:
-      --help, -h  show help
-   ```
 # Git Flow
 
 1. **Create a new branch**
@@ -178,8 +153,6 @@
      ```
 
    - We use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for commit messages. (READ!)
-
-   <!-- - We especially recommend [Trunk](https://marketplace.visualstudio.com/items?itemName=Trunk.io) for linting -->
 
 3. **Push changes to GitHub**
 
