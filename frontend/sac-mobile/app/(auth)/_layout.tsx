@@ -37,7 +37,7 @@ const AuthLayout = () => {
                 name="user-details"
                 options={{
                     title: 'User Details',
-                    headerShown: true
+                    headerShown: false
                 }}
             />
             <Stack.Screen
