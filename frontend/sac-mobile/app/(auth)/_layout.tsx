@@ -27,10 +27,17 @@ const AuthLayout = () => {
                 }}
             />
             <Stack.Screen
-                name="majorAndCollege"
+                name="verification"
                 options={{
-                    title: 'Major And College',
+                    title: 'Verification',
                     headerShown: false
+                }}
+            />
+            <Stack.Screen
+                name="user-details"
+                options={{
+                    title: 'User Details',
+                    headerShown: true
                 }}
             />
             <Stack.Screen

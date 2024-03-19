@@ -17,21 +17,21 @@ import { major } from '@/lib/utils';
 import { graduationYear } from '@/lib/utils';
 import { Item } from '@/types/item';
 
-type MajorAndCollegeForm = {
+type UserDetailsForm = {
     major: Item[];
     college: Item;
     nuid: string;
     graduationYear: Item;
 };
 
-const MajorAndCollege = () => {
+const UserDetails = () => {
     const {
         control,
         handleSubmit,
         formState: { errors }
-    } = useForm<MajorAndCollegeForm>();
+    } = useForm<UserDetailsForm>();
 
-    const majorAndCollegeSchema = z.object({
+    const UserDetailsSchema = z.object({
         college: z.string(),
         major: z.string().array(),
         graduationYear: z.string(),
@@ -43,7 +43,7 @@ const MajorAndCollege = () => {
         college,
         nuid,
         graduationYear
-    }: MajorAndCollegeForm) => {
+    }: UserDetailsForm) => {
         try {
             const updatedData = {
                 major,
@@ -51,7 +51,7 @@ const MajorAndCollege = () => {
                 graduationYear: graduationYear.value,
                 college: college.value
             };
-            majorAndCollegeSchema.parse(updatedData);
+            UserDetailsSchema.parse(updatedData);
             Alert.alert('Form Submitted', JSON.stringify(updatedData));
             router.push('/(auth)/tags');
         } catch (error) {
@@ -180,4 +180,4 @@ const MajorAndCollege = () => {
     );
 };
 
-export default MajorAndCollege;
+export default UserDetails;

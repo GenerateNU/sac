@@ -31,10 +31,6 @@ const registerSchema = z
             .min(8, { message: 'Password must be at least 8 characters long' }),
         passwordConfirm: z.string()
     })
-    .refine((data) => data.password === data.passwordConfirm, {
-        message: 'Passwords do not match',
-        path: ['passwordConfirm']
-    });
 
 const RegistrationForm = () => {
     const {
@@ -53,7 +49,7 @@ const RegistrationForm = () => {
                 ...rest
             };
             Alert.alert('Form Submitted', JSON.stringify(updatedData));
-            router.push('/(auth)/majorAndCollege');
+            router.push('/(auth)/verification');
         } catch (error) {
             if (error instanceof ZodError) {
                 Alert.alert('Validation Error', error.errors[0].message);
