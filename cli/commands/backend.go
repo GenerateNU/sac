@@ -11,9 +11,9 @@ import (
 
 func BackendCommand() *cli.Command {
 	command := &cli.Command{
-		Name:    "backend",
-		Usage:   "Starts the backend server",
-		Aliases: []string{"be"},
+		Name:     "be",
+		Usage:    "Run the backend",
+		Category: "Development",
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
 				Name:    "use-dev-dot-env",
@@ -35,7 +35,7 @@ func BackendCommand() *cli.Command {
 }
 
 func RunBackend() error {
-	cmd := exec.Command("go", "run", "main.go")
+	cmd := exec.Command("air")
 	cmd.Dir = BACKEND_SRC_DIR
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
