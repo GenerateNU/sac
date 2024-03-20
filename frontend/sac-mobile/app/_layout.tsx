@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Text, View } from 'react-native';
 
 import { useFonts } from 'expo-font';
 import { Stack, router } from 'expo-router';
@@ -17,7 +18,7 @@ export {
 
 export const unstable_settings = {
     // Ensure that reloading on `/modal` keeps a back button present.
-    initialRouteName: '(app)'
+    initialRouteName: ''
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -42,7 +43,11 @@ export default function RootLayout() {
     }, [loaded]);
 
     if (!loaded) {
-        return null;
+        return (
+            <View>
+                <Text>Loading...</Text>
+            </View>
+        );
     }
 
     return <RootLayoutNav />;
@@ -53,14 +58,25 @@ function RootLayoutNav() {
 
     useEffect(() => {
         const checkLoginStatus = async () => {
-            const accessToken = await getItemAsync('accessToken');
-            const refreshToken = await getItemAsync('refreshToken');
-            const savedUser = await getItemAsync('user');
+            try {
+                const accessToken = await getItemAsync('accessToken');
+                const refreshToken = await getItemAsync('refreshToken');
+                const savedUser = await getItemAsync('user');
 
-            const user: User = savedUser ? JSON.parse(savedUser) : null;
+                console.log('[root] accessToken:', accessToken);
+                console.log('[root] refreshToken:', refreshToken);
 
-            if (accessToken && refreshToken) {
-                login({ accessToken, refreshToken }, user);
+                const user: User = savedUser ? JSON.parse(savedUser) : null;
+
+                if (accessToken && refreshToken) {
+                    // Consider adding token validation (e.g., expiration check)
+                    login({ accessToken, refreshToken }, user);
+                }
+            } catch (error) {
+                console.error(
+                    '[RootLayoutNav] Error retrieving tokens:',
+                    error
+                );
             }
         };
 
@@ -68,14 +84,12 @@ function RootLayoutNav() {
     }, [login]);
 
     useEffect(() => {
-        if (isLoggedIn === null) return;
-
-        if (!isLoggedIn) {
-            router.push('/(auth)/login');
+        if (isLoggedIn === null) {
+            router.push('/(auth)/welcome');
             return;
         }
 
-        router.push('/(app)/');
+        router.push(isLoggedIn ? '/(app)/' : '/(auth)/welcome');
     }, [isLoggedIn]);
 
     return (
