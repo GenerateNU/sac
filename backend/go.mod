@@ -1,6 +1,6 @@
 module github.com/GenerateNU/sac/backend
 
-go 1.22.0
+go 1.22.1
 
 require (
 	github.com/garrettladley/mattress v0.4.0
@@ -19,7 +19,7 @@ require (
 	golang.org/x/crypto v0.21.0
 	golang.org/x/text v0.14.0
 	gorm.io/driver/postgres v1.5.7
-	gorm.io/gorm v1.25.7
+	gorm.io/gorm v1.25.8
 )
 
 require (
@@ -29,7 +29,6 @@ require (
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
 	github.com/tinylib/msgp v1.1.8 // indirect
-	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/sync v0.6.0 // indirect
 )
 
