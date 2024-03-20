@@ -131,16 +131,6 @@ func GetClub(db *gorm.DB, id uuid.UUID, preloads ...OptionalQuery) (*models.Club
 func UpdateClub(db *gorm.DB, pinecone search.PineconeClientInterface, id uuid.UUID, club models.Club) (*models.Club, *errors.Error) {
 	tx := db.Begin()
 
-	// TODO: is this block needed? (updating user based off club data)
-	result := tx.Model(&models.User{}).Where("id = ?", id).Updates(club)
-	if result.Error != nil {
-		tx.Rollback()
-		if stdliberrors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return nil, &errors.UserNotFound
-		} else {
-			return nil, &errors.FailedToUpdateClub
-		}
-	}
 	var existingClub models.Club
 
 	err := tx.First(&existingClub, id).Error

@@ -7,6 +7,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/GenerateNU/sac/backend/src/transactions"
 	h "github.com/GenerateNU/sac/backend/tests/api/helpers"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
@@ -367,4 +368,205 @@ func TestGetUserTagsReturnsCorrectList(t *testing.T) {
 			},
 		},
 	).Close()
+}
+
+func TestDeleteUserTagFailsOnNonExistentUser(t *testing.T) {
+	userID := uuid.New()
+	tagID := uuid.New()
+
+	h.InitTest(t).TestOnErrorAndTester(
+		h.TestRequest{
+			Method: fiber.MethodDelete,
+			Path:   fmt.Sprintf("/api/v1/users/%s/tags/%s/", userID, tagID),
+			Role:   &models.Super,
+		},
+		h.ErrorWithTester{
+			Error: errors.UserNotFound,
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				var dbUser models.User
+
+				err := eaa.App.Conn.First(&dbUser, userID).Error
+
+				eaa.Assert.Assert(err != nil)
+			},
+		},
+	).Close()
+}
+
+func TestDeleteUserTagFailsOnNonExistentTag(t *testing.T) {
+	tagID := uuid.New()
+
+	h.InitTest(t).TestOnErrorAndTester(
+		h.TestRequest{
+			Method:             fiber.MethodDelete,
+			Path:               fmt.Sprintf("/api/v1/users/:userID/tags/%s/", tagID),
+			Role:               &models.Super,
+			TestUserIDReplaces: h.StringToPointer(":userID"),
+		},
+		h.ErrorWithTester{
+			Error: errors.TagNotFound,
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				var dbTag models.Tag
+
+				err := eaa.App.Conn.First(&dbTag, tagID).Error
+				eaa.Assert.Assert(err != nil)
+			},
+		},
+	).Close()
+}
+
+func TestDeleteUserTagFailsOnInvalidUserUUID(t *testing.T) {
+	appAssert := h.InitTest(t)
+
+	badUserUUIDs := []string{
+		"0",
+		"-1",
+		"1.1",
+		"foo",
+		"null",
+	}
+
+	for _, badUserUUID := range badUserUUIDs {
+		appAssert = appAssert.TestOnError(
+			h.TestRequest{
+				Method: fiber.MethodDelete,
+				Path:   fmt.Sprintf("/api/v1/users/%s/tags/%s/", badUserUUID, uuid.New()),
+				Role:   &models.Super,
+			},
+			errors.FailedToValidateID,
+		)
+	}
+
+	appAssert.Close()
+}
+
+func TestDeleteUserTagFailsOnInvalidTagUUID(t *testing.T) {
+	appAssert := h.InitTest(t)
+
+	badTagUUIDs := []string{
+		"0",
+		"-1",
+		"1.1",
+		"foo",
+		"null",
+	}
+
+	for _, badTagUUID := range badTagUUIDs {
+		appAssert = appAssert.TestOnError(
+			h.TestRequest{
+				Method:             fiber.MethodDelete,
+				Path:               fmt.Sprintf("/api/v1/users/:userID/tags/%s/", badTagUUID),
+				Role:               &models.Super,
+				TestUserIDReplaces: h.StringToPointer(":userID"),
+			},
+			errors.FailedToValidateID,
+		)
+	}
+
+	appAssert.Close()
+}
+
+func TestDeleteUserTagDoesNotAlterTagListOnNonAssociation(t *testing.T) {
+	tagUUIDs, appAssert := CreateSetOfTags(h.InitTest(t))
+	appAssert.Assert.Assert(len(tagUUIDs) > 1)
+
+	// Tag to be queried:
+	tagID := tagUUIDs[0]
+
+	// Tags to be added to the user:
+	tagUUIDs = tagUUIDs[1:]
+
+	appAssert.TestOnStatus(
+		h.TestRequest{
+			Method:             fiber.MethodPost,
+			Path:               "/api/v1/users/:userID/tags/",
+			Body:               SampleTagIDsFactory(&tagUUIDs),
+			Role:               &models.Student,
+			TestUserIDReplaces: h.StringToPointer(":userID"),
+		},
+		fiber.StatusCreated,
+	)
+
+	userTagsBeforeDeletion, err := transactions.GetUserTags(appAssert.App.Conn, appAssert.App.TestUser.UUID)
+	appAssert.Assert.NilError(&err)
+
+	appAssert.TestOnStatusAndTester(
+		h.TestRequest{
+			Method:             fiber.MethodDelete,
+			Path:               fmt.Sprintf("/api/v1/users/:userID/tags/%s/", tagID),
+			Role:               &models.Super,
+			TestUserIDReplaces: h.StringToPointer(":userID"),
+		},
+		h.TesterWithStatus{
+			Status: fiber.StatusNoContent,
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				var dbUser models.User
+
+				err := eaa.App.Conn.Where("id = ?", appAssert.App.TestUser.UUID).Preload("Tag").First(&dbUser).Error
+				eaa.Assert.NilError(err)
+
+				eaa.Assert.Equal(dbUser.Tag, userTagsBeforeDeletion)
+			},
+		},
+	).Close()
+}
+
+func TestDeleteUserTagRemovesTagFromUser(t *testing.T) {
+	tagUUIDs, appAssert := CreateSetOfTags(h.InitTest(t))
+	appAssert.Assert.Assert(len(tagUUIDs) > 1)
+
+	tagID := tagUUIDs[0]
+
+	appAssert.TestOnStatusAndTester(
+		h.TestRequest{
+			Method:             fiber.MethodPost,
+			Path:               "/api/v1/users/:userID/tags/",
+			Body:               SampleTagIDsFactory(&tagUUIDs),
+			Role:               &models.Student,
+			TestUserIDReplaces: h.StringToPointer(":userID"),
+		},
+		h.TesterWithStatus{
+			Status: fiber.StatusCreated,
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				var dbUser models.User
+
+				err := eaa.App.Conn.Where("id = ?", eaa.App.TestUser.UUID).Preload("Tag").First(&dbUser)
+				eaa.Assert.NilError(err)
+
+				eaa.Assert.Equal(len(dbUser.Tag), len(tagUUIDs))
+
+				var dbTag models.Tag
+
+				err = eaa.App.Conn.Where("id = ?", tagID).Preload("User").First(&dbTag)
+				eaa.Assert.NilError(err)
+
+				eaa.Assert.Equal(len(dbTag.User), 1)
+			},
+		},
+	).TestOnStatusAndTester(
+		h.TestRequest{
+			Method:             fiber.MethodDelete,
+			Path:               fmt.Sprintf("/api/v1/users/:userID/tags/%s/", tagID),
+			Role:               &models.Student,
+			TestUserIDReplaces: h.StringToPointer(":userID"),
+		},
+		h.TesterWithStatus{
+			Status: fiber.StatusNoContent,
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				var dbUser models.User
+
+				err := eaa.App.Conn.Where("id = ?", eaa.App.TestUser.UUID).Preload("Tag").First(&dbUser)
+				eaa.Assert.NilError(err)
+
+				eaa.Assert.Equal(len(dbUser.Tag), len(tagUUIDs)-1)
+
+				var dbTag models.Tag
+
+				err = eaa.App.Conn.Where("id = ?", tagID).Preload("User").First(&dbTag)
+				eaa.Assert.NilError(err)
+
+				eaa.Assert.Equal(len(dbTag.User), 0)
+			},
+		},
+	)
 }
