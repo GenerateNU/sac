@@ -47,7 +47,6 @@ func (e *EventService) GetEvents(limit string, page string) ([]models.Event, *er
 	return transactions.GetEvents(e.DB, *limitAsInt, *pageAsInt)
 }
 
-// TODO Q: should we always return a slice of events? or should we return a slice of events if it's a series and a single event if it's not?
 // right now we are always returning a slice
 func (e *EventService) CreateEvent(eventBody models.CreateEventRequestBody) ([]models.Event, *errors.Error) {
 	if err := e.Validate.Struct(eventBody); err != nil {
@@ -63,6 +62,11 @@ func (e *EventService) CreateEvent(eventBody models.CreateEventRequestBody) ([]m
 		Location:    eventBody.Location,
 		EventType:   eventBody.EventType,
 		IsRecurring: *eventBody.IsRecurring,
+
+		Host:         eventBody.Host,
+		Clubs:         eventBody.Clubs,
+		Tag:          eventBody.Tag,
+		Notification: eventBody.Notification,
 	}
 
 	if !event.IsRecurring {
@@ -130,15 +134,7 @@ func (e *EventService) UpdateEvent(id string, eventBody models.UpdateEventReques
 		return nil, &errors.FailedToValidateEvent
 	}
 
-	updatedEvent := &models.Event{
-		Name:      eventBody.Name,
-		Preview:   eventBody.Preview,
-		Content:   eventBody.Content,
-		StartTime: eventBody.StartTime,
-		EndTime:   eventBody.EndTime,
-		Location:  eventBody.Location,
-		EventType: eventBody.EventType,
-	}
+	updatedEvent := MapToEvent(eventBody)
 
 	return transactions.UpdateEvent(e.DB, *idAsUUID, *updatedEvent)
 }
@@ -158,15 +154,7 @@ func (e *EventService) UpdateSeries(seriesID string, seriesBody models.UpdateSer
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	updatedEventBody := &models.Event{
-		Name:      seriesBody.EventDetails.Name,
-		Preview:   seriesBody.EventDetails.Preview,
-		Content:   seriesBody.EventDetails.Content,
-		StartTime: seriesBody.EventDetails.StartTime,
-		EndTime:   seriesBody.EventDetails.EndTime,
-		Location:  seriesBody.EventDetails.Location,
-		EventType: seriesBody.EventDetails.EventType,
-	}
+	updatedEventBody := MapToEvent(seriesBody.EventDetails)
 
 	newEvents := CreateEventSlice(updatedEventBody, *series)
 	series.Events = newEvents
@@ -189,15 +177,7 @@ func (e *EventService) UpdateSeriesByEventID(eventID string, seriesBody models.U
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	updatedEventBody := &models.Event{
-		Name:      seriesBody.EventDetails.Name,
-		Preview:   seriesBody.EventDetails.Preview,
-		Content:   seriesBody.EventDetails.Content,
-		StartTime: seriesBody.EventDetails.StartTime,
-		EndTime:   seriesBody.EventDetails.EndTime,
-		Location:  seriesBody.EventDetails.Location,
-		EventType: seriesBody.EventDetails.EventType,
-	}
+	updatedEventBody := MapToEvent(seriesBody.EventDetails)
 
 	newEvents := CreateEventSlice(updatedEventBody, *series)
 	series.Events = newEvents
@@ -253,4 +233,22 @@ func CreateEventSlice(firstEvent *models.Event, series models.Series) []models.E
 	}
 
 	return eventBodies
+}
+
+func MapToEvent(eventBody models.UpdateEventRequestBody) *models.Event {
+	return &models.Event{
+		Name:        eventBody.Name,
+		Preview:     eventBody.Preview,
+		Content:     eventBody.Content,
+		StartTime:   eventBody.StartTime,
+		EndTime:     eventBody.EndTime,
+		Location:    eventBody.Location,
+		EventType:   eventBody.EventType,
+
+		RSVP:         eventBody.RSVP,
+		Waitlist:     eventBody.Waitlist,
+		Clubs:         eventBody.Clubs,
+		Tag:          eventBody.Tag,
+		Notification: eventBody.Notification,
+	}
 }

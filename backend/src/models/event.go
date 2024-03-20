@@ -33,10 +33,10 @@ type Event struct {
 	EventType   EventType `gorm:"type:varchar(255);default:open" json:"event_type" validate:"required,max=255,oneof=open membersOnly"`
 	IsRecurring bool      `gorm:"not null;type:bool;default:false" json:"is_recurring" validate:"-"`
 
-	// SeriesID     *uuid.UUID     `json:"series_id" validate:"uuid4"`
+	Host         Club           `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	RSVP         []User         `gorm:"many2many:user_event_rsvps;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	Waitlist     []User         `gorm:"many2many:user_event_waitlists;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
-	Club         []Club         `gorm:"many2many:club_events;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
+	Clubs        []Club         `gorm:"many2many:club_events;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	Tag          []Tag          `gorm:"many2many:event_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	Notification []Notification `gorm:"polymorphic:Reference;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;;" json:"-" validate:"-"`
 }
@@ -83,9 +83,10 @@ type CreateEventRequestBody struct {
 	IsRecurring *bool     `json:"is_recurring" validate:"required"`
 
 	// TODO club/tag/notification logic
-	Club         []Club         `json:"-" validate:"-"`
-	Tag          []Tag          `json:"-" validate:"-"`
-	Notification []Notification `json:"-" validate:"-"`
+	Host         Club           `json:"-" validate:"omitempty"`
+	Clubs        []Club         `json:"-" validate:"omitempty"`
+	Tag          []Tag          `json:"-" validate:"omitempty"`
+	Notification []Notification `json:"-" validate:"omitempty"`
 
 	// TODO validate if isRecurring, then series is required
 	Series CreateSeriesRequestBody `json:"series" validate:"-"`
@@ -111,7 +112,7 @@ type UpdateEventRequestBody struct {
 
 	RSVP         []User         `json:"-" validate:"omitempty"`
 	Waitlist     []User         `json:"-" validate:"omitempty"`
-	Club         []Club         `json:"-" validate:"omitempty"`
+	Clubs        []Club         `json:"-" validate:"omitempty"`
 	Tag          []Tag          `json:"-" validate:"omitempty"`
 	Notification []Notification `json:"-" validate:"omitempty"`
 }
