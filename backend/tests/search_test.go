@@ -197,6 +197,26 @@ func TestPineconeSearchWorks(t *testing.T) {
 			},
 		})
 
+	gock.New("https://api.openai.com").
+		Post("/v1/moderations").
+		MatchHeader("Authorization", "Bearer "+mockConfig.OpenAI.APIKey.Expose()).
+		MatchHeader("Content-Type", "application/json").
+		MatchType("json").
+		JSON(search.CreateModerationRequestBody{
+			Input: []string{
+				(&MockSearchableStruct{}).EmbeddingString(),
+			},
+			Model: "text-moderation-stable",
+		}).
+		Reply(200).
+		JSON(search.CreateModerationResponseBody{
+			Results: []search.ModerationResult{
+				{
+					Flagged: false,
+				},
+			},
+		})
+
 	client := search.NewPineconeClient(search.NewOpenAIClient(*mockConfig.OpenAI), *mockConfig.Pinecone)
 	ids, err := client.Search(&MockSearchableStruct{}, 5)
 	assert.Equal(err, nil)

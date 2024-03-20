@@ -220,6 +220,8 @@ type PineconeSearchResponseBody struct {
 
 // Runs a search on the Pinecone index given a searchable item, and returns the topK most similar
 // elements' ids.
+//
+//nolint:cyclop
 func (c *PineconeClient) Search(item Searchable, topK int) ([]string, *errors.Error) {
 	moderation, _err := c.openAIClient.CreateModeration([]Searchable{item})
 	if _err != nil {
