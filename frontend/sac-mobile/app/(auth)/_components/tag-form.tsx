@@ -82,7 +82,7 @@ const TagForm = () => {
     return (
         <>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                {categoriesMenu.map((category) => (
+                {categoriesMenu.map((category, key) => (
                     <View>
                         <Button
                             onPress={() => handleCategoryPress(category)}
@@ -91,6 +91,7 @@ const TagForm = () => {
                                     ? 'underline'
                                     : 'menu'
                             }
+                            key={key}
                             size="menu"
                         >
                             {category.name}
