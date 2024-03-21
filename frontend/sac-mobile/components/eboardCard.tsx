@@ -3,36 +3,16 @@ import { Text, TouchableOpacity, TouchableOpacityProps, View, Image } from 'reac
 import { VariantProps, cva } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
-const cardVariants = {
-    variant: {
-        default: ['bg-card-bg', 'text-white', 'justify-end', 'items-start']
-    },
-    size: {
-        default: ['rounded-lg', 'min-w-96', 'p-4', 'shadow', 'w-80', 'h-48']
-    }
-};
-
-const cardStyles = cva(
-    ['flex'],
-    {
-        variants: cardVariants,
-        defaultVariants: {
-            variant: 'default',
-            size: 'default'
-        }
-    }
-);
-
-export interface EBoardCardProps extends TouchableOpacityProps, VariantProps<typeof cardStyles> {
+export interface EBoardCardProps extends TouchableOpacityProps{
     photo?: string;
     name?: string;
     title?: string;
 }
 
-const EBoardCard = ({ photo, name, title, variant, size, ...props }: EBoardCardProps) => {
+const EBoardCard = ({ photo, name, title, ...props }: EBoardCardProps) => {
     return (
         <TouchableOpacity {...props}>
-            <View className="bg-white p-4 w-full h-48 text-center items-center pb-12" >
+            <View className="bg-white pt-[3%] pr-[5%] w-full h-48 text-center items-center pb-12" >
                 {photo ? (
                     <Image source={{ uri: photo }} className="aspect-square rounded-lg w-full h-full mb-2" />
                 ) : (
@@ -48,4 +28,4 @@ const EBoardCard = ({ photo, name, title, variant, size, ...props }: EBoardCardP
 
 EBoardCard.displayName = 'eboardCard';
 
-export { EBoardCard, cardVariants };
+export { EBoardCard };

@@ -31,8 +31,8 @@ export interface FaqCardProps extends TouchableOpacityProps, VariantProps<typeof
 const FaqCard = ({ question, answer, variant, size, ...props }: FaqCardProps) => {
     return (
         <TouchableOpacity {...props}>
-            <View className="bg-white p-4 w-full h-48 text-center items-center pb-12 border">
-                {question && <Text className="text-sm text-gray-500 mb-2">{question}</Text>}
+            <View className="bg-white p-4 rounded-lg w-60 h-48 pb-12 border">
+                {question && <Text className="text-sm mb-2 font-semibold">{question}</Text>}
                 {answer && <Text className="text-sm">{answer}</Text>}
             </View>
         </TouchableOpacity>
