@@ -1,3 +1,5 @@
+import { Club, HomepageItem } from '@/types/item';
+
 export const API_BASE_URL = 'http://localhost:8080/api/v1';
 
 export const college = [
@@ -194,5 +196,187 @@ export const categories = [
             'Public Relations',
             'Other'
         ]
+    }
+];
+
+export const HomepageList: HomepageItem[] = [
+    {
+        type: 'club',
+        name: "Nor'easters A Capella",
+        description:
+            'The Nor’easters are Northeastern University’s premier a cappella group. As the oldest group on campus, the Nor’easters have continuously striven to maintain the highest standards of musicality while still keeping the fun and love alive.',
+    },
+    {
+        type: 'event',
+        clubName: "Nor'easters A Capella",
+        eventName: 'Best of Northeastern Region',
+        location: 'Blackman Auditorium',
+        description: 'It’s that time of year again... BONR is one week away.',
+        time: 'March 18, 7-8 PM',
+    },
+    {
+        type: 'club',
+        name: 'Cheese Club',
+        description:
+            'Yes, it’s exactly as it sounds: Cheese Club is a club where we learn about and eat delicious cheeses every week.',
+    },
+    {
+        type: 'club',
+        name: 'AerospaceNU',
+        description:
+            'This group is for anyone and everyone who wants to design and build projects with the goal of getting them in the air.',
+    },
+    {
+        type: 'faq',
+        clubName: "Nor'easters A Capella",
+        question: 'Is the ticket free?',
+        answer: 'Yes, the event is opened to all students, and the tickets are free. You can purchase them here.',
+    },
+    {
+        type: 'club',
+        name: 'Super Smash Bros Club',
+        description:
+            'We are the smash bros club, we hold Smash Ultimate tournaments every Friday, and Smash Melee tournaments every Monday.',
+    },
+    {
+        type: 'event',
+        clubName: 'Super Smash Bros Club',
+        eventName: 'Big Northeastern Ultimate Tournament 4',
+        location:
+            'West Village H, Rooms 108 & 110, 440 Huntington Ave, Boston, MA',
+        description:
+            'The Northeastern Super Smash Bros. Club is pleased to announce that it will be hosting its fourth BIG NORTHEASTERN ULTIMATE TOURNAMENT (aka BIG NUT 4).',
+        time: 'March 20, 6-10 PM',
+    },
+    {
+        type: 'club',
+        name: 'Oasis',
+        description:
+            'In the simplest terms, Oasis is a full-fledged project accelerator where every semester, a new cohort of students build a software project with the support of upperclassmen mentors.',
+    },
+    {
+        type: 'faq',
+        clubName: 'Oasis',
+        question: 'How do you assess applications?',
+        answer: "We don't assess them in the traditional sense. We pride ourselves on being open to students from all backgrounds and experience levels, so our application is first-come first-serve to keep it simple and fair for everybody.",
+    },
+    {
+        type: 'faq',
+        clubName: 'Oasis',
+        question: 'How many students are there in normal cohort?',
+        answer: 'A typical semester is roughly 80 students. We target 10 mentors each semester, and each mentor works with two groups of four students each.',
+    }
+];
+
+export const FollowedClubs: Club[] = [
+    {
+        type: 'club',
+        name: 'Oasis',
+        description:
+            'In the simplest terms, Oasis is a full-fledged project accelerator where every semester, a new cohort of students build a software project with the support of upperclassmen mentors.',
+    },
+    {
+        type: 'club',
+        name: 'Super Smash Bros',
+        description:
+            'We are the smash bros club, we hold Smash Ultimate tournaments every Friday, and Smash Melee tournaments every Monday.',
+    },
+    {
+        type: 'club',
+        name: 'AerospaceNU',
+        description:
+            'This group is for anyone and everyone who wants to design and build projects with the goal of getting them in the air.',
+    },
+    {
+        type: 'club',
+        name: 'Cheese Club',
+        description:
+            'Yes, it’s exactly as it sounds: Cheese Club is a club where we learn about and eat delicious cheeses every week.',
+    },
+    {
+        type: 'club',
+        name: "Nor'easters",
+        description:
+            'The Nor’easters are Northeastern University’s premier a cappella group. As the oldest group on campus, the Nor’easters have continuously striven to maintain the highest standards of musicality while still keeping the fun and love alive.',
+    },
+    {
+        type: 'club',
+        name: 'Skate Club',
+        description: '',
+    },
+    {
+        type: 'club',
+        name: 'Kinematix',
+        description:
+            'The team recognizes dance as a powerful, evolving culture and provides a channel for students to grow in that richness.',
+    },
+    {
+        type: 'club',
+        name: 'Sandbox',
+        description:
+            "Sandbox is Northeastern's student-led software consultancy. Sandbox members work in teams on projects that typically last two semesters or longer.",
+    },
+    {
+        type: 'club',
+        name: 'Swim Club',
+        description:
+            'NUSC is a Northeastern University club sport that competes on both regional and national levels while providing members with fun and rewarding experiences.',
+    }
+];
+
+export const ChronologicalList: HomepageItem[] = [
+    {
+        type: 'event',
+        clubName: "Nor'easters A Capella",
+        eventName: 'Best of Northeastern Region',
+        location: 'Blackman Auditorium',
+        description: 'It’s that time of year again... BONR is one week away.',
+        time: 'March 18, 7-8 PM',
+    },
+    {
+        type: 'faq',
+        clubName: 'Oasis',
+        question: 'How do you assess applications?',
+        answer: "We don't assess them in the traditional sense. We pride ourselves on being open to students from all backgrounds and experience levels, so our application is first-come first-serve to keep it simple and fair for everybody.",
+    },
+    {
+        type: 'faq',
+        clubName: 'Oasis',
+        question: 'How many students are there in normal cohort?',
+        answer: 'A typical semester is roughly 80 students. We target 10 mentors each semester, and each mentor works with two groups of four students each.',
+    },
+    {
+        type: 'faq',
+        clubName: "Nor'easters A Capella",
+        question: 'Is the ticket free?',
+        answer: 'Yes, the event is opened to all students, and the tickets are free. You can purchase them here.',
+    },
+    {
+        type: 'club',
+        name: 'Super Smash Bros Club',
+        description:
+            'We are the smash bros club, we hold Smash Ultimate tournaments every Friday, and Smash Melee tournaments every Monday.' ,
+    },
+    {
+        type: 'event',
+        clubName: 'Super Smash Bros Club',
+        eventName: 'Big Northeastern Ultimate Tournament 4',
+        location:
+            'West Village H, Rooms 108 & 110, 440 Huntington Ave, Boston, MA',
+        description:
+            'The Northeastern Super Smash Bros. Club is pleased to announce that it will be hosting its fourth BIG NORTHEASTERN ULTIMATE TOURNAMENT (aka BIG NUT 4).',
+        time: 'March 20, 6-10 PM',
+    },
+    {
+        type: 'club',
+        name: 'Oasis',
+        description:
+            'In the simplest terms, Oasis is a full-fledged project accelerator where every semester, a new cohort of students build a software project with the support of upperclassmen mentors.',
+    },
+    {
+        type: 'club',
+        name: 'AerospaceNU',
+        description:
+            'This group is for anyone and everyone who wants to design and build projects with the goal of getting them in the air.',
     }
 ];

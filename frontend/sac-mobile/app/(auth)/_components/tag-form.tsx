@@ -65,7 +65,7 @@ const TagForm = () => {
     const heightAdjust =
         selectedTags.length === 0 && buttonClicked ? 'h-[46%]' : 'h-[47%]';
 
-    const Tag = (props: { tag: string;}) => {
+    const Tag = (props: { tag: string }) => {
         return (
             <Button
                 onPress={() => handleTagPress(props.tag)}

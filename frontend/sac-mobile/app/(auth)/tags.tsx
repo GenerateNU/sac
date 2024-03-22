@@ -11,10 +11,10 @@ import Error from '@/components/error';
 import Wordmark from '@/components/wordmark';
 import { categories } from '@/lib/const';
 import { Category } from '@/types/categories';
+
 import TagForm from './_components/tag-form';
 
 const Tags = () => {
-
     return (
         <SafeAreaView>
             <View className="px-[8%] pt-[4%]">

@@ -22,7 +22,7 @@ const Welcome = () => {
                 <Button
                     size="lg"
                     variant="default"
-                    onPress={() => router.push('/(auth)/login')}
+                    onPress={() => router.push('/(app)/homepage')}
                 >
                     Get Started
                 </Button>

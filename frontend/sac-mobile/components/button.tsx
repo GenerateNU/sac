@@ -11,7 +11,7 @@ const buttonVariants = {
         secondary: ['bg-white', 'text-gray'],
         outline: ['border border-gray-600 text-gray-500'],
         menu: ['text-black text-lg'],
-        underline: ['border-b border-gray-600 text-lg']
+        underline: ['border-b font-bold border-gray-600 text-lg']
     },
     size: {
         default: 'h-10 px-4 py-2',

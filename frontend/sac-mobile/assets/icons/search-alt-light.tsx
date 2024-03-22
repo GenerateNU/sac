@@ -1,0 +1,5 @@
+const SearchAltLight = () => {
+    <View> 
+        
+    </View>
+}

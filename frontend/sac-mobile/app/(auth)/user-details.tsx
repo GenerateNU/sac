@@ -33,14 +33,10 @@ const UserDetails = () => {
     const UserDetailsSchema = z.object({
         college: z.string(),
         major: z.string().array(),
-        graduationYear: z.string(),
+        graduationYear: z.string()
     });
 
-    const onSubmit = ({
-        major,
-        college,
-        graduationYear
-    }: UserDetailsForm) => {
+    const onSubmit = ({ major, college, graduationYear }: UserDetailsForm) => {
         try {
             const updatedData = {
                 major,
