@@ -1,5 +1,5 @@
-import React from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { GestureResponderEvent, ScrollView, Text, View } from 'react-native';
 import { Button } from '@/components/button';
 
 import { useAuthStore } from '@/hooks/use-auth';
@@ -8,6 +8,7 @@ import { Card } from '@/components/card';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { EBoardCard } from '@/components/eboardCard';
 import { FaqCard } from '@/components/faqCard';
+import { AskAQuestionModal } from './_components/ask-a-question';
 
 // import SlackIcon from '@/components/icons/SlackIcon';
 
@@ -31,17 +32,20 @@ const Club = () => {
         throw new Error('Function not implemented.');
     }
 
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const openModal = () => {
+        setIsModalVisible(true);
+    }
+
     return (
         <SafeAreaView className="bg-neutral-500 h-[100%]" edges={['top']}>
-            <View className="flex-1">
-                <View className="pb-[10%]">
-                    <View className="pt-[1%]">
-                    </View>
-                    <View className="pt-[20%] pb-[6%]">
-                    </View>
+            <ScrollView className="flex-1">
+                {/* Div for the grey */}
+                <View className="pt-[40%]">
+                    <View className="aspect-square rounded-lg w-20 bg-card-bg absolute top-20 left-10 z-10" />
                 </View>
-
-                <ScrollView className="bg-white pt-[20%] pb-[20%] flex-1 px-[8%]">
+                {/* Div for the club */}
+                <View className="bg-white pt-[18%] px-[8%]">
                     <View className="flex-row">
                         <Text className="text-black font-bold text-3xl">Club Name</Text>
                     </View>
@@ -90,20 +94,20 @@ const Club = () => {
                             </View>
                         </ScrollView>
                     </View>
-                    <View className = 'pb-[30%]'>
+                    <View className='pb-[30%]'>
                         <Text className="text-black font-bold">FAQs</Text>
-                        <ScrollView horizontal={true} className = 'pb-[10%]'>
+                        <ScrollView horizontal={true} className='pb-[10%]'>
                             <View className="flex-row">
                                 <FaqCard question="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididun?"
                                     answer="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad "
                                     variant="default" size="default" className="mr-2"> </FaqCard>
                             </View>
                         </ScrollView>
-                        <Button variant="outline">Ask a Question</Button>
+                        <Button variant="outline" onPress={openModal}>Ask a Question</Button>
                     </View>
-
-                </ScrollView>
-            </View>
+                </View>
+            </ScrollView>
+            {isModalVisible && <AskAQuestionModal onClose={() => setIsModalVisible(false)} />}
         </SafeAreaView>
     );
 };
