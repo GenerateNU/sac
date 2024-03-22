@@ -18,6 +18,7 @@ const Homepage = () => {
     return (
         <SafeAreaView edges={['top']}>
             <ScrollView showsVerticalScrollIndicator={false}>
+                <View className="pb-[28%]">
                 <View className="pt-[6%]">
                     <View className="flex-row justify-between items-center mb-[4%] mx-[6%]">
                         <Text className="text-3xl">Followed Clubs</Text>
@@ -114,6 +115,7 @@ const Homepage = () => {
                                   }
                               })}
                     </View>
+                </View>
                 </View>
             </ScrollView>
         </SafeAreaView>

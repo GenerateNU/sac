@@ -5,7 +5,6 @@ import { router } from 'expo-router';
 
 import { Button } from '@/components/button';
 import { useAuthStore } from '@/hooks/use-auth';
-import Svg, {Path, Circle, Line} from 'react-native-svg';
 
 const Profile = () => {
     const { logout } = useAuthStore();
