@@ -1,6 +1,9 @@
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
+import Time from '@/assets/icons/time';
+import Location from '@/assets/icons/location';
+
 import { Event } from '@/types/item';
 
 const EventCard = ({ event }: { event: Event }) => {
@@ -13,11 +16,17 @@ const EventCard = ({ event }: { event: Event }) => {
                         <Text className="text-lg font-bold leading-5">
                             {event.clubName}
                         </Text>
-                        <Text className="text-sm font-bold">
+                        <Text className="text-sm font-semibold">
                             {event.eventName}
                         </Text>
-                        <Text className="text-xs">{event.location}</Text>
-                        <Text className="text-xs">{event.time}</Text>
+                        <View className="flex-row items-center">
+                            <Location />
+                            <Text className="text-sm pl-[2%]">{event.location}</Text>
+                        </View>
+                        <View className="flex-row items-center">
+                            <Time />
+                            <Text className="text-sm pl-[2%]">{event.time}</Text>
+                        </View>
                     </View>
                 </View>
                 <Text

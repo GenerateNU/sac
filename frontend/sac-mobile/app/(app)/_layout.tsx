@@ -1,32 +1,59 @@
 import React from 'react';
-
+import {View} from 'react-native';
 import { Tabs } from 'expo-router';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-const HomeTabBarIcon = ({ color }: { color: string }) => (
-    <MaterialCommunityIcons name="home" size={24} color={color} />
-);
+// const HomeTabBarIcon = ({ color }: { color: string }) => (
+//     <MaterialCommunityIcons name="home" size={24} color={color} />
+// );
 
 import HomeLight from '@/assets/icons/home-light';
+import SearchAltLight from '@/assets/icons/search-alt-light';
+import UserLight from '@/assets/icons/user-light';
+
 
 const AppLayout = () => {
     return (
-        <Tabs>
+        <Tabs
+        screenOptions={{
+            tabBarStyle: {
+                bottom: '2.5%',
+                left: '4%',
+                alignContent: 'center',
+                paddingTop: '7%',
+                right: 20,
+                elevation: 0,
+                borderRadius: 50,
+                position: 'absolute',
+            },
+        }}
+        >
             <Tabs.Screen
-                name="homepage"
+                name="index"
                 options={{
-                    title: 'Home',
+                    title: 'Profile',
+                    tabBarLabel:() => {return null},
                     headerShown: false,
                     tabBarIcon: HomeLight
                 }}
             />
             <Tabs.Screen
-                name="index"
+                name="explore"
                 options={{
-                    title: 'Profile',
+                    title: 'Explore',
+                    tabBarLabel: () => {return null},
                     headerShown: false,
-                    tabBarIcon: HomeTabBarIcon
+                    tabBarIcon: SearchAltLight
+                }}
+            />
+            <Tabs.Screen
+                name="profile"
+                options={{
+                    title: 'profile',
+                    tabBarLabel: () => {return null},
+                    headerShown: false,
+                    tabBarIcon: UserLight
                 }}
             />
         </Tabs>
