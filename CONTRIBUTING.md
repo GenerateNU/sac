@@ -18,8 +18,6 @@
   - It requires you to add all the exports to path so read the end of the installation carefully!
 - [Trunk](https://marketplace.visualstudio.com/items?itemName=Trunk.io) (Recommended!)
   - Visual Studio Code extension for linting/formatting
-- [Air](https://github.com/cosmtrek/air?tab=readme-ov-file#installation)
-  - Live reload for Go apps
 - [gofumpt](https://github.com/mvdan/gofumpt)
   - A stricter gofmt
 - [golangci-lint](https://golangci-lint.run/welcome/install/)
