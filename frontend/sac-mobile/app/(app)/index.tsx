@@ -28,14 +28,15 @@ const Homepage = () => {
                         horizontal
                         showsHorizontalScrollIndicator={false}
                     >
-                        <View className="flex-row pl-[3%] pr-[20%]">
+                        <View className="flex-row">
+                            <View className="pl-6"></View>
                             {FollowedClubs.map((club, index) => (
                                 <View
-                                    className="flex-col mr-3 items-center"
+                                    className="flex-col w-20 mr-5 items-center"
                                     key={index}
                                 >
-                                    <View className="w-16 h-16 bg-gray-300 rounded-full"></View>
-                                    <Text className="mt-2 flex-wrap">
+                                    <View className="w-20 h-20 bg-gray-300 rounded-full"></View>
+                                    <Text numberOfLines={1} ellipsizeMode="tail" className="mt-2 flex-wrap text-xs">
                                         {club.name}
                                     </Text>
                                 </View>

@@ -12,16 +12,16 @@ const EventCard = ({ event }: { event: Event }) => {
             <View className="px-[5%] pt-[5%] pb-[4%]">
                 <View className="flex-row items-center">
                     <View className="bg-gray-300 h-16 w-16 rounded-xl"></View>
-                    <View className="pl-[5%] flex-col shrink">
+                    <View className="pl-[5%] flex-col shrink pr-[3%]">
                         <Text className="text-lg font-bold leading-5">
                             {event.clubName}
                         </Text>
-                        <Text className="text-sm font-semibold">
+                        <Text className="text-sm font-semibold leading-5">
                             {event.eventName}
                         </Text>
                         <View className="flex-row items-center">
                             <Location />
-                            <Text className="text-sm pl-[2%]">{event.location}</Text>
+                            <Text className="text-sm pl-[2%] leading-5">{event.location}</Text>
                         </View>
                         <View className="flex-row items-center">
                             <Time />

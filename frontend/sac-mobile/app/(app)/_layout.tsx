@@ -26,7 +26,14 @@ const AppLayout = () => {
                 elevation: 0,
                 borderRadius: 50,
                 position: 'absolute',
-            },
+                shadowColor: '#000000',
+                shadowOffset: {
+                    width: 2,
+                    height: 2,
+                },
+                shadowOpacity: 0.15,
+                shadowRadius: 3.84,
+                },
         }}
         >
             <Tabs.Screen
