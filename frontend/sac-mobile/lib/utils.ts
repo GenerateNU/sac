@@ -2,6 +2,7 @@ import clsx, { ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 import { majorArr } from '@/lib/const';
+import { categories } from '@/lib/const';
 import { Item } from '@/types/item';
 
 /**
@@ -42,4 +43,16 @@ export const major = () => {
         });
     }
     return majors;
+};
+
+/**
+ * Combine all tags of different categories into one for All tab
+ * @return a list of tags
+*/
+export const allTags = () => {
+    let allTags: string[] = [];
+    for (let i = 0; i < categories.length; i++) {
+        allTags = allTags.concat(categories[i].tags);
+    }
+    return allTags;
 };

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Alert, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { Alert, ScrollView, Text, View } from 'react-native';
 
 import { router } from 'expo-router';
 
@@ -9,21 +9,17 @@ import { ZodError } from 'zod';
 import { Button } from '@/components/button';
 import Error from '@/components/error';
 import { categories } from '@/lib/const';
+import { allTags } from '@/lib/utils';
 import { Category } from '@/types/categories';
 
-type TagsData = {
+type UserInterestsData = {
     tags: String[];
 };
 
-// combine all tags of different categories into one for All tab
-let allTags: string[] = [];
-for (let i = 0; i < categories.length; i++) {
-    allTags = allTags.concat(categories[i].tags);
-}
-const categoriesMenu = [{ name: 'All', tags: allTags }, ...categories];
+const categoriesMenu = [{ name: 'All', tags: allTags() }, ...categories];
 
-const TagForm = () => {
-    const { handleSubmit } = useForm<TagsData>();
+const UserInterestsForm = () => {
+    const { handleSubmit } = useForm<UserInterestsData>();
     const [selectedTags, setSelectedTags] = useState<String[]>([]);
     const [buttonClicked, setButtonClicked] = useState<boolean>(false);
     const [selectedCategory, setSelectedCategory] = useState('All');
@@ -44,7 +40,7 @@ const TagForm = () => {
         }
     };
 
-    const onSubmit = (data: TagsData) => {
+    const onSubmit = (data: UserInterestsData) => {
         setButtonClicked(true);
         if (selectedTags.length === 0) {
             return;
@@ -65,7 +61,7 @@ const TagForm = () => {
     const heightAdjust =
         selectedTags.length === 0 && buttonClicked ? 'h-[46%]' : 'h-[47%]';
 
-    const Tag = (props: { tag: string;}) => {
+    const Tag = (props: { tag: string }) => {
         return (
             <Button
                 onPress={() => handleTagPress(props.tag)}
@@ -104,7 +100,9 @@ const TagForm = () => {
             <ScrollView className={heightAdjust}>
                 <View className="flex-row flex-wrap">
                     {selectedCategory === 'All'
-                        ? allTags.map((tag, key) => <Tag tag={tag} key={key} />)
+                        ? allTags().map((tag, key) => (
+                              <Tag tag={tag} key={key} />
+                          ))
                         : categories
                               .find((c) => c.name === selectedCategory)
                               ?.tags.map((tag, key) => (
@@ -126,4 +124,4 @@ const TagForm = () => {
     );
 };
 
-export default TagForm;
+export default UserInterestsForm;

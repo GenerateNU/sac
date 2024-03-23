@@ -17,20 +17,19 @@ type RegisterFormData = {
     passwordConfirm: string;
 };
 
-const registerSchema = z
-    .object({
-        firstName: z.string().min(2, {
-            message: 'First name must be at least 2 characters long'
-        }),
-        lastName: z.string().min(2, {
-            message: 'Last name must be at least 2 characters long'
-        }),
-        email: z.string().email({ message: 'Invalid email' }),
-        password: z
-            .string()
-            .min(8, { message: 'Password must be at least 8 characters long' }),
-        passwordConfirm: z.string()
-    })
+const registerSchema = z.object({
+    firstName: z.string().min(2, {
+        message: 'First name must be at least 2 characters long'
+    }),
+    lastName: z.string().min(2, {
+        message: 'Last name must be at least 2 characters long'
+    }),
+    email: z.string().email({ message: 'Invalid email' }),
+    password: z
+        .string()
+        .min(8, { message: 'Password must be at least 8 characters long' }),
+    passwordConfirm: z.string()
+});
 
 const RegistrationForm = () => {
     const {
@@ -132,7 +131,7 @@ const RegistrationForm = () => {
                         <Input
                             title="Email"
                             autoCorrect={false}
-                            placeholder="Northeastern email"
+                            placeholder="doe.j@northeastern.edu"
                             onChangeText={onChange}
                             value={value}
                             onSubmitEditing={handleSubmit(onSubmit)}

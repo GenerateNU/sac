@@ -16,7 +16,7 @@ const Register = () => {
                 <View className="px-[8%] pb-[9%]">
                     <View className="flex flex-row justify-between mx-auto w-full items-center pt-[3%] pb-[5.5%]">
                         <View className="pl-[0.5%]">
-                            <Wordmark textColor="text-white" />
+                            <Wordmark variant="secondary" />
                         </View>
                         <Button
                             onPress={() => router.push('/(auth)/login')}

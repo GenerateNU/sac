@@ -12,7 +12,7 @@ const Login = () => {
             <View className="flex-1">
                 <View className="px-[8%] pb-[10%]">
                     <View className="pt-[1%]">
-                        <Wordmark textColor="text-white" />
+                        <Wordmark variant="secondary" />
                     </View>
                     <View className="pt-[9.5%] pb-[6%]">
                         <Text className="text-5xl font-bold text-white">
