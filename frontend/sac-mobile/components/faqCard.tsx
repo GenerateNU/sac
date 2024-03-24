@@ -1,45 +1,40 @@
-import React from 'react';
-import { Text, TouchableOpacity, TouchableOpacityProps, View, Image } from 'react-native';
-import { VariantProps, cva } from 'class-variance-authority';
-import { cn } from '@/lib/utils';
+import React, { useState } from 'react';
+import { Text, TouchableOpacity, TouchableOpacityProps, View, Modal } from 'react-native';
 
-const cardVariants = {
-    variant: {
-        default: ['bg-card-bg', 'text-white', 'justify-end', 'items-start']
-    },
-    size: {
-        default: ['rounded-lg', 'min-w-96', 'p-4', 'shadow', 'w-80', 'h-48']
-    }
-};
 
-const cardStyles = cva(
-    ['flex'],
-    {
-        variants: cardVariants,
-        defaultVariants: {
-            variant: 'default',
-            size: 'default'
-        }
-    }
-);
-
-export interface FaqCardProps extends TouchableOpacityProps, VariantProps<typeof cardStyles> {
+export interface FaqCardProps extends TouchableOpacityProps {
     question?: string;
     answer?: string;
 }
 
-const FaqCard = ({ question, answer, variant, size, ...props }: FaqCardProps) => {
+const FaqCard = ({ question, answer, ...props }: FaqCardProps) => {
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const MAX_LENGTH = 4;
+    const toggleModal = () => setIsModalVisible(!isModalVisible);
     return (
-        <TouchableOpacity {...props}>
-            <View className="bg-white p-4 rounded-lg w-60 h-48 pb-12 border">
-                {question && <Text className="text-sm mb-2 font-semibold">{question}</Text>}
-                {answer && <Text className="text-sm">{answer}</Text>}
-            </View>
-        </TouchableOpacity>
+        <View>
+            <TouchableOpacity {...props} onPress={toggleModal}>
+                <View className="bg-white p-4 rounded-lg w-60 h-48 pb-12 border">
+                    {question && <Text className="text-sm mb-2 font-semibold">{question}</Text>}
+                    {answer && <Text numberOfLines={MAX_LENGTH} className="text-sm">{answer}</Text>}
+                </View>
+            </TouchableOpacity>
+            <Modal visible={isModalVisible} transparent={true}>
+                <View className='flex-1 justify-center items-center bg-black/50'>
+                    <View className='bg-white opacity-100 rounded-lg p-4 w-80'>
+                        {question && <Text className="text-sm mb-2 font-semibold">{question}</Text>}
+                        {answer && <Text className="text-sm">{answer}</Text>}
+                        <TouchableOpacity onPress={toggleModal} style={{ marginTop: 10 }}>
+                            <Text className="text-blue-500 underline">Close</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+        </View>
     );
 };
 
 
 FaqCard.displayName = 'faqCard';
 
-export { FaqCard, cardVariants };
+export { FaqCard };

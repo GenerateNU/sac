@@ -9,6 +9,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { EBoardCard } from '@/components/eboardCard';
 import { FaqCard } from '@/components/faqCard';
 import { AskAQuestionModal } from './_components/ask-a-question';
+import ExpandableText from '@/components/expandable-text';
 
 // import SlackIcon from '@/components/icons/SlackIcon';
 
@@ -41,8 +42,8 @@ const Club = () => {
         <SafeAreaView className="bg-neutral-500 h-[100%]" edges={['top']}>
             <ScrollView className="flex-1">
                 {/* Div for the grey */}
-                <View className="pt-[40%]">
-                    <View className="aspect-square rounded-lg w-20 bg-card-bg absolute top-20 left-10 z-10" />
+                <View className="pt-[40%] z-10">
+                    <View className="aspect-square rounded-lg w-20 bg-card-bg absolute top-20 translate-y-14 left-10" />
                 </View>
                 {/* Div for the club */}
                 <View className="bg-white pt-[18%] px-[8%]">
@@ -60,7 +61,7 @@ const Club = () => {
                         </Button>
 
                         <Button variant="outline" onPress={() => handleSocialMediaClick('slack')}>
-                            <SlackIcon color="black" />
+                            <SlackIcon color="black"/>
                         </Button>
                     </View>
 
@@ -68,7 +69,9 @@ const Club = () => {
                         <View className='pb-[2%]'>
                             <Text className=" text-black font-bold">Description</Text>
                         </View>
-                        <Text className="text-black">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</Text>
+                        <ExpandableText maxLines={5}>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                        </ExpandableText>
                     </View>
                     <View>
                         <Text className="text-black font-bold">Events</Text>
@@ -100,7 +103,7 @@ const Club = () => {
                             <View className="flex-row">
                                 <FaqCard question="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididun?"
                                     answer="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad "
-                                    variant="default" size="default" className="mr-2"> </FaqCard>
+                                    className="mr-2"> </FaqCard>
                             </View>
                         </ScrollView>
                         <Button variant="outline" onPress={openModal}>Ask a Question</Button>

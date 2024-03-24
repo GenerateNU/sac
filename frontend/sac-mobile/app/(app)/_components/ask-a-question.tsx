@@ -1,4 +1,3 @@
-import { EBoardCardProps } from "@/components/eboardCard";
 import { View, Text, TouchableOpacity, Modal, StyleSheet } from "react-native";
 import { Button } from "@/components/button";
 export interface AskAQuestionModalProps {
@@ -8,7 +7,6 @@ export interface AskAQuestionModalProps {
 const AskAQuestionModal = ({ onClose }: AskAQuestionModalProps) => {
     return (
         <Modal
-            animationType="slide"
             transparent={true}
             visible={true}
             onRequestClose={onClose}
