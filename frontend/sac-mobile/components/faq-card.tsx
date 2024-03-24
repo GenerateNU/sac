@@ -1,7 +1,6 @@
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-import { Button } from '@/components/button';
 import Input from '@/components/input';
 import { FAQ } from '@/types/item';
 

@@ -1,5 +1,5 @@
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, ScrollView, Text, View } from 'react-native';
+import { Alert, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { router } from 'expo-router';
@@ -9,7 +9,6 @@ import { ZodError, z } from 'zod';
 import { Button } from '@/components/button';
 import { DropdownComponent } from '@/components/dropdown';
 import Error from '@/components/error';
-import Input from '@/components/input';
 import MultiSelectComponent from '@/components/multiselect';
 import Wordmark from '@/components/wordmark';
 import { college } from '@/lib/const';
