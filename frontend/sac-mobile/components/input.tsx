@@ -1,4 +1,4 @@
-import { Text, TextInput, TextInputProps, View } from 'react-native';
+import { GestureResponderEvent, Text, TextInput, TextInputProps, TouchableOpacity, View } from 'react-native';
 
 import { VariantProps, cva } from 'class-variance-authority';
 
@@ -52,9 +52,9 @@ const Input = ({ title, error, variant, ...props }: InputProps) => {
                     onChangeText={props.onChangeText}
                     value={props.value}
                     secureTextEntry={props.secureTextEntry || false}
-                    onSubmitEditing={props.onSubmitEditing}
                 />
-                <Button size="faq" variant="faq" />
+                {/* @ts-ignore */}
+                <Button size="faq" variant="faq" onPress={(e: GestureResponderEvent) => props.onSubmitEditing!(e)} />
             </View>
         );
     } else {
