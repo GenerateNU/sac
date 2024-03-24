@@ -11,7 +11,8 @@ const buttonVariants = {
         secondary: ['bg-white', 'text-gray'],
         outline: ['border border-gray-600 text-gray-500'],
         menu: ['text-black text-lg'],
-        underline: ['border-b font-bold border-gray-600 text-lg']
+        underline: ['border-b font-bold border-gray-600 text-lg'],
+        faq: ['bg-gray-300']
     },
     size: {
         default: 'h-10 px-4 py-2',
@@ -20,7 +21,8 @@ const buttonVariants = {
         icon: 'h-10 w-10',
         screenwide: 'h-12 rounded-xl px-8 py-[4%]',
         tags: 'h-12 rounded-3xl px-[5%] mr-[4%] w-fit mb-[4%]',
-        menu: 'h-12 px-5'
+        menu: 'h-12 px-5',
+        faq: 'h-6 w-10'
     }
 };
 

@@ -1,10 +1,8 @@
 import React from 'react';
-import{SafeAreaView, Text } from 'react-native';
+import { SafeAreaView, Text } from 'react-native';
 
 const Explore = () => {
-    return (
-        <SafeAreaView></SafeAreaView>
-    )
-}
+    return <SafeAreaView></SafeAreaView>;
+};
 
-export default Explore; 
+export default Explore;
