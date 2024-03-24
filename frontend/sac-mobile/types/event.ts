@@ -9,8 +9,10 @@ const eventSchema = z.object({
     startTime: z.date(),
     endTime: z.date(),
     location: z.string().max(255),
+    meetingLink: z.string().max(255).optional(),
     eventType: z.enum(['open', 'membersOnly']),
-    isRecurring: z.boolean()
+    isRecurring: z.boolean(),
+    hosts: z.array(z.string().max(255)).min(1)
 });
 
 const Event = eventSchema.merge(rootModelSchema);
