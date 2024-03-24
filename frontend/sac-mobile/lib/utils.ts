@@ -1,6 +1,8 @@
 import clsx, { ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
+import { majorArr } from '@/lib/const';
+import { categories } from '@/lib/const';
 import { Item } from '@/types/item';
 
 /**
@@ -26,4 +28,31 @@ export const graduationYear = () => {
         });
     }
     return graduationYears;
+};
+
+/**
+ * Generates an array of item of major
+ * @returns an Item array of majors
+ */
+export const major = () => {
+    const majors: Item[] = [];
+    for (let i = 0; i < majorArr.length; i++) {
+        majors.push({
+            label: majorArr[i],
+            value: majorArr[i]
+        });
+    }
+    return majors;
+};
+
+/**
+ * Combine all tags of different categories into one for All tab
+ * @return a list of tags
+*/
+export const allTags = () => {
+    let allTags: string[] = [];
+    for (let i = 0; i < categories.length; i++) {
+        allTags = allTags.concat(categories[i].tags);
+    }
+    return allTags;
 };

@@ -26,6 +26,27 @@ const AuthLayout = () => {
                     headerShown: false
                 }}
             />
+            <Stack.Screen
+                name="verification"
+                options={{
+                    title: 'Verification',
+                    headerShown: false
+                }}
+            />
+            <Stack.Screen
+                name="user-details"
+                options={{
+                    title: 'User Details',
+                    headerShown: false
+                }}
+            />
+            <Stack.Screen
+                name="user-interests"
+                options={{
+                    title: 'User Interests',
+                    headerShown: false
+                }}
+            />
         </Stack>
     );
 };

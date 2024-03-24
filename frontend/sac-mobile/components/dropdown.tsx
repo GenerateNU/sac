@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DimensionValue, ScrollView, StyleSheet, Text } from 'react-native';
+import { DimensionValue, StyleSheet, Text, View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 
 import { Item } from '@/types/item';
@@ -14,7 +14,7 @@ interface DropdownProps {
     onChangeText: (...event: any[]) => void;
     value: Item;
     onSubmitEditing: () => void;
-    search?: boolean; // true for enable search
+    search?: boolean; // true to enable search
     height?: DimensionValue;
     error?: boolean;
 }
@@ -26,11 +26,10 @@ export const DropdownComponent = (props: DropdownProps) => {
 
     const styles = StyleSheet.create({
         container: {
-            backgroundColor: 'white',
             height: props.height || 78
         },
         dropdown: {
-            height: '85%',
+            height: 50,
             borderColor: borderColor,
             borderWidth: borderWidth,
             borderRadius: 12,
@@ -47,7 +46,8 @@ export const DropdownComponent = (props: DropdownProps) => {
         inputSearchStyle: {
             height: 40,
             fontSize: 14,
-            borderRadius: 11
+            borderRadius: 11,
+            marginLeft: 8
         },
         containerStyle: {
             borderRadius: 12,
@@ -70,7 +70,7 @@ export const DropdownComponent = (props: DropdownProps) => {
     });
 
     return (
-        <ScrollView style={styles.container}>
+        <View style={styles.container}>
             <Text className="pb-[2%]">{props.title}</Text>
             <Dropdown
                 style={[styles.dropdown, isFocus && styles.isFocus]}
@@ -92,6 +92,6 @@ export const DropdownComponent = (props: DropdownProps) => {
                 onChange={props.onChangeText}
                 value={props.value}
             />
-        </ScrollView>
+        </View>
     );
 };

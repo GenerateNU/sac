@@ -6,45 +6,30 @@ import { router } from 'expo-router';
 import { ZodError, z } from 'zod';
 
 import { Button } from '@/components/button';
-import { DropdownComponent } from '@/components/dropdown';
 import Error from '@/components/error';
 import Input from '@/components/input';
-import { graduationYear } from '@/lib/utils';
-import { Item } from '@/types/item';
 
 type RegisterFormData = {
     firstName: string;
     lastName: string;
     email: string;
-    nuid: string;
-    graduationYear: Item;
     password: string;
     passwordConfirm: string;
 };
 
-const registerSchema = z
-    .object({
-        firstName: z.string().min(2, {
-            message: 'First name must be at least 2 characters long'
-        }),
-        lastName: z.string().min(2, {
-            message: 'Last name must be at least 2 characters long'
-        }),
-        email: z.string().email({ message: 'Invalid email' }),
-        nuid: z.string().length(9, { message: 'NUID must have 9 digits' }),
-        password: z
-            .string()
-            .min(8, { message: 'Password must be at least 8 characters long' }),
-        passwordConfirm: z.string(),
-        graduationYear: z.object({
-            label: z.string(),
-            value: z.string()
-        })
-    })
-    .refine((data) => data.password === data.passwordConfirm, {
-        message: 'Passwords do not match',
-        path: ['passwordConfirm']
-    });
+const registerSchema = z.object({
+    firstName: z.string().min(2, {
+        message: 'First name must be at least 2 characters long'
+    }),
+    lastName: z.string().min(2, {
+        message: 'Last name must be at least 2 characters long'
+    }),
+    email: z.string().email({ message: 'Invalid email' }),
+    password: z
+        .string()
+        .min(8, { message: 'Password must be at least 8 characters long' }),
+    passwordConfirm: z.string()
+});
 
 const RegistrationForm = () => {
     const {
@@ -53,20 +38,17 @@ const RegistrationForm = () => {
         formState: { errors }
     } = useForm<RegisterFormData>();
 
-    const onSubmit = ({
-        graduationYear: gradYear,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        passwordConfirm,
-        ...rest
-    }: RegisterFormData) => {
+    const onSubmit = ({ passwordConfirm, ...rest }: RegisterFormData) => {
         try {
+            registerSchema.parse({
+                passwordConfirm,
+                ...rest
+            });
             const updatedData = {
-                ...rest,
-                graduationYear: gradYear.value
+                ...rest
             };
-            registerSchema.parse(updatedData);
             Alert.alert('Form Submitted', JSON.stringify(updatedData));
-            router.push('/(app)/');
+            router.push('/(auth)/verification');
         } catch (error) {
             if (error instanceof ZodError) {
                 Alert.alert('Validation Error', error.errors[0].message);
@@ -149,7 +131,7 @@ const RegistrationForm = () => {
                         <Input
                             title="Email"
                             autoCorrect={false}
-                            placeholder="ladley.g@northeastern.edu"
+                            placeholder="doe.j@northeastern.edu"
                             onChangeText={onChange}
                             value={value}
                             onSubmitEditing={handleSubmit(onSubmit)}
@@ -168,58 +150,6 @@ const RegistrationForm = () => {
                     }}
                 />
                 {errors.email && <Error message={errors.email.message} />}
-            </View>
-
-            <View className="w-full mb-[8.5%]">
-                <Controller
-                    control={control}
-                    render={({ field: { onChange, value } }) => (
-                        <Input
-                            title="NUID"
-                            autoCorrect={false}
-                            placeholder="9 digit student ID number"
-                            onChangeText={onChange}
-                            value={value}
-                            onSubmitEditing={handleSubmit(onSubmit)}
-                            error={!!errors.nuid}
-                        />
-                    )}
-                    name="nuid"
-                    rules={{
-                        required: 'NUID is required',
-                        validate: (value) => {
-                            if (!/^00\d+/.test(value)) {
-                                return 'Please enter a proper NUID number';
-                            }
-                            if (value.length !== 9) {
-                                return 'Please enter 9 digit number';
-                            }
-                            return true;
-                        }
-                    }}
-                />
-                {errors.nuid && <Error message={errors.nuid.message} />}
-            </View>
-            <View className="mb-[7%]">
-                <Controller
-                    control={control}
-                    render={({ field: { onChange, value } }) => (
-                        <DropdownComponent
-                            title="Intended Graduation Year"
-                            item={graduationYear()}
-                            placeholder="Select Year"
-                            onChangeText={onChange}
-                            value={value}
-                            onSubmitEditing={handleSubmit(onSubmit)}
-                            error={!!errors.graduationYear}
-                        />
-                    )}
-                    name="graduationYear"
-                    rules={{ required: 'Graduation year is required' }}
-                />
-                {errors.graduationYear && (
-                    <Error message={errors.graduationYear.message} />
-                )}
             </View>
 
             <View className="w-full mb-[8.5%]">
