@@ -10,6 +10,7 @@ import { EBoardCard } from '@/components/eboardCard';
 import { FaqCard } from '@/components/faqCard';
 import { AskAQuestionModal } from './_components/ask-a-question';
 import ExpandableText from '@/components/expandable-text';
+import { ClubProfileTag } from '@/components/club-profile-tag';
 
 // import SlackIcon from '@/components/icons/SlackIcon';
 
@@ -50,6 +51,15 @@ const Club = () => {
                     <View className="flex-row">
                         <Text className="text-black font-bold text-3xl">Club Name</Text>
                     </View>
+                    <View>
+                        <ScrollView horizontal={true} className="pt-[2%]">
+                            <View className="flex-row">
+                                <ClubProfileTag name="Tag1" />
+                                <ClubProfileTag name="Tag2" />
+                                <ClubProfileTag name="Tag3" />
+                            </View>
+                        </ScrollView>
+                    </View>
                     {/* Rewrite with maybe the button template? */}
                     <View className='flex-row pt-[5%] pb-[5%]'>
                         <Button variant="outline" onPress={() => handleSocialMediaClick('email')}>
@@ -61,7 +71,7 @@ const Club = () => {
                         </Button>
 
                         <Button variant="outline" onPress={() => handleSocialMediaClick('slack')}>
-                            <SlackIcon color="black"/>
+                            <SlackIcon color="black" />
                         </Button>
                     </View>
 
