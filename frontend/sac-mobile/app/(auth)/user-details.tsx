@@ -45,7 +45,7 @@ const UserDetails = () => {
             };
             UserDetailsSchema.parse(updatedData);
             Alert.alert('Form Submitted', JSON.stringify(updatedData));
-            router.push('/(auth)/tags');
+            router.push('/(auth)/user-interests');
         } catch (error) {
             if (error instanceof ZodError) {
                 Alert.alert('Validation Error', error.errors[0].message);

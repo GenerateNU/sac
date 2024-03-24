@@ -127,7 +127,7 @@ export const majorArr = [
 export const categories = [
     {
         name: 'Pre-Professional',
-        tags: ['Pre-med', 'Pre-law', 'Other']
+        tags: ['Pre-med', 'Pre-law']
     },
     {
         name: 'Cultural and Identity',
@@ -139,23 +139,16 @@ export const categories = [
             'Latin America',
             'African American',
             'Asian American',
-            'LGBTQ',
-            'Other'
+            'LGBTQ'
         ]
     },
     {
         name: 'Arts and Creativity',
-        tags: [
-            'Performing Arts',
-            'Visual Arts',
-            'Creative Writing',
-            'Music',
-            'Other'
-        ]
+        tags: ['Performing Arts', 'Visual Arts', 'Creative Writing', 'Music']
     },
     {
         name: 'Sports and Recreation',
-        tags: ['Soccer', 'Hiking', 'Climbing', 'Lacrosse', 'Other']
+        tags: ['Soccer', 'Hiking', 'Climbing', 'Lacrosse']
     },
     {
         name: 'Science and Technology',
@@ -173,8 +166,7 @@ export const categories = [
             'DataScience',
             'Mechanical Engineering',
             'Electrical Engineering',
-            'Industrial Engineering',
-            'Other'
+            'Industrial Engineering'
         ]
     },
     {
@@ -183,19 +175,12 @@ export const categories = [
             'Volunteerism',
             'Environmental Advocacy',
             'Human Rights',
-            'Community Outreach',
-            'Other'
+            'Community Outreach'
         ]
     },
     {
         name: 'Media and Communication',
-        tags: [
-            'Journalism',
-            'Broadcasting',
-            'Film',
-            'Public Relations',
-            'Other'
-        ]
+        tags: ['Journalism', 'Broadcasting', 'Film', 'Public Relations']
     }
 ];
 

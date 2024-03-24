@@ -131,7 +131,7 @@ const RegistrationForm = () => {
                         <Input
                             title="Email"
                             autoCorrect={false}
-                            placeholder="Northeastern email"
+                            placeholder="doe.j@northeastern.edu"
                             onChangeText={onChange}
                             value={value}
                             onSubmitEditing={handleSubmit(onSubmit)}

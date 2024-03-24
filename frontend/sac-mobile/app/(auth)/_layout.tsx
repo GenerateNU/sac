@@ -41,9 +41,9 @@ const AuthLayout = () => {
                 }}
             />
             <Stack.Screen
-                name="tags"
+                name="user-interests"
                 options={{
-                    title: 'Tags',
+                    title: 'User Interests',
                     headerShown: false
                 }}
             />
