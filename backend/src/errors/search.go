@@ -11,6 +11,10 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to create embedding from string",
 	}
+	FailedToCreateModeration = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to create moderation from string",
+	}
 	FailedToUpsertToPinecone = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to upsert to pinecone",
@@ -26,5 +30,9 @@ var (
 	FailedToSearchToPinecone = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to search on pinecone",
+	}
+	PotentiallyHarmfulSearch = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "detected potentially harmful content",
 	}
 )
