@@ -10,7 +10,10 @@ import { Button } from '@/components/button';
 import Error from '@/components/error';
 import { categories } from '@/lib/const';
 import { allTags } from '@/lib/utils';
-import { Category } from '@/types/categories';
+import { CategoryDisplay } from '@/types/category';
+import {useCategories} from '@/hooks/use-categories';
+import {useTags} from '@/hooks/use-tags';
+import {Category} from '@/types/category';
 
 type UserInterestsData = {
     tags: String[];
@@ -19,13 +22,16 @@ type UserInterestsData = {
 const categoriesMenu = [{ name: 'All', tags: allTags() }, ...categories];
 
 const UserInterestsForm = () => {
+    // const {data: categories, isLoading: isCategoriesLoading, error: categoriesError} = useCategories();
+    // const {data: tags, isLoading: isTagsLoading, error: tagsError} = useTags();
+
     const { handleSubmit } = useForm<UserInterestsData>();
     const [selectedTags, setSelectedTags] = useState<String[]>([]);
     const [buttonClicked, setButtonClicked] = useState<boolean>(false);
     const [selectedCategory, setSelectedCategory] = useState('All');
 
     // when a category is selected, set selected category to the category's name
-    const handleCategoryPress = (category: Category) => {
+    const handleCategoryPress = (category: CategoryDisplay) => {
         setSelectedCategory(category.name);
     };
 
@@ -78,7 +84,7 @@ const UserInterestsForm = () => {
     return (
         <>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                {categoriesMenu.map((category, key) => (
+                {categories.map((category, key) => (
                     <View>
                         <Button
                             onPress={() => handleCategoryPress(category)}
