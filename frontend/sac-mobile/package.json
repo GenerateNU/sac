@@ -23,7 +23,7 @@
         "clsx": "^2.1.0",
         "eslint": "^8.56.0",
         "expo": "^50.0.13",
-        "expo-dev-client": "~3.3.10",
+        "expo-dev-client": "~3.3.11",
         "expo-font": "~11.10.2",
         "expo-linking": "~6.2.2",
         "expo-router": "~3.4.8",
