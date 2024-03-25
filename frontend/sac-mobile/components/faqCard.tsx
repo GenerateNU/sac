@@ -14,7 +14,7 @@ const FaqCard = ({ question, answer, ...props }: FaqCardProps) => {
     return (
         <View>
             <TouchableOpacity {...props} onPress={toggleModal}>
-                <View className="bg-white p-4 rounded-lg w-60 h-48 pb-12 border">
+                <View className="bg-white p-4 rounded-lg w-80 h-48 pb-12 border border-[#CDCBCB]">
                     {question && <Text className="text-sm mb-2 font-semibold">{question}</Text>}
                     {answer && <Text numberOfLines={MAX_LENGTH} className="text-sm">{answer}</Text>}
                 </View>

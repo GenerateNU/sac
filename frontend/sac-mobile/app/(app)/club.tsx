@@ -62,16 +62,21 @@ const Club = () => {
                     </View>
                     {/* Rewrite with maybe the button template? */}
                     <View className='flex-row pt-[5%] pb-[5%]'>
-                        <Button variant="outline" onPress={() => handleSocialMediaClick('email')}>
+                        <Button variant="secondary" onPress={() => handleSocialMediaClick('email')}>
                             <EmailIcon color="black" />
                         </Button>
 
-                        <Button variant="outline" onPress={() => handleSocialMediaClick('instagram')}>
+                        <Button variant="secondary" onPress={() => handleSocialMediaClick('instagram')}>
                             <InstagramIcon color="black" />
                         </Button>
 
-                        <Button variant="outline" onPress={() => handleSocialMediaClick('slack')}>
+                        <Button variant="secondary" onPress={() => handleSocialMediaClick('slack')}>
                             <SlackIcon color="black" />
+                        </Button>
+                    </View>
+                    <View>
+                    <Button variant='gray' size='screenwide' className='mb-4'>
+                            Application Form
                         </Button>
                     </View>
 
@@ -88,8 +93,15 @@ const Club = () => {
                         <ScrollView horizontal={true} className="pt-[2%] pb-[10%]">
                             <View className="flex-row">
                                 {/* To be replaced by event components */}
-                                <Card variant="default" size="default" className="mr-2">
-                                    <Text className="text-black">Event 1</Text>
+                                <Card title="Orientation" variant="default" size="default" className="mr-2">
+                                    <Text className='text-gray-600'>{"08:00 - 09:30 PM"}</Text>
+                                    <Text className='text-gray-600'>{"April 23, 2024"}</Text>
+                                    <Text className='text-gray-600'>{"Ryder Hall, Room 294"}</Text>
+                                </Card>
+                                <Card title="Orientation" variant="default" size="default" className="mr-2">
+                                    <Text className='text-gray-600'>{"08:00 - 09:30 PM"}</Text>
+                                    <Text className='text-gray-600'>{"April 23, 2024"}</Text>
+                                    <Text className='text-gray-600'>{"Ryder Hall, Room 294"}</Text>
                                 </Card>
                             </View>
                         </ScrollView>
@@ -108,7 +120,7 @@ const Club = () => {
                         </ScrollView>
                     </View>
                     <View className='pb-[30%]'>
-                        <Text className="text-black font-bold">FAQs</Text>
+                        <Text className="text-black font-bold pb-4">FAQs</Text>
                         <ScrollView horizontal={true} className='pb-[10%]'>
                             <View className="flex-row">
                                 <FaqCard question="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididun?"

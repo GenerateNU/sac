@@ -3,13 +3,14 @@ import { Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-nativ
 import { VariantProps, cva } from 'class-variance-authority';
 
 import { cn } from '@/lib/utils';
+import { Button } from './button';
 
 const cardVariants = {
     variant: {
-        default: ['bg-card-bg', 'text-white', 'justify-end', 'items-start']
+        default: ['bg-card-bg', 'text-white', 'justify-end', 'items-start', 'mr-3']
     },
     size: {
-        default: ['rounded-lg', 'min-w-96', 'p-4', 'shadow', 'w-80', 'h-48']
+        default: ['rounded-lg', 'min-w-96', 'p-4', 'shadow', 'w-80', 'h-40']
     }
 };
 
@@ -26,9 +27,11 @@ const cardStyles = cva(
 
 export interface CardProps
     extends TouchableOpacityProps,
-    VariantProps<typeof cardStyles> { }
+    VariantProps<typeof cardStyles> {
+        title: string
+     }
 
-const Card = ({ children, variant, size, ...props }: CardProps) => {
+const Card = ({ children, variant, size, title, ...props }: CardProps) => {
     return (
         <View
             className={cn(
@@ -37,11 +40,13 @@ const Card = ({ children, variant, size, ...props }: CardProps) => {
                 'text-center'
             )}
         >
-            <View>
-                <Text className={cn(`text-lg font-bold mb-2`, { fontFamily: 'OpenSans-SemiBold' })}>{"Orientation"}</Text>
-                <Text className={cn(`text-gray-600`)}>{"08:00 - 09:30 PM"}</Text>
-                <Text className={cn(`text-gray-600`)}>{"April 23, 2024"}</Text>
-                <Text className={cn(`text-gray-600`)}>{"Ryder Hall, Room 294"}</Text>
+            <View className='flex-row px-3 items-end space-x-10'>
+                <View>
+                    <Text className={cn(`text-lg font-bold mb-2`, { fontFamily: 'OpenSans-SemiBold' })}>{title}</Text>
+                    {children}
+                </View>
+                <Button className='bg-[#747474] rounded-lg'>Register</Button>
+                
             </View>
 
         </View>
