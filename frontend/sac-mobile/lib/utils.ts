@@ -48,7 +48,7 @@ export const major = () => {
 /**
  * Combine all tags of different categories into one for All tab
  * @return a list of tags
-*/
+ */
 export const allTags = () => {
     let allTags: string[] = [];
     for (let i = 0; i < categories.length; i++) {

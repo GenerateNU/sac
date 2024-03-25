@@ -1,17 +1,19 @@
-import React, {useState} from 'react';
-import {Alert, Text, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { Alert, Text, TouchableOpacity, View } from 'react-native';
+
 import { ZodError, z } from 'zod';
+
+import Error from '@/components/error';
 import Input from '@/components/input';
 import { FAQ } from '@/types/item';
-import { Controller, useForm } from 'react-hook-form';
-import Error from '@/components/error';
 
 type FAQData = {
-    question: string,
-}
+    question: string;
+};
 
 const FAQSchema = z.object({
-    question: z.string(),
+    question: z.string()
 });
 
 const FAQCard = ({ faq }: { faq: FAQ }) => {
@@ -30,11 +32,11 @@ const FAQCard = ({ faq }: { faq: FAQ }) => {
         reset
     } = useForm<FAQData>();
 
-    const onSubmit = ({question}: FAQData) => {
+    const onSubmit = ({ question }: FAQData) => {
         try {
-            FAQSchema.parse({question});
+            FAQSchema.parse({ question });
             Alert.alert('Form Submitted', JSON.stringify(question));
-            reset()
+            reset();
         } catch (error) {
             if (error instanceof ZodError) {
                 Alert.alert('Validation Error', error.errors[0].message);
@@ -68,28 +70,30 @@ const FAQCard = ({ faq }: { faq: FAQ }) => {
                     {faq.answer}
                 </Text>
                 <View className="mt-[6%] mb-[1.5%]">
-                <Controller
-                    control={control}
-                    render={({ field: { onChange, value } }) => (
-                        <Input
-                            variant="faq"
-                            placeholder={'Submit a question for ' + length()}
-                            onSubmitEditing={handleSubmit(onSubmit)}
-                            autoCorrect={false}
-                            onChangeText={onChange}
-                            value={value}
-                        />
+                    <Controller
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                            <Input
+                                variant="faq"
+                                placeholder={
+                                    'Submit a question for ' + length()
+                                }
+                                onSubmitEditing={handleSubmit(onSubmit)}
+                                autoCorrect={false}
+                                onChangeText={onChange}
+                                value={value}
+                            />
+                        )}
+                        name="question"
+                        rules={{
+                            required: 'Cannot submit form if empty'
+                        }}
+                    />
+                    {errors.question && (
+                        <View className="mt-[2%]">
+                            <Error message={errors.question.message} />
+                        </View>
                     )}
-                    name="question"
-                    rules={{
-                        required: 'Cannot submit form if empty'
-                    }}
-                />
-                {errors.question && (
-                    <View className="mt-[2%]">
-                        <Error message={errors.question.message} />
-                    </View>
-                )}
                 </View>
             </View>
         </TouchableOpacity>

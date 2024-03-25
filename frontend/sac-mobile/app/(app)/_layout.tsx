@@ -1,13 +1,7 @@
 import React from 'react';
-import { View } from 'react-native';
 
 import { Tabs } from 'expo-router';
 
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-
-// const HomeTabBarIcon = ({ color }: { color: string }) => (
-//     <MaterialCommunityIcons name="home" size={24} color={color} />
-// );
 import HomeLight from '@/assets/icons/home-light';
 import SearchAltLight from '@/assets/icons/search-alt-light';
 import UserLight from '@/assets/icons/user-light';
