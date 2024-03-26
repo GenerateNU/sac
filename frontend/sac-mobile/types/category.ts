@@ -1,14 +1,15 @@
 import { z } from 'zod';
+import { tagSchema } from '@/types/tag';
 
-export const tagSchema = z.object({
+export const categorySchema = z.object({
     id: z.string().uuid(),
     name: z.string().min(1),
-    categoryId: z.string().uuid(),
     createdAt: z.date(),
-    updatedAt: z.date()
+    updatedAt: z.date(),
+    tags: z.array(tagSchema),
 });
 
-export type Category = z.infer<typeof tagSchema>;
+export type Category = z.infer<typeof categorySchema>;
 
 export type CategoryDisplay = {
     name: string;

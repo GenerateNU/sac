@@ -4,7 +4,7 @@ import {Category} from '@/types/category';
 
 export const useCategories = (): UseQueryResult<Category[], Error> => {
     return useQuery<Category[], Error>({
-        queryKey: ['categories'],
-        queryFn: getAllCategories
+        queryKey: ['category'],
+        queryFn: getAllCategories,
     });
 };

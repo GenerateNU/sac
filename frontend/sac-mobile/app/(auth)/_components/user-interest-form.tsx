@@ -8,34 +8,37 @@ import { ZodError } from 'zod';
 
 import { Button } from '@/components/button';
 import Error from '@/components/error';
-import { categories } from '@/lib/const';
-import { allTags } from '@/lib/utils';
-import { CategoryDisplay } from '@/types/category';
 import {useCategories} from '@/hooks/use-categories';
 import {useTags} from '@/hooks/use-tags';
 import {Category} from '@/types/category';
+import { Tag } from '@/types/tag';
 
 type UserInterestsData = {
-    tags: String[];
+    tags: Tag[];
 };
 
-const categoriesMenu = [{ name: 'All', tags: allTags() }, ...categories];
 
 const UserInterestsForm = () => {
-    // const {data: categories, isLoading: isCategoriesLoading, error: categoriesError} = useCategories();
-    // const {data: tags, isLoading: isTagsLoading, error: tagsError} = useTags();
-
+    const { data: categoriesData, isLoading: loadingCategories, error: errorCategory } = useCategories() as { data: Category[], isLoading: boolean, error: Error };
+    const { data: tagsData, isLoading: loadingTags, error: errorTag } = useTags() as { data: Tag[], isLoading: boolean, error: Error };
     const { handleSubmit } = useForm<UserInterestsData>();
-    const [selectedTags, setSelectedTags] = useState<String[]>([]);
+    const AllCategory: Category = {
+        name: 'All',
+        id: '',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        tags: tagsData?.length ? tagsData : [],
+    }
+    const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
     const [buttonClicked, setButtonClicked] = useState<boolean>(false);
-    const [selectedCategory, setSelectedCategory] = useState('All');
+    const [selectedCategory, setSelectedCategory] = useState<Category>(AllCategory);
 
-    // when a category is selected, set selected category to the category's name
-    const handleCategoryPress = (category: CategoryDisplay) => {
-        setSelectedCategory(category.name);
+    // when a category is selected, set selected category to this category
+    const handleCategoryPress = (category: Category) => {
+        setSelectedCategory(category);
     };
 
-    const handleTagPress = (tag: string) => {
+    const handleTagPress = (tag: Tag) => {
         // if a tag is selected and tag has been selected before, filter it out
         if (selectedTags.includes(tag)) {
             setSelectedTags(selectedTags.filter((t) => t !== tag));
@@ -52,8 +55,9 @@ const UserInterestsForm = () => {
             return;
         }
         data.tags = selectedTags;
+        const selectedTagsUUID = data.tags.map(tag => tag.id);
         try {
-            Alert.alert('Form Submitted', JSON.stringify(data));
+            Alert.alert('Form Submitted', JSON.stringify(selectedTagsUUID));
             router.push('/(app)/');
         } catch (error) {
             if (error instanceof ZodError) {
@@ -67,16 +71,16 @@ const UserInterestsForm = () => {
     const heightAdjust =
         selectedTags.length === 0 && buttonClicked ? 'h-[46%]' : 'h-[47%]';
 
-    const Tag = (props: { tag: string }) => {
+    const Tag = ({tag}: { tag: Tag }) => {
         return (
             <Button
-                onPress={() => handleTagPress(props.tag)}
+                onPress={() => handleTagPress(tag)}
                 variant={
-                    selectedTags.includes(props.tag) ? 'default' : 'outline'
+                    selectedTags.includes(tag) ? 'default' : 'outline'
                 }
                 size="tags"
             >
-                {props.tag}
+                {tag.name}
             </Button>
         );
     };
@@ -84,12 +88,20 @@ const UserInterestsForm = () => {
     return (
         <>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                {categories.map((category, key) => (
+                <Button
+                    onPress={() => handleCategoryPress(AllCategory)}
+                    variant={
+                    'All' === selectedCategory.name
+                        ? 'underline'
+                        : 'menu'
+                    }
+                >All</Button>
+                {categoriesData && categoriesData.map((category: Category, key) => (
                     <View>
                         <Button
                             onPress={() => handleCategoryPress(category)}
                             variant={
-                                category.name === selectedCategory
+                                category.name === selectedCategory.name
                                     ? 'underline'
                                     : 'menu'
                             }
@@ -105,15 +117,13 @@ const UserInterestsForm = () => {
             <Text className="text-lg pb-[6%] pt-[5%]">Select one or more</Text>
             <ScrollView className={heightAdjust}>
                 <View className="flex-row flex-wrap">
-                    {selectedCategory === 'All'
-                        ? allTags().map((tag, key) => (
-                              <Tag tag={tag} key={key} />
-                          ))
-                        : categories
-                              .find((c) => c.name === selectedCategory)
-                              ?.tags.map((tag, key) => (
-                                  <Tag tag={tag} key={key} />
-                              ))}
+                    {selectedCategory.name === AllCategory.name
+                        ? AllCategory.tags.map((tag, key) => (
+                            <Tag tag={tag} key={key} />
+                        ))
+                        : tagsData && tagsData.filter((tag) => selectedCategory.id === tag.category_id)
+                        .map((tag, key) => <Tag tag={tag} key={key} />)
+                    }
                 </View>
             </ScrollView>
             {selectedTags.length === 0 && buttonClicked && (

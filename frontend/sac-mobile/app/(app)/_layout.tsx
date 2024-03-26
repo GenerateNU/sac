@@ -6,6 +6,7 @@ import HomeLight from '@/assets/icons/home-light';
 import SearchAltLight from '@/assets/icons/search-alt-light';
 import UserLight from '@/assets/icons/user-light';
 
+
 const AppLayout = () => {
     return (
         <Tabs
