@@ -33,7 +33,7 @@ type Event struct {
 	EventType   EventType `gorm:"type:varchar(255);default:open" json:"event_type" validate:"required,max=255,oneof=open membersOnly"`
 	IsRecurring bool      `gorm:"not null;type:bool;default:false" json:"is_recurring" validate:"-"`
 
-	Host         Club           `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
+	Host         *uuid.UUID     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"uuid4"`
 	RSVP         []User         `gorm:"many2many:user_event_rsvps;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	Waitlist     []User         `gorm:"many2many:user_event_waitlists;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	Clubs        []Club         `gorm:"many2many:club_events;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
@@ -83,7 +83,7 @@ type CreateEventRequestBody struct {
 	IsRecurring *bool     `json:"is_recurring" validate:"required"`
 
 	// TODO club/tag/notification logic
-	Host         Club           `json:"-" validate:"omitempty"`
+	Host         *uuid.UUID     `json:"host" validate:"omitempty"`
 	Clubs        []Club         `json:"-" validate:"omitempty"`
 	Tag          []Tag          `json:"-" validate:"omitempty"`
 	Notification []Notification `json:"-" validate:"omitempty"`

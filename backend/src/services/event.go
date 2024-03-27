@@ -64,7 +64,7 @@ func (e *EventService) CreateEvent(eventBody models.CreateEventRequestBody) ([]m
 		IsRecurring: *eventBody.IsRecurring,
 
 		Host:         eventBody.Host,
-		Clubs:         eventBody.Clubs,
+		Clubs:        eventBody.Clubs,
 		Tag:          eventBody.Tag,
 		Notification: eventBody.Notification,
 	}
@@ -237,17 +237,17 @@ func CreateEventSlice(firstEvent *models.Event, series models.Series) []models.E
 
 func MapToEvent(eventBody models.UpdateEventRequestBody) *models.Event {
 	return &models.Event{
-		Name:        eventBody.Name,
-		Preview:     eventBody.Preview,
-		Content:     eventBody.Content,
-		StartTime:   eventBody.StartTime,
-		EndTime:     eventBody.EndTime,
-		Location:    eventBody.Location,
-		EventType:   eventBody.EventType,
+		Name:      eventBody.Name,
+		Preview:   eventBody.Preview,
+		Content:   eventBody.Content,
+		StartTime: eventBody.StartTime,
+		EndTime:   eventBody.EndTime,
+		Location:  eventBody.Location,
+		EventType: eventBody.EventType,
 
 		RSVP:         eventBody.RSVP,
 		Waitlist:     eventBody.Waitlist,
-		Clubs:         eventBody.Clubs,
+		Clubs:        eventBody.Clubs,
 		Tag:          eventBody.Tag,
 		Notification: eventBody.Notification,
 	}
