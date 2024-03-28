@@ -95,6 +95,7 @@ const UserInterestsForm = () => {
                         ? 'underline'
                         : 'menu'
                     }
+                    size="menu"
                 >All</Button>
                 {categoriesData && categoriesData.map((category: Category, key) => (
                     <View>

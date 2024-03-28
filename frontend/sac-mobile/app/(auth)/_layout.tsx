@@ -20,42 +20,48 @@ const AuthLayout = () => {
                 name="welcome"
                 options={{
                     title: 'Welcome',
-                    headerShown: false
+                    headerShown: false,
+                    gestureEnabled: false,
                 }}
             />
             <Stack.Screen
                 name="login"
                 options={{
                     title: 'Login',
-                    headerShown: false
+                    headerShown: false,
+                    gestureEnabled: false,
                 }}
             />
             <Stack.Screen
                 name="register"
                 options={{
                     title: 'Register',
-                    headerShown: false
+                    headerShown: false,
+                    gestureEnabled: false,
                 }}
             />
             <Stack.Screen
                 name="verification"
                 options={{
                     title: 'Verification',
-                    headerShown: false
+                    headerShown: false,
+                    gestureEnabled: false,
                 }}
             />
             <Stack.Screen
                 name="user-details"
                 options={{
                     title: 'User Details',
-                    headerShown: false
+                    headerShown: false,
+                    gestureEnabled: false,
                 }}
             />
             <Stack.Screen
                 name="user-interests"
                 options={{
                     title: 'User Interests',
-                    headerShown: false
+                    headerShown: false,
+                    gestureEnabled: false,
                 }}
             />
         </Stack>

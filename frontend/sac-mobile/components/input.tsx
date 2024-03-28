@@ -52,7 +52,7 @@ const Input = ({ title, error, variant, ...props }: InputProps) => {
                 {...props}
             >
                 <TextInput
-                    className="bg-transparent"
+                    className="bg-transparent w-[85%]"
                     placeholder={props.placeholder}
                     autoCapitalize={props.autoCapitalize || 'none'}
                     autoCorrect={props.autoCorrect}

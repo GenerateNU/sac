@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { router } from 'expo-router';
@@ -11,6 +11,10 @@ import RegistrationForm from './_components/registration-form';
 
 const Register = () => {
     return (
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            className="flex-1"
+        >
         <SafeAreaView className="bg-neutral-500" edges={['top']}>
             <ScrollView>
                 <View className="px-[8%] pb-[9%]">
@@ -41,6 +45,7 @@ const Register = () => {
                 </View>
             </ScrollView>
         </SafeAreaView>
+        </KeyboardAvoidingView>
     );
 };
 

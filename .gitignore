@@ -6,3 +6,5 @@ node_modules
 .trunk
 .env.dev
 tmp/
+ios
+android

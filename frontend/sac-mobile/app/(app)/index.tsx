@@ -7,9 +7,14 @@ import ClubCard from '@/components/club-card';
 import EventCard from '@/components/event-card';
 import FAQCard from '@/components/faq-card';
 import { ChronologicalList, FollowedClubs, HomepageList } from '@/lib/const';
+import {useUserFollowing } from '@/hooks/use-user-following';
+import {Club} from '@/types/club';
+import {useAuthStore} from '@/hooks/use-auth';
 
 const Homepage = () => {
+    const {user} = useAuthStore();
     const [selectedTab, setSelectedTab] = useState('Relevance');
+    // const { data: userFollowingData, isLoading: loadingUserFollowing, error: errorUserFollowing } = useUserFollowing(user?.id ) as { data: Club[], isLoading: boolean, error: Error };
 
     const handleTabPress = (tab: string) => {
         setSelectedTab(tab);
