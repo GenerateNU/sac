@@ -9,14 +9,16 @@ export interface FaqCardProps extends TouchableOpacityProps {
 
 const FaqCard = ({ question, answer, ...props }: FaqCardProps) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const MAX_LENGTH = 4;
+    const MAX_LENGTH = 8;
     const toggleModal = () => setIsModalVisible(!isModalVisible);
     return (
         <View>
             <TouchableOpacity {...props} onPress={toggleModal}>
-                <View className="bg-white p-4 rounded-lg w-80 h-48 pb-12 border border-[#CDCBCB]">
-                    {question && <Text className="text-sm mb-2 font-semibold">{question}</Text>}
-                    {answer && <Text numberOfLines={MAX_LENGTH} className="text-sm">{answer}</Text>}
+                <View className="bg-white p-4 rounded-lg w-80 h-75 border border-[#CDCBCB]">
+                        {question && <Text className="text-sm mb-2 font-semibold">{question}</Text>}
+                        {answer && <Text numberOfLines={MAX_LENGTH} className="text-sm">{answer}</Text>}
+                        <Text className="pt-5">Show More...</Text>
+                        <Text className="pt-3">200 think this is helpful.</Text>
                 </View>
             </TouchableOpacity>
             <Modal visible={isModalVisible} transparent={true}>

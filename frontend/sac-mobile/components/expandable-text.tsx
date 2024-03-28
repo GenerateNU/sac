@@ -16,7 +16,7 @@ const ExpandableText = ({ children, maxLines = 5, }: { children: React.ReactNode
                     {children}
                 </Text>
                 {!isExpanded && (
-                    <Text className='pt-2 italic font-semibold'>Show More</Text>
+                    <Text className='pt-2 italic font-light'>Show More</Text>
                 )}
             </View>
         </TouchableOpacity>

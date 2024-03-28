@@ -8,7 +8,7 @@ export interface ClubProfileTagProps extends TouchableOpacityProps {
 const ClubProfileTag = ({ name, ...props }: ClubProfileTagProps) => {
     return (
         <TouchableOpacity {...props} className='px-1'>
-            <View className='bg-card-bg rounded-lg items-center w-40' >
+            <View className='bg-card-bg rounded-lg items-center w-40 h-7 justify-center' >
                 {name && <Text className="text-sm text-black">{name}</Text>}
             </View>
         </TouchableOpacity>

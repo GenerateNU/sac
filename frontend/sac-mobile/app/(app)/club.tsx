@@ -8,7 +8,7 @@ import { Card } from '@/components/card';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { EBoardCard } from '@/components/eboardCard';
 import { FaqCard } from '@/components/faqCard';
-import { AskAQuestionModal } from './_components/ask-a-question';
+import { AskAQuestionModal } from './_components/application-modal';
 import ExpandableText from '@/components/expandable-text';
 import { ClubProfileTag } from '@/components/club-profile-tag';
 
@@ -51,17 +51,8 @@ const Club = () => {
                     <View className="flex-row">
                         <Text className="text-black font-bold text-3xl">Club Name</Text>
                     </View>
-                    <View>
-                        <ScrollView horizontal={true} className="pt-[2%]">
-                            <View className="flex-row">
-                                <ClubProfileTag name="Tag1" />
-                                <ClubProfileTag name="Tag2" />
-                                <ClubProfileTag name="Tag3" />
-                            </View>
-                        </ScrollView>
-                    </View>
                     {/* Rewrite with maybe the button template? */}
-                    <View className='flex-row pt-[5%] pb-[5%]'>
+                    <View className='flex-row pb-[3%]'>
                         <Button variant="secondary" onPress={() => handleSocialMediaClick('email')}>
                             <EmailIcon color="black" />
                         </Button>
@@ -75,6 +66,15 @@ const Club = () => {
                         </Button>
                     </View>
                     <View>
+                        <ScrollView horizontal={true} className="pb-[3%]">
+                            <View className="flex-row">
+                                <ClubProfileTag name="Tag1" />
+                                <ClubProfileTag name="Tag2" />
+                                <ClubProfileTag name="Tag3" />
+                            </View>
+                        </ScrollView>
+                    </View>
+                    <View>
                     <Button variant='gray' size='screenwide' className='mb-4'>
                             Application Form
                         </Button>
@@ -82,7 +82,7 @@ const Club = () => {
 
                     <View className="pb-[8%]">
                         <View className='pb-[2%]'>
-                            <Text className=" text-black font-bold">Description</Text>
+                            <Text className=" text-black font-medium">Description</Text>
                         </View>
                         <ExpandableText maxLines={5}>
                             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
