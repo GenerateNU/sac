@@ -82,19 +82,18 @@ function RootLayoutNav() {
         checkLoginStatus();
     }, [login]);
 
-    useEffect(() => {
+    /*useEffect(() => {
         if (isLoggedIn === null) {
             router.push('/(auth)/welcome');
             return;
         }
 
         router.push(isLoggedIn ? '/(app)/' : '/(auth)/welcome');
-    }, [isLoggedIn]);
+    }, [isLoggedIn]);*/
 
     return (
         <Stack>
-            <Stack.Screen name="(app)" options={{ headerShown: false }} />
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            <Stack.Screen name="(calendar)" options={{ headerShown: false }} />
         </Stack>
     );
 }
