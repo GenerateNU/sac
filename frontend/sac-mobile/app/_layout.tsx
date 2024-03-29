@@ -1,61 +1,60 @@
 import { useEffect } from 'react';
 
 import { useFonts } from 'expo-font';
-import { Slot, Stack, useRouter, useSegments } from 'expo-router';
+import { Slot, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
-import { ClerkProvider, useAuth } from '@clerk/clerk-expo';
-import * as SecureStore from 'expo-secure-store';
+import { View } from 'react-native';
+import Spinner from 'react-native-loading-spinner-overlay';
+import { useAuthStore } from '@/hooks/use-auth';
 
 export {
     // Catch any errors thrown by the Layout component.
     ErrorBoundary
 } from 'expo-router';
 
-const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY
-
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-const tokenCache = {
-    async getToken(key: string) {
-        try {
-            return SecureStore.getItemAsync(key);
-        } catch (error) {
-            console.error('[RootLayoutNav] Error retrieving token:', error);
-            return null;
-        }
-    },
-    async saveToken(key: string, value: string) {
-        try {
-            return SecureStore.setItemAsync(key, value);
-        } catch (error) {
-            console.error('[RootLayoutNav] Error setting token:', error);
-        }
-    }
-};
-
 const InitalLayout = () => {
-    const { isLoaded, isSignedIn } = useAuth();
+    const { isLoggedIn, fetchCache, isVerified } = useAuthStore();
     const router = useRouter();
     const segments = useSegments();
 
     useEffect(() => {
-        if (!isLoaded) return;
+        // SecureStore.deleteItemAsync('accessToken');
+        // SecureStore.deleteItemAsync('refreshToken');
+        // SecureStore.deleteItemAsync('user');
+
+
+        fetchCache();
+
+        if (isLoggedIn === null) return;
 
         const inApp = segments[0] === "(app)";
 
-        if (isSignedIn && !inApp) {
+        console.log({ isLoggedIn, isVerified, inApp });
+
+        if (isLoggedIn && isVerified === false) {
+            router.push("/(auth)/verification");
+        } else if (isLoggedIn && isVerified) {
             router.push("/(app)/");
-        } else if (!isSignedIn) {
-            router.push("/(auth)/login");
+        } else if (!isLoggedIn) {
+            router.push("/(auth)/welcome");
         }
+    }, [isLoggedIn, isVerified]);
 
-        console.log({ isSignedIn, inApp });
-    }, [isSignedIn]);
-
+    if (isLoggedIn === null) return (
+        <View className="items-center justify-center flex-1">
+            <Spinner
+                visible
+                textContent="Welcome to SAC Mobile"
+                textStyle={{ color: '#FFF' }}
+            />
+        </View>
+    );
 
     return <Slot />;
 }
@@ -72,9 +71,7 @@ const RootLayout = () => {
     if (!loaded) return null;
 
     return (
-        <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY!} tokenCache={tokenCache}>
-            <InitalLayout />
-        </ClerkProvider>
+        <InitalLayout />
     );
 }
 

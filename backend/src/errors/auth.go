@@ -3,9 +3,17 @@ package errors
 import "github.com/gofiber/fiber/v2"
 
 var (
-	PassedAuthenticateMiddlewareButNilClaims = Error{
+	FailedToExtractClaims = Error{
 		StatusCode: fiber.StatusInternalServerError,
-		Message:    "passed authenticate middleware but claims is nil",
+		Message:    "failed to extract claims",
+	}
+	FailedToParseToken = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to parse token",
+	}
+	InvalidTokenType = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "invalid token type",
 	}
 	FailedToValidateUpdatePasswordBody = Error{
 		StatusCode: fiber.StatusBadRequest,
@@ -31,9 +39,25 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to get password reset token",
 	}
+	FailedToGetToken = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get token",
+	}
+	FailedToDeleteToken = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to delete token",
+	}
+	FailedToSaveToken = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to save token",
+	}
 	PasswordResetTokenNotFound = Error{
 		StatusCode: fiber.StatusNotFound,
 		Message:    "password reset token not found",
+	}
+	TokenNotFound = Error{
+		StatusCode: fiber.StatusNotFound,
+		Message:    "token not found",
 	}
 	EmailAlreadyVerified = Error{
 		StatusCode: fiber.StatusBadRequest,

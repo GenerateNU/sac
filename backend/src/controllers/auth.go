@@ -3,8 +3,6 @@ package controllers
 import (
 	"time"
 
-	"github.com/GenerateNU/sac/backend/src/auth"
-	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
@@ -13,39 +11,11 @@ import (
 )
 
 type AuthController struct {
-	authService  services.AuthServiceInterface
-	blacklist    []string
-	AuthSettings config.AuthSettings
+	authService services.AuthServiceInterface
 }
 
-func NewAuthController(authService services.AuthServiceInterface, authSettings config.AuthSettings) *AuthController {
-	return &AuthController{authService: authService, blacklist: []string{}, AuthSettings: authSettings}
-}
-
-// Me godoc
-//
-// @Summary		Retrieve the current user given an auth session
-// @Description	Returns the current user associated with an auth session
-// @ID			get-current-user
-// @Tags      	auth
-// @Produce		json
-// @Success		200	  {object}	     models.User
-// @Failure     400   {object}       errors.Error
-// @Failure     401   {object}       errors.Error
-// @Failure     404   {object}       errors.Error
-// @Failure     500   {object}       errors.Error
-// @Router		/auth/me  [get]
-func (a *AuthController) Me(c *fiber.Ctx) error {
-	claims, err := auth.From(c)
-	if err != nil {
-		return err.FiberError(c)
-	}
-	user, err := a.authService.Me(claims.Issuer)
-	if err != nil {
-		return err.FiberError(c)
-	}
-
-	return c.Status(fiber.StatusOK).JSON(user)
+func NewAuthController(authService services.AuthServiceInterface) *AuthController {
+	return &AuthController{authService: authService}
 }
 
 // Login godoc
@@ -57,7 +27,7 @@ func (a *AuthController) Me(c *fiber.Ctx) error {
 // @Accept		json
 // @Produce		json
 // @Param		loginBody	body	models.LoginUserResponseBody	true	"Login Body"
-// @Success		200	  {object}	    utilities.SuccessResponse
+// @Success		200	  {object}	    models.User
 // @Failure     400   {object}      errors.Error
 // @Failure     404   {object}		errors.Error
 // @Failure     500   {object}      errors.Error
@@ -69,21 +39,25 @@ func (a *AuthController) Login(c *fiber.Ctx) error {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
-	user, err := a.authService.Login(userBody)
+	user, tokens, err := a.authService.Login(userBody)
 	if err != nil {
 		return err.FiberError(c)
 	}
 
-	accessToken, refreshToken, err := auth.CreateTokenPair(user.ID.String(), string(user.Role), a.AuthSettings)
+	err = a.authService.SetResponseTokens(c, tokens)
 	if err != nil {
-		return errors.Unauthorized.FiberError(c)
+		return err.FiberError(c)
 	}
 
-	// Set the tokens in the response
-	c.Cookie(auth.CreateCookie("access_token", *accessToken, time.Now().Add(time.Minute*time.Duration(a.AuthSettings.AccessTokenExpiry))))
-	c.Cookie(auth.CreateCookie("refresh_token", *refreshToken, time.Now().Add(time.Hour*time.Duration(a.AuthSettings.RefreshTokenExpiry))))
+	// c.Set("Authorization", fmt.Sprintf("Bearer %s", string(tokens.AccessToken)))
+	// c.Cookie(&fiber.Cookie{
+	// 	Name:     "refresh_token",
+	// 	Value:    string(tokens.RefreshToken),
+	// 	Expires:  time.Now().Add(time.Hour * time.Duration(a.AuthSettings.RefreshTokenExpiry)),
+	// 	HTTPOnly: true,
+	// })
 
-	return utilities.FiberMessage(c, fiber.StatusOK, "success")
+	return c.Status(fiber.StatusOK).JSON(user)
 }
 
 // Refresh godoc
@@ -98,29 +72,23 @@ func (a *AuthController) Login(c *fiber.Ctx) error {
 // @Failure     400   {object}    errors.Error
 // @Failure     404   {object}    errors.Error
 // @Failure     500   {object}    errors.Error
-// @Router		/auth/refresh  [get]
+// @Router		/auth/refresh  [post]
 func (a *AuthController) Refresh(c *fiber.Ctx) error {
-	// Extract token values from cookies
-	refreshTokenValue := c.Cookies("refresh_token")
+	var refreshBody models.RefreshTokenRequestBody
 
-	// Extract id from refresh token
-	claims, err := auth.ExtractRefreshClaims(refreshTokenValue, a.AuthSettings.RefreshKey)
-	if err != nil {
-		return errors.Unauthorized.FiberError(c)
+	if err := c.BodyParser(&refreshBody); err != nil {
+		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
-	role, err := a.authService.GetRole(claims.Issuer)
+	tokens, err := a.authService.Refresh(refreshBody.RefreshToken)
 	if err != nil {
-		return errors.Unauthorized.FiberError(c)
+		return err.FiberError(c)
 	}
 
-	accessToken, err := auth.RefreshAccessToken(refreshTokenValue, string(*role), a.AuthSettings.RefreshKey, a.AuthSettings.AccessTokenExpiry, a.AuthSettings.AccessKey)
+	err = a.authService.SetResponseTokens(c, tokens)
 	if err != nil {
-		return errors.Unauthorized.FiberError(c)
+		return err.FiberError(c)
 	}
-
-	// Set the access token in the response
-	c.Cookie(auth.CreateCookie("access_token", *accessToken, time.Now().Add(time.Minute*60)))
 
 	return utilities.FiberMessage(c, fiber.StatusOK, "success")
 }
@@ -134,50 +102,24 @@ func (a *AuthController) Refresh(c *fiber.Ctx) error {
 // @Accept		json
 // @Produce		json
 // @Success		200	  {object}	  utilities.SuccessResponse
-// @Router		/auth/logout  [get]
+// @Router		/auth/logout  [post]
 func (a *AuthController) Logout(c *fiber.Ctx) error {
 	// Extract token values from cookies
-	accessTokenValue := c.Cookies("access_token")
-	refreshTokenValue := c.Cookies("refresh_token")
+	c.Get("Authorization")
+	c.Cookies("refresh_token")
 
 	// TODO: Redis
-	a.blacklist = append(a.blacklist, accessTokenValue)
-	a.blacklist = append(a.blacklist, refreshTokenValue)
+	// a.blacklist = append(a.blacklist, accessTokenValue)
+	// a.blacklist = append(a.blacklist, refreshTokenValue)
 
 	// Expire and clear the cookies
-	c.Cookie(auth.ExpireCookie("access_token"))
-	c.Cookie(auth.ExpireCookie("refresh_token"))
-
-	return utilities.FiberMessage(c, fiber.StatusOK, "success")
-}
-
-// UpdatePassword godoc
-//
-// @Summary		Updates a user's password
-// @Description	Updates a user's password
-// @ID			update-password
-// @Tags      	auth
-// @Accept		json
-// @Produce		json
-// @Param		userID		path	string	true	"User ID"
-// @Param		userBody	body	 models.UpdatePasswordRequestBody	true	"User Body"
-// @Success		200	  {object}	     utilities.SuccessResponse
-// @Failure     400   {object}       errors.Error
-// @Failure     401   {object}       errors.Error
-// @Failure     404   {object}       errors.Error
-// @Failure     429   {object}       errors.Error
-// @Failure     500   {object}       errors.Error
-// @Router		/auth/update-password/{userID} [post]
-func (a *AuthController) UpdatePassword(c *fiber.Ctx) error {
-	var userBody models.UpdatePasswordRequestBody
-
-	if err := c.BodyParser(&userBody); err != nil {
-		return errors.FailedToParseRequestBody.FiberError(c)
-	}
-
-	if err := a.authService.UpdatePassword(c.Params("userID"), userBody); err != nil {
-		return err.FiberError(c)
-	}
+	c.Set("Authorization", "")
+	c.Cookie(&fiber.Cookie{
+		Name:     "refresh_token",
+		Value:    "",
+		Expires:  time.Now().Add(-time.Hour),
+		HTTPOnly: true,
+	})
 
 	return utilities.FiberMessage(c, fiber.StatusOK, "success")
 }
@@ -190,20 +132,20 @@ func (a *AuthController) UpdatePassword(c *fiber.Ctx) error {
 // @Tags      	auth
 // @Accept		json
 // @Produce		json
-// @Param		userBody	body	 models.PasswordResetRequestBody	true	"User Body"
+// @Param		email	body	string	true	"Email"
 // @Success		200	  {object}	     utilities.SuccessResponse
 // @Failure     400   {object}       errors.Error
 // @Failure     429   {object}       errors.Error
 // @Failure     500   {object}       errors.Error
 // @Router		/auth/forgot-password  [post]
 func (a *AuthController) ForgotPassword(c *fiber.Ctx) error {
-	var userBody models.PasswordResetRequestBody
+	var emailBody models.EmailRequestBody
 
-	if err := c.BodyParser(&userBody); err != nil {
+	if err := c.BodyParser(&emailBody); err != nil {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
-	if err := a.authService.ForgotPassword(userBody); err != nil {
+	if err := a.authService.ForgotPassword(emailBody.Email); err != nil {
 		return err.FiberError(c)
 	}
 
@@ -218,7 +160,8 @@ func (a *AuthController) ForgotPassword(c *fiber.Ctx) error {
 // @Tags      	auth
 // @Accept		json
 // @Produce		json
-// @Param		tokenBody	body	 models.VerifyPasswordResetTokenRequestBody	true	"Token Body"
+// @Param		tokenBody	body	 models.VerifyPasswordResetTokenRequestBody	true	"Password Reset Token Body"
+// @Security   Bearer
 // @Success		200	  {object}	     utilities.SuccessResponse
 // @Failure     400   {object}       errors.Error
 // @Failure     429   {object}       errors.Error
@@ -246,14 +189,20 @@ func (a *AuthController) VerifyPasswordResetToken(c *fiber.Ctx) error {
 // @Tags      	auth
 // @Accept		json
 // @Produce		json
-// @Param		userID		path	string	true	"User ID"
+// @Param		email	body	string	true	"Email"
 // @Success		200	  {object}	     utilities.SuccessResponse
 // @Failure     400   {object}       errors.Error
 // @Failure     429   {object}       errors.Error
 // @Failure     500   {object}       errors.Error
-// @Router		/auth/send-code/{userID}  [post]
+// @Router		/auth/send-code [post]
 func (a *AuthController) SendCode(c *fiber.Ctx) error {
-	if err := a.authService.SendCode(c.Params("userID")); err != nil {
+	var emailBody models.EmailRequestBody
+
+	if err := c.BodyParser(&emailBody); err != nil {
+		return errors.FailedToParseRequestBody.FiberError(c)
+	}
+
+	if err := a.authService.SendCode(emailBody.Email); err != nil {
 		return err.FiberError(c)
 	}
 
@@ -268,7 +217,7 @@ func (a *AuthController) SendCode(c *fiber.Ctx) error {
 // @Tags      	auth
 // @Accept		json
 // @Produce		json
-// @Param		tokenBody	body	 models.VerifyEmailRequestBody	true
+// @Param		tokenBody	body	 models.VerifyEmailRequestBody	true	"Email Verification Token Body"
 // @Success		200	  {object}	     utilities.SuccessResponse
 // @Failure     400   {object}       errors.Error
 // @Failure     429   {object}       errors.Error

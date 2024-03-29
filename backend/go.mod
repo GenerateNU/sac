@@ -3,7 +3,7 @@ module github.com/GenerateNU/sac/backend
 go 1.22.1
 
 require (
-	github.com/clerkinc/clerk-sdk-go v1.49.0
+	github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5
 	github.com/garrettladley/mattress v0.4.0
 	github.com/go-playground/validator/v10 v10.19.0
 	github.com/goccy/go-json v0.10.2
@@ -27,10 +27,10 @@ require (
 require (
 	github.com/awnumar/memcall v0.2.0 // indirect
 	github.com/awnumar/memguard v0.22.4 // indirect
-	github.com/go-jose/go-jose/v3 v3.0.3 // indirect
 	github.com/h2non/parth v0.0.0-20190131123155-b4df798d6542 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
+	github.com/smartystreets/goconvey v1.8.1 // indirect
 	github.com/tinylib/msgp v1.1.8 // indirect
 	golang.org/x/sync v0.6.0 // indirect
 )

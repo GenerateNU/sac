@@ -1,6 +1,8 @@
 package helpers
 
 import (
+	"fmt"
+
 	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/database"
 	"github.com/GenerateNU/sac/backend/src/models"
@@ -29,7 +31,7 @@ func (app *TestApp) Auth(role models.UserRole) {
 func (app *TestApp) authSuper() {
 	superUser, superUserErr := database.SuperUser(app.Settings.SuperUser)
 	if superUserErr != nil {
-		panic(superUserErr)
+		panic(fmt.Sprintf("Failed to get super user: %v", superUserErr))
 	}
 
 	email := superUser.Email
@@ -44,16 +46,19 @@ func (app *TestApp) authSuper() {
 		},
 	})
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("Failed to authenticate super user: %v", err))
 	}
 
 	var accessToken string
 	var refreshToken string
 
+	authHeader := resp.Header.Get("Authorization")
+	if authHeader != "" {
+		accessToken = authHeader[len("Bearer "):]
+	}
+
 	for _, cookie := range resp.Cookies() {
-		if cookie.Name == "access_token" {
-			accessToken = cookie.Value
-		} else if cookie.Name == "refresh_token" {
+		if cookie.Name == "refresh_token" {
 			refreshToken = cookie.Value
 		}
 	}
@@ -80,19 +85,19 @@ func (app *TestApp) authStudent() {
 		Body:   SampleStudentJSONFactory(studentUser, rawPassword),
 	})
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("Failed to create sample student user: %v", err))
 	}
 	var respBody map[string]interface{}
 
 	err = json.NewDecoder(resp.Body).Decode(&respBody)
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("Failed to decode response body: %v", err))
 	}
 
 	rawStudentUserUUID := respBody["id"].(string)
 	studentUserUUID, err := uuid.Parse(rawStudentUserUUID)
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("Failed to parse student user UUID: %v", err))
 	}
 
 	resp, err = app.Send(TestRequest{
@@ -104,16 +109,18 @@ func (app *TestApp) authStudent() {
 		},
 	})
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("Failed to authenticate sample student user: %v", err))
 	}
-
 	var accessToken string
 	var refreshToken string
 
+	authHeader := resp.Header.Get("Authorization")
+	if authHeader != "" {
+		accessToken = authHeader[len("Bearer "):]
+	}
+
 	for _, cookie := range resp.Cookies() {
-		if cookie.Name == "access_token" {
-			accessToken = cookie.Value
-		} else if cookie.Name == "refresh_token" {
+		if cookie.Name == "refresh_token" {
 			refreshToken = cookie.Value
 		}
 	}
@@ -135,7 +142,7 @@ func SampleStudentFactory() (models.User, string) {
 	password := "1234567890&"
 	hashedPassword, err := auth.ComputeHash(password)
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("Failed to hash password: %v", err))
 	}
 
 	return models.User{

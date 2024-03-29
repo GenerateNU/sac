@@ -13,15 +13,15 @@ import (
 
 type RouteParams struct {
 	Router         fiber.Router
-	Settings       config.AuthSettings
 	AuthMiddleware *middleware.AuthMiddlewareService
 	ServiceParams  ServiceParams
 }
 
 type ServiceParams struct {
-	DB       *gorm.DB
-	Validate *validator.Validate
-	Email    *email.EmailService
-	Clerk    *auth.ClerkService
-	Pinecone *search.PineconeClientInterface
+	DB           *gorm.DB
+	Validate     *validator.Validate
+	Resend       *email.ResendClient
+	Pinecone     *search.PineconeClientInterface
+	JWT          *auth.JWTClient
+	AuthSettings config.AuthSettings
 }

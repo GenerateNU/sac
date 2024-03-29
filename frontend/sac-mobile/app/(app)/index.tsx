@@ -2,19 +2,19 @@ import React from 'react';
 import { Text, View } from 'react-native';
 
 import { Button } from '@/components/button';
-import { useAuth } from '@clerk/clerk-expo';
+import { useAuthStore } from '@/hooks/use-auth';
 
 const Home = () => {
-    const { signOut } = useAuth();
+    const { signOut, user } = useAuthStore();
 
     const handleSignOut = async () => {
-        await signOut();
+        signOut();
     }
 
     return (
-        <View className="items-center justify-center flex-1">
+        <View className="items-center justify-center flex-1 gap-5">
+            <Text>Welcome {user?.first_name}</Text>
             <Button onPress={handleSignOut}>Sign Out</Button>
-            <Text>Home</Text>
         </View>
     );
 };

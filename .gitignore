@@ -6,3 +6,6 @@ node_modules
 .trunk
 .env.dev
 .env.prod
+
+frontend/sac-mobile/ios/
+frontend/sac-mobile/android/

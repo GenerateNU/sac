@@ -9,7 +9,7 @@ var (
 	}
 	FailedToParseRequestBody = Error{
 		StatusCode: fiber.StatusBadRequest,
-		Message:    "failed to parse request body",
+		Message:    "request body is not valid",
 	}
 	FailedtoParseQueryParams = Error{
 		StatusCode: fiber.StatusBadRequest,

@@ -20,21 +20,17 @@ type Verification struct {
 	Type      VerificationType `gorm:"type:varchar(255);not null" json:"type" validate:"required,oneof=email_verification password_reset"`
 }
 
-type EmailVerificationRequestBody struct {
-	Email string `json:"email" validate:"required,email"`
-}
-
 type VerifyEmailRequestBody struct {
 	Email string `json:"email" validate:"required,email"`
 	Token string `json:"token" validate:"required,len=6"`
-}
-
-type PasswordResetRequestBody struct {
-	Email string `json:"email" validate:"required,email"`
 }
 
 type VerifyPasswordResetTokenRequestBody struct {
 	Token             string `json:"token" validate:"required"`
 	NewPassword       string `json:"new_password" validate:"required,min=8,password"`
 	VerifyNewPassword string `json:"verify_new_password" validate:"required,min=8,password,eqfield=NewPassword"`
+}
+
+type EmailRequestBody struct {
+	Email string `json:"email" validate:"required,email"`
 }

@@ -10,7 +10,7 @@ import Error from '@/components/error';
 import Input from '@/components/input';
 import { useAuthStore } from '@/hooks/use-auth';
 import { loginByEmail } from '@/services/auth';
-import { useSignIn } from '@clerk/clerk-expo';
+import { useAuth, useSignIn } from '@clerk/clerk-expo';
 import { useState } from 'react';
 import Spinner from 'react-native-loading-spinner-overlay';
 
@@ -33,25 +33,17 @@ const LoginForm = () => {
         formState: { errors }
     } = useForm<LoginFormData>();
 
-    const { signIn, setActive, isLoaded } = useSignIn();
+    const { signIn } = useAuthStore();
     const [loading, setLoading] = useState(false);
 
     const onSignInPress = async (loginData: LoginFormData) => {
-        if (!isLoaded) {
-            return;
-        }
-
         setLoading(true);
 
         try {
             const validData = loginSchema.parse(loginData);
-
-            const completeSignIn = await signIn.create({
-                identifier: validData.email,
-                password: validData.password
-            });
-
-            await setActive({ session: completeSignIn.createdSessionId });
+            console.log({ validData });
+            await signIn(validData.email, validData.password);
+            router.push('/(app)/');
         } catch (err: any) {
             if (err instanceof ZodError) {
                 Alert.alert(err.errors[0].message);

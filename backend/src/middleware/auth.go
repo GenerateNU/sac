@@ -3,26 +3,28 @@ package middleware
 import (
 	"fmt"
 	"slices"
+	"strings"
 	"time"
 
 	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/golang-jwt/jwt"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 )
 
-func getExcludedPaths() []string {
-	return []string{
-		"/api/v1/auth/login",
-		"/api/v1/auth/refresh",
-		"/api/v1/users/",
-		"/api/v1/auth/logout",
-		"/api/v1/auth/forgot-password",
-		"/api/v1/auth/send-code/",
-		"/api/v1/auth/verify-email",
-		"/api/v1/auth/verify-reset",
+func getExcludedPaths() []map[string]string {
+	return []map[string]string{
+		{"/api/v1/auth/login": "POST"},
+		{"/api/v1/auth/refresh": "POST"},
+		{"/api/v1/users/": "POST"},
+		{"/api/v1/auth/logout": "POST"},
+		{"/api/v1/auth/forgot-password": "POST"},
+		{"/api/v1/auth/send-code/*": "POST"},
+		{"/api/v1/auth/verify-email": "POST"},
+		{"/api/v1/auth/verify-reset": "POST"},
 	}
 }
 
@@ -38,24 +40,56 @@ func (m *AuthMiddlewareService) IsSuper(c *fiber.Ctx) bool {
 	return claims.Role == string(models.Super)
 }
 
-func (m *AuthMiddlewareService) Authenticate(c *fiber.Ctx) error {
-	if slices.Contains(getExcludedPaths(), c.Path()) {
-		return c.Next()
+func GetAuthroizationToken(c *fiber.Ctx) *string {
+	accessToken := c.Get("Authorization")
+	if accessToken == "" {
+		return nil
 	}
 
-	token, err := auth.ParseAccessToken(c.Cookies("access_token"), m.AuthSettings.AccessKey)
+	token := strings.Split(accessToken, "Bearer ")
+	if len(token) != 2 {
+		return nil
+	}
+
+	return &token[1]
+}
+
+func (m *AuthMiddlewareService) Authenticate(c *fiber.Ctx) error {
+	for _, path := range getExcludedPaths() {
+		for p, method := range path {
+			if strings.HasPrefix(c.Path(), strings.TrimSuffix(p, "/*")) && c.Method() == method {
+				return c.Next()
+			}
+		}
+	}
+
+	accessToken := GetAuthroizationToken(c)
+	if accessToken == nil {
+		return errors.Unauthorized.FiberError(c)
+	}
+
+	fmt.Println("accessToken", *accessToken)
+
+	token, err := func() (*jwt.Token, error) {
+		return jwt.ParseWithClaims(*accessToken, &auth.CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+			return []byte(m.AuthSettings.AccessKey.Expose()), nil
+		})
+	}()
 	if err != nil {
 		return errors.Unauthorized.FiberError(c)
 	}
+
+	fmt.Println("token", token)
 
 	claims, ok := token.Claims.(*auth.CustomClaims)
 	if !ok || !token.Valid {
 		return errors.Unauthorized.FiberError(c)
 	}
 
-	if auth.IsBlacklisted(c.Cookies("access_token")) {
-		return errors.Unauthorized.FiberError(c)
-	}
+	fmt.Println("claims", claims)
+	// if auth.IsBlacklisted(*accessToken) {
+	// 	return errors.Unauthorized.FiberError(c)
+	// }
 
 	c.Locals("claims", claims)
 
@@ -73,12 +107,7 @@ func (m *AuthMiddlewareService) Authorize(requiredPermissions ...auth.Permission
 			return c.Next()
 		}
 
-		role, err := auth.GetRoleFromToken(c.Cookies("access_token"), m.AuthSettings.AccessKey)
-		if err != nil {
-			return errors.Unauthorized.FiberError(c)
-		}
-
-		userPermissions := auth.GetPermissions(models.UserRole(*role))
+		userPermissions := auth.GetPermissions(models.UserRole(claims.Role))
 
 		for _, requiredPermission := range requiredPermissions {
 			if !slices.Contains(userPermissions, requiredPermission) {
@@ -90,6 +119,7 @@ func (m *AuthMiddlewareService) Authorize(requiredPermissions ...auth.Permission
 	}
 }
 
+// TODO: implement rate limiting with redis
 func (m *AuthMiddlewareService) Limiter(rate int, expiration time.Duration) func(c *fiber.Ctx) error {
 	return limiter.New(limiter.Config{
 		Max:        rate,

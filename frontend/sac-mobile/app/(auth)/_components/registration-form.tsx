@@ -6,45 +6,35 @@ import { router } from 'expo-router';
 import { ZodError, z } from 'zod';
 
 import { Button } from '@/components/button';
-import { DropdownComponent } from '@/components/dropdown';
 import Error from '@/components/error';
 import Input from '@/components/input';
-import { graduationYear } from '@/lib/utils';
-import { Item } from '@/types/item';
+import { useSignUp } from '@clerk/clerk-expo';
+import { useState } from 'react';
+import Spinner from 'react-native-loading-spinner-overlay';
+import { useAuthStore } from '@/hooks/use-auth';
 
 type RegisterFormData = {
-    firstName: string;
-    lastName: string;
+    first_name: string;
+    last_name: string;
     email: string;
-    nuid: string;
-    graduationYear: Item;
     password: string;
-    passwordConfirm: string;
+    password_confirmation: string;
 };
 
 const registerSchema = z
     .object({
-        firstName: z.string().min(2, {
+        first_name: z.string().min(2, {
             message: 'First name must be at least 2 characters long'
         }),
-        lastName: z.string().min(2, {
+        last_name: z.string().min(2, {
             message: 'Last name must be at least 2 characters long'
         }),
         email: z.string().email({ message: 'Invalid email' }),
-        nuid: z.string().length(9, { message: 'NUID must have 9 digits' }),
         password: z
             .string()
             .min(8, { message: 'Password must be at least 8 characters long' }),
-        passwordConfirm: z.string(),
-        graduationYear: z.object({
-            label: z.string(),
-            value: z.string()
-        })
+        password_confirmation: z.string()
     })
-    .refine((data) => data.password === data.passwordConfirm, {
-        message: 'Passwords do not match',
-        path: ['passwordConfirm']
-    });
 
 const RegistrationForm = () => {
     const {
@@ -53,31 +43,32 @@ const RegistrationForm = () => {
         formState: { errors }
     } = useForm<RegisterFormData>();
 
-    const onSubmit = ({
-        graduationYear: gradYear,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        passwordConfirm,
-        ...rest
-    }: RegisterFormData) => {
+    const { signUp } = useAuthStore();
+    const [loading, setLoading] = useState(false);
+
+    const onSignUp = async ({ password_confirmation, ...rest }: RegisterFormData) => {
+        setLoading(true);
+
         try {
-            const updatedData = {
-                ...rest,
-                graduationYear: gradYear.value
-            };
-            registerSchema.parse(updatedData);
-            Alert.alert('Form Submitted', JSON.stringify(updatedData));
-            router.push('/(app)/');
-        } catch (error) {
+            registerSchema.parse({ password_confirmation, ...rest });
+            const updatedData = { ...rest };
+
+            await signUp(updatedData);
+            router.push('/(auth)/verification');
+        } catch (error: any) {
             if (error instanceof ZodError) {
-                Alert.alert('Validation Error', error.errors[0].message);
+                Alert.alert(error.errors[0].message);
             } else {
-                console.error('An unexpected error occurred:', error);
+                Alert.alert('An error occurred', error.message);
             }
+        } finally {
+            setLoading(false);
         }
-    };
+    }
 
     return (
         <>
+            {loading && <Spinner visible={loading} />}
             <View className="w-full mb-[8.5%]">
                 <Controller
                     control={control}
@@ -88,11 +79,11 @@ const RegistrationForm = () => {
                             placeholder="Garrett"
                             onChangeText={(text) => onChange(text)}
                             value={value}
-                            onSubmitEditing={handleSubmit(onSubmit)}
-                            error={!!errors.firstName}
+                            onSubmitEditing={handleSubmit(onSignUp)}
+                            error={!!errors.first_name}
                         />
                     )}
-                    name="firstName"
+                    name="first_name"
                     rules={{
                         required: 'First name is required',
                         validate: (value) => {
@@ -106,8 +97,8 @@ const RegistrationForm = () => {
                         }
                     }}
                 />
-                {errors.firstName && (
-                    <Error message={errors.firstName.message} />
+                {errors.first_name && (
+                    <Error message={errors.first_name.message} />
                 )}
             </View>
 
@@ -121,11 +112,11 @@ const RegistrationForm = () => {
                             placeholder="Ladley"
                             onChangeText={onChange}
                             value={value}
-                            onSubmitEditing={handleSubmit(onSubmit)}
-                            error={!!errors.lastName}
+                            onSubmitEditing={handleSubmit(onSignUp)}
+                            error={!!errors.last_name}
                         />
                     )}
-                    name="lastName"
+                    name="last_name"
                     rules={{
                         required: 'Last name is required',
                         validate: (value) => {
@@ -139,7 +130,7 @@ const RegistrationForm = () => {
                         }
                     }}
                 />
-                {errors.lastName && <Error message={errors.lastName.message} />}
+                {errors.last_name && <Error message={errors.last_name.message} />}
             </View>
 
             <View className="w-full mb-[8.5%]">
@@ -149,10 +140,10 @@ const RegistrationForm = () => {
                         <Input
                             title="Email"
                             autoCorrect={false}
-                            placeholder="ladley.g@northeastern.edu"
+                            placeholder="Northeastern email"
                             onChangeText={onChange}
                             value={value}
-                            onSubmitEditing={handleSubmit(onSubmit)}
+                            onSubmitEditing={handleSubmit(onSignUp)}
                             error={!!errors.email}
                         />
                     )}
@@ -175,64 +166,12 @@ const RegistrationForm = () => {
                     control={control}
                     render={({ field: { onChange, value } }) => (
                         <Input
-                            title="NUID"
-                            autoCorrect={false}
-                            placeholder="9 digit student ID number"
-                            onChangeText={onChange}
-                            value={value}
-                            onSubmitEditing={handleSubmit(onSubmit)}
-                            error={!!errors.nuid}
-                        />
-                    )}
-                    name="nuid"
-                    rules={{
-                        required: 'NUID is required',
-                        validate: (value) => {
-                            if (!/^00\d+/.test(value)) {
-                                return 'Please enter a proper NUID number';
-                            }
-                            if (value.length !== 9) {
-                                return 'Please enter 9 digit number';
-                            }
-                            return true;
-                        }
-                    }}
-                />
-                {errors.nuid && <Error message={errors.nuid.message} />}
-            </View>
-            <View className="mb-[7%]">
-                <Controller
-                    control={control}
-                    render={({ field: { onChange, value } }) => (
-                        <DropdownComponent
-                            title="Intended Graduation Year"
-                            item={graduationYear()}
-                            placeholder="Select Year"
-                            onChangeText={onChange}
-                            value={value}
-                            onSubmitEditing={handleSubmit(onSubmit)}
-                            error={!!errors.graduationYear}
-                        />
-                    )}
-                    name="graduationYear"
-                    rules={{ required: 'Graduation year is required' }}
-                />
-                {errors.graduationYear && (
-                    <Error message={errors.graduationYear.message} />
-                )}
-            </View>
-
-            <View className="w-full mb-[8.5%]">
-                <Controller
-                    control={control}
-                    render={({ field: { onChange, value } }) => (
-                        <Input
                             title="Password"
                             autoCorrect={false}
                             placeholder="Password"
                             onChangeText={onChange}
                             value={value}
-                            onSubmitEditing={handleSubmit(onSubmit)}
+                            onSubmitEditing={handleSubmit(onSignUp)}
                             secureTextEntry={true}
                             error={!!errors.password}
                         />
@@ -282,12 +221,12 @@ const RegistrationForm = () => {
                             placeholder="Confirm your password"
                             onChangeText={onChange}
                             value={value}
-                            onSubmitEditing={handleSubmit(onSubmit)}
+                            onSubmitEditing={handleSubmit(onSignUp)}
                             secureTextEntry={true}
                             error={!!errors.password}
                         />
                     )}
-                    name="passwordConfirm"
+                    name="password_confirmation"
                     rules={{
                         required: 'Please confirm your password',
                         validate: (value) => {
@@ -299,12 +238,12 @@ const RegistrationForm = () => {
                         }
                     }}
                 />
-                {errors.passwordConfirm && (
-                    <Error message={errors.passwordConfirm.message} />
+                {errors.password_confirmation && (
+                    <Error message={errors.password_confirmation.message} />
                 )}
             </View>
             <View className="pt-[2%] pb-[15%]">
-                <Button onPress={handleSubmit(onSubmit)} size="screenwide">
+                <Button onPress={handleSubmit(onSignUp)} size="screenwide">
                     Submit
                 </Button>
             </View>

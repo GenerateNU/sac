@@ -9,15 +9,65 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {
-            "name": "David Oduneye and Garrett Ladley",
-            "email": "generatesac@gmail.com"
-        },
+        "contact": {},
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/auth/forgot-password": {
+            "post": {
+                "description": "Generates a password reset token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Generates a password reset token",
+                "operationId": "forgot-password",
+                "parameters": [
+                    {
+                        "description": "Email",
+                        "name": "email",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utilities.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/login": {
             "post": {
                 "description": "Logs in a user",
@@ -47,7 +97,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/utilities.SuccessResponse"
+                            "$ref": "#/definitions/models.User"
                         }
                     },
                     "400": {
@@ -72,7 +122,7 @@ const docTemplate = `{
             }
         },
         "/auth/logout": {
-            "get": {
+            "post": {
                 "description": "Logs out a user",
                 "consumes": [
                     "application/json"
@@ -97,15 +147,23 @@ const docTemplate = `{
         },
         "/auth/me": {
             "get": {
-                "description": "Returns the current user associated with an auth session",
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Retrieves the currently authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "auth"
                 ],
-                "summary": "Retrieve the current user given an auth session",
-                "operationId": "get-current-user",
+                "summary": "Retrieves the currently authenticated user",
+                "operationId": "get-me",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -141,7 +199,7 @@ const docTemplate = `{
             }
         },
         "/auth/refresh": {
-            "get": {
+            "post": {
                 "description": "Refreshes a user's access token",
                 "consumes": [
                     "application/json"
@@ -182,9 +240,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/update-password/{userID}": {
+        "/auth/send-code": {
             "post": {
-                "description": "Updates a user's password",
+                "description": "Sends a verification code",
                 "consumes": [
                     "application/json"
                 ],
@@ -194,23 +252,16 @@ const docTemplate = `{
                 "tags": [
                     "auth"
                 ],
-                "summary": "Updates a user's password",
-                "operationId": "update-password",
+                "summary": "Sends a verification code",
+                "operationId": "send-verification-code",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "userID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "User Body",
-                        "name": "userBody",
+                        "description": "Email",
+                        "name": "email",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UpdatePasswordRequestBody"
+                            "type": "string"
                         }
                     }
                 ],
@@ -227,14 +278,113 @@ const docTemplate = `{
                             "$ref": "#/definitions/errors.Error"
                         }
                     },
-                    "401": {
-                        "description": "Unauthorized",
+                    "429": {
+                        "description": "Too Many Requests",
                         "schema": {
                             "$ref": "#/definitions/errors.Error"
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/verify-email": {
+            "post": {
+                "description": "Verifies an email",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Verifies an email",
+                "operationId": "verify-email",
+                "parameters": [
+                    {
+                        "description": "Email Verification Token Body",
+                        "name": "tokenBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.VerifyEmailRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utilities.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/verify-reset": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Verifies a password reset token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Verifies a password reset token",
+                "operationId": "verify-password-reset-token",
+                "parameters": [
+                    {
+                        "description": "Password Reset Token Body",
+                        "name": "tokenBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.VerifyPasswordResetTokenRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utilities.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/errors.Error"
                         }
@@ -354,6 +504,12 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
                         "schema": {
                             "type": "string"
                         }
@@ -1907,7 +2063,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateSeriesRequestBody"
+                            "$ref": "#/definitions/models.UpdateEventRequestBody"
                         }
                     }
                 ],
@@ -2059,7 +2215,7 @@ const docTemplate = `{
                 }
             },
             "patch": {
-                "description": "Updates a series by ID",
+                "description": "Updates a series by event ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -2069,20 +2225,13 @@ const docTemplate = `{
                 "tags": [
                     "event"
                 ],
-                "summary": "Update a series by ID",
-                "operationId": "update-series-by-id",
+                "summary": "Update a series by event ID",
+                "operationId": "update-series-by-event-id",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "Event ID",
                         "name": "eventID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Series ID",
-                        "name": "seriesID",
                         "in": "path",
                         "required": true
                     },
@@ -2509,6 +2658,12 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
                         "schema": {
                             "$ref": "#/definitions/errors.Error"
                         }
@@ -3034,6 +3189,72 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/{userID}/password": {
+            "patch": {
+                "description": "Updates a user's password",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Update a user's password",
+                "operationId": "update-password",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Password Body",
+                        "name": "passwordBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdatePasswordRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/users/{userID}/tags/": {
             "get": {
                 "description": "Retrieves all tags associated with a user",
@@ -3110,15 +3331,6 @@ const docTemplate = `{
                         "name": "userID",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "description": "User Tags Body",
-                        "name": "userTagsBody",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.CreateUserTagsBody"
-                        }
                     }
                 ],
                 "responses": {
@@ -3229,9 +3441,8 @@ const docTemplate = `{
                     "example": "2023-09-20T16:34:50Z"
                 },
                 "description": {
-                    "description": "MongoDB URL",
-                    "type": "string",
-                    "maxLength": 255
+                    "description": "FIXME: make description a mongodb url again\nDescription      string           ` + "`" + `gorm:\"type:varchar(255)\" json:\"description\" validate:\"required,http_url,mongo_url,max=255\"` + "`" + ` // MongoDB URL",
+                    "type": "string"
                 },
                 "id": {
                     "type": "string",
@@ -3510,6 +3721,10 @@ const docTemplate = `{
                 },
                 "event_type": {
                     "maxLength": 255,
+                    "enum": [
+                        "open",
+                        "membersOnly"
+                    ],
                     "allOf": [
                         {
                             "$ref": "#/definitions/models.EventType"
@@ -3546,6 +3761,14 @@ const docTemplate = `{
         },
         "models.CreateSeriesRequestBody": {
             "type": "object",
+            "required": [
+                "day_of_month",
+                "day_of_week",
+                "max_occurrences",
+                "recurring_type",
+                "separation_count",
+                "week_of_month"
+            ],
             "properties": {
                 "day_of_month": {
                     "type": "integer",
@@ -3563,6 +3786,11 @@ const docTemplate = `{
                 },
                 "recurring_type": {
                     "maxLength": 255,
+                    "enum": [
+                        "daily",
+                        "weekly",
+                        "monthly"
+                    ],
                     "allOf": [
                         {
                             "$ref": "#/definitions/models.RecurringType"
@@ -3599,33 +3827,12 @@ const docTemplate = `{
         "models.CreateUserRequestBody": {
             "type": "object",
             "required": [
-                "college",
                 "email",
                 "first_name",
                 "last_name",
-                "nuid",
-                "password",
-                "year"
+                "password"
             ],
             "properties": {
-                "college": {
-                    "enum": [
-                        "CAMD",
-                        "DMSB",
-                        "KCCS",
-                        "CE",
-                        "BCHS",
-                        "SL",
-                        "CPS",
-                        "CS",
-                        "CSSH"
-                    ],
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.College"
-                        }
-                    ]
-                },
                 "email": {
                     "type": "string",
                     "maxLength": 255
@@ -3638,20 +3845,10 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 255
                 },
-                "nuid": {
-                    "type": "string"
-                },
                 "password": {
-                    "type": "string"
-                },
-                "year": {
-                    "maximum": 6,
-                    "minimum": 1,
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.Year"
-                        }
-                    ]
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 8
                 }
             }
         },
@@ -3694,6 +3891,10 @@ const docTemplate = `{
                 },
                 "event_type": {
                     "maxLength": 255,
+                    "enum": [
+                        "open",
+                        "membersOnly"
+                    ],
                     "allOf": [
                         {
                             "$ref": "#/definitions/models.EventType"
@@ -3742,7 +3943,8 @@ const docTemplate = `{
         "models.LoginUserResponseBody": {
             "type": "object",
             "required": [
-                "email"
+                "email",
+                "password"
             ],
             "properties": {
                 "email": {
@@ -3973,6 +4175,45 @@ const docTemplate = `{
                 }
             }
         },
+        "models.UpdateEventRequestBody": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "event_type": {
+                    "maxLength": 255,
+                    "enum": [
+                        "open",
+                        "membersOnly"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.EventType"
+                        }
+                    ]
+                },
+                "location": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "preview": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "start_time": {
+                    "type": "string"
+                }
+            }
+        },
         "models.UpdatePasswordRequestBody": {
             "type": "object",
             "required": [
@@ -4005,12 +4246,20 @@ const docTemplate = `{
                     "maximum": 7,
                     "minimum": 1
                 },
+                "event_details": {
+                    "$ref": "#/definitions/models.UpdateEventRequestBody"
+                },
                 "max_occurrences": {
                     "type": "integer",
                     "minimum": 2
                 },
                 "recurring_type": {
                     "maxLength": 255,
+                    "enum": [
+                        "daily",
+                        "weekly",
+                        "monthly"
+                    ],
                     "allOf": [
                         {
                             "$ref": "#/definitions/models.RecurringType"
@@ -4061,10 +4310,6 @@ const docTemplate = `{
                         }
                     ]
                 },
-                "email": {
-                    "type": "string",
-                    "maxLength": 255
-                },
                 "first_name": {
                     "type": "string",
                     "maxLength": 255
@@ -4072,9 +4317,6 @@ const docTemplate = `{
                 "last_name": {
                     "type": "string",
                     "maxLength": 255
-                },
-                "nuid": {
-                    "type": "string"
                 },
                 "year": {
                     "maximum": 6,
@@ -4123,6 +4365,9 @@ const docTemplate = `{
                     "type": "string",
                     "example": "123e4567-e89b-12d3-a456-426614174000"
                 },
+                "is_verified": {
+                    "type": "boolean"
+                },
                 "last_name": {
                     "type": "string",
                     "maxLength": 255
@@ -4149,6 +4394,42 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.Year"
                         }
                     ]
+                }
+            }
+        },
+        "models.VerifyEmailRequestBody": {
+            "type": "object",
+            "required": [
+                "email",
+                "token"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.VerifyPasswordResetTokenRequestBody": {
+            "type": "object",
+            "required": [
+                "new_password",
+                "token",
+                "verify_new_password"
+            ],
+            "properties": {
+                "new_password": {
+                    "type": "string",
+                    "minLength": 8
+                },
+                "token": {
+                    "type": "string"
+                },
+                "verify_new_password": {
+                    "type": "string",
+                    "minLength": 8
                 }
             }
         },
@@ -4184,12 +4465,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0",
-	Host:             "127.0.0.1:8080",
-	BasePath:         "/api/v1",
+	Version:          "",
+	Host:             "",
+	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "SAC API",
-	Description:      "Backend Server for SAC App",
+	Title:            "",
+	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

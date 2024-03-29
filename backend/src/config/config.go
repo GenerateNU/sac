@@ -14,7 +14,6 @@ type Settings struct {
 	PineconeSettings PineconeSettings
 	OpenAISettings   OpenAISettings
 	ResendSettings   ResendSettings
-	ClerkSettings    ClerkSettings
 }
 
 type intermediateSettings struct {

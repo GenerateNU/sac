@@ -11,7 +11,6 @@ import (
 func UserRoutes(userParams types.RouteParams) {
 	usersRouter := User(userParams)
 
-	// update the router in params
 	userParams.Router = usersRouter
 
 	UserTag(userParams)
@@ -25,8 +24,9 @@ func User(userParams types.RouteParams) fiber.Router {
 	// api/v1/users/*
 	users := userParams.Router.Group("/users")
 
-	users.Post("/", userController.CreateUser)
 	users.Get("/", userParams.AuthMiddleware.Authorize(p.ReadAll), userController.GetUsers)
+	users.Post("/", userController.CreateUser)
+	users.Get("/me", userController.GetMe)
 
 	// api/v1/users/:userID/*
 	usersID := users.Group("/:userID")
@@ -34,6 +34,7 @@ func User(userParams types.RouteParams) fiber.Router {
 
 	usersID.Get("/", userController.GetUser)
 	usersID.Patch("/", userController.UpdateUser)
+	usersID.Patch("/password", userController.UpdatePassword)
 	usersID.Delete("/", userController.DeleteUser)
 
 	return usersID

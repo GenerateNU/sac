@@ -22,27 +22,27 @@ func ClearDBCommand() *cli.Command {
 				return cli.Exit("Invalid arguments", 1)
 			}
 
-            return CleanTestDBs(context.Background())
-        },
-    }
+			return CleanTestDBs(context.Background())
+		},
+	}
 
-    return &command
+	return &command
 }
 
 func CleanTestDBs(ctx context.Context) error {
-    fmt.Println("Cleaning test databases")
+	fmt.Println("Cleaning test databases")
 
-    db, err := sql.Open("postgres", CONFIG.Database.WithDb())
-    if err != nil {
-        return err
-    }
+	db, err := sql.Open("postgres", CONFIG.Database.WithDb())
+	if err != nil {
+		return err
+	}
 
-    defer db.Close()
+	defer db.Close()
 
-    currentUser, err := user.Current()
-    if err != nil {
-        return fmt.Errorf("failed to get current user: %w", err)
-    }
+	currentUser, err := user.Current()
+	if err != nil {
+		return fmt.Errorf("failed to get current user: %w", err)
+	}
 
 	query := "SELECT datname FROM pg_database WHERE datistemplate = false AND datname != 'postgres' AND datname != $1 AND datname != $2 AND datname LIKE 'sac_test_%';"
 	rows, err := db.Query(query, currentUser.Username, CONFIG.Database.DatabaseName)
@@ -53,18 +53,18 @@ func CleanTestDBs(ctx context.Context) error {
 	var wg sync.WaitGroup
 	var dropped, failed int
 
-    for rows.Next() {
-        var dbName string
+	for rows.Next() {
+		var dbName string
 
-        if err := rows.Scan(&dbName); err != nil {
-            return err
-        }
+		if err := rows.Scan(&dbName); err != nil {
+			return err
+		}
 
-        wg.Add(1)
-        go func(dbName string) {
-            defer wg.Done()
+		wg.Add(1)
+		go func(dbName string) {
+			defer wg.Done()
 
-            fmt.Printf("Dropping database %s\n", dbName)
+			fmt.Printf("Dropping database %s\n", dbName)
 
 			_, err := db.Exec(fmt.Sprintf("DROP DATABASE %s", dbName))
 			if err != nil {

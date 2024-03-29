@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/GenerateNU/sac/backend/src/auth"
@@ -9,13 +10,16 @@ import (
 	"github.com/GenerateNU/sac/backend/src/transactions"
 	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
+	"github.com/gofiber/fiber/v2"
 )
 
 type UserServiceInterface interface {
-	CreateUser(userBody models.CreateUserRequestBody) (*models.User, *errors.Error)
 	GetUsers(limit string, page string) ([]models.User, *errors.Error)
+	GetMe(id string) (*models.User, *errors.Error)
 	GetUser(id string) (*models.User, *errors.Error)
+	CreateUser(c *fiber.Ctx, userBody models.CreateUserRequestBody) (*models.User, *errors.Error)
 	UpdateUser(id string, userBody models.UpdateUserRequestBody) (*models.User, *errors.Error)
+	UpdatePassword(id string, passwordBody models.UpdatePasswordRequestBody) *errors.Error
 	DeleteUser(id string) *errors.Error
 }
 
@@ -27,7 +31,7 @@ func NewUserService(serviceParams types.ServiceParams) *UserService {
 	return &UserService{serviceParams}
 }
 
-func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models.User, *errors.Error) {
+func (u *UserService) CreateUser(c *fiber.Ctx, userBody models.CreateUserRequestBody) (*models.User, *errors.Error) {
 	if err := u.Validate.Struct(userBody); err != nil {
 		return nil, &errors.FailedToValidateUser
 	}
@@ -45,10 +49,33 @@ func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models
 	user.Email = strings.ToLower(userBody.Email)
 	user.PasswordHash = *passwordHash
 
-	// send email creation event to email service
-	// email.SendWelcomeEmail(user.Name, user.Email)
+	emailErr := u.Resend.SendWelcomeEmail(fmt.Sprintf("%s %s", user.FirstName, user.LastName), user.Email)
+	if emailErr != nil {
+		return nil, &errors.FailedToSendEmail
+	}
 
-	return transactions.CreateUser(u.DB, user)
+	user, userErr := transactions.CreateUser(u.DB, user)
+	if userErr != nil {
+		return nil, userErr
+	}
+
+	authService := NewAuthService(u.ServiceParams)
+	authErr := authService.SendCode(user.Email)
+	if authErr != nil {
+		return nil, authErr
+	}
+
+	_, tokens, authErr := authService.Login(models.LoginUserResponseBody{Email: user.Email, Password: userBody.Password})
+	if authErr != nil {
+		return nil, authErr
+	}
+
+	authErr = authService.SetResponseTokens(c, tokens)
+	if authErr != nil {
+		return nil, authErr
+	}
+
+	return user, nil
 }
 
 func (u *UserService) GetUsers(limit string, page string) ([]models.User, *errors.Error) {
@@ -63,6 +90,20 @@ func (u *UserService) GetUsers(limit string, page string) ([]models.User, *error
 	}
 
 	return transactions.GetUsers(u.DB, *limitAsInt, *pageAsInt)
+}
+
+func (u *UserService) GetMe(id string) (*models.User, *errors.Error) {
+	idAsUUID, idErr := utilities.ValidateID(id)
+	if idErr != nil {
+		return nil, idErr
+	}
+
+	user, err := transactions.GetUser(u.DB, *idAsUUID)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
 
 func (u *UserService) GetUser(id string) (*models.User, *errors.Error) {
@@ -94,6 +135,34 @@ func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBod
 	}
 
 	return transactions.UpdateUser(u.DB, *idAsUUID, *user)
+}
+
+func (u *UserService) UpdatePassword(id string, passwordBody models.UpdatePasswordRequestBody) *errors.Error {
+	idAsUUID, idErr := utilities.ValidateID(id)
+	if idErr != nil {
+		return idErr
+	}
+
+	if err := u.Validate.Struct(passwordBody); err != nil {
+		return &errors.FailedToValidateUpdatePasswordBody
+	}
+
+	passwordHash, err := transactions.GetUserPasswordHash(u.DB, *idAsUUID)
+	if err != nil {
+		return err
+	}
+
+	correct, passwordErr := auth.CompareHash(passwordBody.OldPassword, *passwordHash)
+	if passwordErr != nil || !correct {
+		return &errors.FailedToValidateUser
+	}
+
+	hash, hashErr := auth.ComputeHash(passwordBody.NewPassword)
+	if hashErr != nil {
+		return &errors.FailedToValidateUser
+	}
+
+	return transactions.UpdatePassword(u.DB, *idAsUUID, *hash)
 }
 
 func (u *UserService) DeleteUser(id string) *errors.Error {
