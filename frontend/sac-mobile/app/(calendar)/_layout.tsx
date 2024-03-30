@@ -1,7 +1,7 @@
 
 import calendarize from 'calendarize';
 import React, { useContext, useRef, useState } from 'react';
-import { Button, Dimensions, PanResponder, SafeAreaView, StyleSheet, Text, TouchableOpacity, TouchableOpacityProps, View, ViewProps } from 'react-native';
+import { Button, Image, Dimensions, PanResponder, SafeAreaView, StyleSheet, Text, TouchableOpacity, TouchableOpacityProps, View, ViewProps } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { DateContext } from './context';
 
@@ -16,32 +16,48 @@ const SHRUNK_HEIGHT = Dimensions.get('screen').height * .40;
 
 interface CalendarViewHeaderProps extends ViewProps {
   // FIXME: A) should this be dynamic
-  // B) is it box button
+  // B) are these names correct
   onMenuButtonPressed?: () => {}
   onNotificationButtonPressed?: () => {}
   onBoxButtonPressed?: () => {}
 }
+
 const CalendarViewHeader = (p: CalendarViewHeaderProps) => {
   const date = useContext(DateContext);
+  // FIXME: how to do images
   return (
   <View {...p}
     className="w-full h-12 flex flex-row justify-between">
-      <View className="flex flex-row gap-3 justify-start">
+      <View className="flex flex-row gap-3 justify-start items-center">
         <TouchableOpacity
-          onPress={() => {console.log("X")}}
-        >
-          <Text>=</Text>
+          onPress={() => {
+            if (p.onMenuButtonPressed !== undefined) {
+              p.onMenuButtonPressed()
+            }
+          }}>
+          <View className='px-2 py-3 w-12 h-12 flex flex-col justify-between'>
+            <View className='bg-black w-full h-1'></View>
+            <View className='bg-black w-2/3 h-1'></View>
+            <View className='bg-black w-1/3 h-1'></View>
+          </View>
         </TouchableOpacity>
         <Text className='font-bold text-3xl'>{date.toLocaleString('default', { month: 'long' })}</Text>
       </View>
-      <View className="flex flex-row gap-3 justify-start">
-      <TouchableOpacity
-          onPress={() => {console.log("X")}}>
-          <Text>X</Text>
+      <View className="flex flex-row gap-4 justify-end items-center">
+        <TouchableOpacity
+          onPress={() => {
+            if (p.onNotificationButtonPressed !== undefined) {
+              p.onNotificationButtonPressed()
+            }
+          }}>
+          <Image style={{ resizeMode: 'contain' }} className="w-6 h-6" source={require("../../assets/images/bell.png")}/>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => {console.log("X")}}>
-          <Text>Y</Text>
+          onPress={() => {
+            if (p.onMenuButtonPressed !== undefined) {
+              p.onMenuButtonPressed()
+            }}}>
+          <Image style={{ resizeMode: 'contain' }} className="w-6 h-6" source={require("../../assets/images/box.png")}/>
         </TouchableOpacity>
       </View>
   </View>)
@@ -88,7 +104,7 @@ const ExpandedCalendar = (p: ExpandedCalendarProps) => {
       return (
           <TouchableOpacity
             onPress={() => { p.onDayPressed(date) }}
-            className={`${marked ? "bg-black" : ""} rounded flex justify-center w-[8%] h-4`}>
+            className={`${marked ? "bg-black" : ""} rounded flex flex-col items-center w-[8%] h-4`}>
               <Text
               className={`text-sm font-normal text-center`}
               style={{color:textColor, verticalAlign: "middle"}}>
