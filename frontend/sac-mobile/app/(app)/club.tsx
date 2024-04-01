@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import { GestureResponderEvent, ScrollView, Text, View } from 'react-native';
+import {ScrollView, Text, View } from 'react-native';
 import { Button } from '@/components/button';
 
 import { useAuthStore } from '@/hooks/use-auth';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card } from '@/components/card';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { EBoardCard } from '@/components/eboardCard';
-import { FaqCard } from '@/components/faqCard';
 import { AskAQuestionModal } from './_components/application-modal';
 import ExpandableText from '@/components/expandable-text';
-import { ClubProfileTag } from '@/components/club-profile-tag';
+import { AllClubTags } from './_components/all-club-tags';
+import { EBoardMembers } from './_components/all-eboard-members';
+import { FAQs } from './_components/faq-scroll-view';
 
 // import SlackIcon from '@/components/icons/SlackIcon';
 
@@ -47,7 +47,8 @@ const Club = () => {
                     <View className="aspect-square rounded-lg w-20 bg-card-bg absolute top-20 translate-y-14 left-10" />
                 </View>
                 {/* Div for the club */}
-                <View className="bg-white pt-[18%] px-[8%]">
+                <View className="bg-white pt-[18%] px-[6%]">
+                    <Button className="aspect-square rounded-lg w-[22%] absolute translate-y-9 right-9">Follow</Button>
                     <View className="flex-row">
                         <Text className="text-black font-bold text-3xl">Club Name</Text>
                     </View>
@@ -65,17 +66,9 @@ const Club = () => {
                             <SlackIcon color="black" />
                         </Button>
                     </View>
+                    <AllClubTags></AllClubTags>
                     <View>
-                        <ScrollView horizontal={true} className="pb-[3%]">
-                            <View className="flex-row">
-                                <ClubProfileTag name="Tag1" />
-                                <ClubProfileTag name="Tag2" />
-                                <ClubProfileTag name="Tag3" />
-                            </View>
-                        </ScrollView>
-                    </View>
-                    <View>
-                    <Button variant='gray' size='screenwide' className='mb-4'>
+                        <Button variant='gray' size='screenwide' className='mb-4'>
                             Application Form
                         </Button>
                     </View>
@@ -106,30 +99,8 @@ const Club = () => {
                             </View>
                         </ScrollView>
                     </View>
-                    <View>
-                        <Text className="text-black font-bold">E-Board</Text>
-                        <ScrollView horizontal={true} className="pb-[10%]">
-                            <View className="flex-row">
-                                <EBoardCard name="Garrett Ladley" title="Tech Lead" className="mr-2">
-                                    <Text className="text-black">Member1</Text>
-                                </EBoardCard>
-                                <EBoardCard name="David Oduneye" title="Tech Lead" className="mr-2">
-                                    <Text className="text-black">Member1</Text>
-                                </EBoardCard>
-                            </View>
-                        </ScrollView>
-                    </View>
-                    <View className='pb-[30%]'>
-                        <Text className="text-black font-bold pb-4">FAQs</Text>
-                        <ScrollView horizontal={true} className='pb-[10%]'>
-                            <View className="flex-row">
-                                <FaqCard question="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididun?"
-                                    answer="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad "
-                                    className="mr-2"> </FaqCard>
-                            </View>
-                        </ScrollView>
-                        <Button variant="outline" onPress={openModal}>Ask a Question</Button>
-                    </View>
+                    <EBoardMembers></EBoardMembers>
+                    <FAQs></FAQs>
                 </View>
             </ScrollView>
             {isModalVisible && <AskAQuestionModal onClose={() => setIsModalVisible(false)} />}

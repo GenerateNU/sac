@@ -34,7 +34,7 @@ const buttonStyles = cva(
 
 export interface ButtonProps
     extends TouchableOpacityProps,
-        VariantProps<typeof buttonStyles> {}
+    VariantProps<typeof buttonStyles> { }
 
 const Button = ({ children, variant, size, ...props }: ButtonProps) => {
     return (
