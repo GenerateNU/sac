@@ -18,7 +18,6 @@ func SuperUser(superUserSettings config.SuperUserSettings) (*models.User, *error
 
 	return &models.User{
 		Role:         models.Super,
-		NUID:         "000000000",
 		Email:        "generatesac@gmail.com",
 		PasswordHash: *passwordHash,
 		FirstName:    "SAC",

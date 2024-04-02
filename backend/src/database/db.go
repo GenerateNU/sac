@@ -112,7 +112,7 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 
 	var user models.User
 
-	if err := db.Where("nuid = ?", superUser.NUID).First(&user).Error; err != nil {
+	if err := db.Where("id = ?", superUser.ID).First(&user).Error; err != nil {
 		tx := db.Begin().Session(&gorm.Session{SkipHooks: true})
 
 		if err := tx.Error; err != nil {

@@ -46,7 +46,6 @@ type User struct {
 	Model
 
 	Role         UserRole `gorm:"type:varchar(255);default:'student'" json:"role" validate:"required,oneof=super student"`
-	NUID         string   `gorm:"type:varchar(9);column:nuid" json:"nuid" validate:"required,numeric,len=9"`
 	FirstName    string   `gorm:"type:varchar(255)" json:"first_name" validate:"required,max=255"`
 	LastName     string   `gorm:"type:varchar(255)" json:"last_name" validate:"required,max=255"`
 	Email        string   `gorm:"type:varchar(255);unique" json:"email" validate:"required,email,max=255"`
@@ -72,7 +71,6 @@ type CreateUserRequestBody struct {
 	Email     string `json:"email" validate:"required,email,neu_email,max=255"`
 	Password  string `json:"password" validate:"required,password,min=8,max=255"`
 	// Optional fields
-	NUID    string  `json:"nuid" validate:"omitempty,numeric,len=9"`
 	College College `json:"college" validate:"omitempty,oneof=CAMD DMSB KCCS CE BCHS SL CPS CS CSSH"`
 	Year    Year    `json:"year" validate:"omitempty,min=1,max=6"`
 }
@@ -82,7 +80,6 @@ type UpdateUserRequestBody struct {
 	LastName  string  `json:"last_name" validate:"omitempty,max=255"`
 	College   College `json:"college" validate:"omitempty,oneof=CAMD DMSB KCCS CE BCHS SL CPS CS CSSH"`
 	Year      Year    `json:"year" validate:"omitempty,min=1,max=6"`
-	NUID      string  `json:"nuid" validate:"omitempty,len=9"` // TODO: remove this
 }
 
 type LoginUserResponseBody struct {

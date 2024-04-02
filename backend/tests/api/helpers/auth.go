@@ -151,7 +151,6 @@ func SampleStudentFactory() (models.User, string) {
 		LastName:     "Doe",
 		Email:        "doe.jane@northeastern.edu",
 		PasswordHash: *hashedPassword,
-		NUID:         "001234567",
 		College:      models.KCCS,
 		Year:         models.Third,
 	}, password
@@ -166,7 +165,6 @@ func SampleStudentJSONFactory(sampleStudent models.User, rawPassword string) *ma
 		"last_name":  sampleStudent.LastName,
 		"email":      sampleStudent.Email,
 		"password":   rawPassword,
-		"nuid":       sampleStudent.NUID,
 		"college":    string(sampleStudent.College),
 		"year":       int(sampleStudent.Year),
 	}
