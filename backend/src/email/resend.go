@@ -66,6 +66,7 @@ func (r *ResendClient) SendPasswordResetEmail(name, email, token string) *errors
 
 	return send(email, "Password Reset", fmt.Sprintf(*template, name, token), r.Client)
 }
+
 func (r *ResendClient) SendEmailVerification(email, code string) *errors.Error {
 	if r.Dev {
 		return nil
