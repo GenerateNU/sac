@@ -9,3 +9,4 @@ node_modules
 
 frontend/sac-mobile/ios/
 frontend/sac-mobile/android/
+tmp/
