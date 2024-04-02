@@ -12,6 +12,7 @@ import (
 	"github.com/GenerateNU/sac/backend/src/utilities"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
+	"gorm.io/gorm"
 )
 
 type AuthServiceInterface interface {
@@ -272,7 +273,27 @@ func (a *AuthService) SendCode(email string) *errors.Error {
 	return nil
 }
 
-/* trunk-ignore(golangci-lint/cyclop) */
+func verifyEmailHelper(user *models.User, token string, db *gorm.DB) *errors.Error {
+	if user.IsVerified {
+		return &errors.EmailAlreadyVerified
+	}
+
+	otp, otpErr := transactions.GetToken(db, token, models.EmailVerificationType)
+	if otpErr != nil {
+		return otpErr
+	}
+
+	if otp.Token != token {
+		return &errors.InvalidOTP
+	}
+
+	if otp.ExpiresAt.Before(time.Now().UTC()) {
+		return &errors.OTPExpired
+	}
+
+	return nil
+}
+
 func (a *AuthService) VerifyEmail(emailBody models.VerifyEmailRequestBody) *errors.Error {
 	if err := a.Validate.Struct(emailBody); err != nil {
 		return &errors.FailedToValidateUser
@@ -283,21 +304,9 @@ func (a *AuthService) VerifyEmail(emailBody models.VerifyEmailRequestBody) *erro
 		return err
 	}
 
-	if user.IsVerified {
-		return &errors.EmailAlreadyVerified
-	}
-
-	otp, otpErr := transactions.GetToken(a.DB, emailBody.Token, models.EmailVerificationType)
-	if otpErr != nil {
-		return otpErr
-	}
-
-	if otp.Token != emailBody.Token {
-		return &errors.InvalidOTP
-	}
-
-	if otp.ExpiresAt.Before(time.Now().UTC()) {
-		return &errors.OTPExpired
+	verifyErr := verifyEmailHelper(user, emailBody.Token, a.DB)
+	if verifyErr != nil {
+		return verifyErr
 	}
 
 	tx := a.DB.Begin()
