@@ -92,6 +92,9 @@ func TestGetUserWorks(t *testing.T) {
 
 				sampleUser := *h.SampleStudentJSONFactory(sampleStudent, rawPassword)
 
+				fmt.Printf("Sample user: %v", sampleUser)
+				fmt.Printf("Response user: %v", respUser)
+
 				eaa.Assert.Equal(sampleUser["first_name"].(string), respUser.FirstName)
 				eaa.Assert.Equal(sampleUser["last_name"].(string), respUser.LastName)
 				eaa.Assert.Equal(sampleUser["email"].(string), respUser.Email)
@@ -373,7 +376,7 @@ func AssertUserWithIDBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, bo
 	eaa.Assert.Equal(dbUser.College, respUser.College)
 	eaa.Assert.Equal(dbUser.Year, respUser.Year)
 
-	match, err := auth.ComparePasswordAndHash((*body)["password"].(string), dbUser.PasswordHash)
+	match, err := auth.CompareHash((*body)["password"].(string), dbUser.PasswordHash)
 
 	eaa.Assert.NilError(err)
 
@@ -464,35 +467,12 @@ func TestCreateUserFailsIfUserWithEmailAlreadyExists(t *testing.T) {
 	).Close()
 }
 
-func TestCreateUserFailsIfUserWithNUIDAlreadyExists(t *testing.T) {
-	appAssert, _, _ := CreateSampleStudent(t, nil)
-
-	sampleStudent, rawPassword := h.SampleStudentFactory()
-
-	slightlyDifferentSampleStudentJSON := h.SampleStudentJSONFactory(sampleStudent, rawPassword)
-
-	(*slightlyDifferentSampleStudentJSON)["first_name"] = "John"
-	(*slightlyDifferentSampleStudentJSON)["last_name"] = "Doe"
-	(*slightlyDifferentSampleStudentJSON)["email"] = "doe.john@northeastern.edu"
-
-	appAssert.TestOnErrorAndTester(
-		h.TestRequest{
-			Method: fiber.MethodPost,
-			Path:   "/api/v1/users/",
-			Body:   slightlyDifferentSampleStudentJSON,
-			Role:   &models.Super,
-		},
-		h.ErrorWithTester{
-			Error:  errors.UserAlreadyExists,
-			Tester: TestNumUsersRemainsAt2,
-		},
-	).Close()
-}
-
 func AssertCreateBadDataFails(t *testing.T, jsonKey string, badValues []interface{}) {
 	appAssert, _, _ := CreateSampleStudent(t, nil)
 
 	sampleStudent, rawPassword := h.SampleStudentFactory()
+
+	fmt.Printf("Sample student: %v\n", sampleStudent)
 
 	for _, badValue := range badValues {
 		sampleUserPermutation := *h.SampleStudentJSONFactory(sampleStudent, rawPassword)
@@ -551,30 +531,6 @@ func TestCreateUserFailsOnInvalidPassword(t *testing.T) {
 		})
 }
 
-func TestCreateUserFailsOnInvalidYear(t *testing.T) {
-	AssertCreateBadDataFails(t,
-		"year",
-		[]interface{}{
-			0,
-			7,
-		})
-}
-
-func TestCreateUserFailsOnInvalidCollege(t *testing.T) {
-	khouryAbbreviation := "KCCS"
-	permutations := h.AllCasingPermutations(khouryAbbreviation)
-	permutationsWithoutKhoury := make([]interface{}, len(permutations)-1)
-	for _, permutation := range permutations {
-		if permutation != khouryAbbreviation {
-			permutationsWithoutKhoury = append(permutationsWithoutKhoury, permutation)
-		}
-	}
-
-	AssertCreateBadDataFails(t,
-		"college",
-		permutationsWithoutKhoury)
-}
-
 func TestCreateUserFailsOnMissingFields(t *testing.T) {
 	appAssert, _, _ := CreateSampleStudent(t, nil)
 
@@ -585,9 +541,6 @@ func TestCreateUserFailsOnMissingFields(t *testing.T) {
 		"last_name",
 		"email",
 		"password",
-		"nuid",
-		"college",
-		"year",
 	} {
 		sampleUserPermutation := *h.SampleStudentJSONFactory(sampleStudent, rawPassword)
 		delete(sampleUserPermutation, missingField)

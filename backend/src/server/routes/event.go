@@ -2,19 +2,18 @@ package routes
 
 import (
 	"github.com/GenerateNU/sac/backend/src/controllers"
-	"github.com/GenerateNU/sac/backend/src/middleware"
 	"github.com/GenerateNU/sac/backend/src/services"
-	"github.com/gofiber/fiber/v2"
+	"github.com/GenerateNU/sac/backend/src/types"
 )
 
-func Event(router fiber.Router, eventService services.EventServiceInterface, authMiddleware *middleware.AuthMiddlewareService) {
-	eventController := controllers.NewEventController(eventService)
+func Event(eventParams types.RouteParams) {
+	eventController := controllers.NewEventController(services.NewEventService(eventParams.ServiceParams))
 
 	// api/v1/events/*
-	events := router.Group("/events")
+	events := eventParams.Router.Group("/events")
 
 	events.Get("/", eventController.GetAllEvents)
-	events.Post("/", authMiddleware.ClubAuthorizeById, eventController.CreateEvent)
+	events.Post("/", eventParams.AuthMiddleware.ClubAuthorizeById, eventController.CreateEvent)
 
 	// api/v1/events/:eventID/*
 	eventID := events.Group("/:eventID")
@@ -33,6 +32,6 @@ func Event(router fiber.Router, eventService services.EventServiceInterface, aut
 	seriesID := series.Group("/:seriesID")
 
 	seriesID.Get("/", eventController.GetSeriesByID)
-	seriesID.Patch("/", authMiddleware.ClubAuthorizeById, eventController.UpdateSeriesByID)
-	seriesID.Delete("/", authMiddleware.ClubAuthorizeById, eventController.DeleteSeriesByID)
+	seriesID.Patch("/", eventParams.AuthMiddleware.ClubAuthorizeById, eventController.UpdateSeriesByID)
+	seriesID.Delete("/", eventParams.AuthMiddleware.ClubAuthorizeById, eventController.DeleteSeriesByID)
 }

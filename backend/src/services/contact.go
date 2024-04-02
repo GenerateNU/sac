@@ -4,9 +4,8 @@ import (
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
+	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
-	"github.com/go-playground/validator/v10"
-	"gorm.io/gorm"
 )
 
 type ContactServiceInterface interface {
@@ -16,12 +15,11 @@ type ContactServiceInterface interface {
 }
 
 type ContactService struct {
-	DB       *gorm.DB
-	Validate *validator.Validate
+	types.ServiceParams
 }
 
-func NewContactService(db *gorm.DB, validate *validator.Validate) *ContactService {
-	return &ContactService{DB: db, Validate: validate}
+func NewContactService(params types.ServiceParams) ContactServiceInterface {
+	return &ContactService{params}
 }
 
 func (c *ContactService) GetContacts(limit string, page string) ([]models.Contact, *errors.Error) {

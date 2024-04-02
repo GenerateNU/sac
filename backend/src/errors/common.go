@@ -9,7 +9,7 @@ var (
 	}
 	FailedToParseRequestBody = Error{
 		StatusCode: fiber.StatusBadRequest,
-		Message:    "failed to parse request body",
+		Message:    "request body is not valid",
 	}
 	FailedtoParseQueryParams = Error{
 		StatusCode: fiber.StatusBadRequest,
@@ -70,5 +70,9 @@ var (
 	FailedToValidateAccessToken = Error{
 		StatusCode: fiber.StatusUnauthorized,
 		Message:    "failed to validate access token",
+	}
+	FailedToGenerateToken = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to generate token",
 	}
 )
