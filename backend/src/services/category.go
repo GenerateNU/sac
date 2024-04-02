@@ -4,14 +4,11 @@ import (
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
+	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
-
-	"github.com/go-playground/validator/v10"
 
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
-
-	"gorm.io/gorm"
 )
 
 type CategoryServiceInterface interface {
@@ -23,12 +20,11 @@ type CategoryServiceInterface interface {
 }
 
 type CategoryService struct {
-	DB       *gorm.DB
-	Validate *validator.Validate
+	types.ServiceParams
 }
 
-func NewCategoryService(db *gorm.DB, validate *validator.Validate) *CategoryService {
-	return &CategoryService{DB: db, Validate: validate}
+func NewCategoryService(params types.ServiceParams) *CategoryService {
+	return &CategoryService{params}
 }
 
 func (c *CategoryService) CreateCategory(categoryBody models.CategoryRequestBody) (*models.Category, *errors.Error) {

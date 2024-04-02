@@ -60,12 +60,13 @@ func validateEmail(fl validator.FieldLevel) bool {
 }
 
 func validatePassword(fl validator.FieldLevel) bool {
-	if len(fl.Field().String()) < 8 {
-		return false
-	}
-	specialCharactersMatch, _ := regexp.MatchString("[@#%&*+]", fl.Field().String())
-	numbersMatch, _ := regexp.MatchString("[0-9]", fl.Field().String())
-	return specialCharactersMatch && numbersMatch
+	password := fl.Field().String()
+
+	hasMinLength := len(password) >= 8
+	hasDigit, _ := regexp.MatchString(`[0-9]`, password)
+	hasSpecialChar, _ := regexp.MatchString(`[@#%&*+]`, password)
+
+	return hasMinLength && hasDigit && hasSpecialChar
 }
 
 func validateMongoURL(fl validator.FieldLevel) bool {

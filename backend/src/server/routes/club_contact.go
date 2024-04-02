@@ -2,17 +2,16 @@ package routes
 
 import (
 	"github.com/GenerateNU/sac/backend/src/controllers"
-	"github.com/GenerateNU/sac/backend/src/middleware"
 	"github.com/GenerateNU/sac/backend/src/services"
-	"github.com/gofiber/fiber/v2"
+	"github.com/GenerateNU/sac/backend/src/types"
 )
 
-func ClubContact(clubsIDRouter fiber.Router, clubContactService services.ClubContactServiceInterface, authMiddleware *middleware.AuthMiddlewareService) {
-	clubContactController := controllers.NewClubContactController(clubContactService)
+func ClubContact(clubParams types.RouteParams) {
+	clubContactController := controllers.NewClubContactController(services.NewClubContactService(clubParams.ServiceParams))
 
-	clubContacts := clubsIDRouter.Group("/contacts")
+	clubContacts := clubParams.Router.Group("/contacts")
 
 	// api/v1/clubs/:clubID/contacts/*
 	clubContacts.Get("/", clubContactController.GetClubContacts)
-	clubContacts.Put("/", authMiddleware.ClubAuthorizeById, clubContactController.PutContact)
+	clubContacts.Put("/", clubParams.AuthMiddleware.ClubAuthorizeById, clubContactController.PutContact)
 }

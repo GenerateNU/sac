@@ -1,4 +1,3 @@
-basePath: /api/v1
 definitions:
   errors.Error:
     properties:
@@ -41,8 +40,9 @@ definitions:
         example: "2023-09-20T16:34:50Z"
         type: string
       description:
-        description: MongoDB URL
-        maxLength: 255
+        description: |-
+          FIXME: make description a mongodb url again
+          Description      string           `gorm:"type:varchar(255)" json:"description" validate:"required,http_url,mongo_url,max=255"` // MongoDB URL
         type: string
       id:
         example: 123e4567-e89b-12d3-a456-426614174000
@@ -254,6 +254,9 @@ definitions:
       event_type:
         allOf:
         - $ref: '#/definitions/models.EventType'
+        enum:
+        - open
+        - membersOnly
         maxLength: 255
       is_recurring:
         type: boolean
@@ -298,6 +301,10 @@ definitions:
       recurring_type:
         allOf:
         - $ref: '#/definitions/models.RecurringType'
+        enum:
+        - daily
+        - weekly
+        - monthly
         maxLength: 255
       separation_count:
         minimum: 0
@@ -306,6 +313,13 @@ definitions:
         maximum: 5
         minimum: 1
         type: integer
+    required:
+    - day_of_month
+    - day_of_week
+    - max_occurrences
+    - recurring_type
+    - separation_count
+    - week_of_month
     type: object
   models.CreateTagRequestBody:
     properties:
@@ -343,8 +357,11 @@ definitions:
         maxLength: 255
         type: string
       nuid:
+        description: Optional fields
         type: string
       password:
+        maxLength: 255
+        minLength: 8
         type: string
       year:
         allOf:
@@ -352,13 +369,10 @@ definitions:
         maximum: 6
         minimum: 1
     required:
-    - college
     - email
     - first_name
     - last_name
-    - nuid
     - password
-    - year
     type: object
   models.CreateUserTagsBody:
     properties:
@@ -382,6 +396,9 @@ definitions:
       event_type:
         allOf:
         - $ref: '#/definitions/models.EventType'
+        enum:
+        - open
+        - membersOnly
         maxLength: 255
       id:
         example: 123e4567-e89b-12d3-a456-426614174000
@@ -429,6 +446,7 @@ definitions:
         type: string
     required:
     - email
+    - password
     type: object
   models.PutContactRequestBody:
     properties:
@@ -587,6 +605,32 @@ definitions:
     - recruitment_cycle
     - recruitment_type
     type: object
+  models.UpdateEventRequestBody:
+    properties:
+      content:
+        maxLength: 255
+        type: string
+      end_time:
+        type: string
+      event_type:
+        allOf:
+        - $ref: '#/definitions/models.EventType'
+        enum:
+        - open
+        - membersOnly
+        maxLength: 255
+      location:
+        maxLength: 255
+        type: string
+      name:
+        maxLength: 255
+        type: string
+      preview:
+        maxLength: 255
+        type: string
+      start_time:
+        type: string
+    type: object
   models.UpdatePasswordRequestBody:
     properties:
       new_password:
@@ -611,12 +655,18 @@ definitions:
         maximum: 7
         minimum: 1
         type: integer
+      event_details:
+        $ref: '#/definitions/models.UpdateEventRequestBody'
       max_occurrences:
         minimum: 2
         type: integer
       recurring_type:
         allOf:
         - $ref: '#/definitions/models.RecurringType'
+        enum:
+        - daily
+        - weekly
+        - monthly
         maxLength: 255
       separation_count:
         minimum: 0
@@ -649,9 +699,6 @@ definitions:
         - CPS
         - CS
         - CSSH
-      email:
-        maxLength: 255
-        type: string
       first_name:
         maxLength: 255
         type: string
@@ -659,6 +706,7 @@ definitions:
         maxLength: 255
         type: string
       nuid:
+        description: 'TODO: remove this'
         type: string
       year:
         allOf:
@@ -684,6 +732,8 @@ definitions:
       id:
         example: 123e4567-e89b-12d3-a456-426614174000
         type: string
+      is_verified:
+        type: boolean
       last_name:
         maxLength: 255
         type: string
@@ -711,6 +761,31 @@ definitions:
     - role
     - year
     type: object
+  models.VerifyEmailRequestBody:
+    properties:
+      email:
+        type: string
+      token:
+        type: string
+    required:
+    - email
+    - token
+    type: object
+  models.VerifyPasswordResetTokenRequestBody:
+    properties:
+      new_password:
+        minLength: 8
+        type: string
+      token:
+        type: string
+      verify_new_password:
+        minLength: 8
+        type: string
+    required:
+    - new_password
+    - token
+    - verify_new_password
+    type: object
   models.Year:
     enum:
     - 1
@@ -732,28 +807,22 @@ definitions:
       message:
         type: string
     type: object
-host: 127.0.0.1:8080
 info:
-  contact:
-    email: generatesac@gmail.com
-    name: David Oduneye and Garrett Ladley
-  description: Backend Server for SAC App
-  title: SAC API
-  version: "1.0"
+  contact: {}
 paths:
-  /auth/login:
+  /auth/forgot-password:
     post:
       consumes:
       - application/json
-      description: Logs in a user
-      operationId: login-user
+      description: Generates a password reset token
+      operationId: forgot-password
       parameters:
-      - description: Login Body
+      - description: Email
         in: body
-        name: loginBody
+        name: email
         required: true
         schema:
-          $ref: '#/definitions/models.LoginUserResponseBody'
+          type: string
       produces:
       - application/json
       responses:
@@ -765,19 +834,54 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/errors.Error'
-        "404":
-          description: Not Found
+        "429":
+          description: Too Many Requests
           schema:
             $ref: '#/definitions/errors.Error'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/errors.Error'
-      summary: Logs in a user
+      summary: Generates a password reset token
+      tags:
+      - auth
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user and returns a token upon successful login.
+      operationId: login-user
+      parameters:
+      - description: User credentials for login
+        in: body
+        name: loginBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginUserResponseBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully authenticated user
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Invalid request, check the request body
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: User not found, check the provided credentials
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: User Login
       tags:
       - auth
   /auth/logout:
-    get:
+    post:
       consumes:
       - application/json
       description: Logs out a user
@@ -794,8 +898,10 @@ paths:
       - auth
   /auth/me:
     get:
-      description: Returns the current user associated with an auth session
-      operationId: get-current-user
+      consumes:
+      - application/json
+      description: Retrieves the currently authenticated user
+      operationId: get-me
       produces:
       - application/json
       responses:
@@ -819,11 +925,13 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/errors.Error'
-      summary: Retrieve the current user given an auth session
+      security:
+      - Bearer: []
+      summary: Retrieves the currently authenticated user
       tags:
       - auth
   /auth/refresh:
-    get:
+    post:
       consumes:
       - application/json
       description: Refreshes a user's access token
@@ -850,24 +958,19 @@ paths:
       summary: Refreshes a user's access token
       tags:
       - auth
-  /auth/update-password/{userID}:
+  /auth/send-code:
     post:
       consumes:
       - application/json
-      description: Updates a user's password
-      operationId: update-password
+      description: Sends a verification code
+      operationId: send-verification-code
       parameters:
-      - description: User ID
-        in: path
-        name: userID
-        required: true
-        type: string
-      - description: User Body
+      - description: Email
         in: body
-        name: userBody
+        name: email
         required: true
         schema:
-          $ref: '#/definitions/models.UpdatePasswordRequestBody'
+          type: string
       produces:
       - application/json
       responses:
@@ -879,12 +982,39 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/errors.Error'
-        "401":
-          description: Unauthorized
+        "429":
+          description: Too Many Requests
           schema:
             $ref: '#/definitions/errors.Error'
-        "404":
-          description: Not Found
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Sends a verification code
+      tags:
+      - auth
+  /auth/verify-email:
+    post:
+      consumes:
+      - application/json
+      description: Verifies an email
+      operationId: verify-email
+      parameters:
+      - description: Email Verification Token Body
+        in: body
+        name: tokenBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.VerifyEmailRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utilities.SuccessResponse'
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.Error'
         "429":
@@ -895,7 +1025,44 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/errors.Error'
-      summary: Updates a user's password
+      summary: Verifies an email
+      tags:
+      - auth
+  /auth/verify-reset:
+    post:
+      consumes:
+      - application/json
+      description: Verifies a password reset token
+      operationId: verify-password-reset-token
+      parameters:
+      - description: Password Reset Token Body
+        in: body
+        name: tokenBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.VerifyPasswordResetTokenRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utilities.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "429":
+          description: Too Many Requests
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      security:
+      - Bearer: []
+      summary: Verifies a password reset token
       tags:
       - auth
   /categories/:
@@ -964,6 +1131,10 @@ paths:
             type: string
         "404":
           description: Not Found
+          schema:
+            type: string
+        "409":
+          description: Conflict
           schema:
             type: string
         "500":
@@ -2001,7 +2172,7 @@ paths:
         name: seriesBody
         required: true
         schema:
-          $ref: '#/definitions/models.CreateSeriesRequestBody'
+          $ref: '#/definitions/models.UpdateEventRequestBody'
       produces:
       - application/json
       responses:
@@ -2108,17 +2279,12 @@ paths:
     patch:
       consumes:
       - application/json
-      description: Updates a series by ID
-      operationId: update-series-by-id
+      description: Updates a series by event ID
+      operationId: update-series-by-event-id
       parameters:
       - description: Event ID
         in: path
         name: eventID
-        required: true
-        type: string
-      - description: Series ID
-        in: path
-        name: seriesID
         required: true
         type: string
       - description: Series Body
@@ -2150,7 +2316,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/errors.Error'
-      summary: Update a series by ID
+      summary: Update a series by event ID
       tags:
       - event
   /tags:
@@ -2405,6 +2571,10 @@ paths:
             $ref: '#/definitions/errors.Error'
         "404":
           description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "409":
+          description: Conflict
           schema:
             $ref: '#/definitions/errors.Error'
         "500":
@@ -2758,6 +2928,50 @@ paths:
       summary: Join a club
       tags:
       - user-member
+  /users/{userID}/password:
+    patch:
+      consumes:
+      - application/json
+      description: Updates a user's password
+      operationId: update-password
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      - description: Password Body
+        in: body
+        name: passwordBody
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdatePasswordRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Update a user's password
+      tags:
+      - user
   /users/{userID}/tags/:
     get:
       description: Retrieves all tags associated with a user
@@ -2807,12 +3021,6 @@ paths:
         name: userID
         required: true
         type: string
-      - description: User Tags Body
-        in: body
-        name: userTagsBody
-        required: true
-        schema:
-          $ref: '#/definitions/models.CreateUserTagsBody'
       produces:
       - application/json
       responses:
