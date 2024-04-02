@@ -14,6 +14,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Button } from '@/components/button';
 import HostedBy from '@/components/hosted-by';
 import HostedByText from '@/components/hosted-by-text';
+import TagPillLazySusan from '@/components/tag-pill-lazy-susan';
 import { useEvent } from '@/hooks/use-event';
 import {
     getDayOfWeek,
@@ -24,7 +25,7 @@ import {
 
 const displaySameDayEvent = (startTime: Date, endTime: Date) => {
     return (
-        <Text className="ml-1 text-base font-medium">
+        <Text className="px-2 text-base font-medium">
             {getDayOfWeek(startTime)}, {getMonth(startTime)}{' '}
             {startTime.getDate()}
             {getOrdinalSuffix(startTime.getDate())}
@@ -36,16 +37,14 @@ const displaySameDayEvent = (startTime: Date, endTime: Date) => {
 
 const displayDifferentDayEvent = (startTime: Date, endTime: Date) => {
     return (
-        <>
-            <Text className="ml-1 text-base font-medium">
-                {getDayOfWeek(startTime)}, {getMonth(startTime)}{' '}
-                {startTime.getDate()}
-                {getOrdinalSuffix(startTime.getDate())}
-                {' - '}
-                {getDayOfWeek(endTime)}, {getMonth(endTime)} {endTime.getDate()}
-                {getOrdinalSuffix(endTime.getDate())}{' '}
-            </Text>
-        </>
+        <Text className="px-2 text-base font-medium">
+            {getDayOfWeek(startTime)}, {getMonth(startTime)}{' '}
+            {startTime.getDate()}
+            {getOrdinalSuffix(startTime.getDate())}
+            {' - '}
+            {getDayOfWeek(endTime)}, {getMonth(endTime)} {endTime.getDate()}
+            {getOrdinalSuffix(endTime.getDate())}{' '}
+        </Text>
     );
 };
 
@@ -55,7 +54,7 @@ const displayEventTime = (startTime: Date, endTime: Date) => {
     return (
         <TouchableOpacity
             onPress={() => console.log('Navigate to the calendar')}
-            className="mt-2 flex-row items-center"
+            className="flex-row items-center py-1"
         >
             <MaterialCommunityIcons name="calendar" size={36} color="black" />
             {onSameDay
@@ -70,10 +69,10 @@ const displayEventLocation = (
     meetingLink: string | undefined
 ) => {
     return (
-        <View className="mt-2 flex-row items-center">
+        <View className="flex-row items-center">
             <MaterialCommunityIcons name="map-marker" size={36} color="black" />
-            <View className="ml-1 flex-col">
-                <Text className="text-base font-medium">{location}</Text>
+            <View className="px-2 py-1 flex-col">
+                <Text className=" text-base font-medium">{location}</Text>
                 {meetingLink && (
                     <TouchableOpacity
                         onPress={() =>
@@ -118,7 +117,7 @@ const Event = () => {
     return (
         <>
             <ScrollView showsVerticalScrollIndicator={false}>
-                <View className="flex flex-col items-center w-screen">
+                <View className="flex flex-col items-center justify-between w-screen h-fit">
                     <View className="w-full bg-gray-600 h-[200]" />
                     <Button
                         onPress={() => {
@@ -135,86 +134,101 @@ const Event = () => {
                             color="rgb(75 85 99)"
                         />
                     </Button>
-                    <View className="flex-row justify-between w-full -translate-y-12 px-6">
-                        <View className="w-24 h-24 rounded-xl bg-gray-300" />
-                        <View className="flex-row justify-center items-center space-x-3">
-                            <Button
-                                onPress={() => console.log('X Icon')}
-                                size={'icon'}
-                                variant={'secondary'}
-                            >
-                                <Text>X</Text>
-                            </Button>
-                            <Button
-                                onPress={() => console.log('Y Icon')}
-                                size={'icon'}
-                                variant={'secondary'}
-                            >
-                                <Text>Y</Text>
-                            </Button>
-                            <Button
-                                onPress={() => console.log('RSVP')}
-                                size={'default'}
-                                variant={'default'}
-                                className="w-18"
-                            >
-                                <Text>RSVP</Text>
-                            </Button>
+                    <View className="flex w-full -translate-y-12">
+                        <View className="flex-row justify-between px-6 ">
+                            <View className="w-24 h-24 rounded-xl bg-gray-300" />
+                            <View className="flex-row justify-center items-center space-x-3">
+                                <Button
+                                    onPress={() => console.log('X Icon')}
+                                    size={'icon'}
+                                    variant={'secondary'}
+                                >
+                                    <Text>X</Text>
+                                </Button>
+                                <Button
+                                    onPress={() => console.log('Y Icon')}
+                                    size={'icon'}
+                                    variant={'secondary'}
+                                >
+                                    <Text>Y</Text>
+                                </Button>
+                                <Button
+                                    onPress={() => console.log('RSVP')}
+                                    size={'default'}
+                                    variant={'default'}
+                                    className="w-18"
+                                >
+                                    <Text>RSVP</Text>
+                                </Button>
+                            </View>
                         </View>
-                    </View>
-                    <View className="px-6 py-3 w-full -translate-y-6">
-                        <Text className="text-3xl font-bold">{event.name}</Text>
-                        <View className="py-1.5">
-                            <HostedByText eventID={event.id} />
+                        <View className="px-6 py-3 w-full">
+                            <Text className="text-3xl font-bold">
+                                {event.name}
+                            </Text>
+                            <View className="py-2">
+                                <HostedByText eventID={event.id} />
+                            </View>
+                            {displayEventTime(event.startTime, event.endTime)}
+                            {displayEventLocation(
+                                event.location,
+                                event.meetingLink
+                            )}
                         </View>
-                        {displayEventTime(event.startTime, event.endTime)}
-                        {displayEventLocation(
-                            event.location,
-                            event.meetingLink
-                        )}
-                    </View>
-                    {/* TODO: Tag Carousel */}
-                    <View className="px-6 py-3 w-full">
-                        <Text className="text-2xl font-bold">About Event</Text>
-                        {/* TODO: use readmoreable text from Melody */}
-                        <Text className="mt-2 text-lg">{event.content}</Text>
-                    </View>
-                    <View className="px-6 py-3 w-full">
-                        <View className="flex-row justify-between items-center">
-                            <Text className="text-2xl font-bold">Location</Text>
-                            <Button
-                                // TODO: Navigate to the native map app
-                                onPress={() =>
-                                    console.log('Navigate to the map')
-                                }
-                                size={'default'}
-                                variant={'default'}
-                            >
-                                <Text>Open in Maps</Text>
-                            </Button>
+                        <View className="px-6 py-2 w-full">
+                            <TagPillLazySusan eventID={event.id} />
                         </View>
-                        <Text className="mt-2 text-lg">{event.location}</Text>
-                        {event.meetingLink && (
-                            <TouchableOpacity
-                                onPress={() =>
-                                    Linking.openURL(event.meetingLink!).catch(
-                                        (err) =>
+                        <View className="px-6 py-2 w-full">
+                            <Text className="text-2xl font-bold">
+                                About Event
+                            </Text>
+                            {/* TODO: use readmoreable text from Melody */}
+                            <Text className="mt-2 text-lg">
+                                {event.content}
+                            </Text>
+                        </View>
+                        <View className="px-6 py-2 w-full">
+                            <View className="flex-row justify-between items-center">
+                                <Text className="text-2xl font-bold">
+                                    Location
+                                </Text>
+                                <Button
+                                    // TODO: Navigate to the native map app
+                                    onPress={() =>
+                                        console.log('Navigate to the map')
+                                    }
+                                    size={'default'}
+                                    variant={'default'}
+                                >
+                                    <Text>Open in Maps</Text>
+                                </Button>
+                            </View>
+                            <Text className="py-2 text-lg">
+                                {event.location}
+                            </Text>
+                            {event.meetingLink && (
+                                <TouchableOpacity
+                                    onPress={() =>
+                                        Linking.openURL(
+                                            event.meetingLink!
+                                        ).catch((err) =>
                                             console.error(
                                                 'An error occurred',
                                                 err
                                             )
-                                    )
-                                }
-                            >
-                                <Text className="text-blue-500 visited:text-purple-500">
-                                    {event.meetingLink}
-                                </Text>
-                            </TouchableOpacity>
-                        )}
-                        <View className="w-full h-36 rounded-xl bg-gray-400 my-3" />
-                    </View>
-                    <View className="px-6 py-3 w-full">
-                        <HostedBy eventID={event.id} />
+                                        )
+                                    }
+                                >
+                                    <Text className="text-blue-500 visited:text-purple-500">
+                                        {event.meetingLink}
+                                    </Text>
+                                </TouchableOpacity>
+                            )}
+                            <View className="w-full h-36 rounded-xl bg-gray-400 my-3" />
+                        </View>
+                        <View className="px-6 py-2 w-full">
+                            <HostedBy eventID={event.id} />
+                        </View>
                     </View>
                 </View>
             </ScrollView>

@@ -23,6 +23,14 @@ export const fetchEvent = async (eventID: uuid): Promise<Event> => {
         });
 };
 
+/**
+ * Fetches the hosts of an event by its ID.
+ *
+ * @param eventID The ID of the event whose hosts to fetch
+ * @returns A Promise that resolves to the fetched hosts or rejects with an error
+ * @throws Error if the hosts cannot be fetched
+ * @see Club
+ */
 export const fetchHosts = async (eventID: uuid): Promise<Club[]> => {
     return axios
         .get(`${API_BASE_URL}/events/${eventID}/hosts`)
