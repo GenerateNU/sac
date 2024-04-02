@@ -1,6 +1,5 @@
+import { cva, VariantProps } from 'class-variance-authority';
 import { Text, TouchableOpacity, TouchableOpacityProps } from 'react-native';
-
-import { VariantProps, cva } from 'class-variance-authority';
 
 import { cn } from '@/lib/utils';
 
