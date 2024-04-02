@@ -4,10 +4,8 @@ import (
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
+	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
-	"github.com/go-playground/validator/v10"
-
-	"gorm.io/gorm"
 )
 
 type EventServiceInterface interface {
@@ -25,12 +23,11 @@ type EventServiceInterface interface {
 }
 
 type EventService struct {
-	DB       *gorm.DB
-	Validate *validator.Validate
+	types.ServiceParams
 }
 
-func NewEventService(db *gorm.DB, validate *validator.Validate) *EventService {
-	return &EventService{DB: db, Validate: validate}
+func NewEventService(params types.ServiceParams) *EventService {
+	return &EventService{params}
 }
 
 func (e *EventService) GetEvents(limit string, page string) ([]models.Event, *errors.Error) {

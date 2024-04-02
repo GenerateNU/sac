@@ -58,7 +58,7 @@ func main() {
 
 	if *onlySeedPinecone {
 		openAi := search.NewOpenAIClient(config.OpenAISettings)
-		pinecone := search.NewPineconeClient(openAi, config.PineconeSettings)
+		pinecone := search.NewPineconeClient(openAi, config.PineconeSettings, true)
 
 		err := pinecone.Seed(db)
 		if err != nil {
@@ -74,7 +74,7 @@ func main() {
 	}
 
 	openAi := search.NewOpenAIClient(config.OpenAISettings)
-	pinecone := search.NewPineconeClient(openAi, config.PineconeSettings)
+	pinecone := search.NewPineconeClient(openAi, config.PineconeSettings, true)
 
 	app := server.Init(db, pinecone, *config)
 
