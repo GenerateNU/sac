@@ -1,15 +1,9 @@
-import { View, Text, ScrollView } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { useSignUp } from '@clerk/clerk-expo';
-import Spinner from 'react-native-loading-spinner-overlay';
-import { Button } from '@/components/button';
-import Input from '@/components/input';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Wordmark } from '@/components/wordmark';
-import { router } from 'expo-router';
+import React from 'react';
+import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAuthStore } from '@/hooks/use-auth';
-import { requestVerification } from '@/services/auth';
+
+import { Wordmark } from '@/components/wordmark';
+
 import VerificationForm from './_components/verification-form';
 
 const Verification = () => {
@@ -35,6 +29,6 @@ const Verification = () => {
             </ScrollView>
         </SafeAreaView>
     );
-}
+};
 
 export default Verification;

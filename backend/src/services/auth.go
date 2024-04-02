@@ -19,6 +19,7 @@ type AuthServiceInterface interface {
 	SetResponseTokens(c *fiber.Ctx, tokens *auth.Token) *errors.Error
 	Login(userBody models.LoginUserResponseBody) (*models.User, *auth.Token, *errors.Error)
 	Refresh(refreshToken string) (*auth.Token, *errors.Error)
+	Logout(c *fiber.Ctx) *errors.Error
 
 	SendCode(email string) *errors.Error
 	VerifyEmail(emailBody models.VerifyEmailRequestBody) *errors.Error
@@ -322,6 +323,20 @@ func (a *AuthService) VerifyEmail(emailBody models.VerifyEmailRequestBody) *erro
 		tx.Rollback()
 		return &errors.FailedToUpdateEmailVerification
 	}
+
+	return nil
+}
+
+func (a *AuthService) Logout(c *fiber.Ctx) *errors.Error {
+	c.Cookie(&fiber.Cookie{
+		Name:     "refresh_token",
+		Value:    "",
+		Expires:  time.Now().Add(-time.Hour),
+		HTTPOnly: true,
+	})
+	c.Set("Authorization ", "")
+
+	// TODO: blacklist the refresh token
 
 	return nil
 }

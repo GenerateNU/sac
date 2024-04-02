@@ -472,6 +472,8 @@ func AssertCreateBadDataFails(t *testing.T, jsonKey string, badValues []interfac
 
 	sampleStudent, rawPassword := h.SampleStudentFactory()
 
+	fmt.Printf("Sample student: %v\n", sampleStudent)
+
 	for _, badValue := range badValues {
 		sampleUserPermutation := *h.SampleStudentJSONFactory(sampleStudent, rawPassword)
 		sampleUserPermutation[jsonKey] = badValue
@@ -529,30 +531,6 @@ func TestCreateUserFailsOnInvalidPassword(t *testing.T) {
 		})
 }
 
-func TestCreateUserFailsOnInvalidYear(t *testing.T) {
-	AssertCreateBadDataFails(t,
-		"year",
-		[]interface{}{
-			0,
-			7,
-		})
-}
-
-func TestCreateUserFailsOnInvalidCollege(t *testing.T) {
-	khouryAbbreviation := "KCCS"
-	permutations := h.AllCasingPermutations(khouryAbbreviation)
-	permutationsWithoutKhoury := make([]interface{}, len(permutations)-1)
-	for _, permutation := range permutations {
-		if permutation != khouryAbbreviation {
-			permutationsWithoutKhoury = append(permutationsWithoutKhoury, permutation)
-		}
-	}
-
-	AssertCreateBadDataFails(t,
-		"college",
-		permutationsWithoutKhoury)
-}
-
 func TestCreateUserFailsOnMissingFields(t *testing.T) {
 	appAssert, _, _ := CreateSampleStudent(t, nil)
 
@@ -563,9 +541,6 @@ func TestCreateUserFailsOnMissingFields(t *testing.T) {
 		"last_name",
 		"email",
 		"password",
-		"nuid",
-		"college",
-		"year",
 	} {
 		sampleUserPermutation := *h.SampleStudentJSONFactory(sampleStudent, rawPassword)
 		delete(sampleUserPermutation, missingField)

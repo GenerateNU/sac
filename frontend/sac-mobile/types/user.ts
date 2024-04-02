@@ -8,7 +8,7 @@ export const userSchema = z.object({
     last_name: z.string().min(3),
     created_at: z.date(),
     updated_at: z.date(),
-    is_verified: z.boolean(),
+    is_verified: z.boolean()
 });
 
 export const collegeSchema = z.enum([
@@ -29,6 +29,17 @@ export type Year = z.infer<typeof yearSchema>;
 
 export type User = z.infer<typeof userSchema>;
 export type UserWithPassword = User & { password: string };
+
+export const InitialUser: User = {
+    id: '',
+    role: 'student',
+    email: '',
+    first_name: '',
+    last_name: '',
+    created_at: new Date(),
+    updated_at: new Date(),
+    is_verified: false
+};
 
 export type Tokens = {
     accessToken: string;

@@ -334,6 +334,19 @@ definitions:
     type: object
   models.CreateUserRequestBody:
     properties:
+      college:
+        allOf:
+        - $ref: '#/definitions/models.College'
+        enum:
+        - CAMD
+        - DMSB
+        - KCCS
+        - CE
+        - BCHS
+        - SL
+        - CPS
+        - CS
+        - CSSH
       email:
         maxLength: 255
         type: string
@@ -343,10 +356,18 @@ definitions:
       last_name:
         maxLength: 255
         type: string
+      nuid:
+        description: Optional fields
+        type: string
       password:
         maxLength: 255
         minLength: 8
         type: string
+      year:
+        allOf:
+        - $ref: '#/definitions/models.Year'
+        maximum: 6
+        minimum: 1
     required:
     - email
     - first_name
@@ -684,6 +705,9 @@ definitions:
       last_name:
         maxLength: 255
         type: string
+      nuid:
+        description: 'TODO: remove this'
+        type: string
       year:
         allOf:
         - $ref: '#/definitions/models.Year'
@@ -825,10 +849,10 @@ paths:
     post:
       consumes:
       - application/json
-      description: Logs in a user
+      description: Authenticates a user and returns a token upon successful login.
       operationId: login-user
       parameters:
-      - description: Login Body
+      - description: User credentials for login
         in: body
         name: loginBody
         required: true
@@ -838,22 +862,22 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Successfully authenticated user
           schema:
             $ref: '#/definitions/models.User'
         "400":
-          description: Bad Request
+          description: Invalid request, check the request body
           schema:
             $ref: '#/definitions/errors.Error'
         "404":
-          description: Not Found
+          description: User not found, check the provided credentials
           schema:
             $ref: '#/definitions/errors.Error'
         "500":
-          description: Internal Server Error
+          description: Internal server error
           schema:
             $ref: '#/definitions/errors.Error'
-      summary: Logs in a user
+      summary: User Login
       tags:
       - auth
   /auth/logout:

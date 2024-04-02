@@ -1,9 +1,11 @@
+import * as SecureStore from 'expo-secure-store';
+
+import { AxiosResponseHeaders, RawAxiosResponseHeaders } from 'axios';
+import { Buffer } from 'buffer';
 import clsx, { ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { Buffer } from 'buffer';
+
 import { Item } from '@/types/item';
-import * as SecureStore from 'expo-secure-store';
-import { AxiosResponseHeaders, RawAxiosResponseHeaders } from 'axios';
 import { Tokens } from '@/types/user';
 
 /**
@@ -79,14 +81,13 @@ export const experationTime = (token: string, bufferTime: number) => {
         if (!token) {
             return 0;
         }
-        const jwtBuffer = Buffer.from(token.split('.')[1], 'base64')
+        const jwtBuffer = Buffer.from(token.split('.')[1], 'base64');
         const jwtPayload = JSON.parse(jwtBuffer.toString('utf-8'));
-        const experationTime = jwtPayload.exp * 1000;
-        return experationTime - (Date.now() + bufferTime);
+        return jwtPayload.exp * 1000 - (Date.now() + bufferTime);
     } catch (error) {
         return 0;
     }
-}
+};
 
 /**
  * Extracts the access token and refresh token from the cookies and headers of an Axios response.
@@ -94,8 +95,11 @@ export const experationTime = (token: string, bufferTime: number) => {
  * @param headers The headers from the Axios response.
  * @returns The access token and refresh token.
  */
-export const extractTokens = (cookies: string[] | undefined, headers: AxiosResponseHeaders | RawAxiosResponseHeaders): Tokens => {
-    if (!cookies || !headers['authorization']) {
+export const extractTokens = (
+    cookies: string[] | undefined,
+    headers: AxiosResponseHeaders | RawAxiosResponseHeaders
+): Tokens => {
+    if (!cookies || !headers.authorization) {
         throw new Error('No cookies or authorization header found');
     }
 
@@ -106,7 +110,7 @@ export const extractTokens = (cookies: string[] | undefined, headers: AxiosRespo
         }
     });
 
-    const accessToken = headers['authorization'].split(' ')[1]
+    const accessToken = headers.authorization.split(' ')[1];
 
     return { accessToken, refreshToken };
-}
+};

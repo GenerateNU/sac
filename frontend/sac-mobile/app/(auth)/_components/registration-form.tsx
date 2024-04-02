@@ -1,16 +1,13 @@
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Alert, View } from 'react-native';
-
-import { router } from 'expo-router';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 import { ZodError, z } from 'zod';
 
 import { Button } from '@/components/button';
 import Error from '@/components/error';
 import Input from '@/components/input';
-import { useSignUp } from '@clerk/clerk-expo';
-import { useState } from 'react';
-import Spinner from 'react-native-loading-spinner-overlay';
 import { useAuthStore } from '@/hooks/use-auth';
 
 type RegisterFormData = {
@@ -21,20 +18,19 @@ type RegisterFormData = {
     password_confirmation: string;
 };
 
-const registerSchema = z
-    .object({
-        first_name: z.string().min(2, {
-            message: 'First name must be at least 2 characters long'
-        }),
-        last_name: z.string().min(2, {
-            message: 'Last name must be at least 2 characters long'
-        }),
-        email: z.string().email({ message: 'Invalid email' }),
-        password: z
-            .string()
-            .min(8, { message: 'Password must be at least 8 characters long' }),
-        password_confirmation: z.string()
-    })
+const registerSchema = z.object({
+    first_name: z.string().min(2, {
+        message: 'First name must be at least 2 characters long'
+    }),
+    last_name: z.string().min(2, {
+        message: 'Last name must be at least 2 characters long'
+    }),
+    email: z.string().email({ message: 'Invalid email' }),
+    password: z
+        .string()
+        .min(8, { message: 'Password must be at least 8 characters long' }),
+    password_confirmation: z.string()
+});
 
 const RegistrationForm = () => {
     const {
@@ -46,7 +42,10 @@ const RegistrationForm = () => {
     const { signUp } = useAuthStore();
     const [loading, setLoading] = useState(false);
 
-    const onSignUp = async ({ password_confirmation, ...rest }: RegisterFormData) => {
+    const onSignUp = async ({
+        password_confirmation,
+        ...rest
+    }: RegisterFormData) => {
         setLoading(true);
 
         try {
@@ -54,7 +53,6 @@ const RegistrationForm = () => {
             const updatedData = { ...rest };
 
             await signUp(updatedData);
-            router.push('/(auth)/verification');
         } catch (error: any) {
             if (error instanceof ZodError) {
                 Alert.alert(error.errors[0].message);
@@ -64,7 +62,7 @@ const RegistrationForm = () => {
         } finally {
             setLoading(false);
         }
-    }
+    };
 
     return (
         <>
@@ -130,7 +128,9 @@ const RegistrationForm = () => {
                         }
                     }}
                 />
-                {errors.last_name && <Error message={errors.last_name.message} />}
+                {errors.last_name && (
+                    <Error message={errors.last_name.message} />
+                )}
             </View>
 
             <View className="w-full mb-[8.5%]">

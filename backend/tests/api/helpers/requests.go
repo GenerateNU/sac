@@ -66,10 +66,6 @@ func (app TestApp) Send(request TestRequest) (*http.Response, error) {
 
 	if app.TestUser != nil {
 		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", app.TestUser.AccessToken))
-		// req.AddCookie(&http.Cookie{
-		// 	Name:  "access_token",
-		// 	Value: app.TestUser.AccessToken,
-		// })
 		req.AddCookie(&http.Cookie{
 			Name:  "refresh_token",
 			Value: app.TestUser.RefreshToken,

@@ -1,7 +1,8 @@
-import { User } from "@/types/user";
-import { AxiosError } from "axios";
-import { api } from "./api";
-import { ErrorResponse } from "@/types/error";
+import { AxiosError } from 'axios';
+
+import { api } from '@/services/api';
+import { ErrorResponse } from '@/types/error';
+import { User } from '@/types/user';
 
 /**
  * Gets the user from the access token.
@@ -10,7 +11,7 @@ import { ErrorResponse } from "@/types/error";
  */
 export const getCurrentUser = async (): Promise<User> => {
     try {
-        const response = await api.get('/users/me');
+        const response = await api.get<User>('/users/me');
 
         return response.data as User;
     } catch (error: any) {

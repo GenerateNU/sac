@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"time"
-
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
@@ -48,14 +46,6 @@ func (a *AuthController) Login(c *fiber.Ctx) error {
 	if err != nil {
 		return err.FiberError(c)
 	}
-
-	// c.Set("Authorization", fmt.Sprintf("Bearer %s", string(tokens.AccessToken)))
-	// c.Cookie(&fiber.Cookie{
-	// 	Name:     "refresh_token",
-	// 	Value:    string(tokens.RefreshToken),
-	// 	Expires:  time.Now().Add(time.Hour * time.Duration(a.AuthSettings.RefreshTokenExpiry)),
-	// 	HTTPOnly: true,
-	// })
 
 	return c.Status(fiber.StatusOK).JSON(user)
 }
@@ -104,22 +94,10 @@ func (a *AuthController) Refresh(c *fiber.Ctx) error {
 // @Success		200	  {object}	  utilities.SuccessResponse
 // @Router		/auth/logout  [post]
 func (a *AuthController) Logout(c *fiber.Ctx) error {
-	// Extract token values from cookies
-	c.Get("Authorization")
-	c.Cookies("refresh_token")
-
-	// TODO: Redis
-	// a.blacklist = append(a.blacklist, accessTokenValue)
-	// a.blacklist = append(a.blacklist, refreshTokenValue)
-
-	// Expire and clear the cookies
-	c.Set("Authorization", "")
-	c.Cookie(&fiber.Cookie{
-		Name:     "refresh_token",
-		Value:    "",
-		Expires:  time.Now().Add(-time.Hour),
-		HTTPOnly: true,
-	})
+	err := a.authService.Logout(c)
+	if err != nil {
+		return err.FiberError(c)
+	}
 
 	return utilities.FiberMessage(c, fiber.StatusOK, "success")
 }

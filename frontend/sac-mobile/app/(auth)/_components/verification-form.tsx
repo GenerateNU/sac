@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, View, Text } from 'react-native';
+import { Alert, Text, TouchableOpacity, View } from 'react-native';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 import { router } from 'expo-router';
 
@@ -8,9 +10,6 @@ import { ZodError, z } from 'zod';
 import { Button } from '@/components/button';
 import Error from '@/components/error';
 import Input from '@/components/input';
-import { useSignUp } from '@clerk/clerk-expo';
-import { useEffect, useState } from 'react';
-import Spinner from 'react-native-loading-spinner-overlay';
 import { useAuthStore } from '@/hooks/use-auth';
 import { requestVerification } from '@/services/auth';
 
@@ -62,7 +61,7 @@ const VerificationForm = () => {
         } catch (error: any) {
             Alert.alert('Error', error.message);
         }
-    }
+    };
 
     return (
         <>
@@ -85,9 +84,7 @@ const VerificationForm = () => {
                         required: 'Verification code is required'
                     }}
                 />
-                {errors.code && (
-                    <Error message={errors.code.message} />
-                )}
+                {errors.code && <Error message={errors.code.message} />}
             </View>
             <View className="pt-[2%]">
                 <Button onPress={handleSubmit(onVerify)} size="screenwide">
@@ -96,7 +93,12 @@ const VerificationForm = () => {
             </View>
             <View className="mt-[5%] flex-row justify-center">
                 <Text>Did not receive a code?</Text>
-                <Text onPress={requestCode} className="font-bold underline"> Resend</Text>
+                <TouchableOpacity
+                    onPress={requestCode}
+                    className="font-bold underline"
+                >
+                    <Text> Resend</Text>
+                </TouchableOpacity>
             </View>
         </>
     );

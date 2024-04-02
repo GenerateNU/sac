@@ -22,7 +22,7 @@ func getExcludedPaths() []map[string]string {
 		{"/api/v1/users/": "POST"},
 		{"/api/v1/auth/logout": "POST"},
 		{"/api/v1/auth/forgot-password": "POST"},
-		{"/api/v1/auth/send-code/*": "POST"},
+		{"/api/v1/auth/send-code/": "POST"},
 		{"/api/v1/auth/verify-email": "POST"},
 		{"/api/v1/auth/verify-reset": "POST"},
 	}
@@ -55,9 +55,9 @@ func GetAuthroizationToken(c *fiber.Ctx) *string {
 }
 
 func (m *AuthMiddlewareService) Authenticate(c *fiber.Ctx) error {
-	for _, path := range getExcludedPaths() {
-		for p, method := range path {
-			if strings.HasPrefix(c.Path(), strings.TrimSuffix(p, "/*")) && c.Method() == method {
+	for _, excludedPath := range getExcludedPaths() {
+		for path, method := range excludedPath {
+			if c.Path() == path && c.Method() == method {
 				return c.Next()
 			}
 		}
@@ -68,8 +68,6 @@ func (m *AuthMiddlewareService) Authenticate(c *fiber.Ctx) error {
 		return errors.Unauthorized.FiberError(c)
 	}
 
-	fmt.Println("accessToken", *accessToken)
-
 	token, err := func() (*jwt.Token, error) {
 		return jwt.ParseWithClaims(*accessToken, &auth.CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 			return []byte(m.AuthSettings.AccessKey.Expose()), nil
@@ -79,14 +77,11 @@ func (m *AuthMiddlewareService) Authenticate(c *fiber.Ctx) error {
 		return errors.Unauthorized.FiberError(c)
 	}
 
-	fmt.Println("token", token)
-
 	claims, ok := token.Claims.(*auth.CustomClaims)
 	if !ok || !token.Valid {
 		return errors.Unauthorized.FiberError(c)
 	}
 
-	fmt.Println("claims", claims)
 	// if auth.IsBlacklisted(*accessToken) {
 	// 	return errors.Unauthorized.FiberError(c)
 	// }

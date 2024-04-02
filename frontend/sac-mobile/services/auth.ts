@@ -1,9 +1,9 @@
-import axios, { AxiosError } from 'axios';
-import { Tokens, User } from '@/types/user';
-import { api } from './api';
-import { API_BASE_URL } from '@/lib/const';
-import { ErrorResponse } from '@/types/error';
+import { AxiosError } from 'axios';
+
 import { extractTokens } from '@/lib/utils';
+import { api } from '@/services/api';
+import { ErrorResponse } from '@/types/error';
+import { Tokens, User } from '@/types/user';
 
 /**
  * Creates a new user with the given first name, last name, email, and password.
@@ -17,7 +17,7 @@ export const signUp = async (
     first_name: string,
     last_name: string,
     email: string,
-    password: string,
+    password: string
 ): Promise<{ user: User; tokens: Tokens }> => {
     try {
         const response = await api.post<User>('/users/', {
@@ -25,9 +25,12 @@ export const signUp = async (
             last_name: last_name,
             email: email,
             password: password
-        })
+        });
 
-        const tokens = extractTokens(response.headers['set-cookie'], response.headers);
+        const tokens = extractTokens(
+            response.headers['set-cookie'],
+            response.headers
+        );
         const user = response.data;
 
         return { user, tokens };
@@ -47,11 +50,9 @@ export const signUp = async (
  * Requests a verification code for the user with the given email.
  * @param email The email of the user.
  */
-export const requestVerification = async (
-    email: string
-): Promise<void> => {
+export const requestVerification = async (email: string): Promise<void> => {
     try {
-        await api.post('/auth/send-code', {
+        await api.post<void>('/auth/send-code', {
             email
         });
     } catch (error: any) {
@@ -64,7 +65,7 @@ export const requestVerification = async (
             throw new Error('Error requesting verification code');
         }
     }
-}
+};
 
 /**
  * Completes the verification process for the user with the given email and code.
@@ -77,7 +78,7 @@ export const completeVerification = async (
     code: string
 ): Promise<void> => {
     try {
-        await api.post('/auth/verify-email/', {
+        await api.post<void>('/auth/verify-email/', {
             email,
             token: code
         });
@@ -91,7 +92,7 @@ export const completeVerification = async (
             throw new Error('Error completing verification');
         }
     }
-}
+};
 
 /**
  * Logins the user with the given email and password.
@@ -99,17 +100,20 @@ export const completeVerification = async (
  * @param password The password of the user.
  * @returns The user that was logged in.
  */
-export const loginByEmail = async (
+export const login = async (
     email: string,
     password: string
 ): Promise<{ user: User; tokens: Tokens }> => {
     try {
-        const response = await api.post('/auth/login', {
+        const response = await api.post<User>('/auth/login', {
             email,
             password
         });
 
-        const tokens = extractTokens(response.headers['set-cookie'], response.headers);
+        const tokens = extractTokens(
+            response.headers['set-cookie'],
+            response.headers
+        );
         const user = response.data;
 
         return { user, tokens };
@@ -126,29 +130,46 @@ export const loginByEmail = async (
     }
 };
 
-// /**
-//  * Refreshes the access token with the given refresh token.
-//  * @param refreshToken The refresh token of the user.
-//  * @returns The new access token.
-//  */
-// export const refreshAccessToken = async (refreshToken: string): Promise<Tokens> => {
-//     try {
-//         const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
-//             refresh_token: refreshToken
-//         });
+/**
+ * Logout the user.
+ */
+export const logout = async (): Promise<void> => {
+    try {
+        await api.post<void>('/auth/logout');
+    } catch (error: any) {
+        console.log('Error logging out:', error);
+        throw new Error('Error logging out');
+    }
+};
 
-//         const tokens = extractTokens(response.headers['set-cookie'], response.headers);
+/**
+ * Refreshes the access token with the given refresh token.
+ * @param refreshToken The refresh token of the user.
+ * @returns The new tokens.
+ */
+export const refreshAccessToken = async (
+    refreshToken: string
+): Promise<Tokens> => {
+    try {
+        const response = await api.post<void>('/auth/refresh', {
+            refresh_token: refreshToken
+        });
 
-//         return tokens
-//     } catch (error: any) {
-//         console.log('Error refreshing token:', error);
-//         const axiosErr: AxiosError = error;
-//         const response = axiosErr.response;
-//         if (response) {
-//             const data = response.data as ErrorResponse;
-//             throw new Error(data.error);
-//         } else {
-//             throw new Error('Error refreshing token');
-//         }
-//     }
-// }
+        const tokens = extractTokens(
+            response.headers['set-cookie'],
+            response.headers
+        );
+
+        return tokens;
+    } catch (error: any) {
+        console.log('Error refreshing token:', error);
+        const axiosErr: AxiosError = error;
+        const response = axiosErr.response;
+        if (response) {
+            const data = response.data as ErrorResponse;
+            throw new Error(data.error);
+        } else {
+            throw new Error('Error refreshing token');
+        }
+    }
+};

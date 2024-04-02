@@ -1,23 +1,23 @@
-import { VariantProps, cva } from 'class-variance-authority';
 import { Text, View } from 'react-native';
+
+import { VariantProps, cva } from 'class-variance-authority';
 
 const wordmarkVariants = {
     color: {
         default: 'text-white',
         primary: 'text-black',
-        secondary: 'text-gray-500',
-    },
+        secondary: 'text-gray-500'
+    }
 };
 
 const wordmarkStyles = cva(['text-2xl', 'font-bold'], {
     variants: wordmarkVariants,
     defaultVariants: {
-        color: 'default',
-    },
+        color: 'default'
+    }
 });
 
-export interface WordmarkProps
-    extends VariantProps<typeof wordmarkStyles> { }
+export interface WordmarkProps extends VariantProps<typeof wordmarkStyles> {}
 
 const Wordmark = ({ color }: WordmarkProps) => {
     return (

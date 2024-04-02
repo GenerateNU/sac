@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Alert, Text, View } from 'react-native';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 import { router } from 'expo-router';
 
@@ -9,10 +11,6 @@ import { Button } from '@/components/button';
 import Error from '@/components/error';
 import Input from '@/components/input';
 import { useAuthStore } from '@/hooks/use-auth';
-import { loginByEmail } from '@/services/auth';
-import { useAuth, useSignIn } from '@clerk/clerk-expo';
-import { useState } from 'react';
-import Spinner from 'react-native-loading-spinner-overlay';
 
 type LoginFormData = {
     email: string;

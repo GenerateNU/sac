@@ -14,5 +14,5 @@ func Contact(contactParams types.RouteParams) {
 
 	contacts.Get("/", contactController.GetContacts)
 	contacts.Get("/:contactID", contactController.GetContact)
-	contacts.Delete("/:contactID", contactParams.AuthMiddleware.UserAuthorizeById, contactController.DeleteContact)
+	contacts.Delete("/:contactID", contactController.DeleteContact)
 }

@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { Tabs } from 'expo-router';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+
 import { useAuthStore } from '@/hooks/use-auth';
 
 const HomeTabBarIcon = ({ color }: { color: string }) => (
@@ -14,7 +15,7 @@ const AppLayout = () => {
 
     useEffect(() => {
         if (isLoggedIn) fetchUser();
-    }, []);
+    }, [isLoggedIn, fetchUser]);
 
     return (
         <Tabs>

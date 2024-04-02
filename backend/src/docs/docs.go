@@ -70,7 +70,7 @@ const docTemplate = `{
         },
         "/auth/login": {
             "post": {
-                "description": "Logs in a user",
+                "description": "Authenticates a user and returns a token upon successful login.",
                 "consumes": [
                     "application/json"
                 ],
@@ -80,11 +80,11 @@ const docTemplate = `{
                 "tags": [
                     "auth"
                 ],
-                "summary": "Logs in a user",
+                "summary": "User Login",
                 "operationId": "login-user",
                 "parameters": [
                     {
-                        "description": "Login Body",
+                        "description": "User credentials for login",
                         "name": "loginBody",
                         "in": "body",
                         "required": true,
@@ -95,25 +95,25 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Successfully authenticated user",
                         "schema": {
                             "$ref": "#/definitions/models.User"
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Invalid request, check the request body",
                         "schema": {
                             "$ref": "#/definitions/errors.Error"
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "User not found, check the provided credentials",
                         "schema": {
                             "$ref": "#/definitions/errors.Error"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/errors.Error"
                         }
@@ -3833,6 +3833,24 @@ const docTemplate = `{
                 "password"
             ],
             "properties": {
+                "college": {
+                    "enum": [
+                        "CAMD",
+                        "DMSB",
+                        "KCCS",
+                        "CE",
+                        "BCHS",
+                        "SL",
+                        "CPS",
+                        "CS",
+                        "CSSH"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.College"
+                        }
+                    ]
+                },
                 "email": {
                     "type": "string",
                     "maxLength": 255
@@ -3845,10 +3863,23 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 255
                 },
+                "nuid": {
+                    "description": "Optional fields",
+                    "type": "string"
+                },
                 "password": {
                     "type": "string",
                     "maxLength": 255,
                     "minLength": 8
+                },
+                "year": {
+                    "maximum": 6,
+                    "minimum": 1,
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Year"
+                        }
+                    ]
                 }
             }
         },
@@ -4317,6 +4348,10 @@ const docTemplate = `{
                 "last_name": {
                     "type": "string",
                     "maxLength": 255
+                },
+                "nuid": {
+                    "description": "TODO: remove this",
+                    "type": "string"
                 },
                 "year": {
                     "maximum": 6,
