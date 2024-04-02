@@ -19,7 +19,6 @@ const HostedBy = ({ eventID }: { eventID: uuid }) => {
     if (!hosts || hosts.length === 0) {
         return <Text>No hosts found</Text>;
     }
-    console.log(hosts);
 
     return (
         <>
