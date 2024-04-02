@@ -3380,7 +3380,7 @@ balanced-match@^1.0.0:
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.2.tgz#e83e3a7e3f300b34cb9d87f615fa0cbf357690ee"
   integrity sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==
 
-base64-js@^1.2.3, base64-js@^1.3.1, base64-js@^1.5.1:
+base64-js@^1.2.3, base64-js@^1.3.0, base64-js@^1.3.1, base64-js@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.5.1.tgz#1b1b440160a5bf7ad40b650f095963481903930a"
   integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
@@ -4765,6 +4765,11 @@ expect@^29.7.0:
     jest-message-util "^29.7.0"
     jest-util "^29.7.0"
 
+expo-application@^5.8.3, expo-application@~5.8.0:
+  version "5.8.3"
+  resolved "https://registry.yarnpkg.com/expo-application/-/expo-application-5.8.3.tgz#43991bd81d05c987b07b2f430c036cda1572bc62"
+  integrity sha512-IISxzpPX+Xe4ynnwX8yY52T6dm1g9sME1GCj4lvUlrdc5xeTPM6U35x7Wj82V7lLWBaVGe+/Tg9EeKqfylCEwA==
+
 expo-asset@~9.0.2:
   version "9.0.2"
   resolved "https://registry.yarnpkg.com/expo-asset/-/expo-asset-9.0.2.tgz#e8a6b6da356d5fc97955599d2fa49af78c7f0bfd"
@@ -4777,12 +4782,31 @@ expo-asset@~9.0.2:
     invariant "^2.2.4"
     md5-file "^3.2.3"
 
+expo-auth-session@^5.4.0:
+  version "5.4.0"
+  resolved "https://registry.yarnpkg.com/expo-auth-session/-/expo-auth-session-5.4.0.tgz#caae0bae4eeae649d320124ba8cd623c40c6cf0a"
+  integrity sha512-ZwjPMsMgCqdMi+vnhDbtjOAF12Y9+y1bYvorn/jQs47aFg6yeIRHycSOM/WL4hpFr+fAxycP3mIJeHVYfF3zuQ==
+  dependencies:
+    expo-application "~5.8.0"
+    expo-constants "~15.4.0"
+    expo-crypto "~12.8.0"
+    expo-linking "~6.2.0"
+    expo-web-browser "~12.8.0"
+    invariant "^2.2.4"
+
 expo-constants@~15.4.0, expo-constants@~15.4.3:
   version "15.4.5"
   resolved "https://registry.yarnpkg.com/expo-constants/-/expo-constants-15.4.5.tgz#81756a4c4e1c020f840a419cd86a124a6d1fb35b"
   integrity sha512-1pVVjwk733hbbIjtQcvUFCme540v4gFemdNlaxM2UXKbfRCOh2hzgKN5joHMOysoXQe736TTUrRj7UaZI5Yyhg==
   dependencies:
     "@expo/config" "~8.5.0"
+
+expo-crypto@~12.8.0:
+  version "12.8.1"
+  resolved "https://registry.yarnpkg.com/expo-crypto/-/expo-crypto-12.8.1.tgz#c7de01a61e89a0600f8f62ef6e71de4e6d3fcbae"
+  integrity sha512-EJEzmfBUSkGfALTlZRKUbh1RMKF7mWI12vkhO2w6bhGO4bjgGB8XzUHgLfrvSjphDFMx/lwaR6bAQDmXKO9UkQ==
+  dependencies:
+    base64-js "^1.3.0"
 
 expo-dev-client@~3.3.11:
   version "3.3.11"
@@ -4841,7 +4865,7 @@ expo-keep-awake@~12.8.2:
   resolved "https://registry.yarnpkg.com/expo-keep-awake/-/expo-keep-awake-12.8.2.tgz#6cfdf8ad02b5fa130f99d4a1eb98e459d5b4332e"
   integrity sha512-uiQdGbSX24Pt8nGbnmBtrKq6xL/Tm3+DuDRGBk/3ZE/HlizzNosGRIufIMJ/4B4FRw4dw8KU81h2RLuTjbay6g==
 
-expo-linking@~6.2.2:
+expo-linking@~6.2.0, expo-linking@~6.2.2:
   version "6.2.2"
   resolved "https://registry.yarnpkg.com/expo-linking/-/expo-linking-6.2.2.tgz#b7e148068ae49fd9ad814428c16fdf7a236e8aca"
   integrity sha512-FEe6lP4f7xFT/vjoHRG+tt6EPVtkEGaWNK1smpaUevmNdyCJKqW0PDB8o8sfG6y7fly8ULe8qg3HhKh5J7aqUQ==
@@ -4921,7 +4945,7 @@ expo-updates-interface@~0.15.1:
   resolved "https://registry.yarnpkg.com/expo-updates-interface/-/expo-updates-interface-0.15.3.tgz#cdee536dea0a8692833a4d074005bf9c6bbbdd99"
   integrity sha512-uLvsbaCmUsXgJqeen8rYH/jPr874ZUCXEvWpKHxrCv5/XATPlYEaDuecbNSGQ+cu78i6MdtB4BHOwZmoH2d47A==
 
-expo-web-browser@~12.8.2:
+expo-web-browser@~12.8.0, expo-web-browser@~12.8.2:
   version "12.8.2"
   resolved "https://registry.yarnpkg.com/expo-web-browser/-/expo-web-browser-12.8.2.tgz#f34fb85c80031e0dddd4f9b9efd03cb60333b089"
   integrity sha512-Mw8WoFMSADecNjtC4PZVsVj1/lYdxIAH1jOVV+F8v8SEWYxORWofoShfXg7oUxRLu0iUG8JETfO5y4m8+fOgdg==
@@ -8217,6 +8241,11 @@ react-native-element-dropdown@^2.10.2:
   integrity sha512-z6UemDzQdr+a1NDhImCApzRaW9uNiPOPRhjbMFVds855rqSjXPc3vGNaevxWi5q7PdqjyIxWTL6Z1rifcHl53g==
   dependencies:
     lodash "^4.17.21"
+
+react-native-loading-spinner-overlay@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-loading-spinner-overlay/-/react-native-loading-spinner-overlay-3.0.1.tgz#092481b8cce157d3af5ef942f845ad981f96bd36"
+  integrity sha512-4GdR54HQnKg2HPSSisVizfTLuyhSh4splY9eb8mKiYF1Ihjn/5EmdNo5bN3S7uKPFRC3WLzIZIouX6G6fXfnjw==
 
 react-native-reanimated@^3.8.1:
   version "3.8.1"

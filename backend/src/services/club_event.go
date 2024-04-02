@@ -4,8 +4,8 @@ import (
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
+	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
-	"gorm.io/gorm"
 )
 
 type ClubEventServiceInterface interface {
@@ -13,11 +13,11 @@ type ClubEventServiceInterface interface {
 }
 
 type ClubEventService struct {
-	DB *gorm.DB
+	types.ServiceParams
 }
 
-func NewClubEventService(db *gorm.DB) *ClubEventService {
-	return &ClubEventService{DB: db}
+func NewClubEventService(params types.ServiceParams) *ClubEventService {
+	return &ClubEventService{params}
 }
 
 func (c *ClubEventService) GetClubEvents(clubID string, limit string, page string) ([]models.Event, *errors.Error) {

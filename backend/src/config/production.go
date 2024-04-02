@@ -100,6 +100,11 @@ func readProd(v *viper.Viper) (*Settings, error) {
 		return nil, fmt.Errorf("failed to read OpenAI settings: %w", err)
 	}
 
+	resendSettings, err := readResendSettings()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read Resend settings: %w", err)
+	}
+
 	return &Settings{
 		Application: ApplicationSettings{
 			Port:    uint16(portInt),
@@ -125,5 +130,6 @@ func readProd(v *viper.Viper) (*Settings, error) {
 		},
 		PineconeSettings: *pineconeSettings,
 		OpenAISettings:   *openAISettings,
+		ResendSettings:   *resendSettings,
 	}, nil
 }
