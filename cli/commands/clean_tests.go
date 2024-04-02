@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"os/user"
@@ -21,19 +22,14 @@ func ClearDBCommand() *cli.Command {
 				return cli.Exit("Invalid arguments", 1)
 			}
 
-			err := CleanTestDBs()
-			if err != nil {
-				return cli.Exit(err.Error(), 1)
-			}
-
-			return nil
+			return CleanTestDBs(context.Background())
 		},
 	}
 
 	return &command
 }
 
-func CleanTestDBs() error {
+func CleanTestDBs(ctx context.Context) error {
 	fmt.Println("Cleaning test databases")
 
 	db, err := sql.Open("postgres", CONFIG.Database.WithDb())
@@ -54,8 +50,6 @@ func CleanTestDBs() error {
 		return err
 	}
 
-	defer rows.Close()
-
 	var wg sync.WaitGroup
 	var dropped, failed int
 
@@ -67,7 +61,6 @@ func CleanTestDBs() error {
 		}
 
 		wg.Add(1)
-
 		go func(dbName string) {
 			defer wg.Done()
 
