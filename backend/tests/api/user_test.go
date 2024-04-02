@@ -42,7 +42,6 @@ func TestGetUsersWorksForSuper(t *testing.T) {
 				eaa.Assert.Equal("SAC", respUser.FirstName)
 				eaa.Assert.Equal("Super", respUser.LastName)
 				eaa.Assert.Equal("generatesac@gmail.com", respUser.Email)
-				eaa.Assert.Equal("000000000", respUser.NUID)
 				eaa.Assert.Equal(models.College("KCCS"), respUser.College)
 				eaa.Assert.Equal(models.Year(1), respUser.Year)
 
@@ -98,7 +97,6 @@ func TestGetUserWorks(t *testing.T) {
 				eaa.Assert.Equal(sampleUser["first_name"].(string), respUser.FirstName)
 				eaa.Assert.Equal(sampleUser["last_name"].(string), respUser.LastName)
 				eaa.Assert.Equal(sampleUser["email"].(string), respUser.Email)
-				eaa.Assert.Equal(sampleUser["nuid"].(string), respUser.NUID)
 				eaa.Assert.Equal(models.College(sampleUser["college"].(string)), respUser.College)
 				eaa.Assert.Equal(models.Year(sampleUser["year"].(int)), respUser.Year)
 
@@ -190,7 +188,6 @@ func TestUpdateUserWorks(t *testing.T) {
 				eaa.Assert.Equal(newFirstName, respUser.FirstName)
 				eaa.Assert.Equal(newLastName, respUser.LastName)
 				eaa.Assert.Equal((sampleStudentJSON)["email"].(string), respUser.Email)
-				eaa.Assert.Equal((sampleStudentJSON)["nuid"].(string), respUser.NUID)
 				eaa.Assert.Equal(models.College((sampleStudentJSON)["college"].(string)), respUser.College)
 				eaa.Assert.Equal(models.Year((sampleStudentJSON)["year"].(int)), respUser.Year)
 
@@ -203,7 +200,6 @@ func TestUpdateUserWorks(t *testing.T) {
 				eaa.Assert.Equal(dbUser.FirstName, respUser.FirstName)
 				eaa.Assert.Equal(dbUser.LastName, respUser.LastName)
 				eaa.Assert.Equal(dbUser.Email, respUser.Email)
-				eaa.Assert.Equal(dbUser.NUID, respUser.NUID)
 				eaa.Assert.Equal(dbUser.College, respUser.College)
 				eaa.Assert.Equal(dbUser.Year, respUser.Year)
 			},
@@ -214,7 +210,6 @@ func TestUpdateUserWorks(t *testing.T) {
 func TestUpdateUserFailsOnInvalidBody(t *testing.T) {
 	for _, invalidData := range []map[string]interface{}{
 		{"email": "not.northeastern@gmail.com"},
-		{"nuid": "1800-123-4567"},
 		{"year": 1963},
 		{"college": "UT-Austin"},
 	} {
@@ -372,7 +367,6 @@ func AssertUserWithIDBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, bo
 	eaa.Assert.Equal(dbUser.FirstName, respUser.FirstName)
 	eaa.Assert.Equal(dbUser.LastName, respUser.LastName)
 	eaa.Assert.Equal(dbUser.Email, respUser.Email)
-	eaa.Assert.Equal(dbUser.NUID, respUser.NUID)
 	eaa.Assert.Equal(dbUser.College, respUser.College)
 	eaa.Assert.Equal(dbUser.Year, respUser.Year)
 
@@ -385,7 +379,6 @@ func AssertUserWithIDBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, bo
 	eaa.Assert.Equal((*body)["first_name"].(string), dbUser.FirstName)
 	eaa.Assert.Equal((*body)["last_name"].(string), dbUser.LastName)
 	eaa.Assert.Equal((*body)["email"].(string), dbUser.Email)
-	eaa.Assert.Equal((*body)["nuid"].(string), dbUser.NUID)
 	eaa.Assert.Equal(models.College((*body)["college"].(string)), dbUser.College)
 	eaa.Assert.Equal(models.Year((*body)["year"].(int)), dbUser.Year)
 
@@ -493,17 +486,6 @@ func AssertCreateBadDataFails(t *testing.T, jsonKey string, badValues []interfac
 	}
 
 	appAssert.Close()
-}
-
-func TestCreateUserFailsOnInvalidNUID(t *testing.T) {
-	AssertCreateBadDataFails(t,
-		"nuid",
-		[]interface{}{
-			"00123456",
-			"0012345678",
-			"00123456a",
-			"00123456!",
-		})
 }
 
 func TestCreateUserFailsOnInvalidEmail(t *testing.T) {
