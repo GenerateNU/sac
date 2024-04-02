@@ -126,7 +126,6 @@ func (c *OpenAIClient) CreateModeration(items []Searchable) ([]ModerationResult,
 	)
 
 	resp, err := http.DefaultClient.Do(req)
-
 	if err != nil {
 		return nil, &errors.FailedToCreateModeration
 	}
