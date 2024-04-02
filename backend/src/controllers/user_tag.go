@@ -34,6 +34,7 @@ func (ut *UserTagController) GetUserTags(c *fiber.Ctx) error {
 	if err != nil {
 		return err.FiberError(c)
 	}
+
 	return c.Status(fiber.StatusOK).JSON(&tags)
 }
 
@@ -55,6 +56,7 @@ func (ut *UserTagController) GetUserTags(c *fiber.Ctx) error {
 // @Router		/users/{userID}/tags/  [post]
 func (ut *UserTagController) CreateUserTags(c *fiber.Ctx) error {
 	var requestBody models.CreateUserTagsBody
+
 	if err := c.BodyParser(&requestBody); err != nil {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}

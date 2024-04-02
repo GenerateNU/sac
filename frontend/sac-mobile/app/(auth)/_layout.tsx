@@ -26,6 +26,20 @@ const AuthLayout = () => {
                     headerShown: false
                 }}
             />
+            <Stack.Screen
+                name="verification"
+                options={{
+                    title: 'Verification Code',
+                    headerShown: false
+                }}
+            />
+            <Stack.Screen
+                name="user-details"
+                options={{
+                    title: 'User Details',
+                    headerShown: false
+                }}
+            />
         </Stack>
     );
 };
