@@ -108,7 +108,7 @@ func TestPineconeUpsertWorks(t *testing.T) {
 			},
 		})
 
-	client := search.NewPineconeClient(search.NewOpenAIClient(*mockConfig.OpenAI), *mockConfig.Pinecone)
+	client := search.NewPineconeClient(search.NewOpenAIClient(*mockConfig.OpenAI), *mockConfig.Pinecone, false)
 	err := client.Upsert([]search.Searchable{&MockSearchableStruct{}})
 	assert.Equal(err, nil)
 }
@@ -136,7 +136,7 @@ func TestPineconeDeleteWorks(t *testing.T) {
 		}).
 		Reply(200)
 
-	client := search.NewPineconeClient(search.NewOpenAIClient(*mockConfig.OpenAI), *mockConfig.Pinecone)
+	client := search.NewPineconeClient(search.NewOpenAIClient(*mockConfig.OpenAI), *mockConfig.Pinecone, false)
 	err := client.Delete([]search.Searchable{&MockSearchableStruct{}})
 	assert.Equal(err, nil)
 }

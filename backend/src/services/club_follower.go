@@ -4,8 +4,8 @@ import (
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
+	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
-	"gorm.io/gorm"
 )
 
 type ClubFollowerServiceInterface interface {
@@ -13,11 +13,11 @@ type ClubFollowerServiceInterface interface {
 }
 
 type ClubFollowerService struct {
-	DB *gorm.DB
+	types.ServiceParams
 }
 
-func NewClubFollowerService(db *gorm.DB) *ClubFollowerService {
-	return &ClubFollowerService{DB: db}
+func NewClubFollowerService(params types.ServiceParams) *ClubFollowerService {
+	return &ClubFollowerService{params}
 }
 
 func (cf *ClubFollowerService) GetClubFollowers(clubID string, limit string, page string) ([]models.User, *errors.Error) {

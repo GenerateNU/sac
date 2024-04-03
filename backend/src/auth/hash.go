@@ -19,7 +19,33 @@ type params struct {
 	keyLength   uint32
 }
 
-func ComputePasswordHash(password string) (*string, error) {
+func GenerateURLSafeToken(length int) (*string, error) {
+	token := make([]byte, length)
+	if _, err := rand.Read(token); err != nil {
+		return nil, err
+	}
+
+	encodedToken := base64.RawURLEncoding.EncodeToString(token)
+	return &encodedToken, nil
+}
+
+func GenerateOTP(length int) (*string, error) {
+	digits := "0123456789"
+	otp := make([]byte, length)
+	if _, err := rand.Read(otp); err != nil {
+		return nil, err
+	}
+
+	for i := 0; i < length; i++ {
+		otp[i] = digits[int(otp[i])%10]
+	}
+
+	outOtp := string(otp)
+
+	return &outOtp, nil
+}
+
+func ComputeHash(data string) (*string, error) {
 	p := &params{
 		memory:      64 * 1024,
 		iterations:  3,
@@ -34,7 +60,7 @@ func ComputePasswordHash(password string) (*string, error) {
 		return nil, err
 	}
 
-	hash := argon2.IDKey([]byte(password),
+	hash := argon2.IDKey([]byte(data),
 		salt,
 		p.iterations,
 		p.memory,
@@ -56,13 +82,13 @@ var (
 	ErrIncompatibleVersion = errors.New("incompatible version of argon2")
 )
 
-func ComparePasswordAndHash(password string, encodedHash string) (bool, error) {
+func CompareHash(data string, encodedHash string) (bool, error) {
 	p, salt, hash, err := decodeHash(encodedHash)
 	if err != nil {
 		return false, err
 	}
 
-	otherHash := argon2.IDKey([]byte(password), salt, p.iterations, p.memory, p.parallelism, p.keyLength)
+	otherHash := argon2.IDKey([]byte(data), salt, p.iterations, p.memory, p.parallelism, p.keyLength)
 
 	if subtle.ConstantTimeCompare(hash, otherHash) == 1 {
 		return true, nil

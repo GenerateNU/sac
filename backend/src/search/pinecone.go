@@ -27,18 +27,24 @@ type PineconeClient struct {
 	Settings     config.PineconeSettings
 	IndexName    *mattress.Secret[string]
 	openAIClient *OpenAIClient
+	dev          bool
 }
 
 // Connects to an existing Pinecone index, using the host and keys provided in settings.
-func NewPineconeClient(openAIClient *OpenAIClient, settings config.PineconeSettings) *PineconeClient {
+func NewPineconeClient(openAIClient *OpenAIClient, settings config.PineconeSettings, dev bool) *PineconeClient {
 	return &PineconeClient{
 		Settings:     settings,
 		openAIClient: openAIClient,
+		dev:          dev,
 	}
 }
 
 // Seeds the pinecone index with the clubs currently in the database.
 func (c *PineconeClient) Seed(db *gorm.DB) *errors.Error {
+	if c.dev {
+		return nil
+	}
+
 	var clubs []models.Club
 
 	if err := db.Find(&clubs).Error; err != nil {
@@ -99,6 +105,10 @@ func (c *PineconeClient) Upsert(items []Searchable) *errors.Error {
 		return nil
 	}
 
+	if c.dev {
+		return nil
+	}
+
 	embeddings, embeddingErr := c.openAIClient.CreateEmbedding(items)
 	if embeddingErr != nil {
 		return &errors.FailedToUpsertToPinecone
@@ -152,6 +162,10 @@ type PineconeDeleteRequestBody struct {
 // Deletes the given list of searchables from the Pinecone index.
 func (c *PineconeClient) Delete(items []Searchable) *errors.Error {
 	if len(items) == 0 {
+		return nil
+	}
+
+	if c.dev {
 		return nil
 	}
 

@@ -2,16 +2,15 @@ package routes
 
 import (
 	"github.com/GenerateNU/sac/backend/src/controllers"
-	"github.com/GenerateNU/sac/backend/src/middleware"
 	"github.com/GenerateNU/sac/backend/src/services"
-	"github.com/gofiber/fiber/v2"
+	"github.com/GenerateNU/sac/backend/src/types"
 )
 
-func ClubFollower(clubsIDRouter fiber.Router, clubFollowerService services.ClubFollowerServiceInterface, authMiddleware *middleware.AuthMiddlewareService) {
-	clubFollowerController := controllers.NewClubFollowerController(clubFollowerService)
+func ClubFollower(clubParams types.RouteParams) {
+	clubFollowerController := controllers.NewClubFollowerController(services.NewClubFollowerService(clubParams.ServiceParams))
 
-	clubFollower := clubsIDRouter.Group("/followers")
+	clubFollower := clubParams.Router.Group("/followers")
 
 	// api/clubs/:clubID/followers/*
-	clubFollower.Get("/", authMiddleware.ClubAuthorizeById, clubFollowerController.GetClubFollowers)
+	clubFollower.Get("/", clubParams.AuthMiddleware.ClubAuthorizeById, clubFollowerController.GetClubFollowers)
 }
