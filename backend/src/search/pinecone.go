@@ -243,7 +243,7 @@ func (c *PineconeClient) Search(item Searchable) ([]string, *errors.Error) {
 		PineconeSearchRequestBody{
 			IncludeValues:   false,
 			IncludeMetadata: false,
-			TopK:            int(c.SearchSettings.TopKResults),
+			TopK:            c.SearchSettings.TopKResults,
 			// Only 1 item was passed to CreateEmbedding, so grab that 1 item and use its embedding.
 			Vector:    values[0].Embedding,
 			Namespace: item.Namespace(),
