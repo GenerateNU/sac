@@ -91,9 +91,6 @@ func TestGetUserWorks(t *testing.T) {
 
 				sampleUser := *h.SampleStudentJSONFactory(sampleStudent, rawPassword)
 
-				fmt.Printf("Sample user: %v", sampleUser)
-				fmt.Printf("Response user: %v", respUser)
-
 				eaa.Assert.Equal(sampleUser["first_name"].(string), respUser.FirstName)
 				eaa.Assert.Equal(sampleUser["last_name"].(string), respUser.LastName)
 				eaa.Assert.Equal(sampleUser["email"].(string), respUser.Email)
@@ -464,8 +461,6 @@ func AssertCreateBadDataFails(t *testing.T, jsonKey string, badValues []interfac
 	appAssert, _, _ := CreateSampleStudent(t, nil)
 
 	sampleStudent, rawPassword := h.SampleStudentFactory()
-
-	fmt.Printf("Sample student: %v\n", sampleStudent)
 
 	for _, badValue := range badValues {
 		sampleUserPermutation := *h.SampleStudentJSONFactory(sampleStudent, rawPassword)

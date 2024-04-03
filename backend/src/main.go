@@ -62,8 +62,7 @@ func main() {
 
 		err := pinecone.Seed(db)
 		if err != nil {
-			fmt.Printf("Error seeding PineconeDB: %s\n", err.Error())
-			return
+			Exit("Error seeding PineconeDB: %s\n", err.Error())
 		}
 		return
 	}
