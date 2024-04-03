@@ -99,9 +99,9 @@ type ModerationResult struct {
 }
 
 func (c *OpenAIClient) CreateModeration(items []Searchable) ([]ModerationResult, *errors.Error) {
-	searchStrings := []string{}
-	for _, item := range items {
-		searchStrings = append(searchStrings, item.EmbeddingString())
+	searchStrings := make([]string, len(items))
+	for i, item := range items {
+		searchStrings[i] = item.EmbeddingString()
 	}
 
 	moderationBody, err := json.Marshal(

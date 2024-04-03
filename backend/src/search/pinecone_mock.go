@@ -1,8 +1,7 @@
-package helpers
+package search
 
 import (
 	"github.com/GenerateNU/sac/backend/src/errors"
-	"github.com/GenerateNU/sac/backend/src/search"
 )
 
 type PineconeMockClient struct{}
@@ -12,14 +11,14 @@ func NewPineconeMockClient() *PineconeMockClient {
 	return &PineconeMockClient{}
 }
 
-func (c *PineconeMockClient) Upsert(items []search.Searchable) *errors.Error {
+func (c *PineconeMockClient) Upsert(items []Searchable) *errors.Error {
 	return nil
 }
 
-func (c *PineconeMockClient) Delete(items []search.Searchable) *errors.Error {
+func (c *PineconeMockClient) Delete(items []Searchable) *errors.Error {
 	return nil
 }
 
-func (c *PineconeMockClient) Search(item search.Searchable, topK int) ([]string, *errors.Error) {
+func (c *PineconeMockClient) Search(item Searchable) ([]string, *errors.Error) {
 	return []string{}, nil
 }

@@ -44,7 +44,7 @@ func GetClubs(db *gorm.DB, pinecone search.PineconeClientInterface, queryParams 
 
 	if queryParams.Search != "" {
 		clubSearch := models.NewClubSearch(queryParams.Search)
-		resultIDs, err := pinecone.Search(clubSearch, 25)
+		resultIDs, err := pinecone.Search(clubSearch)
 		if err != nil {
 			return nil, err
 		}

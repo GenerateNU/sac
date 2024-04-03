@@ -48,12 +48,13 @@ func Init(db *gorm.DB, pinecone search.PineconeClientInterface, settings config.
 		Router:         apiv1,
 		AuthMiddleware: authMiddleware,
 		ServiceParams: types.ServiceParams{
-			DB:           db,
-			Validate:     validate,
-			Resend:       resend,
-			Pinecone:     &pinecone,
-			JWT:          jwt,
-			AuthSettings: settings.Auth,
+			DB:             db,
+			Validate:       validate,
+			Resend:         resend,
+			Pinecone:       &pinecone,
+			JWT:            jwt,
+			AuthSettings:   settings.Auth,
+			SearchSettings: settings.Search,
 		},
 	}
 

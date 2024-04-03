@@ -18,10 +18,11 @@ type RouteParams struct {
 }
 
 type ServiceParams struct {
-	DB           *gorm.DB
-	Validate     *validator.Validate
-	Resend       *email.ResendClient
-	Pinecone     *search.PineconeClientInterface
-	JWT          *auth.JWTClient
-	AuthSettings config.AuthSettings
+	DB             *gorm.DB
+	Validate       *validator.Validate
+	Resend         *email.ResendClient
+	Pinecone       *search.PineconeClientInterface
+	JWT            *auth.JWTClient
+	AuthSettings   config.AuthSettings
+	SearchSettings config.SearchSettings
 }

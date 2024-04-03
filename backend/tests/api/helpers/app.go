@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/GenerateNU/sac/backend/src/config"
+	"github.com/GenerateNU/sac/backend/src/search"
 	"github.com/GenerateNU/sac/backend/src/server"
 	"github.com/gofiber/fiber/v2"
 	"github.com/huandu/go-assert"
@@ -39,7 +40,7 @@ func spawnApp() (*TestApp, error) {
 	}
 
 	return &TestApp{
-		App:      server.Init(connectionWithDB, NewPineconeMockClient(), *configuration),
+		App:      server.Init(connectionWithDB, search.NewPineconeMockClient(), *configuration),
 		Address:  fmt.Sprintf("http://%s", listener.Addr().String()),
 		Conn:     connectionWithDB,
 		Settings: *configuration,

@@ -32,6 +32,7 @@ func Exit(format string, a ...interface{}) {
 func main() {
 	onlyMigrate := flag.Bool("only-migrate", false, "Specify if you want to only perform the database migration")
 	onlySeedPinecone := flag.Bool("seed-pinecone", false, "Specify if want to only perform the pinecone database seeding")
+	connectToPinecone := flag.Bool("connect-to-pinecone", false, "Connect to a real Pinecone instance instead of mock")
 	configPath := flag.String("config", filepath.Join("..", "..", "config"), "Specify the path to the config directory")
 	useDevDotEnv := flag.Bool("use-dev-dot-env", false, "Specify if you want to use the .env.dev file")
 
@@ -58,7 +59,7 @@ func main() {
 
 	if *onlySeedPinecone {
 		openAi := search.NewOpenAIClient(config.OpenAISettings)
-		pinecone := search.NewPineconeClient(openAi, config.PineconeSettings, true)
+		pinecone := search.NewPineconeClient(openAi, config.PineconeSettings, config.Search)
 
 		err := pinecone.Seed(db)
 		if err != nil {
@@ -74,7 +75,13 @@ func main() {
 	}
 
 	openAi := search.NewOpenAIClient(config.OpenAISettings)
-	pinecone := search.NewPineconeClient(openAi, config.PineconeSettings, true)
+	var pinecone search.PineconeClientInterface
+
+	if *connectToPinecone {
+		pinecone = search.NewPineconeClient(openAi, config.PineconeSettings, config.Search)
+	} else {
+		pinecone = search.NewPineconeMockClient()
+	}
 
 	app := server.Init(db, pinecone, *config)
 

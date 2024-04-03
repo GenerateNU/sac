@@ -20,31 +20,27 @@ import (
 type PineconeClientInterface interface {
 	Upsert(items []Searchable) *errors.Error
 	Delete(items []Searchable) *errors.Error
-	Search(item Searchable, topK int) ([]string, *errors.Error)
+	Search(item Searchable) ([]string, *errors.Error)
 }
 
 type PineconeClient struct {
-	Settings     config.PineconeSettings
-	IndexName    *mattress.Secret[string]
-	openAIClient *OpenAIClient
-	dev          bool
+	PineconeSettings config.PineconeSettings
+	SearchSettings   config.SearchSettings
+	IndexName        *mattress.Secret[string]
+	openAIClient     *OpenAIClient
 }
 
 // Connects to an existing Pinecone index, using the host and keys provided in settings.
-func NewPineconeClient(openAIClient *OpenAIClient, settings config.PineconeSettings, dev bool) *PineconeClient {
+func NewPineconeClient(openAIClient *OpenAIClient, pineconeSettings config.PineconeSettings, searchSettings config.SearchSettings) *PineconeClient {
 	return &PineconeClient{
-		Settings:     settings,
-		openAIClient: openAIClient,
-		dev:          dev,
+		PineconeSettings: pineconeSettings,
+		SearchSettings:   searchSettings,
+		openAIClient:     openAIClient,
 	}
 }
 
 // Seeds the pinecone index with the clubs currently in the database.
 func (c *PineconeClient) Seed(db *gorm.DB) *errors.Error {
-	if c.dev {
-		return nil
-	}
-
 	var clubs []models.Club
 
 	if err := db.Find(&clubs).Error; err != nil {
@@ -83,7 +79,7 @@ func (c *PineconeClient) Seed(db *gorm.DB) *errors.Error {
 
 func (c *PineconeClient) pineconeRequest(req *http.Request) *http.Request {
 	return utilities.ApplyModifiers(req,
-		utilities.HeaderKV("Api-Key", c.Settings.APIKey.Expose()),
+		utilities.HeaderKV("Api-Key", c.PineconeSettings.APIKey.Expose()),
 		utilities.AcceptJSON(),
 		utilities.JSON(),
 	)
@@ -102,10 +98,6 @@ type PineconeUpsertRequestBody struct {
 // Inserts the given list of searchables to the Pinecone index.
 func (c *PineconeClient) Upsert(items []Searchable) *errors.Error {
 	if len(items) == 0 {
-		return nil
-	}
-
-	if c.dev {
 		return nil
 	}
 
@@ -132,7 +124,7 @@ func (c *PineconeClient) Upsert(items []Searchable) *errors.Error {
 	}
 
 	req, err := http.NewRequest(fiber.MethodPost,
-		fmt.Sprintf("%s/vectors/upsert", c.Settings.IndexHost.Expose()),
+		fmt.Sprintf("%s/vectors/upsert", c.PineconeSettings.IndexHost.Expose()),
 		bytes.NewBuffer(upsertBody))
 	if err != nil {
 		return &errors.FailedToUpsertToPinecone
@@ -165,10 +157,6 @@ func (c *PineconeClient) Delete(items []Searchable) *errors.Error {
 		return nil
 	}
 
-	if c.dev {
-		return nil
-	}
-
 	// Ensure all items are in the same namespace
 	namespace := items[0].Namespace()
 	for _, item := range items {
@@ -193,7 +181,7 @@ func (c *PineconeClient) Delete(items []Searchable) *errors.Error {
 	}
 
 	req, err := http.NewRequest(fiber.MethodPost,
-		fmt.Sprintf("%s/vectors/delete", c.Settings.IndexHost.Expose()),
+		fmt.Sprintf("%s/vectors/delete", c.PineconeSettings.IndexHost.Expose()),
 		bytes.NewBuffer(deleteBody))
 	if err != nil {
 		return &errors.FailedToDeleteToPinecone
@@ -236,7 +224,7 @@ type PineconeSearchResponseBody struct {
 // elements' ids.
 //
 //nolint:cyclop
-func (c *PineconeClient) Search(item Searchable, topK int) ([]string, *errors.Error) {
+func (c *PineconeClient) Search(item Searchable) ([]string, *errors.Error) {
 	moderation, _err := c.openAIClient.CreateModeration([]Searchable{item})
 	if _err != nil {
 		return []string{}, _err
@@ -255,7 +243,7 @@ func (c *PineconeClient) Search(item Searchable, topK int) ([]string, *errors.Er
 		PineconeSearchRequestBody{
 			IncludeValues:   false,
 			IncludeMetadata: false,
-			TopK:            topK,
+			TopK:            int(c.SearchSettings.TopKResults),
 			// Only 1 item was passed to CreateEmbedding, so grab that 1 item and use its embedding.
 			Vector:    values[0].Embedding,
 			Namespace: item.Namespace(),
@@ -265,7 +253,7 @@ func (c *PineconeClient) Search(item Searchable, topK int) ([]string, *errors.Er
 	}
 
 	req, err := http.NewRequest(fiber.MethodPost,
-		fmt.Sprintf("%s/query", c.Settings.IndexHost.Expose()),
+		fmt.Sprintf("%s/query", c.PineconeSettings.IndexHost.Expose()),
 		bytes.NewBuffer(searchBody))
 	if err != nil {
 		return []string{}, &errors.FailedToSearchToPinecone
@@ -293,7 +281,7 @@ func (c *PineconeClient) Search(item Searchable, topK int) ([]string, *errors.Er
 	resultsToReturn := []string{}
 
 	for _, match := range results.Matches {
-		if match.Score > 0.7 {
+		if match.Score > c.SearchSettings.ScoreThreshold {
 			resultsToReturn = append(resultsToReturn, match.Id)
 		}
 	}
