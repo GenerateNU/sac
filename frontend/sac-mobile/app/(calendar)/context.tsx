@@ -1,3 +1,11 @@
 import { createContext } from "react";
 
-export const DateContext = createContext(new Date());
+export type DateContextState = {
+    topViewDate: Date,
+    selectedDate: Date,
+}
+
+export const DateContext = createContext<DateContextState>({
+    topViewDate: new Date(),
+    selectedDate: new Date()
+});
