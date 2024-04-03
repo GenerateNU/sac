@@ -17,6 +17,6 @@ updates:
     schedule:
       interval: weekly
   - package-ecosystem: cargo
-    directory: ./scaper/clubs/
+    directory: ./scraper/clubs/
     schedule:
       interval: weekly
