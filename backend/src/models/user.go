@@ -37,17 +37,22 @@ const (
 	Graduate Year = 6
 )
 
+type Tokens struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+}
+
 type User struct {
 	Model
 
 	Role         UserRole `gorm:"type:varchar(255);default:'student'" json:"role" validate:"required,oneof=super student"`
-	NUID         string   `gorm:"column:nuid;type:varchar(9);unique" json:"nuid" validate:"required,numeric,len=9"`
 	FirstName    string   `gorm:"type:varchar(255)" json:"first_name" validate:"required,max=255"`
 	LastName     string   `gorm:"type:varchar(255)" json:"last_name" validate:"required,max=255"`
 	Email        string   `gorm:"type:varchar(255);unique" json:"email" validate:"required,email,max=255"`
 	PasswordHash string   `gorm:"type:varchar(97)" json:"-" validate:"required,len=97"`
 	College      College  `gorm:"type:varchar(255)" json:"college" validate:"required,max=255"`
 	Year         Year     `gorm:"type:smallint" json:"year" validate:"required,min=1,max=6"`
+	IsVerified   bool     `gorm:"type:boolean;default:false" json:"is_verified"`
 
 	Tag               []Tag     `gorm:"many2many:user_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	Admin             []Club    `gorm:"many2many:user_club_admins;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
@@ -61,13 +66,13 @@ type User struct {
 }
 
 type CreateUserRequestBody struct {
-	NUID      string  `json:"nuid" validate:"required,numeric,len=9"`
-	FirstName string  `json:"first_name" validate:"required,max=255"`
-	LastName  string  `json:"last_name" validate:"required,max=255"`
-	Email     string  `json:"email" validate:"required,email,neu_email,max=255"`
-	Password  string  `json:"password" validate:"required,password"`
-	College   College `json:"college" validate:"required,oneof=CAMD DMSB KCCS CE BCHS SL CPS CS CSSH"`
-	Year      Year    `json:"year" validate:"required,min=1,max=6"`
+	FirstName string `json:"first_name" validate:"required,max=255"`
+	LastName  string `json:"last_name" validate:"required,max=255"`
+	Email     string `json:"email" validate:"required,email,neu_email,max=255"`
+	Password  string `json:"password" validate:"required,password,min=8,max=255"`
+	// Optional fields
+	College College `json:"college" validate:"omitempty,oneof=CAMD DMSB KCCS CE BCHS SL CPS CS CSSH"`
+	Year    Year    `json:"year" validate:"omitempty,min=1,max=6"`
 }
 
 type UpdateUserRequestBody struct {
@@ -79,12 +84,16 @@ type UpdateUserRequestBody struct {
 
 type LoginUserResponseBody struct {
 	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"min=8,max=255,password"`
+	Password string `json:"password" validate:"required,password,min=8,max=255"`
 }
 
 type UpdatePasswordRequestBody struct {
 	OldPassword string `json:"old_password" validate:"required,password,min=8,max=255"`
 	NewPassword string `json:"new_password" validate:"required,password,nefield=OldPassword,min=8,max=255"`
+}
+
+type RefreshTokenRequestBody struct {
+	RefreshToken string `json:"refresh_token" validate:"required"`
 }
 
 type CreateUserTagsBody struct {

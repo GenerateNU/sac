@@ -1,13 +1,14 @@
 module github.com/GenerateNU/sac/backend
 
-go 1.22.0
+go 1.22.1
 
 require (
 	github.com/aws/aws-sdk-go v1.50.5
+	github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5
 	github.com/garrettladley/mattress v0.4.0
 	github.com/go-playground/validator/v10 v10.19.0
 	github.com/goccy/go-json v0.10.2
-	github.com/gofiber/fiber/v2 v2.52.2
+	github.com/gofiber/fiber/v2 v2.52.4
 	github.com/gofiber/swagger v1.0.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.6.0
@@ -16,20 +17,24 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/mcnijman/go-emailaddress v1.1.1
 	github.com/mitchellh/mapstructure v1.5.0
+	github.com/resend/resend-go/v2 v2.6.0
 	github.com/spf13/viper v1.18.2
 	github.com/swaggo/swag v1.16.3
 	golang.org/x/crypto v0.21.0
 	golang.org/x/text v0.14.0
 	gorm.io/driver/postgres v1.5.7
-	gorm.io/gorm v1.25.7
+	gorm.io/gorm v1.25.9
 )
 
 require (
 	github.com/awnumar/memcall v0.2.0 // indirect
 	github.com/awnumar/memguard v0.22.4 // indirect
 	github.com/h2non/parth v0.0.0-20190131123155-b4df798d6542 // indirect
+	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
+	github.com/smartystreets/goconvey v1.8.1 // indirect
 	github.com/tinylib/msgp v1.1.8 // indirect
+	golang.org/x/sync v0.6.0 // indirect
 )
 
 require github.com/jmespath/go-jmespath v0.4.0 // indirect
@@ -49,7 +54,7 @@ require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
-	github.com/jackc/pgx/v5 v5.4.3 // indirect
+	github.com/jackc/pgx/v5 v5.5.4 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/josharian/intern v1.0.0 // indirect

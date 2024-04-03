@@ -30,9 +30,11 @@ type Club struct {
 
 	SoftDeletedAt gorm.DeletedAt `gorm:"type:timestamptz;default:NULL" json:"-" validate:"-"`
 
-	Name             string           `gorm:"type:varchar(255);unique" json:"name" validate:"required,max=255"`
-	Preview          string           `gorm:"type:varchar(255)" json:"preview" validate:"required,max=255"`
-	Description      string           `gorm:"type:varchar(255)" json:"description" validate:"required,http_url,mongo_url,max=255"` // MongoDB URL
+	Name    string `gorm:"type:varchar(255)" json:"name" validate:"required,max=255"`
+	Preview string `gorm:"type:varchar(255)" json:"preview" validate:"required,max=255"`
+	// FIXME: make description a mongodb url again
+	/*Description      string           `gorm:"type:varchar(255)" json:"description" validate:"required,http_url,mongo_url,max=255"` // MongoDB URL*/
+	Description      string           `gorm:"type:text" json:"description" validate:"required"`
 	NumMembers       int              `gorm:"type:int" json:"num_members" validate:"required,min=1"`
 	IsRecruiting     bool             `gorm:"type:bool;default:false" json:"is_recruiting" validate:"required"`
 	RecruitmentCycle RecruitmentCycle `gorm:"type:varchar(255);default:always" json:"recruitment_cycle" validate:"required,max=255,oneof=fall spring fallSpring always"`
@@ -40,8 +42,8 @@ type Club struct {
 	ApplicationLink  string           `gorm:"type:varchar(255);default:NULL" json:"application_link" validate:"required,max=255,http_url"`
 	Logo             string           `gorm:"type:varchar(255);default:NULL" json:"logo" validate:"omitempty,http_url,s3_url,max=255"` // S3 URL
 
-	Parent *uuid.UUID `gorm:"foreignKey:Parent" json:"-" validate:"uuid4"`
-	Tag    []Tag      `gorm:"many2many:club_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"tags,omitempty" validate:"-"`
+	Parent            *uuid.UUID       `gorm:"foreignKey:Parent" json:"-" validate:"uuid4"`
+	Tag               []Tag            `gorm:"many2many:club_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"tags,omitempty" validate:"-"`
 	Admin             []User           `gorm:"many2many:user_club_admins;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"required"`
 	Member            []User           `gorm:"many2many:user_club_members;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"required"`
 	Follower          []User           `gorm:"many2many:user_club_followers;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
@@ -49,6 +51,8 @@ type Club struct {
 	Comment           []Comment        `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	PointOfContact    []PointOfContact `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	Contact           []Contact        `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
+	// Event
+	HostEvent   []Event        `gorm:"foreignKey:Host;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	Event       []Event        `gorm:"many2many:club_events;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	Notifcation []Notification `gorm:"polymorphic:Reference;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 }
@@ -88,6 +92,30 @@ type ClubQueryParams struct {
 	IsRecruiting     *bool             `query:"is_recruiting"`
 	Limit            int               `query:"limit"`
 	Page             int               `query:"page"`
+	Search           string            `query:"search"`
+}
+
+type ClubSearch struct {
+	SearchString string `query:"search"`
+}
+
+func NewClubSearch(searchQuery string) *ClubSearch {
+	return &ClubSearch{
+		SearchString: searchQuery,
+	}
+}
+
+// dummy searchID
+func (cs *ClubSearch) SearchId() string {
+	return ""
+}
+
+func (cs *ClubSearch) Namespace() string {
+	return "clubs"
+}
+
+func (cs *ClubSearch) EmbeddingString() string {
+	return cs.SearchString
 }
 
 func (cqp *ClubQueryParams) IntoWhere() string {

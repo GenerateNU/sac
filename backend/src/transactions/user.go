@@ -77,6 +77,18 @@ func GetUserPasswordHash(db *gorm.DB, id uuid.UUID) (*string, *errors.Error) {
 	return &user.PasswordHash, nil
 }
 
+func UpdateEmailVerification(db *gorm.DB, id uuid.UUID) *errors.Error {
+	result := db.Model(&models.User{}).Where("id = ?", id).Update("is_verified", true)
+	if result.RowsAffected == 0 {
+		if result.Error == nil {
+			return &errors.UserNotFound
+		} else {
+			return &errors.FailedToUpdateEmailVerification
+		}
+	}
+	return nil
+}
+
 func UpdateUser(db *gorm.DB, id uuid.UUID, user models.User) (*models.User, *errors.Error) {
 	var existingUser models.User
 

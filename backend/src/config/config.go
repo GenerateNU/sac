@@ -1,19 +1,21 @@
 package config
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/spf13/viper"
 )
 
 type Settings struct {
-	Application ApplicationSettings `yaml:"application"`
-	Database    DatabaseSettings    `yaml:"database"`
-	SuperUser   SuperUserSettings   `yaml:"superuser"`
-	Auth        AuthSettings
-	AWS         AWSSettings
+	Application      ApplicationSettings `yaml:"application"`
+	Database         DatabaseSettings    `yaml:"database"`
+	SuperUser        SuperUserSettings   `yaml:"superuser"`
+	Auth             AuthSettings
+	AWS              AWSSettings
 	PineconeSettings PineconeSettings
 	OpenAISettings   OpenAISettings
+	ResendSettings   ResendSettings
 }
 
 type intermediateSettings struct {
@@ -65,9 +67,13 @@ func GetConfiguration(path string, useDevDotEnv bool) (*Settings, error) {
 	v := viper.New()
 	v.SetConfigType("yaml")
 	v.AddConfigPath(path)
-	if environment == EnvironmentLocal {
+
+	switch environment {
+	case EnvironmentLocal:
 		return readLocal(v, path, useDevDotEnv)
-	} else {
+	case EnvironmentProduction:
 		return readProd(v)
+	default:
+		return nil, fmt.Errorf("unknown environment: %s", environment)
 	}
 }

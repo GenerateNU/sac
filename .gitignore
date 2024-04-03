@@ -17,3 +17,8 @@ node_modules
 
 # Debug files
 backend/tests/api/__debug_*
+.env.prod
+
+frontend/sac-mobile/ios/
+frontend/sac-mobile/android/
+tmp/

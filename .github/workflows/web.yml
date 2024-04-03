@@ -1,0 +1,76 @@
+name: Web
+
+permissions: read-all
+
+on:
+  push:
+    paths:
+      - frontend/sac-web/**
+      - .github/workflows/web.yml
+  pull_request:
+    types: opened
+    paths:
+      - frontend/sac-web/**
+      - .github/workflows/web.yml
+
+jobs:
+  format:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: yarn
+          cache-dependency-path: frontend/sac-web/yarn.lock
+      - name: Install dependencies
+        run: |
+          cd frontend/sac-web
+          yarn install
+      - name: Format
+        run: |
+          cd frontend/sac-web
+          yarn format
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: yarn
+          cache-dependency-path: frontend/sac-web/yarn.lock
+      - name: Install dependencies
+        run: |
+          cd frontend/sac-web
+          yarn install
+      - name: Lint
+        run: |
+          cd frontend/sac-web
+          yarn lint
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: yarn
+          cache-dependency-path: frontend/sac-web/yarn.lock
+      - name: Install dependencies
+        run: |
+          cd frontend/sac-web
+          yarn install
+      - name: Test
+        run: |
+          cd frontend/sac-web
+          yarn test

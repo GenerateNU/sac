@@ -3,7 +3,6 @@ package database
 import (
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/models"
-
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -71,12 +70,15 @@ func MigrateDB(settings config.Settings, db *gorm.DB) error {
 		&models.Category{},
 		&models.Club{},
 		&models.Contact{},
+		&models.Series{},
 		&models.Event{},
+		&models.EventSeries{},
 		&models.Notification{},
 		&models.PointOfContact{},
 		&models.Tag{},
 		&models.User{},
-		&models.File{}, 
+		&models.File{},
+		&models.Verification{},
 		&models.Series{},
 		&models.EventInstanceException{},
 		&models.EventSeries{},
@@ -111,7 +113,7 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 
 	var user models.User
 
-	if err := db.Where("nuid = ?", superUser.NUID).First(&user).Error; err != nil {
+	if err := db.Where("id = ?", superUser.ID).First(&user).Error; err != nil {
 		tx := db.Begin().Session(&gorm.Session{SkipHooks: true})
 
 		if err := tx.Error; err != nil {

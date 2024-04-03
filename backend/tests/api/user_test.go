@@ -42,7 +42,6 @@ func TestGetUsersWorksForSuper(t *testing.T) {
 				eaa.Assert.Equal("SAC", respUser.FirstName)
 				eaa.Assert.Equal("Super", respUser.LastName)
 				eaa.Assert.Equal("generatesac@gmail.com", respUser.Email)
-				eaa.Assert.Equal("000000000", respUser.NUID)
 				eaa.Assert.Equal(models.College("KCCS"), respUser.College)
 				eaa.Assert.Equal(models.Year(1), respUser.Year)
 
@@ -95,7 +94,6 @@ func TestGetUserWorks(t *testing.T) {
 				eaa.Assert.Equal(sampleUser["first_name"].(string), respUser.FirstName)
 				eaa.Assert.Equal(sampleUser["last_name"].(string), respUser.LastName)
 				eaa.Assert.Equal(sampleUser["email"].(string), respUser.Email)
-				eaa.Assert.Equal(sampleUser["nuid"].(string), respUser.NUID)
 				eaa.Assert.Equal(models.College(sampleUser["college"].(string)), respUser.College)
 				eaa.Assert.Equal(models.Year(sampleUser["year"].(int)), respUser.Year)
 
@@ -187,7 +185,6 @@ func TestUpdateUserWorks(t *testing.T) {
 				eaa.Assert.Equal(newFirstName, respUser.FirstName)
 				eaa.Assert.Equal(newLastName, respUser.LastName)
 				eaa.Assert.Equal((sampleStudentJSON)["email"].(string), respUser.Email)
-				eaa.Assert.Equal((sampleStudentJSON)["nuid"].(string), respUser.NUID)
 				eaa.Assert.Equal(models.College((sampleStudentJSON)["college"].(string)), respUser.College)
 				eaa.Assert.Equal(models.Year((sampleStudentJSON)["year"].(int)), respUser.Year)
 
@@ -200,7 +197,6 @@ func TestUpdateUserWorks(t *testing.T) {
 				eaa.Assert.Equal(dbUser.FirstName, respUser.FirstName)
 				eaa.Assert.Equal(dbUser.LastName, respUser.LastName)
 				eaa.Assert.Equal(dbUser.Email, respUser.Email)
-				eaa.Assert.Equal(dbUser.NUID, respUser.NUID)
 				eaa.Assert.Equal(dbUser.College, respUser.College)
 				eaa.Assert.Equal(dbUser.Year, respUser.Year)
 			},
@@ -211,7 +207,6 @@ func TestUpdateUserWorks(t *testing.T) {
 func TestUpdateUserFailsOnInvalidBody(t *testing.T) {
 	for _, invalidData := range []map[string]interface{}{
 		{"email": "not.northeastern@gmail.com"},
-		{"nuid": "1800-123-4567"},
 		{"year": 1963},
 		{"college": "UT-Austin"},
 	} {
@@ -369,11 +364,10 @@ func AssertUserWithIDBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, bo
 	eaa.Assert.Equal(dbUser.FirstName, respUser.FirstName)
 	eaa.Assert.Equal(dbUser.LastName, respUser.LastName)
 	eaa.Assert.Equal(dbUser.Email, respUser.Email)
-	eaa.Assert.Equal(dbUser.NUID, respUser.NUID)
 	eaa.Assert.Equal(dbUser.College, respUser.College)
 	eaa.Assert.Equal(dbUser.Year, respUser.Year)
 
-	match, err := auth.ComparePasswordAndHash((*body)["password"].(string), dbUser.PasswordHash)
+	match, err := auth.CompareHash((*body)["password"].(string), dbUser.PasswordHash)
 
 	eaa.Assert.NilError(err)
 
@@ -382,7 +376,6 @@ func AssertUserWithIDBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, bo
 	eaa.Assert.Equal((*body)["first_name"].(string), dbUser.FirstName)
 	eaa.Assert.Equal((*body)["last_name"].(string), dbUser.LastName)
 	eaa.Assert.Equal((*body)["email"].(string), dbUser.Email)
-	eaa.Assert.Equal((*body)["nuid"].(string), dbUser.NUID)
 	eaa.Assert.Equal(models.College((*body)["college"].(string)), dbUser.College)
 	eaa.Assert.Equal(models.Year((*body)["year"].(int)), dbUser.Year)
 
@@ -464,31 +457,6 @@ func TestCreateUserFailsIfUserWithEmailAlreadyExists(t *testing.T) {
 	).Close()
 }
 
-func TestCreateUserFailsIfUserWithNUIDAlreadyExists(t *testing.T) {
-	appAssert, _, _ := CreateSampleStudent(t, nil)
-
-	sampleStudent, rawPassword := h.SampleStudentFactory()
-
-	slightlyDifferentSampleStudentJSON := h.SampleStudentJSONFactory(sampleStudent, rawPassword)
-
-	(*slightlyDifferentSampleStudentJSON)["first_name"] = "John"
-	(*slightlyDifferentSampleStudentJSON)["last_name"] = "Doe"
-	(*slightlyDifferentSampleStudentJSON)["email"] = "doe.john@northeastern.edu"
-
-	appAssert.TestOnErrorAndTester(
-		h.TestRequest{
-			Method: fiber.MethodPost,
-			Path:   "/api/v1/users/",
-			Body:   slightlyDifferentSampleStudentJSON,
-			Role:   &models.Super,
-		},
-		h.ErrorWithTester{
-			Error:  errors.UserAlreadyExists,
-			Tester: TestNumUsersRemainsAt2,
-		},
-	).Close()
-}
-
 func AssertCreateBadDataFails(t *testing.T, jsonKey string, badValues []interface{}) {
 	appAssert, _, _ := CreateSampleStudent(t, nil)
 
@@ -513,17 +481,6 @@ func AssertCreateBadDataFails(t *testing.T, jsonKey string, badValues []interfac
 	}
 
 	appAssert.Close()
-}
-
-func TestCreateUserFailsOnInvalidNUID(t *testing.T) {
-	AssertCreateBadDataFails(t,
-		"nuid",
-		[]interface{}{
-			"00123456",
-			"0012345678",
-			"00123456a",
-			"00123456!",
-		})
 }
 
 func TestCreateUserFailsOnInvalidEmail(t *testing.T) {
@@ -551,30 +508,6 @@ func TestCreateUserFailsOnInvalidPassword(t *testing.T) {
 		})
 }
 
-func TestCreateUserFailsOnInvalidYear(t *testing.T) {
-	AssertCreateBadDataFails(t,
-		"year",
-		[]interface{}{
-			0,
-			7,
-		})
-}
-
-func TestCreateUserFailsOnInvalidCollege(t *testing.T) {
-	khouryAbbreviation := "KCCS"
-	permutations := h.AllCasingPermutations(khouryAbbreviation)
-	permutationsWithoutKhoury := make([]interface{}, len(permutations)-1)
-	for _, permutation := range permutations {
-		if permutation != khouryAbbreviation {
-			permutationsWithoutKhoury = append(permutationsWithoutKhoury, permutation)
-		}
-	}
-
-	AssertCreateBadDataFails(t,
-		"college",
-		permutationsWithoutKhoury)
-}
-
 func TestCreateUserFailsOnMissingFields(t *testing.T) {
 	appAssert, _, _ := CreateSampleStudent(t, nil)
 
@@ -585,9 +518,6 @@ func TestCreateUserFailsOnMissingFields(t *testing.T) {
 		"last_name",
 		"email",
 		"password",
-		"nuid",
-		"college",
-		"year",
 	} {
 		sampleUserPermutation := *h.SampleStudentJSONFactory(sampleStudent, rawPassword)
 		delete(sampleUserPermutation, missingField)

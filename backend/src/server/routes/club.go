@@ -3,40 +3,40 @@ package routes
 import (
 	p "github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/controllers"
-	"github.com/GenerateNU/sac/backend/src/file"
-	"github.com/GenerateNU/sac/backend/src/middleware"
 	"github.com/GenerateNU/sac/backend/src/services"
-	"github.com/go-playground/validator/v10"
+	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
 )
 
-func ClubRoutes(router fiber.Router, db *gorm.DB, validate *validator.Validate, authMiddleware *middleware.AuthMiddlewareService, awsProvider *file.AWSProvider) {
-	clubIDRouter := Club(router, services.NewClubService(db, validate), authMiddleware)
+func ClubRoutes(clubParams types.RouteParams) {
+	clubIDRouter := Club(clubParams)
 
-	ClubTag(clubIDRouter, services.NewClubTagService(db, validate), authMiddleware)
-	ClubFollower(clubIDRouter, services.NewClubFollowerService(db), authMiddleware)
-	ClubMember(clubIDRouter, services.NewClubMemberService(db, validate), authMiddleware)
-	ClubContact(clubIDRouter, services.NewClubContactService(db, validate), authMiddleware)
-	ClubEvent(clubIDRouter, services.NewClubEventService(db))
-	ClubPointOfContact(clubIDRouter, services.NewClubPointOfContactService(db, validate, awsProvider), authMiddleware)
+	// update the router in params
+	clubParams.Router = clubIDRouter
+
+	ClubTag(clubParams)
+	ClubFollower(clubParams)
+	ClubMember(clubParams)
+	ClubContact(clubParams)
+	ClubEvent(clubParams)
+	// ClubPointOfContact(clubIDRouter, services.NewClubPointOfContactService(db, validate, awsProvider), authMiddleware)
 }
 
-func Club(router fiber.Router, clubService services.ClubServiceInterface, authMiddleware *middleware.AuthMiddlewareService) fiber.Router {
-	clubController := controllers.NewClubController(clubService)
+func Club(clubParams types.RouteParams) fiber.Router {
+	clubController := controllers.NewClubController(services.NewClubService(clubParams.ServiceParams))
 
 	// api/v1/clubs/*
-	club := router.Group("/clubs")
+	clubs := clubParams.Router.Group("/clubs")
 
-	club.Get("/", clubController.GetClubs)
-	club.Post("/", authMiddleware.Authorize(p.CreateAll), clubController.CreateClub)
+	clubs.Get("/", clubController.GetClubs)
+	clubs.Post("/", clubParams.AuthMiddleware.Authorize(p.CreateAll), clubController.CreateClub)
 
 	// api/v1/clubs/:clubID/*
-	clubID := club.Group("/:clubID")
+	clubID := clubs.Group("/:clubID")
 
 	clubID.Get("/", clubController.GetClub)
-	clubID.Patch("/", authMiddleware.ClubAuthorizeById, clubController.UpdateClub)
-	clubID.Delete("/", authMiddleware.Authorize(p.DeleteAll), clubController.DeleteClub)
+	clubID.Patch("/", clubParams.AuthMiddleware.ClubAuthorizeById, clubController.UpdateClub)
+	clubID.Delete("/", clubParams.AuthMiddleware.Authorize(p.DeleteAll), clubController.DeleteClub)
 
 	return clubID
 }
