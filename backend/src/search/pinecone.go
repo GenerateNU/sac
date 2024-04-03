@@ -10,6 +10,7 @@ import (
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
 
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/errors"
@@ -69,9 +70,8 @@ func (c *PineconeClient) Seed(db *gorm.DB) *errors.Error {
 		chunks = append(chunks, searchables[i:end])
 	}
 
-	for _, chunk := range chunks {
-		// TODO logger
-		// print(fmt.Sprintf("Uploading chunk #%d (of %d) to pinecone...\n", i+1, len(chunks)))
+	for index, chunk := range chunks {
+		log.Info("Uploading chunk #%d (of %d) to pinecone...\n", index+1, len(chunks))
 		err := c.Upsert(chunk)
 		if err != nil {
 			return &errors.ClubSeedingFailed
