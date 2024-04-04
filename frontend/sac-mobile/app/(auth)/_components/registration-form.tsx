@@ -1,6 +1,5 @@
-import { Controller, useForm } from 'react-hook-form';
-import { Alert, View } from 'react-native';
-
+import { Controller, useForm, GetIsDirty } from 'react-hook-form';
+import { Alert, View, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { router } from 'expo-router';
 
 import { ZodError, z } from 'zod';
@@ -35,7 +34,7 @@ const RegistrationForm = () => {
     const {
         control,
         handleSubmit,
-        formState: { errors }
+        formState: { errors },
     } = useForm<RegisterFormData>();
 
     const onSubmit = ({ passwordConfirm, ...rest }: RegisterFormData) => {
@@ -64,6 +63,7 @@ const RegistrationForm = () => {
                 <Controller
                     control={control}
                     render={({ field: { onChange, value } }) => (
+                        <TouchableWithoutFeedback onPress={Keyboard.dismiss} >
                         <Input
                             title="First Name"
                             autoCorrect={false}
@@ -73,6 +73,7 @@ const RegistrationForm = () => {
                             onSubmitEditing={handleSubmit(onSubmit)}
                             error={!!errors.firstName}
                         />
+                        </TouchableWithoutFeedback>
                     )}
                     name="firstName"
                     rules={{
@@ -97,6 +98,7 @@ const RegistrationForm = () => {
                 <Controller
                     control={control}
                     render={({ field: { onChange, value } }) => (
+                        <TouchableWithoutFeedback onPress={Keyboard.dismiss} >
                         <Input
                             title="Last Name"
                             autoCorrect={false}
@@ -106,6 +108,7 @@ const RegistrationForm = () => {
                             onSubmitEditing={handleSubmit(onSubmit)}
                             error={!!errors.lastName}
                         />
+                        </TouchableWithoutFeedback>
                     )}
                     name="lastName"
                     rules={{
@@ -128,6 +131,7 @@ const RegistrationForm = () => {
                 <Controller
                     control={control}
                     render={({ field: { onChange, value } }) => (
+                        <TouchableWithoutFeedback onPress={Keyboard.dismiss} >
                         <Input
                             title="Email"
                             autoCorrect={false}
@@ -137,6 +141,7 @@ const RegistrationForm = () => {
                             onSubmitEditing={handleSubmit(onSubmit)}
                             error={!!errors.email}
                         />
+                        </TouchableWithoutFeedback>
                     )}
                     name="email"
                     rules={{
@@ -156,6 +161,7 @@ const RegistrationForm = () => {
                 <Controller
                     control={control}
                     render={({ field: { onChange, value } }) => (
+                        <TouchableWithoutFeedback onPress={Keyboard.dismiss} >
                         <Input
                             title="Password"
                             autoCorrect={false}
@@ -166,6 +172,7 @@ const RegistrationForm = () => {
                             secureTextEntry={true}
                             error={!!errors.password}
                         />
+                        </TouchableWithoutFeedback>
                     )}
                     name="password"
                     rules={{
@@ -206,6 +213,7 @@ const RegistrationForm = () => {
                 <Controller
                     control={control}
                     render={({ field: { onChange, value } }) => (
+                        <TouchableWithoutFeedback onPress={Keyboard.dismiss} >
                         <Input
                             title="Password Confirmation"
                             autoCorrect={false}
@@ -216,6 +224,7 @@ const RegistrationForm = () => {
                             secureTextEntry={true}
                             error={!!errors.password}
                         />
+                        </TouchableWithoutFeedback>
                     )}
                     name="passwordConfirm"
                     rules={{
@@ -234,8 +243,11 @@ const RegistrationForm = () => {
                 )}
             </View>
             <View className="pt-[2%] pb-[15%]">
-                <Button onPress={handleSubmit(onSubmit)} size="screenwide">
-                    Submit
+                <Button
+                    onPress={handleSubmit(onSubmit)}
+                    size="screenwide"
+                >
+                Submit
                 </Button>
             </View>
         </>

@@ -1,5 +1,5 @@
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, Text, View } from 'react-native';
+import { Alert, Text, View, Keyboard, TouchableWithoutFeedback } from 'react-native';
 
 import { router } from 'expo-router';
 
@@ -55,6 +55,7 @@ const LoginForm = () => {
                 <Controller
                     control={control}
                     render={({ field: { onChange, value } }) => (
+                        <TouchableWithoutFeedback onPress={Keyboard.dismiss} >
                         <Input
                             title="Email"
                             autoCorrect={false}
@@ -64,6 +65,7 @@ const LoginForm = () => {
                             onSubmitEditing={handleSubmit(onSubmit)}
                             error={!!errors.email}
                         />
+                        </TouchableWithoutFeedback>
                     )}
                     name="email"
                     rules={{ required: 'Email is required' }}
@@ -74,6 +76,7 @@ const LoginForm = () => {
                 <Controller
                     control={control}
                     render={({ field: { onChange, value } }) => (
+                        <TouchableWithoutFeedback onPress={Keyboard.dismiss} >
                         <Input
                             title="Password"
                             autoCorrect={false}
@@ -84,6 +87,7 @@ const LoginForm = () => {
                             onSubmitEditing={handleSubmit(onSubmit)}
                             error={!!errors.password}
                         />
+                        </TouchableWithoutFeedback>
                     )}
                     name="password"
                     rules={{ required: 'Password is required' }}
