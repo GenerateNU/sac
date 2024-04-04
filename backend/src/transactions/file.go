@@ -60,6 +60,18 @@ func UpdateFile(db *gorm.DB, fileID uuid.UUID, fileInfo models.FileInfo) (*model
 	return &existingFile, nil
 }
 
+func GetFiles(db *gorm.DB, limit, page int) ([]models.File, *errors.Error) {
+	var files []models.File
+
+	offset := (page - 1) * limit
+
+	if err := db.Limit(limit).Offset(offset).Find(&files).Error; err != nil {
+		return nil, &errors.FailedToGetFiles
+	}
+
+	return files, nil
+}
+
 func GetFile(db *gorm.DB, fileID uuid.UUID) (*models.File, *errors.Error) {
 	var file models.File
 	if err := db.First(&file, fileID).Error; err != nil {

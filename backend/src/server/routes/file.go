@@ -10,7 +10,8 @@ func File(fileParams types.RouteParams) {
 	fileController := controllers.NewFileController(services.NewFileService(fileParams.ServiceParams))
 
 	file := fileParams.Router.Group("/files")
-	file.Post("/", fileController.CreateFile)
+	file.Get("/", fileController.GetFiles)
 	file.Get("/:fileID", fileController.GetFile)
-	// file.Delete("/:fileID", fileController.DeleteFile)
+	file.Post("/", fileController.CreateFile)
+	file.Delete("/:fileID", fileController.DeleteFile)
 }

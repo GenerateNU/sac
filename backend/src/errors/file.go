@@ -35,6 +35,10 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to create file in database",
 	}
+	FailedToCreateFile = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to create file",
+	}
 	FailedToDeleteFile = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to delete file",
@@ -46,6 +50,10 @@ var (
 	FailedToValidateFile = Error{
 		StatusCode: fiber.StatusBadRequest,
 		Message:    "failed to validate file",
+	}
+	FailedToGetFiles = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get files",
 	}
 	FailedToGetFile = Error{
 		StatusCode: fiber.StatusBadRequest,
