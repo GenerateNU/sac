@@ -17,14 +17,14 @@ import (
 
 func getExcludedPaths() []map[string]string {
 	return []map[string]string{
-		{"/api/v1/auth/login": "POST"},
-		{"/api/v1/auth/refresh": "POST"},
 		{"/api/v1/users/": "POST"},
+		{"/api/v1/auth/login": "POST"},
 		{"/api/v1/auth/logout": "POST"},
-		{"/api/v1/auth/forgot-password": "POST"},
+		{"/api/v1/auth/refresh": "POST"},
 		{"/api/v1/auth/send-code/": "POST"},
 		{"/api/v1/auth/verify-email": "POST"},
 		{"/api/v1/auth/verify-reset": "POST"},
+		{"/api/v1/auth/forgot-password": "POST"},
 	}
 }
 
@@ -61,6 +61,10 @@ func (m *AuthMiddlewareService) Authenticate(c *fiber.Ctx) error {
 				return c.Next()
 			}
 		}
+	}
+
+	if c.Method() == "OPTIONS" || c.Method() == "GET" {
+		return c.Next()
 	}
 
 	accessToken := GetAuthroizationToken(c)
@@ -106,7 +110,7 @@ func (m *AuthMiddlewareService) Authorize(requiredPermissions ...auth.Permission
 
 		for _, requiredPermission := range requiredPermissions {
 			if !slices.Contains(userPermissions, requiredPermission) {
-				return errors.Unauthorized.FiberError(c)
+				return errors.Forbidden.FiberError(c)
 			}
 		}
 

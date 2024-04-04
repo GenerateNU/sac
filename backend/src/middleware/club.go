@@ -40,5 +40,5 @@ func (m *AuthMiddlewareService) ClubAuthorizeById(c *fiber.Ctx) error {
 		return c.Next()
 	}
 
-	return errors.Unauthorized.FiberError(c)
+	return errors.Forbidden.FiberError(c)
 }
