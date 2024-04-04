@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/controllers"
 	"github.com/GenerateNU/sac/backend/src/services"
 	"github.com/GenerateNU/sac/backend/src/types"
@@ -14,5 +15,5 @@ func Contact(contactParams types.RouteParams) {
 
 	contacts.Get("/", contactController.GetContacts)
 	contacts.Get("/:contactID", contactController.GetContact)
-	contacts.Delete("/:contactID", contactController.DeleteContact)
+	contacts.Delete("/:contactID", contactParams.AuthMiddleware.Authorize(auth.DeleteAll), contactController.DeleteContact)
 }
