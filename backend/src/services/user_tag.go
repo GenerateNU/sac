@@ -18,8 +18,8 @@ type UserTagService struct {
 	types.ServiceParams
 }
 
-func NewUserTagService(params types.ServiceParams) UserTagServiceInterface {
-	return &UserTagService{params}
+func NewUserTagService(serviceParams types.ServiceParams) UserTagServiceInterface {
+	return &UserTagService{serviceParams}
 }
 
 func (u *UserTagService) GetUserTags(id string) ([]models.Tag, *errors.Error) {

@@ -17,7 +17,7 @@ type CategoryTagService struct {
 	types.ServiceParams
 }
 
-func NewCategoryTagService(params types.ServiceParams) *CategoryTagService {
+func NewCategoryTagService(params types.ServiceParams) CategoryTagServiceInterface {
 	return &CategoryTagService{params}
 }
 

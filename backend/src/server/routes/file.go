@@ -1,13 +1,16 @@
 package routes
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/GenerateNU/sac/backend/src/controllers"
+	"github.com/GenerateNU/sac/backend/src/services"
+	"github.com/GenerateNU/sac/backend/src/types"
+)
 
-func File(router fiber.Router, fileService services.FileServiceInterface) {
-	fileController := controllers.NewFileController(fileService)
+func File(fileParams types.RouteParams) {
+	fileController := controllers.NewFileController(services.NewFileService(fileParams.ServiceParams))
 
-	file := router.Group("/files")
+	file := fileParams.Router.Group("/files")
 	file.Post("/", fileController.CreateFile)
-	files.Get("/:fileID", fileController.GetFile)
-	files.Delete("/:fileID", fileController.DeleteFile)
+	file.Get("/:fileID", fileController.GetFile)
+	// file.Delete("/:fileID", fileController.DeleteFile)
 }
-

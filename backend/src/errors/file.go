@@ -11,6 +11,10 @@ var (
 		StatusCode: fiber.StatusBadRequest,
 		Message:    "file size is greater than 5 MB",
 	}
+	InvalidFileType = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "invalid file type",
+	}
 	FileNotFound = Error{
 		StatusCode: fiber.StatusNotFound,
 		Message:    "file not found",
@@ -84,11 +88,11 @@ var (
 		Message:    "failed to get signed URL",
 	}
 	InvalidFileID = Error{
-		StatusCode: fiber.StatusBadRequest, 
-		Message: "invalid file id", 
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "invalid file id",
 	}
 	CannotFindFile = Error{
-		StatusCode: fiber.StatusInternalServerError, 
-		Message: "unable to find file", 
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "unable to find file",
 	}
 )

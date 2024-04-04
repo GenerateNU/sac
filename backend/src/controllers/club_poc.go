@@ -60,6 +60,67 @@ func (u *ClubPointOfContactController) GetClubPointOfContact(c *fiber.Ctx) error
 	return c.Status(fiber.StatusOK).JSON(pointOfContact)
 }
 
+// UpdateClubPointOfContactPhoto godoc
+//
+// @Summary		Update a point of contact photo for a club
+// @Description	Updates a point of contact photo associated with a club
+// @ID			update-point-of-contact-photo-by-club
+// @Tags      	club-point-of-contact
+// @Accept		multipart/form-data
+// @Produce		json
+// @Param		clubID	path	string	true	"Club ID"
+// @Param		pocID	path	string	true	"Point of Contact ID"
+// @Success		200	  {object}	    models.PointOfContact
+// @Failure     400   {object}      errors.Error
+// @Failure     401   {object}      errors.Error
+// @Failure     404   {object}      errors.Error
+// @Failure     500   {object}      errors.Error
+// @Router		/clubs/{clubID}/poc/{pocID}  [patch]
+func (u *ClubPointOfContactController) UpdateClubPointOfContactPhoto(c *fiber.Ctx) error {
+	formFile, parseErr := c.FormFile("file")
+	if parseErr != nil {
+		return errors.FailedToParseRequestBody.FiberError(c)
+	}
+
+	pointOfContact, err := u.clubPointOfContactService.UpdateClubPointOfContactPhoto(c.Params("clubID"), c.Params("pocID"), formFile)
+	if err != nil {
+		return err.FiberError(c)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(pointOfContact)
+}
+
+// UpdateClubPointOfContact godoc
+//
+// @Summary		Update a point of contact for a club
+// @Description	Updates a point of contact associated with a club
+// @ID			update-point-of-contact-by-club
+// @Tags      	club-point-of-contact
+// @Accept      json
+// @Produce		json
+// @Param		clubID	path	string	true	"Club ID"
+// @Param		pocID	path	string	true	"Point of Contact ID"
+// @Success		200	  {object}	    models.PointOfContact
+// @Failure     400   {object}      errors.Error
+// @Failure     401   {object}      errors.Error
+// @Failure     404   {object}      errors.Error
+// @Failure     500   {object}      errors.Error
+// @Router		/clubs/{clubID}/poc/{pocID}  [put]
+func (u *ClubPointOfContactController) UpdateClubPointOfContact(c *fiber.Ctx) error {
+	var pointOfContactBody models.UpdatePointOfContactBody
+
+	if parseErr := c.BodyParser(&pointOfContactBody); parseErr != nil {
+		return errors.FailedToParseRequestBody.FiberError(c)
+	}
+
+	pointOfContact, err := u.clubPointOfContactService.UpdateClubPointOfContact(c.Params("clubID"), c.Params("pocID"), pointOfContactBody)
+	if err != nil {
+		return err.FiberError(c)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(pointOfContact)
+}
+
 // CreateClubPointOfContact godoc
 //
 // @Summary		Create a point of contact for a club

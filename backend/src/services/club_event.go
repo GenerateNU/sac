@@ -16,7 +16,7 @@ type ClubEventService struct {
 	types.ServiceParams
 }
 
-func NewClubEventService(params types.ServiceParams) *ClubEventService {
+func NewClubEventService(params types.ServiceParams) ClubEventServiceInterface {
 	return &ClubEventService{params}
 }
 

@@ -65,7 +65,7 @@ type JWTClient struct {
 	SigningMethod jwt.SigningMethod
 }
 
-func NewJWTClient(authSettings config.AuthSettings, signingMethod jwt.SigningMethod) *JWTClient {
+func NewJWTClient(authSettings config.AuthSettings, signingMethod jwt.SigningMethod) JWTClientInterface {
 	return &JWTClient{
 		RefreshExp:    time.Hour * 24 * time.Duration(authSettings.RefreshTokenExpiry),
 		AccessExp:     time.Minute * time.Duration(authSettings.AccessTokenExpiry),

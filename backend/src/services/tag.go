@@ -20,8 +20,8 @@ type TagService struct {
 	types.ServiceParams
 }
 
-func NewTagService(params types.ServiceParams) *TagService {
-	return &TagService{params}
+func NewTagService(serviceParams types.ServiceParams) TagServiceInterface {
+	return &TagService{serviceParams}
 }
 
 func (t *TagService) CreateTag(tagBody models.CreateTagRequestBody) (*models.Tag, *errors.Error) {

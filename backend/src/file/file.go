@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"mime/multipart"
+	"strings"
 
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/errors"
@@ -16,31 +17,42 @@ import (
 	"github.com/google/uuid"
 )
 
-type FileProviderInterface interface {
+type FileTypes string
+
+const (
+	IMAGE       FileTypes = "image"
+	VIDEO       FileTypes = "video"
+	AUDIO       FileTypes = "audio"
+	DOCUMENT    FileTypes = "document"
+	APPLICATION FileTypes = "application"
+	TEXT        FileTypes = "text"
+	ALL         FileTypes = "all"
+)
+
+type FileClientInterface interface {
 	GetFileURL(fileURL string) *string
-	UploadFile(folder string, fileHeader *multipart.FileHeader) (*models.FileInfo, *errors.Error)
+	UploadFile(folder string, fileHeader *multipart.FileHeader, allowedTypes []FileTypes) (*models.FileInfo, *errors.Error)
 	DeleteFile(fileURL string) *errors.Error
 }
 
-type AWSProvider struct {
+type AWSClient struct {
 	Settings config.AWSSettings
 	session  *session.Session
 }
 
-func NewAWSProvider(settings config.AWSSettings) *AWSProvider {
+func NewAWSProvider(settings config.AWSSettings) FileClientInterface {
 	sess, err := session.NewSession(&aws.Config{
 		Region:      aws.String(settings.REGION.Expose()),
 		Credentials: credentials.NewStaticCredentials(settings.ID.Expose(), settings.SECRET.Expose(), ""),
-
 	})
 	if err != nil {
 		return nil
 	}
 
-	return &AWSProvider{Settings: settings, session: sess}
+	return &AWSClient{Settings: settings, session: sess}
 }
 
-func (aw *AWSProvider) GetFileURL(fileURL string) *string {
+func (aw *AWSClient) GetFileURL(fileURL string) *string {
 	fileURL = fmt.Sprintf("https://%s.s3.amazonaws.com/%s", aw.Settings.BUCKET_NAME.Expose(), fileURL)
 	return &fileURL
 }
@@ -68,17 +80,44 @@ func preProcessFile(fileHeader *multipart.FileHeader) (*string, []byte, *errors.
 }
 
 func generateUniqueFileName(fileName string) string {
-	return fmt.Sprintf("%s-%s", uuid.New().String(), fileName)
+	ext := fileName[strings.LastIndex(fileName, "."):]
+	fileNameWithoutExt := fileName[:len(fileName)-len(ext)]
+	uniqueFileName := fmt.Sprintf("%s-%s%s", fileNameWithoutExt, uuid.New().String(), ext)
+	return uniqueFileName
 }
 
-func (aw *AWSProvider) UploadFile(folder string, fileHeader *multipart.FileHeader) (*models.FileInfo, *errors.Error) {
+func isFileTypeAllowed(fileType string, allowedTypes []FileTypes) bool {
+	if len(allowedTypes) == 0 {
+		return false
+	}
+
+	mainType := strings.Split(fileType, "/")[0]
+	if len(allowedTypes) == 1 && allowedTypes[0] == ALL {
+		return true
+	}
+
+	for _, allowedType := range allowedTypes {
+		allowedMainType := strings.Split(string(allowedType), "/")[0]
+		if allowedMainType == mainType {
+			return true
+		}
+	}
+	return false
+}
+
+func (aw *AWSClient) UploadFile(folder string, fileHeader *multipart.FileHeader, allowedTypes []FileTypes) (*models.FileInfo, *errors.Error) {
+	fileType := fileHeader.Header.Get("Content-Type")
+	if !isFileTypeAllowed(fileType, allowedTypes) {
+		return nil, &errors.InvalidFileType
+	}
+
 	fileName, file, err := preProcessFile(fileHeader)
 	if err != nil {
 		return nil, err
 	}
 
 	svc := s3.New(aw.session)
-	
+
 	bucket := aw.Settings.BUCKET_NAME.Expose()
 	key := fmt.Sprintf("%s/%s", folder, *fileName)
 
@@ -94,15 +133,15 @@ func (aw *AWSProvider) UploadFile(folder string, fileHeader *multipart.FileHeade
 
 	fileURL := fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, key)
 	return &models.FileInfo{
-		FileName: *fileName,
-		FileType: fileHeader.Header.Get("Content-Type"),
-		FileSize: int(fileHeader.Size),
-		FileURL:  fileURL,
+		FileName:  *fileName,
+		FileType:  fileHeader.Header.Get("Content-Type"),
+		FileSize:  int(fileHeader.Size),
+		FileURL:   fileURL,
 		ObjectKey: key,
 	}, nil
 }
 
-func (aw *AWSProvider) DeleteFile(fileURL string) *errors.Error {
+func (aw *AWSClient) DeleteFile(fileURL string) *errors.Error {
 	svc := s3.New(aw.session)
 
 	bucket := aw.Settings.BUCKET_NAME.Expose()

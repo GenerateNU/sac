@@ -18,8 +18,8 @@ type ClubTagService struct {
 	types.ServiceParams
 }
 
-func NewClubTagService(params types.ServiceParams) ClubTagServiceInterface {
-	return &ClubTagService{params}
+func NewClubTagService(serviceParams types.ServiceParams) ClubTagServiceInterface {
+	return &ClubTagService{serviceParams}
 }
 
 func (c *ClubTagService) CreateClubTags(id string, clubTagsBody models.CreateClubTagsRequestBody) ([]models.Tag, *errors.Error) {

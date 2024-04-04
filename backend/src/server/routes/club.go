@@ -19,7 +19,7 @@ func ClubRoutes(clubParams types.RouteParams) {
 	ClubMember(clubParams)
 	ClubContact(clubParams)
 	ClubEvent(clubParams)
-	// ClubPointOfContact(clubIDRouter, services.NewClubPointOfContactService(db, validate, awsProvider), authMiddleware)
+	ClubPointOfContact(clubParams)
 }
 
 func Club(clubParams types.RouteParams) fiber.Router {

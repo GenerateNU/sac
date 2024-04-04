@@ -15,7 +15,7 @@ func Tag(tagParams types.RouteParams) {
 	tags.Get("/", tagController.GetTags)
 	tags.Post("/", tagParams.AuthMiddleware.Authorize(p.CreateAll), tagController.CreateTag)
 
-	tagID := tag.Group("/:tagID")
+	tagID := tags.Group("/:tagID")
 
 	tagID.Get("/", tagController.GetTag)
 	tagID.Patch("/", tagParams.AuthMiddleware.Authorize(p.WriteAll), tagController.UpdateTag)

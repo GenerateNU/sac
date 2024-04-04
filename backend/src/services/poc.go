@@ -4,9 +4,8 @@ import (
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
+	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
-	"github.com/go-playground/validator/v10"
-	"gorm.io/gorm"
 )
 
 type PointOfContactServiceInterface interface {
@@ -15,15 +14,14 @@ type PointOfContactServiceInterface interface {
 }
 
 type PointOfContactService struct {
-	DB *gorm.DB
-	Validate *validator.Validate
+	types.ServiceParams
 }
 
-func NewPointOfContactService(db *gorm.DB, validate *validator.Validate) *PointOfContactService {
-	return &PointOfContactService{DB: db, Validate: validate}
+func NewPointOfContactService(serviceParams types.ServiceParams) PointOfContactServiceInterface {
+	return &PointOfContactService{serviceParams}
 }
 
-func (poc *PointOfContactService) GetPointOfContacts(limit string, page string) ([]models.PointOfContact, *errors.Error) {	
+func (poc *PointOfContactService) GetPointOfContacts(limit string, page string) ([]models.PointOfContact, *errors.Error) {
 	limitAsInt, err := utilities.ValidateNonNegative(limit)
 	if err != nil {
 		return nil, &errors.FailedToValidateLimit

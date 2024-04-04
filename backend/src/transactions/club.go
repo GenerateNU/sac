@@ -26,7 +26,7 @@ func GetAdminIDs(db *gorm.DB, clubID uuid.UUID) ([]uuid.UUID, *errors.Error) {
 	return adminUUIDs, nil
 }
 
-func GetClubs(db *gorm.DB, pinecone search.PineconeClientInterface, queryParams *models.ClubQueryParams) ([]models.Club, *errors.Error) {
+func GetClubs(db *gorm.DB, pinecone search.SearchClientInterface, queryParams *models.ClubQueryParams) ([]models.Club, *errors.Error) {
 	query := db.Model(&models.Club{})
 
 	if queryParams.Tags != nil && len(queryParams.Tags) > 0 {
@@ -65,7 +65,7 @@ func GetClubs(db *gorm.DB, pinecone search.PineconeClientInterface, queryParams 
 	return clubs, nil
 }
 
-func CreateClub(db *gorm.DB, pinecone search.PineconeClientInterface, userId uuid.UUID, club models.Club) (*models.Club, *errors.Error) {
+func CreateClub(db *gorm.DB, pinecone search.SearchClientInterface, userId uuid.UUID, club models.Club) (*models.Club, *errors.Error) {
 	user, err := GetUser(db, userId)
 	if err != nil {
 		return nil, err
@@ -129,7 +129,7 @@ func GetClub(db *gorm.DB, id uuid.UUID, preloads ...OptionalQuery) (*models.Club
 	return &club, nil
 }
 
-func UpdateClub(db *gorm.DB, pinecone search.PineconeClientInterface, id uuid.UUID, club models.Club) (*models.Club, *errors.Error) {
+func UpdateClub(db *gorm.DB, pinecone search.SearchClientInterface, id uuid.UUID, club models.Club) (*models.Club, *errors.Error) {
 	tx := db.Begin()
 
 	var existingClub models.Club
@@ -162,7 +162,7 @@ func UpdateClub(db *gorm.DB, pinecone search.PineconeClientInterface, id uuid.UU
 	return &existingClub, nil
 }
 
-func DeleteClub(db *gorm.DB, pinecone search.PineconeClientInterface, id uuid.UUID) *errors.Error {
+func DeleteClub(db *gorm.DB, pinecone search.SearchClientInterface, id uuid.UUID) *errors.Error {
 	tx := db.Begin()
 
 	var existingClub models.Club

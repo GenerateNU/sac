@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/GenerateNU/sac/backend/src/services"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -30,7 +31,7 @@ func NewFileController(fileService services.FileServiceInterface) *FileControlle
 // @Router		/files/:fileID  [get]
 func (f *FileController) GetFile(c *fiber.Ctx) error {
 	fileID := c.Params("fileID")
-	
+
 	file, err := f.fileService.GetFile(fileID)
 	if err != nil {
 		return err.FiberError(c)

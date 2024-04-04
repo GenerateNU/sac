@@ -37,5 +37,5 @@ func User(userParams types.RouteParams) fiber.Router {
 	usersID.Patch("/password", userController.UpdatePassword)
 	usersID.Delete("/", userController.DeleteUser)
 
-	return userID
+	return usersID
 }

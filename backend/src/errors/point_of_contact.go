@@ -15,6 +15,10 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to get club point of contacts",
 	}
+	FailedToUpdateClubPointOfContact = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to update club point of contact",
+	}
 	FailedToGetClubPointOfContact = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to get club point of contact",
@@ -30,6 +34,10 @@ var (
 	FailedToDeletePointOfContact = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to delete point of contact",
+	}
+	PointOfContactAlreadyExists = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "point of contact already exists",
 	}
 	FailedToValidatePointOfContact = Error{
 		StatusCode: fiber.StatusInternalServerError,

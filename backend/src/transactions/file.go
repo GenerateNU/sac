@@ -48,10 +48,10 @@ func UpdateFile(db *gorm.DB, fileID uuid.UUID, fileInfo models.FileInfo) (*model
 	}
 
 	if err := db.Model(&existingFile).Updates(models.File{
-		FileName: fileInfo.FileName,
-		FileType: fileInfo.FileType,
-		FileSize: fileInfo.FileSize,
-		FileURL:  fileInfo.FileURL,
+		FileName:  fileInfo.FileName,
+		FileType:  fileInfo.FileType,
+		FileSize:  fileInfo.FileSize,
+		FileURL:   fileInfo.FileURL,
 		ObjectKey: fileInfo.ObjectKey,
 	}).Error; err != nil {
 		return nil, &errors.FailedToUpdateFile
