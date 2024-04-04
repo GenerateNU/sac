@@ -91,7 +91,9 @@ func (cpoc *ClubPointOfContactService) CreateClubPointOfContact(clubID string, p
 	}
 
 	if err := tx.Commit().Error; err != nil {
-		cpoc.Deps.File.DeleteFile(fileInfo.FileURL)
+		if err := cpoc.Deps.File.DeleteFile(fileInfo.FileURL); err != nil {
+			return nil, err
+		}
 
 		return nil, &errors.FailedToCreatePointOfContact
 	}
