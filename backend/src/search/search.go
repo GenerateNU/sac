@@ -29,15 +29,15 @@ type PineconeClient struct {
 	PineconeSettings config.PineconeSettings
 	SearchSettings   config.SearchSettings
 	IndexName        *mattress.Secret[string]
-	openAIClient     *OpenAIClient
+	aiClient         AIClientInterface
 }
 
 // Connects to an existing Pinecone index, using the host and keys provided in settings.
-func NewPineconeClient(openAIClient *OpenAIClient, pineconeSettings config.PineconeSettings, searchSettings config.SearchSettings) *PineconeClient {
+func NewPineconeClient(aiClient AIClientInterface, pineconeSettings config.PineconeSettings, searchSettings config.SearchSettings) *PineconeClient {
 	return &PineconeClient{
 		PineconeSettings: pineconeSettings,
 		SearchSettings:   searchSettings,
-		openAIClient:     openAIClient,
+		aiClient:         aiClient,
 	}
 }
 
@@ -102,7 +102,7 @@ func (c *PineconeClient) Upsert(items []Searchable) *errors.Error {
 		return nil
 	}
 
-	embeddings, embeddingErr := c.openAIClient.CreateEmbedding(items)
+	embeddings, embeddingErr := c.aiClient.CreateEmbedding(items)
 	if embeddingErr != nil {
 		return &errors.FailedToUpsertToPinecone
 	}
@@ -131,7 +131,7 @@ func (c *PineconeClient) Upsert(items []Searchable) *errors.Error {
 		return &errors.FailedToUpsertToPinecone
 	}
 
-	req = pineconeRequest(c.Settings, req)
+	req = pineconeRequest(c.PineconeSettings, req)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -188,7 +188,7 @@ func (c *PineconeClient) Delete(items []Searchable) *errors.Error {
 		return &errors.FailedToDeleteToPinecone
 	}
 
-	req = pineconeRequest(c.Settings, req)
+	req = pineconeRequest(c.PineconeSettings, req)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -224,7 +224,7 @@ type PineconeSearchResponseBody struct {
 // Runs a search on the Pinecone index given a searchable item, and returns the topK most similar
 // elements' ids.
 func (c *PineconeClient) Search(item Searchable) ([]string, *errors.Error) {
-	moderation, _err := c.openAIClient.CreateModeration([]Searchable{item})
+	moderation, _err := c.aiClient.CreateModeration([]Searchable{item})
 	if _err != nil {
 		return []string{}, _err
 	}
@@ -233,7 +233,7 @@ func (c *PineconeClient) Search(item Searchable) ([]string, *errors.Error) {
 		return []string{}, &errors.PotentiallyHarmfulSearch
 	}
 
-	values, embeddingErr := c.openAIClient.CreateEmbedding([]Searchable{item})
+	values, embeddingErr := c.aiClient.CreateEmbedding([]Searchable{item})
 	if embeddingErr != nil {
 		return []string{}, embeddingErr
 	}
@@ -258,7 +258,7 @@ func (c *PineconeClient) Search(item Searchable) ([]string, *errors.Error) {
 		return []string{}, &errors.FailedToSearchToPinecone
 	}
 
-	req = pineconeRequest(c.Settings, req)
+	req = pineconeRequest(c.PineconeSettings, req)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {

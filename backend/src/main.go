@@ -34,9 +34,9 @@ func Exit(format string, a ...interface{}) {
 
 func configureDependencies(config *config.Settings, connectToPinecone bool) t.Dependencies {
 	openAi := search.NewOpenAIClient(config.OpenAISettings)
-	var pinecone search.PineconeClientInterface
+	var pinecone search.SearchClientInterface
 
-	if *connectToPinecone {
+	if connectToPinecone {
 		pinecone = search.NewPineconeClient(openAi, config.PineconeSettings, config.Search)
 	} else {
 		pinecone = search.NewPineconeMockClient()

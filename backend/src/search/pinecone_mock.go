@@ -2,6 +2,7 @@ package search
 
 import (
 	"github.com/GenerateNU/sac/backend/src/errors"
+	"gorm.io/gorm"
 )
 
 type PineconeMockClient struct{}
@@ -21,4 +22,8 @@ func (c *PineconeMockClient) Delete(items []Searchable) *errors.Error {
 
 func (c *PineconeMockClient) Search(item Searchable) ([]string, *errors.Error) {
 	return []string{}, nil
+}
+
+func (c *PineconeMockClient) Seed(db *gorm.DB) *errors.Error {
+	return nil
 }

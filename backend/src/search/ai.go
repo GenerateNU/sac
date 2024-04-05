@@ -14,6 +14,7 @@ import (
 
 type AIClientInterface interface {
 	CreateEmbedding(items []Searchable) ([]Embedding, *errors.Error)
+	CreateModeration(items []Searchable) ([]ModerationResult, *errors.Error)
 }
 
 type OpenAIClient struct {

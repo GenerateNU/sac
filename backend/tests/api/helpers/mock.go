@@ -52,7 +52,7 @@ func (c *PineconeMockClient) Delete(items []search.Searchable) *errors.Error {
 	return nil
 }
 
-func (c *PineconeMockClient) Search(item search.Searchable, topK int) ([]string, *errors.Error) {
+func (c *PineconeMockClient) Search(item search.Searchable) ([]string, *errors.Error) {
 	return []string{}, nil
 }
 
@@ -65,6 +65,10 @@ func NewOpenAIMockClient() search.AIClientInterface {
 
 func (c *OpenAIMockClient) CreateEmbedding(items []search.Searchable) ([]search.Embedding, *errors.Error) {
 	return []search.Embedding{}, nil
+}
+
+func (c *OpenAIMockClient) CreateModeration(items []search.Searchable) ([]search.ModerationResult, *errors.Error) {
+	return []search.ModerationResult{}, nil
 }
 
 // ResendMockClient
