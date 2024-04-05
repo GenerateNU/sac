@@ -33,7 +33,7 @@ func main() {
 	onlyMigrate := flag.Bool("only-migrate", false, "Specify if you want to only perform the database migration")
 	onlySeedPinecone := flag.Bool("seed-pinecone", false, "Specify if want to only perform the pinecone database seeding")
 	configPath := flag.String("config", filepath.Join("..", "..", "config"), "Specify the path to the config directory")
-	useDevDotEnv := flag.Bool("use-dev-dot-env", false, "Specify if you want to use the .env.dev file")
+	useDevDotEnv := flag.Bool("use-dev-dot-env", true, "Specify if you want to use the .env.dev file")
 
 	flag.Parse()
 
@@ -62,8 +62,7 @@ func main() {
 
 		err := pinecone.Seed(db)
 		if err != nil {
-			fmt.Printf("Error seeding PineconeDB: %s\n", err.Error())
-			return
+			Exit("Error seeding PineconeDB: %s\n", err.Error())
 		}
 		return
 	}
