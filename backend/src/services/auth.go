@@ -1,11 +1,9 @@
 package services
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/GenerateNU/sac/backend/src/auth"
-	"github.com/GenerateNU/sac/backend/src/constants"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
@@ -18,7 +16,6 @@ import (
 
 type AuthServiceInterface interface {
 	GetRole(id string) (*models.UserRole, *errors.Error)
-	SetResponseTokens(c *fiber.Ctx, tokens *auth.Token) *errors.Error
 	Login(userBody models.LoginUserResponseBody) (*models.User, *auth.Token, *errors.Error)
 	Refresh(refreshToken string) (*auth.Token, *errors.Error)
 	Logout(c *fiber.Ctx) *errors.Error
@@ -36,30 +33,6 @@ type AuthService struct {
 
 func NewAuthService(serviceParams types.ServiceParams) AuthServiceInterface {
 	return &AuthService{serviceParams}
-}
-
-// TODO: organize this
-func (a *AuthService) SetResponseTokens(c *fiber.Ctx, tokens *auth.Token) *errors.Error {
-	// c.Cookie(&fiber.Cookie{
-	// 	Name:     "refresh_token",
-	// 	Value:    "",
-	// 	Expires:  time.Now().Add(-time.Hour),
-	// 	HTTPOnly: true,
-	// })
-	// c.Set("Authorization", "")
-
-	// Set the tokens in the response
-	// should also blacklist the old refresh and access tokens
-
-	c.Set("Authorization", fmt.Sprintf("Bearer %s", tokens.AccessToken))
-	c.Cookie(&fiber.Cookie{
-		Name:     "refresh_token",
-		Value:    string(tokens.RefreshToken),
-		Expires:  time.Now().Add(time.Hour * time.Duration(constants.REFRESH_TOKEN_EXPIRY)),
-		HTTPOnly: true,
-	})
-
-	return nil
 }
 
 func (a *AuthService) Login(loginBody models.LoginUserResponseBody) (*models.User, *auth.Token, *errors.Error) {
