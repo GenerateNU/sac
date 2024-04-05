@@ -20,6 +20,7 @@ type EventServiceInterface interface {
 	DeleteEvent(eventID string) *errors.Error
 	DeleteSeriesByEventID(seriesID string) *errors.Error
 	DeleteSeriesByID(seriesID string) *errors.Error
+	GetHostsByEventID(eventID string) ([]models.Club, *errors.Error)
 }
 
 type EventService struct {
@@ -90,8 +91,8 @@ func (e *EventService) CreateEvent(eventBody models.CreateEventRequestBody) ([]m
 	return transactions.CreateEventSeries(e.DB, *series)
 }
 
-func (e *EventService) GetEvent(id string) ([]models.Event, *errors.Error) {
-	idAsUUID, err := utilities.ValidateID(id)
+func (e *EventService) GetEvent(eventID string) ([]models.Event, *errors.Error) {
+	idAsUUID, err := utilities.ValidateID(eventID)
 	if err != nil {
 		return nil, &errors.FailedToValidateID
 	}
@@ -99,8 +100,8 @@ func (e *EventService) GetEvent(id string) ([]models.Event, *errors.Error) {
 	return transactions.GetEvent(e.DB, *idAsUUID)
 }
 
-func (e *EventService) GetSeriesByEventID(id string) ([]models.Event, *errors.Error) {
-	idAsUUID, err := utilities.ValidateID(id)
+func (e *EventService) GetSeriesByEventID(eventID string) ([]models.Event, *errors.Error) {
+	idAsUUID, err := utilities.ValidateID(eventID)
 	if err != nil {
 		return nil, &errors.FailedToValidateID
 	}
@@ -108,8 +109,8 @@ func (e *EventService) GetSeriesByEventID(id string) ([]models.Event, *errors.Er
 	return transactions.GetSeriesByEventID(e.DB, *idAsUUID)
 }
 
-func (e *EventService) GetSeriesByID(id string) ([]models.Event, *errors.Error) {
-	idAsUUID, err := utilities.ValidateID(id)
+func (e *EventService) GetSeriesByID(seriesID string) ([]models.Event, *errors.Error) {
+	idAsUUID, err := utilities.ValidateID(seriesID)
 	if err != nil {
 		return nil, &errors.FailedToValidateID
 	}
@@ -182,8 +183,8 @@ func (e *EventService) UpdateSeriesByEventID(eventID string, seriesBody models.U
 	return transactions.UpdateSeriesByEventID(e.DB, *eventIDAsUUID, *series)
 }
 
-func (e *EventService) DeleteEvent(id string) *errors.Error {
-	idAsUUID, err := utilities.ValidateID(id)
+func (e *EventService) DeleteEvent(eventID string) *errors.Error {
+	idAsUUID, err := utilities.ValidateID(eventID)
 	if err != nil {
 		return &errors.FailedToValidateID
 	}
@@ -191,8 +192,8 @@ func (e *EventService) DeleteEvent(id string) *errors.Error {
 	return transactions.DeleteEvent(e.DB, *idAsUUID)
 }
 
-func (e *EventService) DeleteSeriesByEventID(id string) *errors.Error {
-	idAsUUID, err := utilities.ValidateID(id)
+func (e *EventService) DeleteSeriesByEventID(eventID string) *errors.Error {
+	idAsUUID, err := utilities.ValidateID(eventID)
 	if err != nil {
 		return &errors.FailedToValidateID
 	}
@@ -200,13 +201,22 @@ func (e *EventService) DeleteSeriesByEventID(id string) *errors.Error {
 	return transactions.DeleteSeriesByEventID(e.DB, *idAsUUID)
 }
 
-func (e *EventService) DeleteSeriesByID(id string) *errors.Error {
-	idAsUUID, err := utilities.ValidateID(id)
+func (e *EventService) DeleteSeriesByID(seriesID string) *errors.Error {
+	idAsUUID, err := utilities.ValidateID(seriesID)
 	if err != nil {
 		return &errors.FailedToValidateID
 	}
 
 	return transactions.DeleteSeriesByID(e.DB, *idAsUUID)
+}
+
+func (e *EventService) GetHostsByEventID(eventID string) ([]models.Club, *errors.Error) {
+	idAsUUID, err := utilities.ValidateID(eventID)
+	if err != nil {
+		return nil, &errors.FailedToValidateID
+	}
+
+	return transactions.GetHostsByEventID(e.DB, *idAsUUID)
 }
 
 func CreateEventSlice(firstEvent *models.Event, series models.Series) []models.Event {
