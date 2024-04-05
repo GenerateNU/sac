@@ -20,7 +20,7 @@ func NewAWSMockClient() file.FileClientInterface {
 	return &AWSMockClient{}
 }
 
-func (c *AWSMockClient) UploadFile(folder string, fileHeader *multipart.FileHeader, allowedTypes []file.FileTypes) (*models.FileInfo, *errors.Error) {
+func (c *AWSMockClient) UploadFile(folder string, fileHeader *multipart.FileHeader, allowedTypes []file.FileType) (*models.FileInfo, *errors.Error) {
 	return nil, nil
 }
 

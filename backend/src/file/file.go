@@ -20,18 +20,18 @@ import (
 type FileType string
 
 const (
-	IMAGE       FileTypes = "image"
-	VIDEO       FileTypes = "video"
-	AUDIO       FileTypes = "audio"
-	DOCUMENT    FileTypes = "document"
-	APPLICATION FileTypes = "application"
-	TEXT        FileTypes = "text"
-	ALL         FileTypes = "all"
+	IMAGE       FileType = "image"
+	VIDEO       FileType = "video"
+	AUDIO       FileType = "audio"
+	DOCUMENT    FileType = "document"
+	APPLICATION FileType = "application"
+	TEXT        FileType = "text"
+	ALL         FileType = "all"
 )
 
 type FileClientInterface interface {
 	GetFileURL(fileURL string) *string
-	UploadFile(folder string, fileHeader *multipart.FileHeader, allowedTypes []FileTypes) (*models.FileInfo, *errors.Error)
+	UploadFile(folder string, fileHeader *multipart.FileHeader, allowedTypes []FileType) (*models.FileInfo, *errors.Error)
 	DeleteFile(fileURL string) *errors.Error
 }
 
@@ -86,7 +86,7 @@ func generateUniqueFileName(fileName string) string {
 	return uniqueFileName
 }
 
-func isFileTypeAllowed(fileType string, allowedTypes []FileTypes) bool {
+func isFileTypeAllowed(fileType string, allowedTypes []FileType) bool {
 	if len(allowedTypes) == 0 {
 		return false
 	}
@@ -105,7 +105,7 @@ func isFileTypeAllowed(fileType string, allowedTypes []FileTypes) bool {
 	return false
 }
 
-func (aw *AWSClient) UploadFile(folder string, fileHeader *multipart.FileHeader, allowedTypes []FileTypes) (*models.FileInfo, *errors.Error) {
+func (aw *AWSClient) UploadFile(folder string, fileHeader *multipart.FileHeader, allowedTypes []FileType) (*models.FileInfo, *errors.Error) {
 	fileType := fileHeader.Header.Get("Content-Type")
 	if !isFileTypeAllowed(fileType, allowedTypes) {
 		return nil, &errors.InvalidFileType

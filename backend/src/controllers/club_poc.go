@@ -28,8 +28,8 @@ func NewClubPointOfContactController(clubPointOfContactService services.ClubPoin
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
 // @Router		/clubs/{clubID}/pocs/  [get]
-func (u *ClubPointOfContactController) GetClubPointOfContacts(c *fiber.Ctx) error {
-	pointOfContact, err := u.clubPointOfContactService.GetClubPointOfContacts(c.Params("clubID"))
+func (cpoc *ClubPointOfContactController) GetClubPointOfContacts(c *fiber.Ctx) error {
+	pointOfContact, err := cpoc.clubPointOfContactService.GetClubPointOfContacts(c.Params("clubID"))
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -51,8 +51,8 @@ func (u *ClubPointOfContactController) GetClubPointOfContacts(c *fiber.Ctx) erro
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
 // @Router		/clubs/{clubID}/pocs/{pocID}  [get]
-func (u *ClubPointOfContactController) GetClubPointOfContact(c *fiber.Ctx) error {
-	pointOfContact, err := u.clubPointOfContactService.GetClubPointOfContact(c.Params("clubID"), c.Params("pocID"))
+func (cpoc *ClubPointOfContactController) GetClubPointOfContact(c *fiber.Ctx) error {
+	pointOfContact, err := cpoc.clubPointOfContactService.GetClubPointOfContact(c.Params("clubID"), c.Params("pocID"))
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -76,13 +76,13 @@ func (u *ClubPointOfContactController) GetClubPointOfContact(c *fiber.Ctx) error
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
 // @Router		/clubs/{clubID}/poc/{pocID}  [patch]
-func (u *ClubPointOfContactController) UpdateClubPointOfContactPhoto(c *fiber.Ctx) error {
+func (cpoc *ClubPointOfContactController) UpdateClubPointOfContactPhoto(c *fiber.Ctx) error {
 	formFile, parseErr := c.FormFile("file")
 	if parseErr != nil {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
-	pointOfContact, err := u.clubPointOfContactService.UpdateClubPointOfContactPhoto(c.Params("clubID"), c.Params("pocID"), formFile)
+	pointOfContact, err := cpoc.clubPointOfContactService.UpdateClubPointOfContactPhoto(c.Params("clubID"), c.Params("pocID"), formFile)
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -106,14 +106,14 @@ func (u *ClubPointOfContactController) UpdateClubPointOfContactPhoto(c *fiber.Ct
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
 // @Router		/clubs/{clubID}/poc/{pocID}  [put]
-func (u *ClubPointOfContactController) UpdateClubPointOfContact(c *fiber.Ctx) error {
+func (cpoc *ClubPointOfContactController) UpdateClubPointOfContact(c *fiber.Ctx) error {
 	var pointOfContactBody models.UpdatePointOfContactBody
 
 	if parseErr := c.BodyParser(&pointOfContactBody); parseErr != nil {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
-	pointOfContact, err := u.clubPointOfContactService.UpdateClubPointOfContact(c.Params("clubID"), c.Params("pocID"), pointOfContactBody)
+	pointOfContact, err := cpoc.clubPointOfContactService.UpdateClubPointOfContact(c.Params("clubID"), c.Params("pocID"), pointOfContactBody)
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -136,7 +136,7 @@ func (u *ClubPointOfContactController) UpdateClubPointOfContact(c *fiber.Ctx) er
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
 // @Router		/clubs/{clubID}/poc/  [post]
-func (u *ClubPointOfContactController) CreateClubPointOfContact(c *fiber.Ctx) error {
+func (cpoc *ClubPointOfContactController) CreateClubPointOfContact(c *fiber.Ctx) error {
 	var pointOfContactBody models.CreatePointOfContactBody
 
 	if parseErr := c.BodyParser(&pointOfContactBody); parseErr != nil {
@@ -148,7 +148,7 @@ func (u *ClubPointOfContactController) CreateClubPointOfContact(c *fiber.Ctx) er
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
-	pointOfContact, err := u.clubPointOfContactService.CreateClubPointOfContact(c.Params("clubID"), pointOfContactBody, formFile)
+	pointOfContact, err := cpoc.clubPointOfContactService.CreateClubPointOfContact(c.Params("clubID"), pointOfContactBody, formFile)
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -170,8 +170,8 @@ func (u *ClubPointOfContactController) CreateClubPointOfContact(c *fiber.Ctx) er
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
 // @Router		/clubs/{clubID}/poc/{pocID}  [delete]
-func (u *ClubPointOfContactController) DeleteClubPointOfContact(c *fiber.Ctx) error {
-	err := u.clubPointOfContactService.DeleteClubPointOfContact(c.Params("clubID"), c.Params("pocID"))
+func (cpoc *ClubPointOfContactController) DeleteClubPointOfContact(c *fiber.Ctx) error {
+	err := cpoc.clubPointOfContactService.DeleteClubPointOfContact(c.Params("clubID"), c.Params("pocID"))
 	if err != nil {
 		return err.FiberError(c)
 	}

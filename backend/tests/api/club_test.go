@@ -1,6 +1,7 @@
 package tests
 
 import (
+	stdliberrors "errors"
 	"fmt"
 	"net/http"
 	"testing"
@@ -11,6 +12,7 @@ import (
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 func SampleClubFactory(userID *uuid.UUID) *map[string]interface{} {
@@ -380,5 +382,120 @@ func TestUpdateClubFailsOnInvalidBody(t *testing.T) {
 			},
 		)
 	}
+	appAssert.Close()
+}
+
+func TestUpdateClubFailsBadRequest(t *testing.T) {
+	appAssert := h.InitTest(t)
+
+	badRequests := []string{
+		"0",
+		"-1",
+		"1.1",
+		"foo",
+		"null",
+	}
+
+	sampleStudent, rawPassword := h.SampleStudentFactory()
+
+	for _, badRequest := range badRequests {
+		appAssert = appAssert.TestOnError(
+			h.TestRequest{
+				Method: fiber.MethodPatch,
+				Path:   fmt.Sprintf("/api/v1/clubs/%s", badRequest),
+				Body:   h.SampleStudentJSONFactory(sampleStudent, rawPassword),
+				Role:   &models.Super,
+			},
+			errors.FailedToValidateID,
+		)
+	}
+
+	appAssert.Close()
+}
+
+func TestUpdateClubFailsOnClubIdNotExist(t *testing.T) {
+	uuid := uuid.New()
+
+	h.InitTest(t).TestOnErrorAndTester(h.TestRequest{
+		Method:             fiber.MethodPatch,
+		Path:               fmt.Sprintf("/api/v1/clubs/%s", uuid),
+		Body:               SampleClubFactory(nil),
+		Role:               &models.Super,
+		TestUserIDReplaces: h.StringToPointer("user_id"),
+	},
+		h.ErrorWithTester{
+			Error: errors.ClubNotFound,
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				var club models.Club
+
+				err := eaa.App.Conn.Where("id = ?", uuid).First(&club).Error
+
+				eaa.Assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
+			},
+		},
+	).Close()
+}
+
+func TestDeleteClubWorks(t *testing.T) {
+	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
+
+	appAssert.TestOnStatusAndTester(
+		h.TestRequest{
+			Method: fiber.MethodDelete,
+			Path:   fmt.Sprintf("/api/v1/clubs/%s", clubUUID),
+			Role:   &models.Super,
+		},
+		h.TesterWithStatus{
+			Status: fiber.StatusNoContent,
+			Tester: TestNumClubsRemainsAt1,
+		},
+	).Close()
+}
+
+func TestDeleteClubNotExist(t *testing.T) {
+	uuid := uuid.New()
+	h.InitTest(t).TestOnErrorAndTester(
+		h.TestRequest{
+			Method: fiber.MethodDelete,
+			Path:   fmt.Sprintf("/api/v1/clubs/%s", uuid),
+			Role:   &models.Super,
+		},
+		h.ErrorWithTester{
+			Error: errors.ClubNotFound,
+			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+				var club models.Club
+
+				err := eaa.App.Conn.Where("id = ?", uuid).First(&club).Error
+
+				eaa.Assert.Assert(stdliberrors.Is(err, gorm.ErrRecordNotFound))
+
+				AssertNumClubsRemainsAtN(eaa, resp, 1)
+			},
+		},
+	).Close()
+}
+
+func TestDeleteClubBadRequest(t *testing.T) {
+	appAssert := h.InitTest(t)
+
+	badRequests := []string{
+		"0",
+		"-1",
+		"1.1",
+		"hello",
+		"null",
+	}
+
+	for _, badRequest := range badRequests {
+		appAssert = appAssert.TestOnError(
+			h.TestRequest{
+				Method: fiber.MethodDelete,
+				Path:   fmt.Sprintf("/api/v1/clubs/%s", badRequest),
+				Role:   &models.Super,
+			},
+			errors.FailedToValidateID,
+		)
+	}
+
 	appAssert.Close()
 }

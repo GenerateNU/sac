@@ -49,13 +49,12 @@ func (f *FileService) GetFile(fileID string) (*models.File, *errors.Error) {
 	return transactions.GetFile(f.DB, *idAsUUID)
 }
 
-// TODO: might not be something we want to do (if you delete a file will it remove its owner?)
 func (f *FileService) CreateFile(fileBody *models.CreateFileRequestBody, fileHeader *multipart.FileHeader) (*models.File, *errors.Error) {
 	if err := f.Validate.Struct(fileBody); err != nil {
 		return nil, &errors.FailedToValidateFile
 	}
 
-	fileInfo, err := f.Deps.File.UploadFile(fileBody.OwnerType, fileHeader, []file.FileTypes{file.ALL})
+	fileInfo, err := f.Deps.File.UploadFile(fileBody.OwnerType, fileHeader, []file.FileType{file.ALL})
 	if err != nil {
 		return nil, &errors.FailedToUploadFile
 	}

@@ -16,7 +16,11 @@ func GetPointOfContacts(db *gorm.DB, limit int, page int) ([]models.PointOfConta
 
 	result := db.Preload("PhotoFile").Limit(limit).Offset(offset).Find(&pointOfContacts)
 	if result.Error != nil {
-		return nil, &errors.FailedToGetPointOfContacts
+		if stdliberrors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, &errors.PointOfContactsNotFound
+		} else {
+			return nil, &errors.FailedToGetPointOfContacts
+		}
 	}
 
 	return pointOfContacts, nil

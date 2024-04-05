@@ -8,9 +8,9 @@ import (
 )
 
 type Settings struct {
-	Application      ApplicationSettings `yaml:"application"`
-	Database         DatabaseSettings    `yaml:"database"`
-	SuperUser        SuperUserSettings   `yaml:"superuser"`
+	Application      ApplicationSettings
+	Database         DatabaseSettings
+	SuperUser        SuperUserSettings
 	Auth             AuthSettings
 	AWS              AWSSettings
 	PineconeSettings PineconeSettings

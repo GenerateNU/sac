@@ -66,7 +66,7 @@ func (cpoc *ClubPointOfContactService) CreateClubPointOfContact(clubID string, p
 		return nil, &errors.PointOfContactAlreadyExists
 	}
 
-	fileInfo, err := cpoc.Deps.File.UploadFile("point_of_contacts", fileHeader, []file.FileTypes{file.IMAGE})
+	fileInfo, err := cpoc.Deps.File.UploadFile("point_of_contacts", fileHeader, []file.FileType{file.IMAGE})
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +123,7 @@ func (cpoc *ClubPointOfContactService) UpdateClubPointOfContactPhoto(clubID, poc
 		return nil, err
 	}
 
-	fileInfo, err := cpoc.Deps.File.UploadFile("point_of_contacts", fileHeader, []file.FileTypes{file.IMAGE})
+	fileInfo, err := cpoc.Deps.File.UploadFile("point_of_contacts", fileHeader, []file.FileType{file.IMAGE})
 	if err != nil {
 		return nil, err
 	}

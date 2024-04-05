@@ -28,7 +28,11 @@ var (
 		Message:    "failed to delete club point of contact",
 	}
 	PointOfContactNotFound = Error{
-		StatusCode: fiber.StatusBadRequest,
+		StatusCode: fiber.StatusNotFound,
+		Message:    "point of contact not found",
+	}
+	PointOfContactsNotFound = Error{
+		StatusCode: fiber.StatusNotFound,
 		Message:    "point of contact not found",
 	}
 	FailedToDeletePointOfContact = Error{

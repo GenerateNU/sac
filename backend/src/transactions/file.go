@@ -29,22 +29,20 @@ func CreateFile(db *gorm.DB, ownerID uuid.UUID, ownerType string, fileInfo model
 
 func DeleteFile(db *gorm.DB, fileID uuid.UUID) *errors.Error {
 	if err := db.Delete(&models.File{}, fileID).Error; err != nil {
-		return &errors.FailedToDeleteFile
+		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
+			return &errors.FileNotFound
+		} else {
+			return &errors.FailedToDeleteFile
+		}
 	}
 
 	return nil
 }
 
 func UpdateFile(db *gorm.DB, fileID uuid.UUID, fileInfo models.FileInfo) (*models.File, *errors.Error) {
-	var existingFile models.File
-
-	err := db.First(&existingFile, fileID).Error
+	existingFile, err := GetFile(db, fileID)
 	if err != nil {
-		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, &errors.FileNotFound
-		} else {
-			return nil, &errors.FailedToGetFile
-		}
+		return nil, err
 	}
 
 	if err := db.Model(&existingFile).Updates(models.File{
@@ -57,7 +55,7 @@ func UpdateFile(db *gorm.DB, fileID uuid.UUID, fileInfo models.FileInfo) (*model
 		return nil, &errors.FailedToUpdateFile
 	}
 
-	return &existingFile, nil
+	return existingFile, nil
 }
 
 func GetFiles(db *gorm.DB, limit, page int) ([]models.File, *errors.Error) {
@@ -75,7 +73,11 @@ func GetFiles(db *gorm.DB, limit, page int) ([]models.File, *errors.Error) {
 func GetFile(db *gorm.DB, fileID uuid.UUID) (*models.File, *errors.Error) {
 	var file models.File
 	if err := db.First(&file, fileID).Error; err != nil {
-		return nil, &errors.FailedToGetFile
+		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, &errors.FileNotFound
+		} else {
+			return nil, &errors.FailedToGetFile
+		}
 	}
 
 	return &file, nil
