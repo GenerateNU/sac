@@ -13,6 +13,7 @@ import (
 	"github.com/gofiber/fiber/v2/log"
 
 	"github.com/GenerateNU/sac/backend/src/config"
+	"github.com/GenerateNU/sac/backend/src/constants"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/utilities"
@@ -27,16 +28,14 @@ type SearchClientInterface interface {
 
 type PineconeClient struct {
 	PineconeSettings config.PineconeSettings
-	SearchSettings   config.SearchSettings
 	IndexName        *mattress.Secret[string]
 	aiClient         AIClientInterface
 }
 
 // Connects to an existing Pinecone index, using the host and keys provided in settings.
-func NewPineconeClient(aiClient AIClientInterface, pineconeSettings config.PineconeSettings, searchSettings config.SearchSettings) *PineconeClient {
+func NewPineconeClient(aiClient AIClientInterface, pineconeSettings config.PineconeSettings) *PineconeClient {
 	return &PineconeClient{
 		PineconeSettings: pineconeSettings,
-		SearchSettings:   searchSettings,
 		aiClient:         aiClient,
 	}
 }
@@ -242,7 +241,7 @@ func (c *PineconeClient) Search(item Searchable) ([]string, *errors.Error) {
 		PineconeSearchRequestBody{
 			IncludeValues:   false,
 			IncludeMetadata: false,
-			TopK:            c.SearchSettings.TopKResults,
+			TopK:            constants.TOP_K_RESULTS,
 			// Only 1 item was passed to CreateEmbedding, so grab that 1 item and use its embedding.
 			Vector:    values[0].Embedding,
 			Namespace: item.Namespace(),
@@ -280,7 +279,7 @@ func (c *PineconeClient) Search(item Searchable) ([]string, *errors.Error) {
 	resultsToReturn := []string{}
 
 	for _, match := range results.Matches {
-		if match.Score > c.SearchSettings.ScoreThreshold {
+		if match.Score > constants.SCORE_THRESHOLD {
 			resultsToReturn = append(resultsToReturn, match.Id)
 		}
 	}

@@ -7,17 +7,13 @@ import (
 )
 
 type AuthSettings struct {
-	AccessKey          *m.Secret[string]
-	RefreshKey         *m.Secret[string]
-	AccessTokenExpiry  uint
-	RefreshTokenExpiry uint
+	AccessKey  *m.Secret[string]
+	RefreshKey *m.Secret[string]
 }
 
 type intermediateAuthSettings struct {
-	AccessKey          string `yaml:"accesskey"`
-	RefreshKey         string `yaml:"refreshkey"`
-	AccessTokenExpiry  uint   `yaml:"accesstokenexpiry"`
-	RefreshTokenExpiry uint   `yaml:"refreshtokenexpiry"`
+	AccessKey  string `yaml:"accesskey"`
+	RefreshKey string `yaml:"refreshkey"`
 }
 
 func (int *intermediateAuthSettings) into() (*AuthSettings, error) {
@@ -32,9 +28,7 @@ func (int *intermediateAuthSettings) into() (*AuthSettings, error) {
 	}
 
 	return &AuthSettings{
-		AccessKey:          accessToken,
-		RefreshKey:         refreshToken,
-		AccessTokenExpiry:  int.AccessTokenExpiry,
-		RefreshTokenExpiry: int.RefreshTokenExpiry,
+		AccessKey:  accessToken,
+		RefreshKey: refreshToken,
 	}, nil
 }
