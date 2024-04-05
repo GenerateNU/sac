@@ -32,13 +32,21 @@ func Exit(format string, a ...interface{}) {
 	os.Exit(0)
 }
 
-func configureDependencies(config *config.Settings) t.Dependencies {
+func configureDependencies(config *config.Settings, connectToPinecone bool) t.Dependencies {
 	openAi := search.NewOpenAIClient(config.OpenAISettings)
+	var pinecone search.SearchClientInterface
+
+	if connectToPinecone {
+		pinecone = search.NewPineconeClient(openAi, config.PineconeSettings)
+	} else {
+		pinecone = search.NewPineconeMockClient()
+	}
+
 	dependencies := t.Dependencies{
 		File:   file.NewAWSProvider(config.AWS),
 		AI:     openAi,
 		Email:  email.NewResendClient(config.ResendSettings, true),
-		Search: search.NewPineconeClient(openAi, config.PineconeSettings, true),
+		Search: pinecone,
 	}
 	return dependencies
 }
@@ -46,6 +54,7 @@ func configureDependencies(config *config.Settings) t.Dependencies {
 func main() {
 	onlyMigrate := flag.Bool("only-migrate", false, "Specify if you want to only perform the database migration")
 	onlySeedPinecone := flag.Bool("seed-pinecone", false, "Specify if want to only perform the pinecone database seeding")
+	connectToPinecone := flag.Bool("connect-to-pinecone", false, "Connect to a real Pinecone instance instead of mock")
 	configPath := flag.String("config", filepath.Join("..", "..", "config"), "Specify the path to the config directory")
 	useDevDotEnv := flag.Bool("use-dev-dot-env", true, "Specify if you want to use the .env.dev file")
 
@@ -72,7 +81,7 @@ func main() {
 
 	if *onlySeedPinecone {
 		openAi := search.NewOpenAIClient(config.OpenAISettings)
-		pinecone := search.NewPineconeClient(openAi, config.PineconeSettings, true)
+		pinecone := search.NewPineconeClient(openAi, config.PineconeSettings)
 
 		err := pinecone.Seed(db)
 		if err != nil {
@@ -86,7 +95,7 @@ func main() {
 		Exit("Error with connection pooling: %s", err.Error())
 	}
 
-	dependencies := configureDependencies(config)
+	dependencies := configureDependencies(config, *connectToPinecone)
 
 	app := server.Init(db, dependencies, *config)
 

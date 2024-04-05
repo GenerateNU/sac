@@ -13,6 +13,7 @@ import (
 	"github.com/gofiber/fiber/v2/log"
 
 	"github.com/GenerateNU/sac/backend/src/config"
+	"github.com/GenerateNU/sac/backend/src/constants"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/utilities"
@@ -22,31 +23,25 @@ type SearchClientInterface interface {
 	Seed(db *gorm.DB) *errors.Error
 	Upsert(items []Searchable) *errors.Error
 	Delete(items []Searchable) *errors.Error
-	Search(item Searchable, topK int) ([]string, *errors.Error)
+	Search(item Searchable) ([]string, *errors.Error)
 }
 
 type PineconeClient struct {
-	Settings     config.PineconeSettings
-	IndexName    *mattress.Secret[string]
-	openAIClient AIClientInterface
-	dev          bool
+	PineconeSettings config.PineconeSettings
+	IndexName        *mattress.Secret[string]
+	aiClient         AIClientInterface
 }
 
 // Connects to an existing Pinecone index, using the host and keys provided in settings.
-func NewPineconeClient(openAIClient AIClientInterface, settings config.PineconeSettings, dev bool) SearchClientInterface {
+func NewPineconeClient(aiClient AIClientInterface, pineconeSettings config.PineconeSettings) *PineconeClient {
 	return &PineconeClient{
-		Settings:     settings,
-		openAIClient: openAIClient,
-		dev:          dev,
+		PineconeSettings: pineconeSettings,
+		aiClient:         aiClient,
 	}
 }
 
 // Seeds the pinecone index with the clubs currently in the database.
 func (c *PineconeClient) Seed(db *gorm.DB) *errors.Error {
-	if c.dev {
-		return nil
-	}
-
 	var clubs []models.Club
 
 	if err := db.Find(&clubs).Error; err != nil {
@@ -106,11 +101,7 @@ func (c *PineconeClient) Upsert(items []Searchable) *errors.Error {
 		return nil
 	}
 
-	if c.dev {
-		return nil
-	}
-
-	embeddings, embeddingErr := c.openAIClient.CreateEmbedding(items)
+	embeddings, embeddingErr := c.aiClient.CreateEmbedding(items)
 	if embeddingErr != nil {
 		return &errors.FailedToUpsertToPinecone
 	}
@@ -133,13 +124,13 @@ func (c *PineconeClient) Upsert(items []Searchable) *errors.Error {
 	}
 
 	req, err := http.NewRequest(fiber.MethodPost,
-		fmt.Sprintf("%s/vectors/upsert", c.Settings.IndexHost.Expose()),
+		fmt.Sprintf("%s/vectors/upsert", c.PineconeSettings.IndexHost.Expose()),
 		bytes.NewBuffer(upsertBody))
 	if err != nil {
 		return &errors.FailedToUpsertToPinecone
 	}
 
-	req = pineconeRequest(c.Settings, req)
+	req = pineconeRequest(c.PineconeSettings, req)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -163,10 +154,6 @@ type PineconeDeleteRequestBody struct {
 // Deletes the given list of searchables from the Pinecone index.
 func (c *PineconeClient) Delete(items []Searchable) *errors.Error {
 	if len(items) == 0 {
-		return nil
-	}
-
-	if c.dev {
 		return nil
 	}
 
@@ -194,13 +181,13 @@ func (c *PineconeClient) Delete(items []Searchable) *errors.Error {
 	}
 
 	req, err := http.NewRequest(fiber.MethodPost,
-		fmt.Sprintf("%s/vectors/delete", c.Settings.IndexHost.Expose()),
+		fmt.Sprintf("%s/vectors/delete", c.PineconeSettings.IndexHost.Expose()),
 		bytes.NewBuffer(deleteBody))
 	if err != nil {
 		return &errors.FailedToDeleteToPinecone
 	}
 
-	req = pineconeRequest(c.Settings, req)
+	req = pineconeRequest(c.PineconeSettings, req)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -235,12 +222,17 @@ type PineconeSearchResponseBody struct {
 
 // Runs a search on the Pinecone index given a searchable item, and returns the topK most similar
 // elements' ids.
-func (c *PineconeClient) Search(item Searchable, topK int) ([]string, *errors.Error) {
-	if c.dev {
-		return nil, nil
+func (c *PineconeClient) Search(item Searchable) ([]string, *errors.Error) {
+	moderation, _err := c.aiClient.CreateModeration([]Searchable{item})
+	if _err != nil {
+		return []string{}, _err
 	}
 
-	values, embeddingErr := c.openAIClient.CreateEmbedding([]Searchable{item})
+	if moderation[0].Flagged {
+		return []string{}, &errors.PotentiallyHarmfulSearch
+	}
+
+	values, embeddingErr := c.aiClient.CreateEmbedding([]Searchable{item})
 	if embeddingErr != nil {
 		return []string{}, embeddingErr
 	}
@@ -249,7 +241,7 @@ func (c *PineconeClient) Search(item Searchable, topK int) ([]string, *errors.Er
 		PineconeSearchRequestBody{
 			IncludeValues:   false,
 			IncludeMetadata: false,
-			TopK:            topK,
+			TopK:            constants.TOP_K_RESULTS,
 			// Only 1 item was passed to CreateEmbedding, so grab that 1 item and use its embedding.
 			Vector:    values[0].Embedding,
 			Namespace: item.Namespace(),
@@ -259,13 +251,13 @@ func (c *PineconeClient) Search(item Searchable, topK int) ([]string, *errors.Er
 	}
 
 	req, err := http.NewRequest(fiber.MethodPost,
-		fmt.Sprintf("%s/query", c.Settings.IndexHost.Expose()),
+		fmt.Sprintf("%s/query", c.PineconeSettings.IndexHost.Expose()),
 		bytes.NewBuffer(searchBody))
 	if err != nil {
 		return []string{}, &errors.FailedToSearchToPinecone
 	}
 
-	req = pineconeRequest(c.Settings, req)
+	req = pineconeRequest(c.PineconeSettings, req)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -284,10 +276,12 @@ func (c *PineconeClient) Search(item Searchable, topK int) ([]string, *errors.Er
 		return []string{}, &errors.FailedToSearchToPinecone
 	}
 
-	resultsToReturn := make([]string, len(results.Matches))
+	resultsToReturn := []string{}
 
-	for i, match := range results.Matches {
-		resultsToReturn[i] = match.Id
+	for _, match := range results.Matches {
+		if match.Score > constants.SCORE_THRESHOLD {
+			resultsToReturn = append(resultsToReturn, match.Id)
+		}
 	}
 
 	return resultsToReturn, nil

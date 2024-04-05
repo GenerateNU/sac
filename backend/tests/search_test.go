@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/GenerateNU/sac/backend/src/config"
+	"github.com/GenerateNU/sac/backend/src/constants"
 	"github.com/GenerateNU/sac/backend/src/search"
 	m "github.com/garrettladley/mattress"
 	"github.com/h2non/gock"
@@ -108,7 +109,7 @@ func TestPineconeUpsertWorks(t *testing.T) {
 			},
 		})
 
-	client := search.NewPineconeClient(search.NewOpenAIClient(*mockConfig.OpenAI), *mockConfig.Pinecone, false)
+	client := search.NewPineconeClient(search.NewOpenAIClient(*mockConfig.OpenAI), *mockConfig.Pinecone)
 	err := client.Upsert([]search.Searchable{&MockSearchableStruct{}})
 	assert.Equal(err, nil)
 }
@@ -136,7 +137,7 @@ func TestPineconeDeleteWorks(t *testing.T) {
 		}).
 		Reply(200)
 
-	client := search.NewPineconeClient(search.NewOpenAIClient(*mockConfig.OpenAI), *mockConfig.Pinecone, false)
+	client := search.NewPineconeClient(search.NewOpenAIClient(*mockConfig.OpenAI), *mockConfig.Pinecone)
 	err := client.Delete([]search.Searchable{&MockSearchableStruct{}})
 	assert.Equal(err, nil)
 }
@@ -150,7 +151,6 @@ func TestPineconeSearchWorks(t *testing.T) {
 	mockSearchString := (&MockSearchableStruct{}).EmbeddingString()
 	mockValues := []float32{1.0, 1.0, 1.0, 1.0}
 	mockNamespace := (&MockSearchableStruct{}).Namespace()
-	topK := 5
 
 	defer gock.Off()
 
@@ -163,7 +163,7 @@ func TestPineconeSearchWorks(t *testing.T) {
 		JSON(search.PineconeSearchRequestBody{
 			IncludeValues:   false,
 			IncludeMetadata: false,
-			TopK:            topK,
+			TopK:            constants.TOP_K_RESULTS,
 			Vector:          mockValues,
 			Namespace:       mockNamespace,
 		}).
@@ -197,8 +197,28 @@ func TestPineconeSearchWorks(t *testing.T) {
 			},
 		})
 
-	client := search.NewPineconeClient(search.NewOpenAIClient(*mockConfig.OpenAI), *mockConfig.Pinecone, false)
-	ids, err := client.Search(&MockSearchableStruct{}, 5)
+	gock.New("https://api.openai.com").
+		Post("/v1/moderations").
+		MatchHeader("Authorization", "Bearer "+mockConfig.OpenAI.APIKey.Expose()).
+		MatchHeader("Content-Type", "application/json").
+		MatchType("json").
+		JSON(search.CreateModerationRequestBody{
+			Input: []string{
+				(&MockSearchableStruct{}).EmbeddingString(),
+			},
+			Model: "text-moderation-stable",
+		}).
+		Reply(200).
+		JSON(search.CreateModerationResponseBody{
+			Results: []search.ModerationResult{
+				{
+					Flagged: false,
+				},
+			},
+		})
+
+	client := search.NewPineconeClient(search.NewOpenAIClient(*mockConfig.OpenAI), *mockConfig.Pinecone)
+	ids, err := client.Search(&MockSearchableStruct{})
 	assert.Equal(err, nil)
 	assert.Equal(len(ids), 1)
 	assert.Equal(ids[0], (&MockSearchableStruct{}).SearchId())

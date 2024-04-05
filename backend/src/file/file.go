@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/GenerateNU/sac/backend/src/config"
+	"github.com/GenerateNU/sac/backend/src/constants"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/aws/aws-sdk-go/aws"
@@ -58,7 +59,7 @@ func (aw *AWSClient) GetFileURL(fileURL string) *string {
 }
 
 func preProcessFile(fileHeader *multipart.FileHeader) (*string, []byte, *errors.Error) {
-	if fileHeader.Size > 5000000 {
+	if fileHeader.Size > constants.MAX_FILE_SIZE {
 		return nil, nil, &errors.InvalidFileSize
 	}
 
