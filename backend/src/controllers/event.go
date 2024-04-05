@@ -291,10 +291,32 @@ func (e *EventController) DeleteSeriesByEventID(c *fiber.Ctx) error {
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
 // @Router		/events/{eventID}/  [delete]
-func (l *EventController) DeleteEvent(c *fiber.Ctx) error {
-	if err := l.eventService.DeleteEvent(c.Params("eventID")); err != nil {
+func (e *EventController) DeleteEvent(c *fiber.Ctx) error {
+	if err := e.eventService.DeleteEvent(c.Params("eventID")); err != nil {
 		return err.FiberError(c)
 	}
 
 	return c.SendStatus(fiber.StatusNoContent)
+}
+
+// GetHostsByEventID godoc
+//
+// @Summary		Retrieve all hosts by event
+// @Description	Retrieves all hosts associated with an event
+// @ID			get-hosts-by-event
+// @Tags      	event
+// @Produce		json
+// @Param		eventID	path	string	true	"Event ID"
+// @Success		200	  {object}	    []models.Club
+// @Failure     400   {object}      errors.Error
+// @Failure     404   {object}      errors.Error
+// @Failure     500   {object}      errors.Error
+// @Router		/events/{eventID}/hosts  [get]
+func (e *EventController) GetHostsByEventID(c *fiber.Ctx) error {
+	hosts, err := e.eventService.GetHostsByEventID(c.Params("eventID"))
+	if err != nil {
+		return err.FiberError(c)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(hosts)
 }

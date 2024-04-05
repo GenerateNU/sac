@@ -27,7 +27,7 @@ type UserService struct {
 	types.ServiceParams
 }
 
-func NewUserService(serviceParams types.ServiceParams) *UserService {
+func NewUserService(serviceParams types.ServiceParams) UserServiceInterface {
 	return &UserService{serviceParams}
 }
 
@@ -49,7 +49,7 @@ func (u *UserService) CreateUser(c *fiber.Ctx, userBody models.CreateUserRequest
 	user.Email = strings.ToLower(userBody.Email)
 	user.PasswordHash = *passwordHash
 
-	emailErr := u.Resend.SendWelcomeEmail(fmt.Sprintf("%s %s", user.FirstName, user.LastName), user.Email)
+	emailErr := u.Deps.Email.SendWelcomeEmail(fmt.Sprintf("%s %s", user.FirstName, user.LastName), user.Email)
 	if emailErr != nil {
 		return nil, &errors.FailedToSendEmail
 	}

@@ -18,8 +18,8 @@ type ContactService struct {
 	types.ServiceParams
 }
 
-func NewContactService(params types.ServiceParams) ContactServiceInterface {
-	return &ContactService{params}
+func NewContactService(serviceParams types.ServiceParams) ContactServiceInterface {
+	return &ContactService{serviceParams}
 }
 
 func (c *ContactService) GetContacts(limit string, page string) ([]models.Contact, *errors.Error) {

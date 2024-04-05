@@ -12,15 +12,15 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type OpenAIClientInterface interface {
-	CreateEmbedding(payload string) ([]float32, *errors.Error)
+type AIClientInterface interface {
+	CreateEmbedding(items []Searchable) ([]Embedding, *errors.Error)
 }
 
 type OpenAIClient struct {
 	Settings config.OpenAISettings
 }
 
-func NewOpenAIClient(settings config.OpenAISettings) *OpenAIClient {
+func NewOpenAIClient(settings config.OpenAISettings) AIClientInterface {
 	return &OpenAIClient{Settings: settings}
 }
 

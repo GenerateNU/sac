@@ -27,11 +27,11 @@ func Category(categoryParams types.RouteParams) fiber.Router {
 	categories.Get("/", categoryController.GetCategories)
 
 	// api/v1/categories/:categoryID/*
-	categoriesID := categories.Group("/:categoryID")
+	categoryID := categories.Group("/:categoryID")
 
-	categoriesID.Get("/", categoryController.GetCategory)
-	categoriesID.Delete("/", categoryParams.AuthMiddleware.Authorize(auth.DeleteAll), categoryController.DeleteCategory)
-	categoriesID.Patch("/", categoryParams.AuthMiddleware.Authorize(auth.WriteAll), categoryController.UpdateCategory)
+	categoryID.Get("/", categoryController.GetCategory)
+	categoryID.Delete("/", categoryParams.AuthMiddleware.Authorize(auth.DeleteAll), categoryController.DeleteCategory)
+	categoryID.Patch("/", categoryParams.AuthMiddleware.Authorize(auth.WriteAll), categoryController.UpdateCategory)
 
-	return categoriesID
+	return categoryID
 }

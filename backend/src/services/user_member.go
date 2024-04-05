@@ -18,8 +18,8 @@ type UserMemberService struct {
 	types.ServiceParams
 }
 
-func NewUserMemberService(params types.ServiceParams) UserMemberServiceInterface {
-	return &UserMemberService{params}
+func NewUserMemberService(serviceParams types.ServiceParams) UserMemberServiceInterface {
+	return &UserMemberService{serviceParams}
 }
 
 func (u *UserMemberService) CreateMembership(userID string, clubID string) *errors.Error {

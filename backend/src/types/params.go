@@ -4,6 +4,7 @@ import (
 	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/email"
+	"github.com/GenerateNU/sac/backend/src/file"
 	"github.com/GenerateNU/sac/backend/src/middleware"
 	"github.com/GenerateNU/sac/backend/src/search"
 	"github.com/go-playground/validator/v10"
@@ -18,11 +19,16 @@ type RouteParams struct {
 }
 
 type ServiceParams struct {
-	DB             *gorm.DB
-	Validate       *validator.Validate
-	Resend         *email.ResendClient
-	Pinecone       *search.PineconeClientInterface
-	JWT            *auth.JWTClient
-	AuthSettings   config.AuthSettings
-	SearchSettings config.SearchSettings
+	DB           *gorm.DB
+	Validate     *validator.Validate
+	AuthSettings *config.AuthSettings
+	JWT          auth.JWTClientInterface
+	Deps         Dependencies
+}
+
+type Dependencies struct {
+	Search search.SearchClientInterface
+	AI     search.AIClientInterface
+	Email  email.EmailClientInterface
+	File   file.FileClientInterface
 }

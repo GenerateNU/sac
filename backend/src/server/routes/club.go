@@ -19,6 +19,7 @@ func ClubRoutes(clubParams types.RouteParams) {
 	ClubMember(clubParams)
 	ClubContact(clubParams)
 	ClubEvent(clubParams)
+	ClubPointOfContact(clubParams)
 }
 
 func Club(clubParams types.RouteParams) fiber.Router {
@@ -31,11 +32,11 @@ func Club(clubParams types.RouteParams) fiber.Router {
 	clubs.Post("/", clubParams.AuthMiddleware.Authorize(p.CreateAll), clubController.CreateClub)
 
 	// api/v1/clubs/:clubID/*
-	clubsID := clubs.Group("/:clubID")
+	clubID := clubs.Group("/:clubID")
 
-	clubsID.Get("/", clubController.GetClub)
-	clubsID.Patch("/", clubParams.AuthMiddleware.ClubAuthorizeById, clubController.UpdateClub)
-	clubsID.Delete("/", clubParams.AuthMiddleware.Authorize(p.DeleteAll), clubController.DeleteClub)
+	clubID.Get("/", clubController.GetClub)
+	clubID.Patch("/", clubParams.AuthMiddleware.ClubAuthorizeById, clubController.UpdateClub)
+	clubID.Delete("/", clubParams.AuthMiddleware.Authorize(p.DeleteAll), clubController.DeleteClub)
 
-	return clubsID
+	return clubID
 }
