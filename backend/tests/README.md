@@ -1,6 +1,6 @@
 # Using the Integration Testing Helpers
 
-The integration testing helpers are a set of functions that reduce the boilerplate code required to write integration tests. They are located in the `backend/tests/helpers.go`.
+The integration testing helpers are a set of functions that reduce the boilerplate code required to write integration tests. They are located in the `backend/tests/api/helpers.go`.
 
 ## Modeling a Request with `TestRequest`
 
@@ -38,42 +38,54 @@ Role represents the desired role for the request to be sent with, see `models.Us
 
 TestUserIDReplaces allows us to use the userID of the created user in our tests. For example, say the path is `/api/v1/users/:userID/`, we can use `h.StringToPointer(":userID")` to replace the path param with the dynamically generated userID. The `:` prefix indicates to attempt to replace in the path. If there isn't a match in the path, nothing will happen. Else, without a `:` prefix, it will attempt to replace the corresponding JSON key in the path. For example, if the userID is passed in the body, use `h.StringToPointer("user_id")` and it will attempt the value of the key `user_id` in the body. Again, if there isn't a match, nothing will happen.
 
-## Testing that a Request Returns a XXX Status Code
+## Initializing a Test
 
-Say you want to test hitting the `[APP_ADDRESS]/health` endpoint with a GET request returns a `200` status code.
+Simply call `h.InitTest(t)` to initialize a test. This will create a new database for the test and return an `ExistingAppAssert` struct that can be reused throughout the sequence of requests. The `h.InitTest(...)` function also accepts optional `TestAppConfigurator`s that allow you to configure the test app before the test starts. You can define additional configurators in the `backend/tests/api/helpers/test.go` file.
+
+## Existing App Asserts
+
+Since the test suite creates a new database for each test, we can have a deterministic database state for each test. However, what if we have a multi step test that depends on the previous steps database state? That is where `ExistingAppAssert` comes in! This will allow us to keep using the database from a previous step in the test. They also allow us to configure & use (or not use) a user across a sequence of requests. Additionally, the signature of tests allow for a chaining of tests, so you can run multiple tests in a sequence.
 
 ```go
- h.InitTest(t).TestOnStatus(
+appAssert.TestOnStatus(
   h.TestRequest{
-   Method: fiber.MethodGet,
-   Path:   "/health",
+   Method:             fiber.MethodPost,
+   Path:               fmt.Sprintf("/api/v1/users/:userID/follower/%s", clubUUID),
+   Role:               &models.Super,
+   TestUserIDReplaces: h.StringToPointer(":userID"),
   },
-  fiber.StatusOK,
- ).Close()
-```
-
-## Testing that a Request Returns a XXX Status Code and Assert Something About the Database
-
-Say you want to test that a creating a catgory with POST `[APP_ADDRESS]/api/v1/categories/` returns a `201`
-
-```go
-existingAppAssert.TestOnStatusAndTester(
+  fiber.StatusCreated,
+ ).TestOnStatusAndTester(
   h.TestRequest{
-   Method: fiber.MethodPost,
-   Path:   "/api/v1/categories/",
-   Body:   SampleCategoryFactory(),
-   Role:   &models.Super,
+   Method:             fiber.MethodDelete,
+   Path:               fmt.Sprintf("/api/v1/users/:userID/follower/%s", clubUUID),
+   Role:               &models.Super,
+   TestUserIDReplaces: h.StringToPointer(":userID"),
   },
   h.TesterWithStatus{
-   Status: fiber.StatusCreated,
+   Status: fiber.StatusNoContent,
    Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
-    sampleCategoryUUID = AssertSampleCategoryBodyRespDB(eaa, resp)
+    var user models.User
+
+    err := eaa.App.Conn.Where("id = ?", eaa.App.TestUser.UUID).Preload("Follower").First(&user)
+
+    eaa.Assert.NilError(err)
+
+    eaa.Assert.Equal(1, len(user.Follower))
+
+    var club models.Club
+
+    err = eaa.App.Conn.Where("id = ?", clubUUID).Preload("Follower").First(&club)
+
+    eaa.Assert.NilError(err)
+
+    eaa.Assert.Equal(0, len(club.Follower))
    },
   },
- )
-```
+ ).Close()
+  ```
 
-### Testers
+## Testers
 
 Often times there are common assertions you want to make about the database, for example, if the object in the response is the same as the object in the database. We can create a lambda function that takes in the `TestApp`, `*assert.A`, and `*http.Response` and makes the assertions we want. We can then pass this function to the `TesterWithStatus` struct.
 
@@ -108,13 +120,44 @@ func AssertCategoryBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, body
 }
 ```
 
-### Existing App Asserts
-
-Since the test suite creates a new database for each test, we can have a deterministic database state for each test. However, what if we have a multi step test that depends on the previous steps database state? That is where `ExistingAppAssert` comes in! This will allow us to keep using the database from a previous step in the test. They also allow us to configure & use (or not use) a user across a sequence of requests.
-
-### Why Close?
+## Why Close?
 
 This closes the connection to the database. This is important because if you don't close the connection, we will run out of available connections and the tests will fail. **Always call `.close()` on the last test request of a test.** If you want to test a sequence of requests, call `.close()` on the last request of the sequence.
+
+## Testing that a Request Returns a XXX Status Code
+
+Say you want to test hitting the `[APP_ADDRESS]/health` endpoint with a GET request returns a `200` status code.
+
+```go
+ h.InitTest(t).TestOnStatus(
+  h.TestRequest{
+   Method: fiber.MethodGet,
+   Path:   "/health",
+  },
+  fiber.StatusOK,
+ ).Close()
+```
+
+## Testing that a Request Returns a XXX Status Code and Assert Something About the Database
+
+Say you want to test that a creating a catgory with POST `[APP_ADDRESS]/api/v1/categories/` returns a `201`
+
+```go
+existingAppAssert.TestOnStatusAndTester(
+  h.TestRequest{
+   Method: fiber.MethodPost,
+   Path:   "/api/v1/categories/",
+   Body:   SampleCategoryFactory(),
+   Role:   &models.Super,
+  },
+  h.TesterWithStatus{
+   Status: fiber.StatusCreated,
+   Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
+    sampleCategoryUUID = AssertSampleCategoryBodyRespDB(eaa, resp)
+   },
+  },
+ )
+```
 
 ## Testing that a Request Returns the Correct Error (Status Code and Message), and Assert Something About the Database
 
