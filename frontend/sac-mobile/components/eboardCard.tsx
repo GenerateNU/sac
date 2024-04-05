@@ -3,7 +3,7 @@ import { Text, TouchableOpacity, TouchableOpacityProps, View, Image } from 'reac
 import { VariantProps, cva } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
-export interface EBoardCardProps extends TouchableOpacityProps{
+export interface EBoardCardProps{
     photo?: string;
     name?: string;
     title?: string;
@@ -11,7 +11,7 @@ export interface EBoardCardProps extends TouchableOpacityProps{
 
 const EBoardCard = ({ photo, name, title, ...props }: EBoardCardProps) => {
     return (
-        <TouchableOpacity {...props}>
+        <View>
             <View className="bg-white pt-[3%] pr-[5%] w-full h-48 text-center items-center pb-12" >
                 {photo ? (
                     <Image source={{ uri: photo }} className="aspect-square rounded-lg w-full h-full mb-2" />
@@ -21,7 +21,7 @@ const EBoardCard = ({ photo, name, title, ...props }: EBoardCardProps) => {
                 {name && <Text className="text-sm text-gray-500 mb-2">{name}</Text>}
                 {title && <Text className="text-sm">{title}</Text>}
             </View>
-        </TouchableOpacity>
+        </View>
     );
 };
 

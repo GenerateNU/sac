@@ -4,8 +4,7 @@ import { Button } from '@/components/button';
 
 import { useAuthStore } from '@/hooks/use-auth';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Card } from '@/components/card';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { EventCard } from '@/components/eventCard';
 import { AskAQuestionModal } from './_components/application-modal';
 import ExpandableText from '@/components/expandable-text';
 import { AllClubTags } from './_components/all-club-tags';
@@ -55,16 +54,9 @@ const Club = () => {
                         <ScrollView horizontal={true} className="pt-[2%] pb-[10%]">
                             <View className="flex-row">
                                 {/* To be replaced by event components */}
-                                <Card title="Orientation" variant="default" size="default" className="mr-2">
-                                    <Text className='text-gray-600'>{"08:00 - 09:30 PM"}</Text>
-                                    <Text className='text-gray-600'>{"April 23, 2024"}</Text>
-                                    <Text className='text-gray-600'>{"Ryder Hall, Room 294"}</Text>
-                                </Card>
-                                <Card title="Orientation" variant="default" size="default" className="mr-2">
-                                    <Text className='text-gray-600'>{"08:00 - 09:30 PM"}</Text>
-                                    <Text className='text-gray-600'>{"April 23, 2024"}</Text>
-                                    <Text className='text-gray-600'>{"Ryder Hall, Room 294"}</Text>
-                                </Card>
+                                <EventCard title={'Orientation'} time={'8:00am-9:30am'} date={'February 29'} location={'Ryder Hall, Room 294'}></EventCard>
+                                <EventCard title={'Orientation'} time={'8:00am-9:30am'} date={'February 29'} location={'Ryder Hall, Room 294'}></EventCard>
+                                <EventCard title={'Orientation'} time={'8:00am-9:30am'} date={'February 29'} location={'Ryder Hall, Room 294'}></EventCard>
                             </View>
                         </ScrollView>
                     </View>

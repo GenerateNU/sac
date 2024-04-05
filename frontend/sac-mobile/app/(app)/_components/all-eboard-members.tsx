@@ -19,7 +19,7 @@ const EBoardMembers = () => {
             <ScrollView horizontal={true} className="pb-[10%]">
                 <View className="flex-row">
                     {eboardmembers && eboardmembers.map((member: EBoardCardProps) => (
-                        <EBoardCard key={member.id} photo={member.photo} name={member.name} title={member.title} />
+                        <EBoardCard key={member.name} photo={member.photo} name={member.name} title={member.title}/>
                     ))}
                 </View>
             </ScrollView>
