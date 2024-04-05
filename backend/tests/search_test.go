@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/GenerateNU/sac/backend/src/config"
+	"github.com/GenerateNU/sac/backend/src/constants"
 	"github.com/GenerateNU/sac/backend/src/search"
 	m "github.com/garrettladley/mattress"
 	"github.com/h2non/gock"
@@ -150,7 +151,6 @@ func TestPineconeSearchWorks(t *testing.T) {
 	mockSearchString := (&MockSearchableStruct{}).EmbeddingString()
 	mockValues := []float32{1.0, 1.0, 1.0, 1.0}
 	mockNamespace := (&MockSearchableStruct{}).Namespace()
-	topK := 10
 
 	defer gock.Off()
 
@@ -163,7 +163,7 @@ func TestPineconeSearchWorks(t *testing.T) {
 		JSON(search.PineconeSearchRequestBody{
 			IncludeValues:   false,
 			IncludeMetadata: false,
-			TopK:            topK,
+			TopK:            constants.TOP_K_RESULTS,
 			Vector:          mockValues,
 			Namespace:       mockNamespace,
 		}).

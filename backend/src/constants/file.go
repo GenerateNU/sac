@@ -1,3 +1,3 @@
 package constants
 
-const MAX_FILE_SIZE = 32 * 1024 * 1024 // 32MB
+const MAX_FILE_SIZE int64 = 5 * 1024 * 1024 // 5MB
