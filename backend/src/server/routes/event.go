@@ -25,6 +25,8 @@ func Event(eventParams types.RouteParams) {
 	eventID.Delete("/", eventController.DeleteEvent)
 	eventID.Delete("/series", eventController.DeleteSeriesByEventID)
 
+	eventID.Get("/hosts", eventController.GetHostsByEventID)
+
 	// api/v1/events/series/*
 	series := events.Group("/series")
 
