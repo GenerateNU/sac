@@ -43,7 +43,12 @@ func (u *UserController) CreateUser(c *fiber.Ctx) error {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
 
-	user, err := u.userService.CreateUser(c, userBody)
+	user, tokens, err := u.userService.CreateUser(userBody)
+	if err != nil {
+		return err.FiberError(c)
+	}
+
+	err = auth.SetResponseTokens(c, tokens)
 	if err != nil {
 		return err.FiberError(c)
 	}

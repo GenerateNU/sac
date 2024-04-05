@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
@@ -42,7 +43,7 @@ func (a *AuthController) Login(c *fiber.Ctx) error {
 		return err.FiberError(c)
 	}
 
-	err = a.authService.SetResponseTokens(c, tokens)
+	err = auth.SetResponseTokens(c, tokens)
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -75,7 +76,7 @@ func (a *AuthController) Refresh(c *fiber.Ctx) error {
 		return err.FiberError(c)
 	}
 
-	err = a.authService.SetResponseTokens(c, tokens)
+	err = auth.SetResponseTokens(c, tokens)
 	if err != nil {
 		return err.FiberError(c)
 	}
