@@ -5,10 +5,11 @@ import { rootModelSchema } from './root';
 export const userSchema = z.object({
     role: z.enum(['super', 'student']),
     email: z.string().email(),
-    username: z.string().min(3),
-    password: z.string().min(8),
-    firstName: z.string().min(3),
-    lastName: z.string().min(3)
+    first_name: z.string().min(3),
+    last_name: z.string().min(3),
+    created_at: z.date(),
+    updated_at: z.date(),
+    is_verified: z.boolean()
 });
 
 export const collegeSchema = z.enum([

@@ -63,6 +63,7 @@ func (cl *ClubController) GetClubs(c *fiber.Ctx) error {
 // @Router		/clubs/  [post]
 func (cl *ClubController) CreateClub(c *fiber.Ctx) error {
 	var clubBody models.CreateClubRequestBody
+
 	if err := c.BodyParser(&clubBody); err != nil {
 		return errors.FailedToParseRequestBody.FiberError(c)
 	}
@@ -147,6 +148,5 @@ func (cl *ClubController) DeleteClub(c *fiber.Ctx) error {
 	if err != nil {
 		return err.FiberError(c)
 	}
-
 	return c.SendStatus(fiber.StatusNoContent)
 }

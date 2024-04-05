@@ -51,19 +51,6 @@ func readProd(v *viper.Viper) (*Settings, error) {
 	superUserPrefix := fmt.Sprintf("%sSUPERUSER__", appPrefix)
 	authSecretPrefix := fmt.Sprintf("%sAUTHSECRET__", appPrefix)
 
-	authAccessExpiry := os.Getenv(fmt.Sprintf("%sACCESS_TOKEN_EXPIRY", authSecretPrefix))
-	authRefreshExpiry := os.Getenv(fmt.Sprintf("%sREFRESH_TOKEN_EXPIRY", authSecretPrefix))
-
-	authAccessExpiryInt, err := strconv.ParseUint(authAccessExpiry, 10, 16)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse access token expiry: %w", err)
-	}
-
-	authRefreshExpiryInt, err := strconv.ParseUint(authRefreshExpiry, 10, 16)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse refresh token expiry: %w", err)
-	}
-
 	portStr := os.Getenv(fmt.Sprintf("%sPORT", appPrefix))
 	portInt, err := strconv.ParseUint(portStr, 10, 16)
 	if err != nil {
@@ -100,6 +87,16 @@ func readProd(v *viper.Viper) (*Settings, error) {
 		return nil, fmt.Errorf("failed to read OpenAI settings: %w", err)
 	}
 
+	awsSettings, err := readAWSSettings()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read AWS settings: %w", err)
+	}
+
+	resendSettings, err := readResendSettings()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read Resend settings: %w", err)
+	}
+
 	return &Settings{
 		Application: ApplicationSettings{
 			Port:    uint16(portInt),
@@ -118,12 +115,12 @@ func readProd(v *viper.Viper) (*Settings, error) {
 			Password: superPassword,
 		},
 		Auth: AuthSettings{
-			AccessKey:          authAccessKey,
-			RefreshKey:         authRefreshKey,
-			AccessTokenExpiry:  uint(authAccessExpiryInt),
-			RefreshTokenExpiry: uint(authRefreshExpiryInt),
+			AccessKey:  authAccessKey,
+			RefreshKey: authRefreshKey,
 		},
 		PineconeSettings: *pineconeSettings,
 		OpenAISettings:   *openAISettings,
+		AWS:              *awsSettings,
+		ResendSettings:   *resendSettings,
 	}, nil
 }

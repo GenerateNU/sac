@@ -9,10 +9,14 @@ updates:
     schedule:
       interval: weekly
   - package-ecosystem: npm
-    directory: ./frontend/sac-mobile
+    directory: ./frontend/sac-mobile/
     schedule:
       interval: weekly
   - package-ecosystem: npm
-    directory: ./frontend/sac-web
+    directory: ./frontend/sac-web/
+    schedule:
+      interval: weekly
+  - package-ecosystem: cargo
+    directory: ./scraper/clubs/
     schedule:
       interval: weekly
