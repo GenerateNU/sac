@@ -11,6 +11,7 @@ import { AllClubTags } from './_components/all-club-tags';
 import { EBoardMembers } from './_components/all-eboard-members';
 import { FAQs } from './_components/all-faqs';
 import { SocialMediaIcons } from './_components/all-social-media';
+import { Events } from './_components/all-events';
 
 const Club = () => {
     const { logout } = useAuthStore();
@@ -49,17 +50,7 @@ const Club = () => {
                             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
                         </ExpandableText>
                     </View>
-                    <View>
-                        <Text className="text-black font-bold">Events</Text>
-                        <ScrollView horizontal={true} className="pt-[2%] pb-[10%]">
-                            <View className="flex-row">
-                                {/* To be replaced by event components */}
-                                <EventCard title={'Orientation'} time={'8:00am-9:30am'} date={'February 29'} location={'Ryder Hall, Room 294'}></EventCard>
-                                <EventCard title={'Orientation'} time={'8:00am-9:30am'} date={'February 29'} location={'Ryder Hall, Room 294'}></EventCard>
-                                <EventCard title={'Orientation'} time={'8:00am-9:30am'} date={'February 29'} location={'Ryder Hall, Room 294'}></EventCard>
-                            </View>
-                        </ScrollView>
-                    </View>
+                    <Events></Events>
                     <EBoardMembers></EBoardMembers>
                     <FAQs></FAQs>
                 </View>
