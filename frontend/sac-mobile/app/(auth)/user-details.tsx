@@ -10,7 +10,7 @@ import { Button } from '@/components/button';
 import { DropdownComponent } from '@/components/dropdown';
 import Error from '@/components/error';
 import MultiSelectComponent from '@/components/multiselect';
-import Wordmark from '@/components/wordmark';
+import { Wordmark } from '@/components/wordmark';
 import { college } from '@/lib/const';
 import { major } from '@/lib/utils';
 import { graduationYear } from '@/lib/utils';
@@ -44,7 +44,7 @@ const UserDetails = () => {
             };
             UserDetailsSchema.parse(updatedData);
             Alert.alert('Form Submitted', JSON.stringify(updatedData));
-            router.push('/(auth)/user-interests');
+            router.push('/(app)/');
         } catch (error) {
             if (error instanceof ZodError) {
                 Alert.alert('Validation Error', error.errors[0].message);
@@ -128,11 +128,7 @@ const UserDetails = () => {
                     )}
                 </View>
                 <View className="flex-row justify-end pt-[5%]">
-                    <Button
-                        size="lg"
-                        variant="default"
-                        onPress={handleSubmit(onSubmit)}
-                    >
+                    <Button onPress={handleSubmit(onSubmit)} size="lg" variant="default">
                         Continue
                     </Button>
                 </View>

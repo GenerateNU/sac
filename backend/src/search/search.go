@@ -10,6 +10,7 @@ import (
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
 
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/errors"
@@ -17,7 +18,8 @@ import (
 	"github.com/GenerateNU/sac/backend/src/utilities"
 )
 
-type PineconeClientInterface interface {
+type SearchClientInterface interface {
+	Seed(db *gorm.DB) *errors.Error
 	Upsert(items []Searchable) *errors.Error
 	Delete(items []Searchable) *errors.Error
 	Search(item Searchable, topK int) ([]string, *errors.Error)
@@ -26,19 +28,25 @@ type PineconeClientInterface interface {
 type PineconeClient struct {
 	Settings     config.PineconeSettings
 	IndexName    *mattress.Secret[string]
-	openAIClient *OpenAIClient
+	openAIClient AIClientInterface
+	dev          bool
 }
 
 // Connects to an existing Pinecone index, using the host and keys provided in settings.
-func NewPineconeClient(openAIClient *OpenAIClient, settings config.PineconeSettings) *PineconeClient {
+func NewPineconeClient(openAIClient AIClientInterface, settings config.PineconeSettings, dev bool) SearchClientInterface {
 	return &PineconeClient{
 		Settings:     settings,
 		openAIClient: openAIClient,
+		dev:          dev,
 	}
 }
 
 // Seeds the pinecone index with the clubs currently in the database.
 func (c *PineconeClient) Seed(db *gorm.DB) *errors.Error {
+	if c.dev {
+		return nil
+	}
+
 	var clubs []models.Club
 
 	if err := db.Find(&clubs).Error; err != nil {
@@ -63,9 +71,8 @@ func (c *PineconeClient) Seed(db *gorm.DB) *errors.Error {
 		chunks = append(chunks, searchables[i:end])
 	}
 
-	for _, chunk := range chunks {
-		// TODO logger
-		// print(fmt.Sprintf("Uploading chunk #%d (of %d) to pinecone...\n", i+1, len(chunks)))
+	for index, chunk := range chunks {
+		log.Info("Uploading chunk #%d (of %d) to pinecone...\n", index+1, len(chunks))
 		err := c.Upsert(chunk)
 		if err != nil {
 			return &errors.ClubSeedingFailed
@@ -75,9 +82,9 @@ func (c *PineconeClient) Seed(db *gorm.DB) *errors.Error {
 	return nil
 }
 
-func (c *PineconeClient) pineconeRequest(req *http.Request) *http.Request {
+func pineconeRequest(settings config.PineconeSettings, req *http.Request) *http.Request {
 	return utilities.ApplyModifiers(req,
-		utilities.HeaderKV("Api-Key", c.Settings.APIKey.Expose()),
+		utilities.HeaderKV("Api-Key", settings.APIKey.Expose()),
 		utilities.AcceptJSON(),
 		utilities.JSON(),
 	)
@@ -96,6 +103,10 @@ type PineconeUpsertRequestBody struct {
 // Inserts the given list of searchables to the Pinecone index.
 func (c *PineconeClient) Upsert(items []Searchable) *errors.Error {
 	if len(items) == 0 {
+		return nil
+	}
+
+	if c.dev {
 		return nil
 	}
 
@@ -128,7 +139,7 @@ func (c *PineconeClient) Upsert(items []Searchable) *errors.Error {
 		return &errors.FailedToUpsertToPinecone
 	}
 
-	req = c.pineconeRequest(req)
+	req = pineconeRequest(c.Settings, req)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -152,6 +163,10 @@ type PineconeDeleteRequestBody struct {
 // Deletes the given list of searchables from the Pinecone index.
 func (c *PineconeClient) Delete(items []Searchable) *errors.Error {
 	if len(items) == 0 {
+		return nil
+	}
+
+	if c.dev {
 		return nil
 	}
 
@@ -185,7 +200,7 @@ func (c *PineconeClient) Delete(items []Searchable) *errors.Error {
 		return &errors.FailedToDeleteToPinecone
 	}
 
-	req = c.pineconeRequest(req)
+	req = pineconeRequest(c.Settings, req)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -221,6 +236,10 @@ type PineconeSearchResponseBody struct {
 // Runs a search on the Pinecone index given a searchable item, and returns the topK most similar
 // elements' ids.
 func (c *PineconeClient) Search(item Searchable, topK int) ([]string, *errors.Error) {
+	if c.dev {
+		return nil, nil
+	}
+
 	values, embeddingErr := c.openAIClient.CreateEmbedding([]Searchable{item})
 	if embeddingErr != nil {
 		return []string{}, embeddingErr
@@ -246,7 +265,7 @@ func (c *PineconeClient) Search(item Searchable, topK int) ([]string, *errors.Er
 		return []string{}, &errors.FailedToSearchToPinecone
 	}
 
-	req = c.pineconeRequest(req)
+	req = pineconeRequest(c.Settings, req)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {

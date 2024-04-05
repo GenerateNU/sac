@@ -1,18 +1,31 @@
 import React from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { router } from 'expo-router';
+import { Wordmark } from '@/components/wordmark';
 
-import { Button } from '@/components/button';
+import VerificationForm from './_components/verification-form';
 
 const Verification = () => {
     return (
-        <SafeAreaView className="h-full bg-neutral-500" edges={['top']}>
+        <SafeAreaView className="bg-neutral-500" edges={['top']}>
             <ScrollView>
-                <Button onPress={() => router.push('/(auth)/user-details')}>
-                    Go to User Details
-                </Button>
+                <View className="px-[8%] pb-[9%]">
+                    <View className="flex flex-row justify-between mx-auto w-full items-center pt-[3%] pb-[5.5%]">
+                        <Wordmark />
+                    </View>
+                    <View className="pt-[9%] pb-[7.5%]">
+                        <Text className="text-5xl font-bold text-white">
+                            Verify your email
+                        </Text>
+                    </View>
+                    <Text className="text-lg leading-6 text-white ">
+                        Please enter the verification code sent to your email.
+                    </Text>
+                </View>
+                <View className="bg-white px-[8%] pt-[13%] pb-[20%] mt-[50%] rounded-t-3xl">
+                    <VerificationForm />
+                </View>
             </ScrollView>
         </SafeAreaView>
     );

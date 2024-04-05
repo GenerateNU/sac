@@ -1,33 +1,35 @@
-import { Controller, useForm, GetIsDirty } from 'react-hook-form';
+import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { Alert, View, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import { router } from 'expo-router';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 import { ZodError, z } from 'zod';
 
 import { Button } from '@/components/button';
 import Error from '@/components/error';
 import Input from '@/components/input';
+import { useAuthStore } from '@/hooks/use-auth';
 
 type RegisterFormData = {
-    firstName: string;
-    lastName: string;
+    first_name: string;
+    last_name: string;
     email: string;
     password: string;
-    passwordConfirm: string;
+    password_confirmation: string;
 };
 
 const registerSchema = z.object({
-    firstName: z.string().min(2, {
+    first_name: z.string().min(2, {
         message: 'First name must be at least 2 characters long'
     }),
-    lastName: z.string().min(2, {
+    last_name: z.string().min(2, {
         message: 'Last name must be at least 2 characters long'
     }),
     email: z.string().email({ message: 'Invalid email' }),
     password: z
         .string()
         .min(8, { message: 'Password must be at least 8 characters long' }),
-    passwordConfirm: z.string()
+    password_confirmation: z.string()
 });
 
 const RegistrationForm = () => {
@@ -37,28 +39,34 @@ const RegistrationForm = () => {
         formState: { errors },
     } = useForm<RegisterFormData>();
 
-    const onSubmit = ({ passwordConfirm, ...rest }: RegisterFormData) => {
+    const { signUp } = useAuthStore();
+    const [loading, setLoading] = useState(false);
+
+    const onSignUp = async ({
+        password_confirmation,
+        ...rest
+    }: RegisterFormData) => {
+        setLoading(true);
+
         try {
-            registerSchema.parse({
-                passwordConfirm,
-                ...rest
-            });
-            const updatedData = {
-                ...rest
-            };
-            Alert.alert('Form Submitted', JSON.stringify(updatedData));
-            router.push('/(auth)/verification');
-        } catch (error) {
+            registerSchema.parse({ password_confirmation, ...rest });
+            const updatedData = { ...rest };
+            console.log(updatedData);
+            await signUp(updatedData);
+        } catch (error: any) {
             if (error instanceof ZodError) {
-                Alert.alert('Validation Error', error.errors[0].message);
+                Alert.alert(error.errors[0].message);
             } else {
-                console.error('An unexpected error occurred:', error);
+                Alert.alert('An error occurred', error.message);
             }
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <>
+            {loading && <Spinner visible={loading} />}
             <View className="w-full mb-[8.5%]">
                 <Controller
                     control={control}
@@ -70,12 +78,12 @@ const RegistrationForm = () => {
                             placeholder="Garrett"
                             onChangeText={(text) => onChange(text)}
                             value={value}
-                            onSubmitEditing={handleSubmit(onSubmit)}
-                            error={!!errors.firstName}
+                            onSubmitEditing={handleSubmit(onSignUp)}
+                            error={!!errors.first_name}
                         />
                         </TouchableWithoutFeedback>
                     )}
-                    name="firstName"
+                    name="first_name"
                     rules={{
                         required: 'First name is required',
                         validate: (value) => {
@@ -89,8 +97,8 @@ const RegistrationForm = () => {
                         }
                     }}
                 />
-                {errors.firstName && (
-                    <Error message={errors.firstName.message} />
+                {errors.first_name && (
+                    <Error message={errors.first_name.message} />
                 )}
             </View>
 
@@ -105,12 +113,12 @@ const RegistrationForm = () => {
                             placeholder="Ladley"
                             onChangeText={onChange}
                             value={value}
-                            onSubmitEditing={handleSubmit(onSubmit)}
-                            error={!!errors.lastName}
+                            onSubmitEditing={handleSubmit(onSignUp)}
+                            error={!!errors.last_name}
                         />
                         </TouchableWithoutFeedback>
                     )}
-                    name="lastName"
+                    name="last_name"
                     rules={{
                         required: 'Last name is required',
                         validate: (value) => {
@@ -124,7 +132,9 @@ const RegistrationForm = () => {
                         }
                     }}
                 />
-                {errors.lastName && <Error message={errors.lastName.message} />}
+                {errors.last_name && (
+                    <Error message={errors.last_name.message} />
+                )}
             </View>
 
             <View className="w-full mb-[8.5%]">
@@ -138,7 +148,7 @@ const RegistrationForm = () => {
                             placeholder="doe.j@northeastern.edu"
                             onChangeText={onChange}
                             value={value}
-                            onSubmitEditing={handleSubmit(onSubmit)}
+                            onSubmitEditing={handleSubmit(onSignUp)}
                             error={!!errors.email}
                         />
                         </TouchableWithoutFeedback>
@@ -168,7 +178,7 @@ const RegistrationForm = () => {
                             placeholder="Password"
                             onChangeText={onChange}
                             value={value}
-                            onSubmitEditing={handleSubmit(onSubmit)}
+                            onSubmitEditing={handleSubmit(onSignUp)}
                             secureTextEntry={true}
                             error={!!errors.password}
                         />
@@ -220,13 +230,13 @@ const RegistrationForm = () => {
                             placeholder="Confirm your password"
                             onChangeText={onChange}
                             value={value}
-                            onSubmitEditing={handleSubmit(onSubmit)}
+                            onSubmitEditing={handleSubmit(onSignUp)}
                             secureTextEntry={true}
                             error={!!errors.password}
                         />
                         </TouchableWithoutFeedback>
                     )}
-                    name="passwordConfirm"
+                    name="password_confirmation"
                     rules={{
                         required: 'Please confirm your password',
                         validate: (value) => {
@@ -238,16 +248,13 @@ const RegistrationForm = () => {
                         }
                     }}
                 />
-                {errors.passwordConfirm && (
-                    <Error message={errors.passwordConfirm.message} />
+                {errors.password_confirmation && (
+                    <Error message={errors.password_confirmation.message} />
                 )}
             </View>
             <View className="pt-[2%] pb-[15%]">
-                <Button
-                    onPress={handleSubmit(onSubmit)}
-                    size="screenwide"
-                >
-                Submit
+                <Button onPress={handleSubmit(onSignUp)} size="screenwide">
+                    Submit
                 </Button>
             </View>
         </>

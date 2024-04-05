@@ -10,8 +10,11 @@ import (
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/database"
 	_ "github.com/GenerateNU/sac/backend/src/docs"
+	"github.com/GenerateNU/sac/backend/src/email"
+	"github.com/GenerateNU/sac/backend/src/file"
 	"github.com/GenerateNU/sac/backend/src/search"
 	"github.com/GenerateNU/sac/backend/src/server"
+	t "github.com/GenerateNU/sac/backend/src/types"
 )
 
 func CheckServerRunning(host string, port uint16) error {
@@ -29,11 +32,22 @@ func Exit(format string, a ...interface{}) {
 	os.Exit(0)
 }
 
+func configureDependencies(config *config.Settings) t.Dependencies {
+	openAi := search.NewOpenAIClient(config.OpenAISettings)
+	dependencies := t.Dependencies{
+		File:   file.NewAWSProvider(config.AWS),
+		AI:     openAi,
+		Email:  email.NewResendClient(config.ResendSettings, true),
+		Search: search.NewPineconeClient(openAi, config.PineconeSettings, true),
+	}
+	return dependencies
+}
+
 func main() {
 	onlyMigrate := flag.Bool("only-migrate", false, "Specify if you want to only perform the database migration")
 	onlySeedPinecone := flag.Bool("seed-pinecone", false, "Specify if want to only perform the pinecone database seeding")
 	configPath := flag.String("config", filepath.Join("..", "..", "config"), "Specify the path to the config directory")
-	useDevDotEnv := flag.Bool("use-dev-dot-env", false, "Specify if you want to use the .env.dev file")
+	useDevDotEnv := flag.Bool("use-dev-dot-env", true, "Specify if you want to use the .env.dev file")
 
 	flag.Parse()
 
@@ -58,12 +72,11 @@ func main() {
 
 	if *onlySeedPinecone {
 		openAi := search.NewOpenAIClient(config.OpenAISettings)
-		pinecone := search.NewPineconeClient(openAi, config.PineconeSettings)
+		pinecone := search.NewPineconeClient(openAi, config.PineconeSettings, true)
 
 		err := pinecone.Seed(db)
 		if err != nil {
-			fmt.Printf("Error seeding PineconeDB: %s\n", err.Error())
-			return
+			Exit("Error seeding PineconeDB: %s\n", err.Error())
 		}
 		return
 	}
@@ -73,10 +86,9 @@ func main() {
 		Exit("Error with connection pooling: %s", err.Error())
 	}
 
-	openAi := search.NewOpenAIClient(config.OpenAISettings)
-	pinecone := search.NewPineconeClient(openAi, config.PineconeSettings)
+	dependencies := configureDependencies(config)
 
-	app := server.Init(db, pinecone, *config)
+	app := server.Init(db, dependencies, *config)
 
 	err = app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
 	if err != nil {

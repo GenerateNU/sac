@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { Tabs } from 'expo-router';
 
@@ -6,7 +6,7 @@ import HomeLight from '@/assets/icons/home-light';
 import SearchAltLight from '@/assets/icons/search-alt-light';
 import UserLight from '@/assets/icons/user-light';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-
+import { useAuthStore } from '@/hooks/use-auth';
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
@@ -16,7 +16,14 @@ const queryClient = new QueryClient({
     },
 });
 
+
 const AppLayout = () => {
+    const { isLoggedIn, fetchUser } = useAuthStore();
+
+    useEffect(() => {
+        if (isLoggedIn) fetchUser();
+    }, [isLoggedIn, fetchUser]);
+
     return (
         <QueryClientProvider client={queryClient}>
         <Tabs
@@ -72,6 +79,7 @@ const AppLayout = () => {
                     headerShown: false,
                     tabBarIcon: UserLight
                 }}
+                redirect={!isLoggedIn}
             />
         </Tabs>
         </QueryClientProvider>

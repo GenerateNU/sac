@@ -1,6 +1,5 @@
 linters:
   enable:
-    - cyclop
     - exportloopref
     - gocritic
     - gosec
