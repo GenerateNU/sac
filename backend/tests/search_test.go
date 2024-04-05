@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/GenerateNU/sac/backend/src/config"
+	"github.com/GenerateNU/sac/backend/src/constants"
 	"github.com/GenerateNU/sac/backend/src/search"
 	m "github.com/garrettladley/mattress"
 	"github.com/h2non/gock"
@@ -27,7 +28,6 @@ func (e *MockSearchableStruct) EmbeddingString() string {
 type mockConfig struct {
 	Pinecone *config.PineconeSettings
 	OpenAI   *config.OpenAISettings
-	Search   *config.SearchSettings
 }
 
 func newMockConfig() *mockConfig {
@@ -58,10 +58,6 @@ func newMockConfig() *mockConfig {
 		},
 		OpenAI: &config.OpenAISettings{
 			APIKey: openAIApiKeySecret,
-		},
-		Search: &config.SearchSettings{
-			ScoreThreshold: 0.7,
-			TopKResults:    10,
 		},
 	}
 }
@@ -113,7 +109,7 @@ func TestPineconeUpsertWorks(t *testing.T) {
 			},
 		})
 
-	client := search.NewPineconeClient(search.NewOpenAIClient(*mockConfig.OpenAI), *mockConfig.Pinecone, *mockConfig.Search)
+	client := search.NewPineconeClient(search.NewOpenAIClient(*mockConfig.OpenAI), *mockConfig.Pinecone)
 	err := client.Upsert([]search.Searchable{&MockSearchableStruct{}})
 	assert.Equal(err, nil)
 }
@@ -141,7 +137,7 @@ func TestPineconeDeleteWorks(t *testing.T) {
 		}).
 		Reply(200)
 
-	client := search.NewPineconeClient(search.NewOpenAIClient(*mockConfig.OpenAI), *mockConfig.Pinecone, *mockConfig.Search)
+	client := search.NewPineconeClient(search.NewOpenAIClient(*mockConfig.OpenAI), *mockConfig.Pinecone)
 	err := client.Delete([]search.Searchable{&MockSearchableStruct{}})
 	assert.Equal(err, nil)
 }
@@ -155,7 +151,6 @@ func TestPineconeSearchWorks(t *testing.T) {
 	mockSearchString := (&MockSearchableStruct{}).EmbeddingString()
 	mockValues := []float32{1.0, 1.0, 1.0, 1.0}
 	mockNamespace := (&MockSearchableStruct{}).Namespace()
-	topK := 10
 
 	defer gock.Off()
 
@@ -168,7 +163,7 @@ func TestPineconeSearchWorks(t *testing.T) {
 		JSON(search.PineconeSearchRequestBody{
 			IncludeValues:   false,
 			IncludeMetadata: false,
-			TopK:            topK,
+			TopK:            constants.TOP_K_RESULTS,
 			Vector:          mockValues,
 			Namespace:       mockNamespace,
 		}).
@@ -222,7 +217,7 @@ func TestPineconeSearchWorks(t *testing.T) {
 			},
 		})
 
-	client := search.NewPineconeClient(search.NewOpenAIClient(*mockConfig.OpenAI), *mockConfig.Pinecone, *mockConfig.Search)
+	client := search.NewPineconeClient(search.NewOpenAIClient(*mockConfig.OpenAI), *mockConfig.Pinecone)
 	ids, err := client.Search(&MockSearchableStruct{})
 	assert.Equal(err, nil)
 	assert.Equal(len(ids), 1)

@@ -16,7 +16,6 @@ type Settings struct {
 	PineconeSettings PineconeSettings
 	OpenAISettings   OpenAISettings
 	ResendSettings   ResendSettings
-	Search           SearchSettings
 }
 
 type intermediateSettings struct {
@@ -24,7 +23,6 @@ type intermediateSettings struct {
 	Database    intermediateDatabaseSettings  `yaml:"database"`
 	SuperUser   intermediateSuperUserSettings `yaml:"superuser"`
 	Auth        intermediateAuthSettings      `yaml:"authsecret"`
-	Search      SearchSettings                `yaml:"search"`
 }
 
 func (int *intermediateSettings) into() (*Settings, error) {
@@ -48,7 +46,6 @@ func (int *intermediateSettings) into() (*Settings, error) {
 		Database:    *databaseSettings,
 		SuperUser:   *superUserSettings,
 		Auth:        *authSettings,
-		Search:      int.Search,
 	}, nil
 }
 

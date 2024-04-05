@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/GenerateNU/sac/backend/src/auth"
+	"github.com/GenerateNU/sac/backend/src/constants"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/transactions"
@@ -54,7 +55,7 @@ func (a *AuthService) SetResponseTokens(c *fiber.Ctx, tokens *auth.Token) *error
 	c.Cookie(&fiber.Cookie{
 		Name:     "refresh_token",
 		Value:    string(tokens.RefreshToken),
-		Expires:  time.Now().Add(time.Hour * time.Duration(a.AuthSettings.RefreshTokenExpiry)),
+		Expires:  time.Now().Add(time.Hour * time.Duration(constants.REFRESH_TOKEN_EXPIRY)),
 		HTTPOnly: true,
 	})
 

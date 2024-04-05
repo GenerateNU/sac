@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/GenerateNU/sac/backend/src/config"
+	"github.com/GenerateNU/sac/backend/src/constants"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	m "github.com/garrettladley/mattress"
 	"github.com/gofiber/fiber/v2"
@@ -67,8 +68,8 @@ type JWTClient struct {
 
 func NewJWTClient(authSettings config.AuthSettings, signingMethod jwt.SigningMethod) JWTClientInterface {
 	return &JWTClient{
-		RefreshExp:    time.Hour * 24 * time.Duration(authSettings.RefreshTokenExpiry),
-		AccessExp:     time.Minute * time.Duration(authSettings.AccessTokenExpiry),
+		RefreshExp:    time.Hour * 24 * time.Duration(constants.REFRESH_TOKEN_EXPIRY),
+		AccessExp:     time.Minute * time.Duration(constants.ACCESS_TOKEN_EXPIRY),
 		RefreshKey:    authSettings.RefreshKey,
 		AccessKey:     authSettings.AccessKey,
 		SigningMethod: signingMethod,

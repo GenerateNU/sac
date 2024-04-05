@@ -37,7 +37,7 @@ func configureDependencies(config *config.Settings, connectToPinecone bool) t.De
 	var pinecone search.SearchClientInterface
 
 	if connectToPinecone {
-		pinecone = search.NewPineconeClient(openAi, config.PineconeSettings, config.Search)
+		pinecone = search.NewPineconeClient(openAi, config.PineconeSettings)
 	} else {
 		pinecone = search.NewPineconeMockClient()
 	}
@@ -81,7 +81,7 @@ func main() {
 
 	if *onlySeedPinecone {
 		openAi := search.NewOpenAIClient(config.OpenAISettings)
-		pinecone := search.NewPineconeClient(openAi, config.PineconeSettings, config.Search)
+		pinecone := search.NewPineconeClient(openAi, config.PineconeSettings)
 
 		err := pinecone.Seed(db)
 		if err != nil {
