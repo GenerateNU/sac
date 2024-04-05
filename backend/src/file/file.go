@@ -17,7 +17,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type FileTypes string
+type FileType string
 
 const (
 	IMAGE       FileTypes = "image"
