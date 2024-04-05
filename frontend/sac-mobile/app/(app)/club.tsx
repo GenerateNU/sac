@@ -10,29 +10,11 @@ import { AskAQuestionModal } from './_components/application-modal';
 import ExpandableText from '@/components/expandable-text';
 import { AllClubTags } from './_components/all-club-tags';
 import { EBoardMembers } from './_components/all-eboard-members';
-import { FAQs } from './_components/faq-scroll-view';
-
-// import SlackIcon from '@/components/icons/SlackIcon';
-
-const SlackIcon = ({ color }: { color: string }) => (
-    <MaterialCommunityIcons name="slack" size={24} color={color} />
-);
-
-const EmailIcon = ({ color }: { color: string }) => (
-    <MaterialCommunityIcons name="email" size={24} color={color} />
-);
-
-const InstagramIcon = ({ color }: { color: string }) => (
-    <MaterialCommunityIcons name="instagram" size={24} color={color} />
-);
+import { FAQs } from './_components/all-faqs';
+import { SocialMediaIcons } from './_components/all-social-media';
 
 const Club = () => {
     const { logout } = useAuthStore();
-
-    // TODO: Implement social media click handling
-    function handleSocialMediaClick(arg0: string): void {
-        throw new Error('Function not implemented.');
-    }
 
     const [isModalVisible, setIsModalVisible] = useState(false);
     const openModal = () => {
@@ -52,20 +34,7 @@ const Club = () => {
                     <View className="flex-row">
                         <Text className="text-black font-bold text-3xl">Club Name</Text>
                     </View>
-                    {/* Rewrite with maybe the button template? */}
-                    <View className='flex-row pb-[3%]'>
-                        <Button variant="secondary" onPress={() => handleSocialMediaClick('email')}>
-                            <EmailIcon color="black" />
-                        </Button>
-
-                        <Button variant="secondary" onPress={() => handleSocialMediaClick('instagram')}>
-                            <InstagramIcon color="black" />
-                        </Button>
-
-                        <Button variant="secondary" onPress={() => handleSocialMediaClick('slack')}>
-                            <SlackIcon color="black" />
-                        </Button>
-                    </View>
+                    <SocialMediaIcons></SocialMediaIcons>
                     <AllClubTags></AllClubTags>
                     <View>
                         <Button variant='gray' size='screenwide' className='mb-4'>

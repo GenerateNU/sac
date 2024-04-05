@@ -10,6 +10,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 import { useAuthStore } from '@/hooks/use-auth';
 import { User } from '@/types/user';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 export {
     // Catch any errors thrown by the Layout component.
@@ -23,6 +24,16 @@ export const unstable_settings = {
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            staleTime: 1000 * 60 * 5, // 5 minutes
+            refetchOnWindowFocus: false,
+            retry: 3,
+        }
+    }
+});
 
 export default function RootLayout() {
     const [loaded, error] = useFonts({
@@ -93,9 +104,11 @@ function RootLayoutNav() {
     }, [isLoggedIn]);
 
     return (
-        <Stack>
-            <Stack.Screen name="(app)" options={{ headerShown: false }} />
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        </Stack>
+        <QueryClientProvider client={queryClient}>
+            <Stack>
+                <Stack.Screen name="(app)" options={{ headerShown: false }} />
+                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            </Stack>
+        </QueryClientProvider>
     );
 }

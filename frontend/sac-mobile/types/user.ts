@@ -29,8 +29,21 @@ export const yearSchema = z.enum(['1', '2', '3', '4', '5']);
 export type Year = z.infer<typeof yearSchema>;
 
 export type User = z.infer<typeof userSchema>;
+export type Admins = User[];
 
 export type Tokens = {
     accessToken: string;
     refreshToken: string;
+};
+
+export const testUser: User = {
+    id: '1',
+    role: 'student',
+    email: 'test@example.com',
+    username: 'test',
+    password: 'password',
+    firstName: 'Test',
+    lastName: 'User',
+    createdAt: new Date(),
+    updatedAt: new Date()
 };
