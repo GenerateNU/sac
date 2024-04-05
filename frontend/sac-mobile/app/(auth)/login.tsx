@@ -14,7 +14,7 @@ const Login = () => {
                     <View className="pt-[1%]">
                         <Wordmark color={'default'} />
                     </View>
-                    <View className="pt-[9.5%] pb-[6%]">
+                    <View className="pt-[16.5%] pb-[7%]">
                         <Text className="text-5xl font-bold text-white">
                             Let's go
                         </Text>
