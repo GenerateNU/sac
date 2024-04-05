@@ -23,7 +23,7 @@ type CategoryService struct {
 	types.ServiceParams
 }
 
-func NewCategoryService(params types.ServiceParams) *CategoryService {
+func NewCategoryService(params types.ServiceParams) CategoryServiceInterface {
 	return &CategoryService{params}
 }
 

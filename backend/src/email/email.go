@@ -10,7 +10,7 @@ import (
 	"github.com/resend/resend-go/v2"
 )
 
-type ResendClientInterface interface {
+type EmailClientInterface interface {
 	SendPasswordResetEmail(name, email, token string) *errors.Error
 	SendEmailVerification(email, code string) *errors.Error
 	SendWelcomeEmail(name, email string) *errors.Error
@@ -22,7 +22,7 @@ type ResendClient struct {
 	Dev    bool
 }
 
-func NewResendClient(settings config.ResendSettings, dev bool) *ResendClient {
+func NewResendClient(settings config.ResendSettings, dev bool) EmailClientInterface {
 	hystrix.ConfigureCommand("send-email", hystrix.CommandConfig{
 		Timeout:               5000,
 		MaxConcurrentRequests: 100,

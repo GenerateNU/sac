@@ -3,6 +3,7 @@ module github.com/GenerateNU/sac/backend
 go 1.22.2
 
 require (
+	github.com/aws/aws-sdk-go v1.50.5
 	github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5
 	github.com/garrettladley/mattress v0.4.0
 	github.com/go-playground/validator/v10 v10.19.0
@@ -13,6 +14,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/h2non/gock v1.2.0
 	github.com/huandu/go-assert v1.1.6
+	github.com/joho/godotenv v1.5.1
 	github.com/mcnijman/go-emailaddress v1.1.1
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/resend/resend-go/v2 v2.6.0
@@ -35,6 +37,8 @@ require (
 	golang.org/x/sync v0.7.0 // indirect
 )
 
+require github.com/jmespath/go-jmespath v0.4.0 // indirect
+
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
@@ -53,7 +57,6 @@ require (
 	github.com/jackc/pgx/v5 v5.5.5 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
-	github.com/joho/godotenv v1.5.1
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/klauspost/compress v1.17.7 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect

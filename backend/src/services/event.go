@@ -27,8 +27,8 @@ type EventService struct {
 	types.ServiceParams
 }
 
-func NewEventService(params types.ServiceParams) *EventService {
-	return &EventService{params}
+func NewEventService(serviceParams types.ServiceParams) EventServiceInterface {
+	return &EventService{serviceParams}
 }
 
 func (e *EventService) GetEvents(limit string, page string) ([]models.Event, *errors.Error) {

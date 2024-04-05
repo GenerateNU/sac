@@ -33,7 +33,7 @@ type AuthService struct {
 	types.ServiceParams
 }
 
-func NewAuthService(serviceParams types.ServiceParams) *AuthService {
+func NewAuthService(serviceParams types.ServiceParams) AuthServiceInterface {
 	return &AuthService{serviceParams}
 }
 
@@ -157,7 +157,7 @@ func (a *AuthService) ForgotPassword(email string) *errors.Error {
 	}
 
 	if activeToken != nil {
-		sendErr := a.Resend.SendPasswordResetEmail(user.FirstName, user.Email, activeToken.Token)
+		sendErr := a.Deps.Email.SendPasswordResetEmail(user.FirstName, user.Email, activeToken.Token)
 		if sendErr != nil {
 			return &errors.FailedToSendEmail
 		}
@@ -175,7 +175,7 @@ func (a *AuthService) ForgotPassword(email string) *errors.Error {
 		return saveErr
 	}
 
-	sendErr := a.Resend.SendPasswordResetEmail(user.FirstName, user.Email, *token)
+	sendErr := a.Deps.Email.SendPasswordResetEmail(user.FirstName, user.Email, *token)
 	if sendErr != nil {
 		return sendErr
 	}
@@ -247,7 +247,7 @@ func (a *AuthService) SendCode(email string) *errors.Error {
 	}
 
 	if activeOTP != nil {
-		sendErr := a.Resend.SendEmailVerification(user.Email, activeOTP.Token)
+		sendErr := a.Deps.Email.SendEmailVerification(user.Email, activeOTP.Token)
 		if sendErr != nil {
 			return &errors.FailedToSendEmail
 		}
@@ -265,7 +265,7 @@ func (a *AuthService) SendCode(email string) *errors.Error {
 		return saveErr
 	}
 
-	sendErr := a.Resend.SendEmailVerification(user.Email, *otp)
+	sendErr := a.Deps.Email.SendEmailVerification(user.Email, *otp)
 	if sendErr != nil {
 		return &errors.FailedToSendEmail
 	}
