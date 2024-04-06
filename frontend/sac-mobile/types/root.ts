@@ -2,6 +2,6 @@ import { z } from 'zod';
 
 export const rootModelSchema = z.object({
     id: z.string().uuid(),
-    createdAt: z.date(),
-    updatedAt: z.date()
+    created_at: z.date(),
+    updated_at: z.date()
 });

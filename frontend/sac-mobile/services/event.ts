@@ -4,6 +4,7 @@ import { API_BASE_URL } from '@/lib/const';
 import { Club } from '@/types/club';
 import { Event } from '@/types/event';
 import { uuid } from '@/types/uuid';
+import { api } from './api';
 
 /**
  * Fetches an event by its ID.
@@ -14,8 +15,7 @@ import { uuid } from '@/types/uuid';
  * @see Event
  */
 export const fetchEvent = async (eventID: uuid): Promise<Event> => {
-    return axios
-        .get(`${API_BASE_URL}/events/${eventID}`)
+    return api.get<Event>(`/events/${eventID}`)
         .then((response) => response.data as Event)
         .catch((error) => {
             console.error(error);
@@ -32,8 +32,8 @@ export const fetchEvent = async (eventID: uuid): Promise<Event> => {
  * @see Club
  */
 export const fetchHosts = async (eventID: uuid): Promise<Club[]> => {
-    return axios
-        .get(`${API_BASE_URL}/events/${eventID}/hosts`)
+    return api
+        .get(`/events/${eventID}/hosts`)
         .then((response) => response.data as Club[])
         .catch((error) => {
             console.error(error);

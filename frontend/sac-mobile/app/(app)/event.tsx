@@ -7,89 +7,14 @@ import {
     View
 } from 'react-native';
 
-import { router } from 'expo-router';
-
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-
 import { Button } from '@/components/button';
 import HostedBy from '@/components/hosted-by';
-import HostedByText from '@/components/hosted-by-text';
-import TagPillLazySusan from '@/components/tag-pill-lazy-susan';
+import { AllHosts } from '@/app/(app)/_components/all-hosts';
+import AllTags from '@/components/all-tags';
 import { useEvent } from '@/hooks/use-event';
-import {
-    getDayOfWeek,
-    getFormattedTime,
-    getMonth,
-    getOrdinalSuffix
-} from '@/lib/date';
-
-const displaySameDayEvent = (startTime: Date, endTime: Date) => {
-    return (
-        <Text className="px-2 text-base font-medium">
-            {getDayOfWeek(startTime)}, {getMonth(startTime)}{' '}
-            {startTime.getDate()}
-            {getOrdinalSuffix(startTime.getDate())}
-            {'\n'}
-            {getFormattedTime(startTime)} - {getFormattedTime(endTime)}
-        </Text>
-    );
-};
-
-const displayDifferentDayEvent = (startTime: Date, endTime: Date) => {
-    return (
-        <Text className="px-2 text-base font-medium">
-            {getDayOfWeek(startTime)}, {getMonth(startTime)}{' '}
-            {startTime.getDate()}
-            {getOrdinalSuffix(startTime.getDate())}
-            {' - '}
-            {getDayOfWeek(endTime)}, {getMonth(endTime)} {endTime.getDate()}
-            {getOrdinalSuffix(endTime.getDate())}{' '}
-        </Text>
-    );
-};
-
-const displayEventTime = (startTime: Date, endTime: Date) => {
-    const onSameDay = startTime.getDate() === endTime.getDate();
-
-    return (
-        <TouchableOpacity
-            onPress={() => console.log('Navigate to the calendar')}
-            className="flex-row items-center py-1"
-        >
-            <MaterialCommunityIcons name="calendar" size={36} color="black" />
-            {onSameDay
-                ? displaySameDayEvent(startTime, endTime)
-                : displayDifferentDayEvent(startTime, endTime)}
-        </TouchableOpacity>
-    );
-};
-
-const displayEventLocation = (
-    location: string,
-    meetingLink: string | undefined
-) => {
-    return (
-        <View className="flex-row items-center">
-            <MaterialCommunityIcons name="map-marker" size={36} color="black" />
-            <View className="px-2 py-1 flex-col">
-                <Text className=" text-base font-medium">{location}</Text>
-                {meetingLink && (
-                    <TouchableOpacity
-                        onPress={() =>
-                            Linking.openURL(meetingLink).catch((err) =>
-                                console.error('An error occurred', err)
-                            )
-                        }
-                    >
-                        <Text className="text-blue-500 visited:text-purple-500">
-                            {meetingLink}
-                        </Text>
-                    </TouchableOpacity>
-                )}
-            </View>
-        </View>
-    );
-};
+import { Title } from './_components/title';
+import { EventTime } from './_components/event-time';
+import { EventLocation } from './_components/event-location';
 
 // TODO: handle link OR location
 const Event = () => {
@@ -99,13 +24,11 @@ const Event = () => {
         error: eventError
     } = useEvent('tester');
 
-    // TODO: Handle error once we have error components
     if (eventError) {
         console.error(eventError);
         return <Text>Error fetching event</Text>;
     }
 
-    // TODO: Handle loading state once we have loading components
     if (isEventLoading) {
         return <Text>Loading...</Text>;
     }
@@ -115,80 +38,47 @@ const Event = () => {
     }
 
     return (
-        <>
-            <ScrollView showsVerticalScrollIndicator={false}>
-                <View className="flex flex-col items-center justify-between w-screen h-fit">
-                    <View className="w-full bg-gray-600 h-[200]" />
-                    <Button
-                        onPress={() => {
-                            console.log('Back Button Pressed');
-                            router.back();
-                        }}
-                        size={'icon'}
-                        variant={'icon'}
-                        className="flex justify-center items-center absolute top-12 left-6 z-10 bg-gray-300 rounded-full"
-                    >
-                        <MaterialCommunityIcons
-                            name="chevron-left"
-                            size={28}
-                            color="rgb(75 85 99)"
-                        />
-                    </Button>
-                    <View className="flex w-full -translate-y-12">
-                        <View className="flex-row justify-between px-6 ">
-                            <View className="w-24 h-24 rounded-xl bg-gray-300" />
-                            <View className="flex-row justify-center items-center space-x-3">
-                                <Button
-                                    onPress={() => console.log('X Icon')}
-                                    size={'icon'}
-                                    variant={'secondary'}
-                                >
-                                    <Text>X</Text>
-                                </Button>
-                                <Button
-                                    onPress={() => console.log('Y Icon')}
-                                    size={'icon'}
-                                    variant={'secondary'}
-                                >
-                                    <Text>Y</Text>
-                                </Button>
-                                <Button
-                                    onPress={() => console.log('RSVP')}
-                                    size={'default'}
-                                    variant={'default'}
-                                    className="w-18"
-                                >
-                                    <Text>RSVP</Text>
-                                </Button>
-                            </View>
+        <ScrollView showsVerticalScrollIndicator={false}>
+            <View className='flex-col justify-between flex-1 w-full'>
+                <View className='w-full bg-gray-600 h-[100]' />
+                {/* <EventHeader /> */}
+                <Title title={event.name} />
+                <AllHosts eventID={event.id} />
+                <View className='flex gap-y-2'>
+                    <EventTime startTime={event.start_time} endTime={event.end_time} />
+                    <EventLocation location={event.location} meetingLink={event.meeting_link} />
+                    <AllTags eventID={event.id} />
+                </View>
+                {/* <HostedBy eventID={event.id} /> */}
+            </View>
+        </ScrollView>
+    );
+};
+
+export default Event;
+
+{/* <ScrollView showsVerticalScrollIndicator={false}>
+                <View className="flex-col items-center justify-between flex-1 w-full">
+                    <View className="w-full bg-gray-600 h-[100]" />
+                    <View className="flex w-full px-6">
+                        <EventHeader />
+                        <Title title={event.name} />
+                        <AllHosts eventID={event.id} />
+                        <View className='flex gap-y-2'>
+                            <EventTime startTime={event.start_time} endTime={event.end_time} />
+                            <EventLocation location={event.location} meetingLink={event.meeting_link} />
+                            <AllTags eventID={event.id} />
                         </View>
-                        <View className="px-6 py-3 w-full">
-                            <Text className="text-3xl font-bold">
-                                {event.name}
-                            </Text>
-                            <View className="py-2">
-                                <HostedByText eventID={event.id} />
-                            </View>
-                            {displayEventTime(event.startTime, event.endTime)}
-                            {displayEventLocation(
-                                event.location,
-                                event.meetingLink
-                            )}
-                        </View>
-                        <View className="px-6 py-2 w-full">
-                            <TagPillLazySusan eventID={event.id} />
-                        </View>
-                        <View className="px-6 py-2 w-full">
+                        <View className="w-full py-2">
                             <Text className="text-2xl font-bold">
                                 About Event
                             </Text>
-                            {/* TODO: use readmoreable text from Melody */}
                             <Text className="mt-2 text-lg">
                                 {event.content}
                             </Text>
                         </View>
-                        <View className="px-6 py-2 w-full">
-                            <View className="flex-row justify-between items-center">
+                        <View className="w-full px-6 py-2">
+                            {/* <View className="flex-row items-center justify-between">
                                 <Text className="text-2xl font-bold">
                                     Location
                                 </Text>
@@ -202,15 +92,15 @@ const Event = () => {
                                 >
                                     <Text>Open in Maps</Text>
                                 </Button>
-                            </View>
-                            <Text className="py-2 text-lg">
+                            </View> */}
+{/* <Text className="py-2 text-lg">
                                 {event.location}
-                            </Text>
-                            {event.meetingLink && (
+                            </Text> */}
+{/* {event.meeting_link && (
                                 <TouchableOpacity
                                     onPress={() =>
                                         Linking.openURL(
-                                            event.meetingLink!
+                                            event.meeting_link!
                                         ).catch((err) =>
                                             console.error(
                                                 'An error occurred',
@@ -220,20 +110,46 @@ const Event = () => {
                                     }
                                 >
                                     <Text className="text-blue-500 visited:text-purple-500">
-                                        {event.meetingLink}
+                                        {event.meeting_link}
                                     </Text>
                                 </TouchableOpacity>
-                            )}
-                            <View className="w-full h-36 rounded-xl bg-gray-400 my-3" />
-                        </View>
-                        <View className="px-6 py-2 w-full">
-                            <HostedBy eventID={event.id} />
-                        </View>
-                    </View>
-                </View>
-            </ScrollView>
-        </>
-    );
-};
+                            )} */}
+{/* <View className="w-full my-3 bg-gray-400 h-36 rounded-xl" /> */ }
+//             </View>
+//             {/* <View className="w-full px-6 py-2">
+//                 <HostedBy eventID={event.id} />
+//             </View> */}
+//         </View >
+//     </View >
+// </ScrollView > * /}
 
-export default Event;
+const EventHeader = () => {
+    // <View className="flex-row items-center justify-between w-full">
+    //     <View className="w-24 h-24 bg-gray-300 rounded-xl" />
+    //     <View className="flex-row space-x-3">
+    //         <Button
+    //             onPress={() => console.log('X Icon')}
+    //             size={'icon'}
+    //             variant={'secondary'}
+    //         >
+    //             <Text>X</Text>
+    //         </Button>
+    //         <Button
+    //             onPress={() => console.log('Y Icon')}
+    //             size={'icon'}
+    //             variant={'secondary'}
+    //         >
+    //             <Text>Y</Text>
+    //         </Button>
+    //         <Button
+    //             onPress={() => console.log('RSVP')}
+    //             size={'default'}
+    //             variant={'default'}
+    //             className="w-18"
+    //         >
+    //             <Text>RSVP</Text>
+    //         </Button>
+    //     </View>
+    // </View>
+}
+
