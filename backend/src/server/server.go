@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 
+	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/middleware"
 	"github.com/GenerateNU/sac/backend/src/search"
@@ -26,7 +27,7 @@ import (
 // @contact.email	oduneye.d@northeastern.edu and ladley.g@northeastern.edu
 // @host 127.0.0.1:8080
 // @BasePath /
-func Init(db *gorm.DB, pinecone search.PineconeClientInterface, settings config.Settings) *fiber.App {
+func Init(db *gorm.DB,redis auth.RedisClientInterface, pinecone search.PineconeClientInterface, settings config.Settings) *fiber.App {
 	app := newFiberApp(settings.Application)
 
 	validate, err := utilities.RegisterCustomValidators()

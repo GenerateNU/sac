@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/database"
 	_ "github.com/GenerateNU/sac/backend/src/docs"
@@ -73,10 +74,12 @@ func main() {
 		Exit("Error with connection pooling: %s", err.Error())
 	}
 
+	//TODO separate redis from auth?
+	redis := auth.NewRedisClient(config.RedisSettings)
 	openAi := search.NewOpenAIClient(config.OpenAISettings)
 	pinecone := search.NewPineconeClient(openAi, config.PineconeSettings)
 
-	app := server.Init(db, pinecone, *config)
+	app := server.Init(db, redis, pinecone, *config)
 
 	err = app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
 	if err != nil {
