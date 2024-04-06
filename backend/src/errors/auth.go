@@ -15,4 +15,12 @@ var (
 		StatusCode: fiber.StatusBadRequest,
 		Message:    "failed to validate update password body",
 	}
+	FailedToFindUserTokenList = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to find token list",
+	}
+	FailedToBlacklistToken = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message: "failed to blacklist token",
+	}
 )
