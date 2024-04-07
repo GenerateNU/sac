@@ -79,7 +79,7 @@ func validateContactPointer(validate *validator.Validate, fl validator.FieldLeve
 	validationRules := map[models.ContactType]string{
 		models.Facebook:   "http_url",
 		models.Instagram:  "http_url",
-		models.Twitter:    "http_url",
+		models.X:          "http_url",
 		models.LinkedIn:   "http_url",
 		models.YouTube:    "http_url",
 		models.GitHub:     "http_url",
