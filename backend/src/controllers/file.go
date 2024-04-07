@@ -1,8 +1,7 @@
 package controllers
 
 import (
-	"strconv"
-
+	"github.com/GenerateNU/sac/backend/src/constants"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
@@ -33,10 +32,7 @@ func NewFileController(fileService services.FileServiceInterface) *FileControlle
 // @Failure     500   {object}    errors.Error
 // @Router		/files/  [get]
 func (f *FileController) GetFiles(c *fiber.Ctx) error {
-	defaultLimit := 10
-	defaultPage := 1
-
-	files, err := f.fileService.GetFiles(c.Query("limit", strconv.Itoa(defaultLimit)), c.Query("page", strconv.Itoa(defaultPage)))
+	files, err := f.fileService.GetFiles(c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING))
 	if err != nil {
 		return err.FiberError(c)
 	}

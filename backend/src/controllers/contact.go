@@ -1,8 +1,7 @@
 package controllers
 
 import (
-	"strconv"
-
+	"github.com/GenerateNU/sac/backend/src/constants"
 	"github.com/GenerateNU/sac/backend/src/services"
 	"github.com/gofiber/fiber/v2"
 )
@@ -53,10 +52,7 @@ func (co *ContactController) GetContact(c *fiber.Ctx) error {
 // @Failure     500   {string}    errors.Error
 // @Router		/contacts/  [get]
 func (co *ContactController) GetContacts(c *fiber.Ctx) error {
-	defaultLimit := 10
-	defaultPage := 1
-
-	contacts, err := co.contactService.GetContacts(c.Query("limit", strconv.Itoa(defaultLimit)), c.Query("page", strconv.Itoa(defaultPage)))
+	contacts, err := co.contactService.GetContacts(c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING))
 	if err != nil {
 		return err.FiberError(c)
 	}
