@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
@@ -22,10 +23,6 @@ func RegisterCustomValidators() (*validator.Validate, error) {
 	}
 
 	if err := validate.RegisterValidation("password", validatePassword); err != nil {
-		return nil, err
-	}
-
-	if err := validate.RegisterValidation("mongo_url", validateMongoURL); err != nil {
 		return nil, err
 	}
 
@@ -69,12 +66,8 @@ func validatePassword(fl validator.FieldLevel) bool {
 	return hasMinLength && hasDigit && hasSpecialChar
 }
 
-func validateMongoURL(fl validator.FieldLevel) bool {
-	return true
-}
-
 func validateS3URL(fl validator.FieldLevel) bool {
-	return true
+	return strings.HasPrefix(fl.Field().String(), "https://s3.amazonaws.com/")
 }
 
 func validateContactPointer(validate *validator.Validate, fl validator.FieldLevel) bool {
@@ -82,12 +75,26 @@ func validateContactPointer(validate *validator.Validate, fl validator.FieldLeve
 	if !ok {
 		return false
 	}
-	switch contact.Type {
-	case models.Email:
-		return validate.Var(contact.Content, "email") == nil
-	default:
-		return validate.Var(contact.Content, "http_url") == nil
+
+	validationRules := map[models.ContactType]string{
+		models.Facebook:   "http_url",
+		models.Instagram:  "http_url",
+		models.X:          "http_url",
+		models.LinkedIn:   "http_url",
+		models.YouTube:    "http_url",
+		models.GitHub:     "http_url",
+		models.Slack:      "http_url",
+		models.Discord:    "http_url",
+		models.Email:      "email",
+		models.CustomSite: "http_url",
 	}
+
+	rule, ok := validationRules[contact.Type]
+	if !ok {
+		return false // invalid contact type
+	}
+
+	return validate.Var(contact.Content, rule) == nil && strings.HasPrefix(contact.Content, models.GetContentPrefix(contact.Type))
 }
 
 func ValidateID(id string) (*uuid.UUID, *errors.Error) {

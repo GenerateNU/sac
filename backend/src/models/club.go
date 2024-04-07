@@ -30,11 +30,9 @@ type Club struct {
 
 	SoftDeletedAt gorm.DeletedAt `gorm:"type:timestamptz;default:NULL" json:"-" validate:"-"`
 
-	Name    string `gorm:"type:varchar(255)" json:"name" validate:"required,max=255"`
-	Preview string `gorm:"type:varchar(255)" json:"preview" validate:"required,max=255"`
-	// FIXME: make description a mongodb url again
-	/*Description      string           `gorm:"type:varchar(255)" json:"description" validate:"required,http_url,mongo_url,max=255"` // MongoDB URL*/
-	Description      string           `gorm:"type:text" json:"description" validate:"required"`
+	Name             string           `gorm:"type:varchar(255)" json:"name" validate:"required,max=255"`
+	Preview          string           `gorm:"type:varchar(255)" json:"preview" validate:"required,max=255"`
+	Description      string           `gorm:"type:text" json:"description" validate:"required,http_url,s3_url,max=255"` // S3 URL
 	NumMembers       int              `gorm:"type:int" json:"num_members" validate:"required,min=1"`
 	IsRecruiting     bool             `gorm:"type:bool;default:false" json:"is_recruiting" validate:"required"`
 	RecruitmentCycle RecruitmentCycle `gorm:"type:varchar(255);default:always" json:"recruitment_cycle" validate:"required,max=255,oneof=fall spring fallSpring always"`
@@ -61,7 +59,7 @@ type CreateClubRequestBody struct {
 	UserID           uuid.UUID        `json:"user_id" validate:"required,uuid4"`
 	Name             string           `json:"name" validate:"required,max=255"`
 	Preview          string           `json:"preview" validate:"required,max=255"`
-	Description      string           `json:"description" validate:"required,http_url,mongo_url,max=255"` // MongoDB URL
+	Description      string           `json:"description" validate:"required,http_url,s3_url,max=255"` // S3 URL
 	IsRecruiting     bool             `json:"is_recruiting" validate:"required"`
 	RecruitmentCycle RecruitmentCycle `gorm:"type:varchar(255);default:always" json:"recruitment_cycle" validate:"required,max=255,oneof=fall spring fallSpring always"`
 	RecruitmentType  RecruitmentType  `gorm:"type:varchar(255);default:unrestricted" json:"recruitment_type" validate:"required,max=255,oneof=unrestricted tryout application"`
@@ -72,7 +70,7 @@ type CreateClubRequestBody struct {
 type UpdateClubRequestBody struct {
 	Name             string           `json:"name" validate:"omitempty,max=255"`
 	Preview          string           `json:"preview" validate:"omitempty,max=255"`
-	Description      string           `json:"description" validate:"omitempty,http_url,mongo_url,max=255"` // MongoDB URL
+	Description      string           `json:"description" validate:"omitempty,http_url,s3_url,max=255"` // S3 URL
 	IsRecruiting     bool             `json:"is_recruiting" validate:"omitempty"`
 	RecruitmentCycle RecruitmentCycle `gorm:"type:varchar(255);default:always" json:"recruitment_cycle" validate:"required,max=255,oneof=fall spring fallSpring always"`
 	RecruitmentType  RecruitmentType  `gorm:"type:varchar(255);default:unrestricted" json:"recruitment_type" validate:"required,max=255,oneof=unrestricted tryout application"`
