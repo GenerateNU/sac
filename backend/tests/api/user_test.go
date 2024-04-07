@@ -97,7 +97,7 @@ func TestGetUserWorks(t *testing.T) {
 				eaa.Assert.Equal(sampleUser["email"].(string), respUser.Email)
 				eaa.Assert.Equal(models.College(sampleUser["college"].(string)), respUser.College)
 				eaa.Assert.Equal(models.GraduationCycle(sampleUser["graduation_cycle"].(string)), respUser.GraduationCycle)
-				eaa.Assert.Equal(sampleUser["graduation_year"].(int16), respUser.GraduationYear)
+				eaa.Assert.Equal(int16(sampleUser["graduation_year"].(int)), respUser.GraduationYear)
 
 				dbUser, err := transactions.GetUser(eaa.App.Conn, eaa.App.TestUser.UUID)
 
@@ -189,7 +189,7 @@ func TestUpdateUserWorks(t *testing.T) {
 				eaa.Assert.Equal((sampleStudentJSON)["email"].(string), respUser.Email)
 				eaa.Assert.Equal(models.College((sampleStudentJSON)["college"].(string)), respUser.College)
 				eaa.Assert.Equal(models.GraduationCycle(sampleStudentJSON["graduation_cycle"].(string)), respUser.GraduationCycle)
-				eaa.Assert.Equal(sampleStudentJSON["graduation_year"].(int16), respUser.GraduationYear)
+				eaa.Assert.Equal(int16(sampleStudentJSON["graduation_year"].(int)), respUser.GraduationYear)
 				var dbUser models.User
 
 				err = eaa.App.Conn.First(&dbUser, eaa.App.TestUser.UUID).Error
@@ -382,7 +382,7 @@ func AssertUserWithIDBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, bo
 	eaa.Assert.Equal((*body)["email"].(string), dbUser.Email)
 	eaa.Assert.Equal(models.College((*body)["college"].(string)), dbUser.College)
 	eaa.Assert.Equal(models.GraduationCycle((*body)["graduation_cycle"].(string)), dbUser.GraduationCycle)
-	eaa.Assert.Equal((*body)["graduation_year"].(int16), dbUser.GraduationYear)
+	eaa.Assert.Equal(int16((*body)["graduation_year"].(int)), dbUser.GraduationYear)
 
 	return dbUser.ID
 }
