@@ -20,17 +20,17 @@ const (
 func GetContentPrefix(contactType ContactType) string {
 	switch contactType {
 	case Facebook:
-		return "https://www.facebook.com/"
+		return "https://facebook.com/"
 	case Instagram:
-		return "https://www.instagram.com/"
+		return "https://instagram.com/"
 	case X:
 		return "https://x.com/"
 	case LinkedIn:
-		return "https://www.linkedin.com/"
+		return "https://linkedin.com/"
 	case YouTube:
-		return "https://www.youtube.com/"
+		return "https://youtube.com/"
 	case GitHub:
-		return "https://www.github.com/"
+		return "https://github.com/"
 	case Slack:
 		return "https://join.slack.com/"
 	case Discord:
