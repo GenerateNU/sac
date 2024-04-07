@@ -44,7 +44,7 @@ func TestGetUsersWorksForSuper(t *testing.T) {
 				eaa.Assert.Equal("generatesac@gmail.com", respUser.Email)
 				eaa.Assert.Equal(models.College("KCCS"), respUser.College)
 				eaa.Assert.Equal(models.May, respUser.GraduationCycle)
-				eaa.Assert.Equal(2025, respUser.GraduationYear)
+				eaa.Assert.Equal(int16(2025), respUser.GraduationYear)
 
 				dbUsers, err := transactions.GetUsers(eaa.App.Conn, 1, 1)
 
