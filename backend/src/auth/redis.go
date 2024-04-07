@@ -1,23 +1,16 @@
 package auth
 
 import (
-	"github.com/GenerateNU/sac/backend/src/errors"
-	"github.com/redis/go-redis/v9"
 	"time"
-
-	"context"
-	"git"
-
 	"github.com/GenerateNU/sac/backend/src/config"
-)
-
-var (
-	ctx = context.Background()
+	"github.com/GenerateNU/sac/backend/src/errors"
+	"github.com/gofiber/fiber/v2"
+	"github.com/redis/go-redis/v9"
 )
 
 type RedisClientInterface interface {
-	BlackListToken(userId string, token string, expiration time.Duration) *errors.Error
-	IsBlackListed(userId string, token string) (bool, *errors.Error)
+	BlacklistToken(c *fiber.Ctx, userId string, token string, expiration time.Duration) *errors.Error
+	IsBlackListed(c *fiber.Ctx, userId string, token string) (bool, *errors.Error)
 }
 
 type RedisClient struct {
@@ -37,9 +30,9 @@ func NewRedisClient(rs config.RedisSettings) *RedisClient {
 	}
 }
 
-func (r *RedisClient) IsBlackListed(userId string, token string) (bool, *errors.Error) {
-	blacklistKey := "Blacklist:" + userId
-	tokenList, err := r.Client.LRange(*r.Client, ctx, blacklistKey, 0, -1).Result()
+func (r *RedisClient) IsBlackListed(c *fiber.Ctx, userId string, token string) (bool, *errors.Error) {
+	blacklistKey := "Blacklist_" + userId
+	tokenList, err := r.Client.LRange(c.Context(), blacklistKey, 0, -1).Result()
 	if err != nil {
 		return false, &errors.FailedToFindUserTokenList
 	}
@@ -51,11 +44,11 @@ func (r *RedisClient) IsBlackListed(userId string, token string) (bool, *errors.
 	return false, nil
 }
 
-func (r *RedisClient) BlackListToken(userId string, token string, expiration time.Duration) *errors.Error {
+func (r *RedisClient) BlacklistToken(c *fiber.Ctx, userId string, token string, expiration time.Duration) *errors.Error {
 	blacklistKey := "Blacklist:" + userId
-	err := r.Client.RPush(*r.Client, ctx, blacklistKey, token, expiration)
+	err := r.Client.RPush(c.Context(), blacklistKey, token, expiration)
 	if err != nil {
-
+		return &errors.FailedToBlacklistToken
 	}
 	return nil
 }
