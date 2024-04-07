@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import {ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, Touchable, TouchableOpacity, View } from 'react-native';
 import { Button } from '@/components/button';
 
 import { useAuthStore } from '@/hooks/use-auth';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { EventCard } from '@/components/eventCard';
 import { AskAQuestionModal } from './_components/application-modal';
 import ExpandableText from '@/components/expandable-text';
 import { AllClubTags } from './_components/all-club-tags';
@@ -38,7 +37,8 @@ const Club = () => {
                     <AllClubTags></AllClubTags>
                     <View>
                         <Button variant='gray' size='screenwide' className='mb-4'>
-                            Application Form
+                            <Text className='text-black font-bold text-left'>Application Form</Text>
+                            <Text className=''>8 minutes</Text>
                         </Button>
                     </View>
 

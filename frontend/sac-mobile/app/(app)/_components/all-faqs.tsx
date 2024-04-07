@@ -2,7 +2,7 @@ import { Button } from '@/components/button';
 import { FaqCard, FaqCardProps } from '@/components/faqCard';
 import { useFAQs } from '@/hooks/use-faqs';
 import { router } from 'expo-router';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 const FAQs = () => {
     const { data: faqs, isLoading, error } = useFAQs("sac");
@@ -16,8 +16,13 @@ const FAQs = () => {
     }
 
     return (
-        <View className='pb-[30%]'>
-            <Text className="text-black font-bold pb-4">FAQs</Text>
+        <View className='pb-[10%]'>
+            <View className='flex-row justify-between'>
+                <Text className="text-black font-bold pb-4">FAQs</Text>
+                <TouchableOpacity onPress={() => router.push('/(app)/view-all-faqs')}>
+                    <Text>View All</Text>
+                </TouchableOpacity>
+            </View>
             <ScrollView horizontal={true} className="pb-[10%]">
                 <View className="flex-row">
                     {faqs && faqs.map((faq: FaqCardProps) => (
