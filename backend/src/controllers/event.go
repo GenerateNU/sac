@@ -1,8 +1,7 @@
 package controllers
 
 import (
-	"strconv"
-
+	"github.com/GenerateNU/sac/backend/src/constants"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
@@ -32,10 +31,7 @@ func NewEventController(eventService services.EventServiceInterface) *EventContr
 // @Failure     500   {object}      errors.Error
 // @Router		/events/  [get]
 func (e *EventController) GetAllEvents(c *fiber.Ctx) error {
-	defaultLimit := 10
-	defaultPage := 1
-
-	events, err := e.eventService.GetEvents(c.Query("limit", strconv.Itoa(defaultLimit)), c.Query("page", strconv.Itoa(defaultPage)))
+	events, err := e.eventService.GetEvents(c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING))
 	if err != nil {
 		return err.FiberError(c)
 	}
