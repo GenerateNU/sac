@@ -17,6 +17,29 @@ const (
 	CustomSite ContactType = "customSite"
 )
 
+func GetContentPrefix(contactType ContactType) string {
+	switch contactType {
+	case Facebook:
+		return "https://www.facebook.com/"
+	case Instagram:
+		return "https://www.instagram.com/"
+	case Twitter:
+		return "https://twitter.com/"
+	case LinkedIn:
+		return "https://www.linkedin.com/"
+	case YouTube:
+		return "https://www.youtube.com/"
+	case GitHub:
+		return "https://www.github.com/"
+	case Slack:
+		return "https://join.slack.com/"
+	case Discord:
+		return "https://discord.gg/"
+	default:
+		return ""
+	}
+}
+
 type Contact struct {
 	Model
 
@@ -28,5 +51,5 @@ type Contact struct {
 
 type PutContactRequestBody struct {
 	Type    ContactType `json:"type" validate:"required,max=255,oneof=facebook instagram twitter linkedin youtube github slack discord email customSite,contact_pointer"`
-	Content string      `json:"content" validate:"required,max=255"`
+	Content string      `json:"content" validate:"required,contact_pointer,max=255"`
 }
