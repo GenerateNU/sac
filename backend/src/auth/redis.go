@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"time"
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/gofiber/fiber/v2"
@@ -9,7 +8,7 @@ import (
 )
 
 type RedisClientInterface interface {
-	BlacklistToken(c *fiber.Ctx, userId string, token string, expiration time.Duration) *errors.Error
+	BlacklistToken(c *fiber.Ctx, userId string, token string) *errors.Error
 	IsBlackListed(c *fiber.Ctx, userId string, token string) (bool, *errors.Error)
 }
 
@@ -30,25 +29,29 @@ func NewRedisClient(rs config.RedisSettings) *RedisClient {
 	}
 }
 
+// checks if a token is blacklisted for a user
 func (r *RedisClient) IsBlackListed(c *fiber.Ctx, userId string, token string) (bool, *errors.Error) {
-	blacklistKey := "Blacklist_" + userId
-	tokenList, err := r.Client.LRange(c.Context(), blacklistKey, 0, -1).Result()
+	blacklistKey := UserBlacklistKey(userId)
+	result, err := r.Client.SIsMember(c.Context(), blacklistKey, token).Result()
 	if err != nil {
 		return false, &errors.FailedToFindUserTokenList
 	}
-	for _, tokenVal := range tokenList {
-		if tokenVal == token {
-			return true, nil
-		}
-	}
-	return false, nil
+
+	return result, nil
 }
 
-func (r *RedisClient) BlacklistToken(c *fiber.Ctx, userId string, token string, expiration time.Duration) *errors.Error {
-	blacklistKey := "Blacklist:" + userId
-	err := r.Client.RPush(c.Context(), blacklistKey, token, expiration)
-	if err != nil {
+// adds a token to the blacklist set for a user
+func (r *RedisClient) BlacklistToken(c *fiber.Ctx, userId string, token string) *errors.Error {
+	blacklistKey := UserBlacklistKey(userId)
+	// maybe add expiration time to the key?
+	numAdded, err := r.Client.SAdd(c.Context(), blacklistKey, token).Result()
+	if err != nil || numAdded != 1 {
 		return &errors.FailedToBlacklistToken
 	}
 	return nil
+}
+
+// TODO q: now that we're using a set to hold the keys, should we still separate the keys by user? or can we just have one key for all blacklisted tokens?
+var UserBlacklistKey = func(userId string) string {
+	return "Blacklist_" + userId
 }
