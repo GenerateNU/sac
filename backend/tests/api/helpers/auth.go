@@ -146,13 +146,14 @@ func SampleStudentFactory() (models.User, string) {
 	}
 
 	return models.User{
-		Role:         models.Student,
-		FirstName:    "Jane",
-		LastName:     "Doe",
-		Email:        "doe.jane@northeastern.edu",
-		PasswordHash: *hashedPassword,
-		College:      models.KCCS,
-		Year:         models.Third,
+		Role:            models.Student,
+		FirstName:       "Jane",
+		LastName:        "Doe",
+		Email:           "doe.jane@northeastern.edu",
+		PasswordHash:    *hashedPassword,
+		College:         models.KCCS,
+		GraduationCycle: models.May,
+		Year:            2025,
 	}, password
 }
 

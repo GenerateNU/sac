@@ -17,13 +17,14 @@ func SuperUser(superUserSettings config.SuperUserSettings) (*models.User, *error
 	}
 
 	return &models.User{
-		Role:         models.Super,
-		Email:        "generatesac@gmail.com",
-		PasswordHash: *passwordHash,
-		FirstName:    "SAC",
-		LastName:     "Super",
-		College:      models.KCCS,
-		Year:         models.First,
+		Role:            models.Super,
+		Email:           "generatesac@gmail.com",
+		PasswordHash:    *passwordHash,
+		FirstName:       "SAC",
+		LastName:        "Super",
+		College:         models.KCCS,
+		GraduationCycle: models.May,
+		Year:            2025,
 	}, nil
 }
 

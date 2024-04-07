@@ -43,7 +43,7 @@ func TestGetUsersWorksForSuper(t *testing.T) {
 				eaa.Assert.Equal("Super", respUser.LastName)
 				eaa.Assert.Equal("generatesac@gmail.com", respUser.Email)
 				eaa.Assert.Equal(models.College("KCCS"), respUser.College)
-				eaa.Assert.Equal(models.Year(1), respUser.Year)
+				eaa.Assert.Equal(2025, respUser.Year)
 
 				dbUsers, err := transactions.GetUsers(eaa.App.Conn, 1, 1)
 
@@ -95,7 +95,7 @@ func TestGetUserWorks(t *testing.T) {
 				eaa.Assert.Equal(sampleUser["last_name"].(string), respUser.LastName)
 				eaa.Assert.Equal(sampleUser["email"].(string), respUser.Email)
 				eaa.Assert.Equal(models.College(sampleUser["college"].(string)), respUser.College)
-				eaa.Assert.Equal(models.Year(sampleUser["year"].(int)), respUser.Year)
+				eaa.Assert.Equal(sampleUser["year"].(int16), respUser.Year)
 
 				dbUser, err := transactions.GetUser(eaa.App.Conn, eaa.App.TestUser.UUID)
 
@@ -186,7 +186,7 @@ func TestUpdateUserWorks(t *testing.T) {
 				eaa.Assert.Equal(newLastName, respUser.LastName)
 				eaa.Assert.Equal((sampleStudentJSON)["email"].(string), respUser.Email)
 				eaa.Assert.Equal(models.College((sampleStudentJSON)["college"].(string)), respUser.College)
-				eaa.Assert.Equal(models.Year((sampleStudentJSON)["year"].(int)), respUser.Year)
+				eaa.Assert.Equal((sampleStudentJSON)["year"].(int16), respUser.Year)
 
 				var dbUser models.User
 
@@ -377,7 +377,7 @@ func AssertUserWithIDBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, bo
 	eaa.Assert.Equal((*body)["last_name"].(string), dbUser.LastName)
 	eaa.Assert.Equal((*body)["email"].(string), dbUser.Email)
 	eaa.Assert.Equal(models.College((*body)["college"].(string)), dbUser.College)
-	eaa.Assert.Equal(models.Year((*body)["year"].(int)), dbUser.Year)
+	eaa.Assert.Equal((*body)["year"].(int16), dbUser.Year)
 
 	return dbUser.ID
 }
