@@ -43,7 +43,8 @@ func TestGetUsersWorksForSuper(t *testing.T) {
 				eaa.Assert.Equal("Super", respUser.LastName)
 				eaa.Assert.Equal("generatesac@gmail.com", respUser.Email)
 				eaa.Assert.Equal(models.College("KCCS"), respUser.College)
-				eaa.Assert.Equal(2025, respUser.Year)
+				eaa.Assert.Equal(models.May, respUser.GraduationCycle)
+				eaa.Assert.Equal(2025, respUser.GraduationYear)
 
 				dbUsers, err := transactions.GetUsers(eaa.App.Conn, 1, 1)
 
@@ -95,7 +96,8 @@ func TestGetUserWorks(t *testing.T) {
 				eaa.Assert.Equal(sampleUser["last_name"].(string), respUser.LastName)
 				eaa.Assert.Equal(sampleUser["email"].(string), respUser.Email)
 				eaa.Assert.Equal(models.College(sampleUser["college"].(string)), respUser.College)
-				eaa.Assert.Equal(sampleUser["year"].(int16), respUser.Year)
+				eaa.Assert.Equal(models.GraduationCycle(sampleUser["graduation_cycle"].(string)), respUser.GraduationCycle)
+				eaa.Assert.Equal(sampleUser["graduation_year"].(int16), respUser.GraduationYear)
 
 				dbUser, err := transactions.GetUser(eaa.App.Conn, eaa.App.TestUser.UUID)
 
@@ -186,8 +188,8 @@ func TestUpdateUserWorks(t *testing.T) {
 				eaa.Assert.Equal(newLastName, respUser.LastName)
 				eaa.Assert.Equal((sampleStudentJSON)["email"].(string), respUser.Email)
 				eaa.Assert.Equal(models.College((sampleStudentJSON)["college"].(string)), respUser.College)
-				eaa.Assert.Equal((sampleStudentJSON)["year"].(int16), respUser.Year)
-
+				eaa.Assert.Equal(models.GraduationCycle(sampleStudentJSON["graduation_cycle"].(string)), respUser.GraduationCycle)
+				eaa.Assert.Equal(sampleStudentJSON["graduation_year"].(int16), respUser.GraduationYear)
 				var dbUser models.User
 
 				err = eaa.App.Conn.First(&dbUser, eaa.App.TestUser.UUID).Error
@@ -198,7 +200,8 @@ func TestUpdateUserWorks(t *testing.T) {
 				eaa.Assert.Equal(dbUser.LastName, respUser.LastName)
 				eaa.Assert.Equal(dbUser.Email, respUser.Email)
 				eaa.Assert.Equal(dbUser.College, respUser.College)
-				eaa.Assert.Equal(dbUser.Year, respUser.Year)
+				eaa.Assert.Equal(dbUser.GraduationCycle, respUser.GraduationCycle)
+				eaa.Assert.Equal(dbUser.GraduationYear, respUser.GraduationYear)
 			},
 		},
 	).Close()
@@ -365,7 +368,8 @@ func AssertUserWithIDBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, bo
 	eaa.Assert.Equal(dbUser.LastName, respUser.LastName)
 	eaa.Assert.Equal(dbUser.Email, respUser.Email)
 	eaa.Assert.Equal(dbUser.College, respUser.College)
-	eaa.Assert.Equal(dbUser.Year, respUser.Year)
+	eaa.Assert.Equal(dbUser.GraduationCycle, respUser.GraduationCycle)
+	eaa.Assert.Equal(dbUser.GraduationYear, respUser.GraduationYear)
 
 	match, err := auth.CompareHash((*body)["password"].(string), dbUser.PasswordHash)
 
@@ -377,7 +381,8 @@ func AssertUserWithIDBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, bo
 	eaa.Assert.Equal((*body)["last_name"].(string), dbUser.LastName)
 	eaa.Assert.Equal((*body)["email"].(string), dbUser.Email)
 	eaa.Assert.Equal(models.College((*body)["college"].(string)), dbUser.College)
-	eaa.Assert.Equal((*body)["year"].(int16), dbUser.Year)
+	eaa.Assert.Equal(models.GraduationCycle((*body)["graduation_cycle"].(string)), dbUser.GraduationCycle)
+	eaa.Assert.Equal((*body)["graduation_year"].(int16), dbUser.GraduationYear)
 
 	return dbUser.ID
 }

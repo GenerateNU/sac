@@ -48,7 +48,7 @@ type User struct {
 	PasswordHash    string          `gorm:"type:varchar(97)" json:"-" validate:"required,len=97"`
 	College         College         `gorm:"type:varchar(255)" json:"college" validate:"required,max=255"`
 	GraduationCycle GraduationCycle `gorm:"type:varchar(255)" json:"graduation_cycle" validate:"required,max=255,oneof=december may"`
-	Year            int16           `gorm:"type:smallint" json:"year" validate:"required"`
+	GraduationYear  int16           `gorm:"type:smallint" json:"graduation_year" validate:"required"`
 	IsVerified      bool            `gorm:"type:boolean;default:false" json:"is_verified"`
 
 	Tag               []Tag     `gorm:"many2many:user_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
@@ -70,7 +70,7 @@ type CreateUserRequestBody struct {
 	// Optional fields
 	College         College         `json:"college" validate:"omitempty,oneof=CAMD DMSB KCCS CE BCHS SL CPS CS CSSH"`
 	GraduationCycle GraduationCycle `json:"graduation_cycle" validate:"omitempty,max=255,oneof=december may"`
-	Year            int16           `json:"year" validate:"omitempty,min=1,max=6"`
+	GraduationYear  int16           `json:"graduation_year" validate:"omitempty"`
 }
 
 type UpdateUserRequestBody struct {
@@ -78,7 +78,7 @@ type UpdateUserRequestBody struct {
 	LastName        string          `json:"last_name" validate:"omitempty,max=255"`
 	College         College         `json:"college" validate:"omitempty,oneof=CAMD DMSB KCCS CE BCHS SL CPS CS CSSH"`
 	GraduationCycle GraduationCycle `json:"graduation_cycle" validate:"omitempty,max=255,oneof=december may"`
-	Year            int16           `json:"year" validate:"omitempty,min=1,max=6"`
+	GraduationYear  int16           `json:"graduation_year" validate:"omitempty"`
 }
 
 type LoginUserResponseBody struct {

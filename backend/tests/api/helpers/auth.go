@@ -153,7 +153,7 @@ func SampleStudentFactory() (models.User, string) {
 		PasswordHash:    *hashedPassword,
 		College:         models.KCCS,
 		GraduationCycle: models.May,
-		Year:            2025,
+		GraduationYear:  2025,
 	}, password
 }
 
@@ -162,11 +162,12 @@ func SampleStudentJSONFactory(sampleStudent models.User, rawPassword string) *ma
 		panic("User is not a student")
 	}
 	return &map[string]interface{}{
-		"first_name": sampleStudent.FirstName,
-		"last_name":  sampleStudent.LastName,
-		"email":      sampleStudent.Email,
-		"password":   rawPassword,
-		"college":    string(sampleStudent.College),
-		"year":       int(sampleStudent.Year),
+		"first_name":       sampleStudent.FirstName,
+		"last_name":        sampleStudent.LastName,
+		"email":            sampleStudent.Email,
+		"password":         rawPassword,
+		"college":          string(sampleStudent.College),
+		"graduation_cycle": string(sampleStudent.GraduationCycle),
+		"graduation_year":  int(sampleStudent.GraduationYear),
 	}
 }

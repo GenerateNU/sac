@@ -24,7 +24,7 @@ func SuperUser(superUserSettings config.SuperUserSettings) (*models.User, *error
 		LastName:        "Super",
 		College:         models.KCCS,
 		GraduationCycle: models.May,
-		Year:            2025,
+		GraduationYear:  2025,
 	}, nil
 }
 
