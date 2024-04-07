@@ -1,4 +1,4 @@
-package controllers
+package root
 
 import (
 	"strconv"
@@ -6,17 +6,16 @@ import (
 	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
-	"github.com/GenerateNU/sac/backend/src/services"
 	"github.com/GenerateNU/sac/backend/src/utilities"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 type UserController struct {
-	userService services.UserServiceInterface
+	userService UserServiceInterface
 }
 
-func NewUserController(userService services.UserServiceInterface) *UserController {
+func NewUserController(userService UserServiceInterface) *UserController {
 	return &UserController{userService: userService}
 }
 

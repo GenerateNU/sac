@@ -1,8 +1,9 @@
-package transactions
+package root
 
 import (
 	stdliberrors "errors"
 
+	"github.com/GenerateNU/sac/backend/src/database"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/google/uuid"
@@ -44,7 +45,7 @@ func GetUsers(db *gorm.DB, limit int, page int) ([]models.User, *errors.Error) {
 	return users, nil
 }
 
-func GetUser(db *gorm.DB, id uuid.UUID, preloads ...OptionalQuery) (*models.User, *errors.Error) {
+func GetUser(db *gorm.DB, id uuid.UUID, preloads ...database.QueryConfigurator) (*models.User, *errors.Error) {
 	var user models.User
 
 	query := db

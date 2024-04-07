@@ -1,29 +1,13 @@
-package routes
+package root
 
 import (
 	p "github.com/GenerateNU/sac/backend/src/auth"
-	"github.com/GenerateNU/sac/backend/src/controllers"
-	"github.com/GenerateNU/sac/backend/src/services"
 	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/gofiber/fiber/v2"
 )
 
-func ClubRoutes(clubParams types.RouteParams) {
-	clubIDRouter := Club(clubParams)
-
-	// update the router in params
-	clubParams.Router = clubIDRouter
-
-	ClubTag(clubParams)
-	ClubFollower(clubParams)
-	ClubMember(clubParams)
-	ClubContact(clubParams)
-	ClubEvent(clubParams)
-	ClubPointOfContact(clubParams)
-}
-
 func Club(clubParams types.RouteParams) fiber.Router {
-	clubController := controllers.NewClubController(services.NewClubService(clubParams.ServiceParams))
+	clubController := NewClubController(NewClubService(clubParams.ServiceParams))
 
 	// api/v1/clubs/*
 	clubs := clubParams.Router.Group("/clubs")

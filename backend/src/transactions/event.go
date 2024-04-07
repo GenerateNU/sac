@@ -22,7 +22,7 @@ func GetEvents(db *gorm.DB, limit int, page int) ([]models.Event, *errors.Error)
 	return events, nil
 }
 
-func GetEvent(db *gorm.DB, eventID uuid.UUID, preloads ...OptionalQuery) ([]models.Event, *errors.Error) {
+func GetEvent(db *gorm.DB, eventID uuid.UUID, preloads ...QueryConfigurator) ([]models.Event, *errors.Error) {
 	var event models.Event
 
 	query := db

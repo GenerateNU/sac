@@ -1,9 +1,8 @@
-package services
+package follower
 
 import (
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
-	"github.com/GenerateNU/sac/backend/src/transactions"
 	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
 )
@@ -36,5 +35,5 @@ func (cf *ClubFollowerService) GetClubFollowers(clubID string, limit string, pag
 		return nil, &errors.FailedToValidatePage
 	}
 
-	return transactions.GetClubFollowers(cf.DB, *idAsUUID, *limitAsInt, *pageAsInt)
+	return GetClubFollowers(cf.DB, *idAsUUID, *limitAsInt, *pageAsInt)
 }

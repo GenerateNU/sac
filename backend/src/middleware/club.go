@@ -5,8 +5,9 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/errors"
-	"github.com/GenerateNU/sac/backend/src/transactions"
+	club "github.com/GenerateNU/sac/backend/src/schema/club/root"
 	"github.com/GenerateNU/sac/backend/src/utilities"
+
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -31,7 +32,7 @@ func (m *AuthMiddlewareService) ClubAuthorizeById(c *fiber.Ctx) error {
 		return errors.FailedToParseAccessToken.FiberError(c)
 	}
 
-	clubAdmin, clubErr := transactions.GetAdminIDs(m.DB, *clubUUID)
+	clubAdmin, clubErr := club.GetAdminIDs(m.DB, *clubUUID)
 	if clubErr != nil {
 		return err
 	}

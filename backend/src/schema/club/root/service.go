@@ -1,9 +1,8 @@
-package services
+package root
 
 import (
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
-	"github.com/GenerateNU/sac/backend/src/transactions"
 	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
 )
@@ -33,7 +32,7 @@ func (c *ClubService) GetClubs(queryParams *models.ClubQueryParams) ([]models.Cl
 		return nil, &errors.FailedToValidatePage
 	}
 
-	return transactions.GetClubs(c.DB, c.Deps.Search, queryParams)
+	return GetClubs(c.DB, c.Deps.Search, queryParams)
 }
 
 func (c *ClubService) CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, *errors.Error) {
@@ -46,7 +45,7 @@ func (c *ClubService) CreateClub(clubBody models.CreateClubRequestBody) (*models
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	return transactions.CreateClub(c.DB, c.Deps.Search, clubBody.UserID, *club)
+	return CreateClub(c.DB, c.Deps.Search, clubBody.UserID, *club)
 }
 
 func (c *ClubService) GetClub(id string) (*models.Club, *errors.Error) {
@@ -55,7 +54,7 @@ func (c *ClubService) GetClub(id string) (*models.Club, *errors.Error) {
 		return nil, &errors.FailedToValidateID
 	}
 
-	return transactions.GetClub(c.DB, *idAsUUID)
+	return GetClub(c.DB, *idAsUUID)
 }
 
 func (c *ClubService) UpdateClub(id string, clubBody models.UpdateClubRequestBody) (*models.Club, *errors.Error) {
@@ -77,7 +76,7 @@ func (c *ClubService) UpdateClub(id string, clubBody models.UpdateClubRequestBod
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	return transactions.UpdateClub(c.DB, c.Deps.Search, *idAsUUID, *club)
+	return UpdateClub(c.DB, c.Deps.Search, *idAsUUID, *club)
 }
 
 func (c *ClubService) DeleteClub(id string) *errors.Error {
@@ -86,5 +85,5 @@ func (c *ClubService) DeleteClub(id string) *errors.Error {
 		return &errors.FailedToValidateID
 	}
 
-	return transactions.DeleteClub(c.DB, c.Deps.Search, *idAsUUID)
+	return DeleteClub(c.DB, c.Deps.Search, *idAsUUID)
 }

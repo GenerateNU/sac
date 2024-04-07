@@ -1,4 +1,4 @@
-package services
+package root
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
-	"github.com/GenerateNU/sac/backend/src/transactions"
+	"github.com/GenerateNU/sac/backend/src/services"
 	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
 )
@@ -53,12 +53,12 @@ func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models
 		return nil, nil, &errors.FailedToSendEmail
 	}
 
-	user, userErr := transactions.CreateUser(u.DB, user)
+	user, userErr := CreateUser(u.DB, user)
 	if userErr != nil {
 		return nil, nil, userErr
 	}
 
-	authService := NewAuthService(u.ServiceParams)
+	authService := services.NewAuthService(u.ServiceParams)
 	authErr := authService.SendCode(user.Email)
 	if authErr != nil {
 		return nil, nil, authErr
@@ -83,7 +83,7 @@ func (u *UserService) GetUsers(limit string, page string) ([]models.User, *error
 		return nil, &errors.FailedToValidatePage
 	}
 
-	return transactions.GetUsers(u.DB, *limitAsInt, *pageAsInt)
+	return GetUsers(u.DB, *limitAsInt, *pageAsInt)
 }
 
 func (u *UserService) GetMe(id string) (*models.User, *errors.Error) {
@@ -92,7 +92,7 @@ func (u *UserService) GetMe(id string) (*models.User, *errors.Error) {
 		return nil, idErr
 	}
 
-	user, err := transactions.GetUser(u.DB, *idAsUUID)
+	user, err := GetUser(u.DB, *idAsUUID)
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +106,7 @@ func (u *UserService) GetUser(id string) (*models.User, *errors.Error) {
 		return nil, &errors.FailedToValidateID
 	}
 
-	return transactions.GetUser(u.DB, *idAsUUID)
+	return GetUser(u.DB, *idAsUUID)
 }
 
 func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBody) (*models.User, *errors.Error) {
@@ -128,7 +128,7 @@ func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBod
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	return transactions.UpdateUser(u.DB, *idAsUUID, *user)
+	return UpdateUser(u.DB, *idAsUUID, *user)
 }
 
 func (u *UserService) UpdatePassword(id string, passwordBody models.UpdatePasswordRequestBody) *errors.Error {
@@ -141,7 +141,7 @@ func (u *UserService) UpdatePassword(id string, passwordBody models.UpdatePasswo
 		return &errors.FailedToValidateUpdatePasswordBody
 	}
 
-	passwordHash, err := transactions.GetUserPasswordHash(u.DB, *idAsUUID)
+	passwordHash, err := GetUserPasswordHash(u.DB, *idAsUUID)
 	if err != nil {
 		return err
 	}
@@ -156,7 +156,7 @@ func (u *UserService) UpdatePassword(id string, passwordBody models.UpdatePasswo
 		return &errors.FailedToValidateUser
 	}
 
-	return transactions.UpdatePassword(u.DB, *idAsUUID, *hash)
+	return UpdatePassword(u.DB, *idAsUUID, *hash)
 }
 
 func (u *UserService) DeleteUser(id string) *errors.Error {
@@ -165,5 +165,5 @@ func (u *UserService) DeleteUser(id string) *errors.Error {
 		return err
 	}
 
-	return transactions.DeleteUser(u.DB, *idAsUUID)
+	return DeleteUser(u.DB, *idAsUUID)
 }

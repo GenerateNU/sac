@@ -1,17 +1,16 @@
-package controllers
+package follower
 
 import (
 	"strconv"
 
-	"github.com/GenerateNU/sac/backend/src/services"
 	"github.com/gofiber/fiber/v2"
 )
 
 type ClubFollowerController struct {
-	clubFollowerService services.ClubFollowerServiceInterface
+	clubFollowerService ClubFollowerServiceInterface
 }
 
-func NewClubFollowerController(clubFollowerService services.ClubFollowerServiceInterface) *ClubFollowerController {
+func NewClubFollowerController(clubFollowerService ClubFollowerServiceInterface) *ClubFollowerController {
 	return &ClubFollowerController{clubFollowerService: clubFollowerService}
 }
 

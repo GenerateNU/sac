@@ -1,17 +1,16 @@
-package controllers
+package root
 
 import (
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
-	"github.com/GenerateNU/sac/backend/src/services"
 	"github.com/gofiber/fiber/v2"
 )
 
 type ClubController struct {
-	clubService services.ClubServiceInterface
+	clubService ClubServiceInterface
 }
 
-func NewClubController(clubService services.ClubServiceInterface) *ClubController {
+func NewClubController(clubService ClubServiceInterface) *ClubController {
 	return &ClubController{clubService: clubService}
 }
 

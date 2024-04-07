@@ -1,14 +1,16 @@
-package transactions
+package follower
 
 import (
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/GenerateNU/sac/backend/src/schema/club/root"
+
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 func GetClubFollowers(db *gorm.DB, clubID uuid.UUID, limit int, page int) ([]models.User, *errors.Error) {
-	club, err := GetClub(db, clubID)
+	club, err := root.GetClub(db, clubID)
 	if err != nil {
 		return nil, err
 	}

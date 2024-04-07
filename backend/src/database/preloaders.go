@@ -1,28 +1,28 @@
-package transactions
+package database
 
 import "gorm.io/gorm"
 
-type OptionalQuery func(*gorm.DB) *gorm.DB
+type QueryConfigurator func(*gorm.DB) *gorm.DB
 
-func PreloadFollwer() OptionalQuery {
+func PreloadFollwer() QueryConfigurator {
 	return func(db *gorm.DB) *gorm.DB {
 		return db.Preload("Follower")
 	}
 }
 
-func PreloadMember() OptionalQuery {
+func PreloadMember() QueryConfigurator {
 	return func(db *gorm.DB) *gorm.DB {
 		return db.Preload("Member")
 	}
 }
 
-func PreloadTag() OptionalQuery {
+func PreloadTag() QueryConfigurator {
 	return func(db *gorm.DB) *gorm.DB {
 		return db.Preload("Tag")
 	}
 }
 
-func PreloadClub() OptionalQuery {
+func PreloadClub() QueryConfigurator {
 	return func(db *gorm.DB) *gorm.DB {
 		return db.Preload("Club")
 	}

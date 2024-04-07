@@ -1,8 +1,9 @@
-package transactions
+package root
 
 import (
 	stdliberrors "errors"
 
+	"github.com/GenerateNU/sac/backend/src/database"
 	"github.com/GenerateNU/sac/backend/src/search"
 
 	"github.com/GenerateNU/sac/backend/src/errors"
@@ -107,7 +108,7 @@ func CreateClub(db *gorm.DB, pinecone search.SearchClientInterface, userId uuid.
 	return &club, nil
 }
 
-func GetClub(db *gorm.DB, id uuid.UUID, preloads ...OptionalQuery) (*models.Club, *errors.Error) {
+func GetClub(db *gorm.DB, id uuid.UUID, preloads ...database.QueryConfigurator) (*models.Club, *errors.Error) {
 	var club models.Club
 
 	query := db
