@@ -1,11 +1,4 @@
 import React, { useCallback } from 'react';
-import {
-    SafeAreaView,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View
-} from 'react-native';
 import { AgendaList, CalendarProvider } from 'react-native-calendars';
 
 import AgendaItem from './agendaItem';
