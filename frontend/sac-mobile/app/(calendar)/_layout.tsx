@@ -7,6 +7,8 @@ import { DateContext, DateContextState } from './context';
 
 import CalendarViewHeader, {CalendarViewHeaderProps} from './components/header';
 import { CalendarCarousel, CalendarDays } from './components/grid';
+import DayScrollView from '@/app/(calendar)/components/dayScrollView';
+import Agenda from './components/agenda';
 
 // FIXME FIXME FIXME FIXME: everything needs to be redone/checked spacing-wise. lots of errors
 
@@ -89,6 +91,7 @@ const CalendarView = () => {
               <View className="ml-[8%] w-[84%] bg-gray-400 h-[1px]" />
               <View className="ml-[45%] w-[10%] bg-gray-400 rounded-full h-[6px] top-2" />
           </View>
+          <Agenda/>
         </SafeAreaView>
       </DateContext.Provider>
       
