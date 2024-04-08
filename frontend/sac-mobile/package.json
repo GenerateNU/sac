@@ -40,7 +40,6 @@
         "react-hook-form": "^7.51.1",
         "react-native": "0.73.6",
         "react-native-calendars": "^1.1304.1",
-        "react-native-cookies": "^3.3.0",
         "react-native-element-dropdown": "^2.10.2",
         "react-native-reanimated": "^3.8.1",
         "react-native-safe-area-context": "4.9.0",
