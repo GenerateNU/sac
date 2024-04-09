@@ -7,9 +7,9 @@ import { Slot, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { useAuthStore } from '@/hooks/use-auth';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 export {
     // Catch any errors thrown by the Layout component.
@@ -90,7 +90,7 @@ const RootLayout = () => {
         <QueryClientProvider client={queryClient}>
             <InitalLayout />
         </QueryClientProvider>
-    )
+    );
 };
 
 export default RootLayout;

@@ -2,6 +2,7 @@ import axios from 'axios';
 
 import { API_BASE_URL } from '@/lib/const';
 import { Category } from '@/types/category';
+
 import { api } from './api';
 
 export const getAllCategories = async (): Promise<Category[]> => {

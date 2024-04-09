@@ -25,8 +25,9 @@ export function cn(...inputs: ClassValue[]) {
  */
 export const graduationYear = () => {
     var year = new Date().getFullYear();
+    const range = 5;
     const graduationYears: Item[] = [];
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < range; i++) {
         graduationYears.push({
             label: String(year + i),
             value: String(year + i)

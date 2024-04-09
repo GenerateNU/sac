@@ -14,6 +14,11 @@ export const college = [
     { label: 'College of Social Sciences and Humanities', value: 'CSSH' }
 ];
 
+export const graduationCycle = [
+    { label: "December", value: "december"},
+    { label: "May", value: "may"},
+]
+
 export const majorArr = [
     'Africana Studies',
     'American Sign Language',

@@ -32,12 +32,18 @@ export const getCurrentUser = async (): Promise<User> => {
  * @param updateUserBody JSON body of updated information
  * @returns The user whose info is updated
  */
-export const UpdateUser = async (userId: string, updateUserBody: JSON): Promise<User> => {
+export const UpdateUser = async (
+    userId: string,
+    updateUserBody: JSON
+): Promise<User> => {
     try {
-        const response = await api.patch<User>(`/users/${userId}/`, updateUserBody);
+        const response = await api.patch<User>(
+            `/users/${userId}/`,
+            updateUserBody
+        );
         return response.data as User;
     } catch (error) {
         console.log('Error updating user');
         throw new Error('Error updating user');
     }
-}
+};

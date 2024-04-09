@@ -8,12 +8,12 @@ import { ZodError } from 'zod';
 
 import { Button } from '@/components/button';
 import Error from '@/components/error';
+import { useAuthStore } from '@/hooks/use-auth';
 import { useCategories } from '@/hooks/use-categories';
 import { useTags } from '@/hooks/use-tags';
+import { useCreateUserTags } from '@/hooks/use-user-tags';
 import { Category } from '@/types/category';
 import { Tag } from '@/types/tag';
-import { useCreateUserTags } from '@/hooks/use-user-tags';
-import { useAuthStore } from '@/hooks/use-auth';
 
 type UserInterestsData = {
     tags: Tag[];
@@ -73,8 +73,11 @@ const UserInterestsForm = () => {
             return;
         }
         data.tags = selectedTags;
-        const selectedTagsUUID = data.tags.map((tag) => (tag.id));
-        createUserTags.mutateAsync({userId: userId, tagIDs: selectedTagsUUID});
+        const selectedTagsUUID = data.tags.map((tag) => tag.id);
+        createUserTags.mutateAsync({
+            userId: userId,
+            tagIDs: selectedTagsUUID
+        });
         try {
             Alert.alert('Form Submitted', JSON.stringify(selectedTagsUUID));
             router.push('/(app)/');

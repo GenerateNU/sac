@@ -2,6 +2,7 @@ import axios from 'axios';
 
 import { API_BASE_URL } from '@/lib/const';
 import { Tag } from '@/types/tag';
+
 import { api } from './api';
 
 export const getAllTags = async (): Promise<Tag[]> => {
