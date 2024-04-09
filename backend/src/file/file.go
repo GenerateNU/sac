@@ -54,7 +54,7 @@ func NewAWSProvider(settings config.AWSSettings) FileClientInterface {
 }
 
 func (aw *AWSClient) GetFileURL(fileURL string) *string {
-	fileURL = fmt.Sprintf("https://%s.s3.amazonaws.com/%s", aw.Settings.BUCKET_NAME.Expose(), fileURL)
+	fileURL = fmt.Sprintf("https://s3.amazonaws.com/%s/%s", aw.Settings.BUCKET_NAME.Expose(), fileURL)
 	return &fileURL
 }
 
@@ -146,7 +146,7 @@ func (aw *AWSClient) DeleteFile(fileURL string) *errors.Error {
 	svc := s3.New(aw.session)
 
 	bucket := aw.Settings.BUCKET_NAME.Expose()
-	key := fileURL[len(fmt.Sprintf("https://%s.s3.amazonaws.com/", bucket)):]
+	key := fileURL[len(fmt.Sprintf("https://s3.amazonaws.com/%s", bucket)):]
 
 	_, err := svc.DeleteObject(&s3.DeleteObjectInput{
 		Bucket: aws.String(bucket),
