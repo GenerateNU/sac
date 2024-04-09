@@ -12,17 +12,15 @@ const wordmarkVariants = {
 
 const wordmarkStyles = cva(['text-2xl', 'font-bold'], {
     variants: wordmarkVariants,
-    defaultVariants: {
-        color: 'default'
-    }
+    defaultVariants: { color: 'default' }
 });
 
 export interface WordmarkProps extends VariantProps<typeof wordmarkStyles> {}
 
 const Wordmark = ({ color }: WordmarkProps) => {
     return (
-        <View>
-            <Text className={wordmarkStyles({ color })}>Wordmark</Text>
+        <View className="flex-row items-center">
+            <Text className={wordmarkStyles({ color })}>SAC</Text>
         </View>
     );
 };

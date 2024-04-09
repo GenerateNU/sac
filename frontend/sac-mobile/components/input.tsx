@@ -24,4 +24,4 @@ const Input = ({ title, error, ...props }: InputProps) => {
     );
 };
 
-export default Input;
+export { Input };

@@ -8,8 +8,8 @@ import { router } from 'expo-router';
 import { ZodError, z } from 'zod';
 
 import { Button } from '@/components/button';
-import Error from '@/components/error';
-import Input from '@/components/input';
+import { Error } from '@/components/error';
+import { Input } from '@/components/input';
 import { useAuthStore } from '@/hooks/use-auth';
 
 type LoginFormData = {
@@ -41,7 +41,7 @@ const LoginForm = () => {
             const validData = loginSchema.parse(loginData);
             console.log({ validData });
             await signIn(validData.email, validData.password);
-            router.push('/(app)/');
+            // router.replace('/(app)/(tabs)/');
         } catch (err: any) {
             if (err instanceof ZodError) {
                 Alert.alert(err.errors[0].message);
@@ -104,7 +104,7 @@ const LoginForm = () => {
                 <Button
                     size="lg"
                     variant="outline"
-                    onPress={() => router.push('/(auth)/register')}
+                    onPress={() => router.replace('/(auth)/register')}
                 >
                     Sign up
                 </Button>
@@ -120,4 +120,4 @@ const LoginForm = () => {
     );
 };
 
-export default LoginForm;
+export { LoginForm };
