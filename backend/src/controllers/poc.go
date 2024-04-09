@@ -1,8 +1,7 @@
 package controllers
 
 import (
-	"strconv"
-
+	"github.com/GenerateNU/sac/backend/src/constants"
 	"github.com/GenerateNU/sac/backend/src/services"
 	"github.com/gofiber/fiber/v2"
 )
@@ -30,10 +29,7 @@ func NewPointOfContactController(pointOfContactService services.PointOfContactSe
 // @Failure     500   {string}    errors.Error
 // @Router		/pocs/  [get]
 func (poc *PointOfContactController) GetPointOfContacts(c *fiber.Ctx) error {
-	defaultLimit := 10
-	defaultPage := 1
-
-	pointOfContacts, err := poc.pointOfContactService.GetPointOfContacts(c.Query("limit", strconv.Itoa(defaultLimit)), c.Query("page", strconv.Itoa(defaultPage)))
+	pointOfContacts, err := poc.pointOfContactService.GetPointOfContacts(c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING))
 	if err != nil {
 		return err.FiberError(c)
 	}

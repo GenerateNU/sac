@@ -1,8 +1,7 @@
 package controllers
 
 import (
-	"strconv"
-
+	"github.com/GenerateNU/sac/backend/src/constants"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
@@ -33,10 +32,7 @@ func NewTagController(tagService services.TagServiceInterface) *TagController {
 // @Failure     500   {object}      errors.Error
 // @Router		/tags  [get]
 func (t *TagController) GetTags(c *fiber.Ctx) error {
-	defaultLimit := 10
-	defaultPage := 1
-
-	tags, err := t.tagService.GetTags(c.Query("limit", strconv.Itoa(defaultLimit)), c.Query("page", strconv.Itoa(defaultPage)))
+	tags, err := t.tagService.GetTags(c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING))
 	if err != nil {
 		return err.FiberError(c)
 	}
