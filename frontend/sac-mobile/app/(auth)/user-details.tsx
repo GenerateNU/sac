@@ -44,7 +44,7 @@ const UserDetails = () => {
             };
             UserDetailsSchema.parse(updatedData);
             Alert.alert('Form Submitted', JSON.stringify(updatedData));
-            router.push('/(app)/');
+            router.push('/(auth)/user-interests');
         } catch (error) {
             if (error instanceof ZodError) {
                 Alert.alert('Validation Error', error.errors[0].message);
@@ -57,7 +57,7 @@ const UserDetails = () => {
     return (
         <SafeAreaView>
             <View className="px-[8%] pb-[9%]">
-                <Wordmark />
+                <Wordmark color={'primary'} />
                 <Text className="font-bold text-5xl pt-[15%] pb-[5%]">
                     Let's learn more about you
                 </Text>
@@ -128,7 +128,11 @@ const UserDetails = () => {
                     )}
                 </View>
                 <View className="flex-row justify-end pt-[5%]">
-                    <Button onPress={handleSubmit(onSubmit)} size="lg" variant="default">
+                    <Button
+                        onPress={handleSubmit(onSubmit)}
+                        size="lg"
+                        variant="default"
+                    >
                         Continue
                     </Button>
                 </View>

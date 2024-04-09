@@ -1,18 +1,19 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { Button } from '@/components/button';
 import { useAuthStore } from '@/hooks/use-auth';
 
 const Profile = () => {
-    // const { logout } = useAuthStore();
+    const { signOut, user } = useAuthStore();
+    const handleSignOut = async () => {
+        signOut();
+    };
+
     return (
-        <View className="items-center justify-center flex-1">
-            <Button
-            // onPress={logout}
-            >
-                Logout
-            </Button>
+        <View className="items-center justify-center flex-1 gap-5">
+            <Text>Welcome {user?.first_name}</Text>
+            <Button onPress={handleSignOut}>Sign Out</Button>
         </View>
     );
 };

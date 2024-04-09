@@ -25,3 +25,19 @@ export const getCurrentUser = async (): Promise<User> => {
         }
     }
 };
+
+/**
+ * Update user details after signup.
+ * @param userId ID of this specific user
+ * @param updateUserBody JSON body of updated information
+ * @returns The user whose info is updated
+ */
+export const UpdateUser = async (userId: string, updateUserBody: JSON): Promise<User> => {
+    try {
+        const response = await api.patch<User>(`/users/${userId}/`, updateUserBody);
+        return response.data as User;
+    } catch (error) {
+        console.log('Error updating user');
+        throw new Error('Error updating user');
+    }
+}

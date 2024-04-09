@@ -23,8 +23,8 @@ const Register = () => {
         >
             <SafeAreaView className="bg-neutral-500" edges={['top']}>
                 <ScrollView>
-                    <View className="px-[8%] pb-[9%]">
-                        <View className="flex flex-row justify-between mx-auto w-full items-center pt-[3%] pb-[5.5%]">
+                    <View className="bg-neutral-500">
+                        <View className="px-[8%] flex flex-row justify-between mx-auto w-full items-center pb-[5.5%]">
                             <View className="pl-[0.5%]">
                                 <Wordmark color={'default'} />
                             </View>
@@ -36,18 +36,18 @@ const Register = () => {
                                 Login
                             </Button>
                         </View>
-                        <View className="pt-[9%] pb-[7.5%]">
+                        <View className="px-[8%] pt-[8%] pb-[7.5%]">
                             <Text className="text-5xl font-bold text-white">
                                 Sign up
                             </Text>
                         </View>
-                        <Text className="text-lg leading-6 text-white">
+                        <Text className="px-[8%] mb-[9%] text-lg leading-6 text-white">
                             Discover, follow, and join all the clubs & events
                             Northeastern has to offer
                         </Text>
-                    </View>
-                    <View className="bg-white px-[8%] pt-[13%] rounded-t-3xl">
-                        <RegistrationForm />
+                        <View className="bg-white px-[8%] pt-[13%] rounded-t-3xl">
+                            <RegistrationForm />
+                        </View>
                     </View>
                 </ScrollView>
             </SafeAreaView>

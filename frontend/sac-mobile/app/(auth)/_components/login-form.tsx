@@ -1,6 +1,12 @@
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, Text, View, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import {
+    Alert,
+    Keyboard,
+    Text,
+    TouchableWithoutFeedback,
+    View
+} from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 import { router } from 'expo-router';
@@ -60,16 +66,16 @@ const LoginForm = () => {
                 <Controller
                     control={control}
                     render={({ field: { onChange, value } }) => (
-                        <TouchableWithoutFeedback onPress={Keyboard.dismiss} >
-                        <Input
-                            title="Email"
-                            autoCorrect={false}
-                            placeholder="ladley.g@northeastern.edu"
-                            onChangeText={onChange}
-                            value={value}
-                            onSubmitEditing={handleSubmit(onSignInPress)}
-                            error={!!errors.email}
-                        />
+                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                            <Input
+                                title="Email"
+                                autoCorrect={false}
+                                placeholder="ladley.g@northeastern.edu"
+                                onChangeText={onChange}
+                                value={value}
+                                onSubmitEditing={handleSubmit(onSignInPress)}
+                                error={!!errors.email}
+                            />
                         </TouchableWithoutFeedback>
                     )}
                     name="email"
@@ -81,17 +87,17 @@ const LoginForm = () => {
                 <Controller
                     control={control}
                     render={({ field: { onChange, value } }) => (
-                        <TouchableWithoutFeedback onPress={Keyboard.dismiss} >
-                        <Input
-                            title="Password"
-                            autoCorrect={false}
-                            placeholder="Password"
-                            onChangeText={onChange}
-                            value={value}
-                            secureTextEntry={true}
-                            onSubmitEditing={handleSubmit(onSignInPress)}
-                            error={!!errors.password}
-                        />
+                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                            <Input
+                                title="Password"
+                                autoCorrect={false}
+                                placeholder="Password"
+                                onChangeText={onChange}
+                                value={value}
+                                secureTextEntry={true}
+                                onSubmitEditing={handleSubmit(onSignInPress)}
+                                error={!!errors.password}
+                            />
                         </TouchableWithoutFeedback>
                     )}
                     name="password"

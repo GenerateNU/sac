@@ -9,7 +9,9 @@ import { Wordmark } from '@/components/wordmark';
 const Welcome = () => {
     return (
         <SafeAreaView className="flex-col mb-[8%] mx-[8%]">
-            <Wordmark color={'primary'} />
+            <View className="mb-[7%]">
+                <Wordmark color={'primary'} />
+            </View>
             <View className="bg-gray-500 h-[45%] w-ful rounded-xl mt-[5%]" />
             <Text className="h-[18%] text-6xl font-bold mt-[10%]">
                 Welcome to StudCal

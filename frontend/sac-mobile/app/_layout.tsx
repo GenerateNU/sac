@@ -9,6 +9,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 import { useAuthStore } from '@/hooks/use-auth';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 export {
     // Catch any errors thrown by the Layout component.
@@ -17,6 +18,15 @@ export {
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+export const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            staleTime: 1000 * 60 * 5,
+            refetchOnWindowFocus: false
+        }
+    }
+});
 
 const InitalLayout = () => {
     const { isLoggedIn, fetchCache, isVerified } = useAuthStore();
@@ -76,7 +86,11 @@ const RootLayout = () => {
 
     if (!loaded) return null;
 
-    return <InitalLayout />;
+    return (
+        <QueryClientProvider client={queryClient}>
+            <InitalLayout />
+        </QueryClientProvider>
+    )
 };
 
 export default RootLayout;

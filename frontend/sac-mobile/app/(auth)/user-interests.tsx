@@ -1,8 +1,7 @@
 import React from 'react';
 import { SafeAreaView, Text, View } from 'react-native';
-import { QueryClient, QueryClientProvider, useQuery } from 'react-query';
 
-import {Wordmark} from '@/components/wordmark';
+import { Wordmark } from '@/components/wordmark';
 
 import UserInterestsForm from './_components/user-interest-form';
 

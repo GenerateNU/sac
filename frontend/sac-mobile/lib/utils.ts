@@ -60,8 +60,8 @@ export const allTags = () => {
         allTags = allTags.concat(categories[i].tags);
     }
     return allTags;
-}
-/**  
+};
+/**
  * Defines the token cache object.
  * This object is used to interact with the SecureStore API.
  * @func getToken: Retrieves a token from the SecureStore.

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, View, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { Alert, Keyboard, TouchableWithoutFeedback, View } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 import { ZodError, z } from 'zod';
@@ -36,7 +36,7 @@ const RegistrationForm = () => {
     const {
         control,
         handleSubmit,
-        formState: { errors },
+        formState: { errors }
     } = useForm<RegisterFormData>();
 
     const { signUp } = useAuthStore();
@@ -71,16 +71,16 @@ const RegistrationForm = () => {
                 <Controller
                     control={control}
                     render={({ field: { onChange, value } }) => (
-                        <TouchableWithoutFeedback onPress={Keyboard.dismiss} >
-                        <Input
-                            title="First Name"
-                            autoCorrect={false}
-                            placeholder="Garrett"
-                            onChangeText={(text) => onChange(text)}
-                            value={value}
-                            onSubmitEditing={handleSubmit(onSignUp)}
-                            error={!!errors.first_name}
-                        />
+                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                            <Input
+                                title="First Name"
+                                autoCorrect={false}
+                                placeholder="Garrett"
+                                onChangeText={(text) => onChange(text)}
+                                value={value}
+                                onSubmitEditing={handleSubmit(onSignUp)}
+                                error={!!errors.first_name}
+                            />
                         </TouchableWithoutFeedback>
                     )}
                     name="first_name"
@@ -106,16 +106,16 @@ const RegistrationForm = () => {
                 <Controller
                     control={control}
                     render={({ field: { onChange, value } }) => (
-                        <TouchableWithoutFeedback onPress={Keyboard.dismiss} >
-                        <Input
-                            title="Last Name"
-                            autoCorrect={false}
-                            placeholder="Ladley"
-                            onChangeText={onChange}
-                            value={value}
-                            onSubmitEditing={handleSubmit(onSignUp)}
-                            error={!!errors.last_name}
-                        />
+                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                            <Input
+                                title="Last Name"
+                                autoCorrect={false}
+                                placeholder="Ladley"
+                                onChangeText={onChange}
+                                value={value}
+                                onSubmitEditing={handleSubmit(onSignUp)}
+                                error={!!errors.last_name}
+                            />
                         </TouchableWithoutFeedback>
                     )}
                     name="last_name"
@@ -141,16 +141,16 @@ const RegistrationForm = () => {
                 <Controller
                     control={control}
                     render={({ field: { onChange, value } }) => (
-                        <TouchableWithoutFeedback onPress={Keyboard.dismiss} >
-                        <Input
-                            title="Email"
-                            autoCorrect={false}
-                            placeholder="doe.j@northeastern.edu"
-                            onChangeText={onChange}
-                            value={value}
-                            onSubmitEditing={handleSubmit(onSignUp)}
-                            error={!!errors.email}
-                        />
+                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                            <Input
+                                title="Email"
+                                autoCorrect={false}
+                                placeholder="doe.j@northeastern.edu"
+                                onChangeText={onChange}
+                                value={value}
+                                onSubmitEditing={handleSubmit(onSignUp)}
+                                error={!!errors.email}
+                            />
                         </TouchableWithoutFeedback>
                     )}
                     name="email"
@@ -171,17 +171,17 @@ const RegistrationForm = () => {
                 <Controller
                     control={control}
                     render={({ field: { onChange, value } }) => (
-                        <TouchableWithoutFeedback onPress={Keyboard.dismiss} >
-                        <Input
-                            title="Password"
-                            autoCorrect={false}
-                            placeholder="Password"
-                            onChangeText={onChange}
-                            value={value}
-                            onSubmitEditing={handleSubmit(onSignUp)}
-                            secureTextEntry={true}
-                            error={!!errors.password}
-                        />
+                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                            <Input
+                                title="Password"
+                                autoCorrect={false}
+                                placeholder="Password"
+                                onChangeText={onChange}
+                                value={value}
+                                onSubmitEditing={handleSubmit(onSignUp)}
+                                secureTextEntry={true}
+                                error={!!errors.password}
+                            />
                         </TouchableWithoutFeedback>
                     )}
                     name="password"
@@ -223,17 +223,17 @@ const RegistrationForm = () => {
                 <Controller
                     control={control}
                     render={({ field: { onChange, value } }) => (
-                        <TouchableWithoutFeedback onPress={Keyboard.dismiss} >
-                        <Input
-                            title="Password Confirmation"
-                            autoCorrect={false}
-                            placeholder="Confirm your password"
-                            onChangeText={onChange}
-                            value={value}
-                            onSubmitEditing={handleSubmit(onSignUp)}
-                            secureTextEntry={true}
-                            error={!!errors.password}
-                        />
+                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                            <Input
+                                title="Password Confirmation"
+                                autoCorrect={false}
+                                placeholder="Confirm your password"
+                                onChangeText={onChange}
+                                value={value}
+                                onSubmitEditing={handleSubmit(onSignUp)}
+                                secureTextEntry={true}
+                                error={!!errors.password}
+                            />
                         </TouchableWithoutFeedback>
                     )}
                     name="password_confirmation"
