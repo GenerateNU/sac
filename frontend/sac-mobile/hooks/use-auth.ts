@@ -3,7 +3,8 @@ import { create } from 'zustand';
 import { tokenCache } from '@/lib/utils';
 import { completeVerification, login, logout, signUp } from '@/services/auth';
 import { getCurrentUser } from '@/services/user';
-import { Tokens, User } from '@/types/user';
+import { Tokens } from '@/types/auth';
+import { User } from '@/types/user';
 
 export type UserSignUp = {
     first_name: string;

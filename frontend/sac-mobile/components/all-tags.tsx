@@ -1,12 +1,17 @@
 import { ScrollView, Text, View } from 'react-native';
 
-import { useEventTags } from '@/hooks/use-event-tags';
+import { Tag } from '@/components/tag';
+import { useEventTags } from '@/hooks/use-event';
 import { uuid } from '@/types/uuid';
 
-import Tag from '@/components/tag';
+// TODO: generify this component
 
-const AllTags = ({ eventID }: { eventID: uuid }) => {
-    const { data: tags, error, isLoading } = useEventTags(eventID);
+type TagListProps = {
+    id: uuid;
+};
+
+const TagList = ({ id }: TagListProps) => {
+    const { data: tags = [], isLoading, error } = useEventTags(id);
 
     if (isLoading) {
         return <Text>Loading...</Text>;
@@ -16,7 +21,7 @@ const AllTags = ({ eventID }: { eventID: uuid }) => {
         return <Text>Error: {error.message}</Text>;
     }
 
-    if (!tags || tags.length === 0) {
+    if (tags.length === 0) {
         return <Text>No tags found</Text>;
     }
 
@@ -26,7 +31,7 @@ const AllTags = ({ eventID }: { eventID: uuid }) => {
             horizontal={true}
             showsHorizontalScrollIndicator={false}
         >
-            <View className="flex-row flex-wrap w-full space-x-2">
+            <View className="flex-row justify-start items-start gap-1.5 inline-flex">
                 {tags.map((tag) => (
                     <View key={tag.id}>
                         <Tag tag={tag} />
@@ -37,4 +42,4 @@ const AllTags = ({ eventID }: { eventID: uuid }) => {
     );
 };
 
-export default AllTags;
+export { TagList };

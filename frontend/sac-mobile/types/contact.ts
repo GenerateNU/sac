@@ -2,17 +2,18 @@ import { z } from 'zod';
 
 import { rootModelSchema } from './root';
 
+// TODO: each one needs a svg icons
 const ContactTypeValues = [
-    'facebook',
-    'instagram',
-    'twitter',
-    'linkedin',
-    'youtube',
-    'github',
+    // 'facebook',
+    // 'instagram',
+    // 'twitter',
+    // 'linkedin',
+    // 'youtube',
+    // 'github',
     'slack',
-    'discord',
-    'email',
-    'customSite'
+    // 'discord',
+    'email'
+    // 'customSite'
 ] as const;
 
 export type ContactType = (typeof ContactTypeValues)[number];

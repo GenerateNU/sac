@@ -11,7 +11,7 @@ const eventSchema = z.object({
     location: z.string().max(255),
     meeting_link: z.string().max(255).optional(),
     event_type: z.enum(['open', 'membersOnly']),
-    is_recurring: z.boolean(),
+    is_recurring: z.boolean()
     // hosts: z.array(z.string().max(255)).min(1)
 });
 

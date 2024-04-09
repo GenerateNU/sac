@@ -5,6 +5,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import { useFonts } from 'expo-font';
 import { Slot, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
 
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -36,22 +37,23 @@ const InitalLayout = () => {
 
     useEffect(() => {
         const handleNavigation = () => {
-            if (isLoggedIn === null) return;
+            if (isLoggedIn === null) return fetchCache();
 
             const inApp = segments[0] === '(app)';
 
             console.log({ isLoggedIn, isVerified, inApp });
 
             if (isLoggedIn && isVerified === false) {
-                router.push('/(auth)/verification');
+                router.replace('/(auth)/verification');
             } else if (isLoggedIn && isVerified) {
-                router.push('/(app)/');
+                router.replace('/(app)/(tabs)/');
             } else if (!isLoggedIn) {
-                router.push('/(auth)/welcome');
+                router.replace('/(auth)/welcome');
             }
         };
 
-        fetchCache();
+        console.log({ isLoggedIn, isVerified });
+
         handleNavigation();
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -69,11 +71,7 @@ const InitalLayout = () => {
             </View>
         );
 
-    return (
-        <QueryClientProvider client={queryClient}>
-            <Slot />
-        </QueryClientProvider>
-    );
+    return <Slot />;
 };
 
 const RootLayout = () => {
@@ -91,7 +89,12 @@ const RootLayout = () => {
 
     if (!loaded) return null;
 
-    return <InitalLayout />;
+    return (
+        <QueryClientProvider client={queryClient}>
+            <StatusBar style="light" />
+            <InitalLayout />
+        </QueryClientProvider>
+    );
 };
 
 export default RootLayout;
