@@ -13,8 +13,8 @@ func UserTag(userParams types.RouteParams) {
 	userTags := userParams.Router.Group("/tags")
 
 	userTags.Get("/", userTagController.GetUserTags)
-	userTags.Post("/", userTagController.CreateUserTags)
+	userTags.Post("/", userParams.AuthMiddleware.UserAuthorizeById, userTagController.CreateUserTags)
 
 	tagID := userTags.Group("/:tagID")
-	tagID.Delete("/", userTagController.DeleteUserTag)
+	tagID.Delete("/", userParams.AuthMiddleware.UserAuthorizeById, userTagController.DeleteUserTag)
 }

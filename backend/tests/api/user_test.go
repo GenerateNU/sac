@@ -67,7 +67,7 @@ func TestGetUsersFailsForStudent(t *testing.T) {
 			Path:   "/api/v1/users/",
 			Role:   &models.Student,
 		},
-		errors.Unauthorized,
+		errors.Forbidden,
 	).Close()
 }
 
