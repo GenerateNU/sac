@@ -21,7 +21,7 @@ const ClubCard = ({ club }: { club: Club }) => {
                 {asset && (
                     <Image
                         source={{ uri: asset[0].uri }}
-                        className="w-10 h-10"
+                        className="w-5 h-5"
                         resizeMode="contain"
                     />
                 )}

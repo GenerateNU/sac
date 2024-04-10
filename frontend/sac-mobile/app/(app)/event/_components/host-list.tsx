@@ -1,11 +1,11 @@
 import { ScrollView, Text, View } from 'react-native';
 
 import { ClubCard } from '@/components/club-card';
-import { useHosts } from '@/hooks/use-event';
+import { useEventHosts } from '@/hooks/use-event';
 import { uuid } from '@/types/uuid';
 
 const HostList = ({ eventID }: { eventID: uuid }) => {
-    const { data: hosts, error, isLoading } = useHosts(eventID);
+    const { data: hosts, error, isLoading } = useEventHosts(eventID);
 
     if (isLoading) {
         return <Text>Loading...</Text>;

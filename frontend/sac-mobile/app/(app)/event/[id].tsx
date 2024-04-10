@@ -9,35 +9,38 @@ import { TagList } from '@/components/all-tags';
 import { Button } from '@/components/button';
 import { useEvent } from '@/hooks/use-event';
 
-import { Description } from '../_components/description';
 import { Title } from '../_components/title';
 import { EventLocation } from './_components/event-location';
 import { EventTime } from './_components/event-time';
 import { HostNames } from './_components/host-names';
 import { LocationView } from './_components/location-view';
+import { useLocalSearchParams } from 'expo-router';
+import { Description } from '@/components/description';
 
 // TODO: handle link OR location
 const Event = () => {
-    // const { id } = useLocalSearchParams();
+    const { id } = useLocalSearchParams<{ id: string }>();
 
     const {
         data: event,
-        isLoading: isEventLoading,
-        error: eventError
-    } = useEvent('tester');
+        isLoading,
+        error
+    } = useEvent(id);
 
-    if (eventError) {
-        console.error(eventError);
+    if (error) {
+        console.error(error);
         return <Text>Error fetching event</Text>;
     }
 
-    if (isEventLoading) {
+    if (isLoading) {
         return <Text>Loading...</Text>;
     }
 
     if (!event) {
         return <Text>Event not found</Text>;
     }
+
+    console.log('[event]', event);
 
     return (
         <ScrollView showsVerticalScrollIndicator={false}>
