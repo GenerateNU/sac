@@ -132,7 +132,7 @@ func (aw *AWSClient) UploadFile(folder string, fileHeader *multipart.FileHeader,
 		return nil, &errors.FailedToUploadFile
 	}
 
-	fileURL := fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, key)
+	fileURL := fmt.Sprintf("https://s3.amazonaws.com/%s/%s", bucket, key)
 	return &models.FileInfo{
 		FileName:  *fileName,
 		FileType:  fileHeader.Header.Get("Content-Type"),
@@ -146,7 +146,7 @@ func (aw *AWSClient) DeleteFile(fileURL string) *errors.Error {
 	svc := s3.New(aw.session)
 
 	bucket := aw.Settings.BUCKET_NAME.Expose()
-	key := fileURL[len(fmt.Sprintf("https://s3.amazonaws.com/%s", bucket)):]
+	key := fileURL[len(fmt.Sprintf("https://s3.amazonaws.com/%s/", bucket)):]
 
 	_, err := svc.DeleteObject(&s3.DeleteObjectInput{
 		Bucket: aws.String(bucket),
