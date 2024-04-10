@@ -1,11 +1,8 @@
+import { eventHosts, eventTags, events } from '@/data/events';
 import { Club } from '@/types/club';
 import { Event } from '@/types/event';
 import { Tag } from '@/types/tag';
 import { uuid } from '@/types/uuid';
-
-import { api } from './api';
-import axios from 'axios';
-import { eventHosts, eventTags, events } from '@/data/events';
 
 /**
  * Fetches an event by its ID.
@@ -24,7 +21,7 @@ export const fetchEvent = async (eventID: string): Promise<Event> => {
     //         throw new Error('Error fetching event');
     //     });
 
-    const event = events.find((event) => event.id === eventID);
+    const event = events.find((e) => e.id === eventID);
     if (!event) {
         throw new Error('Event not found');
     }
@@ -47,7 +44,7 @@ export const fetchEvents = async (): Promise<Event[]> => {
     //         console.error(error);
     //         throw new Error('Error fetching events');
     //     });
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _) => {
         resolve(events);
     });
     // return axios.get('/Users/davidoduneye/projects/org-generate/sac/frontend/sac-mobile/data/events.json').then((response) => response.data as Event[]);

@@ -28,7 +28,13 @@ const Home = () => {
             <Text>Welcome {user?.first_name}</Text>
             <Button onPress={handleSignOut}>Sign Out</Button>
             {events?.map((event) => (
-                <Link key={event.id} href={{ pathname: '/(app)/event/[id]', params: { id: event.id } }}>
+                <Link
+                    key={event.id}
+                    href={{
+                        pathname: '/(app)/event/[id]',
+                        params: { id: event.id }
+                    }}
+                >
                     <Text>{event.name}</Text>
                 </Link>
             ))}

@@ -9,7 +9,8 @@ type DescriptionProps = {
 const Description = ({ title, description }: DescriptionProps) => {
     const [expanded, setExpanded] = useState(false);
 
-    const displayedCharacters = description.length < 100 ? description.length : 100;
+    const displayedCharacters =
+        description.length < 100 ? description.length : 100;
 
     return (
         <View>
@@ -22,7 +23,7 @@ const Description = ({ title, description }: DescriptionProps) => {
                 ) : (
                     <>
                         {description.slice(0, displayedCharacters)}
-                        <Text style={{ color: 'blue' }}>...</Text>
+                        <Text>...</Text>
                     </>
                 )}
             </Text>

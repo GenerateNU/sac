@@ -55,7 +55,6 @@ const LocationView = ({ location, meetingLink }: LocationViewProps) => {
                 {assets ? (
                     <Image
                         source={{ uri: assets[0].uri }}
-                        // @ts-ignore react-native/no-inline-styles
                         style={{ width: '100%', height: assets[0].height }}
                         className="rounded-[22px]"
                     />

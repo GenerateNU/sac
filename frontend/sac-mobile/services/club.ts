@@ -1,8 +1,9 @@
-import { Club } from '@/types/club';
-import { uuid } from '@/types/uuid';
-import { api } from './api';
-import { Contact } from '@/types/contact';
 import { clubContacts } from '@/data/clubs';
+import { Club } from '@/types/club';
+import { Contact } from '@/types/contact';
+import { uuid } from '@/types/uuid';
+
+import { api } from './api';
 
 /**
  * Fetches a club by its ID.
@@ -22,7 +23,6 @@ export const fetchClub = async (clubID: uuid): Promise<Club> => {
         });
 };
 
-
 /**
  * Fetches all contacts for a club by its ID.
  *
@@ -41,10 +41,12 @@ export const fetchClubContacts = async (clubID: uuid): Promise<Contact[]> => {
     //         throw new Error('Error fetching contacts');
     //     });
 
-    const allContacts = clubContacts[clubID as keyof typeof clubContacts] as Contact[];
+    const allContacts = clubContacts[
+        clubID as keyof typeof clubContacts
+    ] as Contact[];
     if (!allContacts) {
         throw new Error('Error fetching contacts');
     }
 
     return allContacts;
-}
+};

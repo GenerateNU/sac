@@ -1,12 +1,15 @@
 import React from 'react';
 import { Alert, Platform, ScrollView, Share, Text, View } from 'react-native';
 
+import { useLocalSearchParams } from 'expo-router';
+
 import { MenuView } from '@react-native-menu/menu';
 
 import { HostList } from '@/app/(app)/event/_components/host-list';
 import ShareIcon from '@/assets/images/svg/share.svg';
 import { TagList } from '@/components/all-tags';
 import { Button } from '@/components/button';
+import { Description } from '@/components/description';
 import { useEvent } from '@/hooks/use-event';
 
 import { Title } from '../_components/title';
@@ -14,18 +17,12 @@ import { EventLocation } from './_components/event-location';
 import { EventTime } from './_components/event-time';
 import { HostNames } from './_components/host-names';
 import { LocationView } from './_components/location-view';
-import { useLocalSearchParams } from 'expo-router';
-import { Description } from '@/components/description';
 
 // TODO: handle link OR location
 const Event = () => {
     const { id } = useLocalSearchParams<{ id: string }>();
 
-    const {
-        data: event,
-        isLoading,
-        error
-    } = useEvent(id);
+    const { data: event, isLoading, error } = useEvent(id);
 
     if (error) {
         console.error(error);

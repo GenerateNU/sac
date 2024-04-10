@@ -12,7 +12,7 @@ export const useClub = (clubID: uuid): UseQueryResult<Club, Error> => {
             return fetchClub(clubID);
         }
     });
-}
+};
 
 export const useClubContacts = (
     clubID: uuid

@@ -18,7 +18,7 @@ export const useEvent = (eventID: string): UseQueryResult<Event, Error> => {
             return fetchEvent(eventID);
         }
     });
-}
+};
 
 export const useEvents = (): UseQueryResult<Event[], Error> => {
     return useQuery<Event[], Error>({
@@ -33,10 +33,10 @@ export const useEventTags = (eventID: uuid): UseQueryResult<Tag[], Error> => {
     return useQuery<Tag[], Error>({
         queryKey: ['event', eventID, 'tags'],
         queryFn: () => {
-                return fetchEventTags(eventID);
+            return fetchEventTags(eventID);
         }
     });
-}
+};
 
 export const useEventHosts = (eventID: uuid): UseQueryResult<Club[], Error> => {
     return useQuery<Club[], Error>({
@@ -45,4 +45,4 @@ export const useEventHosts = (eventID: uuid): UseQueryResult<Club[], Error> => {
             return fetchHosts(eventID);
         }
     });
-}
+};
