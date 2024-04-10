@@ -82,8 +82,8 @@ type UpdateUserRequestBody struct {
 }
 
 type LoginUserResponseBody struct {
-	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required,password,min=8,max=255"`
+	Email    string `json:"email" validate:"required"`
+	Password string `json:"password" validate:"required"`
 }
 
 type UpdatePasswordRequestBody struct {
