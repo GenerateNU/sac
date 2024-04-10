@@ -17,7 +17,7 @@ type ClubContactService struct {
 	types.ServiceParams
 }
 
-func NewClubContactService(params types.ServiceParams) *ClubContactService {
+func NewClubContactService(params types.ServiceParams) ClubContactServiceInterface {
 	return &ClubContactService{params}
 }
 

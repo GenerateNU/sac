@@ -9,8 +9,8 @@ import (
 func ClubFollower(clubParams types.RouteParams) {
 	clubFollowerController := controllers.NewClubFollowerController(services.NewClubFollowerService(clubParams.ServiceParams))
 
-	clubFollower := clubParams.Router.Group("/followers")
+	clubFollowers := clubParams.Router.Group("/followers")
 
 	// api/clubs/:clubID/followers/*
-	clubFollower.Get("/", clubFollowerController.GetClubFollowers)
+	clubFollowers.Get("/", clubFollowerController.GetClubFollowers)
 }

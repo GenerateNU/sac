@@ -12,6 +12,7 @@ type Settings struct {
 	Database         DatabaseSettings
 	SuperUser        SuperUserSettings
 	Auth             AuthSettings
+	AWS              AWSSettings
 	PineconeSettings PineconeSettings
 	OpenAISettings   OpenAISettings
 	ResendSettings   ResendSettings

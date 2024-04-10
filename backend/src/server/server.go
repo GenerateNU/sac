@@ -6,9 +6,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/config"
-	"github.com/GenerateNU/sac/backend/src/email"
 	"github.com/GenerateNU/sac/backend/src/middleware"
-	"github.com/GenerateNU/sac/backend/src/search"
 	"github.com/GenerateNU/sac/backend/src/server/routes"
 	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
@@ -29,7 +27,7 @@ import (
 // @host 127.0.0.1:8080
 // @BasePath /
 // @schemes http
-func Init(db *gorm.DB, pinecone search.PineconeClientInterface, settings config.Settings) *fiber.App {
+func Init(db *gorm.DB, dependencies types.Dependencies, settings config.Settings) *fiber.App {
 	app := newFiberApp(settings.Application)
 
 	validate, err := utilities.RegisterCustomValidators()
@@ -37,9 +35,8 @@ func Init(db *gorm.DB, pinecone search.PineconeClientInterface, settings config.
 		panic(fmt.Sprintf("Error registering custom validators: %s", err))
 	}
 
-	authMiddleware := middleware.NewAuthAuthMiddlewareService(db, validate, settings.Auth)
-	resend := email.NewResendClient(settings.ResendSettings, true)
 	jwt := auth.NewJWTClient(settings.Auth, jwt.SigningMethodHS256)
+	authMiddleware := middleware.NewAuthAuthMiddlewareService(db, validate, settings.Auth)
 
 	apiv1 := app.Group("/api/v1")
 	apiv1.Use(authMiddleware.Authenticate)
@@ -50,23 +47,28 @@ func Init(db *gorm.DB, pinecone search.PineconeClientInterface, settings config.
 		ServiceParams: types.ServiceParams{
 			DB:           db,
 			Validate:     validate,
-			Resend:       resend,
-			Pinecone:     &pinecone,
+			AuthSettings: &settings.Auth,
 			JWT:          jwt,
-			AuthSettings: settings.Auth,
+			Deps:         dependencies,
 		},
 	}
 
+	allRoutes(app, routeParams)
+
+	return app
+}
+
+func allRoutes(app *fiber.App, routeParams types.RouteParams) {
 	routes.Utility(app)
 	routes.Auth(routeParams)
 	routes.UserRoutes(routeParams)
-	routes.Contact(routeParams)
 	routes.ClubRoutes(routeParams)
+	routes.Contact(routeParams)
+	routes.PointOfContact(routeParams)
 	routes.Tag(routeParams)
 	routes.CategoryRoutes(routeParams)
 	routes.Event(routeParams)
-
-	return app
+	routes.File(routeParams)
 }
 
 func newFiberApp(appSettings config.ApplicationSettings) *fiber.App {

@@ -9,8 +9,8 @@ import (
 func ClubMember(clubParams types.RouteParams) {
 	clubMemberController := controllers.NewClubMemberController(services.NewClubMemberService(clubParams.ServiceParams))
 
-	clubMember := clubParams.Router.Group("/members")
+	clubMembers := clubParams.Router.Group("/members")
 
 	// api/v1/clubs/:clubID/members/*
-	clubMember.Get("/", clubMemberController.GetClubMembers)
+	clubMembers.Get("/", clubMemberController.GetClubMembers)
 }

@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Wordmark } from '@/components/wordmark';
 
-import VerificationForm from './_components/verification-form';
+import { VerificationForm } from './_components/verification-form';
 
 const Verification = () => {
     return (

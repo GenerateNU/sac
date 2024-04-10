@@ -7,7 +7,7 @@ import { router } from 'expo-router';
 import { Button } from '@/components/button';
 import { Wordmark } from '@/components/wordmark';
 
-import RegistrationForm from './_components/registration-form';
+import { RegistrationForm } from './_components/registration-form';
 
 const Register = () => {
     return (
@@ -17,7 +17,7 @@ const Register = () => {
                     <View className="flex flex-row justify-between mx-auto w-full items-center pt-[3%] pb-[5.5%]">
                         <Wordmark />
                         <Button
-                            onPress={() => router.push('/(auth)/login')}
+                            onPress={() => router.replace('/(auth)/login')}
                             variant="secondary"
                             size="sm"
                         >

@@ -18,8 +18,8 @@ type UserFollowerService struct {
 	types.ServiceParams
 }
 
-func NewUserFollowerService(params types.ServiceParams) UserFollowerServiceInterface {
-	return &UserFollowerService{params}
+func NewUserFollowerService(serviceParams types.ServiceParams) UserFollowerServiceInterface {
+	return &UserFollowerService{serviceParams}
 }
 
 func (u *UserFollowerService) CreateFollowing(userId string, clubId string) *errors.Error {

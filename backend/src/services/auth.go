@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/GenerateNU/sac/backend/src/auth"
@@ -17,7 +16,6 @@ import (
 
 type AuthServiceInterface interface {
 	GetRole(id string) (*models.UserRole, *errors.Error)
-	SetResponseTokens(c *fiber.Ctx, tokens *auth.Token) *errors.Error
 	Login(userBody models.LoginUserResponseBody) (*models.User, *auth.Token, *errors.Error)
 	Refresh(refreshToken string) (*auth.Token, *errors.Error)
 	Logout(c *fiber.Ctx) *errors.Error
@@ -33,32 +31,8 @@ type AuthService struct {
 	types.ServiceParams
 }
 
-func NewAuthService(serviceParams types.ServiceParams) *AuthService {
+func NewAuthService(serviceParams types.ServiceParams) AuthServiceInterface {
 	return &AuthService{serviceParams}
-}
-
-// TODO: organize this
-func (a *AuthService) SetResponseTokens(c *fiber.Ctx, tokens *auth.Token) *errors.Error {
-	// c.Cookie(&fiber.Cookie{
-	// 	Name:     "refresh_token",
-	// 	Value:    "",
-	// 	Expires:  time.Now().Add(-time.Hour),
-	// 	HTTPOnly: true,
-	// })
-	// c.Set("Authorization", "")
-
-	// Set the tokens in the response
-	// should also blacklist the old refresh and access tokens
-
-	c.Set("Authorization", fmt.Sprintf("Bearer %s", tokens.AccessToken))
-	c.Cookie(&fiber.Cookie{
-		Name:     "refresh_token",
-		Value:    string(tokens.RefreshToken),
-		Expires:  time.Now().Add(time.Hour * time.Duration(a.AuthSettings.RefreshTokenExpiry)),
-		HTTPOnly: true,
-	})
-
-	return nil
 }
 
 func (a *AuthService) Login(loginBody models.LoginUserResponseBody) (*models.User, *auth.Token, *errors.Error) {
@@ -157,7 +131,7 @@ func (a *AuthService) ForgotPassword(email string) *errors.Error {
 	}
 
 	if activeToken != nil {
-		sendErr := a.Resend.SendPasswordResetEmail(user.FirstName, user.Email, activeToken.Token)
+		sendErr := a.Deps.Email.SendPasswordResetEmail(user.FirstName, user.Email, activeToken.Token)
 		if sendErr != nil {
 			return &errors.FailedToSendEmail
 		}
@@ -175,7 +149,7 @@ func (a *AuthService) ForgotPassword(email string) *errors.Error {
 		return saveErr
 	}
 
-	sendErr := a.Resend.SendPasswordResetEmail(user.FirstName, user.Email, *token)
+	sendErr := a.Deps.Email.SendPasswordResetEmail(user.FirstName, user.Email, *token)
 	if sendErr != nil {
 		return sendErr
 	}
@@ -247,7 +221,7 @@ func (a *AuthService) SendCode(email string) *errors.Error {
 	}
 
 	if activeOTP != nil {
-		sendErr := a.Resend.SendEmailVerification(user.Email, activeOTP.Token)
+		sendErr := a.Deps.Email.SendEmailVerification(user.Email, activeOTP.Token)
 		if sendErr != nil {
 			return &errors.FailedToSendEmail
 		}
@@ -265,7 +239,7 @@ func (a *AuthService) SendCode(email string) *errors.Error {
 		return saveErr
 	}
 
-	sendErr := a.Resend.SendEmailVerification(user.Email, *otp)
+	sendErr := a.Deps.Email.SendEmailVerification(user.Email, *otp)
 	if sendErr != nil {
 		return &errors.FailedToSendEmail
 	}

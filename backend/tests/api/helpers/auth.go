@@ -146,13 +146,14 @@ func SampleStudentFactory() (models.User, string) {
 	}
 
 	return models.User{
-		Role:         models.Student,
-		FirstName:    "Jane",
-		LastName:     "Doe",
-		Email:        "doe.jane@northeastern.edu",
-		PasswordHash: *hashedPassword,
-		College:      models.KCCS,
-		Year:         models.Third,
+		Role:            models.Student,
+		FirstName:       "Jane",
+		LastName:        "Doe",
+		Email:           "doe.jane@northeastern.edu",
+		PasswordHash:    *hashedPassword,
+		College:         models.KCCS,
+		GraduationCycle: models.May,
+		GraduationYear:  2025,
 	}, password
 }
 
@@ -161,11 +162,12 @@ func SampleStudentJSONFactory(sampleStudent models.User, rawPassword string) *ma
 		panic("User is not a student")
 	}
 	return &map[string]interface{}{
-		"first_name": sampleStudent.FirstName,
-		"last_name":  sampleStudent.LastName,
-		"email":      sampleStudent.Email,
-		"password":   rawPassword,
-		"college":    string(sampleStudent.College),
-		"year":       int(sampleStudent.Year),
+		"first_name":       sampleStudent.FirstName,
+		"last_name":        sampleStudent.LastName,
+		"email":            sampleStudent.Email,
+		"password":         rawPassword,
+		"college":          string(sampleStudent.College),
+		"graduation_cycle": string(sampleStudent.GraduationCycle),
+		"graduation_year":  int(sampleStudent.GraduationYear),
 	}
 }

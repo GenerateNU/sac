@@ -1,0 +1,8 @@
+package constants
+
+import "time"
+
+const (
+	ACCESS_TOKEN_EXPIRY  time.Duration = time.Hour * 24 * 30 // temporary TODO: change to 60 minutes
+	REFRESH_TOKEN_EXPIRY time.Duration = time.Hour * 24 * 30
+)

@@ -1,9 +1,11 @@
 package auth
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/GenerateNU/sac/backend/src/config"
+	"github.com/GenerateNU/sac/backend/src/constants"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	m "github.com/garrettladley/mattress"
 	"github.com/gofiber/fiber/v2"
@@ -65,10 +67,10 @@ type JWTClient struct {
 	SigningMethod jwt.SigningMethod
 }
 
-func NewJWTClient(authSettings config.AuthSettings, signingMethod jwt.SigningMethod) *JWTClient {
+func NewJWTClient(authSettings config.AuthSettings, signingMethod jwt.SigningMethod) JWTClientInterface {
 	return &JWTClient{
-		RefreshExp:    time.Hour * 24 * time.Duration(authSettings.RefreshTokenExpiry),
-		AccessExp:     time.Minute * time.Duration(authSettings.AccessTokenExpiry),
+		RefreshExp:    constants.REFRESH_TOKEN_EXPIRY,
+		AccessExp:     constants.ACCESS_TOKEN_EXPIRY,
 		RefreshKey:    authSettings.RefreshKey,
 		AccessKey:     authSettings.AccessKey,
 		SigningMethod: signingMethod,
@@ -289,14 +291,37 @@ func copyCustomClaims(claims *jwt.MapClaims, customClaims map[string]interface{}
 	}
 }
 
-// func GenerateRefreshCookie(value string) *fiber.Cookie {
-// 	return &fiber.Cookie{
-// 		Name:     "refresh_token",
-// 		Value:    value,
-// 		Expires:  time.Now().Add(j.RefreshExp),
-// 		HTTPOnly: true,
-// 	}
-// }
+func GenerateRefreshCookie(value string) *fiber.Cookie {
+	return &fiber.Cookie{
+		Name:     "refresh_token",
+		Value:    value,
+		Expires:  time.Now().Add(constants.REFRESH_TOKEN_EXPIRY),
+		HTTPOnly: true,
+	}
+}
+
+func SetResponseTokens(c *fiber.Ctx, tokens *Token) *errors.Error {
+	// c.Cookie(&fiber.Cookie{
+	// 	Name:     "refresh_token",
+	// 	Value:    "",
+	// 	Expires:  time.Now().Add(-time.Hour),
+	// 	HTTPOnly: true,
+	// })
+	// c.Set("Authorization", "")
+
+	// Set the tokens in the response
+	// should also blacklist the old refresh and access tokens
+
+	c.Set("Authorization", fmt.Sprintf("Bearer %s", tokens.AccessToken))
+	c.Cookie(&fiber.Cookie{
+		Name:     "refresh_token",
+		Value:    string(tokens.RefreshToken),
+		Expires:  time.Now().Add(constants.REFRESH_TOKEN_EXPIRY),
+		HTTPOnly: true,
+	})
+
+	return nil
+}
 
 // func ExpireCookie(name string) *fiber.Cookie {
 // 	return &fiber.Cookie{

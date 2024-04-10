@@ -8,37 +8,21 @@ const AuthLayout = () => {
             <Stack.Screen
                 name="welcome"
                 options={{
-                    title: 'Welcome',
-                    headerShown: false
+                    title: '',
+                    headerShown: true,
+                    animationTypeForReplace: 'push',
+                    statusBarColor: 'dark'
                 }}
             />
-            <Stack.Screen
-                name="login"
-                options={{
-                    title: 'Login',
-                    headerShown: false
-                }}
-            />
-            <Stack.Screen
-                name="register"
-                options={{
-                    title: 'Register',
-                    headerShown: false
-                }}
-            />
+            <Stack.Screen name="login" options={{ headerShown: false }} />
+            <Stack.Screen name="register" options={{ headerShown: false }} />
             <Stack.Screen
                 name="verification"
-                options={{
-                    title: 'Verification Code',
-                    headerShown: false
-                }}
+                options={{ headerShown: false }}
             />
             <Stack.Screen
                 name="user-details"
-                options={{
-                    title: 'User Details',
-                    headerShown: false
-                }}
+                options={{ headerShown: false }}
             />
         </Stack>
     );

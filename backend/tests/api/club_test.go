@@ -20,12 +20,12 @@ func SampleClubFactory(userID *uuid.UUID) *map[string]interface{} {
 		"user_id":           userID,
 		"name":              "Generate",
 		"preview":           "Generate is Northeastern's premier student-led product development studio.",
-		"description":       "https://mongodb.com",
+		"description":       "https://s3.amazonaws.com/<bucket>/<object>",
 		"is_recruiting":     true,
 		"recruitment_cycle": "always",
 		"recruitment_type":  "application",
 		"application_link":  "https://generatenu.com/apply",
-		"logo":              "https://aws.amazon.com/s3/",
+		"logo":              "https://s3.amazonaws.com/<bucket>/<object>",
 	}
 }
 

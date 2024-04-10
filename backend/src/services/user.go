@@ -10,14 +10,13 @@ import (
 	"github.com/GenerateNU/sac/backend/src/transactions"
 	"github.com/GenerateNU/sac/backend/src/types"
 	"github.com/GenerateNU/sac/backend/src/utilities"
-	"github.com/gofiber/fiber/v2"
 )
 
 type UserServiceInterface interface {
 	GetUsers(limit string, page string) ([]models.User, *errors.Error)
 	GetMe(id string) (*models.User, *errors.Error)
 	GetUser(id string) (*models.User, *errors.Error)
-	CreateUser(c *fiber.Ctx, userBody models.CreateUserRequestBody) (*models.User, *errors.Error)
+	CreateUser(userBody models.CreateUserRequestBody) (*models.User, *auth.Token, *errors.Error)
 	UpdateUser(id string, userBody models.UpdateUserRequestBody) (*models.User, *errors.Error)
 	UpdatePassword(id string, passwordBody models.UpdatePasswordRequestBody) *errors.Error
 	DeleteUser(id string) *errors.Error
@@ -27,55 +26,50 @@ type UserService struct {
 	types.ServiceParams
 }
 
-func NewUserService(serviceParams types.ServiceParams) *UserService {
+func NewUserService(serviceParams types.ServiceParams) UserServiceInterface {
 	return &UserService{serviceParams}
 }
 
-func (u *UserService) CreateUser(c *fiber.Ctx, userBody models.CreateUserRequestBody) (*models.User, *errors.Error) {
+func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models.User, *auth.Token, *errors.Error) {
 	if err := u.Validate.Struct(userBody); err != nil {
-		return nil, &errors.FailedToValidateUser
+		return nil, nil, &errors.FailedToValidateUser
 	}
 
 	user, err := utilities.MapRequestToModel(userBody, &models.User{})
 	if err != nil {
-		return nil, &errors.FailedToMapRequestToModel
+		return nil, nil, &errors.FailedToMapRequestToModel
 	}
 
 	passwordHash, err := auth.ComputeHash(userBody.Password)
 	if err != nil {
-		return nil, &errors.FailedToComputePasswordHash
+		return nil, nil, &errors.FailedToComputePasswordHash
 	}
 
 	user.Email = strings.ToLower(userBody.Email)
 	user.PasswordHash = *passwordHash
 
-	emailErr := u.Resend.SendWelcomeEmail(fmt.Sprintf("%s %s", user.FirstName, user.LastName), user.Email)
+	emailErr := u.Deps.Email.SendWelcomeEmail(fmt.Sprintf("%s %s", user.FirstName, user.LastName), user.Email)
 	if emailErr != nil {
-		return nil, &errors.FailedToSendEmail
+		return nil, nil, &errors.FailedToSendEmail
 	}
 
 	user, userErr := transactions.CreateUser(u.DB, user)
 	if userErr != nil {
-		return nil, userErr
+		return nil, nil, userErr
 	}
 
 	authService := NewAuthService(u.ServiceParams)
 	authErr := authService.SendCode(user.Email)
 	if authErr != nil {
-		return nil, authErr
+		return nil, nil, authErr
 	}
 
 	_, tokens, authErr := authService.Login(models.LoginUserResponseBody{Email: user.Email, Password: userBody.Password})
 	if authErr != nil {
-		return nil, authErr
+		return nil, nil, authErr
 	}
 
-	authErr = authService.SetResponseTokens(c, tokens)
-	if authErr != nil {
-		return nil, authErr
-	}
-
-	return user, nil
+	return user, tokens, nil
 }
 
 func (u *UserService) GetUsers(limit string, page string) ([]models.User, *errors.Error) {
