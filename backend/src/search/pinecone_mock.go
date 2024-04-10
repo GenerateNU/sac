@@ -8,7 +8,7 @@ import (
 type PineconeMockClient struct{}
 
 // Connects to an existing Pinecone index, using the host and keys provided in settings.
-func NewPineconeMockClient() *PineconeMockClient {
+func NewPineconeMockClient() SearchClientInterface {
 	return &PineconeMockClient{}
 }
 
