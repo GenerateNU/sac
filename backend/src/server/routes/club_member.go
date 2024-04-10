@@ -12,5 +12,5 @@ func ClubMember(clubParams types.RouteParams) {
 	clubMember := clubParams.Router.Group("/members")
 
 	// api/v1/clubs/:clubID/members/*
-	clubMember.Get("/", clubParams.AuthMiddleware.ClubAuthorizeById, clubMemberController.GetClubMembers)
+	clubMember.Get("/", clubMemberController.GetClubMembers)
 }

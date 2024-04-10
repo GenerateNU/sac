@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"fmt"
-	"regexp"
 	"slices"
 	"strings"
 	"time"
@@ -55,35 +54,6 @@ func GetAuthroizationToken(c *fiber.Ctx) *string {
 	return &token[1]
 }
 
-
-func splitPath(path string) []string {
-	// Split the path by "/" separator
-	parts := strings.Split(path, "/")
-	
-	// Remove empty elements caused by leading/trailing slashes
-	nonEmptyParts := []string{}
-	for _, part := range parts {
-		if part != "" {
-		nonEmptyParts = append(nonEmptyParts, part)
-		}
-	}
-	return nonEmptyParts
-}
-
-func isPathParameterized(path string) bool {
-	uuidRegex := regexp.MustCompile("^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$")
-
-	parts := splitPath(path)
-
-	// if any part of the path is a uuid, return true
-	for _, part := range parts {
-		if uuidRegex.MatchString(part) {
-			return true
-		}
-	}
-
-	return false
-}
 func (m *AuthMiddlewareService) Authenticate(c *fiber.Ctx) error {
 	for _, excludedPath := range getExcludedPaths() {
 		for path, method := range excludedPath {
@@ -93,7 +63,8 @@ func (m *AuthMiddlewareService) Authenticate(c *fiber.Ctx) error {
 		}
 	}
 
-	if c.Method() == "OPTIONS" || (c.Method() == "GET" && !isPathParameterized(c.Path())) {
+	// TODO: maybe a better way to handle this?
+	if c.Method() == "OPTIONS" || (c.Method() == "GET" && c.Path() != "/api/v1/users/") {
 		return c.Next()
 	}
 
