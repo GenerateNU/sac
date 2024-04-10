@@ -1,9 +1,8 @@
+import { eventHosts, eventTags, events } from '@/data/events';
 import { Club } from '@/types/club';
 import { Event } from '@/types/event';
 import { Tag } from '@/types/tag';
 import { uuid } from '@/types/uuid';
-
-import { api } from './api';
 
 /**
  * Fetches an event by its ID.
@@ -13,14 +12,21 @@ import { api } from './api';
  * @throws Error if the event cannot be fetched
  * @see Event
  */
-export const fetchEvent = async (eventID: uuid): Promise<Event> => {
-    return api
-        .get<Event>(`/events/${eventID}`)
-        .then((response) => response.data as Event)
-        .catch((error) => {
-            console.error(error);
-            throw new Error('Error fetching event');
-        });
+export const fetchEvent = async (eventID: string): Promise<Event> => {
+    // return api
+    //     .get<Event>(`/events/${eventID}`)
+    //     .then((response) => response.data as Event)
+    //     .catch((error) => {
+    //         console.error(error);
+    //         throw new Error('Error fetching event');
+    //     });
+
+    const event = events.find((e) => e.id === eventID);
+    if (!event) {
+        throw new Error('Event not found');
+    }
+
+    return event;
 };
 
 /**
@@ -31,13 +37,17 @@ export const fetchEvent = async (eventID: uuid): Promise<Event> => {
  * @see Event
  */
 export const fetchEvents = async (): Promise<Event[]> => {
-    return api
-        .get('/events')
-        .then((response) => response.data as Event[])
-        .catch((error) => {
-            console.error(error);
-            throw new Error('Error fetching events');
-        });
+    // return api
+    //     .get('/events')
+    //     .then((response) => response.data as Event[])
+    //     .catch((error) => {
+    //         console.error(error);
+    //         throw new Error('Error fetching events');
+    //     });
+    return new Promise((resolve, _) => {
+        resolve(events);
+    });
+    // return axios.get('/Users/davidoduneye/projects/org-generate/sac/frontend/sac-mobile/data/events.json').then((response) => response.data as Event[]);
 };
 
 /**
@@ -48,14 +58,22 @@ export const fetchEvents = async (): Promise<Event[]> => {
  * @throws Error if the hosts cannot be fetched
  * @see Club
  */
-export const fetchHosts = async (eventID: uuid): Promise<Club[]> => {
-    return api
-        .get(`/events/${eventID}/hosts`)
-        .then((response) => response.data as Club[])
-        .catch((error) => {
-            console.error(error);
-            throw new Error('Error fetching hosts');
-        });
+export const fetchHosts = async (eventID: string): Promise<Club[]> => {
+    // return api
+    //     .get(`/events/${eventID}/hosts`)
+    //     .then((response) => response.data as Club[])
+    //     .catch((error) => {
+    //         console.error(error);
+    //         throw new Error('Error fetching hosts');
+    //     });
+
+    // key is the eventID
+    const allHosts = eventHosts[eventID as keyof typeof eventHosts] as Club[];
+    if (!allHosts) {
+        throw new Error('Hosts not found');
+    }
+
+    return allHosts;
 };
 
 /**
@@ -67,11 +85,18 @@ export const fetchHosts = async (eventID: uuid): Promise<Club[]> => {
  * @see Tag
  */
 export const fetchEventTags = async (eventID: uuid): Promise<Tag[]> => {
-    return api
-        .get(`/events/${eventID}/tags`)
-        .then((response) => response.data as Tag[])
-        .catch((error) => {
-            console.error(error);
-            throw new Error('Failed to fetch event tags');
-        });
+    // return api
+    //     .get(`/events/${eventID}/tags`)
+    //     .then((response) => response.data as Tag[])
+    //     .catch((error) => {
+    //         console.error(error);
+    //         throw new Error('Failed to fetch event tags');
+    //     });
+
+    const allTags = eventTags[eventID as keyof typeof eventTags] as Tag[];
+    if (!allTags) {
+        throw new Error('Tags not found');
+    }
+
+    return allTags;
 };
