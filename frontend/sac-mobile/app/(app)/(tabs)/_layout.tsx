@@ -10,7 +10,7 @@ const HomeTabBarIcon = ({ color }: { color: string }) => (
     <MaterialCommunityIcons name="home" size={24} color={color} />
 );
 
-const AppLayout = () => {
+const Layout = () => {
     const { isLoggedIn, fetchUser } = useAuthStore();
 
     useEffect(() => {
@@ -32,4 +32,4 @@ const AppLayout = () => {
     );
 };
 
-export default AppLayout;
+export default Layout;

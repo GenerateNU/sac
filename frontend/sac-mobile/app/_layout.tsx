@@ -44,11 +44,11 @@ const InitalLayout = () => {
             console.log({ isLoggedIn, isVerified, inApp });
 
             if (isLoggedIn && isVerified === false) {
-                router.replace('/(auth)/verification');
+                router.push('/(auth)/verification');
             } else if (isLoggedIn && isVerified) {
-                router.replace('/(app)/(tabs)/');
+                router.push('/(app)/(tabs)/');
             } else if (!isLoggedIn) {
-                router.replace('/(auth)/welcome');
+                router.push('/(auth)/welcome');
             }
         };
 
