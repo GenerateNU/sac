@@ -17,7 +17,7 @@ export const useUpdateUser = () => {
             };
         }) => UpdateUser(userId, updateUserRequestBody),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['update_user'] });
+            queryClient.invalidateQueries({ queryKey: ['users'] });
         }
     });
 };

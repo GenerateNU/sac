@@ -61,7 +61,7 @@ func validatePassword(fl validator.FieldLevel) bool {
 
 	hasMinLength := len(password) >= 8
 	hasDigit, _ := regexp.MatchString(`[0-9]`, password)
-	hasSpecialChar, _ := regexp.MatchString(`[@#%&*+]`, password)
+	hasSpecialChar, _ := regexp.MatchString(`[!@#$%^&*()_+\-=;:'",<>.]`, password)
 
 	return hasMinLength && hasDigit && hasSpecialChar
 }

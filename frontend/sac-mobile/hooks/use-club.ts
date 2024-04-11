@@ -5,14 +5,14 @@ import { Club } from '@/types/club';
 import { Contact } from '@/types/contact';
 import { uuid } from '@/types/uuid';
 
-// export const useClubs = (): UseQueryResult<Club[], Error> => {
-//     return useQuery<Club[], Error>({
-//         queryKey: ['clubs'],
-//         queryFn: () => {
-//             return fetchClubs();
-//         }
-//     })
-// }
+export const useClubs = (): UseQueryResult<Club[], Error> => {
+    return useQuery<Club[], Error>({
+        queryKey: ['clubs'],
+        queryFn: () => {
+            return fetchClubs();
+        }
+    });
+};
 
 export const useClub = (clubID: uuid): UseQueryResult<Club, Error> => {
     return useQuery<Club, Error>({

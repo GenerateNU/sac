@@ -23,9 +23,9 @@ SplashScreen.preventAutoHideAsync();
 export const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
-            staleTime: 1000 * 60 * 5,
+            refetchOnWindowFocus: false,
             retry: false,
-            refetchOnWindowFocus: false
+            staleTime: 1000 * 60 * 5
         }
     }
 });
@@ -45,7 +45,11 @@ const InitalLayout = () => {
 
             if (isLoggedIn && isVerified === false) {
                 router.push('/(auth)/verification');
-            } else if (isLoggedIn && isVerified) {
+            }
+            // else if (isLoggedIn && isVerified == null) {
+            //     router.replace('/(auth)/verification');
+            // }
+            else if (isLoggedIn && isVerified) {
                 router.push('/(app)/(tabs)/');
             } else if (!isLoggedIn) {
                 router.push('/(auth)/welcome');

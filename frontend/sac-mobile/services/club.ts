@@ -13,10 +13,10 @@ import { api } from './api';
  * @throws Error if the club cannot be fetched
  * @see Club
  */
-export const fetchClubs = async (): Promise<Club> => {
+export const fetchClubs = async (): Promise<Club[]> => {
     return api
         .get(`/clubs/`)
-        .then((response) => response.data as Club)
+        .then((response) => response.data as Club[])
         .catch((error) => {
             console.error(error);
             throw new Error('Error fetching club');

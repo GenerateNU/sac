@@ -55,7 +55,6 @@ const RegistrationForm = () => {
             const updatedData = { ...rest };
             console.log(updatedData);
             await signUp(updatedData);
-            router.push('/(auth)/verification');
         } catch (error: any) {
             if (error instanceof ZodError) {
                 Alert.alert(error.errors[0].message);
