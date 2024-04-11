@@ -1,8 +1,9 @@
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View, FlatList } from 'react-native';
 
 import { Tag } from '@/components/tag';
 import { useEventTags } from '@/hooks/use-event';
 import { uuid } from '@/types/uuid';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // TODO: generify this component
 
@@ -11,7 +12,7 @@ type TagListProps = {
 };
 
 const TagList = ({ id }: TagListProps) => {
-    const { data: tags = [], isLoading, error } = useEventTags(id);
+    const { data: tags, isLoading, error } = useEventTags(id);
 
     if (isLoading) {
         return <Text>Loading...</Text>;
@@ -21,24 +22,21 @@ const TagList = ({ id }: TagListProps) => {
         return <Text>Error: {error.message}</Text>;
     }
 
-    if (tags.length === 0) {
-        return <Text>No tags found</Text>;
+    if (tags?.length === 0) {
+        return null;
     }
 
+
     return (
-        <ScrollView
-            className="w-full py-2"
-            horizontal={true}
+        <FlatList
+            horizontal
             showsHorizontalScrollIndicator={false}
-        >
-            <View className="flex-row justify-start items-start gap-1.5 inline-flex">
-                {tags.map((tag) => (
-                    <View key={tag.id}>
-                        <Tag tag={tag} />
-                    </View>
-                ))}
-            </View>
-        </ScrollView>
+            alwaysBounceHorizontal
+            data={tags}
+            renderItem={({ item }) => <Tag key={item.id} tag={item} />}
+            keyExtractor={(item) => item.id}
+
+        />
     );
 };
 
