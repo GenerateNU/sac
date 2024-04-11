@@ -1,12 +1,9 @@
 import React from 'react';
-import { Alert, Platform, ScrollView, Share, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 
 import { Stack, useLocalSearchParams } from 'expo-router';
 
-import { MenuView } from '@react-native-menu/menu';
-
 import { AllHosts } from '@/app/(app)/event/_components/all-hosts';
-import ShareIcon from '@/assets/images/svg/share.svg';
 import { TagList } from '@/components/all-tags';
 import { Button } from '@/components/button';
 import { Description } from '@/components/description';
@@ -14,11 +11,11 @@ import { useAuthStore } from '@/hooks/use-auth';
 import { useEvent } from '@/hooks/use-event';
 
 import { Title } from '../_components/title';
+import { EventHeader } from './_components/event-header';
+import { EventLocation } from './_components/event-location';
 import { EventTime } from './_components/event-time';
 import { HostNames } from './_components/host-names';
 import { LocationView } from './_components/location-view';
-import { EventLocation } from './_components/event-location';
-import { EventHeader } from './_components/event-header';
 
 // TODO: handle link OR location
 const EventPage = () => {
@@ -61,8 +58,8 @@ const EventPage = () => {
                                     endTime={event.end_time}
                                 />
                                 <EventLocation
-                                location={event.location}
-                                meetingLink={event.meeting_link}
+                                    location={event.location}
+                                    meetingLink={event.meeting_link}
                                 />
                             </View>
                             <TagList id={event.id} />
@@ -91,4 +88,4 @@ const EventPage = () => {
     );
 };
 
-export default EventPage
+export default EventPage;

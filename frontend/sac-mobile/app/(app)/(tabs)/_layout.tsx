@@ -38,12 +38,20 @@ const Layout = () => {
             />
             <Tabs.Screen
                 name="search"
-                options={{ title: 'Search', headerShown: false, tabBarIcon: SearchTabBarIcon }}
+                options={{
+                    title: 'Search',
+                    headerShown: false,
+                    tabBarIcon: SearchTabBarIcon
+                }}
                 redirect={!isLoggedIn}
             />
             <Tabs.Screen
                 name="profile"
-                options={{ title: 'Profile', headerShown: false, tabBarIcon: ProfileTabBarIcon }}
+                options={{
+                    title: 'Profile',
+                    headerShown: false,
+                    tabBarIcon: ProfileTabBarIcon
+                }}
                 redirect={!isLoggedIn}
             />
         </Tabs>

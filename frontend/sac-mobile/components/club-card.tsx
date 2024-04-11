@@ -1,11 +1,11 @@
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 
 import { useAssets } from 'expo-asset';
+import { router } from 'expo-router';
 
 import { Club } from '@/types/club';
 
 import { ClubContacts } from './club-contacts';
-import { Link, router } from 'expo-router';
 
 const ClubCard = ({ club }: { club: Club }) => {
     const [asset, error] = useAssets(
@@ -33,15 +33,16 @@ const ClubCard = ({ club }: { club: Club }) => {
                     </Text>
                 </View>
                 <Text className="flex-wrap w-[254px] mt-2 text-sm font-light truncate text-zinc-900">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                    eiusmod tempor incididunt ut labore et dolore magna aliqua...
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                    do eiusmod tempor incididunt ut labore et dolore magna
+                    aliqua...
                 </Text>
                 <Text className="w-[254px] text-zinc-900 text-xs font-extralight">
                     Read more...
                 </Text>
                 <ClubContacts clubID={club.id} />
             </View>
-        </TouchableOpacity >
+        </TouchableOpacity>
     );
 };
 

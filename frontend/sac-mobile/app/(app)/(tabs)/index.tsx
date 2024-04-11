@@ -1,14 +1,14 @@
 import React from 'react';
-import { Text, View, FlatList } from 'react-native';
+import { FlatList, Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Link } from 'expo-router';
 
+import { clubs } from '@/data/clubs';
 import { useAuthStore } from '@/hooks/use-auth';
 import { useEvents } from '@/hooks/use-event';
-import { Event } from '@/types/event';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Club } from '@/types/club';
-import { clubs } from '@/data/clubs';
+import { Event } from '@/types/event';
 
 const Home = () => {
     const { user } = useAuthStore();
@@ -24,7 +24,7 @@ const Home = () => {
 
     const renderEvent = ({ item: event }: { item: Event }) => (
         <Link
-            className='mt-10 mr-3'
+            className="mt-10 mr-3"
             key={event.id}
             href={{
                 pathname: '/(app)/event/[id]',
@@ -37,7 +37,7 @@ const Home = () => {
 
     const renderClub = ({ item: club }: { item: Club }) => (
         <Link
-            className='mt-10 mr-3'
+            className="mt-10 mr-3"
             key={club.id}
             href={{
                 pathname: '/(app)/club/[id]',
@@ -49,7 +49,7 @@ const Home = () => {
     );
 
     return (
-        <SafeAreaView className='flex items-center justify-center flex-1'>
+        <SafeAreaView className="flex items-center justify-center flex-1">
             <Text>Welcome {user?.first_name}</Text>
             <FlatList
                 numColumns={5}

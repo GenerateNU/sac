@@ -1,9 +1,8 @@
-import { ScrollView, Text, View, FlatList } from 'react-native';
+import { FlatList, Text } from 'react-native';
 
 import { Tag } from '@/components/tag';
 import { useEventTags } from '@/hooks/use-event';
 import { uuid } from '@/types/uuid';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 // TODO: generify this component
 
@@ -26,7 +25,6 @@ const TagList = ({ id }: TagListProps) => {
         return null;
     }
 
-
     return (
         <FlatList
             horizontal
@@ -35,7 +33,6 @@ const TagList = ({ id }: TagListProps) => {
             data={tags}
             renderItem={({ item }) => <Tag key={item.id} tag={item} />}
             keyExtractor={(item) => item.id}
-
         />
     );
 };

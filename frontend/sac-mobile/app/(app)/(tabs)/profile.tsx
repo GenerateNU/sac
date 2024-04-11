@@ -1,5 +1,6 @@
-import { View, Text } from 'react-native';
 import React from 'react';
+import { View } from 'react-native';
+
 import { Button } from '@/components/button';
 import { useAuthStore } from '@/hooks/use-auth';
 
@@ -11,10 +12,10 @@ const Profile = () => {
     };
 
     return (
-        <View className='items-center justify-center flex-1 gap-5'>
+        <View className="items-center justify-center flex-1 gap-5">
             <Button onPress={handleSignOut}>Sign Out</Button>
         </View>
     );
-}
+};
 
 export default Profile;

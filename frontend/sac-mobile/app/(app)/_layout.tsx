@@ -1,10 +1,12 @@
 import React from 'react';
+import { Platform, View } from 'react-native';
 
 import { Stack } from 'expo-router';
-import { MenuView } from '@react-native-menu/menu';
-import { LeftArrow } from '@/components/left-arrow';
+
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { View, Platform, StatusBar } from 'react-native';
+import { MenuView } from '@react-native-menu/menu';
+
+import { LeftArrow } from '@/components/left-arrow';
 
 const Layout = () => {
     return (
