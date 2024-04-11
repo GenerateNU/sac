@@ -23,6 +23,14 @@ const Homepage = () => {
         error: Error;
     };
 
+    if (isLoading) {
+        return <Text>Loading...</Text>;
+    }
+
+    if (error) {
+        return <Text>Error: {error.message}</Text>;
+    }
+
     return (
         <SafeAreaView edges={['top']}>
             <ScrollView showsVerticalScrollIndicator={false}>

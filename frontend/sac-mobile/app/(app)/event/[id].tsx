@@ -1,15 +1,17 @@
 import React from 'react';
 import { Alert, Platform, ScrollView, Share, Text, View } from 'react-native';
 
+import { useLocalSearchParams } from 'expo-router';
+
 import { MenuView } from '@react-native-menu/menu';
 
 import { HostList } from '@/app/(app)/event/_components/host-list';
 import ShareIcon from '@/assets/images/svg/share.svg';
 import { TagList } from '@/components/all-tags';
 import { Button } from '@/components/button';
+import { Description } from '@/components/description';
 import { useEvent } from '@/hooks/use-event';
 
-import { Description } from '../_components/description';
 import { Title } from '../_components/title';
 import { EventLocation } from './_components/event-location';
 import { EventTime } from './_components/event-time';
@@ -18,26 +20,24 @@ import { LocationView } from './_components/location-view';
 
 // TODO: handle link OR location
 const Event = () => {
-    // const { id } = useLocalSearchParams();
+    const { id } = useLocalSearchParams<{ id: string }>();
 
-    const {
-        data: event,
-        isLoading: isEventLoading,
-        error: eventError
-    } = useEvent('tester');
+    const { data: event, isLoading, error } = useEvent(id);
 
-    if (eventError) {
-        console.error(eventError);
+    if (error) {
+        console.error(error);
         return <Text>Error fetching event</Text>;
     }
 
-    if (isEventLoading) {
+    if (isLoading) {
         return <Text>Loading...</Text>;
     }
 
     if (!event) {
         return <Text>Event not found</Text>;
     }
+
+    console.log('[event]', event);
 
     return (
         <ScrollView showsVerticalScrollIndicator={false}>

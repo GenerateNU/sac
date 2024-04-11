@@ -1,3 +1,4 @@
+import { clubContacts } from '@/data/clubs';
 import { Club } from '@/types/club';
 import { Contact } from '@/types/contact';
 import { uuid } from '@/types/uuid';
@@ -32,11 +33,20 @@ export const fetchClub = async (clubID: uuid): Promise<Club> => {
  * @see Contact[]
  */
 export const fetchClubContacts = async (clubID: uuid): Promise<Contact[]> => {
-    return api
-        .get(`/clubs/${clubID}/contacts`)
-        .then((response) => response.data as Contact[])
-        .catch((error) => {
-            console.error(error);
-            throw new Error('Error fetching contacts');
-        });
+    // return api
+    //     .get(`/clubs/${clubID}/contacts`)
+    //     .then((response) => response.data as Contact[])
+    //     .catch((error) => {
+    //         console.error(error);
+    //         throw new Error('Error fetching contacts');
+    //     });
+
+    const allContacts = clubContacts[
+        clubID as keyof typeof clubContacts
+    ] as Contact[];
+    if (!allContacts) {
+        throw new Error('Error fetching contacts');
+    }
+
+    return allContacts;
 };

@@ -12,5 +12,5 @@ func ClubFollower(clubParams types.RouteParams) {
 	clubFollowers := clubParams.Router.Group("/followers")
 
 	// api/clubs/:clubID/followers/*
-	clubFollowers.Get("/", clubParams.AuthMiddleware.ClubAuthorizeById, clubFollowerController.GetClubFollowers)
+	clubFollowers.Get("/", clubFollowerController.GetClubFollowers)
 }

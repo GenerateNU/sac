@@ -14,6 +14,8 @@ const EventLayout = () => {
             <Stack.Screen
                 name="[id]"
                 options={{
+                    animationTypeForReplace: 'push',
+                    animation: 'slide_from_right',
                     headerShown: true,
                     headerTitle: 'Event',
                     headerTitleAlign: 'center',

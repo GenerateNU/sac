@@ -27,15 +27,14 @@ func User(userParams types.RouteParams) fiber.Router {
 	users.Get("/", userParams.AuthMiddleware.Authorize(p.ReadAll), userController.GetUsers)
 	users.Post("/", userController.CreateUser)
 	users.Get("/me", userController.GetMe)
-	users.Get("/:userID", userController.GetUser)
 
 	// api/v1/users/:userID/*
 	usersID := users.Group("/:userID")
-	usersID.Use(userParams.AuthMiddleware.UserAuthorizeById)
 
-	usersID.Patch("/", userController.UpdateUser)
-	usersID.Patch("/password", userController.UpdatePassword)
-	usersID.Delete("/", userController.DeleteUser)
+	usersID.Get("/", userController.GetUser)
+	usersID.Patch("/", userParams.AuthMiddleware.UserAuthorizeById, userController.UpdateUser)
+	usersID.Patch("/password", userParams.AuthMiddleware.UserAuthorizeById, userController.UpdatePassword)
+	usersID.Delete("/", userParams.AuthMiddleware.UserAuthorizeById, userController.DeleteUser)
 
 	return usersID
 }
