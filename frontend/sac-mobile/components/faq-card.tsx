@@ -4,8 +4,8 @@ import { Alert, Text, TouchableOpacity, View } from 'react-native';
 
 import { ZodError, z } from 'zod';
 
-import Error from '@/components/error';
-import Input from '@/components/input';
+import { Error } from '@/components/error';
+import { Input } from '@/components/input';
 import { FAQ } from '@/types/item';
 
 type FAQData = {
@@ -16,7 +16,7 @@ const FAQSchema = z.object({
     question: z.string()
 });
 
-const FAQCard = ({ faq }: { faq: FAQ }) => {
+export const FAQCard = ({ faq }: { faq: FAQ }) => {
     const length = () => {
         if (faq.clubName.length > 11) {
             return faq.clubName.substring(0, 11) + '...';
@@ -99,5 +99,3 @@ const FAQCard = ({ faq }: { faq: FAQ }) => {
         </TouchableOpacity>
     );
 };
-
-export default FAQCard;

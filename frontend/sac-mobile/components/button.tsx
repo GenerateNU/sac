@@ -13,7 +13,8 @@ const buttonVariants = {
         icon: ['bg-transparent'],
         menu: ['text-black text-lg'],
         underline: ['border-b font-bold border-gray-600 text-lg'],
-        pill: ['bg-gray-500', 'text-white', 'rounded-full']
+        pill: ['bg-gray-500', 'text-white', 'rounded-full'],
+        faq: ['bg-gray-300']
     },
     size: {
         default: 'h-10 px-4 py-2',

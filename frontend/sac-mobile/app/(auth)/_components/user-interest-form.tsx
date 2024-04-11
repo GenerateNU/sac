@@ -7,7 +7,7 @@ import { router } from 'expo-router';
 import { ZodError } from 'zod';
 
 import { Button } from '@/components/button';
-import Error from '@/components/error';
+import { Error } from '@/components/error';
 import { useAuthStore } from '@/hooks/use-auth';
 import { useCategories } from '@/hooks/use-categories';
 import { useTags } from '@/hooks/use-tags';
@@ -80,7 +80,7 @@ const UserInterestsForm = () => {
         });
         try {
             Alert.alert('Form Submitted', JSON.stringify(selectedTagsUUID));
-            router.push('/(app)/');
+            router.push('/(app)/(tabs)/');
         } catch (error) {
             if (error instanceof ZodError) {
                 Alert.alert('Validation Error', error.errors[0].message);
@@ -91,7 +91,7 @@ const UserInterestsForm = () => {
     };
 
     const heightAdjust =
-        selectedTags.length === 0 && buttonClicked ? 'h-[46%]' : 'h-[47%]';
+        selectedTags.length === 0 && buttonClicked ? 'h-[46%]' : 'h-[49%]';
 
     const Tag = ({ tag }: { tag: Tag }) => {
         return (

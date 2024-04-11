@@ -13,6 +13,24 @@ import { api } from './api';
  * @throws Error if the club cannot be fetched
  * @see Club
  */
+export const fetchClubs = async (): Promise<Club> => {
+    return api
+        .get(`/clubs/`)
+        .then((response) => response.data as Club)
+        .catch((error) => {
+            console.error(error);
+            throw new Error('Error fetching club');
+        });
+};
+
+/**
+ * Fetches a club by its ID.
+ *
+ * @param clubID The ID of the club to fetch
+ * @returns A Promise that resolves to the fetched club or rejects with an error
+ * @throws Error if the club cannot be fetched
+ * @see Club
+ */
 export const fetchClub = async (clubID: uuid): Promise<Club> => {
     return api
         .get(`/clubs/${clubID}`)

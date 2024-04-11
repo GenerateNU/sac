@@ -2,8 +2,6 @@ import React, { useEffect } from 'react';
 
 import { Tabs } from 'expo-router';
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-
 import HomeLight from '@/assets/icons/home-light';
 import SearchAltLight from '@/assets/icons/search-alt-light';
 import UserLight from '@/assets/icons/user-light';

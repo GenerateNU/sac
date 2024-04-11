@@ -3,6 +3,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { Alert, Keyboard, TouchableWithoutFeedback, View } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
 
+import { router } from 'expo-router';
+
 import { ZodError, z } from 'zod';
 
 import { Button } from '@/components/button';
@@ -53,6 +55,7 @@ const RegistrationForm = () => {
             const updatedData = { ...rest };
             console.log(updatedData);
             await signUp(updatedData);
+            router.push('/(auth)/verification');
         } catch (error: any) {
             if (error instanceof ZodError) {
                 Alert.alert(error.errors[0].message);

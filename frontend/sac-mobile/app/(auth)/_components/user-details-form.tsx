@@ -7,14 +7,15 @@ import { ZodError, z } from 'zod';
 
 import { Button } from '@/components/button';
 import { DropdownComponent } from '@/components/dropdown';
-import Error from '@/components/error';
+import { Error } from '@/components/error';
 import MultiSelectComponent from '@/components/multiselect';
+import { useAuthStore } from '@/hooks/use-auth';
+import { useUpdateUser } from '@/hooks/use-update-users';
 import { college } from '@/lib/const';
 import { graduationCycle } from '@/lib/const';
 import { major } from '@/lib/utils';
 import { graduationYear } from '@/lib/utils';
 import { Item } from '@/types/item';
-import { useUpdateUser } from '@/hooks/use-update-users';
 
 type UserDetailsData = {
     major: Item[];
@@ -38,17 +39,33 @@ const UserDetailsForm = () => {
     });
 
     const updateUserInfo = useUpdateUser();
+    const { user } = useAuthStore();
+    const userId: string = user?.id!;
 
-    const onSubmit = ({ major, college, graduationYear, graduationCycle }: UserDetailsData) => {
+    const onSubmit = ({
+        major,
+        college,
+        graduationYear,
+        graduationCycle
+    }: UserDetailsData) => {
         try {
             const updatedData = {
                 major,
                 graduationYear: graduationYear.value,
                 college: college.value,
-                graduationCycle: graduationCycle.value, 
+                graduationCycle: graduationCycle.value
             };
             UserDetailsSchema.parse(updatedData);
-            Alert.alert('Form Submitted', JSON.stringify(updatedData));
+            const updateRequestBody = {
+                graduation_year: parseInt(updatedData.graduationYear),
+                college: updatedData.college,
+                graduation_cycle: updatedData.graduationCycle
+            };
+            updateUserInfo.mutateAsync({
+                userId: userId,
+                updateUserRequestBody: updateRequestBody
+            });
+            Alert.alert('Form Submitted', JSON.stringify(updateRequestBody));
             router.push('/(auth)/user-interests');
         } catch (error) {
             if (error instanceof ZodError) {

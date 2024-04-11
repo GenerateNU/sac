@@ -5,7 +5,7 @@ import { Tag } from '@/types/tag';
 
 export const useTags = (): UseQueryResult<Tag[], Error> => {
     return useQuery<Tag[], Error>({
-        queryKey: ['tag'],
+        queryKey: ['tags'],
         queryFn: getAllTags
     });
 };

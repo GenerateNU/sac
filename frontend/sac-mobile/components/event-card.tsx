@@ -5,7 +5,7 @@ import Location from '@/assets/icons/location';
 import Time from '@/assets/icons/time';
 import { Event } from '@/types/item';
 
-const EventCard = ({ event }: { event: Event }) => {
+export const EventCard = ({ event }: { event: Event }) => {
     return (
         <TouchableOpacity className="bg-gray-200 rounded-2xl my-[2.5%]">
             <View className="px-[5%] pt-[5%] pb-[4%]">
@@ -44,5 +44,3 @@ const EventCard = ({ event }: { event: Event }) => {
         </TouchableOpacity>
     );
 };
-
-export default EventCard;

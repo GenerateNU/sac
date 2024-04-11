@@ -34,12 +34,16 @@ export const getCurrentUser = async (): Promise<User> => {
  */
 export const UpdateUser = async (
     userId: string,
-    updateUserBody: JSON
+    updateUserBody: {
+        graduation_year: number;
+        college: string;
+        graduation_cycle: string;
+    }
 ): Promise<User> => {
     try {
         const response = await api.patch<User>(
             `/users/${userId}/`,
-            updateUserBody
+            JSON.stringify(updateUserBody)
         );
         return response.data as User;
     } catch (error) {

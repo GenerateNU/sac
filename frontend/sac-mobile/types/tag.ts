@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
+import { rootModelSchema } from './root';
+
 export const tagSchema = z.object({
-    id: z.string().uuid(),
     name: z.string().min(1),
-    category_id: z.string().uuid(),
-    createdAt: z.date(),
-    updatedAt: z.date()
+    category_id: z.string().uuid()
 });
 
-export type Tag = z.infer<typeof tagSchema>;
+const Tag = tagSchema.merge(rootModelSchema);
+export type Tag = z.infer<typeof Tag>;

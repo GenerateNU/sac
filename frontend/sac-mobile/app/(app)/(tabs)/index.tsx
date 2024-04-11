@@ -15,8 +15,8 @@ const Homepage = () => {
     const userId: string = user?.id!;
     const {
         data: userFollowingData,
-        isLoading: loadingUserFollowing,
-        error: errorUserFollowing
+        isLoading,
+        error
     } = useUserFollowing(userId) as {
         data: Club[];
         isLoading: boolean;
