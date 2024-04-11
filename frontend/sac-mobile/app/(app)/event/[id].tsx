@@ -10,6 +10,7 @@ import ShareIcon from '@/assets/images/svg/share.svg';
 import { TagList } from '@/components/all-tags';
 import { Button } from '@/components/button';
 import { Description } from '@/components/description';
+import { useAuthStore } from '@/hooks/use-auth';
 import { useEvent } from '@/hooks/use-event';
 
 import { Title } from '../_components/title';
@@ -17,7 +18,6 @@ import { Title } from '../_components/title';
 import { EventTime } from './_components/event-time';
 import { HostNames } from './_components/host-names';
 import { LocationView } from './_components/location-view';
-import { useAuthStore } from '@/hooks/use-auth';
 
 // TODO: handle link OR location
 const Event = () => {
@@ -43,7 +43,9 @@ const Event = () => {
 
     return (
         <>
-            <Stack.Screen options={{ title: `${event.name} - ${user?.first_name}` }} />
+            <Stack.Screen
+                options={{ title: `${event.name} - ${user?.first_name}` }}
+            />
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View className="flex-col justify-between flex-1 w-full">
                     <View className="w-full bg-gray-600 h-[100]" />

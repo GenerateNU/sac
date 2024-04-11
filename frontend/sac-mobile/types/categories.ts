@@ -1,10 +1,11 @@
-import { z } from "zod";
-import { tagSchema } from "./tag";
-import { rootModelSchema } from "./root";
+import { z } from 'zod';
+
+import { rootModelSchema } from './root';
+import { tagSchema } from './tag';
 
 export const categorySchema = z.object({
     name: z.string(),
-    tags: z.array(tagSchema),
+    tags: z.array(tagSchema)
 });
 
 const Category = categorySchema.merge(rootModelSchema);
