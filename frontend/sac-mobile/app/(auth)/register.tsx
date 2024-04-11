@@ -13,7 +13,7 @@ import { router } from 'expo-router';
 import { Button } from '@/components/button';
 import { Wordmark } from '@/components/wordmark';
 
-import RegistrationForm from './_components/registration-form';
+import { RegistrationForm } from './_components/registration-form';
 
 const Register = () => {
     return (

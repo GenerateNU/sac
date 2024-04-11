@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import ClubCard from '@/components/club-card';
-import EventCard from '@/components/event-card';
-import FAQCard from '@/components/faq-card';
+import { ClubHomepageCard } from '@/components/club-homepage-card';
+import { EventCard } from '@/components/event-card';
+import { FAQCard } from '@/components/faq-card';
 import { useAuthStore } from '@/hooks/use-auth';
 import { useUserFollowing } from '@/hooks/use-user-following';
 import { HomepageList } from '@/lib/const';
@@ -60,7 +60,10 @@ const Homepage = () => {
                                 switch (item.type) {
                                     case 'club':
                                         return (
-                                            <ClubCard key={index} club={item} />
+                                            <ClubHomepageCard
+                                                key={index}
+                                                club={item}
+                                            />
                                         );
                                     case 'event':
                                         return (

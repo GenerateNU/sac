@@ -19,7 +19,7 @@ interface DropdownProps {
     error?: boolean;
 }
 
-export const DropdownComponent = (props: DropdownProps) => {
+const DropdownComponent = (props: DropdownProps) => {
     const [isFocus, setIsFocus] = useState(false);
     const borderColor = props.error ? 'red' : 'black';
     const borderWidth = props.error ? 1 : 0.5;
@@ -95,3 +95,5 @@ export const DropdownComponent = (props: DropdownProps) => {
         </View>
     );
 };
+
+export { DropdownComponent };

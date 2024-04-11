@@ -1,22 +1,45 @@
-import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Image, Text, View } from 'react-native';
 
-import { Club } from '@/types/item';
+import { useAssets } from 'expo-asset';
+
+import { Club } from '@/types/club';
+
+import { ClubContacts } from './club-contacts';
 
 const ClubCard = ({ club }: { club: Club }) => {
+    const [asset, error] = useAssets(
+        require('@/assets/images/placeholder_club_logo.png')
+    );
+
+    if (error) {
+        console.error(error);
+    }
+
     return (
-        <TouchableOpacity className="bg-gray-200 rounded-2xl flex-row p-[5%] my-[2.5%]">
-            <View className="flex-row shrink items-center">
-                <View className="bg-gray-300 rounded-xl w-16 h-16"></View>
-                <View className="pl-[4%] flex-col shrink">
-                    <Text className="text-lg font-bold">{club.name}</Text>
-                    <Text numberOfLines={3} ellipsizeMode="tail">
-                        {club.description}
-                    </Text>
-                </View>
+        <View className="inline-flex p-5 bg-white border-2 rounded-[22px] border-zinc-200">
+            <View className="flex-row items-center gap-2">
+                {asset && (
+                    <Image
+                        source={{ uri: asset[0].uri }}
+                        className="w-10 h-10"
+                        resizeMode="contain"
+                    />
+                )}
+
+                <Text className="text-xl font-normal leading-snug text-zinc-900">
+                    Club Name
+                </Text>
             </View>
-        </TouchableOpacity>
+            <Text className="flex-wrap w-[254px] mt-2 text-sm font-light truncate text-zinc-900">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua...
+            </Text>
+            <Text className="w-[254px] text-zinc-900 text-xs font-extralight">
+                Read more...
+            </Text>
+            <ClubContacts clubID={club.id} />
+        </View>
     );
 };
 
-export default ClubCard;
+export { ClubCard };

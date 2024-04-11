@@ -8,8 +8,8 @@ import { router } from 'expo-router';
 import { ZodError, z } from 'zod';
 
 import { Button } from '@/components/button';
-import Error from '@/components/error';
-import Input from '@/components/input';
+import { Error } from '@/components/error';
+import { Input } from '@/components/input';
 import { useAuthStore } from '@/hooks/use-auth';
 import { requestVerification } from '@/services/auth';
 
@@ -43,7 +43,7 @@ const VerificationForm = () => {
         try {
             verificationSchema.parse({ code });
             await completeVerification(user?.email as string, code);
-            router.push('/(auth)/user-details');
+            router.replace('/(auth)/user-details');
         } catch (error: any) {
             if (error instanceof ZodError) {
                 Alert.alert('Error', error.errors[0].message);
@@ -104,4 +104,4 @@ const VerificationForm = () => {
     );
 };
 
-export default VerificationForm;
+export { VerificationForm };

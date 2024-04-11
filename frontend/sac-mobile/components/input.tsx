@@ -96,4 +96,4 @@ const Input = ({ title, error, variant, ...props }: InputProps) => {
     );
 };
 
-export default Input;
+export { Input };

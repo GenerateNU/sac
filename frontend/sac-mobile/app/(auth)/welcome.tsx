@@ -9,7 +9,7 @@ import { Wordmark } from '@/components/wordmark';
 const Welcome = () => {
     return (
         <SafeAreaView className="flex-col mb-[8%] mx-[8%]">
-            <View className="mb-[7%]">
+            <View className="mb-[3%]">
                 <Wordmark color={'primary'} />
             </View>
             <View className="bg-gray-500 h-[45%] w-ful rounded-xl mt-[5%]" />
@@ -24,7 +24,7 @@ const Welcome = () => {
                 <Button
                     size="lg"
                     variant="default"
-                    onPress={() => router.push('/(auth)/login')}
+                    onPress={() => router.replace('/(auth)/login')}
                 >
                     Get Started
                 </Button>

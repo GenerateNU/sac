@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Wordmark } from '@/components/wordmark';
 
-import LoginForm from './_components/login-form';
+import { LoginForm } from './_components/login-form';
 
 const Login = () => {
     return (

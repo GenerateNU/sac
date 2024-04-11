@@ -85,7 +85,7 @@ func (e *EventService) CreateEvent(eventBody models.CreateEventRequestBody) ([]m
 	}
 
 	// Create other events in series and update field in series (for join table)
-	events := CreateEventSlice(event, *series)
+	events := createEventSlice(event, *series)
 	series.Events = events
 
 	return transactions.CreateEventSeries(e.DB, *series)
@@ -132,7 +132,7 @@ func (e *EventService) UpdateEvent(id string, eventBody models.UpdateEventReques
 		return nil, &errors.FailedToValidateEvent
 	}
 
-	updatedEvent := MapToEvent(eventBody)
+	updatedEvent := mapToEvent(eventBody)
 
 	return transactions.UpdateEvent(e.DB, *idAsUUID, *updatedEvent)
 }
@@ -152,9 +152,9 @@ func (e *EventService) UpdateSeries(seriesID string, seriesBody models.UpdateSer
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	updatedEventBody := MapToEvent(seriesBody.EventDetails)
+	updatedEventBody := mapToEvent(seriesBody.EventDetails)
 
-	newEvents := CreateEventSlice(updatedEventBody, *series)
+	newEvents := createEventSlice(updatedEventBody, *series)
 	series.Events = newEvents
 
 	return transactions.UpdateSeries(e.DB, *seriesIDAsUUID, *series)
@@ -175,9 +175,9 @@ func (e *EventService) UpdateSeriesByEventID(eventID string, seriesBody models.U
 		return nil, &errors.FailedToMapRequestToModel
 	}
 
-	updatedEventBody := MapToEvent(seriesBody.EventDetails)
+	updatedEventBody := mapToEvent(seriesBody.EventDetails)
 
-	newEvents := CreateEventSlice(updatedEventBody, *series)
+	newEvents := createEventSlice(updatedEventBody, *series)
 	series.Events = newEvents
 
 	return transactions.UpdateSeriesByEventID(e.DB, *eventIDAsUUID, *series)
@@ -219,7 +219,7 @@ func (e *EventService) GetHostsByEventID(eventID string) ([]models.Club, *errors
 	return transactions.GetHostsByEventID(e.DB, *idAsUUID)
 }
 
-func CreateEventSlice(firstEvent *models.Event, series models.Series) []models.Event {
+func createEventSlice(firstEvent *models.Event, series models.Series) []models.Event {
 	eventBodies := []models.Event{*firstEvent}
 	months, days := 0, 0
 
@@ -242,7 +242,7 @@ func CreateEventSlice(firstEvent *models.Event, series models.Series) []models.E
 	return eventBodies
 }
 
-func MapToEvent(eventBody models.UpdateEventRequestBody) *models.Event {
+func mapToEvent(eventBody models.UpdateEventRequestBody) *models.Event {
 	return &models.Event{
 		Name:      eventBody.Name,
 		Preview:   eventBody.Preview,

@@ -6,8 +6,8 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import { ZodError, z } from 'zod';
 
 import { Button } from '@/components/button';
-import Error from '@/components/error';
-import Input from '@/components/input';
+import { Error } from '@/components/error';
+import { Input } from '@/components/input';
 import { useAuthStore } from '@/hooks/use-auth';
 
 type RegisterFormData = {
@@ -261,4 +261,4 @@ const RegistrationForm = () => {
     );
 };
 
-export default RegistrationForm;
+export { RegistrationForm };

@@ -7,23 +7,23 @@ import { twMerge } from 'tailwind-merge';
 
 import { majorArr } from '@/lib/const';
 import { categories } from '@/lib/const';
+import { Tokens } from '@/types/auth';
 import { Item } from '@/types/item';
-import { Tokens } from '@/types/user';
 
 /**
  * Nativewind CSS classnames generator
  * @param inputs - a list of classnames
  * @returns a string of Nativewind CSS classnames
  */
-export function cn(...inputs: ClassValue[]) {
+const cn = (...inputs: ClassValue[]) => {
     return twMerge(clsx(inputs));
-}
+};
 
 /**
  * Generates an array of graduation years
  * @returns an Item array of graduation years from the current year to the next 5 years
  */
-export const graduationYear = () => {
+const graduationYear = () => {
     var year = new Date().getFullYear();
     const range = 5;
     const graduationYears: Item[] = [];
@@ -75,7 +75,7 @@ export const allTags = () => {
  * await tokenCache.deleteToken('accessToken');
  * @see https://docs.expo.dev/versions/latest/sdk/securestore/
  */
-export const tokenCache = {
+const tokenCache = {
     async getToken(key: string) {
         try {
             return SecureStore.getItemAsync(key);
@@ -105,13 +105,15 @@ export const tokenCache = {
  * @param bufferTime The buffer time to add to the expiration time.
  * @returns The expiration time of the token.
  */
-export const experationTime = (token: string, bufferTime: number) => {
+const experationTime = (token: string, bufferTime: number = 0) => {
     try {
         if (!token) {
             return 0;
         }
-        const jwtBuffer = Buffer.from(token.split('.')[1], 'base64');
-        const jwtPayload = JSON.parse(jwtBuffer.toString('utf-8'));
+        const jwtBuffer: Buffer = Buffer.from(token.split('.')[1], 'base64');
+        const jwtPayload: { exp: number } = JSON.parse(
+            jwtBuffer.toString('utf-8')
+        );
         return jwtPayload.exp * 1000 - (Date.now() + bufferTime);
     } catch (error) {
         return 0;
@@ -124,7 +126,7 @@ export const experationTime = (token: string, bufferTime: number) => {
  * @param headers The headers from the Axios response.
  * @returns The access token and refresh token.
  */
-export const extractTokens = (
+const extractTokens = (
     cookies: string[] | undefined,
     headers: AxiosResponseHeaders | RawAxiosResponseHeaders
 ): Tokens => {
@@ -143,3 +145,5 @@ export const extractTokens = (
 
     return { accessToken, refreshToken };
 };
+
+export { cn, graduationYear, tokenCache, experationTime, extractTokens };

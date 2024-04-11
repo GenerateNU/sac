@@ -1,6 +1,6 @@
 import { Club, HomepageItem } from '@/types/item';
 
-export const API_BASE_URL = 'http://localhost:8080/api/v1';
+export const API_BASE_URL = 'http://localhost:8080/api/v1'; // 'http://localhost:8080/api/v1';
 
 export const college = [
     { label: 'College of Arts, Media and Design', value: 'CAMD' },
@@ -15,9 +15,9 @@ export const college = [
 ];
 
 export const graduationCycle = [
-    { label: "December", value: "december"},
-    { label: "May", value: "may"},
-]
+    { label: 'December', value: 'december' },
+    { label: 'May', value: 'may' }
+];
 
 export const majorArr = [
     'Africana Studies',
