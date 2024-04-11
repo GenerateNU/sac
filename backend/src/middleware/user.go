@@ -7,7 +7,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// Authorizes admins of the specific club to make this request, skips check if super user
 func (m *AuthMiddlewareService) UserAuthorizeById(c *fiber.Ctx) error {
 	if m.IsSuper(c) {
 		return c.Next()
@@ -18,14 +17,9 @@ func (m *AuthMiddlewareService) UserAuthorizeById(c *fiber.Ctx) error {
 		return errors.FailedToValidateID.FiberError(c)
 	}
 
-	token, tokenErr := auth.ParseAccessToken(c.Cookies("access_token"), m.AuthSettings.AccessKey)
-	if tokenErr != nil {
-		return err
-	}
-
-	claims, ok := token.Claims.(*auth.CustomClaims)
-	if !ok || !token.Valid {
-		return errors.FailedToValidateAccessToken.FiberError(c)
+	claims, err := auth.From(c)
+	if err != nil {
+		return err.FiberError(c)
 	}
 
 	issuerIDAsUUID, err := utilities.ValidateID(claims.Issuer)
@@ -37,5 +31,5 @@ func (m *AuthMiddlewareService) UserAuthorizeById(c *fiber.Ctx) error {
 		return c.Next()
 	}
 
-	return errors.Unauthorized.FiberError(c)
+	return errors.Forbidden.FiberError(c)
 }

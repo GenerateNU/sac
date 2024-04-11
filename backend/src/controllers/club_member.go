@@ -1,8 +1,7 @@
 package controllers
 
 import (
-	"strconv"
-
+	"github.com/GenerateNU/sac/backend/src/constants"
 	"github.com/GenerateNU/sac/backend/src/services"
 	"github.com/gofiber/fiber/v2"
 )
@@ -32,10 +31,7 @@ func NewClubMemberController(clubMemberService services.ClubMemberServiceInterfa
 // @Failure     500   {object}      errors.Error
 // @Router		/clubs/{clubID}/members/  [get]
 func (cm *ClubMemberController) GetClubMembers(c *fiber.Ctx) error {
-	defaultLimit := 10
-	defaultPage := 1
-
-	followers, err := cm.clubMemberService.GetClubMembers(c.Params("clubID"), c.Query("limit", strconv.Itoa(defaultLimit)), c.Query("page", strconv.Itoa(defaultPage)))
+	followers, err := cm.clubMemberService.GetClubMembers(c.Params("clubID"), c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING))
 	if err != nil {
 		return err.FiberError(c)
 	}

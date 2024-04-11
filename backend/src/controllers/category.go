@@ -1,12 +1,10 @@
 package controllers
 
 import (
-	"strconv"
-
+	"github.com/GenerateNU/sac/backend/src/constants"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
-
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -64,10 +62,7 @@ func (cat *CategoryController) CreateCategory(c *fiber.Ctx) error {
 // @Failure     500   {string}      errors.Error
 // @Router		/categories/  [get]
 func (cat *CategoryController) GetCategories(c *fiber.Ctx) error {
-	defaultLimit := 10
-	defaultPage := 1
-
-	categories, err := cat.categoryService.GetCategories(c.Query("limit", strconv.Itoa(defaultLimit)), c.Query("page", strconv.Itoa(defaultPage)))
+	categories, err := cat.categoryService.GetCategories(c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING))
 	if err != nil {
 		return err.FiberError(c)
 	}

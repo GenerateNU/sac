@@ -1,26 +1,21 @@
 import { useEffect } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 import { useFonts } from 'expo-font';
-import { Stack, router } from 'expo-router';
-import { getItemAsync } from 'expo-secure-store';
+import { Slot, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
 
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { useAuthStore } from '@/hooks/use-auth';
-import { User } from '@/types/user';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 export {
     // Catch any errors thrown by the Layout component.
     ErrorBoundary
 } from 'expo-router';
-
-export const unstable_settings = {
-    // Ensure that reloading on `/modal` keeps a back button present.
-    initialRouteName: ''
-};
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -28,91 +23,79 @@ SplashScreen.preventAutoHideAsync();
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
-            staleTime: 1000 * 60 * 5, // 5 minutes
             refetchOnWindowFocus: false,
-            retry: 3,
+            retry: false,
+            staleTime: 1000 * 60 * 5
         }
     }
 });
 
-export default function RootLayout() {
+const InitalLayout = () => {
+    const { isLoggedIn, fetchCache, isVerified } = useAuthStore();
+    const router = useRouter();
+    const segments = useSegments();
+
+    useEffect(() => {
+        const handleNavigation = () => {
+            if (isLoggedIn === null) return fetchCache();
+
+            const inApp = segments[0] === '(app)';
+
+            console.log({ isLoggedIn, isVerified, inApp });
+
+            if (isLoggedIn && isVerified === false) {
+                router.replace('/(auth)/verification');
+            } else if (isLoggedIn && isVerified) {
+                router.replace('/(app)/(tabs)/');
+            } else if (!isLoggedIn) {
+                router.replace('/(auth)/welcome');
+            }
+        };
+
+        console.log({ isLoggedIn, isVerified });
+
+        handleNavigation();
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isLoggedIn, isVerified]);
+
+    if (isLoggedIn === null)
+        return (
+            <View className="items-center justify-center flex-1">
+                <Spinner
+                    visible
+                    textContent="Welcome to SAC Mobile"
+                    // eslint-disable-next-line react-native/no-inline-styles
+                    textStyle={{ color: '#FFF' }}
+                />
+            </View>
+        );
+
+    return <Slot />;
+};
+
+const RootLayout = () => {
     const [loaded, error] = useFonts({
         SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
         'OpenSans-SemiBold': require('../assets/fonts/OpenSans-SemiBold.ttf'),
         ...FontAwesome.font
     });
 
-    // Expo Router uses Error Boundaries to catch errors in the navigation tree.
     useEffect(() => {
         if (error) throw error;
     }, [error]);
-
     useEffect(() => {
-        if (loaded) {
-            SplashScreen.hideAsync();
-        }
+        if (loaded) SplashScreen.hideAsync();
     }, [loaded]);
 
-    if (!loaded) {
-        return (
-            <View>
-                <Text>Loading...</Text>
-            </View>
-        );
-    }
-
-    return <RootLayoutNav />;
-}
-
-function RootLayoutNav() {
-    const { isLoggedIn, login } = useAuthStore();
-
-    useEffect(() => {
-        router.replace("/(app)/(tabs)/")
-    }, []);
-
-    // useEffect(() => {
-    // const checkLoginStatus = async () => {
-    //     try {
-    //         const accessToken = await getItemAsync('accessToken');
-    //         const refreshToken = await getItemAsync('refreshToken');
-    //         const savedUser = await getItemAsync('user');
-
-    //         console.log('[root] accessToken:', accessToken);
-    //         console.log('[root] refreshToken:', refreshToken);
-
-    //         const user: User = savedUser ? JSON.parse(savedUser) : null;
-
-    //         if (accessToken && refreshToken) {
-    //             // Consider adding token validation (e.g., expiration check)
-    //             login({ accessToken, refreshToken }, user);
-    //         }
-    //     } catch (error) {
-    //         console.error(
-    //             '[RootLayoutNav] Error retrieving tokens:',
-    //             error
-    //         );
-    //     }
-    // };
-
-    // checkLoginStatus();
-    // }, [login]);
-
-    // useEffect(() => {
-    //     if (isLoggedIn === null) {
-    //         router.push('/(auth)/welcome');
-    //         return;
-    //     }
-
-    //     router.push(isLoggedIn ? '/(app)/' : '/(auth)/welcome');
-    // }, [isLoggedIn]);
+    if (!loaded) return null;
 
     return (
         <QueryClientProvider client={queryClient}>
-            <Stack>
-                <Stack.Screen name="(app)/(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            </Stack>
+            <StatusBar style="light" />
+            <InitalLayout />
         </QueryClientProvider>
     );
-}
+};
+
+export default RootLayout;

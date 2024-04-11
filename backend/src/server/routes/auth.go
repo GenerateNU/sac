@@ -1,25 +1,26 @@
 package routes
 
 import (
-	"time"
-
-	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/controllers"
-	"github.com/GenerateNU/sac/backend/src/middleware"
 	"github.com/GenerateNU/sac/backend/src/services"
-	"github.com/gofiber/fiber/v2"
+	"github.com/GenerateNU/sac/backend/src/types"
 )
 
-func Auth(router fiber.Router, authService services.AuthServiceInterface, settings config.AuthSettings, authMiddleware *middleware.AuthMiddlewareService) {
-	authController := controllers.NewAuthController(authService, settings)
+func Auth(params types.RouteParams) {
+	authController := controllers.NewAuthController(services.NewAuthService(params.ServiceParams))
 
 	// api/v1/auth/*
-	auth := router.Group("/auth")
+	auth := params.Router.Group("/auth")
 
+	auth.Post("/logout", authController.Logout)
 	auth.Post("/login", authController.Login)
-	auth.Get("/logout", authController.Logout)
-	auth.Get("/refresh", authController.Refresh)
-	auth.Get("/me", authController.Me)
-	auth.Post("/update-password/:userID", authMiddleware.Limiter(2, 1*time.Minute), authMiddleware.UserAuthorizeById, authController.UpdatePassword)
-	// auth.Post("/reset-password/:userID", middleware.Skip(authMiddleware.UserAuthorizeById), authController.ResetPassword)
+	auth.Post("/refresh", authController.Refresh)
+
+	// TODO: rate limit
+	auth.Post("/send-code", authController.SendCode)
+	auth.Post("/verify-email", authController.VerifyEmail)
+
+	// TODO: rate limit
+	auth.Post("/forgot-password", authController.ForgotPassword)
+	auth.Post("/verify-reset", authController.VerifyPasswordResetToken)
 }

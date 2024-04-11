@@ -1,30 +1,45 @@
-// import { useQuery, UseQueryResult } from '@tanstack/react-query';
-// import { uuid } from '@/types/uuid';
-// import { Club } from '@/types/club';
+import { UseQueryResult, useQuery } from '@tanstack/react-query';
 
-// export const useClub = (clubID: uuid): UseQueryResult<Club, Error> => {
-//     return useQuery({
-//         queryKey: ['event', eventID],
-//         queryFn: () => {
-//             if (clubID === 'tester') {
-//                 return {
-//                     id: 'tester',
-//                     name: 'Tester Event',
-//                     preview: 'This is a preview',
-//                     content: 'This is the content',
-//                     startTime: new Date(2024, 2, 15, 18, 30),
-//                     endTime: new Date(2024, 2, 15, 20, 0),
-//                     location: 'Here',
-//                     meetingLink: 'https://foo.com',
-//                     eventType: 'open',
-//                     isRecurring: false,
-//                     createdAt: new Date(),
-//                     updatedAt: new Date(),
-//                     hosts: ['Generate', 'Generate1', 'Generate2', 'Generate3']
-//                 } as Event;
-//             } else {
-//                 return fetchEvent(eventID);
-//             }
-//         }
-//     });
-// };
+import { fetchClub, fetchClubContacts } from '@/services/club';
+import { Club } from '@/types/club';
+import { Contact } from '@/types/contact';
+import { uuid } from '@/types/uuid';
+
+export const useClub = (clubID: uuid): UseQueryResult<Club, Error> => {
+    return useQuery<Club, Error>({
+        queryKey: ['club', clubID],
+        queryFn: () => {
+            return fetchClub(clubID);
+        }
+    });
+};
+
+export const useClubContacts = (
+    clubID: uuid
+): UseQueryResult<Contact[], Error> => {
+    return useQuery<Contact[], Error>({
+        queryKey: ['club', clubID, 'contacts'],
+        queryFn: () => {
+            if (clubID.startsWith('tester')) {
+                return [
+                    {
+                        id: 'tester-email',
+                        created_at: new Date(),
+                        updated_at: new Date(),
+                        type: 'email',
+                        content: 'generatenu@gmail.com'
+                    } as Contact,
+                    {
+                        id: 'tester-slack',
+                        created_at: new Date(),
+                        updated_at: new Date(),
+                        type: 'slack',
+                        content: 'generatenu.slack.com'
+                    }
+                ];
+            } else {
+                return fetchClubContacts(clubID);
+            }
+        }
+    });
+};

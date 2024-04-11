@@ -1,19 +1,18 @@
-// import { z } from 'zod';
+import { z } from 'zod';
 
-// import { rootModelSchema } from './root';
+import { rootModelSchema } from './root';
 
-// const clubSchema = z.object({
-//     name: z.string().max(255),
-//     preview: z.string().max(255),
-//     content: z.string().max(255),
-//     startTime: z.date(),
-//     endTime: z.date(),
-//     location: z.string().max(255),
-//     meetingLink: z.string().max(255).optional(),
-//     eventType: z.enum(['open', 'membersOnly']),
-//     isRecurring: z.boolean(),
-//     hosts: z.array(z.string().max(255)).min(1)
-// });
+const clubSchema = z.object({
+    name: z.string().max(255),
+    preview: z.string().max(255),
+    description: z.string().max(255),
+    num_members: z.number(),
+    is_recruiting: z.boolean(),
+    recruitment_cycle: z.enum(['fall', 'spring', 'fallSpring', 'always']),
+    recruitment_type: z.enum(['unrestricted', 'tryout', 'application']),
+    application_link: z.string().max(255),
+    logo: z.string().max(255).optional()
+});
 
-// const Event = clubSchema.merge(rootModelSchema);
-// export type Event = z.infer<typeof Club>;
+const Club = clubSchema.merge(rootModelSchema);
+export type Club = z.infer<typeof Club>;

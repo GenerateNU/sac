@@ -59,4 +59,8 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to update event series",
 	}
+	FailedToGetEventHosts = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to get event hosts",
+	}
 )
