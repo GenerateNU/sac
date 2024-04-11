@@ -68,45 +68,49 @@ function RootLayoutNav() {
     const { isLoggedIn, login } = useAuthStore();
 
     useEffect(() => {
-        const checkLoginStatus = async () => {
-            try {
-                const accessToken = await getItemAsync('accessToken');
-                const refreshToken = await getItemAsync('refreshToken');
-                const savedUser = await getItemAsync('user');
+        router.replace("/(app)/(tabs)/")
+    }, []);
 
-                console.log('[root] accessToken:', accessToken);
-                console.log('[root] refreshToken:', refreshToken);
+    // useEffect(() => {
+    // const checkLoginStatus = async () => {
+    //     try {
+    //         const accessToken = await getItemAsync('accessToken');
+    //         const refreshToken = await getItemAsync('refreshToken');
+    //         const savedUser = await getItemAsync('user');
 
-                const user: User = savedUser ? JSON.parse(savedUser) : null;
+    //         console.log('[root] accessToken:', accessToken);
+    //         console.log('[root] refreshToken:', refreshToken);
 
-                if (accessToken && refreshToken) {
-                    // Consider adding token validation (e.g., expiration check)
-                    login({ accessToken, refreshToken }, user);
-                }
-            } catch (error) {
-                console.error(
-                    '[RootLayoutNav] Error retrieving tokens:',
-                    error
-                );
-            }
-        };
+    //         const user: User = savedUser ? JSON.parse(savedUser) : null;
 
-        checkLoginStatus();
-    }, [login]);
+    //         if (accessToken && refreshToken) {
+    //             // Consider adding token validation (e.g., expiration check)
+    //             login({ accessToken, refreshToken }, user);
+    //         }
+    //     } catch (error) {
+    //         console.error(
+    //             '[RootLayoutNav] Error retrieving tokens:',
+    //             error
+    //         );
+    //     }
+    // };
 
-    useEffect(() => {
-        if (isLoggedIn === null) {
-            router.push('/(auth)/welcome');
-            return;
-        }
+    // checkLoginStatus();
+    // }, [login]);
 
-        router.push(isLoggedIn ? '/(app)/' : '/(auth)/welcome');
-    }, [isLoggedIn]);
+    // useEffect(() => {
+    //     if (isLoggedIn === null) {
+    //         router.push('/(auth)/welcome');
+    //         return;
+    //     }
+
+    //     router.push(isLoggedIn ? '/(app)/' : '/(auth)/welcome');
+    // }, [isLoggedIn]);
 
     return (
         <QueryClientProvider client={queryClient}>
             <Stack>
-                <Stack.Screen name="(app)" options={{ headerShown: false }} />
+                <Stack.Screen name="(app)/(tabs)" options={{ headerShown: false }} />
                 <Stack.Screen name="(auth)" options={{ headerShown: false }} />
             </Stack>
         </QueryClientProvider>

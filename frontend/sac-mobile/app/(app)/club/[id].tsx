@@ -4,13 +4,14 @@ import { Button } from '@/components/button';
 
 import { useAuthStore } from '@/hooks/use-auth';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { AskAQuestionModal } from './_components/application-modal';
+import { AskAQuestionModal } from '../_components/application-modal';
 import ExpandableText from '@/components/expandable-text';
-import { AllClubTags } from './_components/all-club-tags';
-import { EBoardMembers } from './_components/all-eboard-members';
-import { FAQs } from './_components/all-faqs';
-import { SocialMediaIcons } from './_components/all-social-media';
-import { Events } from './_components/all-events';
+import { AllClubTags } from '../_components/all-club-tags';
+import { EBoardMembers } from '../_components/all-eboard-members';
+import { FAQs } from '../_components/all-faqs';
+import { SocialMediaIcons } from '../_components/all-social-media';
+import { Events } from '../_components/all-events';
+import { Link } from 'expo-router';
 
 const Club = () => {
     const { logout } = useAuthStore();
@@ -24,6 +25,8 @@ const Club = () => {
         <SafeAreaView className="bg-neutral-500 h-[100%]" edges={['top']}>
             <ScrollView className="flex-1">
                 {/* Div for the grey */}
+                <Link href={'/(app)/club/modal'}>Open Modal</Link>
+
                 <View className="pt-[40%] z-10">
                     <View className="aspect-square rounded-lg w-20 bg-card-bg absolute top-20 translate-y-14 left-10" />
                 </View>
@@ -36,9 +39,9 @@ const Club = () => {
                     <SocialMediaIcons></SocialMediaIcons>
                     <AllClubTags></AllClubTags>
                     <View>
-                        <Button variant='gray' size='screenwide' className='mb-4'>
+                        <Button variant='gray' size='screenwide' className='mb-4 flex-col justify-between'>
                             <Text className='text-black font-bold text-left'>Application Form</Text>
-                            <Text className=''>8 minutes</Text>
+                            {/* <Text className=''>8 minutes</Text> */}
                         </Button>
                     </View>
 
@@ -50,9 +53,9 @@ const Club = () => {
                             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
                         </ExpandableText>
                     </View>
-                    <Events></Events>
-                    <EBoardMembers></EBoardMembers>
-                    <FAQs></FAQs>
+                    <Events/>
+                    <EBoardMembers/>
+                    <FAQs/>
                 </View>
             </ScrollView>
             {isModalVisible && <AskAQuestionModal onClose={() => setIsModalVisible(false)} />}

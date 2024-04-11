@@ -34,11 +34,11 @@ const LoginForm = () => {
     const onSubmit = async (data: LoginFormData) => {
         try {
             loginSchema.parse(data);
-            const { user, tokens } = await loginByEmail(
-                data.email.toLowerCase(),
-                data.password
-            );
-            login(tokens, user);
+            // const { user, tokens } = await loginByEmail(
+            //     data.email.toLowerCase(),
+            //     data.password
+            // );
+            // login(tokens, user);
             router.push('/(app)/');
         } catch (e: unknown) {
             if (e instanceof ZodError) {

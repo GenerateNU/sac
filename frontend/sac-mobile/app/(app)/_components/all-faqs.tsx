@@ -1,7 +1,7 @@
 import { Button } from '@/components/button';
 import { FaqCard, FaqCardProps } from '@/components/faqCard';
 import { useFAQs } from '@/hooks/use-faqs';
-import { router } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 const FAQs = () => {
@@ -26,7 +26,7 @@ const FAQs = () => {
             <ScrollView horizontal={true} className="pb-[10%]">
                 <View className="flex-row">
                     {faqs && faqs.map((faq: FaqCardProps) => (
-                        <FaqCard key={faq.id} question={faq.question} answer={faq.answer} />
+                        <FaqCard question={faq.question} answer={faq.answer} />
                     ))}
                 </View>
             </ScrollView>

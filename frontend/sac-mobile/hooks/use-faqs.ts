@@ -28,3 +28,15 @@ export const useFAQs = (clubID: uuid): UseQueryResult<Faq[], Error> => {
         }
     });
 };
+
+export const useFAQ = (faqID: uuid): UseQueryResult<Faq, Error> => {
+    return useQuery<Faq, Error>({
+        queryKey: ['faq', faqID],
+        queryFn: async (): Promise<Faq> => {
+            return {
+                question: 'What is the purpose of the club?',
+                answer: 'The purpose of the club is to provide a platform for like-minded individuals to come together and pursue their interests in a specific field. The purpose of the club is to provide a platform for like-minded individuals to come together and pursue their interests in a specific field. The purpose of the club is to provide a platform for like-minded individuals to come together and pursue their interests in a specific field.'
+            };
+        }
+    });
+};

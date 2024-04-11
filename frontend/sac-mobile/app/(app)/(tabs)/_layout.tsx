@@ -23,14 +23,6 @@ const AppLayout = () => {
                     tabBarIcon: HomeTabBarIcon
                 }}
             />
-            <Tabs.Screen
-                name="club"
-                options={{
-                    title: 'Club',
-                    headerShown: false,
-                    tabBarIcon: ClubTabBarIcon
-                }}
-            />
         </Tabs>
     );
 };
