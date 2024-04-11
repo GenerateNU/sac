@@ -119,7 +119,7 @@ export const login = async (
 
         return { user, tokens };
     } catch (error: any) {
-        console.log('Error logging in:', (error as AxiosError).message);
+        console.log('Error logging in:', error);
         const axiosErr: AxiosError = error;
         const response = axiosErr.response;
         if (response) {

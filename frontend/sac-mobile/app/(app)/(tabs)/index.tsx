@@ -18,6 +18,7 @@ const Home = () => {
             <Text>Welcome {user?.first_name}</Text>
             <Button onPress={handleSignOut}>Sign Out</Button>
             <Link href={`/event/${1}`}>Go to Event</Link>
+            <Link href={'/search/'}>Go to Search</Link>
         </View>
     );
 };
