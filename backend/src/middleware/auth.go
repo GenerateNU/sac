@@ -63,8 +63,11 @@ func (m *AuthMiddlewareService) Authenticate(c *fiber.Ctx) error {
 		}
 	}
 
-	// TODO: maybe a better way to handle this?
-	if c.Method() == "OPTIONS" || (c.Method() == "GET" && c.Path() != "/api/v1/users/") {
+	if c.Method() == "OPTIONS" {
+		return c.Next()
+	}
+	// if a get request but not /api/v1/users/ or /api/v1/users/me
+	if c.Method() == "GET" && c.Path() != "/api/v1/users/" && c.Path() != "/api/v1/users/me" {
 		return c.Next()
 	}
 

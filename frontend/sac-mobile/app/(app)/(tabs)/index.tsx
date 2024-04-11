@@ -27,6 +27,9 @@ const Home = () => {
         <View className="items-center justify-center flex-1 gap-5">
             <Text>Welcome {user?.first_name}</Text>
             <Button onPress={handleSignOut}>Sign Out</Button>
+            {/* <Link href={"/(app)/(tabs)/event"}>
+                <Text>Event</Text>
+            </Link> */}
             {events?.map((event) => (
                 <Link
                     key={event.id}

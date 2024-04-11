@@ -17,8 +17,6 @@ const EventLayout = () => {
                     animationTypeForReplace: 'push',
                     animation: 'slide_from_right',
                     headerShown: true,
-                    headerTitle: 'Event',
-                    headerTitleAlign: 'center',
                     headerTitleStyle: {
                         color: 'white'
                     },
@@ -33,6 +31,14 @@ const EventLayout = () => {
                                     console.warn(JSON.stringify(nativeEvent));
                                 }}
                                 actions={[
+                                    {
+                                        id: 'share',
+                                        title: 'Share Event',
+                                        image: Platform.select({
+                                            ios: 'square.and.arrow.up',
+                                            android: 'share-variant'
+                                        })
+                                    },
                                     {
                                         id: 'report',
                                         title: 'Report Event',
