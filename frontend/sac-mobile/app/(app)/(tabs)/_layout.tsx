@@ -7,7 +7,7 @@ import SearchAltLight from '@/assets/icons/search-alt-light';
 import UserLight from '@/assets/icons/user-light';
 import { useAuthStore } from '@/hooks/use-auth';
 
-const AppLayout = () => {
+const Layout = () => {
     const { isLoggedIn, fetchUser } = useAuthStore();
 
     useEffect(() => {
@@ -48,9 +48,9 @@ const AppLayout = () => {
                 }}
             />
             <Tabs.Screen
-                name="explore"
+                name="search"
                 options={{
-                    title: 'Explore',
+                    title: 'Search',
                     tabBarLabel: () => {
                         return null;
                     },
@@ -74,4 +74,4 @@ const AppLayout = () => {
     );
 };
 
-export default AppLayout;
+export default Layout;
