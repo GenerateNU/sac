@@ -6,7 +6,7 @@ import { ZodError, z } from 'zod';
 
 import { Error } from '@/components/error';
 import { Input } from '@/components/input';
-import { FAQ } from '@/types/item';
+import { FAQ } from '@/types/faq';
 
 type FAQData = {
     question: string;
@@ -16,12 +16,12 @@ const FAQSchema = z.object({
     question: z.string()
 });
 
-export const FAQCard = ({ faq }: { faq: FAQ }) => {
+export const FAQHomePageCard = ({ faq }: { faq: FAQ }) => {
     const length = () => {
-        if (faq.clubName.length > 11) {
-            return faq.clubName.substring(0, 11) + '...';
+        if (faq.club_name.length > 11) {
+            return faq.club_name.substring(0, 11) + '...';
         } else {
-            return faq.clubName;
+            return faq.club_name;
         }
     };
 
@@ -49,10 +49,10 @@ export const FAQCard = ({ faq }: { faq: FAQ }) => {
     return (
         <TouchableOpacity className="bg-gray-200 rounded-2xl my-[2%] p-[5%]">
             <View className="flex-row">
-                <View className="bg-gray-300 rounded-xl w-16 h-16"></View>
+                <View className="bg-gray-300 rounded-xl w-16 h-16" />
                 <View className="ml-[5%]">
                     <Text className="text-base leading-6 font-bold ">
-                        {faq.clubName}
+                        {faq.club_name}
                     </Text>
                     <Text className="text-sm font-medium leading-5 text-gray-500">
                         Frequently Asked

@@ -14,7 +14,9 @@ const buttonVariants = {
         menu: ['text-black text-lg'],
         underline: ['border-b font-bold border-gray-600 text-lg'],
         pill: ['bg-gray-500', 'text-white', 'rounded-full'],
-        faq: ['bg-gray-300']
+        faq: ['bg-gray-300'],
+        follow: ['bg-gray-300 text-black text-md'],
+        unfollow: ['bg-gray-500 text-white text-md']
     },
     size: {
         default: 'h-10 px-4 py-2',
@@ -25,7 +27,8 @@ const buttonVariants = {
         pill: 'h-8 px-3 py-2',
         tags: 'h-12 rounded-3xl px-[5%] mr-[4%] w-fit mb-[4%]',
         menu: 'h-12 px-5',
-        faq: 'h-6 w-10'
+        faq: 'h-6 w-10',
+        follow: 'h-8 rounded-lg px-7 py-[%]'
     }
 };
 
@@ -53,7 +56,7 @@ const Button = ({ children, variant, size, ...props }: ButtonProps) => {
             <Text
                 className={cn(
                     ...(buttonVariants.variant[variant ?? 'default'] ??
-                        buttonVariants.variant['default']),
+                        buttonVariants.variant.default),
                     'text-center'
                 )}
             >

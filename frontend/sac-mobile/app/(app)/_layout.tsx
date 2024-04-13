@@ -108,6 +108,19 @@ const Layout = () => {
                     }
                 }}
             />
+            <Stack.Screen
+                name="following/index"
+                options={{
+                    title: 'Clubs Following',
+                    headerTitleStyle: {
+                        fontSize: 20
+                    },
+                    headerBackground: () => {
+                        return <View className="h-full bg-gray-100" />;
+                    },
+                    headerLeft: () => <LeftArrow />
+                }}
+            />
         </Stack>
     );
 };

@@ -10,7 +10,7 @@ import { DropdownComponent } from '@/components/dropdown';
 import { Error } from '@/components/error';
 import MultiSelectComponent from '@/components/multiselect';
 import { useAuthStore } from '@/hooks/use-auth';
-import { useUpdateUser } from '@/hooks/use-update-users';
+import { useUpdateUser } from '@/hooks/use-user';
 import { college } from '@/lib/const';
 import { graduationCycle } from '@/lib/const';
 import { major } from '@/lib/utils';

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Alert, ScrollView, Text, View } from 'react-native';
+import { Alert, FlatList, ScrollView, Text, View } from 'react-native';
 
 import { router } from 'expo-router';
 
@@ -11,7 +11,7 @@ import { Error } from '@/components/error';
 import { useAuthStore } from '@/hooks/use-auth';
 import { useCategories } from '@/hooks/use-categories';
 import { useTags } from '@/hooks/use-tags';
-import { useCreateUserTags } from '@/hooks/use-user-tags';
+import { useCreateUserTags } from '@/hooks/use-user';
 import { Category } from '@/types/category';
 import { Tag } from '@/types/tag';
 
@@ -41,10 +41,11 @@ const UserInterestsForm = () => {
     const AllCategory: Category = {
         name: 'All',
         id: '',
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        created_at: new Date(),
+        updated_at: new Date(),
         tags: tagsData?.length ? tagsData : []
     };
+    const CategoriesData = [AllCategory, ...categoriesData];
     const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
     const [buttonClicked, setButtonClicked] = useState<boolean>(false);
     const [selectedCategory, setSelectedCategory] =
@@ -91,7 +92,7 @@ const UserInterestsForm = () => {
     };
 
     const heightAdjust =
-        selectedTags.length === 0 && buttonClicked ? 'h-[46%]' : 'h-[49%]';
+        selectedTags.length === 0 && buttonClicked ? 'h-[%]' : 'h-[49%]';
 
     const Tag = ({ tag }: { tag: Tag }) => {
         return (
@@ -105,53 +106,68 @@ const UserInterestsForm = () => {
         );
     };
 
-    return (
-        <>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+    const renderCategory = ({ item }: { item: Category }) => {
+        return (
+            <View>
                 <Button
-                    onPress={() => handleCategoryPress(AllCategory)}
+                    onPress={() => handleCategoryPress(item)}
                     variant={
-                        'All' === selectedCategory.name ? 'underline' : 'menu'
+                        item.name === selectedCategory.name
+                            ? 'underline'
+                            : 'menu'
                     }
+                    key={item.id}
                     size="menu"
                 >
-                    All
+                    {item.name}
                 </Button>
-                {categoriesData &&
-                    categoriesData.map((category: Category, key) => (
-                        <View>
-                            <Button
-                                onPress={() => handleCategoryPress(category)}
-                                variant={
-                                    category.name === selectedCategory.name
-                                        ? 'underline'
-                                        : 'menu'
-                                }
-                                key={key}
-                                size="menu"
-                            >
-                                {category.name}
-                            </Button>
-                        </View>
-                    ))}
-            </ScrollView>
+            </View>
+        );
+    };
 
-            <Text className="text-lg pb-[6%] pt-[5%]">Select one or more</Text>
-            <ScrollView className={heightAdjust}>
-                <View className="flex-row flex-wrap">
-                    {selectedCategory.name === AllCategory.name
-                        ? AllCategory.tags.map((tag, key) => (
-                              <Tag tag={tag} key={key} />
-                          ))
-                        : tagsData &&
-                          tagsData
-                              .filter(
-                                  (tag) =>
-                                      selectedCategory.id === tag.category_id
-                              )
-                              .map((tag, key) => <Tag tag={tag} key={key} />)}
-                </View>
-            </ScrollView>
+    const renderTag = ({ item }: { item: Tag }) => {
+        return (
+            <View className="m-1">
+                <Tag tag={item} key={item.id} />
+            </View>
+        );
+    };
+
+    return (
+        <>
+            <FlatList
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                data={CategoriesData}
+                renderItem={renderCategory}
+                keyExtractor={(item) => item.id.toString()}
+            />
+            <Text className="text-lg pb-[6%] pt-[3%]">Select one or more</Text>
+            <View className={heightAdjust}>
+                {selectedCategory.name === AllCategory.name ? (
+                    <FlatList
+                        data={AllCategory.tags}
+                        renderItem={renderTag}
+                        keyExtractor={(item) => item.id.toString()}
+                        contentContainerStyle={{
+                            flexDirection: 'row',
+                            flexWrap: 'wrap'
+                        }}
+                    />
+                ) : (
+                    <FlatList
+                        data={tagsData.filter(
+                            (tag) => selectedCategory.id === tag.category_id
+                        )}
+                        renderItem={renderTag}
+                        keyExtractor={(item) => item.id.toString()}
+                        contentContainerStyle={{
+                            flexDirection: 'row',
+                            flexWrap: 'wrap'
+                        }}
+                    />
+                )}
+            </View>
             {selectedTags.length === 0 && buttonClicked && (
                 <View className="pt-[2%]">
                     <Error message="Please choose at least one interest" />

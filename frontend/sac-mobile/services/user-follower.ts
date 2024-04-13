@@ -11,3 +11,27 @@ export const GetUserFollowing = async (userId: string): Promise<Club[]> => {
         throw new Error('Error fetching followed clubs');
     }
 };
+
+export const CreateUserFollowing = async (
+    userId: string,
+    clubId: string
+): Promise<void> => {
+    try {
+        await api.post(`/users/${userId}/follower/${clubId}`);
+    } catch (error) {
+        console.log('Error following clubs');
+        throw new Error('Error following clubs');
+    }
+};
+
+export const DeleteUserFollowing = async (
+    userId: string,
+    clubId: string
+): Promise<void> => {
+    try {
+        await api.delete(`/users/${userId}/follower/${clubId}`);
+    } catch (error) {
+        console.log('Error unfollowing clubs');
+        throw new Error('Error unfollowing clubs');
+    }
+};
