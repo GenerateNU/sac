@@ -18,26 +18,40 @@ const eventSchemaIntermediate = z.object({
   meeting_link: z.string().max(255).optional(),
   event_type: z.enum(["open", "membersOnly"]),
   is_recurring: z.boolean(),
-  // hosts: z.array(z.string().max(255)).min(1)
 });
+// hosts: z.array(z.string().max(255)).min(1)
 
 export const eventSchema = eventSchemaIntermediate.merge(rootModelSchema);
-export type Event = z.infer<typeof eventSchema>;
+export type TEvent = z.infer<typeof eventSchema>;
+export interface IEvent {
+  name: string;
+  preview: string;
+  content: string;
+  start_time: Date;
+  end_time: Date;
+  location: string;
+  meeting_link?: string;
+  event_type: "open" | "membersOnly";
+  is_recurring: boolean;
+  id: string;
+  created_at: Date;
+  updated_at: Date;
+}
 
 export const eventsApi = createApi({
   reducerPath: "eventsApi",
   baseQuery: fetchBaseQuery({ baseUrl: API_BASE_URL }),
   endpoints: (builder) => ({
-    eventByID: builder.query<Event, uuid>({
-      query: (eventID) => `events/${eventID}`,
+    eventByID: builder.query<IEvent, uuid>({
+      query: (eventID: uuid) => `events/${eventID}`,
     }),
     eventHostsByEventID: builder.query<Club[], uuid>({
-      query: (eventID) => `events/${eventID}/hosts`,
+      query: (eventID: uuid) => `events/${eventID}/hosts`,
     }),
     eventTagsByEventID: builder.query<Tag[], uuid>({
-      query: (eventID) => `events/${eventID}/tags`,
+      query: (eventID: uuid) => `events/${eventID}/tags`,
     }),
-    events: builder.query<Event[], void>({
+    events: builder.query<IEvent[], void>({
       query: () => "events",
     }),
   }),

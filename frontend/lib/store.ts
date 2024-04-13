@@ -1,9 +1,8 @@
 import { clubsApi } from "@/api/club";
+import { eventsApi } from "@/api/event";
+import { usersApi } from "@/api/user";
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
-
-import { eventsApi } from "./api/event";
-import { usersApi } from "./api/user";
 
 export const store = configureStore({
   reducer: {
@@ -13,14 +12,13 @@ export const store = configureStore({
   },
 
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(
-      usersApi.middleware,
-      clubsApi.middleware,
-      eventsApi.middleware
-    ),
+    getDefaultMiddleware()
+      .concat(usersApi.middleware)
+      .concat(clubsApi.middleware)
+      .concat(eventsApi.middleware),
 });
 
-setupListeners(store.dispatch);
+// setupListeners(store.dispatch);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

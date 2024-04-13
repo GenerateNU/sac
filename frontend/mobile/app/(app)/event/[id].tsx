@@ -1,9 +1,9 @@
 import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
 
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack } from 'expo-router';
 
-import { useGetEventQuery } from '@sac/lib/api/event';
+import { useEventByIDQuery } from '@sac/lib/api/event';
 
 import { AllHosts } from '@/app/(app)/event/_components/all-hosts';
 import { TagList } from '@/components/all-tags';
@@ -20,10 +20,10 @@ import { LocationView } from './_components/location-view';
 
 // TODO: handle link OR location
 const EventPage = () => {
-    const { id } = useLocalSearchParams<{ id: string }>();
+    // const { id: eventID } = useLocalSearchParams<{ id: uuid }>();
     const { user } = useAuthStore();
 
-    const { data: event, error, isLoading } = useGetEventQuery(id);
+    const { data: event, error, isLoading } = useEventByIDQuery('eventID');
 
     if (error) {
         console.error(error);

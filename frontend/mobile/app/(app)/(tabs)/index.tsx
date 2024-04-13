@@ -5,25 +5,25 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link } from 'expo-router';
 
 import { Club } from '@sac/lib/api/club';
-import { Event } from '@sac/lib/api/event';
+import { TEvent, useEventsQuery } from '@sac/lib/api/event';
 
 import { clubs } from '@/data/clubs';
 import { useAuthStore } from '@/hooks/use-auth';
-import { useEvents } from '@/hooks/use-event';
 
 const Home = () => {
     const { user } = useAuthStore();
-    const { data: events, isLoading, error } = useEvents();
+    const { data: events, isLoading, error } = useEventsQuery();
 
     if (isLoading) {
         return <Text>Loading...</Text>;
     }
 
     if (error) {
-        return <Text>Error: {error.message}</Text>;
+        console.error(error);
+        return <Text>Error</Text>;
     }
 
-    const renderEvent = ({ item: event }: { item: Event }) => (
+    const renderEvent = ({ item: event }: { item: TEvent }) => (
         <Link
             className="mt-10 mr-3"
             key={event.id}

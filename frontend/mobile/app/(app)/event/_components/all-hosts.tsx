@@ -1,18 +1,24 @@
 import { FlatList, Text } from 'react-native';
 
+import { useEventHostsByEventIDQuery } from '@sac/lib/api/event';
+import { uuid } from '@sac/lib/types/uuid';
+
 import { ClubCard } from '@/components/club-card';
-import { useEventHosts } from '@/hooks/use-event';
-import { uuid } from '@/types/uuid';
 
 const AllHosts = ({ eventID }: { eventID: uuid }) => {
-    const { data: hosts, error, isLoading } = useEventHosts(eventID);
+    const {
+        data: hosts,
+        error,
+        isLoading
+    } = useEventHostsByEventIDQuery(eventID);
 
     if (isLoading) {
         return <Text>Loading...</Text>;
     }
 
     if (error) {
-        return <Text>Error: {error.message}</Text>;
+        console.error(error);
+        return <Text>Error</Text>;
     }
 
     if (!hosts || hosts.length === 0) {

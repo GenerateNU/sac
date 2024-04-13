@@ -26,10 +26,13 @@ export const clubsApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: API_BASE_URL }),
   endpoints: (builder) => ({
     clubByID: builder.query<Club, uuid>({
-      query: (clubID) => `clubs/${clubID}`,
+      query: (clubID: uuid) => `clubs/${clubID}`,
+      transformResponse: (rawResponse: unknown) => {
+        return clubSchema.parse(rawResponse);
+      },
     }),
     clubContactsByClubID: builder.query<Contact[], uuid>({
-      query: (clubID) => `clubs/${clubID}/contacts`,
+      query: (clubID: uuid) => `clubs/${clubID}/contacts`,
     }),
   }),
 });
