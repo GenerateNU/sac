@@ -3,12 +3,12 @@ name: Web CodeQL
 on:
   push:
     paths:
-      - "frontend/sac-web/**"
+      - "frontend/web/**"
       - ".github/workflows/mweb_codeql.yml"
   pull_request:
     types: [opened]
     paths:
-      - "frontend/sac-web/**"
+      - "frontend/web/**"
       - ".github/workflows/web_codeql.yml"
 
 concurrency:
@@ -34,7 +34,7 @@ jobs:
       - name: Autobuild
         uses: github/codeql-action/autobuild@v3
         with:
-          working-directory: frontend/sac-web
+          working-directory: frontend/web
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
