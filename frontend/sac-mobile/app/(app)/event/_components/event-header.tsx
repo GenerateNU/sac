@@ -1,10 +1,21 @@
-import { Platform, View } from 'react-native';
+import { Platform, TextInput, View, Text } from 'react-native';
 
 import { MenuView } from '@react-native-menu/menu';
 
 import { Button } from '@/components/button';
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import { useRef, useCallback, forwardRef } from 'react';
 
-const EventHeader = () => {
+type Ref = BottomSheet;
+
+const EventHeader = forwardRef<Ref>((_, ref) => {
+
+    if (!ref) {
+        return null;
+    }
+
+    const handleOpenPress = () => ref.current?.snapToIndex(0);
+
     return (
         <View className="flex-row items-center justify-between -translate-y-10">
             <View className="w-24 h-24 bg-gray-300 rounded-xl" />
@@ -51,9 +62,18 @@ const EventHeader = () => {
                         RSVP
                     </Button>
                 </MenuView>
+
+                <Button
+                    size={'default'}
+                    variant={'default'}
+                    className="w-18"
+                    onPress={handleOpenPress}
+                >
+                    Save
+                </Button>
             </View>
         </View>
     );
-};
+});
 
 export { EventHeader };

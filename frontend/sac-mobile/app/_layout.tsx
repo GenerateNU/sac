@@ -11,6 +11,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { useAuthStore } from '@/hooks/use-auth';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export {
     // Catch any errors thrown by the Layout component.
@@ -91,8 +92,10 @@ const RootLayout = () => {
 
     return (
         <QueryClientProvider client={queryClient}>
-            <StatusBar style="light" />
-            <InitalLayout />
+            <GestureHandlerRootView style={{ flex: 1 }}>
+                <StatusBar style="light" />
+                <InitalLayout />
+            </GestureHandlerRootView>
         </QueryClientProvider>
     );
 };

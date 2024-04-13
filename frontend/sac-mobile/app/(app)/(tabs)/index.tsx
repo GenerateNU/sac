@@ -9,10 +9,12 @@ import { useAuthStore } from '@/hooks/use-auth';
 import { useEvents } from '@/hooks/use-event';
 import { Club } from '@/types/club';
 import { Event } from '@/types/event';
+import { useClubs } from '@/hooks/use-club';
 
 const Home = () => {
     const { user } = useAuthStore();
     const { data: events, isLoading, error } = useEvents();
+    const { data: clubs } = useClubs();
 
     if (isLoading) {
         return <Text>Loading...</Text>;
@@ -61,6 +63,7 @@ const Home = () => {
                 numColumns={5}
                 data={clubs}
                 renderItem={renderClub}
+
                 keyExtractor={(item) => item.id.toString()}
             />
         </SafeAreaView>

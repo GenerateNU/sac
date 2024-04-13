@@ -1,10 +1,11 @@
 import React from 'react';
-import { Image, Linking, Text, TouchableOpacity, View } from 'react-native';
+import { Linking, Text, TouchableOpacity, View } from 'react-native';
 import { createOpenLink } from 'react-native-open-maps';
 
 import { useAssets } from 'expo-asset';
 
 import { Button } from '@/components/button';
+import MapView from 'react-native-maps';
 
 type LocationViewProps = {
     location: string;
@@ -52,13 +53,11 @@ const LocationView = ({ location, meetingLink }: LocationViewProps) => {
             )}
 
             <View className="w-full mt-4 overflow-hidden border-2 rounded-xl border-zinc-300">
-                {assets ? (
-                    <Image
-                        source={{ uri: assets[0].uri }}
-                        style={{ width: '100%', height: assets[0].height }}
-                        className="rounded-[22px]"
-                    />
-                ) : null}
+                <MapView
+                    onPress={openMap}
+                    style={{ width: '100%', height: 200 }}
+                    initialRegion={{ ...coordinates, latitudeDelta: 0.0922, longitudeDelta: 0.0421 }}
+                />
             </View>
         </>
     );

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 
 import { Stack, useLocalSearchParams } from 'expo-router';
@@ -16,13 +16,16 @@ import { EventLocation } from './_components/event-location';
 import { EventTime } from './_components/event-time';
 import { HostNames } from './_components/host-names';
 import { LocationView } from './_components/location-view';
+import RSVPBottomSheet from './_components/rsvp-bottom-sheet';
+import BottomSheet from '@gorhom/bottom-sheet';
 
 // TODO: handle link OR location
 const EventPage = () => {
     const { id } = useLocalSearchParams<{ id: string }>();
-    const { user } = useAuthStore();
 
     const { data: event, isLoading, error } = useEvent(id);
+
+    const ref = useRef<BottomSheet>(null);
 
     if (error) {
         console.error(error);
@@ -41,14 +44,12 @@ const EventPage = () => {
 
     return (
         <>
-            <Stack.Screen
-                options={{ title: `${event.name} - ${user?.first_name}` }}
-            />
+            <Stack.Screen options={{ title: `${event.name}` }} />
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View className="flex-col justify-between flex-1 w-full">
                     <View className="w-full bg-gray-600 h-[100]" />
                     <View className="w-full px-6 pb-5">
-                        <EventHeader />
+                        <EventHeader ref={ref} />
                         <View className="flex gap-y-2">
                             <Title title={event.name} />
                             <HostNames eventID={event.id} />
@@ -84,6 +85,7 @@ const EventPage = () => {
                     </View>
                 </View>
             </ScrollView>
+            <RSVPBottomSheet ref={ref} />
         </>
     );
 };

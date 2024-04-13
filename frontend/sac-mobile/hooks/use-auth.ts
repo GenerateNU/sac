@@ -6,21 +6,21 @@ import { getCurrentUser } from '@/services/user';
 import { Tokens } from '@/types/auth';
 import { User } from '@/types/user';
 
-export type UserSignUp = {
+type UserSignUp = {
     first_name: string;
     last_name: string;
     email: string;
     password: string;
 };
 
-export type AuthStoreState = {
+type AuthStoreState = {
     user: User | null;
     isLoggedIn: boolean | null;
     isVerified: boolean | null;
     tokens: Tokens | null;
 };
 
-export type AuthStoreActions = {
+type AuthStoreActions = {
     fetchUser: () => void;
     fetchCache: () => Promise<void>;
     setTokens: (tokens: Tokens) => void;
@@ -30,7 +30,7 @@ export type AuthStoreActions = {
     signOut: () => void;
 };
 
-export const useAuthStore = create<AuthStoreState & AuthStoreActions>(
+const useAuthStore = create<AuthStoreState & AuthStoreActions>(
     (set) => ({
         user: null,
         isLoggedIn: null,
@@ -100,3 +100,10 @@ export const useAuthStore = create<AuthStoreState & AuthStoreActions>(
         }
     })
 );
+
+export {
+    UserSignUp,
+    AuthStoreState,
+    AuthStoreActions,
+    useAuthStore
+}
