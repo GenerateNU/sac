@@ -6,15 +6,25 @@ import { Svg } from "react-native-svg";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const PLACEHOLDERS = [
-    "uh",
-    "uhhhh",
-    "ummmmmmm",
-    "idk"
+    "Marketing clubs",
+    "Business clubs",
+    "Professional clubs",
+    "Volunteering",
+    "Climate change",
+    "Knitting",
+    "Club sports",
+    "Ultimate frisbee",
+    "Finance",
+    "Investment banking",
+    "Product design",
+    "Electrical & comp engineering",
+    "Clubs for cs freshmen"
 ];
 
 export interface SearchBarProps extends ViewProps {
-    onSearchBarGainFocus?: () => void,
-    onSearchBarLoseFocus?: (text: string) => void,
+    onGainFocus?: () => void,
+    onTextChange?: (text: string) => void,
+    onLoseFocus?: (text: string) => void,
     focused: boolean
 }
 
@@ -31,6 +41,12 @@ export const SearchBar = (p: SearchBarProps) => {
 
     const [text, onChangeText] = useState("");
     const textInputRef: React.Ref<TextInput> = useRef(null);
+
+    useEffect(() => {
+        if (p.onTextChange) {
+            p.onTextChange(text);
+        }
+    }, [text]);
 
     if (p.focused) {
         textInputRef.current?.focus();
@@ -65,13 +81,13 @@ export const SearchBar = (p: SearchBarProps) => {
                     className={"ml-2 h-8 flex-grow"}
                     multiline={false}
                     onBlur={(e: any) => {
-                        if (p.onSearchBarLoseFocus) {
-                            p.onSearchBarLoseFocus(text);
+                        if (p.onLoseFocus) {
+                            p.onLoseFocus(text);
                         }
                     }}
                     onFocus={(e: any) => {
-                        if (p.onSearchBarGainFocus) {
-                            p.onSearchBarGainFocus()
+                        if (p.onGainFocus) {
+                            p.onGainFocus()
                         }
                     }}
                     placeholder={PLACEHOLDERS[placeholderIdx]}

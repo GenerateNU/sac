@@ -93,8 +93,8 @@ const RootLayout = () => {
     return (
         <QueryClientProvider client={queryClient}>
             <StatusBar style="light" />
-            <SearchPage />
-            {/* <InitalLayout /> */}
+            {/* <SearchPage /> */}
+            <InitalLayout />
         </QueryClientProvider>
     );
 };

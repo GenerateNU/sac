@@ -8,6 +8,8 @@ import { Button } from '@/components/button';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import { queryClubs } from '@/services/club';
+import { Club } from '@/types/club';
 
 const SearchPageStyles = StyleSheet.create({
     // Because the bottom view's top border is rounded, we do these two styles to ensure that there's no gap in the space
@@ -25,10 +27,27 @@ const SearchPage = () => {
     const [searchBarFocused, setSearchBarFocused] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
 
+    const [clubs, setClubs] = useState<Club[]>([]);
+    
     useEffect(() => {
         if (searchQuery == "") { return; }
-        console.log(`We are going to do search logic here! ${searchQuery}`)
+        
+        queryClubs(searchQuery).then((clubs) => {
+            setClubs(clubs)
+        }).catch((x) => {
+            console.log(":(")
+        })
     }, [searchQuery])
+
+    const bottomView = clubs.length == 0 ? (
+        <Text>Loading...</Text>
+    ) : (
+        <ScrollView className="w-full px-[3%] flex flex-col" onScroll={(evt) => {setSearchBarFocused(false)}}>
+            {clubs.map((val, ind, array) => {
+                return <ClubCard className="mb-4" club={val}/>
+            })}
+        </ScrollView>
+    );
 
     return (
         <SafeAreaView className="bg-red-500 w-full h-full">
@@ -39,8 +58,8 @@ const SearchPage = () => {
                 {/* Overlay for image background */}
                 <LinearGradient colors={["rgba(0,0,0,0.25)", "rgba(0,0,0,0.7)"]} className="w-full h-full absolute left-0 top-0 bottom-0 right-0"></LinearGradient>
             </View>
-            <View className="z-10 w-full bg-white rounded-t-3xl" style={SearchPageStyles.bottomView}>
-                <View className="flex flex-row w-full px-[5%] h-12 mt-[-24px]">
+            <View className="z-10 w-full bg-white rounded-t-3xl flex flex-col items-center" style={SearchPageStyles.bottomView}>
+                <View className="flex flex-row w-full h-12 mt-[-24px] px-[5%]">
                     <Button
                         onPress={() => {
                             console.log('Back Button Pressed');
@@ -48,8 +67,7 @@ const SearchPage = () => {
                         }}
                         size={'icon'}
                         variant={'icon'}
-                        className="flex items-center justify-center bg-[#C8102E] rounded-full"
-                    >
+                        className="flex items-center justify-center bg-[#C8102E] rounded-full">
                         <MaterialCommunityIcons
                             name="chevron-left"
                             size={32}
@@ -58,101 +76,22 @@ const SearchPage = () => {
                     </Button>
                     <SearchBar 
                         className='ml-3 flex-grow'
-                        onSearchBarGainFocus={() => {
+                        onGainFocus={() => {
                             setSearchBarFocused(true);
                         }}
-                        onSearchBarLoseFocus={() => {
+                        onLoseFocus={() => {
                             setSearchBarFocused(false);
+                        }}
+                        onTextChange={(text) => {
+                            setSearchQuery(text);
                         }}
                         focused={searchBarFocused}/>
                 </View>
+                { bottomView }
             </View>
-        </SafeAreaView>
-    )
-    // return (
-    //     <SafeAreaView className="px-6 flex flex-col w-full h-full pt-2" style={notchPadding.padding}>
-    //         <SearchBar onSearchBarLoseFocus={(text: string) => {
-    //             setSearchQuery(text)
-    //         }}/>
-    //         <ScrollView className='mt-6 flex flex-col' showsVerticalScrollIndicator={false}>
-    //             <ClubCard club={{
-    //                 id: "cfc85717-4f51-43e7-aa4d-06f3ce748cb9",
-    //                 created_at: new Date(),
-    //                 updated_at: new Date(),
-    //                 name: "Generate",
-    //                 preview: "alright ig",
-    //                 description: "im goated icl",
-    //                 numMembers: 250,
-    //                 isRecruiting: false,
-    //                 recruitmentCycle: 'fall',
-    //                 recruitmentType: 'unrestricted',
-    //                 applicationLink: "https://google.com",
-    //                 logo: "Logo.png"   
-    //             }}/>
-    //             <View className="bg-transparent w-full h-4" />
-    //             <ClubCard club={{
-    //                 id: "cfc85717-4f51-43e7-aa4d-06f3ce748cb9",
-    //                 created_at: new Date(),
-    //                 updated_at: new Date(),
-    //                 name: "Generate",
-    //                 preview: "alright ig",
-    //                 description: "im goated icl",
-    //                 numMembers: 250,
-    //                 isRecruiting: false,
-    //                 recruitmentCycle: 'fall',
-    //                 recruitmentType: 'unrestricted',
-    //                 applicationLink: "https://google.com",
-    //                 logo: "Logo.png"   
-    //             }}/>
-    //             <View className="bg-transparent w-full h-4" />
-    //             <ClubCard club={{
-    //                 id: "cfc85717-4f51-43e7-aa4d-06f3ce748cb9",
-    //                 created_at: new Date(),
-    //                 updated_at: new Date(),
-    //                 name: "Generate",
-    //                 preview: "alright ig",
-    //                 description: "im goated icl",
-    //                 numMembers: 250,
-    //                 isRecruiting: false,
-    //                 recruitmentCycle: 'fall',
-    //                 recruitmentType: 'unrestricted',
-    //                 applicationLink: "https://google.com",
-    //                 logo: "Logo.png"   
-    //             }}/>
-    //             <View className="bg-transparent w-full h-4" />
-    //             <ClubCard club={{
-    //                 id: "cfc85717-4f51-43e7-aa4d-06f3ce748cb9",
-    //                 created_at: new Date(),
-    //                 updated_at: new Date(),
-    //                 name: "Generate",
-    //                 preview: "alright ig",
-    //                 description: "im goated icl",
-    //                 numMembers: 250,
-    //                 isRecruiting: false,
-    //                 recruitmentCycle: 'fall',
-    //                 recruitmentType: 'unrestricted',
-    //                 applicationLink: "https://google.com",
-    //                 logo: "Logo.png"   
-    //             }}/>
-    //             <View className="bg-transparent w-full h-4" />
-    //             <ClubCard club={{
-    //                 id: "cfc85717-4f51-43e7-aa4d-06f3ce748cb9",
-    //                 created_at: new Date(),
-    //                 updated_at: new Date(),
-    //                 name: "Generate",
-    //                 preview: "alright ig",
-    //                 description: "im goated icl",
-    //                 numMembers: 250,
-    //                 isRecruiting: false,
-    //                 recruitmentCycle: 'fall',
-    //                 recruitmentType: 'unrestricted',
-    //                 applicationLink: "https://google.com",
-    //                 logo: "Logo.png"   
-    //             }}/>
-    //         </ScrollView>
             
-    //     </SafeAreaView>
-    // );
+        </SafeAreaView>
+    );
 };
 
 export default SearchPage;

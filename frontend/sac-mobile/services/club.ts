@@ -40,3 +40,25 @@ export const fetchClubContacts = async (clubID: uuid): Promise<Contact[]> => {
             throw new Error('Error fetching contacts');
         });
 };
+
+/**
+ * Fetch clubs according to a search query.
+ * 
+ * @param clubParams The parameters you'd like to search with.
+ * @returns A Promise that resolves to the fetched clubs or rejects with an error
+ * @throws Error if the clubs cannot be fetched
+ * @see Club
+ * @see Club[]
+ */
+// TODO: deal with pagination + deal with other params
+export const queryClubs = async (queryString: string): Promise<Club[]> => {
+    return api
+        .get(`/clubs/`, {
+            params: { search: queryString }
+        })
+        .then((response) => response.data as Club[])
+        .catch((error) => {
+            console.error(error);
+            throw new Error('Error querying clubs');
+        });
+}
