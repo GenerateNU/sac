@@ -12,7 +12,7 @@ const useClubs = (): UseQueryResult<Club[], Error> => {
             return fetchClubs();
         }
     });
-}
+};
 
 const useClub = (clubID: uuid): UseQueryResult<Club, Error> => {
     return useQuery<Club, Error>({
@@ -23,9 +23,7 @@ const useClub = (clubID: uuid): UseQueryResult<Club, Error> => {
     });
 };
 
-const useClubContacts = (
-    clubID: uuid
-): UseQueryResult<Contact[], Error> => {
+const useClubContacts = (clubID: uuid): UseQueryResult<Contact[], Error> => {
     return useQuery<Contact[], Error>({
         queryKey: ['club', clubID, 'contacts'],
         queryFn: () => {
@@ -53,9 +51,4 @@ const useClubContacts = (
     });
 };
 
-
-export {
-    useClub,
-    useClubs,
-    useClubContacts
-}
+export { useClub, useClubs, useClubContacts };

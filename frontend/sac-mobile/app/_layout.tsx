@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 import { useFonts } from 'expo-font';
@@ -11,7 +12,6 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { useAuthStore } from '@/hooks/use-auth';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export {
     // Catch any errors thrown by the Layout component.

@@ -1,19 +1,19 @@
-import { Platform, TextInput, View, Text } from 'react-native';
+import { forwardRef } from 'react';
+import { Platform, View } from 'react-native';
 
+import BottomSheet from '@gorhom/bottom-sheet';
 import { MenuView } from '@react-native-menu/menu';
 
 import { Button } from '@/components/button';
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
-import { useRef, useCallback, forwardRef } from 'react';
 
 type Ref = BottomSheet;
 
 const EventHeader = forwardRef<Ref>((_, ref) => {
-
     if (!ref) {
         return null;
     }
 
+    // @ts-ignore
     const handleOpenPress = () => ref.current?.snapToIndex(0);
 
     return (

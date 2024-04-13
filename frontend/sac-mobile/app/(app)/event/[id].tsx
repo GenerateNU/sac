@@ -3,11 +3,13 @@ import { ScrollView, Text, View } from 'react-native';
 
 import { Stack, useLocalSearchParams } from 'expo-router';
 
+import BottomSheet from '@gorhom/bottom-sheet';
+
 import { AllHosts } from '@/app/(app)/event/_components/all-hosts';
 import { TagList } from '@/components/all-tags';
 import { Button } from '@/components/button';
-import { Title } from '@/components/title';
 import { Description } from '@/components/description';
+import { Title } from '@/components/title';
 import { useEvent } from '@/hooks/use-event';
 
 import { EventHeader } from './_components/event-header';
@@ -16,7 +18,6 @@ import { EventTime } from './_components/event-time';
 import { HostNames } from './_components/host-names';
 import { LocationView } from './_components/location-view';
 import RSVPBottomSheet from './_components/rsvp-bottom-sheet';
-import BottomSheet from '@gorhom/bottom-sheet';
 
 // TODO: handle link OR location
 const EventPage = () => {

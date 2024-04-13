@@ -1,8 +1,9 @@
 import { Text } from 'react-native';
 
+import { router } from 'expo-router';
+
 import { Button } from '@/components/button';
 import { Tag as T } from '@/types/tag';
-import { router } from 'expo-router';
 
 type TagProps = {
     tag: T;

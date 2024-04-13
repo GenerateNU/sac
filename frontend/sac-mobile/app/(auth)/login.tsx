@@ -2,17 +2,12 @@ import React from 'react';
 import { KeyboardAvoidingView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Wordmark } from '@/components/wordmark';
-
 import { LoginForm } from './_components/login-form';
 
 const Login = () => {
     return (
         <SafeAreaView className="bg-neutral-500 h-[100%]" edges={['top']}>
-            <KeyboardAvoidingView
-                behavior={'padding'}
-                className="flex-1"
-            >
+            <KeyboardAvoidingView behavior={'padding'} className="flex-1">
                 <View className="px-[8%] pb-[8%]">
                     <View className="pt-[2%] pb-[1%]">
                         <Text className="text-5xl font-bold text-white">

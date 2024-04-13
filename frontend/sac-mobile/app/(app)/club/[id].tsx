@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { Text, View } from 'react-native';
 
-import { Link, Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
+
 import { useClub } from '@/hooks/use-club';
 
 const ClubPage = () => {
@@ -24,7 +25,7 @@ const ClubPage = () => {
     return (
         <>
             <Stack.Screen options={{ title: `${club.name}` }} />
-            <View className='flex items-center justify-center flex-1'>
+            <View className="flex items-center justify-center flex-1">
                 <Text>{club.name}</Text>
                 <Text>{club.recruitment_cycle}</Text>
                 <Text>{club.application_link}</Text>

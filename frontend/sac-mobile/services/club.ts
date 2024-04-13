@@ -20,7 +20,7 @@ const fetchClubs = async (): Promise<Club[]> => {
             console.error(error);
             throw new Error('Error fetching clubs');
         });
-}
+};
 
 /**
  * Fetches a club by its ID.

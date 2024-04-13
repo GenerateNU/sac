@@ -61,7 +61,6 @@ const Home = () => {
                 numColumns={5}
                 data={clubs}
                 renderItem={renderClub}
-
                 keyExtractor={(item) => item.id.toString()}
             />
         </SafeAreaView>

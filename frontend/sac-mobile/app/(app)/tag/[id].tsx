@@ -1,12 +1,12 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import React from 'react';
+import { Text, View } from 'react-native';
 
 const TagPage = () => {
     return (
         <View>
             <Text>TagPage</Text>
         </View>
-    )
-}
+    );
+};
 
-export default TagPage
+export default TagPage;

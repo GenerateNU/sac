@@ -47,9 +47,4 @@ const useEventHosts = (eventID: uuid): UseQueryResult<Club[], Error> => {
     });
 };
 
-export {
-    useEvent,
-    useEvents,
-    useEventTags,
-    useEventHosts
-};
+export { useEvent, useEvents, useEventTags, useEventHosts };

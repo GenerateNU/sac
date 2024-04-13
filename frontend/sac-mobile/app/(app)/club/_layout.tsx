@@ -6,7 +6,10 @@ const Layout = () => {
     return (
         <Stack>
             <Stack.Screen name="[id]" options={{ headerShown: false }} />
-            <Stack.Screen name="faq/[id]" options={{ headerShown: false, presentation: 'modal' }} />
+            <Stack.Screen
+                name="faq/[id]"
+                options={{ headerShown: false, presentation: 'modal' }}
+            />
         </Stack>
     );
 };

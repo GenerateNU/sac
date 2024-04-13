@@ -76,7 +76,6 @@ const ClubDotsVertical = () => {
     );
 };
 
-
 const Layout = () => {
     return (
         <Stack>

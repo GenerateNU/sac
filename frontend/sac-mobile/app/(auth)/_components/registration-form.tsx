@@ -168,7 +168,7 @@ const RegistrationForm = () => {
                         <Input
                             title="Password"
                             autoCorrect={false}
-                            autoComplete='password'
+                            autoComplete="password"
                             placeholder="Password"
                             onChangeText={onChange}
                             value={value}
@@ -219,7 +219,7 @@ const RegistrationForm = () => {
                         <Input
                             title="Password Confirmation"
                             autoCorrect={false}
-                            autoComplete='password'
+                            autoComplete="password"
                             placeholder="Confirm your password"
                             onChangeText={onChange}
                             value={value}

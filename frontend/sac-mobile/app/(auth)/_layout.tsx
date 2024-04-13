@@ -1,9 +1,10 @@
 import React from 'react';
+import { View } from 'react-native';
 
 import { Stack, router } from 'expo-router';
-import { Wordmark } from '@/components/wordmark';
+
 import { Button } from '@/components/button';
-import { View } from 'react-native';
+import { Wordmark } from '@/components/wordmark';
 
 const Layout = () => {
     return (
@@ -24,9 +25,11 @@ const Layout = () => {
                     title: '',
                     headerShown: true,
                     headerLeft: () => <Wordmark />,
-                    headerBackground: () => <View className="h-full bg-neutral-500" />,
+                    headerBackground: () => (
+                        <View className="h-full bg-neutral-500" />
+                    ),
                     animationTypeForReplace: 'push',
-                    animation: 'slide_from_right',
+                    animation: 'slide_from_right'
                 }}
             />
             <Stack.Screen
@@ -35,20 +38,23 @@ const Layout = () => {
                     title: '',
                     headerShown: true,
                     headerLeft: () => <Wordmark />,
-                    headerRight: () => <Button variant={'secondary'} onPress={() => router.replace('/login')}>Login</Button>,
-                    headerBackground: () => <View className="h-full bg-neutral-500" />,
+                    headerRight: () => (
+                        <Button
+                            variant={'secondary'}
+                            onPress={() => router.replace('/login')}
+                        >
+                            Login
+                        </Button>
+                    ),
+                    headerBackground: () => (
+                        <View className="h-full bg-neutral-500" />
+                    ),
                     animationTypeForReplace: 'pop',
-                    animation: 'slide_from_left',
+                    animation: 'slide_from_left'
                 }}
             />
-            <Stack.Screen
-                name="verification"
-                options={{ headerShown: true }}
-            />
-            <Stack.Screen
-                name="user-details"
-                options={{ headerShown: true }}
-            />
+            <Stack.Screen name="verification" options={{ headerShown: true }} />
+            <Stack.Screen name="user-details" options={{ headerShown: true }} />
         </Stack>
     );
 };
