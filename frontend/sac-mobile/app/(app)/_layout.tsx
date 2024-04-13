@@ -8,6 +8,75 @@ import { MenuView } from '@react-native-menu/menu';
 
 import { LeftArrow } from '@/components/left-arrow';
 
+const EventDotsVertical = () => {
+    return (
+        <MenuView
+            onPressAction={({ nativeEvent }) => {
+                console.warn(JSON.stringify(nativeEvent));
+            }}
+            actions={[
+                {
+                    id: 'share',
+                    title: 'Share Event',
+                    image: Platform.select({
+                        ios: 'square.and.arrow.up',
+                        android: 'share-variant'
+                    })
+                },
+                {
+                    id: 'report',
+                    title: 'Report Event',
+                    image: Platform.select({
+                        ios: 'person.crop.circle.badge.exclamationmark.fill',
+                        android: 'person-circle-outline'
+                    })
+                }
+            ]}
+        >
+            <MaterialCommunityIcons
+                name="dots-vertical"
+                size={24}
+                color="white"
+            />
+        </MenuView>
+    );
+};
+
+const ClubDotsVertical = () => {
+    return (
+        <MenuView
+            onPressAction={({ nativeEvent }) => {
+                console.warn(JSON.stringify(nativeEvent));
+            }}
+            actions={[
+                {
+                    id: 'share',
+                    title: 'Share Club',
+                    image: Platform.select({
+                        ios: 'square.and.arrow.up',
+                        android: 'share-variant'
+                    })
+                },
+                {
+                    id: 'report',
+                    title: 'Report Club',
+                    image: Platform.select({
+                        ios: 'person.crop.circle.badge.exclamationmark.fill',
+                        android: 'person-circle-outline'
+                    })
+                }
+            ]}
+        >
+            <MaterialCommunityIcons
+                name="dots-vertical"
+                size={24}
+                color="white"
+            />
+        </MenuView>
+    );
+};
+
+
 const Layout = () => {
     return (
         <Stack>
@@ -15,8 +84,6 @@ const Layout = () => {
             <Stack.Screen
                 name="event/[id]"
                 options={{
-                    animationTypeForReplace: 'push',
-                    animation: 'slide_from_right',
                     headerShown: true,
                     headerTitleStyle: {
                         color: 'white'
@@ -25,39 +92,7 @@ const Layout = () => {
                         <View className="h-full bg-gray-600" />
                     ),
                     headerLeft: () => <LeftArrow />,
-                    headerRight: () => {
-                        return (
-                            <MenuView
-                                onPressAction={({ nativeEvent }) => {
-                                    console.warn(JSON.stringify(nativeEvent));
-                                }}
-                                actions={[
-                                    {
-                                        id: 'share',
-                                        title: 'Share Event',
-                                        image: Platform.select({
-                                            ios: 'square.and.arrow.up',
-                                            android: 'share-variant'
-                                        })
-                                    },
-                                    {
-                                        id: 'report',
-                                        title: 'Report Event',
-                                        image: Platform.select({
-                                            ios: 'person.crop.circle.badge.exclamationmark.fill',
-                                            android: 'person-circle-outline'
-                                        })
-                                    }
-                                ]}
-                            >
-                                <MaterialCommunityIcons
-                                    name="dots-vertical"
-                                    size={24}
-                                    color="white"
-                                />
-                            </MenuView>
-                        );
-                    }
+                    headerRight: () => <EventDotsVertical />
                 }}
             />
             <Stack.Screen
@@ -73,39 +108,7 @@ const Layout = () => {
                         <View className="h-full bg-gray-600" />
                     ),
                     headerLeft: () => <LeftArrow />,
-                    headerRight: () => {
-                        return (
-                            <MenuView
-                                onPressAction={({ nativeEvent }) => {
-                                    console.warn(JSON.stringify(nativeEvent));
-                                }}
-                                actions={[
-                                    {
-                                        id: 'share',
-                                        title: 'Share Club',
-                                        image: Platform.select({
-                                            ios: 'square.and.arrow.up',
-                                            android: 'share-variant'
-                                        })
-                                    },
-                                    {
-                                        id: 'report',
-                                        title: 'Report Club',
-                                        image: Platform.select({
-                                            ios: 'person.crop.circle.badge.exclamationmark.fill',
-                                            android: 'person-circle-outline'
-                                        })
-                                    }
-                                ]}
-                            >
-                                <MaterialCommunityIcons
-                                    name="dots-vertical"
-                                    size={24}
-                                    color="white"
-                                />
-                            </MenuView>
-                        );
-                    }
+                    headerRight: () => <ClubDotsVertical />
                 }}
             />
         </Stack>

@@ -6,11 +6,10 @@ import { Stack, useLocalSearchParams } from 'expo-router';
 import { AllHosts } from '@/app/(app)/event/_components/all-hosts';
 import { TagList } from '@/components/all-tags';
 import { Button } from '@/components/button';
+import { Title } from '@/components/title';
 import { Description } from '@/components/description';
-import { useAuthStore } from '@/hooks/use-auth';
 import { useEvent } from '@/hooks/use-event';
 
-import { Title } from '../_components/title';
 import { EventHeader } from './_components/event-header';
 import { EventLocation } from './_components/event-location';
 import { EventTime } from './_components/event-time';
