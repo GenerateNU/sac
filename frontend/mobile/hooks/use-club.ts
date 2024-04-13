@@ -1,9 +1,8 @@
-import { UseQueryResult, useQuery } from '@tanstack/react-query';
-
 import { fetchClub, fetchClubContacts } from '@/services/club';
-import { Club } from '@/types/club';
-import { Contact } from '@/types/contact';
-import { uuid } from '@/types/uuid';
+import { Club } from '@sac/lib/types/club';
+import { Contact } from '@sac/lib/types/contact';
+import { uuid } from '@sac/lib/types/uuid';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
 
 export const useClub = (clubID: uuid): UseQueryResult<Club, Error> => {
     return useQuery<Club, Error>({

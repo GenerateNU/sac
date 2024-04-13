@@ -1,5 +1,5 @@
 {
-  "name": "sac-web",
+  "name": "@sac/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {

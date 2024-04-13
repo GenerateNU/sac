@@ -1,10 +1,10 @@
+import { Tokens } from '@sac/lib/types/auth';
+import { ErrorResponse } from '@sac/lib/types/error';
+import { User } from '@sac/lib/types/user';
 import { AxiosError } from 'axios';
 
 import { extractTokens } from '@/lib/utils';
 import { api } from '@/services/api';
-import { Tokens } from '@/types/auth';
-import { ErrorResponse } from '@/types/error';
-import { User } from '@/types/user';
 
 /**
  * Creates a new user with the given first name, last name, email, and password.

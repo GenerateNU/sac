@@ -1,5 +1,5 @@
 {
-    "name": "sac-mobile",
+    "name": "@sac/mobile",
     "main": "expo-router/entry",
     "version": "1.0.0",
     "scripts": {
@@ -16,6 +16,7 @@
         "preset": "jest-expo"
     },
     "dependencies": {
+        "@sac/lib": "^0.1.0",
         "@expo/vector-icons": "^14.0.0",
         "@react-native-menu/menu": "^0.9.1",
         "@react-navigation/native": "^6.1.17",
