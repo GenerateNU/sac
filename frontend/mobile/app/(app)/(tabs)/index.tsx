@@ -4,11 +4,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Link } from 'expo-router';
 
+import { Club } from '@sac/lib/api/club';
+import { Event } from '@sac/lib/api/event';
+
 import { clubs } from '@/data/clubs';
 import { useAuthStore } from '@/hooks/use-auth';
 import { useEvents } from '@/hooks/use-event';
-import { Club } from '@/types/club';
-import { Event } from '@/types/event';
 
 const Home = () => {
     const { user } = useAuthStore();

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { View } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
+import { Provider } from 'react-redux';
 
 import { useFonts } from 'expo-font';
 import { Slot, useRouter, useSegments } from 'expo-router';
@@ -91,8 +92,10 @@ const RootLayout = () => {
 
     return (
         <QueryClientProvider client={queryClient}>
-            <StatusBar style="light" />
-            <InitalLayout />
+            <Provider store={store}>
+                <StatusBar style="light" />
+                <InitalLayout />
+            </Provider>
         </QueryClientProvider>
     );
 };

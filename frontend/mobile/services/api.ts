@@ -1,7 +1,10 @@
 import axios, { InternalAxiosRequestConfig } from 'axios';
 
+import { useAuthStore } from '@/hooks/use-auth';
 import { API_BASE_URL } from '@/lib/const';
-import { tokenCache } from '@/lib/utils';
+import { experationTime, tokenCache } from '@/lib/utils';
+
+import { refreshAccessToken } from './auth';
 
 // TODO: Add a refresh token interceptor.
 // TODO: Add a retry interceptor.
@@ -46,36 +49,42 @@ export const addAuthorizationHeaderInterceptor = async (
     return config;
 };
 
-// export const refreshTokenInterceptor = async (config: InternalAxiosRequestConfig) => {
-//     const accessToken = await tokenCache.getToken('accessToken');
-//     if (!accessToken) return config;
+export const refreshTokenInterceptor = async (
+    config: InternalAxiosRequestConfig
+) => {
+    const authStore = useAuthStore();
+    const accessToken = await tokenCache.getToken('accessToken');
+    if (!accessToken) return config;
 
-//     const bufferTime = experationTime(accessToken, 30000);
+    const bufferTime = experationTime(accessToken, 30000);
 
-//     if (bufferTime <= 0) {
-//         try {
-//             const refreshToken = await tokenCache.getToken('refreshToken');
-//             if (!refreshToken) throw new Error('No refresh token');
+    if (bufferTime <= 0) {
+        try {
+            const refreshToken = await tokenCache.getToken('refreshToken');
+            if (!refreshToken) throw new Error('No refresh token');
 
-//             const newTokens = await refreshAccessToken(refreshToken);
+            const newTokens = await refreshAccessToken(refreshToken);
 
-//             config.headers.Authorization = `Bearer ${newTokens.accessToken}`;
-//             return config;
-//         } catch (error) {
-//             console.log('Error refreshing access token:', error);
-//             // signOut();
-//             return config;
-//         }
-//     }
+            config.headers.Authorization = `Bearer ${newTokens.accessToken}`;
+            authStore.setTokens(newTokens);
+            return config;
+        } catch (error) {
+            console.log('Error refreshing access token:', error);
+            authStore.signOut();
+            return config;
+        }
+    }
 
-//     config.headers.Authorization = `Bearer ${accessToken}`;
-//     return config;
-// }
+    config.headers.Authorization = `Bearer ${accessToken}`;
+    return config;
+};
 
 api.interceptors.request.use(addAuthorizationHeaderInterceptor, (error) =>
     Promise.reject(error)
 );
-// api.interceptors.request.use(refreshTokenInterceptor, (error) => Promise.reject(error));
+api.interceptors.request.use(refreshTokenInterceptor, (error) =>
+    Promise.reject(error)
+);
 
 // export const unauthorizedInterceptor = async (error: AxiosError) => {
 //     if (error.response?.status !== 401) return Promise.reject(error);

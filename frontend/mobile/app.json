@@ -1,6 +1,6 @@
 {
     "expo": {
-        "name": "sac-mobile",
+        "name": "mobile",
         "slug": "student-activity-calendar",
         "version": "1.0.0",
         "orientation": "portrait",
@@ -37,7 +37,7 @@
             [
                 "expo-secure-store",
                 {
-                    "faceIDPermission": "Allow sac-mobile to access your Face ID biometric data."
+                    "faceIDPermission": "Allow mobile to access your Face ID biometric data."
                 }
             ]
         ],

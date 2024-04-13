@@ -1,7 +1,8 @@
 import { Text } from 'react-native';
 
+import { Tag as T } from '@sac/lib/api/tag';
+
 import { Button } from '@/components/button';
-import { Tag as T } from '@/types/tag';
 
 type TagProps = {
     tag: T;

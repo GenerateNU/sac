@@ -3,12 +3,13 @@ import { ScrollView, Text, View } from 'react-native';
 
 import { Stack, useLocalSearchParams } from 'expo-router';
 
+import { useGetEventQuery } from '@sac/lib/api/event';
+
 import { AllHosts } from '@/app/(app)/event/_components/all-hosts';
 import { TagList } from '@/components/all-tags';
 import { Button } from '@/components/button';
 import { Description } from '@/components/description';
 import { useAuthStore } from '@/hooks/use-auth';
-import { useEvent } from '@/hooks/use-event';
 
 import { Title } from '../_components/title';
 import { EventHeader } from './_components/event-header';
@@ -22,7 +23,7 @@ const EventPage = () => {
     const { id } = useLocalSearchParams<{ id: string }>();
     const { user } = useAuthStore();
 
-    const { data: event, isLoading, error } = useEvent(id);
+    const { data: event, error, isLoading } = useGetEventQuery(id);
 
     if (error) {
         console.error(error);

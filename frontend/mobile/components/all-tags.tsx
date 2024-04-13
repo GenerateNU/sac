@@ -1,8 +1,9 @@
 import { FlatList, Text } from 'react-native';
 
+import { useEventTagsByEventIDQuery } from '@sac/lib/api/event';
+import { uuid } from '@sac/lib/types/uuid';
+
 import { Tag } from '@/components/tag';
-import { useEventTags } from '@/hooks/use-event';
-import { uuid } from '@/types/uuid';
 
 // TODO: generify this component
 
@@ -11,14 +12,15 @@ type TagListProps = {
 };
 
 const TagList = ({ id }: TagListProps) => {
-    const { data: tags, isLoading, error } = useEventTags(id);
+    const { data: tags, isLoading, error } = useEventTagsByEventIDQuery(id);
 
     if (isLoading) {
         return <Text>Loading...</Text>;
     }
 
     if (error) {
-        return <Text>Error: {error.message}</Text>;
+        console.error(error);
+        return <Text>Error</Text>;
     }
 
     if (tags?.length === 0) {
