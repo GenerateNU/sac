@@ -2,9 +2,9 @@ import { z } from 'zod';
 
 import { rootModelSchema } from './root';
 
-export const tagSchema = z.object({
+export const tagSchemaIntermediate = z.object({
     name: z.string().max(255)
 });
 
-const Tag = tagSchema.merge(rootModelSchema);
-export type Tag = z.infer<typeof Tag>;
+export const tagSchema = tagSchemaIntermediate.merge(rootModelSchema);
+export type Tag = z.infer<typeof tagSchema>;
