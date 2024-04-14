@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableWithoutFeedback, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Wordmark } from '@/components/wordmark';
@@ -8,6 +8,8 @@ import { LoginForm } from './_components/login-form';
 
 const Login = () => {
     return (
+        <>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <SafeAreaView className="bg-neutral-500 h-[100%]" edges={['top']}>
             <View className="flex-1">
                 <View className="px-[8%] pb-[10%]">
@@ -37,6 +39,8 @@ const Login = () => {
                 </View>
             </View>
         </SafeAreaView>
+        </TouchableWithoutFeedback>
+        </>
     );
 };
 
