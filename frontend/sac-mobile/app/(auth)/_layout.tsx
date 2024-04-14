@@ -1,8 +1,12 @@
 import React from 'react';
+import { View } from 'react-native';
 
-import { Stack } from 'expo-router';
+import { Stack, router } from 'expo-router';
 
-const AuthLayout = () => {
+import { Button } from '@/components/button';
+import { Wordmark } from '@/components/wordmark';
+
+const Layout = () => {
     return (
         <Stack initialRouteName="welcome">
             <Stack.Screen
@@ -10,22 +14,49 @@ const AuthLayout = () => {
                 options={{
                     title: '',
                     headerShown: true,
-                    animationTypeForReplace: 'push',
+                    animationTypeForReplace: 'pop',
+                    animation: 'slide_from_left',
                     statusBarColor: 'dark'
                 }}
             />
-            <Stack.Screen name="login" options={{ headerShown: false }} />
-            <Stack.Screen name="register" options={{ headerShown: false }} />
             <Stack.Screen
-                name="verification"
-                options={{ headerShown: false }}
+                name="login"
+                options={{
+                    title: '',
+                    headerShown: true,
+                    headerLeft: () => <Wordmark />,
+                    headerBackground: () => (
+                        <View className="h-full bg-neutral-500" />
+                    ),
+                    animationTypeForReplace: 'push',
+                    animation: 'slide_from_right'
+                }}
             />
             <Stack.Screen
-                name="user-details"
-                options={{ headerShown: false }}
+                name="register"
+                options={{
+                    title: '',
+                    headerShown: true,
+                    headerLeft: () => <Wordmark />,
+                    headerRight: () => (
+                        <Button
+                            variant={'secondary'}
+                            onPress={() => router.replace('/login')}
+                        >
+                            Login
+                        </Button>
+                    ),
+                    headerBackground: () => (
+                        <View className="h-full bg-neutral-500" />
+                    ),
+                    animationTypeForReplace: 'pop',
+                    animation: 'slide_from_left'
+                }}
             />
+            <Stack.Screen name="verification" options={{ headerShown: true }} />
+            <Stack.Screen name="user-details" options={{ headerShown: true }} />
         </Stack>
     );
 };
 
-export default AuthLayout;
+export default Layout;
