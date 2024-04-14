@@ -7,8 +7,15 @@ import (
 type MembershipType string
 
 const (
-	MembershipTypeMember MembershipType = "member"
-	MembershipTypeAdmin  MembershipType = "admin"
+	MembershipTypeMember  MembershipType = "member"
+	MembershipTypeOfficer MembershipType = "officer"
+)
+
+type MembershipPermission string
+
+const (
+	MembershipPermissionRead   MembershipPermission = "read"
+	MembershipPermissionCreate MembershipPermission = "create"
 )
 
 func (Membership) TableName() string {
@@ -22,5 +29,7 @@ type Membership struct {
 	Club *Club `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	User *User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 
-	MembershipType MembershipType `gorm:"type:varchar(255);not null;default:member" json:"membership_type" validate:"required,oneof=member admin"`
+	RoleName              string                 `gorm:"type:varchar(255);not null;default:member" json:"role_name" validate:"required"`
+	MembershipType        MembershipType         `gorm:"type:varchar(255);not null;default:member" json:"membership_type" validate:"required,oneof=member admin"`
+	MembershipPermissions []MembershipPermission `gorm:"type:varchar(255)[]" json:"permissions" validate:"required,dive,oneof=read create"`
 }

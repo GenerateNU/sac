@@ -11,10 +11,10 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetAdminIDs(db *gorm.DB, clubID uuid.UUID) ([]uuid.UUID, *errors.Error) {
+func GetClubAdminIDs(db *gorm.DB, clubID uuid.UUID) ([]uuid.UUID, *errors.Error) {
 	var adminIDs []models.Membership
 
-	if err := db.Where("club_id = ? AND membership_type = ?", clubID, models.MembershipTypeAdmin).Find(&adminIDs).Error; err != nil {
+	if err := db.Where("club_id = ? AND membership_type = ?", clubID, models.MembershipTypeOfficer).Find(&adminIDs).Error; err != nil {
 		return nil, &errors.FailedtoGetAdminIDs
 	}
 
@@ -81,7 +81,12 @@ func CreateClub(db *gorm.DB, pinecone search.SearchClientInterface, userId uuid.
 	membership := models.Membership{
 		ClubID:         club.ID,
 		UserID:         user.ID,
-		MembershipType: models.MembershipTypeAdmin,
+		MembershipType: models.MembershipTypeOfficer,
+		MembershipPermissions: []models.MembershipPermission{
+			models.MembershipPermissionRead,
+			models.MembershipPermissionCreate,
+		},
+		RoleName: "president",
 	}
 
 	if err := tx.Create(&membership).Error; err != nil {
