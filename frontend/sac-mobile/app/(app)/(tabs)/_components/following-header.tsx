@@ -7,7 +7,7 @@ import {
     View
 } from 'react-native';
 
-import { Link } from 'expo-router';
+import { Link, Stack } from 'expo-router';
 
 import { useUserFollowing } from '@/hooks/use-user';
 import { Club } from '@/types/club';
@@ -50,17 +50,35 @@ const FollowingHeader = ({ id }: { id: string }) => {
         );
     };
     return (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View className="flex-row">
-                <View className="pl-7" />
-                <FlatList
-                    horizontal
-                    data={userFollowingData}
-                    renderItem={renderFollowing}
-                    keyExtractor={(item) => item.id.toString()}
-                />
-            </View>
-        </ScrollView>
+        <>
+            <Stack.Screen
+                options={{
+                    title: '',
+                    headerRight: () => {
+                        return (
+                            <View className="pr-6 mt-4 ">
+                                <Link href={'/(app)/following/'} asChild>
+                                    <Text className="text-sm font-bold">
+                                        View all
+                                    </Text>
+                                </Link>
+                            </View>
+                        );
+                    }
+                }}
+            />
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <View className="flex-row">
+                    <View className="pl-7" />
+                    <FlatList
+                        horizontal
+                        data={userFollowingData}
+                        renderItem={renderFollowing}
+                        keyExtractor={(item) => item.id.toString()}
+                    />
+                </View>
+            </ScrollView>
+        </>
     );
 };
 

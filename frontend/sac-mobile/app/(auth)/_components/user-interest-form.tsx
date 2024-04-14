@@ -45,7 +45,10 @@ const UserInterestsForm = () => {
         updated_at: new Date(),
         tags: tagsData?.length ? tagsData : []
     };
-    const CategoriesData = [AllCategory, ...categoriesData];
+    const CategoriesData = categoriesData
+        ? [AllCategory, ...categoriesData]
+        : [];
+
     const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
     const [buttonClicked, setButtonClicked] = useState<boolean>(false);
     const [selectedCategory, setSelectedCategory] =

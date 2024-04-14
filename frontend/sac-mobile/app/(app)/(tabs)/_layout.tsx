@@ -52,17 +52,6 @@ const Layout = () => {
                     },
                     headerShown: true,
                     tabBarIcon: HomeLight,
-                    headerRight: () => {
-                        return (
-                            <View className="pr-6 mt-4 ">
-                                <Link href={'/(app)/following/'} asChild>
-                                    <Text className="text-sm font-bold">
-                                        View all
-                                    </Text>
-                                </Link>
-                            </View>
-                        );
-                    },
                     headerLeft: () => {
                         return (
                             <Text className="pl-6 mt-4 text-2xl font-bold">

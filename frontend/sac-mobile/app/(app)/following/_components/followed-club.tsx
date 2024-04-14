@@ -12,36 +12,36 @@ import {
 import { Club } from '@/types/club';
 
 export const FollowedClub = ({ club }: { club: Club }) => {
-    // const { user } = useAuthStore();
-    // const userId: string = user?.id!;
-    // const {
-    //     data: following,
-    //     isLoading,
-    //     error
-    // } = useUserFollowing(userId) as {
-    //     data: Club[];
-    //     isLoading: boolean;
-    //     error: Error;
-    // };
+    const { user } = useAuthStore();
+    const userId: string = user?.id!;
+    const {
+        data: following,
+        isLoading,
+        error
+    } = useUserFollowing(userId) as {
+        data: Club[];
+        isLoading: boolean;
+        error: Error;
+    };
 
-    // const followClub = useCreateClubFollowing();
-    // const unfollowClub = useDeleteClubFollowing();
+    const followClub = useCreateClubFollowing();
+    const unfollowClub = useDeleteClubFollowing();
 
-    // const isFollowing = following?.some((c) => c.id === club.id);
+    const isFollowing = following?.some((c) => c.id === club.id);
 
-    // const handlePressFollow = () => {
-    //     if (isFollowing) {
-    //         unfollowClub.mutateAsync({
-    //             userId: userId,
-    //             clubId: club.id,
-    //         });
-    //     } else {
-    //         followClub.mutateAsync({
-    //             userId: userId,
-    //             clubId: club.id,
-    //         });
-    //     }
-    // };
+    const handlePressFollow = () => {
+        if (isFollowing) {
+            followClub.mutateAsync({
+                userId: userId,
+                clubId: club.id
+            });
+        } else {
+            unfollowClub.mutateAsync({
+                userId: userId,
+                clubId: club.id
+            });
+        }
+    };
 
     return (
         <View className="flex-row items-center w-full px-[7%] justify-between">
@@ -62,14 +62,10 @@ export const FollowedClub = ({ club }: { club: Club }) => {
             </Link>
             <Button
                 size="follow"
-                variant={
-                    'follow'
-                    // isFollowing ? "follow" : "unfollow"
-                }
-                // onPress={handlePressFollow}
+                variant={isFollowing ? 'follow' : 'unfollow'}
+                onPress={handlePressFollow}
             >
-                {/* {isFollowing ? "Follow" : "Following"} */}
-                Following
+                {isFollowing ? 'Following' : 'Follow'}
             </Button>
         </View>
     );
