@@ -360,46 +360,6 @@ func TestCreateSeriesFailsOnInvalidMaxOccurrences(t *testing.T) {
 	)
 }
 
-func TestCreateSeriesFailsOnInvalidSeparationCount(t *testing.T) {
-	AssertCreateBadEventSeriesDataFails(t,
-		models.CreateSeriesRequestBody{
-			RecurringType:  "weekly",
-			MaxOccurrences: 10,
-		},
-		errors.FailedToValidateEventSeries,
-	)
-}
-
-func TestCreateSeriesFailsOnInvalidDayOfWeek(t *testing.T) {
-	AssertCreateBadEventSeriesDataFails(t,
-		models.CreateSeriesRequestBody{
-			RecurringType:  "weekly",
-			MaxOccurrences: 10,
-		},
-		errors.FailedToValidateEventSeries,
-	)
-}
-
-func TestCreateSeriesFailsOnInvalidWeekOfMonth(t *testing.T) {
-	AssertCreateBadEventSeriesDataFails(t,
-		models.CreateSeriesRequestBody{
-			RecurringType:  "weekly",
-			MaxOccurrences: 10,
-		},
-		errors.FailedToValidateEventSeries,
-	)
-}
-
-func TestCreateSeriesFailsOnInvalidDayOfMonth(t *testing.T) {
-	AssertCreateBadEventSeriesDataFails(t,
-		models.CreateSeriesRequestBody{
-			RecurringType:  "weekly",
-			MaxOccurrences: 10,
-		},
-		errors.FailedToValidateEventSeries,
-	)
-}
-
 func TestUpdateEventWorks(t *testing.T) {
 	appAssert, eventUUID := CreateSampleEvent(h.InitTest(t), SampleEventFactory)
 
@@ -427,12 +387,8 @@ func TestUpdateEventSeriesWorks(t *testing.T) {
 	appAssert, eventUUIDs := CreateSampleEvent(h.InitTest(t), SampleSeriesFactory)
 
 	updatedSeries := &map[string]interface{}{
-		"recurring_type":   "daily",
-		"max_occurrences":  5,
-		"separation_count": 4,
-		"day_of_week":      3,
-		"week_of_month":    2,
-		"day_of_month":     1,
+		"recurring_type":  "daily",
+		"max_occurrences": 5,
 		"event_details": &map[string]interface{}{
 			"name":         "eece test",
 			"preview":      "the best class ever",
