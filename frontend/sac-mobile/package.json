@@ -4,8 +4,8 @@
     "version": "1.0.0",
     "scripts": {
         "start": "expo start",
-        "android": "expo run:android",
-        "ios": "expo run:ios",
+        "android": "expo start --android",
+        "ios": "expo start --ios",
         "web": "expo start --web",
         "test": "echo \"Woah there, we have no frontend tests as of right now. Let's just say we're passing.\" && exit 0",
         "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
