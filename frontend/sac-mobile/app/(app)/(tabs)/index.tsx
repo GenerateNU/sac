@@ -1,18 +1,18 @@
+import React from 'react';
+import { FlatList, Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Link } from 'expo-router';
 
-import { Button } from '@/components/button';
+import { clubs } from '@/data/clubs';
 import { useAuthStore } from '@/hooks/use-auth';
 import { useEvents } from '@/hooks/use-event';
-import { View, Text } from 'react-native';
+import { Club } from '@/types/club';
+import { Event } from '@/types/event';
 
 const Home = () => {
-    const { signOut, user } = useAuthStore();
+    const { user } = useAuthStore();
     const { data: events, isLoading, error } = useEvents();
-
-    const handleSignOut = async () => {
-        signOut();
-    };
 
     if (isLoading) {
         return <Text>Loading...</Text>;
@@ -22,26 +22,48 @@ const Home = () => {
         return <Text>Error: {error.message}</Text>;
     }
 
+    const renderEvent = ({ item: event }: { item: Event }) => (
+        <Link
+            className="mt-10 mr-3"
+            key={event.id}
+            href={{
+                pathname: '/(app)/event/[id]',
+                params: { id: event.id }
+            }}
+        >
+            <Text>{event.name}</Text>
+        </Link>
+    );
+
+    const renderClub = ({ item: club }: { item: Club }) => (
+        <Link
+            className="mt-10 mr-3"
+            key={club.id}
+            href={{
+                pathname: '/(app)/club/[id]',
+                params: { id: club.id }
+            }}
+        >
+            <Text>{club.name}</Text>
+        </Link>
+    );
+
     return (
-        <View className="items-center justify-center flex-1 gap-5">
+        <SafeAreaView className="flex items-center justify-center flex-1">
             <Text>Welcome {user?.first_name}</Text>
-            <Button onPress={handleSignOut}>Sign Out</Button>
-            {events?.map((event) => (
-                <Link
-                    key={event.id}
-                    href={{
-                        pathname: '/(app)/event/[id]',
-                        params: { id: event.id }
-                    }}
-                >
-                    <Text>{event.name}</Text>
-                </Link>
-            ))}
-
-            <Link href={`/club/${1}`}>Club</Link>
-            <Link href={`/club/modal/${1}`}>Modal</Link>
-
-        </View>
+            <FlatList
+                numColumns={5}
+                data={events}
+                renderItem={renderEvent}
+                keyExtractor={(item) => item.id.toString()}
+            />
+            <FlatList
+                numColumns={5}
+                data={clubs}
+                renderItem={renderClub}
+                keyExtractor={(item) => item.id.toString()}
+            />
+        </SafeAreaView>
     );
 };
 

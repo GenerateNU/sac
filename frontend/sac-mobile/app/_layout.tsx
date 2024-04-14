@@ -11,6 +11,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { useAuthStore } from '@/hooks/use-auth';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export {
     // Catch any errors thrown by the Layout component.
@@ -44,11 +45,11 @@ const InitalLayout = () => {
             console.log({ isLoggedIn, isVerified, inApp });
 
             if (isLoggedIn && isVerified === false) {
-                router.replace('/(auth)/verification');
+                router.push('/(auth)/verification');
             } else if (isLoggedIn && isVerified) {
-                router.replace('/(app)/(tabs)/');
+                router.push('/(app)/(tabs)/');
             } else if (!isLoggedIn) {
-                router.replace('/(auth)/welcome');
+                router.push('/(auth)/welcome');
             }
         };
 
@@ -92,8 +93,10 @@ const RootLayout = () => {
 
     return (
         <QueryClientProvider client={queryClient}>
+            <GestureHandlerRootView style={{flex: 1}}>
             <StatusBar style="light" />
             <InitalLayout />
+            </GestureHandlerRootView>
         </QueryClientProvider>
     );
 };

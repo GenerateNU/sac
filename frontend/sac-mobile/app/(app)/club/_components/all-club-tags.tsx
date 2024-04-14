@@ -15,7 +15,7 @@ const AllClubTags = () => {
 
     return (
         <View>
-            <ScrollView horizontal={true} className="pb-[3%]">
+            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} className="pb-[3%]">
                 <View className="flex-row flex-wrap">
                     {tags && tags.map((tag: ClubProfileTagProps) => (
                         <ClubProfileTag key={tag.id} name={tag.name} />

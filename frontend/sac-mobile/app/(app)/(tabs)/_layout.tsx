@@ -10,11 +10,15 @@ const HomeTabBarIcon = ({ color }: { color: string }) => (
     <MaterialCommunityIcons name="home" size={24} color={color} />
 );
 
-const ClubTabBarIcon = ({ color }: { color: string }) => (
-    <MaterialCommunityIcons name="car" size={24} color={color} />
+const ProfileTabBarIcon = ({ color }: { color: string }) => (
+    <MaterialCommunityIcons name="account" size={24} color={color} />
 );
 
-const AppLayout = () => {
+const SearchTabBarIcon = ({ color }: { color: string }) => (
+    <MaterialCommunityIcons name="magnify" size={24} color={color} />
+);
+
+const Layout = () => {
     const { isLoggedIn, fetchUser } = useAuthStore();
 
     useEffect(() => {
@@ -32,8 +36,26 @@ const AppLayout = () => {
                 }}
                 redirect={!isLoggedIn}
             />
+            <Tabs.Screen
+                name="search"
+                options={{
+                    title: 'Search',
+                    headerShown: false,
+                    tabBarIcon: SearchTabBarIcon
+                }}
+                redirect={!isLoggedIn}
+            />
+            <Tabs.Screen
+                name="profile"
+                options={{
+                    title: 'Profile',
+                    headerShown: false,
+                    tabBarIcon: ProfileTabBarIcon
+                }}
+                redirect={!isLoggedIn}
+            />
         </Tabs>
     );
 };
 
-export default AppLayout;
+export default Layout;

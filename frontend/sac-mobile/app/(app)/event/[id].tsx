@@ -5,7 +5,7 @@ import { useLocalSearchParams } from 'expo-router';
 
 import { MenuView } from '@react-native-menu/menu';
 
-import { HostList } from '@/app/(app)/event/_components/host-list';
+// import { HostList } from '@/app/(app)/event/_components/host-list';
 import ShareIcon from '@/assets/images/svg/share.svg';
 import { TagList } from '@/components/all-tags';
 import { Button } from '@/components/button';
@@ -67,7 +67,7 @@ const Event = () => {
                             location={event.location}
                             meetingLink={event.meeting_link}
                         />
-                        <HostList eventID={event.id} />
+                        {/* <HostList eventID={event.id} /> */}
                         <Button
                             onPress={() => console.log('RSVP')}
                             size={'default'}

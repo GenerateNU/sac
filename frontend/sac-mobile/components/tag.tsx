@@ -13,6 +13,7 @@ const Tag = ({ tag }: TagProps) => {
             onPress={() => console.log('Pressed:', tag)}
             size={'pill'}
             variant={'pill'}
+            className="my-1 mr-1"
         >
             <Text>{tag.name}</Text>
         </Button>

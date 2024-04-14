@@ -1,29 +1,42 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-import { useLocalSearchParams } from 'expo-router'
-import { useFAQ } from '@/hooks/use-faqs'
+import React from 'react';
+import { SafeAreaView, Text } from 'react-native';
 
-const Modal = () => {
-    const { id } = useLocalSearchParams<{ id: string }>()
+import { useLocalSearchParams } from 'expo-router';
+import { useClubFAQ } from '@/hooks/use-club';
 
-    const { data: faq, error, isLoading } = useFAQ(id)
+const Faq = () => {
+    // refetch data based on the id
 
-    if (isLoading) {
-        return <Text>Loading...</Text>
-    }
+    const { id } = useLocalSearchParams<{ id: string }>();
 
-    if (error) {
-        return <Text>Error: {error.message}</Text>
-    }
+    const { data: faq, isLoading, error } = useClubFAQ(id);
 
     return (
-        <View className='flex-1 justify-center items-center bg-black/50'>
-            <View className='bg-white opacity-100 rounded-lg p-4 w-80'>
-                {faq && <Text className="text-sm mb-2 font-semibold">{faq.question}</Text>}
-                {faq && <Text className="text-sm">{faq.answer}</Text>}
-            </View>
-        </View>
-    )
-}
+        <SafeAreaView className="items-center flex-1 bg-white px-5">
+            <Text className=''>{id}</Text>
+            <Text className='font-semibold text-2xl px-5'>{faq?.question}</Text>
+            <Text className='px-5 text-lg'>{faq?.answer}</Text>
+        </SafeAreaView>
+    );
+};
 
-export default Modal
+export default Faq;
+
+// import { View, Text } from 'react-native'
+// import React from 'react'
+// import { useLocalSearchParams } from 'expo-router'
+// import { useFAQ } from '@/hooks/use-faqs'
+
+// const FAQ = ({ question, answer }: { question: string; answer: string }) => {
+
+//     return (
+//         <View className='flex-1 justify-center items-center bg-black/50'>
+//             <View className='bg-white opacity-100 rounded-lg p-4 w-80'>
+//                 <Text className="text-sm mb-2 font-semibold">{question}</Text>
+//                 <Text className="text-sm">{answer}</Text>
+//             </View>
+//         </View>
+//     )
+// }
+
+// export default FAQ

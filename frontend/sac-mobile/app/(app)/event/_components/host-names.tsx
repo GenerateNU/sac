@@ -1,6 +1,8 @@
 import { Fragment } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
+import { router } from 'expo-router';
+
 import { useEventHosts } from '@/hooks/use-event';
 import { uuid } from '@/types/uuid';
 
@@ -27,7 +29,7 @@ const HostNames = ({ eventID }: { eventID: uuid }) => {
             {hosts.map((host, index) => (
                 <Fragment key={index}>
                     <Pressable
-                        onPress={() => console.log(`${host.name} pressed`)}
+                        onPress={() => router.push(`/club/${host.id}`)}
                         className={'font-bold'}
                     >
                         <Text className="text-base font-bold tracking-tight text-zinc-900">

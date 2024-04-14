@@ -12,7 +12,7 @@ export interface EBoardCardProps{
 const EBoardCard = ({ photo, name, title, ...props }: EBoardCardProps) => {
     return (
         <View>
-            <View className="bg-white pt-[3%] pr-[5%] w-full h-48 text-center items-center pb-12" >
+            <View className="pt-[3%] pr-[5%] w-full h-48 text-center items-center pb-12" >
                 {photo ? (
                     <Image source={{ uri: photo }} className="aspect-square rounded-lg w-full h-full mb-2" />
                 ) : (

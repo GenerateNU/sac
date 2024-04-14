@@ -4,6 +4,7 @@ import { Text, TouchableOpacity, TouchableOpacityProps, View, Modal } from 'reac
 
 
 export interface FaqCardProps extends TouchableOpacityProps {
+    id?: string;
     question?: string;
     answer?: string;
 }

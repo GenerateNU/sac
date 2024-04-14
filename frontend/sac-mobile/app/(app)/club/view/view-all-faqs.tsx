@@ -4,13 +4,14 @@ import { Button } from '@/components/button'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import { ViewAllFaqCard, ViewAllFaqCardProps } from '@/components/view-all-faqs-card'
-import { useFAQs } from '@/hooks/use-faqs'
+import { useClubFAQs } from '@/hooks/use-club'
 
 
 const AllFAQs = () => {
-    const { data: faqs, isLoading, error } = useFAQs("sac");
+    const { data: faqs, isLoading, error } = useClubFAQs("sac");
     return (
         <SafeAreaView className="bg-white h-[100%]">
+            {/* <Text>Hello</Text> */}
             <ScrollView className="flex-1">
                 <View>
                     <Button size={'icon'} variant="outline" className='flex justify-center items-center absolute top-1 left-6 z-10 bg-gray-300 rounded-full' onPress={() => router.back()}>

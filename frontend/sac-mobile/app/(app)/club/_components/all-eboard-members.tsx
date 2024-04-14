@@ -1,9 +1,9 @@
 import { EBoardCard, EBoardCardProps } from '@/components/eboardCard';
-import { useAdmin } from '@/hooks/use-admin';
+import { useClubAdmin } from '@/hooks/use-club';
 import { ScrollView, Text, View } from 'react-native';
 
 const EBoardMembers = () => {
-    const { data: eboardmembers, isLoading, error } = useAdmin("sac");
+    const { data: eboardmembers, isLoading, error } = useClubAdmin("sac");
 
     if (isLoading) {
         return <Text>Loading...</Text>;
