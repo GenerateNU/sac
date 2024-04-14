@@ -1,17 +1,17 @@
-name: Club Scraper
+name: Mock Data
 
 permissions: read-all
 
 on:
   push:
     paths:
-      - scraper/club/**
-      - .github/workflows/club_scraper.yml
+      - mock_data/**
+      - .github/workflows/mock_data.yml
   pull_request:
     types: [opened]
     paths:
-      - scraper/club/**
-      - .github/workflows/club_scraper.yml
+      - mock_data/**
+      - .github/workflows/mock_data.yml
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -19,7 +19,7 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
-  MANIFEST_PATH: ./scraper/clubs/Cargo.toml
+  MANIFEST_PATH: ./mock_data/Cargo.toml
 
 jobs:
   test:

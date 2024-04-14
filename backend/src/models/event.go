@@ -38,18 +38,14 @@ type Event struct {
 	Waitlist     []User         `gorm:"many2many:user_event_waitlists;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	Clubs        []Club         `gorm:"many2many:club_events;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	Tag          []Tag          `gorm:"many2many:event_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
-	Notification []Notification `gorm:"polymorphic:Reference;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;;" json:"-" validate:"-"`
+	Notification []Notification `gorm:"polymorphic:Reference;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 }
 
 type Series struct {
 	Model
-	RecurringType   RecurringType `gorm:"type:varchar(255);default:open" json:"recurring_type" validate:"max=255"`
-	SeparationCount int           `gorm:"type:int" json:"separation_count" validate:"min=0"`
-	MaxOccurrences  int           `gorm:"type:int" json:"max_occurrences" validate:"min=1"`
-	DayOfWeek       int           `gorm:"type:int" json:"day_of_week" validate:"min=1,max=7"`
-	WeekOfMonth     int           `gorm:"type:int" json:"week_of_month" validate:"min=1,max=5"`
-	DayOfMonth      int           `gorm:"type:int" json:"day_of_month" validate:"min=1,max=31"`
-	Events          []Event       `gorm:"many2many:event_series;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"events" validate:"-"`
+	RecurringType  RecurringType `gorm:"type:varchar(255);default:open" json:"recurring_type" validate:"max=255"`
+	MaxOccurrences int           `gorm:"type:int" json:"max_occurrences" validate:"min=1"`
+	Events         []Event       `gorm:"many2many:event_series;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"events" validate:"-"`
 }
 
 // TODO: add not null to required fields on all gorm models
@@ -93,12 +89,8 @@ type CreateEventRequestBody struct {
 }
 
 type CreateSeriesRequestBody struct {
-	RecurringType   RecurringType `json:"recurring_type" validate:"required,max=255,oneof=daily weekly monthly"`
-	SeparationCount int           `json:"separation_count" validate:"required,min=0"`
-	MaxOccurrences  int           `json:"max_occurrences" validate:"required,min=2"`
-	DayOfWeek       int           `json:"day_of_week" validate:"required,min=1,max=7"`
-	WeekOfMonth     int           `json:"week_of_month" validate:"required,min=1,max=5"`
-	DayOfMonth      int           `json:"day_of_month" validate:"required,min=1,max=31"`
+	RecurringType  RecurringType `json:"recurring_type" validate:"required,max=255,oneof=daily weekly monthly"`
+	MaxOccurrences int           `json:"max_occurrences" validate:"required,min=2"`
 }
 
 type UpdateEventRequestBody struct {
@@ -119,12 +111,8 @@ type UpdateEventRequestBody struct {
 
 // TODO: probably need to make changes to this to update the events as well
 type UpdateSeriesRequestBody struct {
-	RecurringType   RecurringType `json:"recurring_type" validate:"omitempty,max=255,oneof=daily weekly monthly"`
-	SeparationCount int           `json:"separation_count" validate:"omitempty,min=0"`
-	MaxOccurrences  int           `json:"max_occurrences" validate:"omitempty,min=2"`
-	DayOfWeek       int           `json:"day_of_week" validate:"omitempty,min=1,max=7"`
-	WeekOfMonth     int           `json:"week_of_month" validate:"omitempty,min=1,max=5"`
-	DayOfMonth      int           `json:"day_of_month" validate:"omitempty,min=1,max=31"`
+	RecurringType  RecurringType `json:"recurring_type" validate:"omitempty,max=255,oneof=daily weekly monthly"`
+	MaxOccurrences int           `json:"max_occurrences" validate:"omitempty,min=2"`
 
 	EventDetails UpdateEventRequestBody `json:"event_details" validate:"omitempty"`
 }

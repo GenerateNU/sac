@@ -58,6 +58,8 @@ func main() {
 	configPath := flag.String("config", filepath.Join("..", "..", "config"), "Specify the path to the config directory")
 	useDevDotEnv := flag.Bool("use-dev-dot-env", true, "Specify if you want to use the .env.dev file")
 
+	fmt.Println("foo", *useDevDotEnv)
+
 	flag.Parse()
 
 	config, err := config.GetConfiguration(*configPath, *useDevDotEnv)
