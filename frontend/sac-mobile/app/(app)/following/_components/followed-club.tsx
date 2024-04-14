@@ -10,6 +10,7 @@ import {
     useUserFollowing
 } from '@/hooks/use-user';
 import { Club } from '@/types/club';
+import { useState } from 'react';
 
 export const FollowedClub = ({ club }: { club: Club }) => {
     const { user } = useAuthStore();
@@ -17,7 +18,7 @@ export const FollowedClub = ({ club }: { club: Club }) => {
     const {
         data: following,
         isLoading,
-        error
+        error,
     } = useUserFollowing(userId) as {
         data: Club[];
         isLoading: boolean;
@@ -27,19 +28,23 @@ export const FollowedClub = ({ club }: { club: Club }) => {
     const followClub = useCreateClubFollowing();
     const unfollowClub = useDeleteClubFollowing();
 
-    const isFollowing = following?.some((c) => c.id === club.id);
+    const [buttonClicked, setButtonClicked] = useState("Following");
 
     const handlePressFollow = () => {
-        if (isFollowing) {
+        if (!following?.some((c) => c.id === club.id)) {
+            console.log("Follow Club")
             followClub.mutateAsync({
                 userId: userId,
                 clubId: club.id
             });
+            setButtonClicked("Following");
         } else {
+            console.log("Unfollow Club")
             unfollowClub.mutateAsync({
                 userId: userId,
                 clubId: club.id
             });
+            setButtonClicked("Follow");
         }
     };
 
@@ -62,10 +67,10 @@ export const FollowedClub = ({ club }: { club: Club }) => {
             </Link>
             <Button
                 size="follow"
-                variant={isFollowing ? 'follow' : 'unfollow'}
+                variant={buttonClicked === "Following" ? 'follow' : 'unfollow'}
                 onPress={handlePressFollow}
             >
-                {isFollowing ? 'Following' : 'Follow'}
+                {buttonClicked === "Following" ? 'Following' : 'Follow'}
             </Button>
         </View>
     );

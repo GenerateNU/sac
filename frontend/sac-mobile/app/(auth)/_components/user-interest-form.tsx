@@ -95,7 +95,7 @@ const UserInterestsForm = () => {
     };
 
     const heightAdjust =
-        selectedTags.length === 0 && buttonClicked ? 'h-[%]' : 'h-[49%]';
+        selectedTags.length === 0 && buttonClicked ? 'h-[49%]' : 'h-[50%]';
 
     const Tag = ({ tag }: { tag: Tag }) => {
         return (
@@ -145,7 +145,7 @@ const UserInterestsForm = () => {
                 renderItem={renderCategory}
                 keyExtractor={(item) => item.id.toString()}
             />
-            <Text className="text-lg pb-[6%] pt-[3%]">Select one or more</Text>
+            <Text className="text-lg pb-[4%] pt-[1%]">Select one or more</Text>
             <View className={heightAdjust}>
                 {selectedCategory.name === AllCategory.name ? (
                     <FlatList

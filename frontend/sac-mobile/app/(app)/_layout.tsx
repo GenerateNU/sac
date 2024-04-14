@@ -111,7 +111,7 @@ const Layout = () => {
             <Stack.Screen
                 name="following/index"
                 options={{
-                    title: 'Clubs Following',
+                    title: 'Followed Clubs',
                     headerTitleStyle: {
                         fontSize: 20
                     },
