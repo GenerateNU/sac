@@ -1699,13 +1699,5 @@ INSERT INTO event_series (event_id, series_id) VALUES ('cc034c67-82e0-4ba5-94c5-
 INSERT INTO events (id, host, name, preview, content, start_time, end_time, location, is_recurring) VALUES ('788e36a1-116c-4e9b-9842-e70f787e691b', '38ae97fd-f259-40ef-9d99-c3d47fc44644', 'Phi Sigma Rho Philanthropy', 'Join us for a day of service as we give back to the community!', 'Join us for a day of service as we give back to the community! We will be volunteering at a local food bank, so be sure to wear comfortable clothes and closed-toed shoes. This event is open to all students, so feel free to bring a friend!', '2024-04-20 10:00:00', '2024-04-20 16:00:00', '70 S Bay Ave, Boston, MA 02118', false);
 INSERT INTO event_tags(id, event_id, tag_id) VALUES ('f184543c-9b11-4f10-aa92-c12abaf2096b', '788e36a1-116c-4e9b-9842-e70f787e691b', 'a85c38cb-65ba-4481-9c32-1834dd41e472'), ('c536eff6-11db-4d56-92b4-26ee0ef9f50e','788e36a1-116c-4e9b-9842-e70f787e691b','b7c272cd-8556-4202-b6ae-9f2223cca95c');
 
--- INSERT INTO "tags" ("id", "name", "category_id") VALUES ('a85c38cb-65ba-4481-9c32-1834dd41e472', 'Volunteerism', '484e00b5-42a3-45df-8335-f26f443fe026');
--- INSERT INTO "tags" ("id", "name", "category_id") VALUES ('f96332f6-ff18-4810-8b8c-5c26dd01a880', 'EnvironmentalAdvocacy', '484e00b5-42a3-45df-8335-f26f443fe026');
--- INSERT INTO "tags" ("id", "name", "category_id") VALUES ('288766e1-bf6a-4d3d-bec4-698675527bd4', 'HumanRights', '484e00b5-42a3-45df-8335-f26f443fe026');
--- INSERT INTO "tags" ("id", "name", "category_id") VALUES ('b7c272cd-8556-4202-b6ae-9f2223cca95c', 'CommunityOutreach', '484e00b5-42a3-45df-8335-f26f443fe026');
--- INSERT INTO "tags" ("id", "name", "category_id") VALUES ('3abe8f84-75d8-40e6-8d38-8479d3c135c8', 'Broadcasting', '78dde277-3e0f-4c35-aff0-65831b1cbfe5');
--- INSERT INTO "tags" ("id", "name", "category_id") VALUES ('28086003-383f-41c3-8a9c-e5823d5f7c8a', 'Film', '78dde277-3e0f-4c35-aff0-65831b1cbfe5');
--- INSERT INTO "tags" ("id", "name", "category_id") VALUES ('6714365f-7133-495c-a4d9-33a1a432c159', 'PublicRelations', '78dde277-3e0f-4c35-aff0-65831b1cbfe5');
-
 COMMIT;
 -- END MOCK DATA TRANSACTION
