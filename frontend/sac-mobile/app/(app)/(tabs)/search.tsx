@@ -1,11 +1,23 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { TextInput } from 'react-native-gesture-handler';
+
+import { Button } from '@/components/button';
 
 const Search = () => {
     return (
-        <View>
-            <Text>Search</Text>
-        </View>
+        <SafeAreaView>
+            <ScrollView className="px-[8%] pb-[9%] w-full">
+                <Text className="text-5xl font-bold text-black">Search</Text>
+                <View className="flex flex-row gap-4">
+                    <TextInput
+                        placeholder="Search"
+                        className="w-48 p-2 mt-2 border border-black rounded-lg"
+                    />
+                    <Button>Search</Button>
+                </View>
+            </ScrollView>
+        </SafeAreaView>
     );
 };
 
