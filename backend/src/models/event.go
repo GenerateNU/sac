@@ -78,12 +78,13 @@ type CreateEventRequestBody struct {
 	IsRecurring *bool     `json:"is_recurring" validate:"required"`
 
 	// TODO club/tag/notification logic
-	Host         *uuid.UUID     `json:"host" validate:"omitempty"`
+	Host         *uuid.UUID     `json:"host" validate:"required,uuid4"`
 	Clubs        []Club         `json:"-" validate:"omitempty"`
 	Tag          []Tag          `json:"-" validate:"omitempty"`
 	Notification []Notification `json:"-" validate:"omitempty"`
 
-	Series CreateSeriesRequestBody `json:"series" validate:"required_if=IsRecurring true"`
+	// TODO validate if isRecurring, then series is required
+	Series CreateSeriesRequestBody `json:"series" validate:"-"`
 }
 
 type CreateSeriesRequestBody struct {
