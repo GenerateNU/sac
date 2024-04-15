@@ -36,6 +36,10 @@ func RegisterCustomValidators() (*validator.Validate, error) {
 		return nil, err
 	}
 
+	if err := validate.RegisterValidation("not_equal_if_not_empty", validateNotEqualIfNotEmpty); err != nil {
+		return nil, err
+	}
+
 	return validate, nil
 }
 
@@ -95,6 +99,13 @@ func validateContactPointer(validate *validator.Validate, fl validator.FieldLeve
 	}
 
 	return validate.Var(contact.Content, rule) == nil && strings.HasPrefix(contact.Content, models.GetContentPrefix(contact.Type))
+}
+
+func validateNotEqualIfNotEmpty(fl validator.FieldLevel) bool {
+	field := fl.Field().String()
+	otherField := fl.Parent().FieldByName(fl.Param()).String()
+
+	return field == "" || field != otherField
 }
 
 func ValidateID(id string) (*uuid.UUID, *errors.Error) {

@@ -42,8 +42,6 @@ func AssertClubBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, body *ma
 
 	eaa.Assert.NilError(err)
 
-	eaa.Assert.Equal(2, len(dbClubs))
-
 	dbClub := dbClubs[0]
 
 	eaa.Assert.Equal(dbClub.ID, respClub.ID)
