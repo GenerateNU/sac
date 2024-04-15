@@ -4,7 +4,6 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 
 import { Button } from '@/components/button';
-import { router } from 'expo-router';
 
 type Ref = BottomSheet;
 
