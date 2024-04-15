@@ -14,9 +14,6 @@ const AllFAQs = () => {
             {/* <Text>Hello</Text> */}
             <ScrollView className="flex-1">
                 <View>
-                    <Button size={'icon'} variant="outline" className='flex justify-center items-center absolute top-1 left-6 z-10 bg-gray-300 rounded-full' onPress={() => router.back()}>
-                        <MaterialCommunityIcons name="chevron-left" size={24} color="rgb(75 85 99)" />
-                    </Button>
                     <Text className='text-center font-bold text-xl pt-2 pb-5'>Club Name</Text>
                     <View className='flex-row border border-[#CDCBCB] pl-3 rounded-lg mx-[5%] items-center'>
                         <MaterialCommunityIcons name="magnify" size={30} color="rgb(75 85 99)" />
@@ -24,7 +21,7 @@ const AllFAQs = () => {
                     </View>
                     <View className='flex-row px-[5%] py-[4%] justify-between'>
                         <Text className='text-center font-medium text-3xl'>FAQ</Text>
-                        <TouchableOpacity onPress={() => router.push('/(app)/ask-a-question')}>
+                        <TouchableOpacity onPress={() => router.push('/(app)/club/ask-a-question')}>
                             <MaterialCommunityIcons name="plus-circle-outline" size={40} color="black" />
                         </TouchableOpacity>
                     </View>

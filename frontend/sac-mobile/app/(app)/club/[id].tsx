@@ -11,7 +11,7 @@ import { EBoardMembers } from './_components/all-eboard-members';
 import { FAQs } from './_components/all-faqs';
 import { SocialMediaIcons } from './_components/all-social-media';
 import { Events } from './_components/all-events';
-import { Link, Stack } from 'expo-router';
+import { Link, router, Stack } from 'expo-router';
 import { MenuView } from '@react-native-menu/menu';
 
 const Club = () => {
@@ -34,9 +34,8 @@ const Club = () => {
                     <SocialMediaIcons/>
                     <AllClubTags />
                     <View>
-                        <Button variant='gray' size='screenwide' className='mb-4 flex-col justify-between'>
+                        <Button variant='gray' size='screenwide' className='mb-4 flex-col justify-between' onPress={() => router.push('/(app)/club/apply/apply-here')}>
                             <Text className='text-black font-bold text-left'>Application Form</Text>
-                            {/* <Text className=''>8 minutes</Text> */}
                         </Button>
                     </View>
 

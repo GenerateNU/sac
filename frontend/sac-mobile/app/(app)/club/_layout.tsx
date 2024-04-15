@@ -14,6 +14,16 @@ const Layout = () => {
                 name="faq/view-all-faqs"
                 options={{ headerShown: false, presentation: 'modal' }}
             />
+            <Stack.Screen
+
+
+                name="ask/ask-a-question"
+                options={{ headerShown: false, presentation: 'modal' }}
+            />
+            <Stack.Screen
+                name="apply/apply-here"
+                options={{ headerShown: false, presentation: 'modal' }}
+            />
         </Stack>
     );
 };

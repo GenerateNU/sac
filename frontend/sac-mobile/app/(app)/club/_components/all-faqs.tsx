@@ -19,18 +19,18 @@ const FAQs = () => {
         <View className='pb-[10%]'>
             <View className='flex-row justify-between'>
                 <Text className="text-black font-bold pb-4">FAQs</Text>
-                <TouchableOpacity onPress={() => router.push('/(app)/club/faq/view-all-faq')}>
+                <TouchableOpacity onPress={() => router.push('/(app)/club/faq/view-all-faqs')}>
                     <Text>View All</Text>
                 </TouchableOpacity>
             </View>
             <ScrollView horizontal={true} className="pb-[10%]">
                 <View className="flex-row">
                     {faqs && faqs.map((faq: FaqCardProps) => (
-                        <FaqCard id= {faq.id} question={faq.question} answer={faq.answer} />
+                        <FaqCard id={faq.id} question={faq.question} answer={faq.answer} />
                     ))}
                 </View>
             </ScrollView>
-            <Button variant="outline" onPress={() => router.push("/(app)/club/ask-a-question")}>Ask a Question</Button>
+            <Button variant="outline" onPress={() => router.push("/(app)/club/ask/ask-a-question")}>Ask a Question</Button>
         </View>
     );
 }
