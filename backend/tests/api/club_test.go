@@ -253,7 +253,7 @@ func TestCreateClubFailsOnInvalidDescription(t *testing.T) {
 		[]interface{}{
 			"Not an URL",
 			"@#139081#$Ad_Axf",
-			// "https://google.com", <-- TODO fix once we handle mongo urls
+			"https://google.com",
 		},
 	)
 }
@@ -298,7 +298,7 @@ func TestCreateClubFailsOnInvalidLogo(t *testing.T) {
 		[]interface{}{
 			"Not an URL",
 			"@#139081#$Ad_Axf",
-			// "https://google.com", <-- TODO uncomment once we figure out s3 url validation
+			"https://google.com",
 		},
 	)
 }
