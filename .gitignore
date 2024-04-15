@@ -2,7 +2,7 @@
 .DS_Store
 
 # Cli
-sac-cli
+sac
 
 # VSCode
 .vscode
