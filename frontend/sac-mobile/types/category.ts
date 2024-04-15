@@ -4,10 +4,12 @@ import { tagSchema } from '@/types/tag';
 
 import { rootModelSchema } from './root';
 
-export const categorySchema = z.object({
+const categorySchemaIntermediate = z.object({
     name: z.string().min(1),
     tags: z.array(tagSchema)
 });
 
-const Category = categorySchema.merge(rootModelSchema);
-export type Category = z.infer<typeof Category>;
+const categorySchema = categorySchemaIntermediate.merge(rootModelSchema);
+type Category = z.infer<typeof categorySchema>;
+
+export { categorySchema, Category };

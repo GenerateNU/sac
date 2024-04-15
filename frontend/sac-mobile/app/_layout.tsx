@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 import { useFonts } from 'expo-font';
@@ -91,8 +92,10 @@ const RootLayout = () => {
 
     return (
         <QueryClientProvider client={queryClient}>
-            <StatusBar style="light" />
-            <InitalLayout />
+            <GestureHandlerRootView style={{ flex: 1 }}>
+                <StatusBar style="light" />
+                <InitalLayout />
+            </GestureHandlerRootView>
         </QueryClientProvider>
     );
 };

@@ -8,12 +8,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { router } from 'expo-router';
-
-import { Button } from '@/components/button';
-import { Wordmark } from '@/components/wordmark';
-
 import { RegistrationForm } from './_components/registration-form';
+import { Wordmark } from '@/components/wordmark';
+import { Button } from '@/components/button';
+import { router } from 'expo-router';
 
 const Register = () => {
     return (

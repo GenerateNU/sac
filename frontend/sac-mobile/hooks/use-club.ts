@@ -5,7 +5,7 @@ import { Club } from '@/types/club';
 import { Contact } from '@/types/contact';
 import { uuid } from '@/types/uuid';
 
-export const useClubs = (): UseQueryResult<Club[], Error> => {
+const useClubs = (): UseQueryResult<Club[], Error> => {
     return useQuery<Club[], Error>({
         queryKey: ['clubs'],
         queryFn: () => {
@@ -14,7 +14,7 @@ export const useClubs = (): UseQueryResult<Club[], Error> => {
     });
 };
 
-export const useClub = (clubID: uuid): UseQueryResult<Club, Error> => {
+const useClub = (clubID: uuid): UseQueryResult<Club, Error> => {
     return useQuery<Club, Error>({
         queryKey: ['club', clubID],
         queryFn: () => {
@@ -23,9 +23,7 @@ export const useClub = (clubID: uuid): UseQueryResult<Club, Error> => {
     });
 };
 
-export const useClubContacts = (
-    clubID: uuid
-): UseQueryResult<Contact[], Error> => {
+const useClubContacts = (clubID: uuid): UseQueryResult<Contact[], Error> => {
     return useQuery<Contact[], Error>({
         queryKey: ['club', clubID, 'contacts'],
         queryFn: () => {
@@ -52,3 +50,5 @@ export const useClubContacts = (
         }
     });
 };
+
+export { useClub, useClubs, useClubContacts };

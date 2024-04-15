@@ -176,6 +176,7 @@ const RegistrationForm = () => {
                         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                             <Input
                                 title="Password"
+                                autoComplete='password'
                                 autoCorrect={false}
                                 placeholder="Password"
                                 onChangeText={onChange}
@@ -229,6 +230,7 @@ const RegistrationForm = () => {
                             <Input
                                 title="Password Confirmation"
                                 autoCorrect={false}
+                                autoComplete="password"
                                 placeholder="Confirm your password"
                                 onChangeText={onChange}
                                 value={value}
