@@ -481,7 +481,7 @@ func TestCreateUserFailsIfUserWithEmailAlreadyExists(t *testing.T) {
 }
 
 func AssertCreateBadDataFails(t *testing.T, jsonKey string, badValues []interface{}) {
-	appAssert, _, _ := CreateSampleStudent(t, nil)
+	appAssert := h.InitTest(t)
 
 	sampleStudent, rawPassword := h.SampleStudentFactory()
 
@@ -498,7 +498,7 @@ func AssertCreateBadDataFails(t *testing.T, jsonKey string, badValues []interfac
 			},
 			h.ErrorWithTester{
 				Error:  errors.FailedToValidateUser,
-				Tester: TestNumUsersRemainsAt2,
+				Tester: TestNumUsersRemainsAt1,
 			},
 		)
 	}
@@ -520,15 +520,40 @@ func TestCreateUserFailsOnInvalidEmail(t *testing.T) {
 }
 
 func TestCreateUserFailsOnInvalidPassword(t *testing.T) {
-	AssertCreateBadDataFails(t,
-		"password",
-		[]interface{}{
-			"",
-			"foo",
-			"abcdefg",
-			"abcdefg0",
-			"abcdefg@",
-		})
+	appAssert := h.InitTest(t)
+
+	sampleStudent, rawPassword := h.SampleStudentFactory()
+
+	inputsWithDesiredErr := []struct {
+		Password string
+		Error    errors.Error
+	}{
+		{"0", errors.InvalidPasswordNotLongEnough},
+		{"foo", errors.InvalidPasswordNotLongEnough},
+		{"abcdefgh", errors.InvalidPasswordNoDigit},
+		{"abcdefg0", errors.InvalidPasswordNoSpecialCharacter},
+		{"abcdefg@", errors.InvalidPasswordNoDigit},
+	}
+
+	for _, inputWithDesiredErr := range inputsWithDesiredErr {
+		sampleUserPermutation := *h.SampleStudentJSONFactory(sampleStudent, rawPassword)
+		sampleUserPermutation["password"] = inputWithDesiredErr.Password
+
+		appAssert = appAssert.TestOnErrorAndTester(
+			h.TestRequest{
+				Method: fiber.MethodPost,
+				Path:   "/api/v1/users/",
+				Body:   &sampleUserPermutation,
+				Role:   &models.Super,
+			},
+			h.ErrorWithTester{
+				Error:  inputWithDesiredErr.Error,
+				Tester: TestNumUsersRemainsAt1,
+			},
+		)
+	}
+
+	appAssert.Close()
 }
 
 func TestCreateUserFailsOnMissingFields(t *testing.T) {

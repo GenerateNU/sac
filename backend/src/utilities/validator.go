@@ -2,7 +2,6 @@ package utilities
 
 import (
 	"reflect"
-	"regexp"
 	"strconv"
 	"strings"
 
@@ -19,10 +18,6 @@ func RegisterCustomValidators() (*validator.Validate, error) {
 	validate := validator.New(validator.WithRequiredStructEnabled())
 
 	if err := validate.RegisterValidation("neu_email", validateEmail); err != nil {
-		return nil, err
-	}
-
-	if err := validate.RegisterValidation("password", validatePassword); err != nil {
 		return nil, err
 	}
 
@@ -58,16 +53,6 @@ func validateEmail(fl validator.FieldLevel) bool {
 	}
 
 	return true
-}
-
-func validatePassword(fl validator.FieldLevel) bool {
-	password := fl.Field().String()
-
-	hasMinLength := len(password) >= 8
-	hasDigit, _ := regexp.MatchString(`[0-9]`, password)
-	hasSpecialChar, _ := regexp.MatchString(`[@#%&*+]`, password)
-
-	return hasMinLength && hasDigit && hasSpecialChar
 }
 
 func validateS3URL(fl validator.FieldLevel) bool {
