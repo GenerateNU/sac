@@ -1,11 +1,14 @@
 import React, { useEffect } from 'react';
 import { Text, View } from 'react-native';
 
-import { Link, Tabs } from 'expo-router';
+import { Link, Tabs, useSegments } from 'expo-router';
 
-import HomeLight from '@/assets/icons/home-light';
-import SearchAltLight from '@/assets/icons/search-alt-light';
-import UserLight from '@/assets/icons/user-light';
+import HomeSelectedIcon from '@/assets/images/svg/home-selected.svg';
+import HomeIcon from '@/assets/images/svg/home.svg';
+import ProfileSelectedIcon from '@/assets/images/svg/profile-selected.svg';
+import ProfileIcon from '@/assets/images/svg/profile.svg';
+import SearchSelectedIcon from '@/assets/images/svg/search-selected.svg';
+import SearchIcon from '@/assets/images/svg/search.svg';
 import { useAuthStore } from '@/hooks/use-auth';
 
 const Layout = () => {
@@ -17,25 +20,27 @@ const Layout = () => {
 
     return (
         <Tabs
-            screenOptions={{
-                tabBarStyle: {
-                    bottom: '2.5%',
-                    left: '4%',
-                    alignContent: 'center',
-                    paddingTop: '7%',
-                    right: 20,
-                    elevation: 0,
-                    borderRadius: 50,
-                    position: 'absolute',
-                    shadowColor: '#000000',
-                    shadowOffset: {
-                        width: 2,
-                        height: 2
-                    },
-                    shadowOpacity: 0.15,
-                    shadowRadius: 3.84
+            screenOptions={
+                {
+                    // tabBarStyle: {
+                    //     bottom: '2.5%',
+                    //     left: '4%',
+                    //     alignContent: 'center',
+                    //     paddingTop: '7%',
+                    //     right: 20,
+                    //     elevation: 0,
+                    //     borderRadius: 50,
+                    //     position: 'absolute',
+                    //     shadowColor: '#000000',
+                    //     shadowOffset: {
+                    //         width: 2,
+                    //         height: 2
+                    //     },
+                    //     shadowOpacity: 0.15,
+                    //     shadowRadius: 3.84
+                    // }
                 }
-            }}
+            }
         >
             <Tabs.Screen
                 name="index"
@@ -51,7 +56,9 @@ const Layout = () => {
                         return <View className="h-full bg-gray-100" />;
                     },
                     headerShown: true,
-                    tabBarIcon: HomeLight,
+                    tabBarIcon: ({ focused }) => {
+                        return focused ? <HomeSelectedIcon /> : <HomeIcon />;
+                    },
                     headerLeft: () => {
                         return (
                             <Text className="pl-6 mt-4 text-2xl font-bold">
@@ -69,7 +76,13 @@ const Layout = () => {
                         return null;
                     },
                     headerShown: false,
-                    tabBarIcon: SearchAltLight
+                    tabBarIcon: ({ focused }) => {
+                        return focused ? (
+                            <SearchSelectedIcon />
+                        ) : (
+                            <SearchIcon />
+                        );
+                    }
                 }}
             />
             <Tabs.Screen
@@ -80,7 +93,13 @@ const Layout = () => {
                         return null;
                     },
                     headerShown: false,
-                    tabBarIcon: UserLight
+                    tabBarIcon: ({ focused }) => {
+                        return focused ? (
+                            <ProfileSelectedIcon />
+                        ) : (
+                            <ProfileIcon />
+                        );
+                    }
                 }}
                 redirect={!isLoggedIn}
             />

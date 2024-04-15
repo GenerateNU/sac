@@ -34,6 +34,7 @@
         "expo-auth-session": "^5.4.0",
         "expo-dev-client": "~3.3.11",
         "expo-font": "~11.10.2",
+        "expo-haptics": "~12.8.1",
         "expo-linking": "~6.2.2",
         "expo-router": "~3.4.8",
         "expo-secure-store": "~12.8.1",

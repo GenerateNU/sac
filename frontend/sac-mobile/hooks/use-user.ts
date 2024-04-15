@@ -81,8 +81,10 @@ export const useDeleteClubFollowing = () => {
         mutationFn: ({ userId, clubId }: { userId: string; clubId: string }) =>
             DeleteUserFollowing(userId, clubId),
         onSuccess: (data, variables, context) => {
-            return queryClient.invalidateQueries({ queryKey: [`user${variables.userId}following`] })
+            return queryClient.invalidateQueries({
+                queryKey: [`user${variables.userId}following`]
+            });
             // queryClient.invalidateQueries({ queryKey: ['user_following'] });
         }
-    })
-}
+    });
+};

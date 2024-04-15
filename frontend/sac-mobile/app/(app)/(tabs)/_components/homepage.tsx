@@ -32,6 +32,18 @@ const HomepageList = () => {
         return shuffledItems;
     };
 
+    // const renderItems = (items: HomepageItem[]) => {
+    //     return items.map((item: HomepageItem, index) => {
+    //         if (isClub(item)) {
+    //             return <ClubHomepageCard key={index} club={item as Club} />;
+    //         } else if (isEvent(item)) {
+    //             return <EventHomePageCard key={index} event={item as Event} />;
+    //         } else if (isFAQ(item)) {
+    //             return <FAQHomePageCard key={index} faq={item} />;
+    //         }
+    //     });
+    // }
+
     return (
         <View className="px-[6%] pt-[3%]">
             {getHomepageItems().map((item: FAQ | Club | Event, index) => {
