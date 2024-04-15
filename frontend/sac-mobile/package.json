@@ -46,7 +46,7 @@
         "react-native": "0.73.6",
         "react-native-cookies": "^3.3.0",
         "react-native-element-dropdown": "^2.10.4",
-        "react-native-gesture-handler": "~2.14.0",
+        "react-native-gesture-handler": "~2.16.0",
         "react-native-loading-spinner-overlay": "^3.0.1",
         "react-native-maps": "1.10.0",
         "react-native-open-maps": "^0.4.3",
