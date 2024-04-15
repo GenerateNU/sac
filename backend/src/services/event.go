@@ -252,6 +252,7 @@ func mapToEvent(eventBody models.UpdateEventRequestBody) *models.Event {
 		Location:  eventBody.Location,
 		EventType: eventBody.EventType,
 
+		Host:         eventBody.Host,
 		RSVP:         eventBody.RSVP,
 		Waitlist:     eventBody.Waitlist,
 		Clubs:        eventBody.Clubs,
