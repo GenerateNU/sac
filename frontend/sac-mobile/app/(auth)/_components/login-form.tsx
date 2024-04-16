@@ -11,6 +11,7 @@ import { Button } from '@/components/button';
 import { Error } from '@/components/error';
 import { Input } from '@/components/input';
 import { useAuthStore } from '@/hooks/use-auth';
+import { useAuth } from '@/context/AuthContext';
 
 type LoginFormData = {
     email: string;
@@ -31,7 +32,8 @@ const LoginForm = () => {
         formState: { errors }
     } = useForm<LoginFormData>();
 
-    const { signIn } = useAuthStore();
+    // const { signIn } = useAuthStore();
+    const { onLogin } = useAuth();
     const [loading, setLoading] = useState(false);
 
     const onSignInPress = async (loginData: LoginFormData) => {
@@ -40,8 +42,12 @@ const LoginForm = () => {
         try {
             const validData = loginSchema.parse(loginData);
             console.log({ validData });
+<<<<<<< Updated upstream
             await signIn(validData.email, validData.password);
             // router.replace('/(app)/(tabs)/');
+=======
+            await onLogin!(validData.email, validData.password);
+>>>>>>> Stashed changes
         } catch (err: any) {
             if (err instanceof ZodError) {
                 Alert.alert(err.errors[0].message);

@@ -1,0 +1,11 @@
+/Users/davidoduneye/projects/org-generate/sac/mock_data/target/debug/deps/libbitflags-00518e6b9619f2c2.rmeta: /Users/davidoduneye/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitflags-2.4.2/src/lib.rs /Users/davidoduneye/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitflags-2.4.2/src/iter.rs /Users/davidoduneye/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitflags-2.4.2/src/parser.rs /Users/davidoduneye/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitflags-2.4.2/src/traits.rs /Users/davidoduneye/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitflags-2.4.2/src/public.rs /Users/davidoduneye/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitflags-2.4.2/src/internal.rs /Users/davidoduneye/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitflags-2.4.2/src/external.rs
+
+/Users/davidoduneye/projects/org-generate/sac/mock_data/target/debug/deps/bitflags-00518e6b9619f2c2.d: /Users/davidoduneye/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitflags-2.4.2/src/lib.rs /Users/davidoduneye/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitflags-2.4.2/src/iter.rs /Users/davidoduneye/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitflags-2.4.2/src/parser.rs /Users/davidoduneye/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitflags-2.4.2/src/traits.rs /Users/davidoduneye/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitflags-2.4.2/src/public.rs /Users/davidoduneye/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitflags-2.4.2/src/internal.rs /Users/davidoduneye/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitflags-2.4.2/src/external.rs
+
+/Users/davidoduneye/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitflags-2.4.2/src/lib.rs:
+/Users/davidoduneye/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitflags-2.4.2/src/iter.rs:
+/Users/davidoduneye/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitflags-2.4.2/src/parser.rs:
+/Users/davidoduneye/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitflags-2.4.2/src/traits.rs:
+/Users/davidoduneye/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitflags-2.4.2/src/public.rs:
+/Users/davidoduneye/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitflags-2.4.2/src/internal.rs:
+/Users/davidoduneye/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitflags-2.4.2/src/external.rs:

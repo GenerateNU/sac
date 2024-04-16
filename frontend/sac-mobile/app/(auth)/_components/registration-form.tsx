@@ -9,6 +9,7 @@ import { Button } from '@/components/button';
 import { Error } from '@/components/error';
 import { Input } from '@/components/input';
 import { useAuthStore } from '@/hooks/use-auth';
+import { useAuth } from '@/context/AuthContext';
 
 type RegisterFormData = {
     first_name: string;
@@ -39,7 +40,8 @@ const RegistrationForm = () => {
         formState: { errors }
     } = useForm<RegisterFormData>();
 
-    const { signUp } = useAuthStore();
+    // const { signUp } = useAuthStore();
+    const { onRegister } = useAuth();
     const [loading, setLoading] = useState(false);
 
     const onSignUp = async ({
@@ -51,8 +53,13 @@ const RegistrationForm = () => {
         try {
             registerSchema.parse({ password_confirmation, ...rest });
             const updatedData = { ...rest };
+<<<<<<< Updated upstream
 
             await signUp(updatedData);
+=======
+            console.log(updatedData);
+            await onRegister!(updatedData);
+>>>>>>> Stashed changes
         } catch (error: any) {
             if (error instanceof ZodError) {
                 Alert.alert(error.errors[0].message);

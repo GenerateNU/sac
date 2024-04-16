@@ -10,6 +10,7 @@ import { useEvents } from '@/hooks/use-event';
 import { Club } from '@/types/club';
 import { Event } from '@/types/event';
 
+<<<<<<< Updated upstream
 const Home = () => {
     const { user } = useAuthStore();
     const { data: events, isLoading, error } = useEvents();
@@ -47,6 +48,14 @@ const Home = () => {
             <Text>{club.name}</Text>
         </Link>
     );
+=======
+import { FollowingHeader } from './_components/following-header';
+import { useAuth } from '@/context/AuthContext';
+
+const HomePage = () => {
+    // const { user } = useAuthStore();
+    const { user } = useAuth();
+>>>>>>> Stashed changes
 
     return (
         <SafeAreaView className="flex items-center justify-center flex-1">

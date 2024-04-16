@@ -13,9 +13,14 @@ import { Input } from '@/components/input';
 import { useAuthStore } from '@/hooks/use-auth';
 import { requestVerification } from '@/services/auth';
 
+<<<<<<< Updated upstream
 type VerificationFormData = {
     code: string;
 };
+=======
+import Code from './code';
+import { useAuth } from '@/context/AuthContext';
+>>>>>>> Stashed changes
 
 const verificationSchema = z.object({
     code: z.string().min(6, {
@@ -24,6 +29,7 @@ const verificationSchema = z.object({
 });
 
 const VerificationForm = () => {
+<<<<<<< Updated upstream
     const {
         control,
         handleSubmit,
@@ -31,18 +37,26 @@ const VerificationForm = () => {
     } = useForm<VerificationFormData>();
 
     const { user, completeVerification } = useAuthStore();
+=======
+    // const { user, completeVerification } = useAuthStore();
+    const { user, onVerify } = useAuth();
+>>>>>>> Stashed changes
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         console.log('[verification-form]', { user });
     }, [user]);
 
+<<<<<<< Updated upstream
     const onVerify = async ({ code }: VerificationFormData) => {
+=======
+    const onPressVerify = async (code: string) => {
+>>>>>>> Stashed changes
         setLoading(true);
 
         try {
             verificationSchema.parse({ code });
-            await completeVerification(user?.email as string, code);
+            await onVerify!(user?.email as string, code);
             router.replace('/(auth)/user-details');
         } catch (error: any) {
             if (error instanceof ZodError) {
@@ -66,6 +80,7 @@ const VerificationForm = () => {
     return (
         <>
             {loading && <Spinner visible={loading} />}
+<<<<<<< Updated upstream
             <View className="w-full mb-[8.5%]">
                 <Controller
                     control={control}
@@ -91,6 +106,9 @@ const VerificationForm = () => {
                     Submit
                 </Button>
             </View>
+=======
+            <Code onCompleted={onPressVerify} />
+>>>>>>> Stashed changes
             <View className="mt-[5%] flex-row justify-center">
                 <Text>Did not receive a code?</Text>
                 <TouchableOpacity

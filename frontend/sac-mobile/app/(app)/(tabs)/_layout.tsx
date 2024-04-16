@@ -5,6 +5,7 @@ import { Tabs } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { useAuthStore } from '@/hooks/use-auth';
+import { useAuth } from '@/context/AuthContext';
 
 const HomeTabBarIcon = ({ color }: { color: string }) => (
     <MaterialCommunityIcons name="home" size={24} color={color} />
@@ -19,11 +20,12 @@ const SearchTabBarIcon = ({ color }: { color: string }) => (
 );
 
 const Layout = () => {
-    const { isLoggedIn, fetchUser } = useAuthStore();
+    // const { isLoggedIn, fetchUser } = useAuthStore();
+    const { initialized, getUser } = useAuth();
 
     useEffect(() => {
-        if (isLoggedIn) fetchUser();
-    }, [isLoggedIn, fetchUser]);
+        if (initialized) getUser!();
+    }, [initialized]);
 
     return (
         <Tabs>
@@ -52,7 +54,7 @@ const Layout = () => {
                     headerShown: false,
                     tabBarIcon: ProfileTabBarIcon
                 }}
-                redirect={!isLoggedIn}
+                // redirect={!isLoggedIn}
             />
         </Tabs>
     );
