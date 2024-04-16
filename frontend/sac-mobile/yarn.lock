@@ -8645,11 +8645,6 @@ react-native-gesture-handler@^2.16.0:
     lodash "^4.17.21"
     prop-types "^15.7.2"
 
-react-native-loading-overlay@^3.0.1:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/react-native-loading-overlay/-/react-native-loading-overlay-1.0.2.tgz#e763ad05d104b76b60ff0d0a72acc39414ced0c5"
-  integrity sha512-pw3hJMB+OzRiZ1pCB3sLUx6Msk7bOFL7yBgOSZMmIeVzScM/0PrbIHninVoQKCq66cxZlNtxoNNMsgdlqqSARg==
-
 react-native-loading-spinner-overlay@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/react-native-loading-spinner-overlay/-/react-native-loading-spinner-overlay-3.0.1.tgz#092481b8cce157d3af5ef942f845ad981f96bd36"
