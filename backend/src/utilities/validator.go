@@ -2,7 +2,6 @@ package utilities
 
 import (
 	"reflect"
-	"regexp"
 	"strconv"
 	"strings"
 
@@ -22,10 +21,6 @@ func RegisterCustomValidators() (*validator.Validate, error) {
 		return nil, err
 	}
 
-	if err := validate.RegisterValidation("password", validatePassword); err != nil {
-		return nil, err
-	}
-
 	if err := validate.RegisterValidation("s3_url", validateS3URL); err != nil {
 		return nil, err
 	}
@@ -33,6 +28,10 @@ func RegisterCustomValidators() (*validator.Validate, error) {
 	if err := validate.RegisterValidation("contact_pointer", func(fl validator.FieldLevel) bool {
 		return validateContactPointer(validate, fl)
 	}); err != nil {
+		return nil, err
+	}
+
+	if err := validate.RegisterValidation("not_equal_if_not_empty", validateNotEqualIfNotEmpty); err != nil {
 		return nil, err
 	}
 
@@ -54,16 +53,6 @@ func validateEmail(fl validator.FieldLevel) bool {
 	}
 
 	return true
-}
-
-func validatePassword(fl validator.FieldLevel) bool {
-	password := fl.Field().String()
-
-	hasMinLength := len(password) >= 8
-	hasDigit, _ := regexp.MatchString(`[0-9]`, password)
-	hasSpecialChar, _ := regexp.MatchString(`[!@#$%^&*()_+\-=;:'",<>.]`, password)
-
-	return hasMinLength && hasDigit && hasSpecialChar
 }
 
 func validateS3URL(fl validator.FieldLevel) bool {
@@ -95,6 +84,13 @@ func validateContactPointer(validate *validator.Validate, fl validator.FieldLeve
 	}
 
 	return validate.Var(contact.Content, rule) == nil && strings.HasPrefix(contact.Content, models.GetContentPrefix(contact.Type))
+}
+
+func validateNotEqualIfNotEmpty(fl validator.FieldLevel) bool {
+	field := fl.Field().String()
+	otherField := fl.Parent().FieldByName(fl.Param()).String()
+
+	return field == "" || field != otherField
 }
 
 func ValidateID(id string) (*uuid.UUID, *errors.Error) {

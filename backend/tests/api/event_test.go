@@ -16,9 +16,9 @@ import (
 	"gorm.io/gorm"
 )
 
-type EventFactory func() *map[string]interface{}
+type EventFactory func(hostID uuid.UUID) *map[string]interface{}
 
-func SampleEventFactory() *map[string]interface{} {
+func SampleEventFactory(hostID uuid.UUID) *map[string]interface{} {
 	return &map[string]interface{}{
 		"name":         "Generate",
 		"preview":      "Generate is Northeastern's premier student-led product development studio.",
@@ -28,11 +28,13 @@ func SampleEventFactory() *map[string]interface{} {
 		"location":     "Carter Fields",
 		"event_type":   "open",
 		"is_recurring": false,
+		"host":         hostID,
 	}
 }
 
-func SampleSeriesFactory() *map[string]interface{} {
+func SampleSeriesFactory(hostID uuid.UUID) *map[string]interface{} {
 	return CustomSampleSeriesFactory(
+		hostID,
 		models.CreateSeriesRequestBody{
 			RecurringType:  "daily",
 			MaxOccurrences: 10,
@@ -40,7 +42,7 @@ func SampleSeriesFactory() *map[string]interface{} {
 	)
 }
 
-func CustomSampleSeriesFactory(series models.CreateSeriesRequestBody) *map[string]interface{} {
+func CustomSampleSeriesFactory(hostID uuid.UUID, series models.CreateSeriesRequestBody) *map[string]interface{} {
 	return &map[string]interface{}{
 		"name":         "Software Development",
 		"preview":      "CS4500 at northeastern",
@@ -50,6 +52,7 @@ func CustomSampleSeriesFactory(series models.CreateSeriesRequestBody) *map[strin
 		"location":     "ISEC",
 		"event_type":   "membersOnly",
 		"is_recurring": true,
+		"host":         hostID,
 		"series":       series,
 	}
 }
@@ -138,25 +141,25 @@ func AssertEventBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, body *m
 	return dbEvent.ID
 }
 
-func AssertSampleEventBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response) []uuid.UUID {
-	sampleEvent := SampleEventFactory()
+func AssertSampleEventBodyRespDB(eaa h.ExistingAppAssert, hostID uuid.UUID, resp *http.Response) []uuid.UUID {
+	sampleEvent := SampleEventFactory(hostID)
 	return AssertEventListBodyRespDB(eaa, resp, sampleEvent)
 }
 
-func CreateSampleEvent(existingAppAssert h.ExistingAppAssert, factoryFunction EventFactory) (h.ExistingAppAssert, []uuid.UUID) {
+func CreateSampleEvent(existingAppAssert h.ExistingAppAssert, hostID uuid.UUID, factoryFunction EventFactory) (h.ExistingAppAssert, []uuid.UUID) {
 	var sampleEventUUIDs []uuid.UUID
 
 	newAppAssert := existingAppAssert.TestOnStatusAndTester(
 		h.TestRequest{
 			Method: fiber.MethodPost,
 			Path:   "/api/v1/events/",
-			Body:   factoryFunction(),
+			Body:   factoryFunction(hostID),
 			Role:   &models.Super,
 		},
 		h.TesterWithStatus{
 			Status: fiber.StatusCreated,
 			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
-				sampleEventUUIDs = AssertSampleEventBodyRespDB(eaa, resp)
+				sampleEventUUIDs = AssertSampleEventBodyRespDB(eaa, hostID, resp)
 			},
 		},
 	)
@@ -185,18 +188,20 @@ func AssertNumSeriesRemainsAtN(eaa h.ExistingAppAssert, resp *http.Response, n i
 }
 
 func TestCreateEventWorks(t *testing.T) {
-	existingAppAssert, _ := CreateSampleEvent(h.InitTest(t), SampleEventFactory)
-	existingAppAssert.Close()
+	eaa, _, clubID := CreateSampleClub(h.InitTest(t))
+	eaa, _ = CreateSampleEvent(eaa, clubID, SampleEventFactory)
+	eaa.Close()
 }
 
 func TestCreateEventSeriesWorks(t *testing.T) {
-	existingAppAssert, _ := CreateSampleEvent(h.InitTest(t), SampleSeriesFactory)
-	existingAppAssert.Close()
+	eaa, _, clubID := CreateSampleClub(h.InitTest(t))
+	eaa, _ = CreateSampleEvent(eaa, clubID, SampleSeriesFactory)
+	eaa.Close()
 }
 
 func TestGetEventWorks(t *testing.T) {
-	existingAppAssert, eventUUID := CreateSampleEvent(h.InitTest(t), SampleEventFactory)
-
+	existingAppAssert, _, clubID := CreateSampleClub(h.InitTest(t))
+	existingAppAssert, eventUUID := CreateSampleEvent(existingAppAssert, clubID, SampleEventFactory)
 	existingAppAssert.TestOnStatusAndTester(h.TestRequest{
 		Method: fiber.MethodGet,
 		Path:   fmt.Sprintf("/api/v1/events/%s", eventUUID[0]),
@@ -205,14 +210,15 @@ func TestGetEventWorks(t *testing.T) {
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
 			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
-				AssertEventListBodyRespDB(eaa, resp, SampleEventFactory())
+				AssertEventListBodyRespDB(eaa, resp, SampleEventFactory(clubID))
 			},
 		},
 	).Close()
 }
 
 func TestGetEventsWorks(t *testing.T) {
-	existingAppAssert, _ := CreateSampleEvent(h.InitTest(t), SampleEventFactory)
+	existingAppAssert, _, clubID := CreateSampleClub(h.InitTest(t))
+	existingAppAssert, _ = CreateSampleEvent(existingAppAssert, clubID, SampleEventFactory)
 
 	existingAppAssert.TestOnStatusAndTester(h.TestRequest{
 		Method: fiber.MethodGet,
@@ -235,7 +241,8 @@ func TestGetEventsWorks(t *testing.T) {
 }
 
 func TestGetSeriesByEventIDWorks(t *testing.T) {
-	existingAppAssert, eventUUIDs := CreateSampleEvent(h.InitTest(t), SampleSeriesFactory)
+	existingAppAssert, _, clubID := CreateSampleClub(h.InitTest(t))
+	existingAppAssert, eventUUIDs := CreateSampleEvent(existingAppAssert, clubID, SampleSeriesFactory)
 
 	existingAppAssert.TestOnStatusAndTester(h.TestRequest{
 		Method: fiber.MethodGet,
@@ -254,9 +261,10 @@ func TestGetSeriesByEventIDWorks(t *testing.T) {
 
 func AssertCreateBadEventDataFails(t *testing.T, jsonKey string, badValues []interface{}, expectedErr errors.Error) {
 	appAssert, _, _ := CreateSampleStudent(t, nil)
+	appAssert, _, clubID := CreateSampleClub(appAssert)
 
 	for _, badValue := range badValues {
-		sampleEventPermutation := *SampleEventFactory()
+		sampleEventPermutation := *SampleEventFactory(clubID)
 		sampleEventPermutation[jsonKey] = badValue
 
 		appAssert.TestOnErrorAndTester(
@@ -320,8 +328,9 @@ func TestCreateEventFailsOnInvalidEventType(t *testing.T) {
 
 func AssertCreateBadEventSeriesDataFails(t *testing.T, badSeries models.CreateSeriesRequestBody, expectedErr errors.Error) {
 	appAssert, _, _ := CreateSampleStudent(t, nil)
+	appAssert, _, clubID := CreateSampleClub(appAssert)
 
-	sampleSeriesPermutation := CustomSampleSeriesFactory(badSeries)
+	sampleSeriesPermutation := CustomSampleSeriesFactory(clubID, badSeries)
 
 	appAssert.TestOnErrorAndTester(
 		h.TestRequest{
@@ -361,9 +370,10 @@ func TestCreateSeriesFailsOnInvalidMaxOccurrences(t *testing.T) {
 }
 
 func TestUpdateEventWorks(t *testing.T) {
-	appAssert, eventUUID := CreateSampleEvent(h.InitTest(t), SampleEventFactory)
+	appAssert, _, clubID := CreateSampleClub(h.InitTest(t))
+	appAssert, eventUUID := CreateSampleEvent(appAssert, clubID, SampleEventFactory)
 
-	updatedEvent := SampleEventFactory()
+	updatedEvent := SampleEventFactory(clubID)
 	(*updatedEvent)["name"] = "Updated Name"
 	(*updatedEvent)["preview"] = "Updated Preview"
 
@@ -384,7 +394,8 @@ func TestUpdateEventWorks(t *testing.T) {
 }
 
 func TestUpdateEventSeriesWorks(t *testing.T) {
-	appAssert, eventUUIDs := CreateSampleEvent(h.InitTest(t), SampleSeriesFactory)
+	appAssert, _, clubID := CreateSampleClub(h.InitTest(t))
+	appAssert, eventUUIDs := CreateSampleEvent(appAssert, clubID, SampleSeriesFactory)
 
 	updatedSeries := &map[string]interface{}{
 		"recurring_type":  "daily",
@@ -398,6 +409,7 @@ func TestUpdateEventSeriesWorks(t *testing.T) {
 			"location":     "Richards 224",
 			"event_type":   "open",
 			"is_recurring": true,
+			"host":         clubID,
 		},
 	}
 
@@ -418,9 +430,10 @@ func TestUpdateEventSeriesWorks(t *testing.T) {
 }
 
 func TestUpdateEventFailsOnInvalidBody(t *testing.T) {
-	appAssert, eventUUID := CreateSampleEvent(h.InitTest(t), SampleEventFactory)
+	appAssert, _, clubID := CreateSampleClub(h.InitTest(t))
+	appAssert, eventUUID := CreateSampleEvent(appAssert, clubID, SampleEventFactory)
 
-	body := SampleEventFactory()
+	body := SampleEventFactory(clubID)
 
 	for _, invalidData := range []map[string]interface{}{
 		{"start_time": "Not a datetime"},
@@ -466,7 +479,7 @@ func TestUpdateEventFailsOnInvalidBody(t *testing.T) {
 }
 
 func TestUpdateEventFailsBadRequest(t *testing.T) {
-	appAssert := h.InitTest(t)
+	appAssert, _, clubID := CreateSampleClub(h.InitTest(t))
 
 	badRequests := []string{
 		"0",
@@ -481,7 +494,7 @@ func TestUpdateEventFailsBadRequest(t *testing.T) {
 			h.TestRequest{
 				Method: fiber.MethodPatch,
 				Path:   fmt.Sprintf("/api/v1/events/%s", badRequest),
-				Body:   SampleEventFactory(),
+				Body:   SampleEventFactory(clubID),
 				Role:   &models.Super,
 			},
 			errors.FailedToValidateID,
@@ -492,12 +505,14 @@ func TestUpdateEventFailsBadRequest(t *testing.T) {
 }
 
 func TestUpdateEventFailsOnEventIdNotExist(t *testing.T) {
+	eaa, _, clubID := CreateSampleClub(h.InitTest(t))
+
 	uuid := uuid.New()
 
-	h.InitTest(t).TestOnErrorAndTester(h.TestRequest{
+	eaa.TestOnErrorAndTester(h.TestRequest{
 		Method:             fiber.MethodPatch,
 		Path:               fmt.Sprintf("/api/v1/events/%s", uuid),
-		Body:               SampleEventFactory(),
+		Body:               SampleEventFactory(clubID),
 		Role:               &models.Super,
 		TestUserIDReplaces: h.StringToPointer("user_id"),
 	},
@@ -515,7 +530,7 @@ func TestUpdateEventFailsOnEventIdNotExist(t *testing.T) {
 }
 
 func TestUpdateSeriesFailsBadRequest(t *testing.T) {
-	appAssert := h.InitTest(t)
+	appAssert, _, clubID := CreateSampleClub(h.InitTest(t))
 
 	badRequests := []string{
 		"0",
@@ -530,7 +545,7 @@ func TestUpdateSeriesFailsBadRequest(t *testing.T) {
 			h.TestRequest{
 				Method: fiber.MethodPatch,
 				Path:   fmt.Sprintf("/api/v1/events/%s/series", badRequest),
-				Body:   SampleEventFactory(),
+				Body:   SampleEventFactory(clubID),
 				Role:   &models.Super,
 			},
 			errors.FailedToValidateID,
@@ -541,7 +556,8 @@ func TestUpdateSeriesFailsBadRequest(t *testing.T) {
 }
 
 func AssertDeleteWorks(t *testing.T, factoryFunction EventFactory, requestPath string, tester h.Tester) {
-	appAssert, eventUUIDs := CreateSampleEvent(h.InitTest(t), factoryFunction)
+	appAssert, _, clubID := CreateSampleClub(h.InitTest(t))
+	appAssert, eventUUIDs := CreateSampleEvent(appAssert, clubID, factoryFunction)
 
 	appAssert.TestOnStatusAndTester(
 		h.TestRequest{
@@ -570,7 +586,8 @@ func TestDeleteSeriesByEventIDWorks(t *testing.T) {
 }
 
 func AssertDeleteNotExistFails(t *testing.T, factoryFunction EventFactory, requestPath string, tester h.Tester, badUUID uuid.UUID) {
-	appAssert, _ := CreateSampleEvent(h.InitTest(t), factoryFunction)
+	appAssert, _, clubID := CreateSampleClub(h.InitTest(t))
+	appAssert, _ = CreateSampleEvent(appAssert, clubID, factoryFunction)
 
 	appAssert.TestOnErrorAndTester(
 		h.TestRequest{

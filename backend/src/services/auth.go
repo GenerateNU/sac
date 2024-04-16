@@ -40,6 +40,10 @@ func (a *AuthService) Login(loginBody models.LoginUserResponseBody) (*models.Use
 		return nil, nil, &errors.FailedToValidateUser
 	}
 
+	if pwordValErr := auth.ValidatePassword(loginBody.Password); pwordValErr != nil {
+		return nil, nil, pwordValErr
+	}
+
 	user, getUserByEmailErr := transactions.GetUserByEmail(a.DB, loginBody.Email)
 	if getUserByEmailErr != nil {
 		return nil, nil, getUserByEmailErr

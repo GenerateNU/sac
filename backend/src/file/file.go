@@ -128,7 +128,6 @@ func (aw *AWSClient) UploadFile(folder string, fileHeader *multipart.FileHeader,
 		Body:   bytes.NewReader(file),
 	})
 	if s3Err != nil {
-		fmt.Printf("Failed to upload data to %s/%s, %v\n", bucket, key, err)
 		return nil, &errors.FailedToUploadFile
 	}
 

@@ -30,13 +30,13 @@ type Club struct {
 
 	SoftDeletedAt gorm.DeletedAt `gorm:"type:timestamptz;default:NULL" json:"-" validate:"-"`
 
-	Name             string           `gorm:"type:varchar(255)" json:"name" validate:"required,max=255"`
-	Preview          string           `gorm:"type:varchar(255)" json:"preview" validate:"required,max=255"`
-	Description      string           `gorm:"type:text" json:"description" validate:"required,http_url,s3_url,max=255"` // S3 URL
-	NumMembers       int              `gorm:"type:int" json:"num_members" validate:"required,min=1"`
-	IsRecruiting     bool             `gorm:"type:bool;default:false" json:"is_recruiting" validate:"required"`
-	RecruitmentCycle RecruitmentCycle `gorm:"type:varchar(255);default:always" json:"recruitment_cycle" validate:"required,max=255,oneof=fall spring fallSpring always"`
-	RecruitmentType  RecruitmentType  `gorm:"type:varchar(255);default:unrestricted" json:"recruitment_type" validate:"required,max=255,oneof=unrestricted tryout application"`
+	Name             string           `gorm:"type:varchar(255);not null" json:"name" validate:"required,max=255"`
+	Preview          string           `gorm:"type:varchar(255);not null" json:"preview" validate:"required,max=255"`
+	Description      string           `gorm:"type:text;not null" json:"description" validate:"required,http_url,s3_url,max=255"` // S3 URL
+	NumMembers       int              `gorm:"type:int;not null" json:"num_members" validate:"required,min=1"`
+	IsRecruiting     bool             `gorm:"type:bool;default:false;not null" json:"is_recruiting" validate:"required"`
+	RecruitmentCycle RecruitmentCycle `gorm:"type:varchar(255);default:always;not null" json:"recruitment_cycle" validate:"required,max=255,oneof=fall spring fallSpring always"`
+	RecruitmentType  RecruitmentType  `gorm:"type:varchar(255);default:unrestricted;not null" json:"recruitment_type" validate:"required,max=255,oneof=unrestricted tryout application"`
 	ApplicationLink  string           `gorm:"type:varchar(255);default:NULL" json:"application_link" validate:"required,max=255,http_url"`
 	Logo             string           `gorm:"type:varchar(255);default:NULL" json:"logo" validate:"omitempty,http_url,s3_url,max=255"` // S3 URL
 
