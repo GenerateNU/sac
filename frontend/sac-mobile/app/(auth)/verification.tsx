@@ -5,27 +5,26 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Wordmark } from '@/components/wordmark';
 
 import { VerificationForm } from './_components/verification-form';
+import { StatusBar } from 'expo-status-bar';
 
 const Verification = () => {
     return (
-        <SafeAreaView className="bg-neutral-500" edges={['top']}>
+        <View className="h-full bg-white">
+            <StatusBar style="dark" />
             <View className="px-[8%] pb-[9%]">
-                <View className="flex flex-row justify-between mx-auto w-full items-center pt-[3%] pb-[5.5%]">
-                    <Wordmark />
-                </View>
                 <View className="pt-[9%] pb-[7.5%]">
-                    <Text className="text-5xl font-bold text-white">
+                    <Text className="text-5xl font-bold text-gray-500">
                         Verify your email
                     </Text>
                 </View>
-                <Text className="text-lg leading-6 text-white ">
+                <Text className="text-lg leading-6 text-gray-500 ">
                     Please enter the verification code sent to your email.
                 </Text>
             </View>
-            <View className="bg-white px-[8%] pt-[13%] pb-[20%] mt-[50%] rounded-t-3xl">
+            <View className=" px-[8%] pt-[13%] pb-[20%]">
                 <VerificationForm />
             </View>
-        </SafeAreaView>
+        </View>
     );
 };
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Pressable, Text, View } from 'react-native';
 
 import { ZodError, z } from 'zod';
 
@@ -16,7 +16,7 @@ const FAQSchema = z.object({
     question: z.string()
 });
 
-export const FAQHomePageCard = ({ faq }: { faq: FAQ }) => {
+const FAQHomePageCard = ({ faq }: { faq: FAQ }) => {
     const length = () => {
         if (faq.club_name.length > 11) {
             return faq.club_name.substring(0, 11) + '...';
@@ -47,11 +47,11 @@ export const FAQHomePageCard = ({ faq }: { faq: FAQ }) => {
     };
 
     return (
-        <TouchableOpacity className="bg-gray-200 rounded-2xl my-[2%] p-[5%]">
+        <Pressable className="bg-gray-200 rounded-2xl my-[2%] p-[5%]">
             <View className="flex-row">
-                <View className="bg-gray-300 rounded-xl w-16 h-16" />
+                <View className="w-16 h-16 bg-gray-300 rounded-xl" />
                 <View className="ml-[5%]">
-                    <Text className="text-base leading-6 font-bold ">
+                    <Text className="text-base font-bold leading-6 ">
                         {faq.club_name}
                     </Text>
                     <Text className="text-sm font-medium leading-5 text-gray-500">
@@ -86,7 +86,7 @@ export const FAQHomePageCard = ({ faq }: { faq: FAQ }) => {
                         )}
                         name="question"
                         rules={{
-                            required: 'Cannot submit form if empty'
+                            required: 'Question is required'
                         }}
                     />
                     {errors.question && (
@@ -96,6 +96,8 @@ export const FAQHomePageCard = ({ faq }: { faq: FAQ }) => {
                     )}
                 </View>
             </View>
-        </TouchableOpacity>
+        </Pressable>
     );
 };
+
+export { FAQHomePageCard };

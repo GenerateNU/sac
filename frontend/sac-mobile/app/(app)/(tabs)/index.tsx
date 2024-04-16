@@ -1,34 +1,40 @@
 import React from 'react';
-import { ScrollView, View } from 'react-native';
+import { SectionList, View } from 'react-native';
+
+import { StatusBar } from 'expo-status-bar';
 
 import { HomepageList } from '@/app/(app)/(tabs)/_components/homepage';
 import { useAuthStore } from '@/hooks/use-auth';
-import { useUserFollowing } from '@/hooks/use-user';
 
 import { FollowingHeader } from './_components/following-header';
 
-const Homepage = () => {
+const HomePage = () => {
     const { user } = useAuthStore();
-    const userId: string = user?.id!;
-    const {
-        data: userFollowingData,
-        isLoading,
-        error
-    } = useUserFollowing(userId);
+
     return (
-        <ScrollView showsVerticalScrollIndicator={false}>
-            <View className="pb-[28%]">
-                <View className="pt-[2%]">
-                    {userFollowingData && userFollowingData.length > 0 && (
-                        <View className="pt-[3%] pb-[0.5%]">
-                            <FollowingHeader id={userId} />
-                        </View>
-                    )}
-                    <HomepageList />
-                </View>
-            </View>
-        </ScrollView>
+        <>
+            <StatusBar style="dark" />
+            <SectionList
+                sections={[
+                    {
+                        data: [
+                            <FollowingHeader
+                                key={user?.id}
+                                id={user?.id || ''}
+                            />
+                        ]
+                    },
+                    {
+                        data: [<HomepageList key={user?.id} />]
+                    }
+                ]}
+                keyExtractor={(_, index) => index.toString()}
+                renderItem={({ item }) => <>{item}</>}
+                renderSectionHeader={() => <View className="px-[6%] pt-[3%]" />}
+                stickySectionHeadersEnabled={false}
+            />
+        </>
     );
 };
 
-export default Homepage;
+export default HomePage;

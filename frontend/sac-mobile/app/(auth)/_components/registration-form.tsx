@@ -73,17 +73,15 @@ const RegistrationForm = () => {
                 <Controller
                     control={control}
                     render={({ field: { onChange, value } }) => (
-                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                            <Input
-                                title="First Name"
-                                autoCorrect={false}
-                                placeholder="Garrett"
-                                onChangeText={(text) => onChange(text)}
-                                value={value}
-                                onSubmitEditing={handleSubmit(onSignUp)}
-                                error={!!errors.first_name}
-                            />
-                        </TouchableWithoutFeedback>
+                        <Input
+                            title="First Name"
+                            autoCorrect={false}
+                            placeholder="Garrett"
+                            onChangeText={(text) => onChange(text)}
+                            value={value}
+                            onSubmitEditing={handleSubmit(onSignUp)}
+                            error={!!errors.first_name}
+                        />
                     )}
                     name="first_name"
                     rules={{
@@ -108,17 +106,15 @@ const RegistrationForm = () => {
                 <Controller
                     control={control}
                     render={({ field: { onChange, value } }) => (
-                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                            <Input
-                                title="Last Name"
-                                autoCorrect={false}
-                                placeholder="Ladley"
-                                onChangeText={onChange}
-                                value={value}
-                                onSubmitEditing={handleSubmit(onSignUp)}
-                                error={!!errors.last_name}
-                            />
-                        </TouchableWithoutFeedback>
+                        <Input
+                            title="Last Name"
+                            autoCorrect={false}
+                            placeholder="Ladley"
+                            onChangeText={onChange}
+                            value={value}
+                            onSubmitEditing={handleSubmit(onSignUp)}
+                            error={!!errors.last_name}
+                        />
                     )}
                     name="last_name"
                     rules={{
@@ -143,17 +139,15 @@ const RegistrationForm = () => {
                 <Controller
                     control={control}
                     render={({ field: { onChange, value } }) => (
-                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                            <Input
-                                title="Email"
-                                autoCorrect={false}
-                                placeholder="doe.j@northeastern.edu"
-                                onChangeText={onChange}
-                                value={value}
-                                onSubmitEditing={handleSubmit(onSignUp)}
-                                error={!!errors.email}
-                            />
-                        </TouchableWithoutFeedback>
+                        <Input
+                            title="Email"
+                            autoCorrect={false}
+                            placeholder="doe.j@northeastern.edu"
+                            onChangeText={onChange}
+                            value={value}
+                            onSubmitEditing={handleSubmit(onSignUp)}
+                            error={!!errors.email}
+                        />
                     )}
                     name="email"
                     rules={{
@@ -173,19 +167,18 @@ const RegistrationForm = () => {
                 <Controller
                     control={control}
                     render={({ field: { onChange, value } }) => (
-                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                            <Input
-                                title="Password"
-                                autoComplete='password'
-                                autoCorrect={false}
-                                placeholder="Password"
-                                onChangeText={onChange}
-                                value={value}
-                                onSubmitEditing={handleSubmit(onSignUp)}
-                                secureTextEntry={true}
-                                error={!!errors.password}
-                            />
-                        </TouchableWithoutFeedback>
+                        <Input
+                            title="Password"
+                            autoComplete="password"
+                            autoCorrect={false}
+                            textContentType='password'
+                            placeholder="Password"
+                            onChangeText={onChange}
+                            value={value}
+                            onSubmitEditing={handleSubmit(onSignUp)}
+                            secureTextEntry={true}
+                            error={!!errors.password}
+                        />
                     )}
                     name="password"
                     rules={{
@@ -226,19 +219,18 @@ const RegistrationForm = () => {
                 <Controller
                     control={control}
                     render={({ field: { onChange, value } }) => (
-                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                            <Input
-                                title="Password Confirmation"
-                                autoCorrect={false}
-                                autoComplete="password"
-                                placeholder="Confirm your password"
-                                onChangeText={onChange}
-                                value={value}
-                                onSubmitEditing={handleSubmit(onSignUp)}
-                                secureTextEntry={true}
-                                error={!!errors.password}
-                            />
-                        </TouchableWithoutFeedback>
+                        <Input
+                            title="Password Confirmation"
+                            autoCorrect={false}
+                            autoComplete="password"
+                            textContentType='password'
+                            placeholder="Confirm your password"
+                            onChangeText={onChange}
+                            value={value}
+                            onSubmitEditing={handleSubmit(onSignUp)}
+                            secureTextEntry={true}
+                            error={!!errors.password}
+                        />
                     )}
                     name="password_confirmation"
                     rules={{

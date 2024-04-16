@@ -8,16 +8,12 @@ import { Club } from '@/types/club';
 
 const FollowedClubsPage = () => {
     const { user } = useAuthStore();
-    const userId: string = user?.id!;
+
     const {
         data: following,
         isLoading,
         error
-    } = useUserFollowing(userId) as {
-        data: Club[];
-        isLoading: boolean;
-        error: Error;
-    };
+    } = useUserFollowing(user?.id ?? '');
 
     if (isLoading) {
         return <ActivityIndicator size={'large'} />;
@@ -25,6 +21,10 @@ const FollowedClubsPage = () => {
 
     if (error) {
         return <Text>Loading...</Text>;
+    }
+
+    if (!following) {
+        return <Text>No clubs followed</Text>;
     }
 
     const renderFollowing = ({ item }: { item: Club }) => {

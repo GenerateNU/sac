@@ -20,24 +20,23 @@ type UserInterestsData = {
 };
 
 const UserInterestsForm = () => {
+    const { user } = useAuthStore();
+    const userId: string = user?.id!;
+
     const {
         data: categoriesData,
         isLoading: loadingCategories,
         error: errorCategory
-    } = useCategories() as {
-        data: Category[];
-        isLoading: boolean;
-        error: Error;
-    };
-    const { user } = useAuthStore();
-    const userId: string = user?.id!;
+    } = useCategories();
+
     const {
         data: tagsData,
         isLoading: loadingTags,
         error: errorTag
-    } = useTags() as { data: Tag[]; isLoading: boolean; error: Error };
+    } = useTags();
 
     const { handleSubmit } = useForm<UserInterestsData>();
+
     const AllCategory: Category = {
         name: 'All',
         id: '',
@@ -45,6 +44,7 @@ const UserInterestsForm = () => {
         updated_at: new Date(),
         tags: tagsData?.length ? tagsData : []
     };
+
     const CategoriesData = categoriesData
         ? [AllCategory, ...categoriesData]
         : [];
@@ -61,11 +61,9 @@ const UserInterestsForm = () => {
     };
 
     const handleTagPress = (tag: Tag) => {
-        // if a tag is selected and tag has been selected before, filter it out
         if (selectedTags.includes(tag)) {
             setSelectedTags(selectedTags.filter((t) => t !== tag));
         }
-        // appended into selectedTags list
         else {
             setSelectedTags([...selectedTags, tag]);
         }
@@ -93,6 +91,14 @@ const UserInterestsForm = () => {
             }
         }
     };
+
+    if (loadingCategories || loadingTags) {
+        return <Text>Loading...</Text>;
+    }
+
+    if (errorCategory || errorTag) {
+        return <Text>Error</Text>;
+    }
 
     const heightAdjust =
         selectedTags.length === 0 && buttonClicked ? 'h-[49%]' : 'h-[50%]';
@@ -159,7 +165,7 @@ const UserInterestsForm = () => {
                     />
                 ) : (
                     <FlatList
-                        data={tagsData.filter(
+                            data={tagsData?.filter(
                             (tag) => selectedCategory.id === tag.category_id
                         )}
                         renderItem={renderTag}

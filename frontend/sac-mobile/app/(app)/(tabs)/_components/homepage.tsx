@@ -1,23 +1,31 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { FlatList, Text, View } from 'react-native';
 
 import { useClubs } from '@/hooks/use-club';
 import { useEvents } from '@/hooks/use-event';
 import { HomepageFAQ } from '@/lib/const';
-import { isClub, isEvent, isFAQ, shuffleArray } from '@/lib/utils';
+import { isClub, isEvent, isFAQ } from '@/lib/utils';
 import { Club } from '@/types/club';
 import { Event } from '@/types/event';
 import { FAQ } from '@/types/faq';
 
-import { ClubHomepageCard } from './club-homepage-card';
+import { ClubHomePageCard } from './club-homepage-card';
 import { EventHomePageCard } from './event-homepage-card';
 import { FAQHomePageCard } from './faq-homepage-card';
 
 export type HomepageItem = Event | Club | FAQ;
 
 const HomepageList = () => {
-    const { data: events } = useEvents();
-    const { data: clubs } = useClubs();
+    const { data: events, isLoading: eIsLoading, error: eError } = useEvents();
+    const { data: clubs, isLoading: cIsLoading, error: cError } = useClubs();
+
+    if (eIsLoading || cIsLoading) {
+        return <Text>Loading...</Text>;
+    }
+
+    if (eError || cError) {
+        return <Text>Error: {eError?.message || cError?.message}</Text>;
+    }
 
     const getHomepageItems = () => {
         const allItems: HomepageItem[] = [];
@@ -28,35 +36,33 @@ const HomepageList = () => {
             allItems.push(...clubs);
         }
         allItems.push(...HomepageFAQ);
-        const shuffledItems = shuffleArray(allItems);
-        return shuffledItems;
+        return allItems.sort(() => Math.random() - 0.5);
     };
 
-    // const renderItems = (items: HomepageItem[]) => {
-    //     return items.map((item: HomepageItem, index) => {
-    //         if (isClub(item)) {
-    //             return <ClubHomepageCard key={index} club={item as Club} />;
-    //         } else if (isEvent(item)) {
-    //             return <EventHomePageCard key={index} event={item as Event} />;
-    //         } else if (isFAQ(item)) {
-    //             return <FAQHomePageCard key={index} faq={item} />;
-    //         }
-    //     });
-    // }
+    const renderItems = (items: HomepageItem[]) => {
+        return items.map((item: HomepageItem, index) => {
+            if (isClub(item)) {
+                const club = item as Club;
+                if (club.name === 'SAC') {
+                    return null;
+                }
+                return <ClubHomePageCard key={index} club={club} />;
+            } else if (isEvent(item)) {
+                return <EventHomePageCard key={index} event={item as Event} />;
+            } else if (isFAQ(item)) {
+                return <FAQHomePageCard key={index} faq={item as FAQ} />;
+            }
+        });
+    };
 
     return (
         <View className="px-[6%] pt-[3%]">
-            {getHomepageItems().map((item: FAQ | Club | Event, index) => {
-                if (isClub(item)) {
-                    return <ClubHomepageCard key={index} club={item as Club} />;
-                } else if (isEvent(item)) {
-                    return (
-                        <EventHomePageCard key={index} event={item as Event} />
-                    );
-                } else if (isFAQ(item)) {
-                    return <FAQHomePageCard key={index} faq={item} />;
-                }
-            })}
+            <FlatList
+                data={renderItems(getHomepageItems())}
+                renderItem={({ item }) => <>{item}</>}
+                keyExtractor={(_, index) => index.toString()}
+                showsVerticalScrollIndicator={false}
+            />
         </View>
     );
 };

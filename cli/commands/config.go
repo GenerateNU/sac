@@ -12,6 +12,6 @@ var (
 	FRONTEND_DIR    = filepath.Join(ROOT_DIR, "/frontend")
 	BACKEND_DIR     = filepath.Join(ROOT_DIR, "/backend")
 	BACKEND_SRC_DIR = filepath.Join(BACKEND_DIR, "/src")
-	CONFIG, _       = config.GetConfiguration(filepath.Join(ROOT_DIR, "/config"), false)
+	CONFIG, _       = config.GetConfiguration(filepath.Join(ROOT_DIR, "/config"), true)
 	MIGRATION_FILE  = filepath.Join(BACKEND_SRC_DIR, "/migrations/data.sql")
 )

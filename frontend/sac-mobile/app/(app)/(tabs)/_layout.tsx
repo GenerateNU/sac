@@ -10,6 +10,7 @@ import ProfileIcon from '@/assets/images/svg/profile.svg';
 import SearchSelectedIcon from '@/assets/images/svg/search-selected.svg';
 import SearchIcon from '@/assets/images/svg/search.svg';
 import { useAuthStore } from '@/hooks/use-auth';
+import { Wordmark } from '@/components/wordmark';
 
 const Layout = () => {
     const { isLoggedIn, fetchUser } = useAuthStore();
@@ -19,87 +20,40 @@ const Layout = () => {
     }, [isLoggedIn, fetchUser]);
 
     return (
-        <Tabs
-            screenOptions={
-                {
-                    // tabBarStyle: {
-                    //     bottom: '2.5%',
-                    //     left: '4%',
-                    //     alignContent: 'center',
-                    //     paddingTop: '7%',
-                    //     right: 20,
-                    //     elevation: 0,
-                    //     borderRadius: 50,
-                    //     position: 'absolute',
-                    //     shadowColor: '#000000',
-                    //     shadowOffset: {
-                    //         width: 2,
-                    //         height: 2
-                    //     },
-                    //     shadowOpacity: 0.15,
-                    //     shadowRadius: 3.84
-                    // }
-                }
-            }
-        >
+        <Tabs screenOptions={{ tabBarShowLabel: false }}>
             <Tabs.Screen
                 name="index"
                 options={{
                     title: '',
-                    headerTitleStyle: {
-                        fontSize: 30
-                    },
-                    tabBarLabel: () => {
-                        return null;
-                    },
-                    headerBackground: () => {
-                        return <View className="h-full bg-gray-100" />;
-                    },
+                    headerBackground: () => (
+                        <View className="h-full bg-gray-100" />
+                    ),
+                    headerLeft: () => (
+                        <View className='pl-6'>
+                            <Wordmark color='primary' />
+                        </View>
+                    ),
                     headerShown: true,
-                    tabBarIcon: ({ focused }) => {
-                        return focused ? <HomeSelectedIcon /> : <HomeIcon />;
-                    },
-                    headerLeft: () => {
-                        return (
-                            <Text className="pl-6 mt-4 text-2xl font-bold">
-                                SAC
-                            </Text>
-                        );
-                    }
+                    tabBarIcon: ({ focused }) =>
+                        focused ? <HomeSelectedIcon /> : <HomeIcon />
                 }}
             />
             <Tabs.Screen
                 name="search"
                 options={{
-                    title: 'Search',
-                    tabBarLabel: () => {
-                        return null;
-                    },
+                    title: 'search',
                     headerShown: false,
-                    tabBarIcon: ({ focused }) => {
-                        return focused ? (
-                            <SearchSelectedIcon />
-                        ) : (
-                            <SearchIcon />
-                        );
-                    }
+                    tabBarIcon: ({ focused }) =>
+                        focused ? <SearchSelectedIcon /> : <SearchIcon />
                 }}
             />
             <Tabs.Screen
                 name="profile"
                 options={{
                     title: 'profile',
-                    tabBarLabel: () => {
-                        return null;
-                    },
                     headerShown: false,
-                    tabBarIcon: ({ focused }) => {
-                        return focused ? (
-                            <ProfileSelectedIcon />
-                        ) : (
-                            <ProfileIcon />
-                        );
-                    }
+                    tabBarIcon: ({ focused }) =>
+                        focused ? <ProfileSelectedIcon /> : <ProfileIcon />
                 }}
                 redirect={!isLoggedIn}
             />

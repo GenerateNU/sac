@@ -11,9 +11,10 @@ const buttonVariants = {
         secondary: ['bg-white', 'text-gray'],
         outline: ['border border-gray-600 text-gray-500 font-medium'],
         icon: ['bg-transparent'],
-        menu: ['text-black text-lg'],
         underline: ['border-b font-bold border-gray-600 text-lg'],
         pill: ['bg-gray-500', 'text-white', 'rounded-full'],
+        // TODO: remove unnecessary styles
+        menu: ['text-black text-lg'],
         faq: ['bg-gray-300'],
         follow: ['bg-gray-300 text-black text-md'],
         unfollow: ['bg-gray-500 text-white text-md']
@@ -25,6 +26,7 @@ const buttonVariants = {
         icon: 'h-10 w-10',
         screenwide: 'h-12 rounded-xl px-8 py-[4%]',
         pill: 'h-8 px-3 py-2',
+        //TODO: remove unncessary styles
         tags: 'h-12 rounded-3xl px-[5%] mr-[4%] w-fit mb-[4%]',
         menu: 'h-12 px-5',
         faq: 'h-6 w-10',

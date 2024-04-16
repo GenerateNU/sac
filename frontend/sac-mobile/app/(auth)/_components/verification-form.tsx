@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Platform, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 import { router } from 'expo-router';
@@ -12,6 +12,13 @@ import { Error } from '@/components/error';
 import { Input } from '@/components/input';
 import { useAuthStore } from '@/hooks/use-auth';
 import { requestVerification } from '@/services/auth';
+import {
+    CodeField,
+    Cursor,
+    useBlurOnFulfill,
+    useClearByFocusCell,
+} from 'react-native-confirmation-code-field';
+import Code from './code';
 
 type VerificationFormData = {
     code: string;
@@ -23,13 +30,8 @@ const verificationSchema = z.object({
     })
 });
 
-const VerificationForm = () => {
-    const {
-        control,
-        handleSubmit,
-        formState: { errors }
-    } = useForm<VerificationFormData>();
 
+const VerificationForm = () => {
     const { user, completeVerification } = useAuthStore();
     const [loading, setLoading] = useState(false);
 
@@ -37,7 +39,7 @@ const VerificationForm = () => {
         console.log('[verification-form]', { user });
     }, [user]);
 
-    const onVerify = async ({ code }: VerificationFormData) => {
+    const onVerify = async (code: string) => {
         setLoading(true);
 
         try {
@@ -66,38 +68,14 @@ const VerificationForm = () => {
     return (
         <>
             {loading && <Spinner visible={loading} />}
-            <View className="w-full mb-[8.5%]">
-                <Controller
-                    control={control}
-                    render={({ field: { onChange, value } }) => (
-                        <Input
-                            title="Verification code"
-                            placeholder="Verification code"
-                            onChangeText={onChange}
-                            value={value}
-                            keyboardType="numeric"
-                            maxLength={6}
-                        />
-                    )}
-                    name="code"
-                    rules={{
-                        required: 'Verification code is required'
-                    }}
-                />
-                {errors.code && <Error message={errors.code.message} />}
-            </View>
-            <View className="pt-[2%]">
-                <Button onPress={handleSubmit(onVerify)} size="screenwide">
-                    Submit
-                </Button>
-            </View>
+            <Code onCompleted={onVerify} />
             <View className="mt-[5%] flex-row justify-center">
-                <Text>Did not receive a code?</Text>
+                <Text className="text-gray-500 text-md">Didn't receive the code?</Text>
                 <TouchableOpacity
                     onPress={requestCode}
                     className="font-bold underline"
                 >
-                    <Text> Resend</Text>
+                    <Text className="font-bold text-gray-500 underline text-md"> Resend</Text>
                 </TouchableOpacity>
             </View>
         </>

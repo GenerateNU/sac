@@ -1,12 +1,6 @@
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import {
-    Alert,
-    Keyboard,
-    Text,
-    TouchableWithoutFeedback,
-    View
-} from 'react-native';
+import { Alert, Text, View } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 import { router } from 'expo-router';
@@ -47,7 +41,6 @@ const LoginForm = () => {
             const validData = loginSchema.parse(loginData);
             console.log({ validData });
             await signIn(validData.email, validData.password);
-            // router.replace('/(app)/(tabs)/');
         } catch (err: any) {
             if (err instanceof ZodError) {
                 Alert.alert(err.errors[0].message);
@@ -66,17 +59,15 @@ const LoginForm = () => {
                 <Controller
                     control={control}
                     render={({ field: { onChange, value } }) => (
-                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                            <Input
-                                title="Email"
-                                autoCorrect={false}
-                                placeholder="ladley.g@northeastern.edu"
-                                onChangeText={onChange}
-                                value={value}
-                                onSubmitEditing={handleSubmit(onSignInPress)}
-                                error={!!errors.email}
-                            />
-                        </TouchableWithoutFeedback>
+                        <Input
+                            title="Email"
+                            autoCorrect={false}
+                            placeholder="ladley.g@northeastern.edu"
+                            onChangeText={onChange}
+                            value={value}
+                            onSubmitEditing={handleSubmit(onSignInPress)}
+                            error={!!errors.email}
+                        />
                     )}
                     name="email"
                     rules={{ required: 'Email is required' }}
@@ -87,18 +78,16 @@ const LoginForm = () => {
                 <Controller
                     control={control}
                     render={({ field: { onChange, value } }) => (
-                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                            <Input
-                                title="Password"
-                                autoCorrect={false}
-                                placeholder="Password"
-                                onChangeText={onChange}
-                                value={value}
-                                secureTextEntry={true}
-                                onSubmitEditing={handleSubmit(onSignInPress)}
-                                error={!!errors.password}
-                            />
-                        </TouchableWithoutFeedback>
+                        <Input
+                            title="Password"
+                            autoCorrect={false}
+                            placeholder="Password"
+                            onChangeText={onChange}
+                            value={value}
+                            secureTextEntry={true}
+                            onSubmitEditing={handleSubmit(onSignInPress)}
+                            error={!!errors.password}
+                        />
                     )}
                     name="password"
                     rules={{ required: 'Password is required' }}

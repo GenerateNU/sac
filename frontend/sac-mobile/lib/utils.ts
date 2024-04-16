@@ -5,7 +5,7 @@ import { Buffer } from 'buffer';
 import clsx, { ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-import { HomepageItem } from '@/app/(app)/(tabs)/(home)/_components/homepage';
+import { HomepageItem } from '@/app/(app)/(tabs)/_components/homepage';
 import { majorArr } from '@/lib/const';
 import { categories } from '@/lib/const';
 import { Tokens } from '@/types/auth';
@@ -164,7 +164,7 @@ const isEvent = (item: any) => {
     );
 };
 
-const isFAQ = (item: any) => {
+const isFAQ = (item: any): FAQ => {
     return (
         typeof item === 'object' &&
         item.hasOwnProperty('question') &&
@@ -172,24 +172,9 @@ const isFAQ = (item: any) => {
     );
 };
 
-function shuffleArray(array: HomepageItem[]) {
-    let currentIndex = array.length,
-        randomIndex;
-    while (currentIndex !== 0) {
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
-        [array[currentIndex], array[randomIndex]] = [
-            array[randomIndex],
-            array[currentIndex]
-        ];
-    }
-    return array;
-}
-
 export {
     cn,
     isClub,
-    shuffleArray,
     isEvent,
     isFAQ,
     graduationYear,

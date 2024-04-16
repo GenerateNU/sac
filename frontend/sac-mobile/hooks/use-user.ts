@@ -6,25 +6,23 @@ import {
 } from '@tanstack/react-query';
 
 import { queryClient } from '@/app/_layout';
-import { UpdateUser } from '@/services/user';
 import {
-    CreateUserFollowing,
-    DeleteUserFollowing,
-    GetUserFollowing
-} from '@/services/user-follower';
-import { CreateUserTags } from '@/services/user-tag';
+    createUserFollowing,
+    createUserTags,
+    deleteUserFollowing,
+    fetchUserFollowing,
+    updateUser
+} from '@/services/user';
 import { Club } from '@/types/club';
 
-export const useUserFollowing = (
-    userID: string
-): UseQueryResult<Club[], Error> => {
+const useUserFollowing = (userID: string): UseQueryResult<Club[], Error> => {
     return useQuery<Club[], Error>({
         queryKey: ['user', userID, 'following'],
-        queryFn: async () => await GetUserFollowing(userID)
+        queryFn: async () => await fetchUserFollowing(userID)
     });
 };
 
-export const useUpdateUser = () => {
+const useUpdateUser = () => {
     return useMutation({
         mutationFn: ({
             userId,
@@ -36,14 +34,14 @@ export const useUpdateUser = () => {
                 college: string;
                 graduation_cycle: string;
             };
-        }) => UpdateUser(userId, updateUserRequestBody),
+        }) => updateUser(userId, updateUserRequestBody),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['users'] });
         }
     });
 };
 
-export const useCreateUserTags = (): UseMutationResult<
+const useCreateUserTags = (): UseMutationResult<
     void,
     Error,
     {
@@ -53,38 +51,46 @@ export const useCreateUserTags = (): UseMutationResult<
     unknown
 > => {
     return useMutation({
-        mutationFn: ({
-            userId,
-            tagIDs
-        }: {
-            userId: string;
-            tagIDs: string[];
-        }) => CreateUserTags(userId, tagIDs),
+        mutationFn: ({ userId, tagIDs }) => createUserTags(userId, tagIDs),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['user_tags'] });
         }
     });
 };
 
-export const useCreateClubFollowing = () => {
+const useCreateClubFollowing = (): UseMutationResult<
+    void,
+    Error,
+    {
+        userId: string;
+        clubId: string;
+    },
+    unknown
+> => {
     return useMutation({
-        mutationFn: ({ userId, clubId }: { userId: string; clubId: string }) =>
-            CreateUserFollowing(userId, clubId),
+        mutationFn: ({ userId, clubId }) => createUserFollowing(userId, clubId),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['user_following'] });
         }
     });
 };
 
-export const useDeleteClubFollowing = () => {
+const useDeleteClubFollowing = () => {
     return useMutation({
         mutationFn: ({ userId, clubId }: { userId: string; clubId: string }) =>
-            DeleteUserFollowing(userId, clubId),
+            deleteUserFollowing(userId, clubId),
         onSuccess: (data, variables, context) => {
             return queryClient.invalidateQueries({
                 queryKey: [`user${variables.userId}following`]
             });
-            // queryClient.invalidateQueries({ queryKey: ['user_following'] });
         }
     });
+};
+
+export {
+    useUserFollowing,
+    useUpdateUser,
+    useCreateUserTags,
+    useCreateClubFollowing,
+    useDeleteClubFollowing
 };

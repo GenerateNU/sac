@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { Link } from 'expo-router';
+import { router } from 'expo-router';
 
 import { Button } from '@/components/button';
 import { useAuthStore } from '@/hooks/use-auth';
@@ -12,18 +12,14 @@ import {
 } from '@/hooks/use-user';
 import { Club } from '@/types/club';
 
-export const FollowedClub = ({ club }: { club: Club }) => {
+const FollowedClub = ({ club }: { club: Club }) => {
     const { user } = useAuthStore();
-    const userId: string = user?.id!;
+
     const {
         data: following,
         isLoading,
         error
-    } = useUserFollowing(userId) as {
-        data: Club[];
-        isLoading: boolean;
-        error: Error;
-    };
+    } = useUserFollowing(user?.id || '');
 
     const followClub = useCreateClubFollowing();
     const unfollowClub = useDeleteClubFollowing();
@@ -31,40 +27,40 @@ export const FollowedClub = ({ club }: { club: Club }) => {
     const [buttonClicked, setButtonClicked] = useState('Following');
 
     const handlePressFollow = () => {
-        if (!following?.some((c) => c.id === club.id)) {
+        if (following?.some((c) => c.id === club.id)) {
             console.log('Follow Club');
             followClub.mutateAsync({
-                userId: userId,
+                userId: user?.id || '',
                 clubId: club.id
             });
             setButtonClicked('Following');
         } else {
             console.log('Unfollow Club');
             unfollowClub.mutateAsync({
-                userId: userId,
+                userId: user?.id || '',
                 clubId: club.id
             });
             setButtonClicked('Follow');
         }
     };
 
+    if (isLoading) {
+        return <Text>Loading...</Text>;
+    }
+
+    if (error) {
+        return <Text>Error: {error.message}</Text>;
+    }
+
     return (
-        <View className="flex-row items-center w-full px-[7%] justify-between">
-            <Link
-                key={club.id}
-                href={{
-                    pathname: '/(app)/club/[id]',
-                    params: { id: club.id }
-                }}
-                asChild
+        <View className="flex-row items-center w-full px-[4%] justify-between">
+            <Pressable
+                className="flex-row items-center"
+                onPress={() => router.push(`/club/${club.id}`)}
             >
-                <Pressable className="flex-row items-center">
-                    <View className="w-16 h-16 bg-gray-400 rounded-full" />
-                    <Text className="pl-[4%] font-bold text-lg">
-                        {club.name}
-                    </Text>
-                </Pressable>
-            </Link>
+                <View className="w-16 h-16 bg-gray-400 rounded-full" />
+                <Text className="pl-[4%] font-bold text-lg">{club.name}</Text>
+            </Pressable>
             <Button
                 size="follow"
                 variant={buttonClicked === 'Following' ? 'follow' : 'unfollow'}
@@ -75,3 +71,5 @@ export const FollowedClub = ({ club }: { club: Club }) => {
         </View>
     );
 };
+
+export { FollowedClub };

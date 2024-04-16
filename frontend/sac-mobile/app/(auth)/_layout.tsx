@@ -16,7 +16,11 @@ const Layout = () => {
                     headerShown: true,
                     animationTypeForReplace: 'pop',
                     animation: 'slide_from_left',
-                    statusBarColor: 'dark'
+                    statusBarColor: 'dark',
+                    headerLeft: () => <Wordmark color={'primary'} />,
+                    headerBackground: () => (
+                        <View className="h-full bg-neutral-100" />
+                    )
                 }}
             />
             <Stack.Screen
@@ -53,8 +57,40 @@ const Layout = () => {
                     animation: 'slide_from_left'
                 }}
             />
-            <Stack.Screen name="verification" options={{ headerShown: true }} />
-            <Stack.Screen name="user-details" options={{ headerShown: true }} />
+            <Stack.Screen
+                name="verification"
+                options={{
+                    title: 'SAC',
+                    headerShown: true,
+                    headerLeft: () => null,
+                    headerBackground: () => (
+                        <View className="h-full bg-white" />
+                    ),
+                }}
+            />
+            <Stack.Screen
+                name="user-interests"
+                options={{
+                    headerShown: true,
+                    title: '',
+                    headerLeft: () => <Wordmark color={'primary'} />,
+                    headerBackground: () => (
+                        <View className="h-full bg-neutral-100" />
+                    )
+                }}
+            />
+            <Stack.Screen
+                name="user-details"
+                options={{
+                    headerShown: true,
+                    title: '',
+                    headerLeft: () => <Wordmark color={'primary'} />,
+                    headerBackground: () => (
+                        <View className="h-full bg-neutral-100" />
+                    )
+                }}
+            />
+
         </Stack>
     );
 };

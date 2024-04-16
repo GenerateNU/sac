@@ -47,7 +47,7 @@ const InitalLayout = () => {
             if (isLoggedIn && isVerified === false) {
                 router.push('/(auth)/verification');
             } else if (isLoggedIn && isVerified) {
-                router.push('/(app)/(tabs)/');
+                router.push('/(auth)/user-interests');
             } else if (!isLoggedIn) {
                 router.push('/(auth)/welcome');
             }
