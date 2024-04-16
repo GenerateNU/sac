@@ -53,13 +53,8 @@ const RegistrationForm = () => {
         try {
             registerSchema.parse({ password_confirmation, ...rest });
             const updatedData = { ...rest };
-<<<<<<< Updated upstream
-
-            await signUp(updatedData);
-=======
             console.log(updatedData);
             await onRegister!(updatedData);
->>>>>>> Stashed changes
         } catch (error: any) {
             if (error instanceof ZodError) {
                 Alert.alert(error.errors[0].message);
@@ -147,7 +142,7 @@ const RegistrationForm = () => {
                         <Input
                             title="Email"
                             autoCorrect={false}
-                            placeholder="Northeastern email"
+                            placeholder="doe.j@northeastern.edu"
                             onChangeText={onChange}
                             value={value}
                             onSubmitEditing={handleSubmit(onSignUp)}
@@ -174,7 +169,9 @@ const RegistrationForm = () => {
                     render={({ field: { onChange, value } }) => (
                         <Input
                             title="Password"
+                            autoComplete="password"
                             autoCorrect={false}
+                            textContentType="password"
                             placeholder="Password"
                             onChangeText={onChange}
                             value={value}
@@ -225,6 +222,8 @@ const RegistrationForm = () => {
                         <Input
                             title="Password Confirmation"
                             autoCorrect={false}
+                            autoComplete="password"
+                            textContentType="password"
                             placeholder="Confirm your password"
                             onChangeText={onChange}
                             value={value}

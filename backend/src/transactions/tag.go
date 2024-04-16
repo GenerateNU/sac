@@ -48,12 +48,10 @@ func GetTag(db *gorm.DB, tagID uuid.UUID) (*models.Tag, *errors.Error) {
 	return &tag, nil
 }
 
-func GetTags(db *gorm.DB, limit int, page int) ([]models.Tag, *errors.Error) {
+func GetTags(db *gorm.DB) ([]models.Tag, *errors.Error) {
 	var tags []models.Tag
 
-	offset := (page - 1) * limit
-
-	if err := db.Limit(limit).Offset(offset).Find(&tags).Error; err != nil {
+	if err := db.Find(&tags).Error; err != nil {
 		return nil, &errors.FailedToGetTags
 	}
 

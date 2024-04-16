@@ -225,11 +225,11 @@ func createEventSlice(firstEvent *models.Event, series models.Series) []models.E
 
 	switch series.RecurringType {
 	case "daily":
-		days = series.SeparationCount + 1
+		days = 1
 	case "weekly":
-		days = 7 * (series.SeparationCount + 1)
+		days = 7
 	case "monthly":
-		months = series.SeparationCount + 1
+		months = 1
 	}
 
 	for i := 1; i < series.MaxOccurrences; i++ {
@@ -252,6 +252,7 @@ func mapToEvent(eventBody models.UpdateEventRequestBody) *models.Event {
 		Location:  eventBody.Location,
 		EventType: eventBody.EventType,
 
+		Host:         eventBody.Host,
 		RSVP:         eventBody.RSVP,
 		Waitlist:     eventBody.Waitlist,
 		Clubs:        eventBody.Clubs,

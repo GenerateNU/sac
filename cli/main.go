@@ -10,7 +10,7 @@ import (
 
 func main() {
 	app := &cli.App{
-		Name:  "sac-cli",
+		Name:  "sac",
 		Usage: "CLI for the GenerateNU SAC",
 		Commands: []*cli.Command{
 			commands.SwaggerCommand(),

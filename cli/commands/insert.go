@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/lib/pq"
 	"github.com/urfave/cli/v2"
 )
@@ -34,7 +35,12 @@ func InsertCommand() *cli.Command {
 }
 
 func InsertDB() error {
-	db, err := sql.Open("postgres", CONFIG.Database.WithDb())
+	config, err := config.GetConfiguration(CONFIG, false)
+	if err != nil {
+		return err
+	}
+
+	db, err := sql.Open("postgres", config.Database.WithDb())
 	if err != nil {
 		return err
 	}

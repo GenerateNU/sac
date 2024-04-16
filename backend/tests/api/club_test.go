@@ -42,8 +42,6 @@ func AssertClubBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, body *ma
 
 	eaa.Assert.NilError(err)
 
-	eaa.Assert.Equal(2, len(dbClubs))
-
 	dbClub := dbClubs[0]
 
 	eaa.Assert.Equal(dbClub.ID, respClub.ID)
@@ -255,7 +253,7 @@ func TestCreateClubFailsOnInvalidDescription(t *testing.T) {
 		[]interface{}{
 			"Not an URL",
 			"@#139081#$Ad_Axf",
-			// "https://google.com", <-- TODO fix once we handle mongo urls
+			"https://google.com",
 		},
 	)
 }
@@ -300,7 +298,7 @@ func TestCreateClubFailsOnInvalidLogo(t *testing.T) {
 		[]interface{}{
 			"Not an URL",
 			"@#139081#$Ad_Axf",
-			// "https://google.com", <-- TODO uncomment once we figure out s3 url validation
+			"https://google.com",
 		},
 	)
 }

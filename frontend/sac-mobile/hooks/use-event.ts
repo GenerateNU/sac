@@ -11,7 +11,7 @@ import { Event } from '@/types/event';
 import { Tag } from '@/types/tag';
 import { uuid } from '@/types/uuid';
 
-export const useEvent = (eventID: string): UseQueryResult<Event, Error> => {
+const useEvent = (eventID: string): UseQueryResult<Event, Error> => {
     return useQuery<Event, Error>({
         queryKey: ['event', eventID],
         queryFn: () => {
@@ -20,7 +20,7 @@ export const useEvent = (eventID: string): UseQueryResult<Event, Error> => {
     });
 };
 
-export const useEvents = (): UseQueryResult<Event[], Error> => {
+const useEvents = (): UseQueryResult<Event[], Error> => {
     return useQuery<Event[], Error>({
         queryKey: ['events'],
         queryFn: () => {
@@ -29,7 +29,7 @@ export const useEvents = (): UseQueryResult<Event[], Error> => {
     });
 };
 
-export const useEventTags = (eventID: uuid): UseQueryResult<Tag[], Error> => {
+const useEventTags = (eventID: uuid): UseQueryResult<Tag[], Error> => {
     return useQuery<Tag[], Error>({
         queryKey: ['event', eventID, 'tags'],
         queryFn: () => {
@@ -38,7 +38,7 @@ export const useEventTags = (eventID: uuid): UseQueryResult<Tag[], Error> => {
     });
 };
 
-export const useEventHosts = (eventID: uuid): UseQueryResult<Club[], Error> => {
+const useEventHosts = (eventID: uuid): UseQueryResult<Club[], Error> => {
     return useQuery<Club[], Error>({
         queryKey: ['event', eventID, 'hosts'],
         queryFn: () => {
@@ -46,3 +46,5 @@ export const useEventHosts = (eventID: uuid): UseQueryResult<Club[], Error> => {
         }
     });
 };
+
+export { useEvent, useEvents, useEventTags, useEventHosts };

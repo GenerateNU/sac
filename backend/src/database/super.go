@@ -22,6 +22,7 @@ func SuperUser(superUserSettings config.SuperUserSettings) (*models.User, *error
 		PasswordHash:    *passwordHash,
 		FirstName:       "SAC",
 		LastName:        "Super",
+		Major0:          models.ComputerScience,
 		College:         models.KCCS,
 		GraduationCycle: models.May,
 		GraduationYear:  2025,

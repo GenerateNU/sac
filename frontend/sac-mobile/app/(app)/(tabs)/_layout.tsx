@@ -1,23 +1,17 @@
 import React, { useEffect } from 'react';
+import { View } from 'react-native';
 
 import { Tabs } from 'expo-router';
 
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-
+import HomeSelectedIcon from '@/assets/images/svg/home-selected.svg';
+import HomeIcon from '@/assets/images/svg/home.svg';
+import ProfileSelectedIcon from '@/assets/images/svg/profile-selected.svg';
+import ProfileIcon from '@/assets/images/svg/profile.svg';
+import SearchSelectedIcon from '@/assets/images/svg/search-selected.svg';
+import SearchIcon from '@/assets/images/svg/search.svg';
+import { Wordmark } from '@/components/wordmark';
 import { useAuthStore } from '@/hooks/use-auth';
 import { useAuth } from '@/context/AuthContext';
-
-const HomeTabBarIcon = ({ color }: { color: string }) => (
-    <MaterialCommunityIcons name="home" size={24} color={color} />
-);
-
-const ProfileTabBarIcon = ({ color }: { color: string }) => (
-    <MaterialCommunityIcons name="account" size={24} color={color} />
-);
-
-const SearchTabBarIcon = ({ color }: { color: string }) => (
-    <MaterialCommunityIcons name="magnify" size={24} color={color} />
-);
 
 const Layout = () => {
     // const { isLoggedIn, fetchUser } = useAuthStore();
@@ -28,31 +22,40 @@ const Layout = () => {
     }, [initialized]);
 
     return (
-        <Tabs>
+        <Tabs screenOptions={{ tabBarShowLabel: false }}>
             <Tabs.Screen
                 name="index"
                 options={{
-                    title: 'Home',
-                    headerShown: false,
-                    tabBarIcon: HomeTabBarIcon
+                    title: '',
+                    headerBackground: () => (
+                        <View className="h-full bg-gray-100" />
+                    ),
+                    headerLeft: () => (
+                        <View className="pl-6">
+                            <Wordmark color="primary" />
+                        </View>
+                    ),
+                    headerShown: true,
+                    tabBarIcon: ({ focused }) =>
+                        focused ? <HomeSelectedIcon /> : <HomeIcon />
                 }}
-                redirect={!isLoggedIn}
             />
             <Tabs.Screen
                 name="search"
                 options={{
-                    title: 'Search',
+                    title: 'search',
                     headerShown: false,
-                    tabBarIcon: SearchTabBarIcon
+                    tabBarIcon: ({ focused }) =>
+                        focused ? <SearchSelectedIcon /> : <SearchIcon />
                 }}
-                redirect={!isLoggedIn}
             />
             <Tabs.Screen
                 name="profile"
                 options={{
-                    title: 'Profile',
+                    title: 'profile',
                     headerShown: false,
-                    tabBarIcon: ProfileTabBarIcon
+                    tabBarIcon: ({ focused }) =>
+                        focused ? <ProfileSelectedIcon /> : <ProfileIcon />
                 }}
                 // redirect={!isLoggedIn}
             />

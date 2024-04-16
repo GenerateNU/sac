@@ -99,4 +99,16 @@ var (
 		StatusCode: fiber.StatusNotFound,
 		Message:    "otp not found",
 	}
+	InvalidPasswordNotLongEnough = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "password must be at least 8 characters long",
+	}
+	InvalidPasswordNoDigit = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "password must contain at least one digit",
+	}
+	InvalidPasswordNoSpecialCharacter = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "password must contain at least one special character",
+	}
 )

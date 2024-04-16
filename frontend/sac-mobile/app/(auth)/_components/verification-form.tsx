@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
 
@@ -7,20 +6,15 @@ import { router } from 'expo-router';
 
 import { ZodError, z } from 'zod';
 
-import { Button } from '@/components/button';
-import { Error } from '@/components/error';
-import { Input } from '@/components/input';
 import { useAuthStore } from '@/hooks/use-auth';
 import { requestVerification } from '@/services/auth';
+import { useForm } from 'react-hook-form';
+import { useAuth } from '@/context/AuthContext';
+import Code from './code';
 
-<<<<<<< Updated upstream
 type VerificationFormData = {
     code: string;
 };
-=======
-import Code from './code';
-import { useAuth } from '@/context/AuthContext';
->>>>>>> Stashed changes
 
 const verificationSchema = z.object({
     code: z.string().min(6, {
@@ -29,29 +23,21 @@ const verificationSchema = z.object({
 });
 
 const VerificationForm = () => {
-<<<<<<< Updated upstream
     const {
         control,
         handleSubmit,
         formState: { errors }
     } = useForm<VerificationFormData>();
 
-    const { user, completeVerification } = useAuthStore();
-=======
     // const { user, completeVerification } = useAuthStore();
     const { user, onVerify } = useAuth();
->>>>>>> Stashed changes
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         console.log('[verification-form]', { user });
     }, [user]);
 
-<<<<<<< Updated upstream
-    const onVerify = async ({ code }: VerificationFormData) => {
-=======
     const onPressVerify = async (code: string) => {
->>>>>>> Stashed changes
         setLoading(true);
 
         try {
@@ -80,42 +66,19 @@ const VerificationForm = () => {
     return (
         <>
             {loading && <Spinner visible={loading} />}
-<<<<<<< Updated upstream
-            <View className="w-full mb-[8.5%]">
-                <Controller
-                    control={control}
-                    render={({ field: { onChange, value } }) => (
-                        <Input
-                            title="Verification code"
-                            placeholder="Verification code"
-                            onChangeText={onChange}
-                            value={value}
-                            keyboardType="numeric"
-                            maxLength={6}
-                        />
-                    )}
-                    name="code"
-                    rules={{
-                        required: 'Verification code is required'
-                    }}
-                />
-                {errors.code && <Error message={errors.code.message} />}
-            </View>
-            <View className="pt-[2%]">
-                <Button onPress={handleSubmit(onVerify)} size="screenwide">
-                    Submit
-                </Button>
-            </View>
-=======
             <Code onCompleted={onPressVerify} />
->>>>>>> Stashed changes
             <View className="mt-[5%] flex-row justify-center">
-                <Text>Did not receive a code?</Text>
+                <Text className="text-gray-500 text-md">
+                    Didn't receive the code?
+                </Text>
                 <TouchableOpacity
                     onPress={requestCode}
                     className="font-bold underline"
                 >
-                    <Text> Resend</Text>
+                    <Text className="font-bold text-gray-500 underline text-md">
+                        {' '}
+                        Resend
+                    </Text>
                 </TouchableOpacity>
             </View>
         </>

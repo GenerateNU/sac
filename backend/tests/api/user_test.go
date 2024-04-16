@@ -42,7 +42,10 @@ func TestGetUsersWorksForSuper(t *testing.T) {
 				eaa.Assert.Equal("SAC", respUser.FirstName)
 				eaa.Assert.Equal("Super", respUser.LastName)
 				eaa.Assert.Equal("generatesac@gmail.com", respUser.Email)
-				eaa.Assert.Equal(models.College("KCCS"), respUser.College)
+				eaa.Assert.Equal(models.ComputerScience, respUser.Major0)
+				eaa.Assert.Equal(models.Major(""), respUser.Major1)
+				eaa.Assert.Equal(models.Major(""), respUser.Major2)
+				eaa.Assert.Equal(models.KCCS, respUser.College)
 				eaa.Assert.Equal(models.May, respUser.GraduationCycle)
 				eaa.Assert.Equal(int16(2025), respUser.GraduationYear)
 
@@ -95,6 +98,9 @@ func TestGetUserWorks(t *testing.T) {
 				eaa.Assert.Equal(sampleUser["first_name"].(string), respUser.FirstName)
 				eaa.Assert.Equal(sampleUser["last_name"].(string), respUser.LastName)
 				eaa.Assert.Equal(sampleUser["email"].(string), respUser.Email)
+				eaa.Assert.Equal(models.Major(sampleUser["major0"].(string)), respUser.Major0)
+				eaa.Assert.Equal(models.Major(sampleUser["major1"].(string)), respUser.Major1)
+				eaa.Assert.Equal(models.Major(sampleUser["major2"].(string)), respUser.Major2)
 				eaa.Assert.Equal(models.College(sampleUser["college"].(string)), respUser.College)
 				eaa.Assert.Equal(models.GraduationCycle(sampleUser["graduation_cycle"].(string)), respUser.GraduationCycle)
 				eaa.Assert.Equal(int16(sampleUser["graduation_year"].(int)), respUser.GraduationYear)
@@ -187,6 +193,9 @@ func TestUpdateUserWorks(t *testing.T) {
 				eaa.Assert.Equal(newFirstName, respUser.FirstName)
 				eaa.Assert.Equal(newLastName, respUser.LastName)
 				eaa.Assert.Equal((sampleStudentJSON)["email"].(string), respUser.Email)
+				eaa.Assert.Equal(models.Major((sampleStudentJSON)["major0"].(string)), respUser.Major0)
+				eaa.Assert.Equal(models.Major((sampleStudentJSON)["major1"].(string)), respUser.Major1)
+				eaa.Assert.Equal(models.Major((sampleStudentJSON)["major2"].(string)), respUser.Major2)
 				eaa.Assert.Equal(models.College((sampleStudentJSON)["college"].(string)), respUser.College)
 				eaa.Assert.Equal(models.GraduationCycle(sampleStudentJSON["graduation_cycle"].(string)), respUser.GraduationCycle)
 				eaa.Assert.Equal(int16(sampleStudentJSON["graduation_year"].(int)), respUser.GraduationYear)
@@ -199,6 +208,9 @@ func TestUpdateUserWorks(t *testing.T) {
 				eaa.Assert.Equal(dbUser.FirstName, respUser.FirstName)
 				eaa.Assert.Equal(dbUser.LastName, respUser.LastName)
 				eaa.Assert.Equal(dbUser.Email, respUser.Email)
+				eaa.Assert.Equal(dbUser.Major0, respUser.Major0)
+				eaa.Assert.Equal(dbUser.Major1, respUser.Major1)
+				eaa.Assert.Equal(dbUser.Major2, respUser.Major2)
 				eaa.Assert.Equal(dbUser.College, respUser.College)
 				eaa.Assert.Equal(dbUser.GraduationCycle, respUser.GraduationCycle)
 				eaa.Assert.Equal(dbUser.GraduationYear, respUser.GraduationYear)
@@ -367,6 +379,9 @@ func AssertUserWithIDBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, bo
 	eaa.Assert.Equal(dbUser.FirstName, respUser.FirstName)
 	eaa.Assert.Equal(dbUser.LastName, respUser.LastName)
 	eaa.Assert.Equal(dbUser.Email, respUser.Email)
+	eaa.Assert.Equal(dbUser.Major0, respUser.Major0)
+	eaa.Assert.Equal(dbUser.Major1, respUser.Major1)
+	eaa.Assert.Equal(dbUser.Major2, respUser.Major2)
 	eaa.Assert.Equal(dbUser.College, respUser.College)
 	eaa.Assert.Equal(dbUser.GraduationCycle, respUser.GraduationCycle)
 	eaa.Assert.Equal(dbUser.GraduationYear, respUser.GraduationYear)
@@ -380,6 +395,9 @@ func AssertUserWithIDBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, bo
 	eaa.Assert.Equal((*body)["first_name"].(string), dbUser.FirstName)
 	eaa.Assert.Equal((*body)["last_name"].(string), dbUser.LastName)
 	eaa.Assert.Equal((*body)["email"].(string), dbUser.Email)
+	eaa.Assert.Equal(models.Major((*body)["major0"].(string)), dbUser.Major0)
+	eaa.Assert.Equal(models.Major((*body)["major1"].(string)), dbUser.Major1)
+	eaa.Assert.Equal(models.Major((*body)["major2"].(string)), dbUser.Major2)
 	eaa.Assert.Equal(models.College((*body)["college"].(string)), dbUser.College)
 	eaa.Assert.Equal(models.GraduationCycle((*body)["graduation_cycle"].(string)), dbUser.GraduationCycle)
 	eaa.Assert.Equal(int16((*body)["graduation_year"].(int)), dbUser.GraduationYear)
@@ -463,7 +481,7 @@ func TestCreateUserFailsIfUserWithEmailAlreadyExists(t *testing.T) {
 }
 
 func AssertCreateBadDataFails(t *testing.T, jsonKey string, badValues []interface{}) {
-	appAssert, _, _ := CreateSampleStudent(t, nil)
+	appAssert := h.InitTest(t)
 
 	sampleStudent, rawPassword := h.SampleStudentFactory()
 
@@ -480,7 +498,7 @@ func AssertCreateBadDataFails(t *testing.T, jsonKey string, badValues []interfac
 			},
 			h.ErrorWithTester{
 				Error:  errors.FailedToValidateUser,
-				Tester: TestNumUsersRemainsAt2,
+				Tester: TestNumUsersRemainsAt1,
 			},
 		)
 	}
@@ -502,15 +520,40 @@ func TestCreateUserFailsOnInvalidEmail(t *testing.T) {
 }
 
 func TestCreateUserFailsOnInvalidPassword(t *testing.T) {
-	AssertCreateBadDataFails(t,
-		"password",
-		[]interface{}{
-			"",
-			"foo",
-			"abcdefg",
-			"abcdefg0",
-			"abcdefg@",
-		})
+	appAssert := h.InitTest(t)
+
+	sampleStudent, rawPassword := h.SampleStudentFactory()
+
+	inputsWithDesiredErr := []struct {
+		Password string
+		Error    errors.Error
+	}{
+		{"0", errors.InvalidPasswordNotLongEnough},
+		{"foo", errors.InvalidPasswordNotLongEnough},
+		{"abcdefgh", errors.InvalidPasswordNoDigit},
+		{"abcdefg0", errors.InvalidPasswordNoSpecialCharacter},
+		{"abcdefg@", errors.InvalidPasswordNoDigit},
+	}
+
+	for _, inputWithDesiredErr := range inputsWithDesiredErr {
+		sampleUserPermutation := *h.SampleStudentJSONFactory(sampleStudent, rawPassword)
+		sampleUserPermutation["password"] = inputWithDesiredErr.Password
+
+		appAssert = appAssert.TestOnErrorAndTester(
+			h.TestRequest{
+				Method: fiber.MethodPost,
+				Path:   "/api/v1/users/",
+				Body:   &sampleUserPermutation,
+				Role:   &models.Super,
+			},
+			h.ErrorWithTester{
+				Error:  inputWithDesiredErr.Error,
+				Tester: TestNumUsersRemainsAt1,
+			},
+		)
+	}
+
+	appAssert.Close()
 }
 
 func TestCreateUserFailsOnMissingFields(t *testing.T) {

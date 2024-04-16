@@ -42,12 +42,7 @@ const LoginForm = () => {
         try {
             const validData = loginSchema.parse(loginData);
             console.log({ validData });
-<<<<<<< Updated upstream
-            await signIn(validData.email, validData.password);
-            // router.replace('/(app)/(tabs)/');
-=======
             await onLogin!(validData.email, validData.password);
->>>>>>> Stashed changes
         } catch (err: any) {
             if (err instanceof ZodError) {
                 Alert.alert(err.errors[0].message);
