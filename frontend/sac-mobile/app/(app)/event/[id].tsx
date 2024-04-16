@@ -18,8 +18,7 @@ import { EventLocation } from './_components/event-location';
 import { EventTime } from './_components/event-time';
 import { HostNames } from './_components/host-names';
 import { LocationView } from './_components/location-view';
-import RSVPBottomSheet from './_components/rsvp-bottom-sheet';
-import { AnimatedHeader } from './_components/animated-header';
+import { RSVPBottomSheet } from './_components/rsvp-bottom-sheet';
 
 // TODO: handle link OR location
 const EventPage = () => {

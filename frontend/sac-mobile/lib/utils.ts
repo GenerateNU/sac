@@ -5,12 +5,9 @@ import { Buffer } from 'buffer';
 import clsx, { ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-import { HomepageItem } from '@/app/(app)/(tabs)/_components/homepage';
 import { majorArr } from '@/lib/const';
 import { categories } from '@/lib/const';
 import { Tokens } from '@/types/auth';
-import { Club } from '@/types/club';
-import { Event } from '@/types/event';
 import { FAQ } from '@/types/faq';
 import { Item } from '@/types/item';
 

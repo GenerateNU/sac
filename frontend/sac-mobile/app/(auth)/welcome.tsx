@@ -1,10 +1,9 @@
 import React from 'react';
-import { SafeAreaView, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { router } from 'expo-router';
 
 import { Button } from '@/components/button';
-import { Wordmark } from '@/components/wordmark';
 
 const Welcome = () => {
     return (

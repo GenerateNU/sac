@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, Keyboard, TouchableWithoutFeedback, View } from 'react-native';
+import { Alert, View } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
-
-import { router } from 'expo-router';
 
 import { ZodError, z } from 'zod';
 
@@ -171,7 +169,7 @@ const RegistrationForm = () => {
                             title="Password"
                             autoComplete="password"
                             autoCorrect={false}
-                            textContentType='password'
+                            textContentType="password"
                             placeholder="Password"
                             onChangeText={onChange}
                             value={value}
@@ -223,7 +221,7 @@ const RegistrationForm = () => {
                             title="Password Confirmation"
                             autoCorrect={false}
                             autoComplete="password"
-                            textContentType='password'
+                            textContentType="password"
                             placeholder="Confirm your password"
                             onChangeText={onChange}
                             value={value}

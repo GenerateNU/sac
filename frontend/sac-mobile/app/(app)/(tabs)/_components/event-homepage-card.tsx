@@ -3,19 +3,21 @@ import { Pressable, Text, View } from 'react-native';
 
 import { router } from 'expo-router';
 
-import Location from '@/assets/icons/location';
-import Time from '@/assets/icons/time';
+import Pin from '@/assets/images/svg/pin.svg';
+import Time from '@/assets/images/svg/time.svg';
 import { useEventHosts } from '@/hooks/use-event';
 import { Event } from '@/types/event';
 
 const EventHomePageCard = ({ event }: { event: Event }) => {
-    const getHost = () => {
-        const { data: hosts } = useEventHosts(event.id);
-        if (hosts !== undefined && hosts.length > 0) {
-            return hosts[0].name;
-        }
-        return null;
-    };
+    const { data: hosts, isLoading, error } = useEventHosts(event.id);
+
+    if (isLoading) {
+        return <Text>Loading...</Text>;
+    }
+
+    if (error) {
+        return <Text>Error: {error.message}</Text>;
+    }
 
     return (
         <Pressable
@@ -28,13 +30,13 @@ const EventHomePageCard = ({ event }: { event: Event }) => {
                         <View className="w-16 h-16 bg-gray-300 rounded-xl" />
                         <View className="pl-[5%] flex-col shrink pr-[3%]">
                             <Text className="text-lg font-bold leading-5">
-                                {getHost()}
+                                {hosts?.[0].name ?? 'No Hosts'}
                             </Text>
                             <Text className="text-sm font-semibold leading-5">
                                 {event.name}
                             </Text>
                             <View className="flex-row items-center">
-                                <Location />
+                                <Pin />
                                 <Text className="text-sm pl-[2%] leading-5">
                                     {event.location}
                                 </Text>
@@ -42,7 +44,14 @@ const EventHomePageCard = ({ event }: { event: Event }) => {
                             <View className="flex-row items-center">
                                 <Time />
                                 <Text className="text-sm pl-[2%]">
-                                    {String(event.start_time)}
+                                    {new Date(
+                                        event.start_time
+                                    ).toLocaleDateString('en-US', {
+                                        month: 'long',
+                                        day: 'numeric',
+                                        hour: 'numeric',
+                                        minute: 'numeric'
+                                    })}
                                 </Text>
                             </View>
                         </View>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Alert, FlatList, ScrollView, Text, View } from 'react-native';
+import { Alert, FlatList, Text, View } from 'react-native';
 
 import { router } from 'expo-router';
 
@@ -63,8 +63,7 @@ const UserInterestsForm = () => {
     const handleTagPress = (tag: Tag) => {
         if (selectedTags.includes(tag)) {
             setSelectedTags(selectedTags.filter((t) => t !== tag));
-        }
-        else {
+        } else {
             setSelectedTags([...selectedTags, tag]);
         }
     };
@@ -108,7 +107,7 @@ const UserInterestsForm = () => {
             <Button
                 onPress={() => handleTagPress(tag)}
                 variant={selectedTags.includes(tag) ? 'default' : 'outline'}
-                size="tags"
+                className="h-12 rounded-3xl px-[5%] mr-[4%] w-fit mb-[4%]"
             >
                 {tag.name}
             </Button>
@@ -126,7 +125,7 @@ const UserInterestsForm = () => {
                             : 'menu'
                     }
                     key={item.id}
-                    size="menu"
+                    className={`h-12 px-5`}
                 >
                     {item.name}
                 </Button>
@@ -165,7 +164,7 @@ const UserInterestsForm = () => {
                     />
                 ) : (
                     <FlatList
-                            data={tagsData?.filter(
+                        data={tagsData?.filter(
                             (tag) => selectedCategory.id === tag.category_id
                         )}
                         renderItem={renderTag}

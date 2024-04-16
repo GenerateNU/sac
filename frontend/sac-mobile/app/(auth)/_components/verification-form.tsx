@@ -1,35 +1,21 @@
 import { useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { Alert, Platform, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 import { router } from 'expo-router';
 
 import { ZodError, z } from 'zod';
 
-import { Button } from '@/components/button';
-import { Error } from '@/components/error';
-import { Input } from '@/components/input';
 import { useAuthStore } from '@/hooks/use-auth';
 import { requestVerification } from '@/services/auth';
-import {
-    CodeField,
-    Cursor,
-    useBlurOnFulfill,
-    useClearByFocusCell,
-} from 'react-native-confirmation-code-field';
-import Code from './code';
 
-type VerificationFormData = {
-    code: string;
-};
+import Code from './code';
 
 const verificationSchema = z.object({
     code: z.string().min(6, {
         message: 'Verification code must be 6 characters long'
     })
 });
-
 
 const VerificationForm = () => {
     const { user, completeVerification } = useAuthStore();
@@ -70,12 +56,17 @@ const VerificationForm = () => {
             {loading && <Spinner visible={loading} />}
             <Code onCompleted={onVerify} />
             <View className="mt-[5%] flex-row justify-center">
-                <Text className="text-gray-500 text-md">Didn't receive the code?</Text>
+                <Text className="text-gray-500 text-md">
+                    Didn't receive the code?
+                </Text>
                 <TouchableOpacity
                     onPress={requestCode}
                     className="font-bold underline"
                 >
-                    <Text className="font-bold text-gray-500 underline text-md"> Resend</Text>
+                    <Text className="font-bold text-gray-500 underline text-md">
+                        {' '}
+                        Resend
+                    </Text>
                 </TouchableOpacity>
             </View>
         </>

@@ -1,11 +1,9 @@
 import React from 'react';
-import { ScrollView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text, View } from 'react-native';
 
-import { Wordmark } from '@/components/wordmark';
+import { StatusBar } from 'expo-status-bar';
 
 import { VerificationForm } from './_components/verification-form';
-import { StatusBar } from 'expo-status-bar';
 
 const Verification = () => {
     return (

@@ -53,4 +53,4 @@ const RSVPBottomSheet = forwardRef<Ref>((_, ref) => {
     );
 });
 
-export default RSVPBottomSheet;
+export { RSVPBottomSheet };

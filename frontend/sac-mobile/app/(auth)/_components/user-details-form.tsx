@@ -1,5 +1,5 @@
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, ScrollView, View } from 'react-native';
+import { Alert, View } from 'react-native';
 
 import { router } from 'expo-router';
 

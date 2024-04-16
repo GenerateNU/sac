@@ -1,11 +1,7 @@
 import React from 'react';
-import { Platform, View } from 'react-native';
+import { View } from 'react-native';
 
 import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { MenuView } from '@react-native-menu/menu';
 
 import { LeftArrow } from '@/components/left-arrow';
 

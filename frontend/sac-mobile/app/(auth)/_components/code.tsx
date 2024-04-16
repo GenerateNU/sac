@@ -1,7 +1,13 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-import { useState } from 'react'
-import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from 'react-native-confirmation-code-field'
+import React from 'react';
+import { useState } from 'react';
+import { Text, View } from 'react-native';
+import {
+    CodeField,
+    Cursor,
+    useBlurOnFulfill,
+    useClearByFocusCell
+} from 'react-native-confirmation-code-field';
+
 import { Button } from '@/components/button';
 
 const CELL_COUNT = 6;
@@ -15,11 +21,11 @@ const Code = ({ onCompleted }: CodeProps) => {
     const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
     const [props, getCellOnLayoutHandler] = useClearByFocusCell({
         value,
-        setValue,
+        setValue
     });
 
     return (
-        <View className='flex-col gap-y-5'>
+        <View className="flex-col gap-y-5">
             <CodeField
                 ref={ref}
                 {...props}
@@ -39,21 +45,23 @@ const Code = ({ onCompleted }: CodeProps) => {
                             justifyContent: 'center',
                             alignItems: 'center',
                             borderBottomWidth: 2,
-                            borderBottomColor: isFocused ? 'gray' : 'black',
+                            borderBottomColor: isFocused ? 'gray' : 'black'
                         }}
                     >
-                        <Text style={{ fontSize: 24, color: 'gray' }}>{symbol || (isFocused ? <Cursor /> : null)}</Text>
+                        <Text style={{ fontSize: 24, color: 'gray' }}>
+                            {symbol || (isFocused ? <Cursor /> : null)}
+                        </Text>
                     </View>
                 )}
             />
             <Button
                 className="bg-primary-500"
-                onPress={() => onCompleted(value)}>
+                onPress={() => onCompleted(value)}
+            >
                 Submit
             </Button>
         </View>
     );
-}
+};
 
-export default Code
-
+export default Code;

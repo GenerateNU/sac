@@ -62,8 +62,7 @@ const FollowedClub = ({ club }: { club: Club }) => {
                 <Text className="pl-[4%] font-bold text-lg">{club.name}</Text>
             </Pressable>
             <Button
-                size="follow"
-                variant={buttonClicked === 'Following' ? 'follow' : 'unfollow'}
+                className={`h-8 rounded-lg px-7 py-[1%] ${buttonClicked === 'Following' ? 'bg-gray-300 text-black text-md' : 'bg-gray-500 text-white text-md'}`}
                 onPress={handlePressFollow}
             >
                 {buttonClicked === 'Following' ? 'Following' : 'Follow'}

@@ -61,8 +61,7 @@ const Input = ({ title, error, variant, ...props }: InputProps) => {
                 />
                 {/* @ts-ignore */}
                 <Button
-                    size="faq"
-                    variant="faq"
+                    className="w-10 h-6 bg-gray-300"
                     onPress={(e: GestureResponderEvent) =>
                         props.onSubmitEditing!(e)
                     }

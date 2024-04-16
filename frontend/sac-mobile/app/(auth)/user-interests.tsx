@@ -1,8 +1,9 @@
 import React from 'react';
-import { SafeAreaView, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
+
+import { StatusBar } from 'expo-status-bar';
 
 import UserInterestsForm from './_components/user-interest-form';
-import { StatusBar } from 'expo-status-bar';
 
 const UserInterests = () => {
     return (

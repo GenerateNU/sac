@@ -63,9 +63,7 @@ const Layout = () => {
                     title: 'SAC',
                     headerShown: true,
                     headerLeft: () => null,
-                    headerBackground: () => (
-                        <View className="h-full bg-white" />
-                    ),
+                    headerBackground: () => <View className="h-full bg-white" />
                 }}
             />
             <Stack.Screen
@@ -90,7 +88,6 @@ const Layout = () => {
                     )
                 }}
             />
-
         </Stack>
     );
 };
