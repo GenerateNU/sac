@@ -1,24 +1,21 @@
-import { View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, ScrollView, Text, View } from 'react-native';
 
-import { router } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 
-import { Button } from '@/components/button';
+import UserDetailForm from './_components/user-details-form';
 
 const UserDetails = () => {
     return (
         <SafeAreaView>
-            <View className="px-[8%] pb-[9%]">
-                <View className="flex-row justify-end pt-[5%]">
-                    <Button
-                        size="lg"
-                        variant="default"
-                        onPress={() => router.push('/(app)/')}
-                    >
-                        Continue
-                    </Button>
+            <ScrollView className="px-[8%] pb-[9%]">
+                <StatusBar style="dark" />
+                <Text className="font-bold text-5xl pt-[8%] pb-[10%]">
+                    Let's learn more about you
+                </Text>
+                <View className="pb-[10%]">
+                    <UserDetailForm />
                 </View>
-            </View>
+            </ScrollView>
         </SafeAreaView>
     );
 };

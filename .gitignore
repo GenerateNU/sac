@@ -22,3 +22,5 @@ backend/tests/api/__debug_*
 frontend/sac-mobile/ios/
 frontend/sac-mobile/android/
 tmp/
+ios
+android

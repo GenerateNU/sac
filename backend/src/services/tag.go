@@ -9,7 +9,7 @@ import (
 )
 
 type TagServiceInterface interface {
-	GetTags(limit string, page string) ([]models.Tag, *errors.Error)
+	GetTags() ([]models.Tag, *errors.Error)
 	CreateTag(tagBody models.CreateTagRequestBody) (*models.Tag, *errors.Error)
 	GetTag(id string) (*models.Tag, *errors.Error)
 	UpdateTag(id string, tagBody models.UpdateTagRequestBody) (*models.Tag, *errors.Error)
@@ -37,18 +37,8 @@ func (t *TagService) CreateTag(tagBody models.CreateTagRequestBody) (*models.Tag
 	return transactions.CreateTag(t.DB, *tag)
 }
 
-func (t *TagService) GetTags(limit string, page string) ([]models.Tag, *errors.Error) {
-	limitAsInt, err := utilities.ValidateNonNegative(limit)
-	if err != nil {
-		return nil, &errors.FailedToValidateLimit
-	}
-
-	pageAsInt, err := utilities.ValidateNonNegative(page)
-	if err != nil {
-		return nil, &errors.FailedToValidatePage
-	}
-
-	return transactions.GetTags(t.DB, *limitAsInt, *pageAsInt)
+func (t *TagService) GetTags() ([]models.Tag, *errors.Error) {
+	return transactions.GetTags(t.DB)
 }
 
 func (t *TagService) GetTag(tagID string) (*models.Tag, *errors.Error) {

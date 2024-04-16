@@ -1,15 +1,17 @@
 import React from 'react';
-import { KeyboardAvoidingView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Keyboard, Pressable, Text, View } from 'react-native';
 
 import { LoginForm } from './_components/login-form';
 
 const Login = () => {
     return (
-        <SafeAreaView className="bg-neutral-500 h-[100%]" edges={['top']}>
-            <KeyboardAvoidingView behavior={'padding'} className="flex-1">
-                <View className="px-[8%] pb-[8%]">
-                    <View className="pt-[2%] pb-[1%]">
+        <Pressable
+            className="flex-1 bg-neutral-500 h-[100%] pt-[8%]"
+            onPress={() => Keyboard.dismiss()}
+        >
+            <View className="flex-1">
+                <View className="px-[8%] pb-[10%]">
+                    <View className="pt-[5%] pb-[7%]">
                         <Text className="text-5xl font-bold text-white">
                             Let's go
                         </Text>
@@ -30,8 +32,8 @@ const Login = () => {
                         </Text>
                     </View>
                 </View>
-            </KeyboardAvoidingView>
-        </SafeAreaView>
+            </View>
+        </Pressable>
     );
 };
 

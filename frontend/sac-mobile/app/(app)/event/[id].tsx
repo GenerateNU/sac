@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 
 import { Stack, useLocalSearchParams } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 
 import BottomSheet from '@gorhom/bottom-sheet';
 
@@ -17,7 +18,7 @@ import { EventLocation } from './_components/event-location';
 import { EventTime } from './_components/event-time';
 import { HostNames } from './_components/host-names';
 import { LocationView } from './_components/location-view';
-import RSVPBottomSheet from './_components/rsvp-bottom-sheet';
+import { RSVPBottomSheet } from './_components/rsvp-bottom-sheet';
 
 // TODO: handle link OR location
 const EventPage = () => {
@@ -40,11 +41,10 @@ const EventPage = () => {
         return <Text>Event not found</Text>;
     }
 
-    console.log('[event]', event);
-
     return (
         <>
             <Stack.Screen options={{ title: `${event.name}` }} />
+            <StatusBar style="light" />
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View className="flex-col justify-between flex-1 w-full">
                     <View className="w-full bg-gray-600 h-[100]" />

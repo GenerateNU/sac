@@ -1,20 +1,23 @@
 import React from 'react';
-import { View } from 'react-native';
+import { SafeAreaView, Text, View } from 'react-native';
 
 import { Button } from '@/components/button';
 import { useAuthStore } from '@/hooks/use-auth';
 
 const Profile = () => {
-    const { signOut } = useAuthStore();
+    const { signOut, user } = useAuthStore();
 
     const handleSignOut = async () => {
         signOut();
     };
 
     return (
-        <View className="items-center justify-center flex-1 gap-5">
-            <Button onPress={handleSignOut}>Sign Out</Button>
-        </View>
+        <SafeAreaView className="flex-1 justify-center">
+            <View className="px-[8%] gap-5 flex-col items-center">
+                <Text className="text-lg">Welcome {user?.first_name}</Text>
+                <Button onPress={handleSignOut}>Sign Out</Button>
+            </View>
+        </SafeAreaView>
     );
 };
 
