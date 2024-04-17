@@ -13,7 +13,7 @@ const Layout = () => {
         <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen
-                name="event"
+                name="event/[id]"
                 options={{
                     animationTypeForReplace: 'push',
                     animation: 'slide_from_right',
@@ -64,6 +64,7 @@ const Layout = () => {
                 name="club"
                 options={{
                     animationTypeForReplace: 'push',
+                    animation: 'slide_from_right',
                     headerShown: true,
                     headerTitleStyle: {
                         color: 'white'
