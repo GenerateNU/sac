@@ -12,8 +12,6 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { useAuthStore } from '@/hooks/use-auth';
-import { AuthProvider, useAuth } from '@/context/AuthContext';
-import * as SecureStore from 'expo-secure-store';
 
 export {
     // Catch any errors thrown by the Layout component.
@@ -34,47 +32,48 @@ export const queryClient = new QueryClient({
 });
 
 const InitalLayout = () => {
-    // const { isLoggedIn, fetchCache, isVerified } = useAuthStore();
-    const [loaded, error] = useFonts({
-        SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-        ...FontAwesome.font
-    });
-
-    const { token, initialized, verified } = useAuth();
+    const { isLoggedIn, fetchCache, isVerified, user } = useAuthStore();
     const router = useRouter();
     const segments = useSegments();
 
     useEffect(() => {
-        if (error) throw error;
-    }, [error]);
-    useEffect(() => {
-        if (loaded) SplashScreen.hideAsync();
-    }, [loaded]);
+        const handleNavigation = () => {
+            if (isLoggedIn === null) return fetchCache();
 
-    useEffect(() => {
-        // SecureStore.deleteItemAsync('accessToken');
-        // SecureStore.deleteItemAsync('refreshToken');
-        // SecureStore.deleteItemAsync('user');
+            const inApp = segments[0] === '(app)';
 
-        if (!initialized) return;
+            console.log({ isLoggedIn, isVerified, inApp });
 
-        const inAuthGroup = segments[0] === '(app)';
-        console.log({ token, inAuthGroup, verified, initialized });
+            if (isLoggedIn && isVerified === false) {
+                router.push('/(auth)/verification');
+            } else if (isLoggedIn && isVerified) {
+                router.push('/(app)/(tabs)/');
+            } else if (!isLoggedIn) {
+                router.push('/(auth)/welcome');
+            }
+        };
 
-        if (token && inAuthGroup && verified === false) {
-            router.push('/(auth)/verification');
-        } else if (token && !inAuthGroup) {
-            router.push('/(app)/(tabs)/');
-        } else if (!token && inAuthGroup) {
-            router.push('/(auth)/welcome');
-        }
-    }, [token, initialized, verified]);
+        console.log({ isLoggedIn, isVerified, user });
 
-    if (!loaded || !initialized) {
-        // return <ActivityIndicator size={'large'} />;
-        return <Slot />;
-    }
+        handleNavigation();
 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isLoggedIn, isVerified]);
+
+
+
+
+    if (isLoggedIn === null)
+        return (
+            <View className="items-center justify-center flex-1">
+                <Spinner
+                    visible
+                    textContent="Welcome to SAC Mobile"
+                    // eslint-disable-next-line react-native/no-inline-styles
+                    textStyle={{ color: '#FFF' }}
+                />
+            </View>
+        );
 
     return (
         <>
@@ -86,53 +85,29 @@ const InitalLayout = () => {
         </>
     )
 
-    // useEffect(() => {
-    //     const handleNavigation = () => {
-    //         if (isLoggedIn === null) return fetchCache();
-
-    //         const inApp = segments[0] === '(app)';
-
-    //         console.log({ isLoggedIn, isVerified, inApp });
-
-    //         if (isLoggedIn && isVerified === false) {
-    //             router.push('/(auth)/verification');
-    //         } else if (isLoggedIn && isVerified) {
-    //             router.push('/(app)/(tabs)/');
-    //         } else if (!isLoggedIn) {
-    //             router.push('/(auth)/welcome');
-    //         }
-    //     };
-
-    //     console.log({ isLoggedIn, isVerified });
-
-    //     handleNavigation();
-
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [isLoggedIn, isVerified]);
-
-    // if (isLoggedIn === null)
-    //     return (
-    //         <View className="items-center justify-center flex-1">
-    //             <Spinner
-    //                 visible
-    //                 textContent="Welcome to SAC Mobile"
-    //                 // eslint-disable-next-line react-native/no-inline-styles
-    //                 textStyle={{ color: '#FFF' }}
-    //             />
-    //         </View>
-    //     );
 };
 
 const RootLayout = () => {
+    const [loaded, error] = useFonts({
+        SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+        ...FontAwesome.font
+    });
+
+    useEffect(() => {
+        if (error) throw error;
+    }, [error]);
+    useEffect(() => {
+        if (loaded) SplashScreen.hideAsync();
+    }, [loaded]);
+
+    if (!loaded) return null;
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-            <AuthProvider>
                 <QueryClientProvider client={queryClient}>
                     <StatusBar style="light" />
                     <InitalLayout />
-                </QueryClientProvider>
-            </AuthProvider>
+            </QueryClientProvider>
         </GestureHandlerRootView>
     );
 };

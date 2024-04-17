@@ -16,7 +16,6 @@ import { graduationCycle } from '@/lib/const';
 import { major } from '@/lib/utils';
 import { graduationYear } from '@/lib/utils';
 import { Item } from '@/types/item';
-import { useAuth } from '@/context/AuthContext';
 
 type UserDetailsData = {
     major: Item[];
@@ -40,8 +39,7 @@ const UserDetailsForm = () => {
     });
 
     const updateUserInfo = useUpdateUser();
-    // const { user } = useAuthStore();
-    const { user } = useAuth();
+    const { user } = useAuthStore();
     const userId: string = user?.id!;
 
     const onSubmit = ({

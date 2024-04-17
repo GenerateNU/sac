@@ -11,15 +11,13 @@ import SearchSelectedIcon from '@/assets/images/svg/search-selected.svg';
 import SearchIcon from '@/assets/images/svg/search.svg';
 import { Wordmark } from '@/components/wordmark';
 import { useAuthStore } from '@/hooks/use-auth';
-import { useAuth } from '@/context/AuthContext';
 
 const Layout = () => {
-    // const { isLoggedIn, fetchUser } = useAuthStore();
-    const { initialized, getUser } = useAuth();
+    const { isLoggedIn, fetchUser } = useAuthStore();
 
     useEffect(() => {
-        if (initialized) getUser!();
-    }, [initialized]);
+        if (isLoggedIn) fetchUser();
+    }, [isLoggedIn]);
 
     return (
         <Tabs screenOptions={{ tabBarShowLabel: false }}>

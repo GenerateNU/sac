@@ -14,15 +14,13 @@ import { useTags } from '@/hooks/use-tags';
 import { useCreateUserTags } from '@/hooks/use-user';
 import { Category } from '@/types/category';
 import { Tag } from '@/types/tag';
-import { useAuth } from '@/context/AuthContext';
 
 type UserInterestsData = {
     tags: Tag[];
 };
 
 const UserInterestsForm = () => {
-    // const { user } = useAuthStore();
-    const { user } = useAuth();
+    const { user } = useAuthStore();
     const userId: string = user?.id!;
 
     const {

@@ -11,11 +11,9 @@ import {
     useUserFollowing
 } from '@/hooks/use-user';
 import { Club } from '@/types/club';
-import { useAuth } from '@/context/AuthContext';
 
 const FollowedClub = ({ club }: { club: Club }) => {
-    // const { user } = useAuthStore();
-    const { user } = useAuth();
+    const { user } = useAuthStore();
 
     const {
         data: following,
@@ -28,21 +26,19 @@ const FollowedClub = ({ club }: { club: Club }) => {
 
     const [buttonClicked, setButtonClicked] = useState('Following');
 
-    const handlePressFollow = () => {
-        if (following?.some((c) => c.id === club.id)) {
-            console.log('Follow Club');
-            followClub.mutateAsync({
-                userId: user?.id || '',
-                clubId: club.id
-            });
-            setButtonClicked('Following');
-        } else {
-            console.log('Unfollow Club');
-            unfollowClub.mutateAsync({
+    const handlePressFollow = async () => {
+        if (buttonClicked === 'Following') {
+            await unfollowClub.mutateAsync({
                 userId: user?.id || '',
                 clubId: club.id
             });
             setButtonClicked('Follow');
+        } else {
+            await followClub.mutateAsync({
+                userId: user?.id || '',
+                clubId: club.id
+            });
+            setButtonClicked('Following');
         }
     };
 
@@ -66,6 +62,7 @@ const FollowedClub = ({ club }: { club: Club }) => {
             <Button
                 className={`h-8 rounded-lg px-7 py-[1%] ${buttonClicked === 'Following' ? 'bg-gray-300 text-black text-md' : 'bg-gray-500 text-white text-md'}`}
                 onPress={handlePressFollow}
+                variant={'none'}
             >
                 {buttonClicked === 'Following' ? 'Following' : 'Follow'}
             </Button>

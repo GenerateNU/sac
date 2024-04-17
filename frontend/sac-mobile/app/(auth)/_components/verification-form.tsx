@@ -9,7 +9,6 @@ import { ZodError, z } from 'zod';
 import { useAuthStore } from '@/hooks/use-auth';
 import { requestVerification } from '@/services/auth';
 import { useForm } from 'react-hook-form';
-import { useAuth } from '@/context/AuthContext';
 import Code from './code';
 
 type VerificationFormData = {
@@ -29,8 +28,7 @@ const VerificationForm = () => {
         formState: { errors }
     } = useForm<VerificationFormData>();
 
-    // const { user, completeVerification } = useAuthStore();
-    const { user, onVerify } = useAuth();
+    const { user, completeVerification } = useAuthStore();
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -42,7 +40,7 @@ const VerificationForm = () => {
 
         try {
             verificationSchema.parse({ code });
-            await onVerify!(user?.email as string, code);
+            await completeVerification(user?.email as string, code);
             router.replace('/(auth)/user-details');
         } catch (error: any) {
             if (error instanceof ZodError) {

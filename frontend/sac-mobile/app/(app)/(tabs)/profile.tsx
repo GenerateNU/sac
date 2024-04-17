@@ -3,13 +3,12 @@ import { SafeAreaView, Text, View } from 'react-native';
 
 import { Button } from '@/components/button';
 import { useAuthStore } from '@/hooks/use-auth';
-import { useAuth } from '@/context/AuthContext';
 
 const Profile = () => {
-    // const { signOut, user } = useAuthStore();
-    const { onLogout, user } = useAuth();
+    const { signOut, user } = useAuthStore();
+
     const handleSignOut = async () => {
-        onLogout!();
+        signOut();
     };
 
     return (

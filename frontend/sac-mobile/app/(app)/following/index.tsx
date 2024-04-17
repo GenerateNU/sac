@@ -5,11 +5,9 @@ import { FollowedClub } from '@/app/(app)/following/_components/followed-club';
 import { useAuthStore } from '@/hooks/use-auth';
 import { useUserFollowing } from '@/hooks/use-user';
 import { Club } from '@/types/club';
-import { useAuth } from '@/context/AuthContext';
 
 const FollowedClubsPage = () => {
-    // const { user } = useAuthStore();
-    const { user } = useAuth();
+    const { user } = useAuthStore();
 
     const {
         data: following,

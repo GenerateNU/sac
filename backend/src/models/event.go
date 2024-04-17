@@ -32,8 +32,9 @@ type Event struct {
 	Location    string    `gorm:"type:varchar(255);not null" json:"location" validate:"required,max=255"`
 	EventType   EventType `gorm:"type:varchar(255);default:open;not null" json:"event_type" validate:"required,max=255,oneof=open membersOnly"`
 	IsRecurring bool      `gorm:"type:bool;default:false;not null" json:"is_recurring" validate:"-"`
-
-	Host         *uuid.UUID     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;not null;" json:"-" validate:"uuid4"`
+	MeetingLink string    `gorm:"type:varchar(255);" json:"meeting_link" validate:"url"`
+	Host         *uuid.UUID     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;not null;" json:"host" validate:"uuid4"`
+	
 	RSVP         []User         `gorm:"many2many:user_event_rsvps;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	Waitlist     []User         `gorm:"many2many:user_event_waitlists;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
 	Clubs        []Club         `gorm:"many2many:club_events;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`

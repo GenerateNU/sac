@@ -7,7 +7,6 @@ import { HomepageList } from '@/app/(app)/(tabs)/_components/homepage';
 import { useAuthStore } from '@/hooks/use-auth';
 
 import { FollowingHeader } from './_components/following-header';
-import { useAuth } from '@/context/AuthContext';
 
 
 const HomePage = () => {
