@@ -106,15 +106,7 @@ func CreateEvent(db *gorm.DB, event models.Event) ([]models.Event, *errors.Error
 }
 
 func CreateEventSeries(db *gorm.DB, series models.Series) ([]models.Event, *errors.Error) {
-	tx := db.Begin()
-
-	if err := tx.Create(&series).Error; err != nil {
-		tx.Rollback()
-		return nil, &errors.FailedToCreateEventSeries
-	}
-
-	if err := tx.Commit().Error; err != nil {
-		tx.Rollback()
+	if err := db.Create(&series).Error; err != nil {
 		return nil, &errors.FailedToCreateEventSeries
 	}
 

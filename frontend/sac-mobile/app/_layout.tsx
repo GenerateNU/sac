@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 import { useFonts } from 'expo-font';
@@ -20,7 +21,7 @@ export {
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
             refetchOnWindowFocus: false,
@@ -44,11 +45,11 @@ const InitalLayout = () => {
             console.log({ isLoggedIn, isVerified, inApp });
 
             if (isLoggedIn && isVerified === false) {
-                router.replace('/(auth)/verification');
+                router.push('/(auth)/verification');
             } else if (isLoggedIn && isVerified) {
-                router.replace('/(app)/(tabs)/');
+                router.push('/(app)/(tabs)/');
             } else if (!isLoggedIn) {
-                router.replace('/(auth)/welcome');
+                router.push('/(auth)/welcome');
             }
         };
 
@@ -91,8 +92,10 @@ const RootLayout = () => {
 
     return (
         <QueryClientProvider client={queryClient}>
-            <StatusBar style="light" />
-            <InitalLayout />
+            <GestureHandlerRootView style={{ flex: 1 }}>
+                <StatusBar style="light" />
+                <InitalLayout />
+            </GestureHandlerRootView>
         </QueryClientProvider>
     );
 };

@@ -43,6 +43,10 @@ var (
 		StatusCode: fiber.StatusUnauthorized,
 		Message:    "unauthorized",
 	}
+	Forbidden = Error{
+		StatusCode: fiber.StatusForbidden,
+		Message:    "forbidden",
+	}
 	FailedToSignToken = Error{
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to sign token",

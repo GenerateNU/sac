@@ -131,7 +131,7 @@
 
 ### SAC CLI
 
-   To install use `./install.sh` and then run `sac-cli` to see all commands.
+   To install use `./install.sh` and then run `sac` to see all commands.
 
 # Git Flow
 

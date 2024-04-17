@@ -35,6 +35,10 @@ func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models
 		return nil, nil, &errors.FailedToValidateUser
 	}
 
+	if pwordValErr := auth.ValidatePassword(userBody.Password); pwordValErr != nil {
+		return nil, nil, pwordValErr
+	}
+
 	user, err := utilities.MapRequestToModel(userBody, &models.User{})
 	if err != nil {
 		return nil, nil, &errors.FailedToMapRequestToModel
@@ -139,6 +143,14 @@ func (u *UserService) UpdatePassword(id string, passwordBody models.UpdatePasswo
 
 	if err := u.Validate.Struct(passwordBody); err != nil {
 		return &errors.FailedToValidateUpdatePasswordBody
+	}
+
+	if pwordValErr := auth.ValidatePassword(passwordBody.OldPassword); pwordValErr != nil {
+		return pwordValErr
+	}
+
+	if pwordValErr := auth.ValidatePassword(passwordBody.NewPassword); pwordValErr != nil {
+		return pwordValErr
 	}
 
 	passwordHash, err := transactions.GetUserPasswordHash(u.DB, *idAsUUID)

@@ -6,11 +6,13 @@ on:
   push:
     paths:
       - backend/**
+      - config/**
       - .github/workflows/backend.yml
   pull_request:
     types: [opened]
     paths:
       - backend/**
+      - config/**
       - .github/workflows/backend.yml
 
 concurrency:

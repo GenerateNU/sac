@@ -1,26 +1,40 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { SectionList, View } from 'react-native';
 
-import { Link } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 
-import { Button } from '@/components/button';
+import { HomepageList } from '@/app/(app)/(tabs)/_components/homepage';
 import { useAuthStore } from '@/hooks/use-auth';
 
-const Home = () => {
-    const { signOut, user } = useAuthStore();
+import { FollowingHeader } from './_components/following-header';
 
-    const handleSignOut = async () => {
-        signOut();
-    };
+const HomePage = () => {
+    const { user } = useAuthStore();
 
     return (
-        <View className="items-center justify-center flex-1 gap-5">
-            <Text>Welcome {user?.first_name}</Text>
-            <Button onPress={handleSignOut}>Sign Out</Button>
-            <Link href={`/event/${1}`}>Go to Event</Link>
-            <Link href={'/search/'}>Go to Search</Link>
-        </View>
+        <>
+            <StatusBar style="dark" />
+            <SectionList
+                sections={[
+                    {
+                        data: [
+                            <FollowingHeader
+                                key={user?.id}
+                                id={user?.id || ''}
+                            />
+                        ]
+                    },
+                    {
+                        data: [<HomepageList key={user?.id} />]
+                    }
+                ]}
+                keyExtractor={(_, index) => index.toString()}
+                renderItem={({ item }) => <>{item}</>}
+                renderSectionHeader={() => <View className="px-[6%] pt-[3%]" />}
+                stickySectionHeadersEnabled={false}
+            />
+        </>
     );
 };
 
-export default Home;
+export default HomePage;

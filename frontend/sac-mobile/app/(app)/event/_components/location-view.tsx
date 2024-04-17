@@ -1,8 +1,7 @@
 import React from 'react';
-import { Image, Linking, Text, TouchableOpacity, View } from 'react-native';
+import { Linking, Text, TouchableOpacity, View } from 'react-native';
+import MapView from 'react-native-maps';
 import { createOpenLink } from 'react-native-open-maps';
-
-import { useAssets } from 'expo-asset';
 
 import { Button } from '@/components/button';
 
@@ -12,15 +11,8 @@ type LocationViewProps = {
 };
 
 const LocationView = ({ location, meetingLink }: LocationViewProps) => {
-    const [assets, error] = useAssets([
-        require('@/assets/images/placeholder_location.png')
-    ]);
     const coordinates = { latitude: 42.3393326, longitude: -71.0869942 };
     const openMap = createOpenLink({ ...coordinates });
-
-    if (error) {
-        console.error(error);
-    }
 
     return (
         <>
@@ -52,14 +44,15 @@ const LocationView = ({ location, meetingLink }: LocationViewProps) => {
             )}
 
             <View className="w-full mt-4 overflow-hidden border-2 rounded-xl border-zinc-300">
-                {assets ? (
-                    <Image
-                        source={{ uri: assets[0].uri }}
-                        // @ts-ignore react-native/no-inline-styles
-                        style={{ width: '100%', height: assets[0].height }}
-                        className="rounded-[22px]"
-                    />
-                ) : null}
+                <MapView
+                    onPress={openMap}
+                    style={{ width: '100%', height: 200 }}
+                    initialRegion={{
+                        ...coordinates,
+                        latitudeDelta: 0.0922,
+                        longitudeDelta: 0.0421
+                    }}
+                />
             </View>
         </>
     );

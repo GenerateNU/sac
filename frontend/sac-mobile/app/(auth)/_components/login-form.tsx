@@ -41,7 +41,6 @@ const LoginForm = () => {
             const validData = loginSchema.parse(loginData);
             console.log({ validData });
             await signIn(validData.email, validData.password);
-            // router.replace('/(app)/(tabs)/');
         } catch (err: any) {
             if (err instanceof ZodError) {
                 Alert.alert(err.errors[0].message);

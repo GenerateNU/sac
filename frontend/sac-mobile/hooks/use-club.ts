@@ -1,43 +1,31 @@
 import { UseQueryResult, useQuery } from '@tanstack/react-query';
 
-import { fetchClub, fetchClubContacts } from '@/services/club';
+import { fetchClub, fetchClubContacts, fetchClubs } from '@/services/club';
 import { Club } from '@/types/club';
 import { Contact } from '@/types/contact';
 import { uuid } from '@/types/uuid';
 
-export const useClub = (clubID: uuid): UseQueryResult<Club, Error> => {
-    return useQuery<Club, Error>({
-        queryKey: ['useClubclubID', clubID],
+const useClubs = (): UseQueryResult<Club[], Error> => {
+    return useQuery<Club[], Error>({
+        queryKey: ['clubs'],
         queryFn: () => {
-            if (clubID === 'tester') {
-                return {
-                    id: 'tester',
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    name: 'Generate',
-                    preview: 'Generate',
-                    description: 'Generate',
-                    numMembers: 69420,
-                    isRecruiting: true,
-                    recruitmentCycle: 'always',
-                    recruitmentType: 'unrestricted',
-                    applicationLink: 'https://www.generatenu.com',
-                    logo: 'https://www.generatenu.com/logo.png',
-                    created_at: new Date(),
-                    updated_at: new Date()
-                } as Club;
-            } else {
-                return fetchClub(clubID);
-            }
+            return fetchClubs();
         }
     });
 };
 
-export const useClubContacts = (
-    clubID: uuid
-): UseQueryResult<Contact[], Error> => {
+const useClub = (clubID: uuid): UseQueryResult<Club, Error> => {
+    return useQuery<Club, Error>({
+        queryKey: ['club', clubID],
+        queryFn: () => {
+            return fetchClub(clubID);
+        }
+    });
+};
+
+const useClubContacts = (clubID: uuid): UseQueryResult<Contact[], Error> => {
     return useQuery<Contact[], Error>({
-        queryKey: ['useClubContactsclubID', clubID],
+        queryKey: ['club', clubID, 'contacts'],
         queryFn: () => {
             if (clubID.startsWith('tester')) {
                 return [
@@ -62,3 +50,5 @@ export const useClubContacts = (
         }
     });
 };
+
+export { useClub, useClubs, useClubContacts };

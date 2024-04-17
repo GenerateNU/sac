@@ -7,6 +7,7 @@ import (
 	"os/user"
 	"sync"
 
+	"github.com/GenerateNU/sac/backend/src/config"
 	_ "github.com/lib/pq"
 	"github.com/urfave/cli/v2"
 )
@@ -32,7 +33,12 @@ func ClearDBCommand() *cli.Command {
 func CleanTestDBs(ctx context.Context) error {
 	fmt.Println("Cleaning test databases")
 
-	db, err := sql.Open("postgres", CONFIG.Database.WithDb())
+	config, err := config.GetConfiguration(CONFIG, false)
+	if err != nil {
+		return err
+	}
+
+	db, err := sql.Open("postgres", config.Database.WithDb())
 	if err != nil {
 		return err
 	}
@@ -45,7 +51,7 @@ func CleanTestDBs(ctx context.Context) error {
 	}
 
 	query := "SELECT datname FROM pg_database WHERE datistemplate = false AND datname != 'postgres' AND datname != $1 AND datname != $2 AND datname LIKE 'sac_test_%';"
-	rows, err := db.Query(query, currentUser.Username, CONFIG.Database.DatabaseName)
+	rows, err := db.Query(query, currentUser.Username, config.Database.DatabaseName)
 	if err != nil {
 		return err
 	}

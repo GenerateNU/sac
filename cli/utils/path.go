@@ -13,7 +13,7 @@ func GetRootDir() (string, error) {
 		return "", err
 	}
 
-	// Find the closest directory containing "sac-cli" (the root directory)
+	// Find the closest directory containing "sac" (the root directory)
 	rootDir, err := FindRootDir(currentDir)
 	if err != nil {
 		return "", err
@@ -23,19 +23,19 @@ func GetRootDir() (string, error) {
 }
 
 func FindRootDir(dir string) (string, error) {
-	// Check if "sac-cli" exists in the current directory
-	mainGoPath := filepath.Join(dir, "sac-cli")
+	// Check if "sac" exists in the current directory
+	mainGoPath := filepath.Join(dir, "sac")
 	_, err := os.Stat(mainGoPath)
 	if err == nil {
-		// "sac-cli" found, this is the root directory
+		// "sac" found, this is the root directory
 		return dir, nil
 	}
 
 	// If not found, go up one level
 	parentDir := filepath.Dir(dir)
 	if parentDir == dir {
-		// Reached the top without finding "sac-cli"
-		return "", fmt.Errorf("could not find root directory containing sac-cli")
+		// Reached the top without finding "sac"
+		return "", fmt.Errorf("could not find root directory containing sac")
 	}
 
 	// Recursively search in the parent directory

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/urfave/cli/v2"
 )
 
@@ -52,7 +53,12 @@ func DropData() error {
 	dbMutex.Lock()
 	defer dbMutex.Unlock()
 
-	db, err := sql.Open("postgres", CONFIG.Database.WithDb())
+	config, err := config.GetConfiguration(CONFIG, false)
+	if err != nil {
+		return err
+	}
+
+	db, err := sql.Open("postgres", config.Database.WithDb())
 	if err != nil {
 		return err
 	}
@@ -95,7 +101,12 @@ func DropDB() error {
 	dbMutex.Lock()
 	defer dbMutex.Unlock()
 
-	db, err := sql.Open("postgres", CONFIG.Database.WithDb())
+	config, err := config.GetConfiguration(CONFIG, false)
+	if err != nil {
+		return err
+	}
+
+	db, err := sql.Open("postgres", config.Database.WithDb())
 	if err != nil {
 		return err
 	}

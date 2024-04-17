@@ -5,7 +5,10 @@ import { Buffer } from 'buffer';
 import clsx, { ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
+import { majorArr } from '@/lib/const';
+import { categories } from '@/lib/const';
 import { Tokens } from '@/types/auth';
+import { FAQ } from '@/types/faq';
 import { Item } from '@/types/item';
 
 /**
@@ -23,8 +26,9 @@ const cn = (...inputs: ClassValue[]) => {
  */
 const graduationYear = () => {
     var year = new Date().getFullYear();
+    const range = 5;
     const graduationYears: Item[] = [];
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < range; i++) {
         graduationYears.push({
             label: String(year + i),
             value: String(year + i)
@@ -33,6 +37,32 @@ const graduationYear = () => {
     return graduationYears;
 };
 
+/**
+ * Generates an array of item of major
+ * @returns an Item array of majors
+ */
+export const major = () => {
+    const majors: Item[] = [];
+    for (let i = 0; i < majorArr.length; i++) {
+        majors.push({
+            label: majorArr[i],
+            value: majorArr[i]
+        });
+    }
+    return majors;
+};
+
+/**
+ * Combine all tags of different categories into one for All tab
+ * @return a list of tags
+ */
+export const allTags = () => {
+    let allTags: string[] = [];
+    for (let i = 0; i < categories.length; i++) {
+        allTags = allTags.concat(categories[i].tags);
+    }
+    return allTags;
+};
 /**
  * Defines the token cache object.
  * This object is used to interact with the SecureStore API.
@@ -117,4 +147,35 @@ const extractTokens = (
     return { accessToken, refreshToken };
 };
 
-export { cn, graduationYear, tokenCache, experationTime, extractTokens };
+const isClub = (item: any) => {
+    return typeof item === 'object' && item.hasOwnProperty('is_recruiting');
+};
+
+const isEvent = (item: any) => {
+    return (
+        typeof item === 'object' &&
+        item.hasOwnProperty('name') &&
+        item.hasOwnProperty('start_time') &&
+        typeof item.start_time === 'object' &&
+        item.start_time instanceof Date
+    );
+};
+
+const isFAQ = (item: any): FAQ => {
+    return (
+        typeof item === 'object' &&
+        item.hasOwnProperty('question') &&
+        item.hasOwnProperty('answer')
+    );
+};
+
+export {
+    cn,
+    isClub,
+    isEvent,
+    isFAQ,
+    graduationYear,
+    tokenCache,
+    experationTime,
+    extractTokens
+};
