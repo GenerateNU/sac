@@ -9,6 +9,7 @@ import { Theme } from 'react-native-calendars/src/types';
 
 
 import Agenda from './components/agenda';
+import { getMarkedDates } from './components/mock';
 
 // FIXME FIXME FIXME FIXME: everything needs to be redone/checked spacing-wise. lots of errors
 
@@ -35,7 +36,7 @@ const CalendarView = () => {
                     <HamburgerButton className="w-12 h-12" />
                     <Text className='font-bold text-3xl'>Events</Text>
                 </View>   
-                <ExpandableCalendar theme={calendarTheme}/>
+                <ExpandableCalendar theme={calendarTheme} markedDates={getMarkedDates()}/>
                 <Agenda />
             </CalendarProvider>
         </SafeAreaView>
