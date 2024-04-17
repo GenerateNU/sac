@@ -27,26 +27,7 @@ const useClubContacts = (clubID: uuid): UseQueryResult<Contact[], Error> => {
     return useQuery<Contact[], Error>({
         queryKey: ['club', clubID, 'contacts'],
         queryFn: () => {
-            if (clubID.startsWith('tester')) {
-                return [
-                    {
-                        id: 'tester-email',
-                        created_at: new Date(),
-                        updated_at: new Date(),
-                        type: 'email',
-                        content: 'generatenu@gmail.com'
-                    } as Contact,
-                    {
-                        id: 'tester-slack',
-                        created_at: new Date(),
-                        updated_at: new Date(),
-                        type: 'slack',
-                        content: 'generatenu.slack.com'
-                    }
-                ];
-            } else {
-                return fetchClubContacts(clubID);
-            }
+            return fetchClubContacts(clubID);
         }
     });
 };

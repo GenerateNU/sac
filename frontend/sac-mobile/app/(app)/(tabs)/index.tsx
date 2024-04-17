@@ -8,6 +8,7 @@ import { useAuthStore } from '@/hooks/use-auth';
 
 import { FollowingHeader } from './_components/following-header';
 
+
 const HomePage = () => {
     const { user } = useAuthStore();
 

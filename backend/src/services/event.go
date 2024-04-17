@@ -21,6 +21,7 @@ type EventServiceInterface interface {
 	DeleteSeriesByEventID(seriesID string) *errors.Error
 	DeleteSeriesByID(seriesID string) *errors.Error
 	GetHostsByEventID(eventID string) ([]models.Club, *errors.Error)
+	GetTagsByEventID(eventID string) ([]models.Tag, *errors.Error)
 }
 
 type EventService struct {
@@ -217,6 +218,15 @@ func (e *EventService) GetHostsByEventID(eventID string) ([]models.Club, *errors
 	}
 
 	return transactions.GetHostsByEventID(e.DB, *idAsUUID)
+}
+
+func (e *EventService) GetTagsByEventID(eventID string) ([]models.Tag, *errors.Error) {
+	idAsUUID, err := utilities.ValidateID(eventID)
+	if err != nil {
+		return nil, &errors.FailedToValidateID
+	}
+
+	return transactions.GetTagsByEventID(e.DB, *idAsUUID)
 }
 
 func createEventSlice(firstEvent *models.Event, series models.Series) []models.Event {
