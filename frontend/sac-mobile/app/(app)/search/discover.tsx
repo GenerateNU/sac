@@ -1,7 +1,7 @@
 import React, {  } from 'react';
 import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { ClubCardNoTags } from './_components/club-card';
-import { SearchTopView } from './_components/top-view';
+import { SearchBar } from './_components/search-bar';
 import { HorizontalEventCard } from './_components/event-card';
 import { TopSearch } from './_components/top-search';
 import { router } from 'expo-router';
@@ -10,9 +10,13 @@ import { router } from 'expo-router';
 const Discover = () => {    
     return (
         <SafeAreaView className="w-full h-full bg-[#fafafa] pt-[50px] flex flex-col px-[5%]">
-            <SearchTopView 
-                active={false} 
-                onSearchBoxGainFocus={() => { router.push("/search/recents") }}/>
+            <SearchBar 
+                searchBoxEditable={false}
+                cancelOrBackButton="Back"
+                onSearchBoxPressed={() => {
+                    router.push("/search/recents")
+                    return undefined;
+                }}/>
             <ScrollView className="flex flex-col mt-6">
             <Text className="font-bold text-base mb-2">Top Searches</Text>
             {/* FIXME: this and discover clubs have the same layout, make like a 2d grid scroll view elem */}

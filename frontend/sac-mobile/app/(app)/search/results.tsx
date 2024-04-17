@@ -1,7 +1,7 @@
 import React, {  } from 'react';
 import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { ClubCard, ClubCardNoTags } from './_components/club-card';
-import { SearchTopView } from './_components/top-view';
+import { SearchBar } from './_components/search-bar';
 import { EventCard, HorizontalEventCard } from './_components/event-card';
 import { TopSearch } from './_components/top-search';
 import { router } from 'expo-router';
@@ -9,10 +9,9 @@ import { router } from 'expo-router';
 const Results = () => {    
     return (
         <SafeAreaView className="w-full h-full bg-[#fafafa] pt-[50px] flex flex-col px-[5%]">
-             <SearchTopView 
-                active={false} 
-                onSearchBoxGainFocus={() => { console.log("XXX") }}
-                onSearchBoxLoseFocus={() => { console.log("YYY")}}/>
+             <SearchBar
+                searchBoxEditable={false} 
+                cancelOrBackButton='Back'/>
             <ScrollView className="flex flex-col mt-6">
                 <View className="w-full flex flex-row justify-between items-center">
                     <Text className="font-bold text-base mb-2">Recommended Clubs</Text>

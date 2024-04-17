@@ -11,6 +11,8 @@ export type SearchContextState = {
     clubs: Club[],
 }
 
+// @refresh reset
+
 export const SearchContext = createContext<SearchContextState>({
     query: "",
     queryState: "NoQuery",
