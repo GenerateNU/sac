@@ -22,10 +22,16 @@ func GetEvents(db *gorm.DB, limit int, page int) ([]models.Event, *errors.Error)
 	return events, nil
 }
 
-func GetEvent(db *gorm.DB, eventID uuid.UUID) ([]models.Event, *errors.Error) {
+func GetEvent(db *gorm.DB, eventID uuid.UUID, preloads ...OptionalQuery) ([]models.Event, *errors.Error) {
 	var event models.Event
 
-	if err := db.First(&event, eventID).Error; err != nil {
+	query := db
+
+	for _, preload := range preloads {
+		query = preload(query)
+	}
+
+	if err := query.First(&event, eventID).Error; err != nil {
 		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &errors.EventNotFound
 		} else {
@@ -100,15 +106,7 @@ func CreateEvent(db *gorm.DB, event models.Event) ([]models.Event, *errors.Error
 }
 
 func CreateEventSeries(db *gorm.DB, series models.Series) ([]models.Event, *errors.Error) {
-	tx := db.Begin()
-
-	if err := tx.Create(&series).Error; err != nil {
-		tx.Rollback()
-		return nil, &errors.FailedToCreateEventSeries
-	}
-
-	if err := tx.Commit().Error; err != nil {
-		tx.Rollback()
+	if err := db.Create(&series).Error; err != nil {
 		return nil, &errors.FailedToCreateEventSeries
 	}
 
@@ -221,4 +219,13 @@ func DeleteSeriesByID(db *gorm.DB, seriesID uuid.UUID) *errors.Error {
 	tx.Commit()
 
 	return nil
+}
+
+func GetHostsByEventID(db *gorm.DB, eventID uuid.UUID) ([]models.Club, *errors.Error) {
+	event, err := GetEvent(db, eventID, PreloadClub())
+	if err != nil {
+		return nil, err
+	}
+
+	return event[0].Clubs, nil
 }

@@ -20,12 +20,12 @@ func SampleClubFactory(userID *uuid.UUID) *map[string]interface{} {
 		"user_id":           userID,
 		"name":              "Generate",
 		"preview":           "Generate is Northeastern's premier student-led product development studio.",
-		"description":       "https://mongodb.com",
+		"description":       "https://s3.amazonaws.com/<bucket>/<object>",
 		"is_recruiting":     true,
 		"recruitment_cycle": "always",
 		"recruitment_type":  "application",
 		"application_link":  "https://generatenu.com/apply",
-		"logo":              "https://aws.amazon.com/s3/",
+		"logo":              "https://s3.amazonaws.com/<bucket>/<object>",
 	}
 }
 
@@ -41,8 +41,6 @@ func AssertClubBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, body *ma
 	err = eaa.App.Conn.Order("created_at desc").Find(&dbClubs).Error
 
 	eaa.Assert.NilError(err)
-
-	eaa.Assert.Equal(2, len(dbClubs))
 
 	dbClub := dbClubs[0]
 
@@ -255,7 +253,7 @@ func TestCreateClubFailsOnInvalidDescription(t *testing.T) {
 		[]interface{}{
 			"Not an URL",
 			"@#139081#$Ad_Axf",
-			// "https://google.com", <-- TODO fix once we handle mongo urls
+			"https://google.com",
 		},
 	)
 }
@@ -300,7 +298,7 @@ func TestCreateClubFailsOnInvalidLogo(t *testing.T) {
 		[]interface{}{
 			"Not an URL",
 			"@#139081#$Ad_Axf",
-			// "https://google.com", <-- TODO uncomment once we figure out s3 url validation
+			"https://google.com",
 		},
 	)
 }

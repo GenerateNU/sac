@@ -1,26 +1,62 @@
 import React from 'react';
+import { View } from 'react-native';
 
-import { Tabs } from 'expo-router';
+import { Stack } from 'expo-router';
 
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { LeftArrow } from '@/components/left-arrow';
 
-const HomeTabBarIcon = ({ color }: { color: string }) => (
-    <MaterialCommunityIcons name="home" size={24} color={color} />
-);
+import { ClubKebab } from './_components/club-kebab';
+import { EventKabab } from './_components/event-kebab';
 
-const AppLayout = () => {
+const Layout = () => {
     return (
-        <Tabs>
-            <Tabs.Screen
-                name="index"
+        <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen
+                name="event/[id]"
                 options={{
-                    title: 'Home',
-                    headerShown: false,
-                    tabBarIcon: HomeTabBarIcon
+                    headerShown: true,
+                    headerTitleStyle: {
+                        color: 'white'
+                    },
+                    headerBackground: () => (
+                        <View className="h-full bg-gray-600" />
+                    ),
+                    headerLeft: () => <LeftArrow />,
+                    headerRight: () => <EventKabab />
                 }}
             />
-        </Tabs>
+            <Stack.Screen
+                name="club"
+                options={{
+                    animationTypeForReplace: 'push',
+                    animation: 'slide_from_right',
+                    headerShown: true,
+                    headerTitleStyle: {
+                        color: 'white'
+                    },
+                    headerBackground: () => (
+                        <View className="h-full bg-gray-600" />
+                    ),
+                    headerLeft: () => <LeftArrow />,
+                    headerRight: () => <ClubKebab />
+                }}
+            />
+            <Stack.Screen
+                name="following/index"
+                options={{
+                    title: 'Followed Clubs',
+                    headerTitleStyle: {
+                        fontSize: 20
+                    },
+                    headerBackground: () => (
+                        <View className="h-full bg-gray-100" />
+                    ),
+                    headerLeft: () => <LeftArrow />
+                }}
+            />
+        </Stack>
     );
 };
 
-export default AppLayout;
+export default Layout;

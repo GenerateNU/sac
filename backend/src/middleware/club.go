@@ -21,14 +21,9 @@ func (m *AuthMiddlewareService) ClubAuthorizeById(c *fiber.Ctx) error {
 		return errors.FailedToValidateID.FiberError(c)
 	}
 
-	token, tokenErr := auth.ParseAccessToken(c.Cookies("access_token"), m.AuthSettings.AccessKey)
-	if tokenErr != nil {
-		return errors.FailedToParseAccessToken.FiberError(c)
-	}
-
-	claims, ok := token.Claims.(*auth.CustomClaims)
-	if !ok || !token.Valid {
-		return errors.FailedToValidateAccessToken.FiberError(c)
+	claims, err := auth.From(c)
+	if err != nil {
+		return err.FiberError(c)
 	}
 
 	issuerUUID, issueErr := utilities.ValidateID(claims.Issuer)
@@ -36,16 +31,14 @@ func (m *AuthMiddlewareService) ClubAuthorizeById(c *fiber.Ctx) error {
 		return errors.FailedToParseAccessToken.FiberError(c)
 	}
 
-	// use clubID to get the list of admin for a certain club
 	clubAdmin, clubErr := transactions.GetAdminIDs(m.DB, *clubUUID)
 	if clubErr != nil {
 		return err
 	}
 
-	// check issuerID against the list of admin for the certain club
 	if slices.Contains(clubAdmin, *issuerUUID) {
 		return c.Next()
 	}
 
-	return errors.Unauthorized.FiberError(c)
+	return errors.Forbidden.FiberError(c)
 }

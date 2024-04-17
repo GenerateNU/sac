@@ -1,11 +1,13 @@
 package commands
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"os/user"
 	"sync"
 
+	"github.com/GenerateNU/sac/backend/src/config"
 	_ "github.com/lib/pq"
 	"github.com/urfave/cli/v2"
 )
@@ -21,22 +23,22 @@ func ClearDBCommand() *cli.Command {
 				return cli.Exit("Invalid arguments", 1)
 			}
 
-			err := CleanTestDBs()
-			if err != nil {
-				return cli.Exit(err.Error(), 1)
-			}
-
-			return nil
+			return CleanTestDBs(context.Background())
 		},
 	}
 
 	return &command
 }
 
-func CleanTestDBs() error {
+func CleanTestDBs(ctx context.Context) error {
 	fmt.Println("Cleaning test databases")
 
-	db, err := sql.Open("postgres", CONFIG.Database.WithDb())
+	config, err := config.GetConfiguration(CONFIG, false)
+	if err != nil {
+		return err
+	}
+
+	db, err := sql.Open("postgres", config.Database.WithDb())
 	if err != nil {
 		return err
 	}
@@ -49,12 +51,10 @@ func CleanTestDBs() error {
 	}
 
 	query := "SELECT datname FROM pg_database WHERE datistemplate = false AND datname != 'postgres' AND datname != $1 AND datname != $2 AND datname LIKE 'sac_test_%';"
-	rows, err := db.Query(query, currentUser.Username, CONFIG.Database.DatabaseName)
+	rows, err := db.Query(query, currentUser.Username, config.Database.DatabaseName)
 	if err != nil {
 		return err
 	}
-
-	defer rows.Close()
 
 	var wg sync.WaitGroup
 	var dropped, failed int
@@ -67,7 +67,6 @@ func CleanTestDBs() error {
 		}
 
 		wg.Add(1)
-
 		go func(dbName string) {
 			defer wg.Done()
 

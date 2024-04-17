@@ -1,8 +1,7 @@
 package controllers
 
 import (
-	"strconv"
-
+	"github.com/GenerateNU/sac/backend/src/constants"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
@@ -32,10 +31,7 @@ func NewEventController(eventService services.EventServiceInterface) *EventContr
 // @Failure     500   {object}      errors.Error
 // @Router		/events/  [get]
 func (e *EventController) GetAllEvents(c *fiber.Ctx) error {
-	defaultLimit := 10
-	defaultPage := 1
-
-	events, err := e.eventService.GetEvents(c.Query("limit", strconv.Itoa(defaultLimit)), c.Query("page", strconv.Itoa(defaultPage)))
+	events, err := e.eventService.GetEvents(c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING))
 	if err != nil {
 		return err.FiberError(c)
 	}
@@ -291,10 +287,32 @@ func (e *EventController) DeleteSeriesByEventID(c *fiber.Ctx) error {
 // @Failure     404   {object}      errors.Error
 // @Failure     500   {object}      errors.Error
 // @Router		/events/{eventID}/  [delete]
-func (l *EventController) DeleteEvent(c *fiber.Ctx) error {
-	if err := l.eventService.DeleteEvent(c.Params("eventID")); err != nil {
+func (e *EventController) DeleteEvent(c *fiber.Ctx) error {
+	if err := e.eventService.DeleteEvent(c.Params("eventID")); err != nil {
 		return err.FiberError(c)
 	}
 
 	return c.SendStatus(fiber.StatusNoContent)
+}
+
+// GetHostsByEventID godoc
+//
+// @Summary		Retrieve all hosts by event
+// @Description	Retrieves all hosts associated with an event
+// @ID			get-hosts-by-event
+// @Tags      	event
+// @Produce		json
+// @Param		eventID	path	string	true	"Event ID"
+// @Success		200	  {object}	    []models.Club
+// @Failure     400   {object}      errors.Error
+// @Failure     404   {object}      errors.Error
+// @Failure     500   {object}      errors.Error
+// @Router		/events/{eventID}/hosts  [get]
+func (e *EventController) GetHostsByEventID(c *fiber.Ctx) error {
+	hosts, err := e.eventService.GetHostsByEventID(c.Params("eventID"))
+	if err != nil {
+		return err.FiberError(c)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(hosts)
 }

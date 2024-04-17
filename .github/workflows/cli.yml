@@ -6,11 +6,13 @@ on:
   push:
     paths:
       - cli/**
+      - config/**
       - .github/workflows/cli.yml
   pull_request:
     types: [opened]
     paths:
       - cli/**
+      - config/**
       - .github/workflows/cli.yml
 
 concurrency:
@@ -34,7 +36,7 @@ jobs:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
-            ${{ runner.os }}-go-
+            ${{ runner.os }}-go
       - name: Install gofumpt
         run: go install mvdan.cc/gofumpt@latest
       - name: Check code formatting

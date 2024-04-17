@@ -2,8 +2,8 @@ package utilities
 
 import (
 	"reflect"
-	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
@@ -21,14 +21,6 @@ func RegisterCustomValidators() (*validator.Validate, error) {
 		return nil, err
 	}
 
-	if err := validate.RegisterValidation("password", validatePassword); err != nil {
-		return nil, err
-	}
-
-	if err := validate.RegisterValidation("mongo_url", validateMongoURL); err != nil {
-		return nil, err
-	}
-
 	if err := validate.RegisterValidation("s3_url", validateS3URL); err != nil {
 		return nil, err
 	}
@@ -36,6 +28,10 @@ func RegisterCustomValidators() (*validator.Validate, error) {
 	if err := validate.RegisterValidation("contact_pointer", func(fl validator.FieldLevel) bool {
 		return validateContactPointer(validate, fl)
 	}); err != nil {
+		return nil, err
+	}
+
+	if err := validate.RegisterValidation("not_equal_if_not_empty", validateNotEqualIfNotEmpty); err != nil {
 		return nil, err
 	}
 
@@ -59,21 +55,8 @@ func validateEmail(fl validator.FieldLevel) bool {
 	return true
 }
 
-func validatePassword(fl validator.FieldLevel) bool {
-	if len(fl.Field().String()) < 8 {
-		return false
-	}
-	specialCharactersMatch, _ := regexp.MatchString("[@#%&*+]", fl.Field().String())
-	numbersMatch, _ := regexp.MatchString("[0-9]", fl.Field().String())
-	return specialCharactersMatch && numbersMatch
-}
-
-func validateMongoURL(fl validator.FieldLevel) bool {
-	return true
-}
-
 func validateS3URL(fl validator.FieldLevel) bool {
-	return true
+	return strings.HasPrefix(fl.Field().String(), "https://s3.amazonaws.com/")
 }
 
 func validateContactPointer(validate *validator.Validate, fl validator.FieldLevel) bool {
@@ -81,12 +64,33 @@ func validateContactPointer(validate *validator.Validate, fl validator.FieldLeve
 	if !ok {
 		return false
 	}
-	switch contact.Type {
-	case models.Email:
-		return validate.Var(contact.Content, "email") == nil
-	default:
-		return validate.Var(contact.Content, "http_url") == nil
+
+	validationRules := map[models.ContactType]string{
+		models.Facebook:   "http_url",
+		models.Instagram:  "http_url",
+		models.X:          "http_url",
+		models.LinkedIn:   "http_url",
+		models.YouTube:    "http_url",
+		models.GitHub:     "http_url",
+		models.Slack:      "http_url",
+		models.Discord:    "http_url",
+		models.Email:      "email",
+		models.CustomSite: "http_url",
 	}
+
+	rule, ok := validationRules[contact.Type]
+	if !ok {
+		return false // invalid contact type
+	}
+
+	return validate.Var(contact.Content, rule) == nil && strings.HasPrefix(contact.Content, models.GetContentPrefix(contact.Type))
+}
+
+func validateNotEqualIfNotEmpty(fl validator.FieldLevel) bool {
+	field := fl.Field().String()
+	otherField := fl.Parent().FieldByName(fl.Param()).String()
+
+	return field == "" || field != otherField
 }
 
 func ValidateID(id string) (*uuid.UUID, *errors.Error) {

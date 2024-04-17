@@ -87,7 +87,7 @@ func ResetMigration() error {
 
 	err := DropDB()
 	if err != nil {
-		return cli.Exit(err.Error(), 1)
+		return cli.Exit(fmt.Sprintf("Error dropping database: %s", err.Error()), 1)
 	}
 
 	cmd := exec.Command("sleep", "1")
@@ -100,7 +100,7 @@ func ResetMigration() error {
 
 	err = Migrate()
 	if err != nil {
-		return cli.Exit(err.Error(), 1)
+		return cli.Exit(fmt.Sprintf("Error migrating database: %s", err.Error()), 1)
 	}
 
 	fmt.Println("Migration reset successfully")
