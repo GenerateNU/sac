@@ -5,10 +5,12 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { Text, GestureResponderEvent, TextInput, TouchableOpacity, TouchableWithoutFeedback, View, ViewProps, Pressable } from "react-native";
 
 import SearchIcon from '@/assets/images/svg/search.svg';
-import { SearchContext } from "../_layout";
 
 export interface SearchBarProps extends ViewProps {
     searchBoxEditable: boolean,
+    /** Will only be shown if searchBox is not editable. */
+    searchBoxText?: string,
+    focusOnLayout?: boolean,
     onSearchBoxPressed?: () => ("Focus" | undefined),
     onSearchSubmitted?: (query: string) => void,
     cancelOrBackButton?: "Cancel" | "Back",
@@ -18,8 +20,7 @@ export const SearchBar = (p: SearchBarProps) => {
     const [text, setText] = useState("");
     const textInputRef: React.Ref<TextInput> = useRef(null);
 
-
-    const searchBoxMargin = p.cancelOrBackButton == "Cancel" ? "ml-2" : "mr-2";
+    // FIXME: needs to filter, users cannot search with '/' in the query
     const backButton = (
         <Button
             onPress={() => {
@@ -65,11 +66,17 @@ export const SearchBar = (p: SearchBarProps) => {
                         editable={p.searchBoxEditable}
                         placeholder={"Search"}
                         ref={textInputRef}
-                        value={text}
+                        value={!p.searchBoxEditable && p.searchBoxText ? p.searchBoxText : text}
                         onChangeText={setText}
                         onSubmitEditing={(evt) => {
                             if (p.onSearchSubmitted) {
                                 p.onSearchSubmitted(text)
+                            }
+                        }}
+                        onLayout={(evt) => {
+                            // FIXME: works when going from discover, but not when coming back from results or results/expanded
+                            if (p.focusOnLayout !== undefined && p.focusOnLayout) {
+                                textInputRef.current?.focus()
                             }
                         }}/>
                 </View>

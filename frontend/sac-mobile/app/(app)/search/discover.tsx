@@ -25,14 +25,14 @@ const Discover = () => {
                 flexDirection: "column"
             }}>
                 <View className="flex flex-row">
-                    <TopSearch className="mr-2 w-40"/>
-                    <TopSearch className="mr-2 w-40"/>
-                    <TopSearch className="mr-2 w-40"/>
+                    <TopSearch search={"COExist"} className="mr-2 w-40"/>
+                    <TopSearch search={"Volleyball"} className="mr-2 w-40"/>
+                    <TopSearch search={"iGEM"} className="mr-2 w-40"/>
                 </View>
                 <View className="mt-2 flex flex-row">
-                    <TopSearch className="mr-2 w-40"/>
-                    <TopSearch className="mr-2 w-40"/>
-                    <TopSearch className="mr-2 w-40"/>
+                    <TopSearch search={"Jiu Jitsu"} className="mr-2 w-40"/>
+                    <TopSearch search={"Music"} className="mr-2 w-40"/>
+                    <TopSearch search={"Kappa Sigma"} className="mr-2 w-40"/>
                 </View>
             </ScrollView>
             

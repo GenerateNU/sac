@@ -3,6 +3,7 @@ import { Contact } from '@/types/contact';
 import { uuid } from '@/types/uuid';
 
 import { api } from './api';
+import { Tag } from '@/types/tag';
 
 /**
  * Fetches a club by its ID.
@@ -62,3 +63,14 @@ export const queryClubs = async (queryString: string): Promise<Club[]> => {
             throw new Error('Error querying clubs');
         });
 }
+
+/** Get the tags of a club */
+export const fetchClubTags = async (clubID: uuid): Promise<Tag[]> => {
+    return api
+        .get(`/clubs/${clubID}/tags`)
+        .then((response) => response.data as Tag[])
+        .catch((error) => {
+            console.error(error);
+            throw new Error('Error fetching contacts');
+        });
+};

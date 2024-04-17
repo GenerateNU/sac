@@ -1,5 +1,5 @@
 import React, {  } from 'react';
-import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Pressable, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { ClubCardNoTags } from './_components/club-card';
 import { SearchBar } from './_components/search-bar';
 import { HorizontalEventCard } from './_components/event-card';
@@ -17,15 +17,24 @@ const Recents = () => {
         "Generate"
     ].map((val, ind, arr) => {
         return (
-            <View className="w-full flex flex-row mb-4 items-center">
-                <SearchIcon className="w-5 h-5 mr-2"></SearchIcon>
-                <Text className="text-base flex-grow">{val}</Text>
-                <TouchableOpacity>
-                    <MaterialCommunityIcons
-                        name="close" size={20} className="w-5 h-5">
-                    </MaterialCommunityIcons>
-                </TouchableOpacity>
-            </View>
+            <Pressable
+                onPress={(evt) => {
+                    router.push(`/search/results/${val}`)
+                }}>
+                <View className="w-full flex flex-row mb-4 items-center">
+                    <SearchIcon className="w-5 h-5 mr-2"></SearchIcon>
+                    <Text className="text-base flex-grow">{val}</Text>
+                    <TouchableOpacity
+                        onPress={(evt) => {
+                            console.log("Recents removed.")
+                        }}>
+                        {/* <MaterialCommunityIcons
+                            name="close" size={20} className="w-5 h-5">
+                        </MaterialCommunityIcons> */}
+                    </TouchableOpacity>
+                </View>
+            </Pressable>
+            
         )
     })
     return (
@@ -36,9 +45,10 @@ const Recents = () => {
                 onSearchBoxPressed={() => {
                     return "Focus"
                 }}
-                onSearchSubmitted={() => {
-                    router.push('/search/results')
-                }}/>
+                onSearchSubmitted={(text) => {
+                    router.push(`/search/results/${text}`)
+                }}
+                focusOnLayout={true}/>
             <View className="flex flex-col mt-6">
                 <Text className="font-bold text-base mb-2">Recents</Text>
                 {searchRecents}
