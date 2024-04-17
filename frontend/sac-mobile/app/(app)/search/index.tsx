@@ -6,6 +6,9 @@ import { Club } from '@/types/club';
 import { SearchTopView } from './_components/top-view';
 import { EventCard, HorizontalEventCard } from './_components/event-card';
 import { TopSearch } from './_components/top-search';
+import SearchHomeView from './_components/home-view';
+import SearchRecents from './_components/recents';
+import SearchResult from './_components/search-result';
 
 type SearchQueryState = "NoQuery" | "Loading" | "Done";
 
@@ -66,17 +69,17 @@ const SearchPage = () => {
     let bottomElement: JSX.Element = <></>;
 
     if (!searchBarActive && searchQueryState == "NoQuery") {
-        bottomElement = <Text>At a glance view</Text>
+        bottomElement = <SearchHomeView/>
     } else if (!searchBarActive && searchQueryState == "Loading") {
         bottomElement = <Text>Loading</Text>
     } else if (!searchBarActive && searchQueryState == "Done") {
         bottomElement = <Text>Clubs shown</Text>
     } else if (searchBarActive && searchQueryState == "NoQuery") {
-        bottomElement = <Text>Recents</Text>
+        bottomElement = <SearchRecents/>
     } else if (searchBarActive && searchQueryState == "Loading") {
         bottomElement = <Text>Loading</Text>
     } else if (searchBarActive && searchQueryState == "Done") {
-        bottomElement = <Text>Clubs shown</Text>
+        bottomElement = <SearchResult onClubViewAllPressed={() => {console.log("XXX")}}/>
     }
 
     return (
@@ -86,8 +89,7 @@ const SearchPage = () => {
                 onSearchBoxGainFocus={() => { setSearchBarActive(true) }}
                 onSearchBoxLoseFocus={() => { setSearchBarActive(false) }}
                 onSearchBoxTextChange={(txt) => { setSearchQuery(txt) }}/>
-            {/* {bottomElement} */}
-            <TopSearch />
+            {bottomElement}
         </SafeAreaView>
     );
 };
