@@ -7,12 +7,12 @@ import { Button } from '@/components/button';
 
 const Welcome = () => {
     return (
-        <View className="flex-col mb-[8%] mx-[8%]">
-            <View className="bg-gray-500 h-[45%] w-ful rounded-xl mt-[5%]" />
-            <Text className="h-[18%] text-6xl font-bold mt-[10%]">
-                Welcome to SAC
-            </Text>
-            <Text className="text-2xl leading-8 pl-[1%] pb-[10%]">
+        <View className="flex-col bg-neutral-500 pb-[14%] px-[8%]">
+            <View className="bg-neutral-400 h-[45%] w-ful rounded-xl mt-[5%]" />
+                <Text className="text-white flex flex-wrap text-5xl font-bold pt-[20%] pb-[3%]">
+                    Welcome to Student Activity Calendar
+                </Text>
+            <Text className="text-2xl text-white leading-8 pl-[1%] pb-[10%]">
                 Discover, follow, and join all the clubs & events Northeastern
                 has to offer
             </Text>

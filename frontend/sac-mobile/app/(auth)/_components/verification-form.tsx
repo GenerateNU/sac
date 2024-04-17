@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
-
 import { router } from 'expo-router';
 
 import { ZodError, z } from 'zod';

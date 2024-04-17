@@ -41,7 +41,7 @@ export interface InputProps
 }
 
 const Input = ({ title, error, variant, ...props }: InputProps) => {
-    const borderColor = error ? 'border-red-600' : 'border-gray-500';
+    const borderColor = error ? 'border-red-600' : 'border-gray-400';
 
     let inputComponent = null;
     if (variant === 'faq') {
