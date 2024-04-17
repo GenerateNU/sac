@@ -1,27 +1,84 @@
-import React, { useEffect, useState } from 'react';
-import { SafeAreaView, ScrollView, Text } from 'react-native';
-import { ClubCard, ClubCardNoTags } from './_components/club-card';
-import { queryClubs } from '@/services/club';
-import { Club } from '@/types/club';
+import React, {  } from 'react';
+import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ClubCardNoTags } from './_components/club-card';
 import { SearchTopView } from './_components/top-view';
-import { EventCard, HorizontalEventCard } from './_components/event-card';
+import { HorizontalEventCard } from './_components/event-card';
 import { TopSearch } from './_components/top-search';
-import SearchHomeView from './_components/home-view';
-import SearchRecents from './_components/recents';
-import SearchResult from './_components/search-result';
+import { router } from 'expo-router';
 
 
-const DiscoverPage = () => {    
+const Discover = () => {    
     return (
         <SafeAreaView className="w-full h-full bg-[#fafafa] pt-[50px] flex flex-col px-[5%]">
             <SearchTopView 
-                active={searchBarActive} 
-                onSearchBoxGainFocus={() => { setSearchBarActive(true) }}
-                onSearchBoxLoseFocus={() => { setSearchBarActive(false) }}
-                onSearchBoxTextChange={(txt) => { setSearchQuery(txt) }}/>
-            {bottomElement}
+                active={false} 
+                onSearchBoxGainFocus={() => { router.push("/search/recents") }}/>
+            <ScrollView className="flex flex-col mt-6">
+            <Text className="font-bold text-base mb-2">Top Searches</Text>
+            {/* FIXME: this and discover clubs have the same layout, make like a 2d grid scroll view elem */}
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} className="overflow-visible mb-6" contentContainerStyle={{
+                display: "flex",
+                flexDirection: "column"
+            }}>
+                <View className="flex flex-row">
+                    <TopSearch className="mr-2 w-40"/>
+                    <TopSearch className="mr-2 w-40"/>
+                    <TopSearch className="mr-2 w-40"/>
+                </View>
+                <View className="mt-2 flex flex-row">
+                    <TopSearch className="mr-2 w-40"/>
+                    <TopSearch className="mr-2 w-40"/>
+                    <TopSearch className="mr-2 w-40"/>
+                </View>
+            </ScrollView>
+            
+            <View className="w-full flex flex-row justify-between items-center">
+                <Text className="font-bold text-base mb-2">Discover Clubs</Text>
+                <TouchableOpacity>
+                    <Text className="text-xs text-zinc-600">
+                        View All
+                    </Text>
+                </TouchableOpacity>
+            </View>
+
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} className="overflow-visible mb-6" contentContainerStyle={{
+                display: "flex",
+                flexDirection: "column"
+            }}>
+                <View className="flex flex-row">
+                    <ClubCardNoTags className="mr-2 h-15 w-40" />
+                    <ClubCardNoTags className="mr-2 h-15 w-40" />
+                    <ClubCardNoTags className="mr-2 h-15 w-40" />
+                </View>
+                <View className="mt-2 flex flex-row">
+                    <ClubCardNoTags className="mr-2 h-15 w-40" />
+                    <ClubCardNoTags className="mr-2 h-15 w-40" />
+                    <ClubCardNoTags className="mr-2 h-15 w-40" />
+                </View>
+            </ScrollView>
+
+            <View className="w-full flex flex-row justify-between items-center">
+                <Text className="font-bold text-base mb-2">Discover Events</Text>
+                <TouchableOpacity>
+                    <Text className="text-xs text-zinc-600">
+                        View All
+                    </Text>
+                </TouchableOpacity>
+            </View>
+            
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} className="overflow-visible" contentContainerStyle={{
+                display: "flex",
+                flexDirection: "column"
+            }}>
+                <HorizontalEventCard className="w-full mb-2"/>
+                <HorizontalEventCard className="w-full mb-2"/>
+                <HorizontalEventCard className="w-full mb-2"/>
+                <HorizontalEventCard className="w-full mb-2"/>
+            </ScrollView>
+
+        </ScrollView>
         </SafeAreaView>
     );
 };
 
-export default SearchPage;
+export default Discover;

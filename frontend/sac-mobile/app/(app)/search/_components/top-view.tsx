@@ -86,16 +86,15 @@ export const SearchTopView = (p: SearchTopViewProps) => {
                         }}
                         placeholder={"Search"}
                         onChangeText={onChangeText}
+                        returnKeyType="search"
                         value={text}/>
                 </View>
             </TouchableWithoutFeedback>
             <TouchableOpacity
                 onPress={() => {
-                    textInputRef.current?.blur();
-
-                    if (p.onSearchBoxLoseFocus) {
-                        p.onSearchBoxLoseFocus();
-                    }
+                    console.log("Cancel button pressed.");
+                    
+                    router.back();
                 }}
                 className="ml-4 flex flex-row justify-center items-center">
                 <Text className="text-center">Cancel</Text>

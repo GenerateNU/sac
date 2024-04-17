@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
 import { Club } from '@/types/club';
 import { queryClubs } from '@/services/club';
+import DiscoverPage from './discover';
 
 export type QueryState = "NoQuery" | "Loading" | "Done";
 export type SearchContextState = {
@@ -47,12 +48,9 @@ const SearchLayout = () => {
             queryState: queryState,
             clubs: clubs
         }}>
-            <Stack>
+            <Stack screenOptions={{ headerShown: false }}>
                 <Stack.Screen 
-                    name="index"
-                    options={{
-                    headerShown: false
-                    }}/>
+                    name="discover"/>
             </Stack>
         </SearchContext.Provider>
         
