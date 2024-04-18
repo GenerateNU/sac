@@ -30,7 +30,7 @@ const Description = ({ title, description }: DescriptionProps) => {
                     className="py-1 text-xs text-zinc-900 font-extralight"
                     onPress={() => setExpanded(!expanded)}
                 >
-                    <Text>{expanded ? 'Read less' : 'Read more...' }</Text>
+                    <Text>{expanded ? 'Read less' : 'Read more...'}</Text>
                 </TouchableOpacity>
             )}
         </View>

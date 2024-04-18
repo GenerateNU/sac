@@ -1,4 +1,4 @@
-import { FlatList, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { ClubCard } from '@/components/club-card';
 import { useEventHosts } from '@/hooks/use-event';
@@ -26,11 +26,9 @@ const AllHosts = ({ eventID }: { eventID: uuid }) => {
                     Hosted by
                 </Text>
             </View>
-            <View className='mt-2'>
+            <View className="mt-2">
                 {hosts.map((host) => {
-                    return (
-                        <ClubCard key={host.id} club={host} />
-                    );
+                    return <ClubCard key={host.id} club={host} />;
                 })}
             </View>
         </View>
