@@ -16,7 +16,7 @@ interface MultiSelectProps {
 }
 
 const MultiSelectComponent = (props: MultiSelectProps) => {
-    const borderColor = props.error ? 'red' : 'black';
+    const borderColor = props.error ? 'red' : '#6E757E';
     const borderWidth = props.error ? 1 : 0.5;
     const marginBottom = props.error ? '0.5%' : '2%';
     const [selected, setSelected] = useState(Array<Item>);

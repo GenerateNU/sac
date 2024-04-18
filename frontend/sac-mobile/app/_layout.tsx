@@ -60,9 +60,6 @@ const InitalLayout = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoggedIn, isVerified]);
 
-
-
-
     if (isLoggedIn === null)
         return (
             <View className="items-center justify-center flex-1">
@@ -83,8 +80,7 @@ const InitalLayout = () => {
                 <Stack.Screen name="(app)" options={{ headerShown: false }} />
             </Stack>
         </>
-    )
-
+    );
 };
 
 const RootLayout = () => {

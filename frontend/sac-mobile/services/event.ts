@@ -1,8 +1,8 @@
-import { eventHosts, eventTags, events } from '@/data/events';
 import { Club } from '@/types/club';
 import { Event } from '@/types/event';
 import { Tag } from '@/types/tag';
 import { uuid } from '@/types/uuid';
+
 import { api } from './api';
 
 /**
@@ -93,11 +93,4 @@ export const fetchEventTags = async (eventID: uuid): Promise<Tag[]> => {
             console.error(error);
             throw new Error('Failed to fetch event tags');
         });
-
-    // const allTags = eventTags[eventID as keyof typeof eventTags] as Tag[];
-    // if (!allTags) {
-    //     throw new Error('Tags not found');
-    // }
-
-    // return allTags;
 };

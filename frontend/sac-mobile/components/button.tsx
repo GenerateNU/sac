@@ -6,8 +6,8 @@ import { cn } from '@/lib/utils';
 
 const buttonVariants = {
     variant: {
-        none: [],
         default: ['bg-black', 'text-white'],
+        none: [],
         destructive: ['bg-red-500', 'text-white font-bold'],
         secondary: ['bg-white', 'text-gray'],
         outline: ['border border-gray-600 text-gray-500 font-medium'],

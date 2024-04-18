@@ -1,5 +1,11 @@
 import React, { useRef } from 'react';
-import { Animated, ScrollView, Text, View } from 'react-native';
+import { Animated,
+    ActivityIndicator,
+    RefreshControl,
+    ScrollView,
+    Text,
+    View
+} from 'react-native';
 
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -24,7 +30,7 @@ import { HeaderImage } from '../../../components/entity-header';
 const EventPage = () => {
     const { id } = useLocalSearchParams<{ id: string }>();
 
-    const { data: event, isLoading, error } = useEvent(id);
+    const { data: event, isLoading, error, refetch } = useEvent(id);
 
     const ref = useRef<BottomSheet>(null);
     const pan = useRef(new Animated.ValueXY()).current;
@@ -35,7 +41,7 @@ const EventPage = () => {
     }
 
     if (isLoading) {
-        return <Text>Loading...</Text>;
+        return <ActivityIndicator size={'large'} />;
     }
 
     if (!event) {

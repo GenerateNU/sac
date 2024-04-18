@@ -17,7 +17,7 @@ const Layout = () => {
 
     useEffect(() => {
         if (isLoggedIn) fetchUser();
-    }, [isLoggedIn]);
+    }, [isLoggedIn, fetchUser]);
 
     return (
         <Tabs screenOptions={{ tabBarShowLabel: false }}>
@@ -37,6 +37,7 @@ const Layout = () => {
                     tabBarIcon: ({ focused }) =>
                         focused ? <HomeSelectedIcon /> : <HomeIcon />
                 }}
+                redirect={!isLoggedIn}
             />
             <Tabs.Screen
                 name="search"
@@ -46,6 +47,7 @@ const Layout = () => {
                     tabBarIcon: ({ focused }) =>
                         focused ? <SearchSelectedIcon /> : <SearchIcon />
                 }}
+                redirect={!isLoggedIn}
             />
             <Tabs.Screen
                 name="profile"
@@ -55,7 +57,7 @@ const Layout = () => {
                     tabBarIcon: ({ focused }) =>
                         focused ? <ProfileSelectedIcon /> : <ProfileIcon />
                 }}
-                // redirect={!isLoggedIn}
+                redirect={!isLoggedIn}
             />
         </Tabs>
     );
