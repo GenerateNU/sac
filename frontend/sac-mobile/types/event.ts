@@ -12,7 +12,7 @@ const eventSchema = z.object({
     meeting_link: z.string().max(255).optional(),
     event_type: z.enum(['open', 'membersOnly']),
     is_recurring: z.boolean(),
-    host: z.string().max(255),
+    host: z.string().max(255)
 });
 
 const Event = eventSchema.merge(rootModelSchema);

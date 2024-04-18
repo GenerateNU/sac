@@ -9,7 +9,7 @@ const UserInterests = () => {
     return (
         <View className="px-[8%] pt-[4%]">
             <StatusBar style="dark" />
-            <Text className="text-5xl pt-[6%] pb-[5%] font-bold">
+            <Text className="text-5xl pt-[6%] pb-[4%] font-bold">
                 What are you interested in?
             </Text>
             <UserInterestsForm />

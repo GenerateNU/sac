@@ -54,12 +54,14 @@ const Code = ({ onCompleted }: CodeProps) => {
                     </View>
                 )}
             />
-            <Button
-                className="bg-primary-500"
-                onPress={() => onCompleted(value)}
-            >
-                Submit
-            </Button>
+            <View className="pt-[2%]">
+                <Button
+                    className="bg-primary-500"
+                    onPress={() => onCompleted(value)}
+                >
+                    Submit
+                </Button>
+            </View>
         </View>
     );
 };

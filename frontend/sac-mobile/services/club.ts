@@ -1,4 +1,3 @@
-import { clubContacts } from '@/data/clubs';
 import { Club } from '@/types/club';
 import { Contact } from '@/types/contact';
 import { uuid } from '@/types/uuid';

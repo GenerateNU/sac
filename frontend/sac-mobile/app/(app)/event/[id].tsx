@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -34,7 +34,7 @@ const EventPage = () => {
     }
 
     if (isLoading) {
-        return <Text>Loading...</Text>;
+        return <ActivityIndicator size={'large'} />;
     }
 
     if (!event) {

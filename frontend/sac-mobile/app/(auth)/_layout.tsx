@@ -17,9 +17,9 @@ const Layout = () => {
                     animationTypeForReplace: 'pop',
                     animation: 'slide_from_left',
                     statusBarColor: 'dark',
-                    headerLeft: () => <Wordmark color={'primary'} />,
+                    headerLeft: () => <Wordmark />,
                     headerBackground: () => (
-                        <View className="h-full bg-neutral-100" />
+                        <View className="h-full bg-neutral-500" />
                     )
                 }}
             />
@@ -60,9 +60,9 @@ const Layout = () => {
             <Stack.Screen
                 name="verification"
                 options={{
-                    title: 'SAC',
+                    title: '',
                     headerShown: true,
-                    headerLeft: () => null,
+                    headerRight: () => <Wordmark />,
                     headerBackground: () => <View className="h-full bg-white" />
                 }}
             />

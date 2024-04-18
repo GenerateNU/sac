@@ -50,9 +50,8 @@ const RegistrationForm = () => {
 
         try {
             registerSchema.parse({ password_confirmation, ...rest });
-            const updatedData = { ...rest };
-            console.log(updatedData);
-            await signUp(updatedData);
+            console.log({ ...rest });
+            await signUp({ ...rest });
         } catch (error: any) {
             if (error instanceof ZodError) {
                 Alert.alert(error.errors[0].message);
