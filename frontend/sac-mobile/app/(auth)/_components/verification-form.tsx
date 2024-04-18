@@ -7,8 +7,12 @@ import { ZodError, z } from 'zod';
 
 import { useAuthStore } from '@/hooks/use-auth';
 import { requestVerification } from '@/services/auth';
-
+import { useForm } from 'react-hook-form';
 import Code from './code';
+
+type VerificationFormData = {
+    code: string;
+};
 
 const verificationSchema = z.object({
     code: z.string().min(6, {
@@ -17,6 +21,12 @@ const verificationSchema = z.object({
 });
 
 const VerificationForm = () => {
+    const {
+        control,
+        handleSubmit,
+        formState: { errors }
+    } = useForm<VerificationFormData>();
+
     const { user, completeVerification } = useAuthStore();
     const [loading, setLoading] = useState(false);
 
@@ -24,7 +34,7 @@ const VerificationForm = () => {
         console.log('[verification-form]', { user });
     }, [user]);
 
-    const onVerify = async (code: string) => {
+    const onPressVerify = async (code: string) => {
         setLoading(true);
 
         try {
@@ -53,7 +63,7 @@ const VerificationForm = () => {
     return (
         <>
             {loading && <Spinner visible={loading} />}
-            <Code onCompleted={onVerify} />
+            <Code onCompleted={onPressVerify} />
             <View className="mt-[5%] flex-row justify-center">
                 <Text className="text-gray-500 text-md">
                     Didn't receive the code?

@@ -50,22 +50,22 @@ const fetchClub = async (clubID: uuid): Promise<Club> => {
  * @see Contact[]
  */
 const fetchClubContacts = async (clubID: uuid): Promise<Contact[]> => {
-    // return api
-    //     .get(`/clubs/${clubID}/contacts`)
-    //     .then((response) => response.data as Contact[])
-    //     .catch((error) => {
-    //         console.error(error);
-    //         throw new Error('Error fetching contacts');
-    //     });
+    return api
+        .get<Contact[]>(`/clubs/${clubID}/contacts`)
+        .then((response) => response.data)
+        .catch((error) => {
+            console.error(error);
+            throw new Error('Error fetching contacts');
+        });
 
-    const allContacts = clubContacts[
-        clubID as keyof typeof clubContacts
-    ] as Contact[];
-    if (!allContacts) {
-        throw new Error('Error fetching contacts');
-    }
+    // const allContacts = clubContacts[
+    //     clubID as keyof typeof clubContacts
+    // ] as Contact[];
+    // if (!allContacts) {
+    //     throw new Error('Error fetching contacts');
+    // }
 
-    return allContacts;
+    // return allContacts;
 };
 
 export { fetchClubContacts, fetchClub, fetchClubs };

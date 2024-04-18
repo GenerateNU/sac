@@ -12,7 +12,7 @@ const Profile = () => {
     };
 
     return (
-        <SafeAreaView className="flex-1 justify-center">
+        <SafeAreaView className="justify-center flex-1">
             <View className="px-[8%] gap-5 flex-col items-center">
                 <Text className="text-lg">Welcome {user?.first_name}</Text>
                 <Button onPress={handleSignOut}>Sign Out</Button>
