@@ -5,10 +5,10 @@ import { Button } from '@/components/button';
 import { useAuthStore } from '@/hooks/use-auth';
 
 const Profile = () => {
-    const { signOut, user } = useAuthStore();
+    const { onLogout, user } = useAuthStore();
 
     const handleSignOut = async () => {
-        signOut();
+        onLogout();
     };
 
     return (

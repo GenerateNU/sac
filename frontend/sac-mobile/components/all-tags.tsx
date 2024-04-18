@@ -1,17 +1,18 @@
 import { FlatList, Text } from 'react-native';
 
-import { Tag } from '@/components/tag';
-import { useEventTags } from '@/hooks/use-event';
+import { Tag as TagComponent } from '@/components/tag';
 import { uuid } from '@/types/uuid';
-
-// TODO: generify this component
+import { UseQueryResult } from '@tanstack/react-query';
+import { Tag } from '@/types/tag';
 
 type TagListProps = {
-    id: uuid;
+    id: uuid
+    tagQueryResult: (id: uuid) => UseQueryResult<Tag[], Error>
+
 };
 
-const TagList = ({ id }: TagListProps) => {
-    const { data: tags, isLoading, error } = useEventTags(id);
+const TagList = ({ tagQueryResult, id }: TagListProps) => {
+    const { data: tags, isLoading, error } = tagQueryResult(id);
 
     if (isLoading) {
         return <Text>Loading...</Text>;
@@ -27,11 +28,10 @@ const TagList = ({ id }: TagListProps) => {
 
     return (
         <FlatList
-            horizontal
-            showsHorizontalScrollIndicator={false}
             data={tags}
-            renderItem={({ item }) => <Tag key={item.id} tag={item} />}
+            renderItem={({ item }) => <TagComponent key={item.id} tag={item} />}
             keyExtractor={(item) => item.id}
+            contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
         />
     );
 };

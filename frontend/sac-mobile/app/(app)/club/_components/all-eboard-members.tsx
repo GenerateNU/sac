@@ -15,8 +15,8 @@ const EBoardMembers = () => {
 
     return (
         <View>
-            <Text className="text-black font-bold">E-Board</Text>
-            <ScrollView horizontal={true} className="pb-[10%]">
+            <Text className="text-lg font-semibold text-black">E-Board</Text>
+            <ScrollView horizontal={true} className="pb-[10%]" showsHorizontalScrollIndicator={false}>
                 <View className="flex-row">
                     {eboardmembers && eboardmembers.map((member: EBoardCardProps) => (
                         <EBoardCard key={member.name} photo={member.photo} name={member.name} title={member.title}/>

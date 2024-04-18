@@ -1,7 +1,7 @@
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import React, { useState } from 'react';
-import { Text, TouchableOpacity, TouchableOpacityProps, View, Modal } from 'react-native';
-
+import { Text, TouchableOpacity, TouchableOpacityProps, View, Modal, Pressable } from 'react-native';
+import Like from '@/assets/images/svg/like.svg';
 
 export interface FaqCardProps extends TouchableOpacityProps {
     id?: string;
@@ -9,22 +9,21 @@ export interface FaqCardProps extends TouchableOpacityProps {
     answer?: string;
 }
 
-const FaqCard = ({ question, answer, ...props }: FaqCardProps) => {
-    const [isModalVisible, setIsModalVisible] = useState(false);
+const FaqCard = ({ id, question, answer, ...props }: FaqCardProps) => {
     const MAX_LENGTH = 8;
-    const toggleModal = () => setIsModalVisible(!isModalVisible);
     return (
-        <View>
-            <Link href={{ pathname: '/(app)/club/faq/[id]', params: { id: 1 } }} asChild>
-                <TouchableOpacity {...props} onPress={toggleModal} className='mr-3'>
-                    <View className="bg-white p-4 rounded-lg w-80 h-80 border border-[#CDCBCB]">
-                        {question && <Text className="text-sm mb-2 font-semibold">{question}</Text>}
-                        {answer && <Text numberOfLines={MAX_LENGTH} className="text-sm">{answer}</Text>}
-                        <Text className="pt-5">200 think this is helpful.</Text>
-                    </View>
-                </TouchableOpacity>
-            </Link>
-        </View>
+        // <Link href={{ pathname: '/(app)/club/faq/[id]', params: { id: 1 } }} asChild>
+        <Pressable onPress={() => router.push(`/(app)/club/faq/${id}`)} className='mr-3'>
+            <View className="bg-white p-4 rounded-2xl w-80 h-80 border border-[#CDCBCB] flex gap-y-2">
+                {question && <Text className="w-10/12 text-lg font-semibold text-black">{question}</Text>}
+                {answer && <Text numberOfLines={MAX_LENGTH} className="font-normal tracking-tight text-md text-neutral-500">{answer}</Text>}
+                <View className="flex-row items-center flex-1">
+                    <Like />
+                    <Text className="text-[#F8C45C]">200 think this is helpful.</Text>
+                </View>
+            </View>
+        </Pressable>
+        // </Link>
     );
 };
 

@@ -6,7 +6,7 @@ import { tokenCache } from '@/lib/utils';
 // TODO: Add a refresh token interceptor.
 // TODO: Add a retry interceptor.
 
-export const api = axios.create({
+const api = axios.create({
     baseURL: API_BASE_URL,
     withCredentials: true,
     timeout: 10000,
@@ -15,7 +15,7 @@ export const api = axios.create({
     }
 });
 
-export const addAuthorizationHeaderInterceptor = async (
+const addAuthorizationHeaderInterceptor = async (
     config: InternalAxiosRequestConfig
 ) => {
     if (
@@ -108,3 +108,5 @@ api.interceptors.request.use(addAuthorizationHeaderInterceptor, (error) =>
 //         return Promise.reject(error);
 //     }
 // });
+
+export { api, addAuthorizationHeaderInterceptor };

@@ -9,12 +9,12 @@ const buttonVariants = {
         default: ['bg-black', 'text-white'],
         none: [],
         destructive: ['bg-red-500', 'text-white font-bold'],
-        secondary: ['bg-white', 'text-gray'],
+        secondary: ['text-white'],
         outline: ['border border-gray-600 text-gray-500 font-medium'],
         gray: ['bg-card-bg', 'text-black'],
         icon: ['bg-transparent'],
         underline: ['border-b font-bold border-gray-600 text-lg'],
-        pill: ['bg-gray-500', 'text-white', 'rounded-full'],
+        pill: ['bg-[#FFE3AA]', 'text-black'],
         menu: ['text-black text-lg']
     },
     size: {
@@ -23,7 +23,7 @@ const buttonVariants = {
         lg: 'h-12 rounded-xl px-8 py-[4%] w-[47%]',
         icon: 'h-10 w-10',
         screenwide: 'h-12 rounded-xl px-8 py-[4%]',
-        pill: 'h-8 px-3 py-2'
+        pill: 'h-7 py-1 px-2'
     }
 };
 

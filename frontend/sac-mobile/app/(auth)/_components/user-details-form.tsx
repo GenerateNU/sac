@@ -40,7 +40,7 @@ const UserDetailsForm = () => {
 
     const updateUserInfo = useUpdateUser();
     const { user } = useAuthStore();
-    const userId: string = user?.id!;
+    const userId = user?.id!;
 
     const onSubmit = ({
         major,
@@ -62,7 +62,7 @@ const UserDetailsForm = () => {
                 graduation_cycle: updatedData.graduationCycle
             };
             updateUserInfo.mutateAsync({
-                userId: userId,
+                userID: userId,
                 updateUserRequestBody: updateRequestBody
             });
             Alert.alert('Form Submitted', JSON.stringify(updateRequestBody));

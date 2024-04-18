@@ -18,7 +18,7 @@ const verificationSchema = z.object({
 });
 
 const VerificationForm = () => {
-    const { user, completeVerification } = useAuthStore();
+    const { user, onVerify } = useAuthStore();
     const [loading, setLoading] = useState(false);
 
     const onPressVerify = async (code: string) => {
@@ -26,7 +26,7 @@ const VerificationForm = () => {
 
         try {
             verificationSchema.parse({ code });
-            await completeVerification(user?.email as string, code);
+            await onVerify(user?.email as string, code);
             router.replace('/(auth)/user-details');
         } catch (error: any) {
             if (error instanceof ZodError) {

@@ -14,8 +14,9 @@ import {
     updateUser
 } from '@/services/user';
 import { Club } from '@/types/club';
+import { uuid } from '@/types/uuid';
 
-const useUserFollowing = (userID: string): UseQueryResult<Club[], Error> => {
+const useUserFollowing = (userID: uuid): UseQueryResult<Club[], Error> => {
     return useQuery<Club[], Error>({
         queryKey: ['user', userID, 'following'],
         queryFn: async () => await fetchUserFollowing(userID)
@@ -25,18 +26,18 @@ const useUserFollowing = (userID: string): UseQueryResult<Club[], Error> => {
 const useUpdateUser = () => {
     return useMutation({
         mutationFn: ({
-            userId,
+            userID,
             updateUserRequestBody
         }: {
-            userId: string;
+                userID: uuid;
             updateUserRequestBody: {
                 graduation_year: number;
                 college: string;
                 graduation_cycle: string;
             };
-        }) => updateUser(userId, updateUserRequestBody),
+            }) => updateUser(userID, updateUserRequestBody),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['users'] });
+            queryClient.invalidateQueries({ queryKey: ['user'] });
         }
     });
 };
@@ -45,13 +46,13 @@ const useCreateUserTags = (): UseMutationResult<
     void,
     Error,
     {
-        userId: string;
-        tagIDs: string[];
+        userID: uuid;
+        tagIDs: uuid[];
     },
     unknown
 > => {
     return useMutation({
-        mutationFn: ({ userId, tagIDs }) => createUserTags(userId, tagIDs),
+        mutationFn: ({ userID, tagIDs }) => createUserTags(userID, tagIDs),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['user_tags'] });
         }
@@ -62,26 +63,26 @@ const useCreateClubFollowing = (): UseMutationResult<
     void,
     Error,
     {
-        userId: string;
-        clubId: string;
+        userID: uuid;
+        clubID: uuid;
     },
     unknown
 > => {
     return useMutation({
-        mutationFn: ({ userId, clubId }) => createUserFollowing(userId, clubId),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['user_following'] });
+        mutationFn: ({ userID, clubID }) => createUserFollowing(userID, clubID),
+        onSuccess: (_, variables: { userID: uuid; clubID: uuid }, __) => {
+            queryClient.invalidateQueries({ queryKey: [`user${variables.userID}following`] });
         }
     });
 };
 
 const useDeleteClubFollowing = () => {
     return useMutation({
-        mutationFn: ({ userId, clubId }: { userId: string; clubId: string }) =>
-            deleteUserFollowing(userId, clubId),
-        onSuccess: (_, variables: { userId: string; clubId: string }, __) => {
+        mutationFn: ({ userID, clubID }: { userID: uuid; clubID: uuid }) =>
+            deleteUserFollowing(userID, clubID),
+        onSuccess: (_, variables: { userID: string; clubID: string }, __) => {
             return queryClient.invalidateQueries({
-                queryKey: [`user${variables.userId}following`]
+                queryKey: [`user${variables.userID}following`]
             });
         }
     });

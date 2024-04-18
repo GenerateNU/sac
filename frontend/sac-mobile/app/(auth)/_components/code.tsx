@@ -24,11 +24,15 @@ const Code = ({ onCompleted }: CodeProps) => {
         setValue
     });
 
-    useEffect(() => {
+    const handleCodeCompleted = (value: string) => {
         if (value.length === CELL_COUNT) {
             onCompleted(value);
         }
-    }, [value, onCompleted]);
+    }
+
+    useEffect(() => {
+        handleCodeCompleted(value);
+    }, [value]);
 
     return (
         <View className="flex-col gap-y-5">

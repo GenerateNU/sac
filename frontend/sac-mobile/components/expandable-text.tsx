@@ -3,10 +3,11 @@ import { Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-nativ
 
 
 export interface ExpandableTextProps extends TouchableOpacityProps {
+    children: React.ReactNode;
     maxLines?: number;
 }
 
-const ExpandableText = ({ children, maxLines = 5, }: { children: React.ReactNode, maxLines?: number }) => {
+const ExpandableText = ({ children, maxLines = 5, }: ExpandableTextProps) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
     return (
@@ -16,7 +17,7 @@ const ExpandableText = ({ children, maxLines = 5, }: { children: React.ReactNode
                     {children}
                 </Text>
                 {!isExpanded && (
-                    <Text className='pt-2 italic font-light'>Show More</Text>
+                    <Text className='pt-2 font-light'>Read More...</Text>
                 )}
             </View>
         </TouchableOpacity>

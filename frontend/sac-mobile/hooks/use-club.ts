@@ -1,9 +1,10 @@
 import { UseQueryResult, useQuery } from '@tanstack/react-query';
 
-import { fetchClub, fetchClubContacts, fetchClubs } from '@/services/club';
+import { fetchClub, fetchClubContacts, fetchClubTags, fetchClubs } from '@/services/club';
 import { Club } from '@/types/club';
 import { Contact } from '@/types/contact';
 import { uuid } from '@/types/uuid';
+import { Tag } from '@/types/tag';
 
 const useClubs = (): UseQueryResult<Club[], Error> => {
     return useQuery<Club[], Error>({
@@ -32,25 +33,38 @@ const useClubContacts = (clubID: uuid): UseQueryResult<Contact[], Error> => {
     });
 };
 
+const useClubTags = (clubID: uuid): UseQueryResult<Tag[], Error> => {
+    return useQuery<Tag[], Error>({
+        queryKey: ['club', clubID, 'tags'],
+        queryFn: () => {
+            return fetchClubTags(clubID);
+        }
+    });
+}
+
 export type Faq = {
+    id: uuid;
     question: string;
     answer: string;
 };
 
 export const useClubFAQs = (clubID: uuid): UseQueryResult<Faq[], Error> => {
     return useQuery<Faq[], Error>({
-        queryKey: ['faqs', clubID],
+        queryKey: ['club', clubID, 'faqs'],
         queryFn: async (): Promise<Faq[]> => {
             return [
                 {
+                    id: '1',
                     question: 'What is the purpose of the club?',
                     answer: 'The purpose of the club is to provide a platform for like-minded individuals to come together and pursue their interests in a specific field. The purpose of the club is to provide a platform for like-minded individuals to come together and pursue their interests in a specific field. The purpose of the club is to provide a platform for like-minded individuals to come together and pursue their interests in a specific field.'
                 },
                 {
+                    id: '2',
                     question: 'How can I join the club?',
                     answer: 'To join the club, you can attend our regular meetings and express your interest in becoming a member. We welcome anyone who shares our passion and is willing to contribute.'
                 },
                 {
+                    id: '3',
                     question: 'What activities does the club organize?',
                     answer: 'The club organizes various activities such as workshops, guest lectures, competitions, and networking events to enhance the learning and networking opportunities for its members.'
                 }
@@ -59,25 +73,30 @@ export const useClubFAQs = (clubID: uuid): UseQueryResult<Faq[], Error> => {
     });
 };
 
-export const useClubFAQ = (faqID: uuid): UseQueryResult<Faq, Error> => {
+export const useFAQ = (faqID: uuid): UseQueryResult<Faq, Error> => {
     return useQuery<Faq, Error>({
         queryKey: ['faq', faqID],
         queryFn: async (): Promise<Faq> => {
+            let id = '';
             let question = '';
             let answer = '';
 
             if (faqID === '1') {
+                id = '1';
                 question = 'What is the purpose of the club?';
                 answer = 'The purpose of the club is to provide a platform for like-minded individuals to come together and pursue their interests in a specific field. The purpose of the club is to provide a platform for like-minded individuals to come together and pursue their interests in a specific field. The purpose of the club is to provide a platform for like-minded individuals to come together and pursue their interests in a specific field.';
             } else if (faqID === '2') {
+                id = '2';
                 question = 'How can I join the club?';
                 answer = 'To join the club, you can attend our regular meetings and express your interest in becoming a member. We welcome anyone who shares our passion and is willing to contribute.';
             } else if (faqID === '3') {
+                id = '3';
                 question = 'What activities does the club organize?';
                 answer = 'The club organizes various activities such as workshops, guest lectures, competitions, and networking events to enhance the learning and networking opportunities for its members.';
             }
 
             return {
+                id,
                 question,
                 answer
             };
@@ -104,4 +123,4 @@ export const useClubAdmin = (clubID: uuid): UseQueryResult<Admin[], Error> => {
         }
     });
 };
-export { useClub, useClubs, useClubContacts };
+export { useClub, useClubs, useClubContacts, useClubTags };

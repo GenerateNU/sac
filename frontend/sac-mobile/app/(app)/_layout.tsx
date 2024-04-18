@@ -3,7 +3,7 @@ import { View } from 'react-native';
 
 import { Stack } from 'expo-router';
 
-import { LeftArrow } from '@/components/left-arrow';
+import { Arrow } from '@/components/arrow';
 
 import { ClubKebab } from './_components/club-kebab';
 import { EventKabab } from './_components/event-kebab';
@@ -13,7 +13,7 @@ const Layout = () => {
         <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen
-                name="event/[id]"
+                name="event"
                 options={{
                     headerTitle: '',
                     headerTransparent: true,
@@ -21,24 +21,21 @@ const Layout = () => {
                     headerTitleStyle: {
                         color: 'white'
                     },
-                    headerLeft: () => <LeftArrow />,
+                    headerLeft: () => <Arrow />,
                     headerRight: () => <EventKabab />
                 }}
             />
             <Stack.Screen
                 name="club"
                 options={{
-                    animationTypeForReplace: 'push',
-                    animation: 'slide_from_right',
+                    headerTitle: '',
+                    headerTransparent: true,
                     headerShown: true,
                     headerTitleStyle: {
                         color: 'white'
                     },
-                    headerBackground: () => (
-                        <View className="h-full bg-gray-600" />
-                    ),
-                    headerLeft: () => <LeftArrow />,
-                    headerRight: () => <ClubKebab />
+                    headerLeft: () => <Arrow />,
+                    headerRight: () => <EventKabab />
                 }}
             />
             <Stack.Screen
@@ -51,7 +48,7 @@ const Layout = () => {
                     headerBackground: () => (
                         <View className="h-full bg-gray-100" />
                     ),
-                    headerLeft: () => <LeftArrow />
+                    headerLeft: () => <Arrow />
                 }}
             />
         </Stack>

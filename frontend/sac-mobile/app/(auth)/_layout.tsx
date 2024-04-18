@@ -4,12 +4,12 @@ import { View } from 'react-native';
 import { Stack, router } from 'expo-router';
 
 import { Button } from '@/components/button';
-import { LeftArrow } from '@/components/left-arrow';
+import { Arrow } from '@/components/arrow';
 import { Wordmark } from '@/components/wordmark';
 import { useAuthStore } from '@/hooks/use-auth';
 
 const Layout = () => {
-    const { signOut } = useAuthStore();
+    const { onLogout } = useAuthStore();
     return (
         <Stack initialRouteName="welcome">
             <Stack.Screen
@@ -66,7 +66,7 @@ const Layout = () => {
                     title: '',
                     headerShown: true,
                     headerLeft: () => {
-                        return <LeftArrow onPress={() => signOut()} />;
+                        return <Arrow onPress={() => onLogout()} />;
                     },
                     headerBackground: () => <View className="h-full bg-white" />
                 }}
@@ -79,6 +79,9 @@ const Layout = () => {
                     headerLeft: () => <Wordmark color={'primary'} />,
                     headerBackground: () => (
                         <View className="h-full bg-neutral-100" />
+                    ),
+                    headerRight: () => (
+                        <Arrow direction={'right'} onPress={() => router.replace('/(app)/(tabs)/')} />
                     )
                 }}
             />
@@ -90,6 +93,9 @@ const Layout = () => {
                     headerLeft: () => <Wordmark color={'primary'} />,
                     headerBackground: () => (
                         <View className="h-full bg-neutral-100" />
+                    ),
+                    headerRight: () => (
+                        <Arrow direction={'right'} onPress={() => router.replace('/(app)/(tabs)/')} />
                     )
                 }}
             />

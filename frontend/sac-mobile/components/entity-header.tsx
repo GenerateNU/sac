@@ -1,14 +1,14 @@
 import React, { forwardRef } from 'react';
 import { Animated, Platform, View } from 'react-native';
-
 import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet';
 import { MenuView } from '@react-native-menu/menu';
-
 import EventDemoDay from '@/assets/images/svg/event-demo-day.svg';
 import { Button } from '@/components/button';
 
 const HEADER_HEIGHT = 175;
 const LOGO_HEIGHT = 100;
+const HALF_LOGO_HEIGHT = LOGO_HEIGHT / 2;
+const HEADER_TRANSLATE = HEADER_HEIGHT - HALF_LOGO_HEIGHT;
 
 type HeaderImageProps = {
     image: string;
@@ -23,7 +23,6 @@ const HeaderImage = forwardRef<Ref, HeaderImageProps>(
         if (!ref) {
             return null;
         }
-
         const buttonOnPress = {
             club: {
                 follow: () => {}
@@ -33,9 +32,10 @@ const HeaderImage = forwardRef<Ref, HeaderImageProps>(
                 save: () => ref.current?.snapToIndex(0)
             }
         };
-
         return (
-            <View className={`pb-[${LOGO_HEIGHT / 2}px]`}>
+            <View style={{
+                paddingBottom: HALF_LOGO_HEIGHT,
+            }}>
                 <Animated.Image
                     source={{ uri: image }}
                     resizeMode="cover"
@@ -61,11 +61,14 @@ const HeaderImage = forwardRef<Ref, HeaderImageProps>(
                     }}
                 />
                 <View
-                    className={`absolute translate-y-[${HEADER_HEIGHT - LOGO_HEIGHT / 2}px] px-[5%]`}
+                    className={`absolute px-[5%]`}
+                    style={{
+                        transform: `translateY(${HEADER_TRANSLATE}px)`
+                    }}
                 >
-                    <View className="flex-row w-full items-center justify-between">
+                    <View className="flex-row items-center justify-between w-full">
                         <View
-                            className="p-2 bg-[#f2f2f2] rounded-xl"
+                            className="p-2 bg-[#F2F2F2] rounded-xl"
                             style={{
                                 width: LOGO_HEIGHT,
                                 height: LOGO_HEIGHT
@@ -124,7 +127,6 @@ const HeaderImage = forwardRef<Ref, HeaderImageProps>(
                                             RSVP
                                         </Button>
                                     </MenuView>
-
                                     <Button
                                         size={'default'}
                                         variant={'default'}

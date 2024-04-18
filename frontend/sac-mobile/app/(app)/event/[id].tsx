@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import {
     ActivityIndicator,
     Animated,
+    RefreshControl,
     ScrollView,
     Text,
     View
@@ -20,28 +21,34 @@ import { TagList } from '@/components/all-tags';
 import { Button } from '@/components/button';
 import { Description } from '@/components/description';
 import { Title } from '@/components/title';
-import { useEvent } from '@/hooks/use-event';
+import { useEvent, useEventTags } from '@/hooks/use-event';
 
-import { HeaderImage } from '../../../components/entity-header';
 import { EventLocation } from './_components/event-location';
 import { EventTime } from './_components/event-time';
 import { HostNames } from './_components/host-names';
 import { LocationView } from './_components/location-view';
 import { AllHosts } from './_components/all-hosts';
 import { RSVPBottomSheet } from './_components/rsvp-bottom-sheet';
+import { HeaderImage } from '@/components/entity-header';
+import { useAssets } from 'expo-asset';
 
 // TODO: handle link OR location
 const EventPage = () => {
     const { id } = useLocalSearchParams<{ id: string }>();
 
-    const { data: event, isLoading, error } = useEvent(id);
+    const { data: event, isLoading, error, refetch } = useEvent(id);
 
     const ref = useRef<BottomSheet>(null);
     const pan = useRef(new Animated.ValueXY()).current;
 
-    if (error) {
-        console.error(error);
+    const [asset, assetError] = useAssets(require('@/assets/images/sandbox-header.png'));
+    if (assetError) {
+        console.error(assetError);
         return <Text>Error fetching event</Text>;
+    }
+
+    if (!asset) {
+        return <ActivityIndicator size={'large'} />;
     }
 
     if (isLoading) {
@@ -57,6 +64,12 @@ const EventPage = () => {
             <Stack.Screen options={{ title: `${event[0].name}` }} />
             <StatusBar style="light" />
             <ScrollView
+                refreshControl={
+                    <RefreshControl
+                        refreshing={isLoading}
+                        onRefresh={refetch}
+                    />
+                }
                 scrollEventThrottle={1}
                 showsVerticalScrollIndicator={false}
                 onScroll={Animated.event(
@@ -87,7 +100,7 @@ const EventPage = () => {
                                     meetingLink={event[0].meeting_link}
                                 />
                             </View>
-                            <TagList id={event[0].id} />
+                            <TagList tagQueryResult={useEventTags} id={event[0].id} />
                             <Description
                                 title={'About Event'}
                                 description={event[0].content}

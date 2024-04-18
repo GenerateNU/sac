@@ -16,22 +16,39 @@ const FAQs = () => {
     }
 
     return (
-        <View className='pb-[10%]'>
-            <View className='flex-row justify-between'>
-                <Text className="text-black font-bold pb-4">FAQs</Text>
-                <TouchableOpacity onPress={() => router.push('/(app)/club/faq/view-all-faqs')}>
-                    <Text>View All</Text>
-                </TouchableOpacity>
+        <View>
+            <View className="flex-row items-center justify-between">
+                <Text className="text-lg font-semibold text-black">FAQ</Text>
+                <Text className='text-neutral-400 text-[15px] font-normal'>View All</Text>
             </View>
-            <ScrollView horizontal={true} className="pb-[10%]">
-                <View className="flex-row">
-                    {faqs && faqs.map((faq: FaqCardProps) => (
-                        <FaqCard id={faq.id} question={faq.question} answer={faq.answer} />
-                    ))}
+            <ScrollView className="pt-[2%] pb-[10%]" horizontal={true}>
+                {faqs && faqs.slice(0, 2).map((faq: FaqCardProps, index) => (
+                    <FaqCard {...faq} key={index} />
+                ))}
+                <View className="flex-col">
+                    <View className='px-2'>
+                        <Button className='bg-[#f8c45c]' variant="secondary" size="screenwide">View All Events</Button>
+                    </View>
                 </View>
             </ScrollView>
-            <Button variant="outline" onPress={() => router.push("/(app)/club/ask/ask-a-question")}>Ask a Question</Button>
         </View>
+
+        // <View className='pb-[10%]'>
+        //     <View className='flex-row justify-between'>
+        //         <Text className="text-lg font-semibold text-black">FAQ</Text>
+        //         <TouchableOpacity onPress={() => router.push('/(app)/club/faq/view-all-faqs')}>
+        //             <Text>View All</Text>
+        //         </TouchableOpacity>
+        //     </View>
+        //     <ScrollView horizontal={true} className="pb-[10%]">
+        //         <View className="flex-row">
+        //             {faqs && faqs.map((faq: FaqCardProps) => (
+        //                 <FaqCard id={faq.id} question={faq.question} answer={faq.answer} />
+        //             ))}
+        //         </View>
+        //     </ScrollView>
+        //     <Button variant="outline" onPress={() => router.push("/(app)/club/ask/ask-a-question")}>Ask a Question</Button>
+        // </View>
     );
 }
 

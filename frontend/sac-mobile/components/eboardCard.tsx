@@ -2,6 +2,7 @@ import React from 'react';
 import { Text, TouchableOpacity, TouchableOpacityProps, View, Image } from 'react-native';
 import { VariantProps, cva } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
+import { useAssets } from 'expo-asset';
 
 export interface EBoardCardProps{
     photo?: string;
@@ -10,16 +11,28 @@ export interface EBoardCardProps{
 }
 
 const EBoardCard = ({ photo, name, title, ...props }: EBoardCardProps) => {
+    const [asset, error] = useAssets(
+        require('@/assets/images/guy-1.jpeg')
+    );
+
+    if (error) {
+        console.error(error);
+    }
+
     return (
-        <View>
-            <View className="pt-[3%] pr-[5%] w-full h-48 text-center items-center pb-12" >
-                {photo ? (
-                    <Image source={{ uri: photo }} className="aspect-square rounded-lg w-full h-full mb-2" />
-                ) : (
-                    <View className="aspect-square rounded-lg w-full h-full bg-card-bg mb-2" />
+        <View className="flex-col items-start gap-2 mr-2">
+            {asset && (
+                <Image
+                    source={{ uri: asset[0].uri }}
+                    className="rounded-lg aspect-square"
+                    resizeMode="cover"
+                    width={145}
+                    height={132}
+                />
                 )}
-                {name && <Text className="text-sm text-gray-500 mb-2">{name}</Text>}
-                {title && <Text className="text-sm">{title}</Text>}
+            <View className='flex-col items-start gap-1'>
+                {name && <Text className="text-sm font-normal text-zinc-600">{name}</Text>}
+                {title && <Text className="font-medium tracking-tight text-black text-md">{title}</Text>}
             </View>
         </View>
     );
