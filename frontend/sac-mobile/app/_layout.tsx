@@ -4,7 +4,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 import { useFonts } from 'expo-font';
-import { Slot, Stack, useRouter, useSegments } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 
@@ -104,9 +104,9 @@ const RootLayout = () => {
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-                <QueryClientProvider client={queryClient}>
-                    <StatusBar style="light" />
-                    <InitalLayout />
+            <QueryClientProvider client={queryClient}>
+                <StatusBar style="light" />
+                <InitalLayout />
             </QueryClientProvider>
         </GestureHandlerRootView>
     );
