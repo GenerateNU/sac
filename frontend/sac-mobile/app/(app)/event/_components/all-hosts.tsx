@@ -1,4 +1,4 @@
-import { FlatList, Text } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { ClubCard } from '@/components/club-card';
 import { useEventHosts } from '@/hooks/use-event';
@@ -20,14 +20,18 @@ const AllHosts = ({ eventID }: { eventID: uuid }) => {
     }
 
     return (
-        <FlatList
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            alwaysBounceHorizontal
-            data={hosts}
-            renderItem={({ item }) => <ClubCard club={item} />}
-            keyExtractor={(item) => item.id}
-        />
+        <View>
+            <View className="inline-flex flex-col justify-between">
+                <Text className="text-xl font-light leading-relaxed text-zinc-900">
+                    Hosted by
+                </Text>
+            </View>
+            <View className="mt-2">
+                {hosts.map((host) => {
+                    return <ClubCard key={host.id} club={host} />;
+                })}
+            </View>
+        </View>
     );
 };
 
