@@ -9,6 +9,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/gofiber/fiber/v2"
 
 	"github.com/goccy/go-json"
 )
@@ -103,7 +104,7 @@ func (existingAppAssert ExistingAppAssert) TestOnStatus(request TestRequest, sta
 func (request *TestRequest) testOn(existingAppAssert ExistingAppAssert, status int, key string, value string) (ExistingAppAssert, *http.Response) {
 	appAssert, resp := request.test(existingAppAssert)
 
-	if resp.StatusCode == 204 {
+	if resp.StatusCode == fiber.StatusNoContent {
 		return appAssert, resp
 	}
 
@@ -113,6 +114,7 @@ func (request *TestRequest) testOn(existingAppAssert ExistingAppAssert, status i
 
 	appAssert.Assert.NilError(err)
 
+	fmt.Println(respBody)
 	appAssert.Assert.Equal(value, respBody[key].(string))
 
 	appAssert.Assert.Equal(status, resp.StatusCode)
