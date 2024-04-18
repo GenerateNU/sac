@@ -18,7 +18,9 @@ const Description = ({ title, description }: DescriptionProps) => {
                 {title}
             </Text>
             <Text className="text-base font-light tracking-tight text-zinc-900">
-                {expanded ? description : description.slice(0, displayedCharacters)}
+                {expanded
+                    ? description
+                    : description.slice(0, displayedCharacters)}
             </Text>
             {description.length > 100 && (
                 <TouchableOpacity

@@ -59,7 +59,7 @@ const Code = ({ onCompleted }: CodeProps) => {
                     className="bg-primary-500"
                     onPress={() => onCompleted(value)}
                 >
-                Submit
+                    Submit
                 </Button>
             </View>
         </View>

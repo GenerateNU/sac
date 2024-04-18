@@ -1,18 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
+
 import { router } from 'expo-router';
 
 import { ZodError, z } from 'zod';
 
 import { useAuthStore } from '@/hooks/use-auth';
 import { requestVerification } from '@/services/auth';
-import { useForm } from 'react-hook-form';
-import Code from './code';
 
-type VerificationFormData = {
-    code: string;
-};
+import Code from './code';
 
 const verificationSchema = z.object({
     code: z.string().min(6, {
@@ -21,18 +18,8 @@ const verificationSchema = z.object({
 });
 
 const VerificationForm = () => {
-    const {
-        control,
-        handleSubmit,
-        formState: { errors }
-    } = useForm<VerificationFormData>();
-
     const { user, completeVerification } = useAuthStore();
     const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        console.log('[verification-form]', { user });
-    }, [user]);
 
     const onPressVerify = async (code: string) => {
         setLoading(true);

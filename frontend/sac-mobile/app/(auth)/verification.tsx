@@ -1,8 +1,9 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import EmailConfirm from '@/assets/images/svg/email-confirm.svg';
 
 import { StatusBar } from 'expo-status-bar';
+
+import EmailConfirm from '@/assets/images/svg/email-confirm.svg';
 
 import { VerificationForm } from './_components/verification-form';
 
