@@ -8,5 +8,6 @@ func NewMockDependencies() *types.Dependencies {
 		AI:     NewOpenAIMockClient(),
 		Email:  NewResendMockClient(),
 		File:   NewAWSMockClient(),
+		Redis: NewRedisMockClient(),
 	}
 }

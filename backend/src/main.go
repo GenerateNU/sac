@@ -13,9 +13,11 @@ import (
 	_ "github.com/GenerateNU/sac/backend/src/docs"
 	"github.com/GenerateNU/sac/backend/src/email"
 	"github.com/GenerateNU/sac/backend/src/file"
+	"github.com/GenerateNU/sac/backend/src/redis"
 	"github.com/GenerateNU/sac/backend/src/search"
 	"github.com/GenerateNU/sac/backend/src/server"
 	t "github.com/GenerateNU/sac/backend/src/types"
+	"github.com/golang-jwt/jwt"
 )
 
 func CheckServerRunning(host string, port uint16) error {
@@ -34,7 +36,9 @@ func Exit(format string, a ...interface{}) {
 }
 
 func configureDependencies(config *config.Settings, connectToPinecone bool) t.Dependencies {
+	jwt := auth.NewJWTClient(config.Auth, jwt.SigningMethodHS256)
 	openAi := search.NewOpenAIClient(config.OpenAISettings)
+	redis := redis.NewRedisClient(config.RedisSettings, jwt)
 	var pinecone search.SearchClientInterface
 
 	if connectToPinecone {
@@ -48,6 +52,8 @@ func configureDependencies(config *config.Settings, connectToPinecone bool) t.De
 		AI:     openAi,
 		Email:  email.NewResendClient(config.ResendSettings, true),
 		Search: pinecone,
+		Redis:  redis,
+		JWT:   jwt,
 	}
 	return dependencies
 }
@@ -96,13 +102,8 @@ func main() {
 		Exit("Error with connection pooling: %s", err.Error())
 	}
 
-	//TODO separate redis from auth?
-	redis := auth.NewRedisClient(config.RedisSettings)
-	openAi := search.NewOpenAIClient(config.OpenAISettings)
-	pinecone := search.NewPineconeClient(openAi, config.PineconeSettings)
-
-	app := server.Init(db, redis, pinecone, *config)
 	dependencies := configureDependencies(config, *connectToPinecone)
+	app := server.Init(db, dependencies, *config)
 
 	
 	err = app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))

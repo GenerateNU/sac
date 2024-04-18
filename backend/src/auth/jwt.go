@@ -162,7 +162,7 @@ func (j *JWTClient) ExtractClaims(tokenString string, tokenType JWTType) (jwt.Ma
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		return nil, err
+		return nil, &errors.FailedToExtractClaims
 	}
 
 	return claims, nil

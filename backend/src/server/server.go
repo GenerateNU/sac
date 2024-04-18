@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/GenerateNU/sac/backend/src/auth"
 	"github.com/GenerateNU/sac/backend/src/config"
 	"github.com/GenerateNU/sac/backend/src/middleware"
 	"github.com/GenerateNU/sac/backend/src/server/routes"
@@ -14,7 +13,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
-	"github.com/golang-jwt/jwt"
 	"gorm.io/gorm"
 )
 
@@ -27,15 +25,13 @@ import (
 // @host 127.0.0.1:8080
 // @BasePath /
 // @schemes http
-func Init(db *gorm.DB,redis auth.RedisClientInterface, pinecone search.PineconeClientInterface, settings config.Settings) *fiber.App {
+func Init(db *gorm.DB, dependencies types.Dependencies, settings config.Settings) *fiber.App {
 	app := newFiberApp(settings.Application)
-
 	validate, err := utilities.RegisterCustomValidators()
 	if err != nil {
 		panic(fmt.Sprintf("Error registering custom validators: %s", err))
 	}
 
-	jwt := auth.NewJWTClient(settings.Auth, jwt.SigningMethodHS256)
 	authMiddleware := middleware.NewAuthAuthMiddlewareService(db, validate, settings.Auth)
 
 	apiv1 := app.Group("/api/v1")
@@ -48,7 +44,6 @@ func Init(db *gorm.DB,redis auth.RedisClientInterface, pinecone search.PineconeC
 			DB:           db,
 			Validate:     validate,
 			AuthSettings: &settings.Auth,
-			JWT:          jwt,
 			Deps:         dependencies,
 		},
 	}

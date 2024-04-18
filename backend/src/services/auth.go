@@ -50,7 +50,7 @@ func (a *AuthService) Login(loginBody models.LoginUserResponseBody) (*models.Use
 		return nil, nil, &errors.FailedToValidateUser
 	}
 
-	tokens, err := a.JWT.GenerateTokenPair(auth.Claims{
+	tokens, err := a.Deps.JWT.GenerateTokenPair(auth.Claims{
 		StandardClaims: &jwt.StandardClaims{
 			IssuedAt: time.Now().Unix(),
 			Issuer:   user.ID.String(),
@@ -72,7 +72,7 @@ func (a *AuthService) Login(loginBody models.LoginUserResponseBody) (*models.Use
 }
 
 func (a *AuthService) Refresh(refreshToken string) (*auth.Token, *errors.Error) {
-	claims, err := a.JWT.ExtractClaims(refreshToken, auth.RefreshToken)
+	claims, err := a.Deps.JWT.ExtractClaims(refreshToken, auth.RefreshToken)
 	if err != nil {
 		return nil, &errors.FailedToExtractClaims
 	}
@@ -82,7 +82,7 @@ func (a *AuthService) Refresh(refreshToken string) (*auth.Token, *errors.Error) 
 		return nil, roleErr
 	}
 
-	tokens, err := a.JWT.GenerateTokenPair(auth.Claims{
+	tokens, err := a.Deps.JWT.GenerateTokenPair(auth.Claims{
 		StandardClaims: &jwt.StandardClaims{
 			IssuedAt: time.Now().Unix(),
 			Issuer:   claims["iss"].(string),

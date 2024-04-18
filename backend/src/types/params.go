@@ -6,6 +6,7 @@ import (
 	"github.com/GenerateNU/sac/backend/src/email"
 	"github.com/GenerateNU/sac/backend/src/file"
 	"github.com/GenerateNU/sac/backend/src/middleware"
+	"github.com/GenerateNU/sac/backend/src/redis"
 	"github.com/GenerateNU/sac/backend/src/search"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -22,11 +23,12 @@ type ServiceParams struct {
 	DB           *gorm.DB
 	Validate     *validator.Validate
 	AuthSettings *config.AuthSettings
-	JWT          auth.JWTClientInterface
 	Deps         Dependencies
 }
 
 type Dependencies struct {
+	Redis  redis.RedisClientInterface
+	JWT    auth.JWTClientInterface
 	Search search.SearchClientInterface
 	AI     search.AIClientInterface
 	Email  email.EmailClientInterface
