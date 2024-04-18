@@ -1,7 +1,7 @@
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, View } from 'react-native';
 
-import CalendarIcon from '@/assets/images/svg/calendar.svg';
+import TimeIcon from '@/assets/images/svg/time.svg';
 
 type EventTimeProps = {
     startTime: Date;
@@ -9,22 +9,6 @@ type EventTimeProps = {
 };
 
 const EventTime = ({ startTime, endTime }: EventTimeProps) => {
-    const formatDate = (date: Date) => {
-        const day = date.toLocaleDateString('en-US', { weekday: 'long' });
-        const month = date.toLocaleDateString('en-US', { month: 'long' });
-        const dateNum = date.getDate();
-        const ordinalSuffix =
-            dateNum === 1
-                ? 'st'
-                : dateNum === 2
-                  ? 'nd'
-                  : dateNum === 3
-                    ? 'rd'
-                    : 'th';
-
-        return `${day}, ${month} ${dateNum}${ordinalSuffix}`;
-    };
-
     const formatTime = (date: Date) => {
         return date.toLocaleTimeString([], {
             hour: 'numeric',
@@ -32,31 +16,35 @@ const EventTime = ({ startTime, endTime }: EventTimeProps) => {
         });
     };
 
+    const formatLength = () => {
+        const length = (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
+
+        if (length < 1) {
+            return `${length} minutes`
+        } else if (length === 1) {
+            return `${length} hour`
+        } else {
+            return `${length} hours`
+        }
+    }
+
+    const weekday = startTime.toLocaleDateString('en-US', { weekday: 'long' });
+    const start = formatTime(startTime);
+
     return (
-        <TouchableOpacity
-            onPress={() => console.log('Navigate to the calendar')}
-            className="flex flex-row"
-        >
-            <CalendarIcon className="self-center" />
-            <View className="flex-col pl-2">
-                <Text className="text-black">
-                    {startTime.getDate() === endTime.getDate() ? (
-                        <>
-                            {formatDate(startTime)}
-                            {'\n'}
-                            {formatTime(startTime)} - {formatTime(endTime)}
-                        </>
-                    ) : (
-                        <>
-                            {formatDate(startTime)}
-                            {'\n'}
-                            {formatTime(startTime)} - {formatDate(endTime)}{' '}
-                            {formatTime(endTime)}
-                        </>
-                    )}
+        <View className='p-3 bg-white rounded-lg shadow-sm col-span-1' style={{ width: '32%' }}>
+            <View className='flex-col items-center justify-center gap-y-2'>
+                <TimeIcon width={24} height={24} />
+                <Text className='font-semibold text-center text-black'>
+                    {formatLength()}
                 </Text>
+                <View className='flex-col items-center'>
+                    <Text className='text-xs text-center font-normal text-neutral-400'>
+                        Length of the Event
+                    </Text>
+                </View>
             </View>
-        </TouchableOpacity>
+        </View>
     );
 };
 

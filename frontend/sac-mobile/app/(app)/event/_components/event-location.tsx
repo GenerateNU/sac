@@ -9,34 +9,32 @@ type EventLocationProps = {
 };
 
 const EventLocation = ({ location, meetingLink }: EventLocationProps) => {
-    const [city, rest] = location.split(/,(.+)/);
+    const title = () => {
+        if (location && meetingLink) {
+            return ['Hybrid', 'Event In-person and online']
+        } else if (location) {
+            return ['In Person', 'Event In-person only']
+        } else {
+            return ['Online', 'Event online Only']
+        }
+    }
+
+    const information = title();
 
     return (
-        <View className="flex-row items-center py-1">
-            <Location />
-            <View className="flex-col pb-1">
-                <View className="flex-row pl-2">
-                    <Text className="text-black">{city}</Text>
-                    <Text className="text-black">, {rest}</Text>
-                </View>
-                {meetingLink && (
-                    <View className="flex-row items-center">
-                        <TouchableOpacity
-                            className="pl-2"
-                            onPress={() =>
-                                Linking.openURL(meetingLink!).catch((err) =>
-                                    console.error('An error occurred', err)
-                                )
-                            }
-                        >
-                            <Text className="text-black underline">
-                                {meetingLink}
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
+        <View className='p-3 bg-white rounded-lg shadow-sm col-span-1' style={{ width: '32%' }}>
+        <View className='flex-col items-center justify-center gap-y-2'>
+            <Location width={24} height={24} />
+            <Text className='font-semibold text-center text-black'>
+                { information[0] }
+            </Text>
+            <View className='flex-col items-center'>
+                <Text className='text-xs text-center font-normal text-neutral-400'>
+                    { information[1] }
+                </Text>
             </View>
         </View>
+    </View>
     );
 };
 
