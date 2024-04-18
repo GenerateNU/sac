@@ -4,6 +4,7 @@ import (
 	stdliberrors "errors"
 
 	"github.com/GenerateNU/sac/backend/src/search"
+	"github.com/sahilm/fuzzy"
 
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
@@ -34,6 +35,7 @@ func GetClubs(db *gorm.DB, pinecone search.SearchClientInterface, queryParams *m
 	}
 
 	query = query.Where(queryParams.IntoWhere())
+	query = query.Where("name != ?", "SAC")
 
 	if queryParams.Tags != nil && len(queryParams.Tags) > 0 {
 		query = query.Joins("JOIN club_tags ON club_tags.club_id = clubs.id").
@@ -51,7 +53,38 @@ func GetClubs(db *gorm.DB, pinecone search.SearchClientInterface, queryParams *m
 		query = query.Where("id IN ?", resultIDs)
 	}
 
-	var clubs []models.Club
+	var clubs models.Clubs
+
+	if queryParams.Search != "" {
+		if err := query.Find(&clubs).Error; err != nil {
+			return nil, &errors.FailedToGetClubs
+		}
+
+		// len(matches) <= len(clubs), because it discardss results that don't fuzz at all.
+		matches := fuzzy.FindFrom(queryParams.Search, clubs)
+
+		// Copy the sorted, fuzzed matches to the top of the list, and record their indices
+		// in a list.
+		clubsSorted := models.Clubs{}
+		idxMap := map[int]bool{}
+		for _, match := range matches {
+			clubsSorted = append(clubsSorted, clubs[match.Index])
+			idxMap[match.Index] = true
+		}
+
+		// For the remaining clubs, append them to the bottom of the list, making sure not
+		// to include the fuzzed clubs again.
+		for i, club := range clubs {
+			_, exists := idxMap[i]
+			if !exists {
+				clubsSorted = append(clubsSorted, club)
+			}
+		}
+
+		print("Triple Double")
+
+		return clubsSorted, nil
+	}
 
 	offset := (queryParams.Page - 1) * queryParams.Limit
 

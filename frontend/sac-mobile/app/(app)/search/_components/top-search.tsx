@@ -13,7 +13,7 @@ export const TopSearch = (p: TopSearchProps) => {
     return (
         <TouchableOpacity
             onPress={() => {
-                router.push(`/search/results/${p.search}`)
+                router.push(`/(app)/search/results/${p.search}`)
             }}>
             <View {...p} className="elevation bg-white rounded-xl flex flex-row p-3 items-center">
                 <SearchIcon className="w-5 h-5"></SearchIcon>

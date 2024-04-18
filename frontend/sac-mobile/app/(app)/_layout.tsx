@@ -55,6 +55,11 @@ const Layout = () => {
                     headerLeft: () => <LeftArrow />
                 }}
             />
+            <Stack.Screen
+                name="search"
+                options={{
+                    headerShown: false
+                }}/>
         </Stack>
     );
 };

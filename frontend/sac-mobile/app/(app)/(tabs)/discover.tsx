@@ -1,9 +1,9 @@
 import React, {  } from 'react';
 import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { ClubCardNoTags } from './_components/club-card';
-import { SearchBar } from './_components/search-bar';
-import { HorizontalEventCard } from './_components/event-card';
-import { TopSearch } from './_components/top-search';
+import { ClubCardNoTags } from '../search/_components/club-card';
+import { SearchBar } from '../search/_components/search-bar';
+import { HorizontalEventCard } from '../search/_components/event-card';
+import { TopSearch } from '../search/_components/top-search';
 import { router } from 'expo-router';
 
 
@@ -14,7 +14,7 @@ const Discover = () => {
                 searchBoxEditable={false}
                 cancelOrBackButton="Back"
                 onSearchBoxPressed={() => {
-                    router.push("/search/recents")
+                    router.push("/(app)/search/recents")
                     return undefined;
                 }}/>
             <ScrollView className="flex flex-col mt-6">

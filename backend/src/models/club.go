@@ -149,3 +149,13 @@ func (c *Club) Namespace() string {
 func (c *Club) EmbeddingString() string {
 	return fmt.Sprintf("%s %s %s %s %s", c.Name, c.Name, c.Name, c.Name, c.Description)
 }
+
+type Clubs []Club
+
+func (c Clubs) String(i int) string {
+	return c[i].Name
+}
+
+func (c Clubs) Len() int {
+	return len(c)
+}
