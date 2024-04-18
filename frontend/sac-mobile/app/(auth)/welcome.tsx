@@ -4,12 +4,10 @@ import { SafeAreaView, Text, View } from 'react-native';
 import { router } from 'expo-router';
 
 import { Button } from '@/components/button';
-import Wordmark from '@/components/wordmark';
 
 const Welcome = () => {
     return (
         <SafeAreaView className="flex-col mb-[8%] mx-[8%]">
-            <Wordmark />
             <View className="bg-gray-500 h-[45%] w-ful rounded-xl mt-[5%]" />
             <Text className="h-[18%] text-6xl font-bold mt-[10%]">
                 Welcome to StudCal
@@ -22,7 +20,7 @@ const Welcome = () => {
                 <Button
                     size="lg"
                     variant="default"
-                    onPress={() => router.push('/(auth)/login')}
+                    onPress={() => router.replace('/(auth)/login')}
                 >
                     Get Started
                 </Button>

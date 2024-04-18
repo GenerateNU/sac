@@ -25,9 +25,24 @@ func SampleContactFactory() *map[string]interface{} {
 func ManyContactsFactory() map[string](*map[string]interface{}) {
 	arr := make(map[string]*map[string]interface{})
 
-	arr["email"] = &map[string]interface{}{
-		"type":    "email",
-		"content": "cheeseClub@gmail.com",
+	arr["facebook"] = &map[string]interface{}{
+		"type":    "facebook",
+		"content": "https://facebook.com/cheeseClub",
+	}
+
+	arr["instagram"] = &map[string]interface{}{
+		"type":    "instagram",
+		"content": "https://instagram.com/cheeseClub",
+	}
+
+	arr["x"] = &map[string]interface{}{
+		"type":    "x",
+		"content": "https://x.com/cheeseClub",
+	}
+
+	arr["linkedin"] = &map[string]interface{}{
+		"type":    "linkedin",
+		"content": "https://linkedin.com/cheeseClub",
 	}
 
 	arr["youtube"] = &map[string]interface{}{
@@ -35,23 +50,29 @@ func ManyContactsFactory() map[string](*map[string]interface{}) {
 		"content": "https://youtube.com/cheeseClub",
 	}
 
-	arr["facebook"] = &map[string]interface{}{
-		"type":    "facebook",
-		"content": "https://facebook.com/cheeseClub",
+	arr["github"] = &map[string]interface{}{
+		"type":    "github",
+		"content": "https://github.com/GeneratNU/sac",
+	}
+
+	arr["slack"] = &map[string]interface{}{
+		"type":    "slack",
+		"content": "https://join.slack.com/cheeseClub",
 	}
 
 	arr["discord"] = &map[string]interface{}{
 		"type":    "discord",
-		"content": "https://discord.com/cheeseClub",
+		"content": "https://discord.gg/cheeseClub",
 	}
 
-	arr["instagram"] = &map[string]interface{}{
-		"type":    "instagram",
-		"content": "https://instagram.com/cheeseClub",
+	arr["email"] = &map[string]interface{}{
+		"type":    "email",
+		"content": "cheeseClub@gmail.com",
 	}
-	arr["github"] = &map[string]interface{}{
-		"type":    "github",
-		"content": "https://github.com/cheeseClub",
+
+	arr["customSite"] = &map[string]interface{}{
+		"type":    "customSite",
+		"content": "https://cheeseClub.com",
 	}
 
 	return arr

@@ -14,14 +14,8 @@ func BackendCommand() *cli.Command {
 		Name:     "be",
 		Usage:    "Run the backend",
 		Category: "Development",
-		Flags: []cli.Flag{
-			&cli.BoolFlag{
-				Name:  "d",
-				Usage: "Use the .env.dev file in the backend directory",
-			},
-		},
 		Action: func(c *cli.Context) error {
-			err := RunBackend(c.Bool("d"))
+			err := RunBackend()
 			if err != nil {
 				return cli.Exit(err.Error(), 1)
 			}
@@ -33,12 +27,8 @@ func BackendCommand() *cli.Command {
 	return command
 }
 
-func RunBackend(useDevDotEnv bool) error {
+func RunBackend() error {
 	cmd := exec.Command("go", "run", "main.go")
-
-	if useDevDotEnv {
-		cmd.Args = append(cmd.Args, "--use-dev-dot-env")
-	}
 
 	cmd.Dir = BACKEND_SRC_DIR
 	cmd.Stdout = os.Stdout
