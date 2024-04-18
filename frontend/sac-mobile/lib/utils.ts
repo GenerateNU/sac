@@ -12,6 +12,7 @@ import { FAQ } from '@/types/faq';
 import { Item } from '@/types/item';
 import { addDays, getDay, getDaysInMonth, isSameWeek, setDate, subDays } from 'date-fns';
 import calendarize from 'calendarize';
+import { Club } from '@/types/club';
 
 /**
  * Nativewind CSS classnames generator
@@ -191,17 +192,15 @@ const extractTokens = (
     return { accessToken, refreshToken };
 };
 
-const isClub = (item: any) => {
+const isClub = (item: any): Club => {
     return typeof item === 'object' && item.hasOwnProperty('is_recruiting');
 };
 
-const isEvent = (item: any) => {
+const isEvent = (item: any): Event => {
     return (
         typeof item === 'object' &&
-        item.hasOwnProperty('name') &&
         item.hasOwnProperty('start_time') &&
-        typeof item.start_time === 'object' &&
-        item.start_time instanceof Date
+        item.hasOwnProperty('end_time')
     );
 };
 

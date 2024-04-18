@@ -5,6 +5,7 @@ import BottomSheet from '@gorhom/bottom-sheet';
 import { MenuView } from '@react-native-menu/menu';
 
 import { Button } from '@/components/button';
+import EventDemoDay from '@/assets/images/svg/event-demo-day.svg';
 
 type Ref = BottomSheet;
 
@@ -18,7 +19,7 @@ const EventHeader = forwardRef<Ref>((_, ref) => {
 
     return (
         <View className="flex-row items-center justify-between -translate-y-10">
-            <View className="w-24 h-24 bg-gray-300 rounded-xl" />
+            <EventDemoDay className='w-full h-full rounded-xl' />
             <View className="flex-row space-x-3">
                 <MenuView
                     onPressAction={({ nativeEvent }) => {
