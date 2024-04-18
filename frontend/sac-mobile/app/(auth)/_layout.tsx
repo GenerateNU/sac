@@ -4,9 +4,12 @@ import { View } from 'react-native';
 import { Stack, router } from 'expo-router';
 
 import { Button } from '@/components/button';
+import { LeftArrow } from '@/components/left-arrow';
 import { Wordmark } from '@/components/wordmark';
+import { useAuthStore } from '@/hooks/use-auth';
 
 const Layout = () => {
+    const { signOut } = useAuthStore();
     return (
         <Stack initialRouteName="welcome">
             <Stack.Screen
@@ -62,7 +65,9 @@ const Layout = () => {
                 options={{
                     title: '',
                     headerShown: true,
-                    headerRight: () => <Wordmark />,
+                    headerLeft: () => {
+                        return <LeftArrow onPress={() => signOut()} />;
+                    },
                     headerBackground: () => <View className="h-full bg-white" />
                 }}
             />
