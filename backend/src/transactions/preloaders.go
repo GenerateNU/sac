@@ -22,8 +22,8 @@ func PreloadTag() OptionalQuery {
 	}
 }
 
-func PreloadClub() OptionalQuery {
+func PreloadEvent() OptionalQuery {
 	return func(db *gorm.DB) *gorm.DB {
-		return db.Preload("Club")
+		return db.Preload("Event")
 	}
 }
