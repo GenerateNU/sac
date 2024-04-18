@@ -1,5 +1,11 @@
 import React, { useRef } from 'react';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import {
+    ActivityIndicator,
+    RefreshControl,
+    ScrollView,
+    Text,
+    View
+} from 'react-native';
 
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -24,7 +30,7 @@ import { RSVPBottomSheet } from './_components/rsvp-bottom-sheet';
 const EventPage = () => {
     const { id } = useLocalSearchParams<{ id: string }>();
 
-    const { data: event, isLoading, error } = useEvent(id);
+    const { data: event, isLoading, error, refetch } = useEvent(id);
 
     const ref = useRef<BottomSheet>(null);
 
@@ -47,7 +53,15 @@ const EventPage = () => {
         <>
             <Stack.Screen options={{ title: `${event[0].name}` }} />
             <StatusBar style="light" />
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView
+                refreshControl={
+                    <RefreshControl
+                        refreshing={isLoading}
+                        onRefresh={refetch}
+                    />
+                }
+                showsVerticalScrollIndicator={false}
+            >
                 <View className="flex-col justify-between flex-1 w-full">
                     <View className="w-full bg-gray-600 h-[100]" />
                     <View className="w-full px-3 pb-5">
