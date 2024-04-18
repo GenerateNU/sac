@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
-import { Animated,
+import {
     ActivityIndicator,
-    RefreshControl,
+    Animated,
     ScrollView,
     Text,
     View
@@ -19,18 +19,18 @@ import { Description } from '@/components/description';
 import { Title } from '@/components/title';
 import { useEvent } from '@/hooks/use-event';
 
+import { HeaderImage } from '../../../components/entity-header';
 import { EventLocation } from './_components/event-location';
 import { EventTime } from './_components/event-time';
 import { HostNames } from './_components/host-names';
 import { LocationView } from './_components/location-view';
 import { RSVPBottomSheet } from './_components/rsvp-bottom-sheet';
-import { HeaderImage } from '../../../components/entity-header';
 
 // TODO: handle link OR location
 const EventPage = () => {
     const { id } = useLocalSearchParams<{ id: string }>();
 
-    const { data: event, isLoading, error, refetch } = useEvent(id);
+    const { data: event, isLoading, error } = useEvent(id);
 
     const ref = useRef<BottomSheet>(null);
     const pan = useRef(new Animated.ValueXY()).current;
@@ -58,15 +58,15 @@ const EventPage = () => {
                 onScroll={Animated.event(
                     [{ nativeEvent: { contentOffset: { y: pan.y } } }],
                     {
-                      useNativeDriver: false,
+                        useNativeDriver: false
                     }
-                )}   
+                )}
             >
                 <View className="flex-col">
-                    <HeaderImage 
-                        image='https://blenderartists.org/uploads/default/optimized/4X/7/e/2/7e2d7bea4ac21388c4a96e1371f375c4ce00094b_2_1024x576.jpg'
+                    <HeaderImage
+                        image="https://blenderartists.org/uploads/default/optimized/4X/7/e/2/7e2d7bea4ac21388c4a96e1371f375c4ce00094b_2_1024x576.jpg"
                         pan={pan}
-                        type='event'
+                        type="event"
                         ref={ref}
                     />
                     <View className="px-5 pb-8">
