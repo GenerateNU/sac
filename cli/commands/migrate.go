@@ -32,7 +32,7 @@ func MigrateCommand() *cli.Command {
 func Migrate() error {
 	fmt.Println("Migrating database")
 
-	goCmd := exec.Command("go", "run", "main.go", "--only-migrate")
+	goCmd := exec.Command("go", "run", "main.go", "--only-migrate", "--use-dev-dot-env=false")
 	goCmd.Dir = BACKEND_SRC_DIR
 
 	output, err := goCmd.CombinedOutput()

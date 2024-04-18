@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"github.com/GenerateNU/sac/backend/src/constants"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
@@ -32,7 +31,7 @@ func NewTagController(tagService services.TagServiceInterface) *TagController {
 // @Failure     500   {object}      errors.Error
 // @Router		/tags  [get]
 func (t *TagController) GetTags(c *fiber.Ctx) error {
-	tags, err := t.tagService.GetTags(c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING))
+	tags, err := t.tagService.GetTags()
 	if err != nil {
 		return err.FiberError(c)
 	}

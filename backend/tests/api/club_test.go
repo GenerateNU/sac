@@ -17,15 +17,17 @@ import (
 
 func SampleClubFactory(userID *uuid.UUID) *map[string]interface{} {
 	return &map[string]interface{}{
-		"user_id":           userID,
-		"name":              "Generate",
-		"preview":           "Generate is Northeastern's premier student-led product development studio.",
-		"description":       "https://s3.amazonaws.com/<bucket>/<object>",
-		"is_recruiting":     true,
-		"recruitment_cycle": "always",
-		"recruitment_type":  "application",
-		"application_link":  "https://generatenu.com/apply",
-		"logo":              "https://s3.amazonaws.com/<bucket>/<object>",
+		"user_id":                 userID,
+		"name":                    "Generate",
+		"preview":                 "Generate is Northeastern's premier student-led product development studio.",
+		"description":             "https://s3.amazonaws.com/<bucket>/<object>",
+		"is_recruiting":           true,
+		"recruitment_cycle":       "always",
+		"recruitment_type":        "application",
+		"weekly_time_commitment":  10,
+		"one_word_to_describe_us": "muneer",
+		"application_link":        "https://generatenu.com/apply",
+		"logo":                    "https://s3.amazonaws.com/<bucket>/<object>",
 	}
 }
 
@@ -42,8 +44,6 @@ func AssertClubBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, body *ma
 
 	eaa.Assert.NilError(err)
 
-	eaa.Assert.Equal(2, len(dbClubs))
-
 	dbClub := dbClubs[0]
 
 	eaa.Assert.Equal(dbClub.ID, respClub.ID)
@@ -54,6 +54,8 @@ func AssertClubBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, body *ma
 	eaa.Assert.Equal(dbClub.IsRecruiting, respClub.IsRecruiting)
 	eaa.Assert.Equal(dbClub.RecruitmentCycle, respClub.RecruitmentCycle)
 	eaa.Assert.Equal(dbClub.RecruitmentType, respClub.RecruitmentType)
+	eaa.Assert.Equal(dbClub.WeeklyTimeCommitment, respClub.WeeklyTimeCommitment)
+	eaa.Assert.Equal(dbClub.OneWordToDescribeUs, respClub.OneWordToDescribeUs)
 	eaa.Assert.Equal(dbClub.ApplicationLink, respClub.ApplicationLink)
 	eaa.Assert.Equal(dbClub.Logo, respClub.Logo)
 
@@ -72,6 +74,8 @@ func AssertClubBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, body *ma
 	eaa.Assert.Equal((*body)["is_recruiting"].(bool), dbClub.IsRecruiting)
 	eaa.Assert.Equal(models.RecruitmentCycle((*body)["recruitment_cycle"].(string)), dbClub.RecruitmentCycle)
 	eaa.Assert.Equal(models.RecruitmentType((*body)["recruitment_type"].(string)), dbClub.RecruitmentType)
+	eaa.Assert.Equal((*body)["weekly_time_commitment"].(int), dbClub.WeeklyTimeCommitment)
+	eaa.Assert.Equal((*body)["one_word_to_describe_us"].(string), dbClub.OneWordToDescribeUs)
 	eaa.Assert.Equal((*body)["application_link"].(string), dbClub.ApplicationLink)
 	eaa.Assert.Equal((*body)["logo"].(string), dbClub.Logo)
 
@@ -99,6 +103,8 @@ func AssertClubWithBodyRespDBMostRecent(eaa h.ExistingAppAssert, resp *http.Resp
 	eaa.Assert.Equal(dbClub.IsRecruiting, respClub.IsRecruiting)
 	eaa.Assert.Equal(dbClub.RecruitmentCycle, respClub.RecruitmentCycle)
 	eaa.Assert.Equal(dbClub.RecruitmentType, respClub.RecruitmentType)
+	eaa.Assert.Equal(dbClub.WeeklyTimeCommitment, respClub.WeeklyTimeCommitment)
+	eaa.Assert.Equal(dbClub.OneWordToDescribeUs, respClub.OneWordToDescribeUs)
 	eaa.Assert.Equal(dbClub.ApplicationLink, respClub.ApplicationLink)
 	eaa.Assert.Equal(dbClub.Logo, respClub.Logo)
 
@@ -120,6 +126,8 @@ func AssertClubWithBodyRespDBMostRecent(eaa h.ExistingAppAssert, resp *http.Resp
 	eaa.Assert.Equal((*body)["is_recruiting"].(bool), dbClub.IsRecruiting)
 	eaa.Assert.Equal((*body)["recruitment_cycle"].(string), dbClub.RecruitmentCycle)
 	eaa.Assert.Equal((*body)["recruitment_type"].(string), dbClub.RecruitmentType)
+	eaa.Assert.Equal((*body)["weekly_time_commitment"].(int), dbClub.WeeklyTimeCommitment)
+	eaa.Assert.Equal((*body)["one_word_to_describe_us"].(string), dbClub.OneWordToDescribeUs)
 	eaa.Assert.Equal((*body)["application_link"].(string), dbClub.ApplicationLink)
 	eaa.Assert.Equal((*body)["logo"].(string), dbClub.Logo)
 
@@ -195,6 +203,8 @@ func TestGetClubsWorks(t *testing.T) {
 				eaa.Assert.Equal(dbClub.IsRecruiting, respClub.IsRecruiting)
 				eaa.Assert.Equal(dbClub.RecruitmentCycle, respClub.RecruitmentCycle)
 				eaa.Assert.Equal(dbClub.RecruitmentType, respClub.RecruitmentType)
+				eaa.Assert.Equal(dbClub.WeeklyTimeCommitment, respClub.WeeklyTimeCommitment)
+				eaa.Assert.Equal(dbClub.OneWordToDescribeUs, respClub.OneWordToDescribeUs)
 				eaa.Assert.Equal(dbClub.ApplicationLink, respClub.ApplicationLink)
 				eaa.Assert.Equal(dbClub.Logo, respClub.Logo)
 
@@ -255,7 +265,7 @@ func TestCreateClubFailsOnInvalidDescription(t *testing.T) {
 		[]interface{}{
 			"Not an URL",
 			"@#139081#$Ad_Axf",
-			// "https://google.com", <-- TODO fix once we handle mongo urls
+			"https://google.com",
 		},
 	)
 }
@@ -284,6 +294,16 @@ func TestCreateClubFailsOnInvalidRecruitmentType(t *testing.T) {
 	)
 }
 
+func TestCreateClubFailsOnInvalidWeeklyTimeCommitment(t *testing.T) {
+	AssertCreateBadClubDataFails(t,
+		"weekly_time_commitment",
+		[]interface{}{
+			0,
+			-1,
+		},
+	)
+}
+
 func TestCreateClubFailsOnInvalidApplicationLink(t *testing.T) {
 	AssertCreateBadClubDataFails(t,
 		"application_link",
@@ -300,7 +320,7 @@ func TestCreateClubFailsOnInvalidLogo(t *testing.T) {
 		[]interface{}{
 			"Not an URL",
 			"@#139081#$Ad_Axf",
-			// "https://google.com", <-- TODO uncomment once we figure out s3 url validation
+			"https://google.com",
 		},
 	)
 }

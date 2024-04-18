@@ -29,7 +29,6 @@ const TagList = ({ id }: TagListProps) => {
         <FlatList
             horizontal
             showsHorizontalScrollIndicator={false}
-            alwaysBounceHorizontal
             data={tags}
             renderItem={({ item }) => <Tag key={item.id} tag={item} />}
             keyExtractor={(item) => item.id}

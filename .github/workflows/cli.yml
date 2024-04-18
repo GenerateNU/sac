@@ -6,11 +6,13 @@ on:
   push:
     paths:
       - cli/**
+      - config/**
       - .github/workflows/cli.yml
   pull_request:
     types: [opened]
     paths:
       - cli/**
+      - config/**
       - .github/workflows/cli.yml
 
 concurrency:

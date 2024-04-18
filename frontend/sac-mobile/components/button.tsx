@@ -6,13 +6,16 @@ import { cn } from '@/lib/utils';
 
 const buttonVariants = {
     variant: {
-        default: ['bg-gray-500', 'text-white'],
+        default: ['bg-black', 'text-white'],
+        none: [],
         destructive: ['bg-red-500', 'text-white font-bold'],
         secondary: ['bg-white', 'text-gray'],
         outline: ['border border-gray-600 text-gray-500 font-medium'],
         gray: ['bg-card-bg', 'text-black'],
         icon: ['bg-transparent'],
-        pill: ['bg-gray-500', 'text-white', 'rounded-full']
+        underline: ['border-b font-bold border-gray-600 text-lg'],
+        pill: ['bg-gray-500', 'text-white', 'rounded-full'],
+        menu: ['text-black text-lg']
     },
     size: {
         default: 'h-10 px-4 py-2',
@@ -47,7 +50,8 @@ const Button = ({ children, variant, size, ...props }: ButtonProps) => {
         >
             <Text
                 className={cn(
-                    ...buttonVariants.variant[variant ?? 'default'],
+                    ...(buttonVariants.variant[variant ?? 'default'] ??
+                        buttonVariants.variant.default),
                     'text-center'
                 )}
             >

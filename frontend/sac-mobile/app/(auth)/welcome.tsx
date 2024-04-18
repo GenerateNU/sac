@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { router } from 'expo-router';
 
@@ -7,12 +7,12 @@ import { Button } from '@/components/button';
 
 const Welcome = () => {
     return (
-        <SafeAreaView className="flex-col mb-[8%] mx-[8%]">
-            <View className="bg-gray-500 h-[45%] w-ful rounded-xl mt-[5%]" />
-            <Text className="h-[18%] text-6xl font-bold mt-[10%]">
-                Welcome to StudCal
+        <View className="flex-col flex-1 bg-neutral-500 px-[5%] gap-y-5">
+            <View className="bg-neutral-400 h-[38%] w-full rounded-xl" />
+            <Text className="flex flex-wrap text-5xl font-bold text-white">
+                Welcome to Student Activity Calendar
             </Text>
-            <Text className="text-2xl leading-8 pl-[1%] pb-[10%]">
+            <Text className="text-2xl text-white leading-8 pl-[1%]">
                 Discover, follow, and join all the clubs & events Northeastern
                 has to offer
             </Text>
@@ -25,7 +25,7 @@ const Welcome = () => {
                     Get Started
                 </Button>
             </View>
-        </SafeAreaView>
+        </View>
     );
 };
 

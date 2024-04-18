@@ -5,7 +5,10 @@ import { Buffer } from 'buffer';
 import clsx, { ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
+import { majorArr } from '@/lib/const';
 import { Tokens } from '@/types/auth';
+import { Club } from '@/types/club';
+import { FAQ } from '@/types/faq';
 import { Item } from '@/types/item';
 
 /**
@@ -23,14 +26,30 @@ const cn = (...inputs: ClassValue[]) => {
  */
 const graduationYear = () => {
     var year = new Date().getFullYear();
+    const range = 5;
     const graduationYears: Item[] = [];
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < range; i++) {
         graduationYears.push({
             label: String(year + i),
             value: String(year + i)
         });
     }
     return graduationYears;
+};
+
+/**
+ * Generates an array of item of major
+ * @returns an Item array of majors
+ */
+export const major = () => {
+    const majors: Item[] = [];
+    for (let i = 0; i < majorArr.length; i++) {
+        majors.push({
+            label: majorArr[i],
+            value: majorArr[i]
+        });
+    }
+    return majors;
 };
 
 /**
@@ -117,4 +136,33 @@ const extractTokens = (
     return { accessToken, refreshToken };
 };
 
-export { cn, graduationYear, tokenCache, experationTime, extractTokens };
+const isClub = (item: any): Club => {
+    return typeof item === 'object' && item.hasOwnProperty('is_recruiting');
+};
+
+const isEvent = (item: any): Event => {
+    return (
+        typeof item === 'object' &&
+        item.hasOwnProperty('start_time') &&
+        item.hasOwnProperty('end_time')
+    );
+};
+
+const isFAQ = (item: any): FAQ => {
+    return (
+        typeof item === 'object' &&
+        item.hasOwnProperty('question') &&
+        item.hasOwnProperty('answer')
+    );
+};
+
+export {
+    cn,
+    isClub,
+    isEvent,
+    isFAQ,
+    graduationYear,
+    tokenCache,
+    experationTime,
+    extractTokens
+};

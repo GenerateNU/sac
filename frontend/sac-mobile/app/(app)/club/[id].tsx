@@ -27,27 +27,41 @@ const Club = () => {
 
     const handleOpenPress = () => { ref.current?.snapToIndex(0); };
 
+    const { data: club, isLoading, error } = useClub(id);
+
+    if (isLoading) {
+        return <Text>Loading...</Text>;
+    }
+
+    if (error) {
+        return <Text>Error: {error.message}</Text>;
+    }
+
+    if (!club) {
+        return <Text>Club not found</Text>;
+    }
+
     return (
         <>
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View className="flex-col justify-between flex-1 w-full">
                     <View className="w-full bg-gray-600 h-[100]" />
-                    <View className="w-full pb-5 px-6">
+                    <View className="w-full px-6 pb-5">
                         <ClubHeader />
                         <View className="flex-row">
-                            <Text className="text-black font-bold text-3xl">Club Name</Text>
+                            <Text className="text-3xl font-bold text-black">Club Name</Text>
                         </View>
                         <SocialMediaIcons />
                         <AllClubTags />
                         <View>
-                            <Button variant='gray' size='screenwide' className='mb-4 flex-col justify-between' onPress={handleOpenPress}>
-                                <Text className='text-black font-bold text-left'>Application Form</Text>
+                            <Button variant='gray' size='screenwide' className='flex-col justify-between mb-4' onPress={handleOpenPress}>
+                                <Text className='font-bold text-left text-black'>Application Form</Text>
                             </Button>
                         </View>
 
                         <View className="pb-[8%]">
                             <View className='pb-[2%]'>
-                                <Text className=" text-black font-medium">Description</Text>
+                                <Text className="font-medium text-black ">Description</Text>
                             </View>
                             <ExpandableText maxLines={5}>
                                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.

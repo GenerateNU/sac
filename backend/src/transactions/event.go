@@ -106,15 +106,7 @@ func CreateEvent(db *gorm.DB, event models.Event) ([]models.Event, *errors.Error
 }
 
 func CreateEventSeries(db *gorm.DB, series models.Series) ([]models.Event, *errors.Error) {
-	tx := db.Begin()
-
-	if err := tx.Create(&series).Error; err != nil {
-		tx.Rollback()
-		return nil, &errors.FailedToCreateEventSeries
-	}
-
-	if err := tx.Commit().Error; err != nil {
-		tx.Rollback()
+	if err := db.Create(&series).Error; err != nil {
 		return nil, &errors.FailedToCreateEventSeries
 	}
 
@@ -230,10 +222,25 @@ func DeleteSeriesByID(db *gorm.DB, seriesID uuid.UUID) *errors.Error {
 }
 
 func GetHostsByEventID(db *gorm.DB, eventID uuid.UUID) ([]models.Club, *errors.Error) {
-	event, err := GetEvent(db, eventID, PreloadClub())
+	// Get the club that hosts the event
+	event, err := GetEvent(db, eventID)
 	if err != nil {
 		return nil, err
 	}
 
-	return event[0].Clubs, nil
+	clubs, err := GetClub(db, *event[0].Host, PreloadEvent())
+	if err != nil {
+		return nil, err
+	}
+
+	return []models.Club{*clubs}, nil
+}
+
+func GetTagsByEventID(db *gorm.DB, eventID uuid.UUID) ([]models.Tag, *errors.Error) {
+	event, err := GetEvent(db, eventID, PreloadTag())
+	if err != nil {
+		return nil, err
+	}
+
+	return event[0].Tag, nil
 }

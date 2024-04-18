@@ -7,19 +7,21 @@ set -o pipefail
 SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Build the Go CLI tool
-go build -o "sac-cli" "cli/main.go"
+# Check if the command is already installed to avoid adding it to path multiple times
+COMMAND_NAME="sac"
+
+if command -v "$COMMAND_NAME" >/dev/null 2>&1; then
+	echo "Command '$COMMAND_NAME' is already installed. Exiting."
+	exit 1
+fi
+
+go build -o "sac" "cli/main.go"
 
 # Identify the user's shell
 SHELL_NAME=$(basename "$SHELL")
 
-# Check if the command is already installed to avoid adding it to path multiple times
-COMMAND_NAME="sac-cli"
 
-if command -v "$COMMAND_NAME" >/dev/null 2>&1; then
-	exit 1
-fi
-
-# Add sac-cli to the user's PATH
+# Add sac to the user's PATH
 if [[ $SHELL_NAME == "zsh" ]]; then
 	echo "export PATH=\"$SCRIPT_PATH:\$PATH\"" >>~/.zshrc
 	source ~/.zshrc
@@ -32,4 +34,4 @@ else
 fi
 
 # Inform the user
-echo "Installation complete. You can now run 'sac-cli' from anywhere."
+echo "Installation complete. You can now run 'sac' from anywhere."

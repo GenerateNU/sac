@@ -1,22 +1,30 @@
+import { Tag } from '@/types/tag';
 import { uuid } from '@/types/uuid';
 import { UseQueryResult, useQuery } from '@tanstack/react-query';
 
-export type Tag = {
+export type TTag = {
     name: string;
 };
 
-export const useTags = (
+export const useClubTags = (
     clubID: uuid
-): UseQueryResult<Tag[], Error> => {
-    return useQuery<Tag[], Error>({
+): UseQueryResult<TTag[], Error> => {
+    return useQuery<TTag[], Error>({
         queryKey: ['tags', clubID],
-        queryFn: async (): Promise<Tag[]> => {
+        queryFn: async (): Promise<TTag[]> => {
             return [
-                { name: 'Science'},
+                { name: 'Science' },
                 { name: 'Technology' },
                 { name: 'Engineering' },
                 { name: 'Mathematics' }
             ];
         }
+    });
+}
+
+export const useTags = (): UseQueryResult<Tag[], Error> => {
+    return useQuery<Tag[], Error>({
+        queryKey: ['tags'],
+        queryFn: getAllTags
     });
 };

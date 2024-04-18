@@ -15,8 +15,6 @@ const Layout = () => {
                 options={{ headerShown: false, presentation: 'modal' }}
             />
             <Stack.Screen
-
-
                 name="ask/ask-a-question"
                 options={{ headerShown: false, presentation: 'modal' }}
             />

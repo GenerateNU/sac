@@ -21,6 +21,7 @@ type EventServiceInterface interface {
 	DeleteSeriesByEventID(seriesID string) *errors.Error
 	DeleteSeriesByID(seriesID string) *errors.Error
 	GetHostsByEventID(eventID string) ([]models.Club, *errors.Error)
+	GetTagsByEventID(eventID string) ([]models.Tag, *errors.Error)
 }
 
 type EventService struct {
@@ -219,17 +220,26 @@ func (e *EventService) GetHostsByEventID(eventID string) ([]models.Club, *errors
 	return transactions.GetHostsByEventID(e.DB, *idAsUUID)
 }
 
+func (e *EventService) GetTagsByEventID(eventID string) ([]models.Tag, *errors.Error) {
+	idAsUUID, err := utilities.ValidateID(eventID)
+	if err != nil {
+		return nil, &errors.FailedToValidateID
+	}
+
+	return transactions.GetTagsByEventID(e.DB, *idAsUUID)
+}
+
 func createEventSlice(firstEvent *models.Event, series models.Series) []models.Event {
 	eventBodies := []models.Event{*firstEvent}
 	months, days := 0, 0
 
 	switch series.RecurringType {
 	case "daily":
-		days = series.SeparationCount + 1
+		days = 1
 	case "weekly":
-		days = 7 * (series.SeparationCount + 1)
+		days = 7
 	case "monthly":
-		months = series.SeparationCount + 1
+		months = 1
 	}
 
 	for i := 1; i < series.MaxOccurrences; i++ {
@@ -252,6 +262,7 @@ func mapToEvent(eventBody models.UpdateEventRequestBody) *models.Event {
 		Location:  eventBody.Location,
 		EventType: eventBody.EventType,
 
+		Host:         eventBody.Host,
 		RSVP:         eventBody.RSVP,
 		Waitlist:     eventBody.Waitlist,
 		Clubs:        eventBody.Clubs,

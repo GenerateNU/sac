@@ -11,8 +11,8 @@ import { Event } from '@/types/event';
 import { Tag } from '@/types/tag';
 import { uuid } from '@/types/uuid';
 
-const useEvent = (eventID: string): UseQueryResult<Event, Error> => {
-    return useQuery<Event, Error>({
+const useEvent = (eventID: string): UseQueryResult<Event[], Error> => {
+    return useQuery<Event[], Error>({
         queryKey: ['event', eventID],
         queryFn: () => {
             return fetchEvent(eventID);
@@ -47,4 +47,4 @@ const useEventHosts = (eventID: uuid): UseQueryResult<Club[], Error> => {
     });
 };
 
-export { useEventTags, useEventHosts, useEvents, useEvent };
+export { useEvent, useEvents, useEventTags, useEventHosts };
