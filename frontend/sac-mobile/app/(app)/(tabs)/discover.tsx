@@ -17,7 +17,7 @@ const Discover = () => {
                     router.push("/(app)/search/recents")
                     return undefined;
                 }}/>
-            <ScrollView className="flex flex-col mt-6">
+            <ScrollView className="flex flex-col mt-6" showsVerticalScrollIndicator={false}>
             <Text className="font-bold text-base mb-2">Top Searches</Text>
             {/* FIXME: this and discover clubs have the same layout, make like a 2d grid scroll view elem */}
             <ScrollView horizontal showsHorizontalScrollIndicator={false} className="overflow-visible mb-6" contentContainerStyle={{
@@ -70,11 +70,12 @@ const Discover = () => {
                 </TouchableOpacity>
             </View>
             
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} className="overflow-visible" contentContainerStyle={{
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} className="w-full overflow-visible" contentContainerStyle={{
                 display: "flex",
-                flexDirection: "column"
+                flexDirection: "column",
+                width: "100%"
             }}>
-                <HorizontalEventCard className="w-full mb-2"/>
+                <HorizontalEventCard className="w-fulll mb-2"/>
                 <HorizontalEventCard className="w-full mb-2"/>
                 <HorizontalEventCard className="w-full mb-2"/>
                 <HorizontalEventCard className="w-full mb-2"/>

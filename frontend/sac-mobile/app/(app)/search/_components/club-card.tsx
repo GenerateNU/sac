@@ -1,5 +1,6 @@
 import { useClubTags } from "@/hooks/use-club-tags";
 import { Club } from "@/types/club";
+import { router } from "expo-router";
 import { useState, useEffect } from "react";
 import { Pressable, ScrollView, Text, View, ViewProps } from "react-native";
 
@@ -24,7 +25,7 @@ export const ClubCard = (p: ClubCardProps) => {
     return (
         <Pressable
             onPress={() => {
-                console.log("TODO: Club page")
+                router.push(`/(app)/club/${p.club?.id}`)
             }}>
             <View {...p} className="elevation bg-white rounded-xl flex flex-col p-3">
                 <View className="w-full h-1/2 flex flex-row items-center">

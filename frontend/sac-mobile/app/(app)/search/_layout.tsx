@@ -4,7 +4,6 @@ import { Club } from '@/types/club';
 import { queryClubs } from '@/services/club';
 import DiscoverPage from '../(tabs)/discover';
 
-
 // @refresh reset
 const SearchLayout = () => {    
     return (

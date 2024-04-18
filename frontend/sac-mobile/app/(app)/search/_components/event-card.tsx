@@ -1,5 +1,6 @@
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState, useEffect } from "react";
-import { Button, Text, TouchableOpacity, View, ViewProps } from "react-native";
+import { Button, ScrollView, Text, TouchableOpacity, View, ViewProps } from "react-native";
 
 export interface EventCardProps extends ViewProps {
 
@@ -8,39 +9,47 @@ export interface EventCardProps extends ViewProps {
 export const EventCard = (p: EventCardProps) => {
     return (
         <View {...p} className="elevation bg-white rounded-xl flex flex-col justify-end p-3">
+            <View className="h-16 bg-zinc-200 rounded-xl mb-2"></View>
             <Text className="text-xs text-zinc-600">Club Name</Text>
             <Text className="text-base mb-4">Tryouts</Text>
             <Text className="text-base">8pm - 10:30pm</Text>
             <Text className="text-xs text-zinc-600">April 23, 2024</Text>
-            <Text className="text-xs text-zinc-600 mb-4">Hayden 010A</Text>
-
-            <TouchableOpacity className="bg-black w-full flex flex-row justify-center items-center h-7 rounded-md">
-                <Text className="text-white text-xs font-extralight">Register</Text>
-            </TouchableOpacity>
+            <View className="w-full flex flex-row justify-start">
+                <MaterialCommunityIcons className="w-4 h-4 text-zinc-600" name="map-marker"></MaterialCommunityIcons>
+                <Text className="text-xs text-zinc-600 ml-1 mb-4">Hayden 010A</Text>
+            </View>            
         </View>
     );
 }
 
 export const HorizontalEventCard = (p: EventCardProps) => {
+    const tagComponents = ["Free Food", "Open To All"].map((val, ind, arr) => {
+        return (
+            <View key={val} className="border-zinc-200 border py-1 px-2 rounded-full mr-1">
+                <Text className="text-base font-light">{val}</Text>
+            </View>
+        );
+    });
+
     return (
-        <View {...p} className="elevation bg-white rounded-xl flex flex-row p-3 justify-between items-end">
-            <View className="flex flex-col justify-end">
-                <Text className="text-xs text-zinc-600">Club Name</Text>
-                <Text className="text-base">Tryouts</Text>
+        <View {...p} className="elevation bg-white rounded-xl flex flex-row p-3 justify-start items-start">
+            <View className="w-20 h-20 bg-zinc-200  rounded-xl">
+                
+            </View>    
+            <View className="flex flex-grow flex-col justify-start ml-3">
+                <Text className="text-xs text-zinc-600">
+                    April 23, 2024 - 8-9pm
+                </Text>
+                <Text className="text-base text-black">
+                    Applications Close!
+                </Text>
+                <Text className="text-xs text-zinc-600">
+                    Hosted by NUImpact
+                </Text>
+                <ScrollView horizontal className="w-full flex flex-row mt-2" showsHorizontalScrollIndicator={false}>
+                    {tagComponents}
+                </ScrollView>
             </View>
-
-            <View className="flex flex-row items-end">
-                <View className="flex flex-col justify-end mr-3">
-                    <Text className="text-base">8pm - 10:30pm</Text>
-                    <Text className="text-xs text-zinc-600">April 23, 2024</Text>
-                    <Text className="text-xs text-zinc-600">Hayden 010A</Text>
-                </View>
-
-                <TouchableOpacity className="bg-black w-20 flex flex-row justify-center items-center h-7 rounded-md">
-                    <Text className="text-white text-xs font-extralight">Register</Text>
-                </TouchableOpacity>
-            </View>
-            
         </View>
     );
 }
