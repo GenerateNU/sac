@@ -81,8 +81,6 @@ func GetClubs(db *gorm.DB, pinecone search.SearchClientInterface, queryParams *m
 			}
 		}
 
-		print("Triple Double")
-
 		return clubsSorted, nil
 	}
 

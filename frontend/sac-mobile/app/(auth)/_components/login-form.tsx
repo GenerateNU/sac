@@ -1,11 +1,9 @@
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Alert, Text, View } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
-
-import { router } from 'expo-router';
-
-import { ZodError, z } from 'zod';
+import { z, ZodError } from 'zod';
 
 import { Button } from '@/components/button';
 import { Error } from '@/components/error';
@@ -19,9 +17,8 @@ type LoginFormData = {
 
 const loginSchema = z.object({
     email: z.string().email({ message: 'Invalid email' }),
-    password: z
-        .string()
-        //.min(8, { message: 'Password must be at least 8 characters long' })
+    password: z.string()
+    //.min(8, { message: 'Password must be at least 8 characters long' })
 });
 
 const LoginForm = () => {

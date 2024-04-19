@@ -7,7 +7,6 @@ import { Tag } from '@/types/tag';
 import { uuid } from '@/types/uuid';
 
 import { api } from './api';
-import { Tag } from '@/types/tag';
 
 /**
  * Fetches all clubs.
@@ -16,6 +15,7 @@ import { Tag } from '@/types/tag';
  * @throws Error if the clubs cannot be fetched
  * @see Club
  */
+// TODO: deal with pagination + deal with other params
 const fetchClubs = async (): Promise<Club[]> => {
     return api
         .get<Club[]>('/clubs')
@@ -115,7 +115,7 @@ const fetchClubTags = async (_clubID: uuid): Promise<Tag[]> => {
 
 /**
  * Fetch clubs according to a search query.
- * 
+ *
  * @param clubParams The parameters you'd like to search with.
  * @returns A Promise that resolves to the fetched clubs or rejects with an error
  * @throws Error if the clubs cannot be fetched
@@ -123,7 +123,7 @@ const fetchClubTags = async (_clubID: uuid): Promise<Tag[]> => {
  * @see Club[]
  */
 // TODO: deal with pagination + deal with other params
-export const queryClubs = async (queryString: string): Promise<Club[]> => {
+const queryClubs = async (queryString: string): Promise<Club[]> => {
     return api
         .get(`/clubs/`, {
             params: { search: queryString }
@@ -133,16 +133,6 @@ export const queryClubs = async (queryString: string): Promise<Club[]> => {
             console.error(error);
             throw new Error('Error querying clubs');
         });
-}
-
-/** Get the tags of a club */
-export const fetchClubTags = async (clubID: uuid): Promise<Tag[]> => {
-    return api
-        .get(`/clubs/${clubID}/tags`)
-        .then((response) => response.data as Tag[])
-        .catch((error) => {
-            console.error(error);
-            throw new Error('Error fetching contacts');
-        });
 };
-export { fetchClubContacts, fetchClub, fetchClubs, fetchClubTags };
+
+export { fetchClubContacts, fetchClub, fetchClubs, fetchClubTags, queryClubs };
