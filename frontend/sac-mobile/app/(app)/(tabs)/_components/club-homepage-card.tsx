@@ -1,11 +1,11 @@
 import React from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View, Image } from 'react-native';
 
 import { router } from 'expo-router';
 
 import EventDemoDay from '@/assets/images/svg/event-demo-day.svg';
 import { useClubTags } from '@/hooks/use-club';
-import { pluralize } from '@/lib/utils';
+import { pluralize, randomEventColorData } from '@/lib/utils';
 import { Club } from '@/types/club';
 
 import { HomePageTagList } from './event-homepage-card';
@@ -31,17 +31,22 @@ const ClubHomePageCard = ({
         return <Text>No tags found</Text>;
     }
 
+    const randomEventColor =
+        randomEventColorData[
+        Math.round(Math.random() * (randomEventColorData.length - 1))
+        ];
+
     return (
         <Pressable
             className="flex-row items-center px-4 py-5 bg-white shadow-sm rounded-xl"
             style={{ height: 'auto' }}
             onPress={() => router.push(`/club/${club.id}`)}
         >
-            <View className="flex-col items-start">
-                <View className="flex-row items-center">
-                    <EventDemoDay
-                        width={64}
-                        height={64}
+            <View className="flex-col items-start w-full gap-y-2">
+                <View className="flex-row items-center pb-2">
+                    <Image
+                        source={{ uri: randomEventColor.image }}
+                        style={{ width: 64, height: 64 }}
                         className="rounded-xl"
                     />
                     <View className="flex-col ml-5">

@@ -22,21 +22,21 @@ const HostNames = ({ eventID }: { eventID: uuid }) => {
     }
 
     return (
-        <View className="flex-row w-full">
-            <Text className="font-light tracking-tight text-black text-sm">
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', width: '100%' }}>
+            <Text style={{ fontSize: 14, fontWeight: '300', color: 'black' }}>
                 Hosted by{' '}
             </Text>
             {hosts.map((host, index) => (
                 <Fragment key={index}>
                     <Pressable
                         onPress={() => router.push(`/club/${host.id}`)}
-                        className={'font-bold'}
+                        style={{ flexDirection: 'row', flexWrap: 'wrap' }}
                     >
-                        <Text className="text-sm font-medium tracking-tight text-black">
+                        <Text style={{ fontSize: 14, fontWeight: 'bold', color: 'black' }}>
                             {host.name}
                         </Text>
                     </Pressable>
-                    <Text className="text-sm font-light tracking-tight text-gray-500">
+                    <Text style={{ fontSize: 14, fontWeight: '300', color: 'gray' }}>
                         {index < hosts.length - 2
                             ? ', '
                             : index === hosts.length - 2

@@ -15,6 +15,7 @@ import { isToday } from '@/lib/utils';
 import { Event } from '@/types/event';
 import { Tag } from '@/types/tag';
 import { uuid } from '@/types/uuid';
+import { randomEventColorData } from '@/lib/utils';
 
 type EventHomePageCardHorizontalProps = {
     event: Event;
@@ -34,6 +35,11 @@ const EventHomePageCardHorizontal = ({
         return <Text>Error: {error.message}</Text>;
     }
 
+    const randomEventColor =
+        randomEventColorData[
+        Math.round(Math.random() * (randomEventColorData.length - 1))
+        ];
+
     return (
         <Pressable
             className="flex-1 w-full bg-white shadow-sm rounded-xl"
@@ -41,10 +47,10 @@ const EventHomePageCardHorizontal = ({
         >
             <View className="flex-row">
                 <View className="px-3 my-5">
-                    <View className="flex-row items-start">
-                        <EventDemoDay
-                            width={98}
-                            height={98}
+                    <View className="flex-row items-start pb-2">
+                        <Image
+                            source={{ uri: randomEventColor.image }}
+                            style={{ width: 98, height: 98 }}
                             className="rounded-xl"
                         />
                         <View className="pl-[5%] flex-col gap-y-1 shrink pr-[3%]">
@@ -82,13 +88,13 @@ const EventHomePageCardHorizontal = ({
 const EventHomePageCard = ({ event }: { event: Event }) => {
     const { data: host, isLoading, error } = useClub(event.host);
 
-    const [asset, assetError] = useAssets(
-        require('@/assets/images/showcase.png')
-    );
+    // const [asset, assetError] = useAssets(
+    //     require('@/assets/images/showcase.png')
+    // );
 
-    if (assetError) {
-        return <Text>Error: {assetError.message}</Text>;
-    }
+    // if (assetError) {
+    //     return <Text>Error: {assetError.message}</Text>;
+    // }
 
     if (isLoading) {
         // skeleton loading
@@ -99,6 +105,12 @@ const EventHomePageCard = ({ event }: { event: Event }) => {
         return <Text>Error: {error.message}</Text>;
     }
 
+
+    const randomEventColor =
+        randomEventColorData[
+        Math.round(Math.random() * (randomEventColorData.length - 1))
+        ];
+
     return (
         <Pressable
             className="flex-1 mr-3 bg-white shadow-sm rounded-xl"
@@ -106,14 +118,12 @@ const EventHomePageCard = ({ event }: { event: Event }) => {
             onPress={() => router.push(`/event/${event.id}`)}
         >
             <View className="flex-col p-4 gap-y-2">
-                {asset && (
-                    <Image
-                        source={{ uri: asset[0].uri }}
-                        style={{ width: 142, height: 64 }}
-                        resizeMode="cover"
-                        className="rounded-xl"
-                    />
-                )}
+                <Image
+                    source={{ uri: randomEventColor.image }}
+                    style={{ width: 142, height: 64 }}
+                    resizeMode="cover"
+                    className="rounded-xl"
+                />
                 <View className=" flex-col gap-y-1 shrink pr-[3%]">
                     <Text
                         className="text-xs text-zinc-900 font-extralight"
@@ -154,8 +164,8 @@ const EventHomePageCard = ({ event }: { event: Event }) => {
                         </Text>
                     </View>
                 </View>
-            </View>
-        </Pressable>
+            </View >
+        </Pressable >
     );
 };
 
@@ -178,7 +188,7 @@ const HomePageTagList = ({ id, tagQueryResult }: HomePageTagListProps) => {
     return (
         <View className="flex flex-row flex-wrap max-w-[300] gap-y-2 mt-1">
             {tags &&
-                tags.map((tag) => (
+                tags.slice(0, 2).map((tag) => (
                     <View
                         className="flex flex-row px-3 py-1 mr-2 border border-gray-200 rounded-xl"
                         key={tag.id}

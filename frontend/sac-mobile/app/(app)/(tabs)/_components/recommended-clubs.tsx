@@ -23,11 +23,11 @@ const RecommendedClubs = () => {
     }
 
     const renderClubs = ({ item }: { item: Club }) => {
-        return (
-            <View className="flex-grow mr-3">
-                <ClubHomePageCard club={item} />
-            </View>
-        );
+        if (item.name === 'SAC') {
+            return null;
+        }
+
+        return <ClubHomePageCard club={item} />;
     };
 
     return (

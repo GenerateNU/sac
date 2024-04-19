@@ -26,7 +26,7 @@ type Event struct {
 
 	Name        string     `gorm:"type:varchar(255);not null" json:"name" validate:"required,max=255"`
 	Preview     string     `gorm:"type:varchar(255);not null" json:"preview" validate:"required,max=255"`
-	Content     string     `gorm:"type:varchar(255);not null" json:"content" validate:"required,max=255"`
+	Content     string     `gorm:"type:text;not null" json:"content" validate:"required,max=255"`
 	StartTime   time.Time  `gorm:"type:timestamptz;not null" json:"start_time" validate:"required,ltecsfield=EndTime"`
 	EndTime     time.Time  `gorm:"type:timestamptz;not null" json:"end_time" validate:"required,gtecsfield=StartTime"`
 	Location    string     `gorm:"type:varchar(255);not null" json:"location" validate:"required,max=255"`

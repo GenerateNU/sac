@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, Pressable, Text, View } from 'react-native';
 
 import { StatusBar } from 'expo-status-bar';
 
@@ -9,6 +9,10 @@ import { VerificationForm } from './_components/verification-form';
 
 const Verification = () => {
     return (
+        <Pressable
+            style={{ flex: 1 }}
+            onPress={() => Keyboard.dismiss()}
+        >
         <View className="h-full bg-white">
             <StatusBar style="dark" />
             <View className="px-[8%] pb-[9%]">
@@ -28,6 +32,7 @@ const Verification = () => {
                 <VerificationForm />
             </View>
         </View>
+        </Pressable>
     );
 };
 

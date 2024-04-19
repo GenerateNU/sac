@@ -11,33 +11,21 @@ const HomePage = () => {
     return (
         <>
             <StatusBar style="dark" />
-            <View className="px-[5%]">
-                <SectionList
-                    sections={[
-                        {
-                            title: 'Happening Today',
-                            data: [<HappeningToday />]
-                        },
-                        {
-                            title: 'Upcoming Events',
-                            data: [<UpcomingEvents />]
-                        },
-                        {
-                            title: 'Recommended Clubs',
-                            data: [<RecommendedClubs />]
-                        }
-                    ]}
-                    keyExtractor={(_, index) => index.toString()}
-                    renderItem={({ item }) => <View>{item}</View>}
-                    renderSectionHeader={({ section: { title } }) => (
-                        <Text className="text-xl my-3 font-light leading-relaxed text-zinc-900">
-                            {title}
-                        </Text>
-                    )}
-                    stickyHeaderHiddenOnScroll={true}
-                    stickySectionHeadersEnabled={false}
-                />
-            </View>
+            <SectionList
+                sections={[
+                    { title: 'Happening Today', data: [<HappeningToday />] },
+                    { title: 'Upcoming Events', data: [<UpcomingEvents />] },
+                    { title: 'Recommended Clubs', data: [<RecommendedClubs />] }
+                ]}
+                keyExtractor={(_, index) => index.toString()}
+                renderItem={({ item }) => <View>{item}</View>}
+                renderSectionHeader={({ section: { title } }) => (
+                    <Text className="text-[18px] font-bold px-[6%] py-[3%]">
+                        {title}
+                    </Text>
+                )}
+                stickyHeaderHiddenOnScroll={true}
+            />
         </>
     );
 };
