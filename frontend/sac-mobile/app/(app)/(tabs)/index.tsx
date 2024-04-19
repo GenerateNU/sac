@@ -1,52 +1,34 @@
 import React from 'react';
-import { SectionList, View, Text } from 'react-native';
+import { SectionList, Text, View } from 'react-native';
 
 import { StatusBar } from 'expo-status-bar';
 
-import { HomepageList } from '@/app/(app)/(tabs)/_components/homepage';
-import { useAuthStore } from '@/hooks/use-auth';
 import { HappeningToday } from './_components/happening-today';
 import { RecommendedClubs } from './_components/recommended-clubs';
-
+import { UpcomingEvents } from './_components/upcoming-events';
 
 const HomePage = () => {
-    const { user } = useAuthStore();
-
     return (
         <>
             <StatusBar style="dark" />
-            <View className="pt-[2%]">
-                <Text className="text-[18px] font-bold px-[6%]">Happening Today</Text>
-                <HappeningToday />
-            </View>
-            {/* <View className="pt-[2%]">
-                <HomepageList />
-            </View> */}
-            <View className="pt-[2%]">
-                <Text className="text-[18px] font-bold px-[6%]">Recommended Clubs</Text>
-                <RecommendedClubs />
-            </View>
-            {/* <SectionList
+            <SectionList
                 sections={[
+                    { title: 'Happening Today', data: [<HappeningToday />] },
+                    { title: 'Upcoming Events', data: [<UpcomingEvents />] },
                     {
-                        data: [<HappeningToday key={user?.id} />],
-                        title: 'Happening Today',
-                    },
-                    // {
-                    //     data: [<HomepageList key={user?.id} />],
-                    //     title: 'Your Upcoming Events'
-                    // },
-                    {
-                        data: [<RecommendedClubs key={user?.id} />],
-                        title: 'Recommended Clubs'
+                        title: 'Recommended Clubs',
+                        data: [<RecommendedClubs />]
                     }
                 ]}
                 keyExtractor={(_, index) => index.toString()}
-                renderSectionFooter={() => <View className="px-[6%] pb-[3%]" />}
-                renderSectionHeader={({ section: { title } }) => <View className="px-[6%] pt-[3%]"><Text className="text-[18px] font-bold">{title}</Text></View>}
-                stickySectionHeadersEnabled={false}
-                renderItem={({ item }) => item}
-            /> */}
+                renderItem={({ item }) => <View>{item}</View>}
+                renderSectionHeader={({ section: { title } }) => (
+                    <Text className="text-[18px] font-bold px-[6%] py-[3%]">
+                        {title}
+                    </Text>
+                )}
+                stickyHeaderHiddenOnScroll={true}
+            />
         </>
     );
 };

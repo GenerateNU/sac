@@ -66,6 +66,7 @@ const EventPage = () => {
     const [asset, assetError] = useAssets(
         require('@/assets/images/sandbox-header.png')
     );
+
     if (assetError) {
         console.error(assetError);
         return <Text>Error fetching event</Text>;

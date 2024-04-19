@@ -21,6 +21,18 @@ const cn = (...inputs: ClassValue[]) => {
 };
 
 /**
+ * Checks if a date is today
+ * @param date - the date to check
+ * @returns a boolean if the date is today
+ */
+const isToday = (date: Date) => {
+    const today = new Date();
+    const eventDate = new Date(date);
+
+    return today.toDateString() === eventDate.toDateString();
+};
+
+/**
  * Updates a string if it's plural or not
  * @param count - the number of items
  * @param singular - the singular form of the item
@@ -169,6 +181,7 @@ const isFAQ = (item: any): FAQ => {
 
 export {
     cn,
+    isToday,
     isClub,
     isEvent,
     isFAQ,

@@ -91,4 +91,3 @@ const FollowingHeader = ({ id }: { id: string }) => {
 };
 
 export { FollowingHeader };
-

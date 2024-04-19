@@ -1,28 +1,43 @@
-import { View, Text, ScrollView } from 'react-native'
-import React from 'react'
-import { Event } from '@/types/event'
-import { useEvents } from '@/hooks/use-event'
-import { EventHomePageCard } from './event-homepage-card'
+import React from 'react';
+import { Text, View } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
+
+import { useEvents } from '@/hooks/use-event';
+import { isToday } from '@/lib/utils';
+import { Event } from '@/types/event';
+
+import { EventHomePageCardHorizontal } from './event-homepage-card';
 
 const HappeningToday = () => {
-    const { data: events, isLoading, error } = useEvents()
+    const { data: events, isLoading, error } = useEvents();
 
     if (isLoading) {
-        return <Text>Loading...</Text>
+        return <Text>Loading...</Text>;
     }
 
     if (error) {
-        return <Text>Error: {error.message}</Text>
+        return <Text>Error: {error.message}</Text>;
     }
 
+    const renderEvents = ({ item }: { item: Event }) => {
+        if (isToday(item.start_time)) {
+            return <EventHomePageCardHorizontal event={item} />;
+        }
+
+        return null;
+    };
+
     return (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-[6%] pt-[3%]">
-            {events?.map((event: Event) => (
-                <EventHomePageCard event={event} key={event.id} />
-            ))}
-        </ScrollView>
-    )
+        <View style={{ paddingLeft: 20 }}>
+            <FlatList
+                data={events}
+                renderItem={renderEvents}
+                keyExtractor={(event) => event.id}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+            />
+        </View>
+    );
+};
 
-}
-
-export { HappeningToday }
+export { HappeningToday };
