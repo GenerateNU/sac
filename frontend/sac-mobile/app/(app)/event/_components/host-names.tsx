@@ -22,7 +22,7 @@ const HostNames = ({ eventID }: { eventID: uuid }) => {
     }
 
     return (
-        <View className="flex-row flex-wrap w-full">
+        <View className="flex-row w-full">
             <Text className="font-light tracking-tight text-black text-sm">
                 Hosted by{' '}
             </Text>

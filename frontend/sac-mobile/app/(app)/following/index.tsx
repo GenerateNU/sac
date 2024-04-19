@@ -38,6 +38,11 @@ const FollowedClubsPage = () => {
                 renderItem={renderFollowing}
                 keyExtractor={(item) => item.id.toString()}
                 scrollEnabled={following.length >= 7}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{
+                    gap: 15,
+                    width: '100%'
+                }}
             />
         </View>
     );

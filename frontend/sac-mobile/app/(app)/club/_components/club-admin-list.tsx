@@ -17,10 +17,11 @@ const ClubAdmins = ({}: { clubID?: string }) => {
 
     return (
         <View>
-            <Text className="text-lg font-semibold text-black">E-Board</Text>
+            <Text className="text-xl font-light leading-relaxed mb-2 text-zinc-900">
+                E-Board
+            </Text>
             <ScrollView
                 horizontal={true}
-                className="pb-[10%]"
                 showsHorizontalScrollIndicator={false}
             >
                 <View className="flex-row">
