@@ -1,6 +1,13 @@
-import { router } from 'expo-router';
 import React from 'react';
-import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import {
+    SafeAreaView,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View
+} from 'react-native';
+
+import { router } from 'expo-router';
 
 import { ClubCardNoTags } from '@/app/(app)/search/_components/club-card';
 import { HorizontalEventCard } from '@/app/(app)/search/_components/event-card';

@@ -55,7 +55,8 @@ const Layout = () => {
                 name="search"
                 options={{
                     headerShown: false
-                }}/>
+                }}
+            />
         </Stack>
     );
 };

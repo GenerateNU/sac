@@ -1,6 +1,13 @@
-import { router } from 'expo-router';
 import React from 'react';
-import { Pressable, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import {
+    Pressable,
+    SafeAreaView,
+    Text,
+    TouchableOpacity,
+    View
+} from 'react-native';
+
+import { router } from 'expo-router';
 
 import { SearchBar } from '@/app/(app)/search/_components/search-bar';
 import SearchIcon from '@/assets/images/svg/search.svg';
@@ -19,7 +26,7 @@ const Recents = () => {
                 }}
             >
                 <View className="w-full flex flex-row mb-4 items-center">
-                    <SearchIcon className="w-5 h-5 mr-2"></SearchIcon>
+                    <SearchIcon className="w-5 h-5 mr-2" />
                     <Text className="text-base flex-grow">{val}</Text>
                     <TouchableOpacity
                         onPress={(evt) => {

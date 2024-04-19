@@ -1,6 +1,7 @@
-import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { SafeAreaView, ScrollView, Text, View } from 'react-native';
+
+import { router, useLocalSearchParams } from 'expo-router';
 
 import { ClubCard } from '@/app/(app)/search/_components/club-card';
 import { SearchBar } from '@/app/(app)/search/_components/search-bar';

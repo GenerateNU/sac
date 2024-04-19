@@ -1,9 +1,11 @@
-import { router } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Alert, Text, View } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
-import { z, ZodError } from 'zod';
+
+import { router } from 'expo-router';
+
+import { ZodError, z } from 'zod';
 
 import { Button } from '@/components/button';
 import { Error } from '@/components/error';

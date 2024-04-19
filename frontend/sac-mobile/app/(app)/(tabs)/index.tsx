@@ -1,6 +1,7 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { SectionList, View } from 'react-native';
+
+import { StatusBar } from 'expo-status-bar';
 
 import { FollowingHeader } from '@/app/(app)/(tabs)/_components/following-header';
 import { HomepageList } from '@/app/(app)/(tabs)/_components/homepage';

@@ -10,7 +10,7 @@ export const EventCard = (p: EventCardProps) => {
             {...p}
             className="elevation bg-white rounded-xl flex flex-col justify-end p-3"
         >
-            <View className="h-16 bg-zinc-200 rounded-xl mb-2"></View>
+            <View className="h-16 bg-zinc-200 rounded-xl mb-2" />
             <Text className="text-xs text-zinc-600">Club Name</Text>
             <Text className="text-base mb-4">Tryouts</Text>
             <Text className="text-base">8pm - 10:30pm</Text>
@@ -19,7 +19,7 @@ export const EventCard = (p: EventCardProps) => {
                 <MaterialCommunityIcons
                     className="w-4 h-4 text-zinc-600"
                     name="map-marker"
-                ></MaterialCommunityIcons>
+                />
                 <Text className="text-xs text-zinc-600 ml-1 mb-4">
                     Hayden 010A
                 </Text>
@@ -45,7 +45,7 @@ export const HorizontalEventCard = (p: EventCardProps) => {
             {...p}
             className="elevation bg-white rounded-xl flex flex-row p-3 justify-start items-start"
         >
-            <View className="w-20 h-20 bg-zinc-200  rounded-xl"></View>
+            <View className="w-20 h-20 bg-zinc-200  rounded-xl" />
             <View className="flex flex-grow flex-col justify-start ml-3">
                 <Text className="text-xs text-zinc-600">
                     April 23, 2024 - 8-9pm

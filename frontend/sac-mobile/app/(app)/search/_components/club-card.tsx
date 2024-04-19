@@ -1,5 +1,6 @@
-import { router } from 'expo-router';
 import { Pressable, ScrollView, Text, View, ViewProps } from 'react-native';
+
+import { router } from 'expo-router';
 
 import { useClubTags } from '@/hooks/use-club-tags';
 import { Club } from '@/types/club';
@@ -44,7 +45,7 @@ export const ClubCard = (p: ClubCardProps) => {
                 className="elevation bg-white rounded-xl flex flex-col p-3"
             >
                 <View className="w-full h-1/2 flex flex-row items-center">
-                    <View className="w-12 h-12 rounded-full bg-zinc-200"></View>
+                    <View className="w-12 h-12 rounded-full bg-zinc-200" />
                     <Text className="ml-4 text-base">
                         {p.club ? p.club.name : 'Club'}
                     </Text>
@@ -71,7 +72,7 @@ export const ClubCardNoTags = (p: ClubCardProps) => {
             {...p}
             className="elevation bg-white rounded-xl flex flex-row p-3 items-center"
         >
-            <View className="w-12 h-12 rounded-full bg-zinc-200"></View>
+            <View className="w-12 h-12 rounded-full bg-zinc-200" />
             <Text className="ml-4 text-base">Club Name</Text>
         </View>
     );

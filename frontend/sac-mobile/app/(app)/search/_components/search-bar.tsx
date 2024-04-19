@@ -1,13 +1,21 @@
-import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import {
-    GestureResponderEvent, Pressable, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback,
-    View, ViewProps
+    GestureResponderEvent,
+    Pressable,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
+    ViewProps
 } from 'react-native';
+
+import { router } from 'expo-router';
+
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import SearchIcon from '@/assets/images/svg/search.svg';
 import { Button } from '@/components/button';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export interface SearchBarProps extends ViewProps {
     searchBoxEditable: boolean;
@@ -72,7 +80,7 @@ export const SearchBar = (p: SearchBarProps) => {
                     {...p}
                     className="flex-grow bg-white h-12 px-4 flex flex-row rounded-lg border-zinc-200 border-2 items-center"
                 >
-                    <SearchIcon className="w-8 h-8"></SearchIcon>
+                    <SearchIcon className="w-8 h-8" />
                     <TextInput
                         className={'ml-2 h-8 flex-grow'}
                         multiline={false}
