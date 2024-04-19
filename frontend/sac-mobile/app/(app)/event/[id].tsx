@@ -32,10 +32,12 @@ import { AllHosts } from './_components/all-hosts';
 import { RSVPBottomSheet } from './_components/rsvp-bottom-sheet';
 import { HeaderImage } from '@/components/entity-header';
 import { useAssets } from 'expo-asset';
+import { useAuthStore } from '@/hooks/use-auth';
 
 // TODO: handle link OR location
 const EventPage = () => {
     const { id } = useLocalSearchParams<{ id: string }>();
+    const { user } = useAuthStore();
 
     const { data: event, isLoading, error, refetch } = useEvent(id);
 
@@ -85,6 +87,7 @@ const EventPage = () => {
                         pan={pan}
                         type="event"
                         ref={ref}
+                        userID={user?.id ?? ''}
                     />
                     <View
                         style={{
