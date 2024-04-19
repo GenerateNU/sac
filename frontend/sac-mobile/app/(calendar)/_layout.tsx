@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-    Dimensions,
     Platform,
     SafeAreaView,
     StatusBar,
@@ -16,9 +15,6 @@ import HamburgerButton from '@/app/(calendar)/components/button';
 import { getMarkedDates } from '@/app/(calendar)/components/mock';
 
 // FIXME FIXME FIXME FIXME: everything needs to be redone/checked spacing-wise. lots of errors
-
-const EXPANDED_HEIGHT = Dimensions.get('screen').height * 0.4;
-const SHRUNK_HEIGHT = Dimensions.get('screen').height * 0.2;
 
 // @refresh reset
 const CalendarView = () => {

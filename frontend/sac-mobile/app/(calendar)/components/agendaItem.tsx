@@ -21,7 +21,7 @@ const AgendaItem = (props: ItemProps) => {
 
     const itemPressed = useCallback(() => {
         Alert.alert(item.title);
-    }, []);
+    }, [item.title]);
 
     if (!item) {
         return (

@@ -3,11 +3,9 @@ import { AgendaList } from 'react-native-calendars';
 
 import AgendaItem from '@/app/(calendar)/components/agendaItem';
 
-import { agendaItems, getDates } from './mock';
+import { agendaItems } from './mock';
 
 const Agenda = () => {
-    const dates = getDates(2024, 4);
-
     const renderItem = useCallback(({ item }: any) => {
         return <AgendaItem item={item} />;
     }, []);
