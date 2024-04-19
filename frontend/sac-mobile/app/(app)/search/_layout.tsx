@@ -1,23 +1,20 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
-import { Club } from '@/types/club';
-import { queryClubs } from '@/services/club';
-import DiscoverPage from '../(tabs)/discover';
+import React from 'react';
 
 // @refresh reset
-const SearchLayout = () => {    
+const SearchLayout = () => {
     return (
         <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen 
-                name="results/[query]"
-                options={{headerShown: false}} />
             <Stack.Screen
-                name="recents"
-                options={{headerShown: false}} />
+                name="results/[query]"
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen name="recents" options={{ headerShown: false }} />
             <Stack.Screen
                 name="results/expanded/[query]"
-                options={{headerShown: false}} />
-        </Stack>        
+                options={{ headerShown: false }}
+            />
+        </Stack>
     );
 };
 
