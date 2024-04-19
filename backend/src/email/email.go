@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/GenerateNU/sac/backend/src/config"
+	"github.com/GenerateNU/sac/backend/src/constants"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/afex/hystrix-go/hystrix"
 	"github.com/resend/resend-go/v2"
@@ -37,7 +38,7 @@ func NewResendClient(settings config.ResendSettings, dev bool) EmailClientInterf
 
 func send(email, subject, html string, client *resend.Client) *errors.Error {
 	params := &resend.SendEmailRequest{
-		From:    "onboarding@resend.dev", // TODO: get domain
+		From:    "onboarding" + constants.DOMAIN,
 		To:      []string{email},
 		Subject: subject,
 		Html:    html,

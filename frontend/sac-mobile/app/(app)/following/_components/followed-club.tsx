@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
-
-import { router } from 'expo-router';
+import { Text, View } from 'react-native';
 
 import { Button } from '@/components/button';
 import { useAuthStore } from '@/hooks/use-auth';
@@ -36,16 +34,22 @@ const FollowedClub = ({ club }: { club: Club }) => {
     };
 
     return (
-        <View className="flex-row items-center w-full px-[4%] justify-between my-3">
-            <Pressable
-                className="flex-row items-center"
-                onPress={() => router.push(`/club/${club.id}`)}
-            >
-                <View className="w-16 h-16 bg-gray-400 rounded-full" />
-                <Text className="pl-[4%] font-bold text-lg">{club.name}</Text>
-            </Pressable>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <View style={{ width: 50 }}>
+                <View
+                    style={{
+                        backgroundColor: 'black',
+                        height: 50,
+                        width: 50,
+                        borderRadius: 25
+                    }}
+                />
+            </View>
+            <View style={{ marginRight: 8, width: 200 }}>
+                <Text numberOfLines={6}>{club.name}</Text>
+            </View>
             <Button
-                className={`h-8 rounded-lg px-7 py-[1%] ${buttonClicked === 'Following' ? 'bg-gray-300 text-black text-md' : 'bg-gray-500 text-white text-md'}`}
+                className={`h-8 rounded-lg px-7 py-[1%] ${buttonClicked === 'Following' ? 'bg-gray-500 text-black text-md' : 'bg-gray-500 text-white text-md'}`}
                 onPress={handlePressFollow}
                 variant={'none'}
             >
