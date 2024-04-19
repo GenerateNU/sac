@@ -1,6 +1,5 @@
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-
 import { router } from 'expo-router';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 import { FaqCard } from '@/components/faqCard';
 import { useClubFAQs } from '@/hooks/use-club';
@@ -34,14 +33,13 @@ const FAQs = ({}: { clubID?: string }) => {
                 </TouchableOpacity>
             </View>
             <ScrollView className="pt-[2%]" horizontal={true}>
-                {faqs &&
-                    faqs.map((faq, index) => (
-                        <FaqCard
-                            key={index}
-                            question={faq.question}
-                            answer={faq.answer}
-                        />
-                    ))}
+                {faqs.map((faq) => (
+                    <FaqCard
+                        key={faq.id}
+                        question={faq.question}
+                        answer={faq.answer}
+                    />
+                ))}
             </ScrollView>
         </View>
     );
