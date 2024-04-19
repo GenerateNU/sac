@@ -4,7 +4,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 import { useFonts } from 'expo-font';
-import { Slot, useRouter, useSegments } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 
@@ -32,7 +32,7 @@ export const queryClient = new QueryClient({
 });
 
 const InitalLayout = () => {
-    const { isLoggedIn, fetchCache, isVerified } = useAuthStore();
+    const { isLoggedIn, fetchCache, isVerified, user } = useAuthStore();
     const router = useRouter();
     const segments = useSegments();
 
@@ -53,7 +53,7 @@ const InitalLayout = () => {
             }
         };
 
-        console.log({ isLoggedIn, isVerified });
+        console.log({ isLoggedIn, isVerified, user });
 
         handleNavigation();
 
@@ -72,7 +72,15 @@ const InitalLayout = () => {
             </View>
         );
 
-    return <Slot />;
+    return (
+        <>
+            <StatusBar style="light" />
+            <Stack>
+                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                <Stack.Screen name="(app)" options={{ headerShown: false }} />
+            </Stack>
+        </>
+    );
 };
 
 const RootLayout = () => {
@@ -91,12 +99,12 @@ const RootLayout = () => {
     if (!loaded) return null;
 
     return (
-        <QueryClientProvider client={queryClient}>
-            <GestureHandlerRootView style={{ flex: 1 }}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <QueryClientProvider client={queryClient}>
                 <StatusBar style="light" />
                 <InitalLayout />
-            </GestureHandlerRootView>
-        </QueryClientProvider>
+            </QueryClientProvider>
+        </GestureHandlerRootView>
     );
 };
 

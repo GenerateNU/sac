@@ -316,3 +316,25 @@ func (e *EventController) GetHostsByEventID(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusOK).JSON(hosts)
 }
+
+// GetTagsByEventID godoc
+//
+// @Summary		Retrieve all tags by event
+// @Description	Retrieves all tags associated with an event
+// @ID			get-tags-by-event
+// @Tags      	event
+// @Produce		json
+// @Param		eventID	path	string	true	"Event ID"
+// @Success		200	  {object}	    []models.Tag
+// @Failure     400   {object}      errors.Error
+// @Failure     404   {object}      errors.Error
+// @Failure     500   {object}      errors.Error
+// @Router		/events/{eventID}/tags  [get]
+func (e *EventController) GetTagsByEventID(c *fiber.Ctx) error {
+	tags, err := e.eventService.GetTagsByEventID(c.Params("eventID"))
+	if err != nil {
+		return err.FiberError(c)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(tags)
+}

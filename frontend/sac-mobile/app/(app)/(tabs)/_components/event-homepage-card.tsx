@@ -1,23 +1,27 @@
 import React from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
 import { router } from 'expo-router';
 
+import EventDemoDay from '@/assets/images/svg/event-demo-day.svg';
 import Pin from '@/assets/images/svg/pin.svg';
 import Time from '@/assets/images/svg/time.svg';
-import { useEventHosts } from '@/hooks/use-event';
+import { useClub } from '@/hooks/use-club';
 import { Event } from '@/types/event';
 
 const EventHomePageCard = ({ event }: { event: Event }) => {
-    const { data: hosts, isLoading, error } = useEventHosts(event.id);
+    const { data: host, isLoading, error } = useClub(event.host);
 
     if (isLoading) {
-        return <Text>Loading...</Text>;
+        // skeleton loading
+        <ActivityIndicator size={'large'} />;
     }
 
     if (error) {
         return <Text>Error: {error.message}</Text>;
     }
+
+    console.log('event', event);
 
     return (
         <Pressable
@@ -27,10 +31,14 @@ const EventHomePageCard = ({ event }: { event: Event }) => {
             <View>
                 <View className="px-[5%] pt-[5%] pb-[4%]">
                     <View className="flex-row items-center">
-                        <View className="w-16 h-16 bg-gray-300 rounded-xl" />
+                        <EventDemoDay
+                            width={64}
+                            height={64}
+                            className="rounded-xl"
+                        />
                         <View className="pl-[5%] flex-col shrink pr-[3%]">
                             <Text className="text-lg font-bold leading-5">
-                                {hosts?.[0].name ?? 'No Hosts'}
+                                {host?.name ?? 'No Hosts'}
                             </Text>
                             <Text className="text-sm font-semibold leading-5">
                                 {event.name}

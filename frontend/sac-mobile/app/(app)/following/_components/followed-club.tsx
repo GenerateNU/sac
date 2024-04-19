@@ -7,53 +7,36 @@ import { Button } from '@/components/button';
 import { useAuthStore } from '@/hooks/use-auth';
 import {
     useCreateClubFollowing,
-    useDeleteClubFollowing,
-    useUserFollowing
+    useDeleteClubFollowing
 } from '@/hooks/use-user';
 import { Club } from '@/types/club';
 
 const FollowedClub = ({ club }: { club: Club }) => {
     const { user } = useAuthStore();
 
-    const {
-        data: following,
-        isLoading,
-        error
-    } = useUserFollowing(user?.id || '');
-
     const followClub = useCreateClubFollowing();
     const unfollowClub = useDeleteClubFollowing();
 
     const [buttonClicked, setButtonClicked] = useState('Following');
 
-    const handlePressFollow = () => {
-        if (following?.some((c) => c.id === club.id)) {
-            console.log('Follow Club');
-            followClub.mutateAsync({
-                userId: user?.id || '',
-                clubId: club.id
-            });
-            setButtonClicked('Following');
-        } else {
-            console.log('Unfollow Club');
-            unfollowClub.mutateAsync({
+    const handlePressFollow = async () => {
+        if (buttonClicked === 'Following') {
+            await unfollowClub.mutateAsync({
                 userId: user?.id || '',
                 clubId: club.id
             });
             setButtonClicked('Follow');
+        } else {
+            await followClub.mutateAsync({
+                userId: user?.id || '',
+                clubId: club.id
+            });
+            setButtonClicked('Following');
         }
     };
 
-    if (isLoading) {
-        return <Text>Loading...</Text>;
-    }
-
-    if (error) {
-        return <Text>Error: {error.message}</Text>;
-    }
-
     return (
-        <View className="flex-row items-center w-full px-[4%] justify-between">
+        <View className="flex-row items-center w-full px-[4%] justify-between my-3">
             <Pressable
                 className="flex-row items-center"
                 onPress={() => router.push(`/club/${club.id}`)}
@@ -64,6 +47,7 @@ const FollowedClub = ({ club }: { club: Club }) => {
             <Button
                 className={`h-8 rounded-lg px-7 py-[1%] ${buttonClicked === 'Following' ? 'bg-gray-300 text-black text-md' : 'bg-gray-500 text-white text-md'}`}
                 onPress={handlePressFollow}
+                variant={'none'}
             >
                 {buttonClicked === 'Following' ? 'Following' : 'Follow'}
             </Button>

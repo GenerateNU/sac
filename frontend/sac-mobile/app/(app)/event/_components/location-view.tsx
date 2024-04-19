@@ -1,60 +1,49 @@
 import React from 'react';
-import { Linking, Text, TouchableOpacity, View } from 'react-native';
-import MapView from 'react-native-maps';
+import { Text, View } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 import { createOpenLink } from 'react-native-open-maps';
-
-import { Button } from '@/components/button';
 
 type LocationViewProps = {
     location: string;
-    meetingLink?: string;
 };
 
-const LocationView = ({ location, meetingLink }: LocationViewProps) => {
+const LocationView = ({ location }: LocationViewProps) => {
+    const [city, rest] = location.split(/,(.+)/);
     const coordinates = { latitude: 42.3393326, longitude: -71.0869942 };
     const openMap = createOpenLink({ ...coordinates });
 
     return (
-        <>
-            <View className="inline-flex flex-row items-center justify-between">
-                <Text className="text-2xl font-normal leading-relaxed text-zinc-900">
-                    Location
+        <View className="flex flex-col gap-2">
+            <View className="inline-flex flex-col justify-between gap-y-2">
+                <Text className="text-xl font-light leading-relaxed text-zinc-900">
+                    How to get there
                 </Text>
-                <Button onPress={openMap} size={'default'} variant={'default'}>
-                    <Text>Open in Maps</Text>
-                </Button>
+                <Text className="text-sm font-medium leading-relaxed text-zinc-900">
+                    {city},<Text className="font-normal">{rest}</Text>
+                </Text>
             </View>
-
-            <Text className="text-base font-light tracking-tight text-zinc-900">
-                {location}
-            </Text>
-
-            {meetingLink && (
-                <TouchableOpacity
-                    onPress={() =>
-                        Linking.openURL(meetingLink!).catch((err) =>
-                            console.error('An error occurred', err)
-                        )
-                    }
-                >
-                    <Text className="text-blue-500 visited:text-purple-500">
-                        {meetingLink}
-                    </Text>
-                </TouchableOpacity>
-            )}
-
-            <View className="w-full mt-4 overflow-hidden border-2 rounded-xl border-zinc-300">
+            <View className="rounded-xl overflow-hidden border-[1px] border-gray-200 shadow-2xl">
                 <MapView
-                    onPress={openMap}
+                    onPress={() => openMap()}
                     style={{ width: '100%', height: 200 }}
+                    cameraZoomRange={{
+                        minCenterCoordinateDistance: 150,
+                        maxCenterCoordinateDistance: 200
+                    }}
                     initialRegion={{
                         ...coordinates,
                         latitudeDelta: 0.0922,
                         longitudeDelta: 0.0421
                     }}
-                />
+                >
+                    <Marker
+                        coordinate={{
+                            ...coordinates
+                        }}
+                    />
+                </MapView>
             </View>
-        </>
+        </View>
     );
 };
 

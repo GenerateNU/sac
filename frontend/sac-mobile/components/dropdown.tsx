@@ -21,7 +21,7 @@ interface DropdownProps {
 
 const DropdownComponent = (props: DropdownProps) => {
     const [isFocus, setIsFocus] = useState(false);
-    const borderColor = props.error ? 'red' : 'black';
+    const borderColor = props.error ? 'red' : '#6E757E';
     const borderWidth = props.error ? 1 : 0.5;
 
     const styles = StyleSheet.create({

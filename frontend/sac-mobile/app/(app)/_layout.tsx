@@ -15,13 +15,12 @@ const Layout = () => {
             <Stack.Screen
                 name="event/[id]"
                 options={{
+                    headerTitle: '',
+                    headerTransparent: true,
                     headerShown: true,
                     headerTitleStyle: {
                         color: 'white'
                     },
-                    headerBackground: () => (
-                        <View className="h-full bg-gray-600" />
-                    ),
                     headerLeft: () => <LeftArrow />,
                     headerRight: () => <EventKabab />
                 }}

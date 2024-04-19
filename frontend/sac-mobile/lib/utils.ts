@@ -6,8 +6,8 @@ import clsx, { ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 import { majorArr } from '@/lib/const';
-import { categories } from '@/lib/const';
 import { Tokens } from '@/types/auth';
+import { Club } from '@/types/club';
 import { FAQ } from '@/types/faq';
 import { Item } from '@/types/item';
 
@@ -52,17 +52,6 @@ export const major = () => {
     return majors;
 };
 
-/**
- * Combine all tags of different categories into one for All tab
- * @return a list of tags
- */
-export const allTags = () => {
-    let allTags: string[] = [];
-    for (let i = 0; i < categories.length; i++) {
-        allTags = allTags.concat(categories[i].tags);
-    }
-    return allTags;
-};
 /**
  * Defines the token cache object.
  * This object is used to interact with the SecureStore API.
@@ -147,17 +136,15 @@ const extractTokens = (
     return { accessToken, refreshToken };
 };
 
-const isClub = (item: any) => {
+const isClub = (item: any): Club => {
     return typeof item === 'object' && item.hasOwnProperty('is_recruiting');
 };
 
-const isEvent = (item: any) => {
+const isEvent = (item: any): Event => {
     return (
         typeof item === 'object' &&
-        item.hasOwnProperty('name') &&
         item.hasOwnProperty('start_time') &&
-        typeof item.start_time === 'object' &&
-        item.start_time instanceof Date
+        item.hasOwnProperty('end_time')
     );
 };
 

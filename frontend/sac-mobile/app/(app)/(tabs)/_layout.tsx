@@ -37,6 +37,7 @@ const Layout = () => {
                     tabBarIcon: ({ focused }) =>
                         focused ? <HomeSelectedIcon /> : <HomeIcon />
                 }}
+                redirect={!isLoggedIn}
             />
             <Tabs.Screen
                 name="discover"
@@ -46,6 +47,7 @@ const Layout = () => {
                     tabBarIcon: ({ focused }) =>
                         focused ? <SearchSelectedIcon /> : <SearchIcon />
                 }}
+                redirect={!isLoggedIn}
             />
             <Tabs.Screen
                 name="profile"

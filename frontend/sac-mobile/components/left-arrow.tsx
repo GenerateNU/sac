@@ -4,13 +4,10 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { Button } from '@/components/button';
 
-const LeftArrow = () => {
+const LeftArrow = ({ onPress }: { onPress?: () => void }) => {
     return (
         <Button
-            onPress={() => {
-                console.log('Back Button Pressed');
-                router.back();
-            }}
+            onPress={onPress || (() => router.back())}
             size={'icon'}
             variant={'icon'}
             className="flex items-center justify-center bg-gray-300 rounded-full"

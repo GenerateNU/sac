@@ -33,19 +33,20 @@ const RSVPBottomSheet = forwardRef<Ref>((_, ref) => {
             backgroundStyle={{ backgroundColor: 'white' }}
             backdropComponent={renderBackdrop}
         >
-            <View className="items-center justify-center p-4">
-                <Text className="text-2xl font-bold">Save Event</Text>
-                <Text className="mt-2 text-lg">
-                    By saving this event, you are automatically signed up for
-                    notifications and this event will be added to your calendar.
+            <View className="justify-center p-5">
+                <Text className="text-xl font-bold">Register for Event</Text>
+                <Text className="mt-2 text-base text-gray-500">
+                    By registering for this event, you are automatically signed
+                    up for notifications and this event will be added to your
+                    calendar.
                 </Text>
-                <View className="w-full mt-4">
+                <View className="w-full mt-10">
                     <Button
                         className="rounded-xl"
                         onPress={handleClosePress}
                         size={'screenwide'}
                     >
-                        Save Event
+                        Register
                     </Button>
                 </View>
             </View>

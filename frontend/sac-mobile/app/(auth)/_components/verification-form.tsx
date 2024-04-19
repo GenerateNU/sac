@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
 
@@ -21,11 +21,7 @@ const VerificationForm = () => {
     const { user, completeVerification } = useAuthStore();
     const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        console.log('[verification-form]', { user });
-    }, [user]);
-
-    const onVerify = async (code: string) => {
+    const onPressVerify = async (code: string) => {
         setLoading(true);
 
         try {
@@ -54,7 +50,7 @@ const VerificationForm = () => {
     return (
         <>
             {loading && <Spinner visible={loading} />}
-            <Code onCompleted={onVerify} />
+            <Code onCompleted={onPressVerify} />
             <View className="mt-[5%] flex-row justify-center">
                 <Text className="text-gray-500 text-md">
                     Didn't receive the code?
