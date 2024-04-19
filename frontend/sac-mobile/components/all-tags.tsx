@@ -1,11 +1,11 @@
 import { FlatList, Text } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 
 import { UseQueryResult } from '@tanstack/react-query';
 
 import { Tag as TagComponent } from '@/components/tag';
 import { Tag } from '@/types/tag';
 import { uuid } from '@/types/uuid';
-import { ScrollView } from 'react-native-gesture-handler';
 
 type TagListProps = {
     id: uuid;
@@ -29,9 +29,7 @@ const TagList = ({ tagQueryResult, id, color }: TagListProps) => {
     }
 
     return (
-        <ScrollView
-            horizontal
-        >
+        <ScrollView horizontal>
             <FlatList
                 data={tags}
                 renderItem={({ item }) => (
@@ -40,7 +38,7 @@ const TagList = ({ tagQueryResult, id, color }: TagListProps) => {
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={{
                     flexDirection: 'row',
-                    gap: 10,
+                    gap: 10
                 }}
             />
         </ScrollView>
