@@ -1,10 +1,10 @@
 import { Button } from '@/components/button';
 import { EventCard, EventCardProps } from '@/components/eventCard';
-import { FaqCard, FaqCardProps } from '@/components/faqCard';
 import { useEvents } from '@/hooks/use-events';
 import { ScrollView, Text, View } from 'react-native';
 
-const Events = () => {
+const Events = ({ clubID }: { clubID: string }) => {
+// const { data: events, isLoading, error } = useEvents(clubID);
     const { data: events, isLoading, error } = useEvents("sac"); // TODO: add limits and filters
 
     if (isLoading) {
@@ -25,12 +25,11 @@ const Events = () => {
                 <View className="flex-col">
                     <View className='px-2'>
                         {events && events.slice(0, 2).map((event: EventCardProps, index) => (
-                            <>
+                            <View key={index}>
                                 <Text className='text-neutral-600 text-[15px] font-medium'>{event.date}</Text>
                                 <EventCard {...event} />
-                            </>
+                            </View>
                         ))}
-                        <Button className='bg-[#f8c45c]' variant="secondary" size="screenwide">View All Events</Button>
                     </View>
                 </View>
             </ScrollView>

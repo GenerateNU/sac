@@ -73,7 +73,7 @@ export const useClubFAQs = (clubID: uuid): UseQueryResult<Faq[], Error> => {
     });
 };
 
-export const useFAQ = (faqID: uuid): UseQueryResult<Faq, Error> => {
+export const useClubFAQ = (faqID: uuid): UseQueryResult<Faq, Error> => {
     return useQuery<Faq, Error>({
         queryKey: ['faq', faqID],
         queryFn: async (): Promise<Faq> => {

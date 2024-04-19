@@ -23,7 +23,6 @@ import { Description } from '@/components/description';
 import { Title } from '@/components/title';
 import { useEvent, useEventTags } from '@/hooks/use-event';
 
-import { HeaderImage } from '../../../components/entity-header';
 import { EventDate } from './_components/event-date';
 import { EventLocation } from './_components/event-location';
 import { EventTime } from './_components/event-time';
@@ -63,7 +62,6 @@ const EventPage = () => {
 
     return (
         <>
-            <Stack.Screen options={{ title: `${event[0].name}` }} />
             <StatusBar style="light" />
             <ScrollView
                 refreshControl={
@@ -114,7 +112,7 @@ const EventPage = () => {
                                 <Title title={event[0].name} />
                                 <HostNames eventID={event[0].id} />
                             </View>
-                            <TagList id={event[0].id} />
+                            <TagList id={event[0].id} tagQueryResult={useEventTags} />
                         </View>
                         <View>
                             <View className="flex-row justify-between pb-5">

@@ -24,7 +24,7 @@ const EventDate = ({ startTime }: EventDateProps) => {
 
     return (
         <View
-            className="pt-3 pb-3 bg-white rounded-lg shadow-sm col-span-1"
+            className="col-span-1 pt-3 pb-3 bg-white rounded-lg shadow-sm"
             style={{ width: '32%' }}
         >
             <View className="flex-col items-center justify-center gap-y-2">

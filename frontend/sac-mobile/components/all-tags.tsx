@@ -8,7 +8,6 @@ import { Tag } from '@/types/tag';
 type TagListProps = {
     id: uuid
     tagQueryResult: (id: uuid) => UseQueryResult<Tag[], Error>
-
 };
 
 const TagList = ({ tagQueryResult, id }: TagListProps) => {
