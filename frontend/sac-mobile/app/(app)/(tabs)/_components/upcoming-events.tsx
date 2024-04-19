@@ -28,7 +28,7 @@ const UpcomingEvents = () => {
     };
 
     return (
-        <View style={{ paddingLeft: 20 }}>
+        <View>
             <FlatList
                 data={events}
                 renderItem={renderEvents}

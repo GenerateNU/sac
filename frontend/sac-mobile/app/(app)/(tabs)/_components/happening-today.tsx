@@ -21,14 +21,18 @@ const HappeningToday = () => {
 
     const renderEvents = ({ item }: { item: Event }) => {
         if (isToday(item.start_time)) {
-            return <EventHomePageCardHorizontal event={item} />;
+            return (
+                <View className='flex-grow mr-3'>
+                    <EventHomePageCardHorizontal event={item} />
+                </View>
+            );
         }
 
         return null;
     };
 
     return (
-        <View style={{ paddingLeft: 20 }}>
+        <View className='w-full'>
             <FlatList
                 data={events}
                 renderItem={renderEvents}

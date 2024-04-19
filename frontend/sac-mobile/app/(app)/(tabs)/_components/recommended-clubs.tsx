@@ -23,11 +23,15 @@ const RecommendedClubs = () => {
     }
 
     const renderClubs = ({ item }: { item: Club }) => {
-        return <ClubHomePageCard club={item} />;
+        return (
+            <View className='flex-grow mr-3'>
+                <ClubHomePageCard club={item} />
+            </View>
+        )
     };
 
     return (
-        <View style={{ paddingLeft: 20, flex: 1 }}>
+        <View style={{ flex: 1 }}>
             <FlatList
                 data={clubs}
                 renderItem={renderClubs}
