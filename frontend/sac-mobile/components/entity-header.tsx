@@ -1,9 +1,14 @@
-import React, { forwardRef } from 'react';
-import { Animated, Image, Text, View } from 'react-native';
+import React, { forwardRef, useEffect, useState } from 'react';
+import { Animated, Image, View } from 'react-native';
 
 import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet';
 
 import { Button } from '@/components/button';
+import {
+    useCreateClubFollowing,
+    useDeleteClubFollowing,
+    useUserFollowing
+} from '@/hooks/use-user';
 
 const HEADER_HEIGHT = 175;
 const LOGO_HEIGHT = 100;
@@ -22,49 +27,49 @@ type HeaderImageProps = {
 type Ref = BottomSheet;
 
 const HeaderImage = forwardRef<Ref, HeaderImageProps>(
-    ({ image, logo, pan, type }, ref) => {
+    ({ image, logo, pan, type, userID, clubID }, ref) => {
+        const followClub = useCreateClubFollowing();
+        const unfollowClub = useDeleteClubFollowing();
+        const userFollowing = useUserFollowing(userID);
+        const [buttonClicked, setButtonClicked] = useState(false);
+
+        // Effects
+        useEffect(() => {
+            if (userFollowing.data) {
+                const isFollowing = userFollowing.data
+                    .map((club) => club.id)
+                    .includes(clubID || '');
+                setButtonClicked(isFollowing);
+            }
+        }, [userFollowing.data, clubID]);
+
+        // Event Handlers
+        const handlePressFollow = async () => {
+            if (buttonClicked) {
+                await unfollowClub.mutateAsync({
+                    userID: userID,
+                    clubID: clubID || ''
+                });
+            } else {
+                await followClub.mutateAsync({
+                    userID: userID,
+                    clubID: clubID || ''
+                });
+            }
+            // Force a refetch of the user following data
+            userFollowing.refetch();
+            setButtonClicked(!buttonClicked);
+        };
+
+        const buttonOnPress = {
+            club: {
+                follow: handlePressFollow
+            }
+        };
+
         if (!ref) {
             return null;
         }
-
-        // Causing a rerender issue
-        // const followClub = useCreateClubFollowing();
-        // const unfollowClub = useDeleteClubFollowing();
-        // const userFollowing = useUserFollowing(userID);
-
-        // const isFollowing = userFollowing.data
-        //     ?.map((club) => club.id)
-        //     .includes(clubID || '');
-        // const [buttonClicked, setButtonClicked] = useState(
-        //     isFollowing ? 'Following' : 'Follow'
-        // );
-
-        // const handlePressFollow = async () => {
-        //     if (buttonClicked === 'Following') {
-        //         await unfollowClub.mutateAsync({
-        //             userID: userID,
-        //             clubID: clubID || ''
-        //         });
-
-        //         // force a refetch of the user following data
-        //         userFollowing.refetch();
-        //         setButtonClicked('Follow');
-        //     } else {
-        //         await followClub.mutateAsync({
-        //             userID: userID,
-        //             clubID: clubID || ''
-        //         });
-
-        //         // force a refetch of the user following data
-        //         userFollowing.refetch();
-        //         setButtonClicked('Following');
-        //     }
-        // };
-        const buttonOnPress = {
-            club: {
-                follow: () => {}
-            }
-        };
 
         return (
             <View
@@ -122,10 +127,7 @@ const HeaderImage = forwardRef<Ref, HeaderImageProps>(
                                     variant={'default'}
                                     onPress={buttonOnPress[type].follow}
                                 >
-                                    <Text> Follow </Text>
-                                    {/* {buttonClicked === 'Following'
-                                        ? 'Following'
-                                        : 'Follow'} */}
+                                    {buttonClicked ? 'Following' : 'Follow'}
                                 </Button>
                             </View>
                         </View>
