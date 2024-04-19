@@ -1,4 +1,5 @@
 import { FlatList, Text } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 
 import { UseQueryResult } from '@tanstack/react-query';
 
@@ -28,18 +29,19 @@ const TagList = ({ tagQueryResult, id, color }: TagListProps) => {
     }
 
     return (
-        <FlatList
-            data={tags}
-            renderItem={({ item }) => (
-                <TagComponent color={color} key={item.id} tag={item} />
-            )}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={{
-                flexDirection: 'row',
-                flexWrap: 'wrap',
-                gap: 10
-            }}
-        />
+        <ScrollView horizontal>
+            <FlatList
+                data={tags}
+                renderItem={({ item }) => (
+                    <TagComponent color={color} key={item.id} tag={item} />
+                )}
+                keyExtractor={(item) => item.id}
+                contentContainerStyle={{
+                    flexDirection: 'row',
+                    gap: 10
+                }}
+            />
+        </ScrollView>
     );
 };
 

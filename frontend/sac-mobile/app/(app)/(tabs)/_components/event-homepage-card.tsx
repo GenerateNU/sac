@@ -112,11 +112,11 @@ const EventHomePageCard = ({ event }: { event: Event }) => {
             onPress={() => router.push(`/event/${event.id}`)}
         >
             <View className="flex-col p-4 gap-y-2">
-                    <Image
+                <Image
                     source={{ uri: randomEventColor.image }}
-                        style={{ width: 142, height: 64 }}
-                        resizeMode="cover"
-                        className="rounded-xl"
+                    style={{ width: 142, height: 64 }}
+                    resizeMode="cover"
+                    className="rounded-xl"
                 />
                 <View className=" flex-col gap-y-1 shrink pr-[3%]">
                     <Text
@@ -158,8 +158,8 @@ const EventHomePageCard = ({ event }: { event: Event }) => {
                         </Text>
                     </View>
                 </View>
-            </View>
-        </Pressable>
+            </View >
+        </Pressable >
     );
 };
 

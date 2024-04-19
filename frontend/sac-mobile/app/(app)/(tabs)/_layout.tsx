@@ -55,7 +55,7 @@ const Layout = () => {
                 redirect={!isLoggedIn}
             />
             <Tabs.Screen
-                name="search"
+                name="discover"
                 options={{
                     title: 'search',
                     headerShown: false,
