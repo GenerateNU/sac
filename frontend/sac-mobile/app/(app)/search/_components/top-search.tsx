@@ -2,7 +2,7 @@ import { Text, TouchableOpacity, View, ViewProps } from 'react-native';
 
 import { router } from 'expo-router';
 
-import SearchIcon from '@/assets/images/svg/search.svg';
+import SearchIcon from '@/assets/images/svg/searchNew.svg';
 
 export interface TopSearchProps extends ViewProps {
     search: string;

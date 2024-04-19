@@ -17,7 +17,13 @@ import { Tag } from '@/types/tag';
 import { uuid } from '@/types/uuid';
 import { randomEventColorData } from '@/lib/utils';
 
-const EventHomePageCardHorizontal = ({ event }: { event: Event }) => {
+type EventHomePageCardHorizontalProps = {
+    event: Event;
+};
+
+const EventHomePageCardHorizontal = ({
+    event
+}: EventHomePageCardHorizontalProps) => {
     const { data: host, isLoading, error } = useClub(event.host);
 
     if (isLoading) {
@@ -36,7 +42,7 @@ const EventHomePageCardHorizontal = ({ event }: { event: Event }) => {
 
     return (
         <Pressable
-            className="flex-1 w-full mx-2 bg-white shadow-sm rounded-xl"
+            className="flex-1 w-full bg-white shadow-sm rounded-xl"
             onPress={() => router.push(`/event/${event.id}`)}
         >
             <View className="flex-row">
@@ -180,7 +186,7 @@ const HomePageTagList = ({ id, tagQueryResult }: HomePageTagListProps) => {
     }
 
     return (
-        <View className="flex flex-row flex-wrap gap-y-2">
+        <View className="flex flex-row flex-wrap max-w-[300] gap-y-2 mt-1">
             {tags &&
                 tags.slice(0, 2).map((tag) => (
                     <View

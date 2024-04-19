@@ -29,7 +29,7 @@ const Layout = () => {
                         <View className="h-full bg-gray-100" />
                     ),
                     headerLeft: () => (
-                        <View className="pl-6">
+                        <View className="pl-[20]">
                             <Text className="h-8 text-black text-[32px] font-normal">
                                 Hi, {user?.first_name}
                             </Text>

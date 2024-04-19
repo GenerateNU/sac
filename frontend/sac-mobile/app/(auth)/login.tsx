@@ -6,11 +6,11 @@ import { LoginForm } from './_components/login-form';
 const Login = () => {
     return (
         <Pressable
-            className="flex-1 bg-neutral-500 h-[100%] pt-[8%]"
+            className="flex-1 bg-neutral-300 h-[100%] pt-[8%]"
             onPress={() => Keyboard.dismiss()}
         >
             <View className="flex-1">
-                <View className="px-[8%] pb-[10%]">
+                <View className="px-[5%] pb-[10%]">
                     <View className="pt-[5%] pb-[7%]">
                         <Text className="text-5xl font-bold text-white">
                             Let's go
@@ -21,7 +21,7 @@ const Login = () => {
                         Northeastern has to offer
                     </Text>
                 </View>
-                <View className="bg-white pt-[13%] pb-[2%] flex-1 rounded-tl-3xl rounded-tr-3xl px-[8%]">
+                <View className="bg-white pt-[13%] pb-[2%] flex-1 rounded-tl-3xl rounded-tr-3xl px-[5%]">
                     <LoginForm />
                     <View className="mt-[9%] flex-row justify-center">
                         <Text className="font-bold">Not a student?</Text>

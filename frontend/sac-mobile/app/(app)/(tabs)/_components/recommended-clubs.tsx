@@ -31,7 +31,7 @@ const RecommendedClubs = () => {
     };
 
     return (
-        <View style={{ paddingLeft: 20, flex: 1 }}>
+        <View style={{ flex: 1 }}>
             <FlatList
                 data={clubs}
                 renderItem={renderClubs}

@@ -10,11 +10,11 @@ import {
 import { router } from 'expo-router';
 
 import { SearchBar } from '@/app/(app)/search/_components/search-bar';
-import SearchIcon from '@/assets/images/svg/search.svg';
+import SearchIcon from '@/assets/images/svg/searchNew.svg';
 
 const Recents = () => {
     const searchRecents = [
-        'UI/UX Design',
+        'UI-UX Design',
         "Women's Club Volleyball",
         'NU Italian Club',
         'Generate'
@@ -42,21 +42,23 @@ const Recents = () => {
         );
     });
     return (
-        <SafeAreaView className="w-full h-full bg-[#fafafa] pt-[50px] flex flex-col px-[5%]">
-            <SearchBar
-                searchBoxEditable={true}
-                cancelOrBackButton="Cancel"
-                onSearchBoxPressed={() => {
-                    return 'Focus';
-                }}
-                onSearchSubmitted={(text) => {
-                    router.push(`/search/results/${text}`);
-                }}
-                focusOnLayout={true}
-            />
-            <View className="flex flex-col mt-6">
-                <Text className="font-bold text-base mb-2">Recents</Text>
-                {searchRecents}
+        <SafeAreaView className="w-full h-full bg-[#fafafa]">
+            <View className="px-[5%]">
+                <SearchBar
+                    searchBoxEditable={true}
+                    cancelOrBackButton="Cancel"
+                    onSearchBoxPressed={() => {
+                        return 'Focus';
+                    }}
+                    onSearchSubmitted={(text) => {
+                        router.push(`/search/results/${text}`);
+                    }}
+                    focusOnLayout={true}
+                />
+                <View className="flex flex-col mt-6">
+                    <Text className="font-bold text-base mb-2">Recents</Text>
+                    {searchRecents}
+                </View>
             </View>
         </SafeAreaView>
     );

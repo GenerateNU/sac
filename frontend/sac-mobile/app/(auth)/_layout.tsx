@@ -20,10 +20,9 @@ const Layout = () => {
                     animationTypeForReplace: 'pop',
                     animation: 'slide_from_left',
                     statusBarColor: 'dark',
-                    headerLeft: () => <Wordmark />,
-                    headerBackground: () => (
-                        <View className="h-full bg-neutral-500" />
-                    )
+                    headerStyle: { backgroundColor: 'transparent' },
+                    headerLeft: () => <Wordmark color={'primary'} />,
+                    headerBackground: () => <View className="h-full" />
                 }}
             />
             <Stack.Screen
@@ -31,9 +30,9 @@ const Layout = () => {
                 options={{
                     title: '',
                     headerShown: true,
-                    headerLeft: () => <Wordmark />,
+                    headerLeft: () => <Wordmark color={'primary'} />,
                     headerBackground: () => (
-                        <View className="h-full bg-neutral-500" />
+                        <View className="h-full bg-neutral-300" />
                     ),
                     animationTypeForReplace: 'push',
                     animation: 'slide_from_right'
@@ -42,9 +41,10 @@ const Layout = () => {
             <Stack.Screen
                 name="register"
                 options={{
+                    headerStyle: { backgroundColor: 'transparent' },
                     title: '',
                     headerShown: true,
-                    headerLeft: () => <Wordmark />,
+                    headerLeft: () => <Wordmark color={'primary'} />,
                     headerRight: () => (
                         <Button
                             variant={'secondary'}
@@ -53,9 +53,7 @@ const Layout = () => {
                             Login
                         </Button>
                     ),
-                    headerBackground: () => (
-                        <View className="h-full bg-neutral-500" />
-                    ),
+                    headerBackground: () => <View className="h-full" />,
                     animationTypeForReplace: 'pop',
                     animation: 'slide_from_left'
                 }}
@@ -63,23 +61,23 @@ const Layout = () => {
             <Stack.Screen
                 name="verification"
                 options={{
+                    headerTransparent: true,
                     title: '',
                     headerShown: true,
                     headerLeft: () => {
                         return <Arrow onPress={() => onLogout()} />;
                     },
-                    headerBackground: () => <View className="h-full bg-white" />
+                    headerBackground: () => <View className="h-full" />
                 }}
             />
             <Stack.Screen
                 name="user-interests"
                 options={{
+                    headerTransparent: true,
                     headerShown: true,
                     title: '',
                     headerLeft: () => <Wordmark color={'primary'} />,
-                    headerBackground: () => (
-                        <View className="h-full bg-neutral-100" />
-                    ),
+                    headerBackground: () => <View className="h-full" />,
                     headerRight: () => (
                         <Arrow
                             direction={'right'}
@@ -94,9 +92,7 @@ const Layout = () => {
                     headerShown: true,
                     title: '',
                     headerLeft: () => <Wordmark color={'primary'} />,
-                    headerBackground: () => (
-                        <View className="h-full bg-neutral-100" />
-                    ),
+                    headerBackground: () => <View className="h-full " />,
                     headerRight: () => (
                         <Arrow
                             direction={'right'}
