@@ -18,7 +18,7 @@ const EventCard = ({ title, time, location }: EventCardProps) => {
             onPress={() =>
                 router.push(`/event/eea48981-8c89-4f3a-8b04-c9ec60671640`)
             }
-            className="flex my-3 bg-white border border-gray-300 shadow-sm rounded-2xl"
+            className="flex mt-3 bg-white border border-gray-300 shadow-sm rounded-2xl"
         >
             <View className="flex p-4 gap-y-1">
                 <View className="flex-row items-center justify-between gap-x-2">

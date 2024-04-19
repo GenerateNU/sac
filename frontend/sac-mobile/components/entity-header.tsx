@@ -1,9 +1,8 @@
 import React, { forwardRef } from 'react';
-import { Animated, Text, View } from 'react-native';
+import { Animated, Image, Text, View } from 'react-native';
 
 import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet';
 
-import EventDemoDay from '@/assets/images/svg/event-demo-day.svg';
 import { Button } from '@/components/button';
 
 const HEADER_HEIGHT = 175;
@@ -13,6 +12,7 @@ const HEADER_TRANSLATE = HEADER_HEIGHT - HALF_LOGO_HEIGHT;
 
 type HeaderImageProps = {
     image: string;
+    logo: string;
     pan: Animated.ValueXY;
     type: 'club' | 'event';
     userID: string;
@@ -22,7 +22,7 @@ type HeaderImageProps = {
 type Ref = BottomSheet;
 
 const HeaderImage = forwardRef<Ref, HeaderImageProps>(
-    ({ image, pan, type }, ref) => {
+    ({ image, logo, pan, type }, ref) => {
         if (!ref) {
             return null;
         }
@@ -111,17 +111,15 @@ const HeaderImage = forwardRef<Ref, HeaderImageProps>(
                                     height: LOGO_HEIGHT
                                 }}
                             >
-                                <EventDemoDay
-                                    className="rounded-xl"
-                                    width="100%"
-                                    height="100%"
+                                <Image
+                                    source={{ uri: logo }}
+                                    className="w-full h-full rounded-xl"
                                 />
                             </View>
                             <View className="flex-row space-x-3">
                                 <Button
                                     size={'default'}
                                     variant={'default'}
-                                    className="w-18"
                                     onPress={buttonOnPress[type].follow}
                                 >
                                     <Text> Follow </Text>

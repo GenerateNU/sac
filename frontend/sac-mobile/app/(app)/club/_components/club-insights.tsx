@@ -71,7 +71,7 @@ const OneWord = ({ word }: { word: string }) => {
 
 const ClubInsights = () => {
     return (
-        <View className="flex-row justify-between pb-5">
+        <View className="flex-row justify-between">
             <View
                 className="col-span-1 pt-3 pb-3 bg-white rounded-lg shadow-sm"
                 style={{ width: '32%' }}
