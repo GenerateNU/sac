@@ -4,6 +4,7 @@ import { Pressable, Text, View } from 'react-native';
 import { router } from 'expo-router';
 
 import { Club } from '@/types/club';
+import EventDemoDay from '@/assets/images/svg/event-demo-day.svg';
 
 export const ClubHomePageCard = ({ club }: { club: Club }) => {
     return (
@@ -12,7 +13,11 @@ export const ClubHomePageCard = ({ club }: { club: Club }) => {
             onPress={() => router.push(`/club/${club.id}`)}
         >
             <View className="flex-row shrink items-center pt-[1%]">
-                <View className="w-16 h-16 bg-gray-300 rounded-xl" />
+                <EventDemoDay
+                    width={64}
+                    height={64}
+                    className="rounded-xl"
+                />
                 <View className="pl-[4%] flex-col shrink">
                     <Text className="mb-1 text-lg font-bold leading-5">
                         {club.name}
