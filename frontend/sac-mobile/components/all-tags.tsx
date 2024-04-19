@@ -8,10 +8,11 @@ import { uuid } from '@/types/uuid';
 
 type TagListProps = {
     id: uuid;
+    color: string;
     tagQueryResult: (id: uuid) => UseQueryResult<Tag[], Error>;
 };
 
-const TagList = ({ tagQueryResult, id }: TagListProps) => {
+const TagList = ({ tagQueryResult, id, color }: TagListProps) => {
     const { data: tags, isLoading, error } = tagQueryResult(id);
 
     if (isLoading) {
@@ -29,9 +30,15 @@ const TagList = ({ tagQueryResult, id }: TagListProps) => {
     return (
         <FlatList
             data={tags}
-            renderItem={({ item }) => <TagComponent key={item.id} tag={item} />}
+            renderItem={({ item }) => (
+                <TagComponent color={color} key={item.id} tag={item} />
+            )}
             keyExtractor={(item) => item.id}
-            contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
+            contentContainerStyle={{
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                gap: 10
+            }}
         />
     );
 };

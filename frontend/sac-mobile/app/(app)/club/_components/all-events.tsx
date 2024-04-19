@@ -18,20 +18,19 @@ const Events = ({}: { clubID?: string }) => {
     return (
         <View>
             <View className="flex-row items-center justify-between">
-                <Text className="text-lg font-semibold text-black">Events</Text>
+                <Text className="text-xl font-light leading-relaxed text-zinc-900">
+                    Events
+                </Text>
                 <Text className="text-neutral-400 text-[15px] font-normal">
                     View All
                 </Text>
             </View>
-            <ScrollView className="pt-[2%] pb-[10%]">
+            <ScrollView>
                 <View className="flex-col">
-                    <View className="px-2">
+                    <View className="">
                         {events &&
                             events.slice(0, 2).map((event, index) => (
                                 <View key={index}>
-                                    <Text className="text-neutral-600 text-[15px] font-medium">
-                                        {event.date}
-                                    </Text>
                                     <EventCard {...event} />
                                 </View>
                             ))}
