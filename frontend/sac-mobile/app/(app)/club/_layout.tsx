@@ -10,12 +10,14 @@ const Layout = () => {
                 name="faq/[id]"
                 options={{ headerShown: false, presentation: 'modal' }}
             />
-            {/* <Stack.Screen
-                name="following/following"
-                options={{
-                    headerShown: true
-                }}
-            /> */}
+            <Stack.Screen
+                name="faq/view-all-faqs"
+                options={{ headerShown: false, presentation: 'modal' }}
+            />
+            <Stack.Screen
+                name="ask/ask-a-question"
+                options={{ headerShown: false, presentation: 'modal' }}
+            />
         </Stack>
     );
 };

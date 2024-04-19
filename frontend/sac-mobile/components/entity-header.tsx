@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import { Animated, View } from 'react-native';
+import { Animated, Text, View } from 'react-native';
 
 import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet';
 
@@ -15,16 +15,51 @@ type HeaderImageProps = {
     image: string;
     pan: Animated.ValueXY;
     type: 'club' | 'event';
+    userID: string;
+    clubID?: string;
 };
 
 type Ref = BottomSheet;
 
 const HeaderImage = forwardRef<Ref, HeaderImageProps>(
-    ({ image, pan, type }: HeaderImageProps, ref) => {
+    ({ image, pan, type }, ref) => {
         if (!ref) {
             return null;
         }
 
+        // Causing a rerender issue
+        // const followClub = useCreateClubFollowing();
+        // const unfollowClub = useDeleteClubFollowing();
+        // const userFollowing = useUserFollowing(userID);
+
+        // const isFollowing = userFollowing.data
+        //     ?.map((club) => club.id)
+        //     .includes(clubID || '');
+        // const [buttonClicked, setButtonClicked] = useState(
+        //     isFollowing ? 'Following' : 'Follow'
+        // );
+
+        // const handlePressFollow = async () => {
+        //     if (buttonClicked === 'Following') {
+        //         await unfollowClub.mutateAsync({
+        //             userID: userID,
+        //             clubID: clubID || ''
+        //         });
+
+        //         // force a refetch of the user following data
+        //         userFollowing.refetch();
+        //         setButtonClicked('Follow');
+        //     } else {
+        //         await followClub.mutateAsync({
+        //             userID: userID,
+        //             clubID: clubID || ''
+        //         });
+
+        //         // force a refetch of the user following data
+        //         userFollowing.refetch();
+        //         setButtonClicked('Following');
+        //     }
+        // };
         const buttonOnPress = {
             club: {
                 follow: () => {}
@@ -68,7 +103,7 @@ const HeaderImage = forwardRef<Ref, HeaderImageProps>(
                     }}
                 >
                     {type === 'club' && (
-                        <View className="flex-row w-full items-center justify-between">
+                        <View className="flex-row items-center justify-between w-full">
                             <View
                                 className="p-2 bg-[#f2f2f2] rounded-xl"
                                 style={{
@@ -89,7 +124,10 @@ const HeaderImage = forwardRef<Ref, HeaderImageProps>(
                                     className="w-18"
                                     onPress={buttonOnPress[type].follow}
                                 >
-                                    Follow
+                                    <Text> Follow </Text>
+                                    {/* {buttonClicked === 'Following'
+                                        ? 'Following'
+                                        : 'Follow'} */}
                                 </Button>
                             </View>
                         </View>

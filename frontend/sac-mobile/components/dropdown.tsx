@@ -4,8 +4,8 @@ import { Dropdown } from 'react-native-element-dropdown';
 
 import { Item } from '@/types/item';
 
-// Library Component
-// https://www.npmjs.com/package/react-native-element-dropdown?activeTab=code
+// // Library Component
+// // https://www.npmjs.com/package/react-native-element-dropdown?activeTab=code
 
 interface DropdownProps {
     title: string;

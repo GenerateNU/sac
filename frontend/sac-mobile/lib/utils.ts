@@ -21,6 +21,17 @@ const cn = (...inputs: ClassValue[]) => {
 };
 
 /**
+ * Updates a string if it's plural or not
+ * @param count - the number of items
+ * @param singular - the singular form of the item
+ * @param plural - the plural form of the item
+ * @returns a string of the item in singular or plural form
+ */
+export const pluralize = (count: number, singular: string, plural: string) => {
+    return count === 1 ? singular : plural;
+};
+
+/**
  * Generates an array of graduation years
  * @returns an Item array of graduation years from the current year to the next 5 years
  */
