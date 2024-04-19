@@ -45,7 +45,7 @@ func configureDependencies(config *config.Settings, connectToPinecone bool) t.De
 	dependencies := t.Dependencies{
 		File:   file.NewAWSProvider(config.AWS),
 		AI:     openAi,
-		Email:  email.NewResendClient(config.ResendSettings, false),
+		Email:  email.NewResendClient(config.ResendSettings, true),
 		Search: pinecone,
 	}
 	return dependencies
