@@ -10,7 +10,13 @@ import { Club } from '@/types/club';
 
 import { HomePageTagList } from './event-homepage-card';
 
-const ClubHomePageCard = ({ club }: { club: Club }) => {
+const ClubHomePageCard = ({
+    club,
+    partial
+}: {
+    club: Club;
+    partial?: boolean;
+}) => {
     const { data: tags, isLoading, error } = useClubTags(club.id);
 
     if (isLoading) {
@@ -27,12 +33,12 @@ const ClubHomePageCard = ({ club }: { club: Club }) => {
 
     return (
         <Pressable
-            className="flex-row items-center px-4 py-3 mr-3 bg-white shadow-sm rounded-xl"
-            style={{ width: 300, height: 'auto' }}
+            className="flex-row items-center px-4 py-5 bg-white shadow-sm rounded-xl"
+            style={{ height: 'auto' }}
             onPress={() => router.push(`/club/${club.id}`)}
         >
-            <View className="flex-col items-start w-full gap-y-2">
-                <View className="flex-row items-center pb-2">
+            <View className="flex-col items-start">
+                <View className="flex-row items-center">
                     <EventDemoDay
                         width={64}
                         height={64}
@@ -44,12 +50,12 @@ const ClubHomePageCard = ({ club }: { club: Club }) => {
                                 maxWidth: 180 // Adjust the value as needed
                             }}
                             numberOfLines={2}
-                            className="mb-1 overflow-hidden text-lg font-semibold leading-5"
+                            className="mb-1 overflow-hidden text-lg font-light leading-5"
                         >
                             {club.name}
                         </Text>
                         <View className="flex-row items-center gap-x-2">
-                            <Text className="text-sm text-gray-500">
+                            <Text className="text-xs font-light text-gray-500">
                                 {club.num_members}{' '}
                                 {pluralize(
                                     club.num_members,
@@ -60,7 +66,12 @@ const ClubHomePageCard = ({ club }: { club: Club }) => {
                         </View>
                     </View>
                 </View>
-                <HomePageTagList id={club.id} tagQueryResult={useClubTags} />
+                {!partial && (
+                    <HomePageTagList
+                        id={club.id}
+                        tagQueryResult={useClubTags}
+                    />
+                )}
             </View>
         </Pressable>
     );

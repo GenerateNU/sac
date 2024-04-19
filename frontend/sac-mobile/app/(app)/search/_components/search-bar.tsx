@@ -12,7 +12,7 @@ import { router } from 'expo-router';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-import SearchIcon from '@/assets/images/svg/search.svg';
+import SearchIcon from '@/assets/images/svg/searchNew.svg';
 import { Button } from '@/components/button';
 
 export interface SearchBarProps extends ViewProps {

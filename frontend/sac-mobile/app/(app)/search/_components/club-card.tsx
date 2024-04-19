@@ -73,7 +73,7 @@ export const ClubCardNoTags = (p: ClubCardProps) => {
             className="elevation bg-white rounded-xl flex flex-row p-3 items-center"
         >
             <View className="w-12 h-12 rounded-full bg-zinc-200" />
-            <Text className="ml-4 text-base">Club Name</Text>
+            <Text className="ml-4 text-base">{p.club?.name}</Text>
         </View>
     );
 };

@@ -1,11 +1,12 @@
 import { ScrollView, Text, View } from 'react-native';
 
-import { EventCard } from '@/components/eventCard';
-import { useEvents } from '@/hooks/use-events';
+import { useEvents } from '@/hooks/use-event';
+
+import { EventHomePageCardHorizontal } from '../../(tabs)/_components/event-homepage-card';
 
 const Events = ({}: { clubID?: string }) => {
     // const { data: events, isLoading, error } = useEvents(clubID);
-    const { data: events, isLoading, error } = useEvents('sac'); // TODO: add limits and filters
+    const { data: events, isLoading, error } = useEvents(); // TODO: add limits and filters
 
     if (isLoading) {
         return <Text>Loading...</Text>;
@@ -26,12 +27,14 @@ const Events = ({}: { clubID?: string }) => {
                 </Text>
             </View>
             <ScrollView>
-                <View className="flex-col">
-                    <View className="">
+                <View className="flex-col mt-3">
+                    <View className="gap-y-3">
                         {events &&
                             events.slice(0, 2).map((event, index) => (
                                 <View key={index}>
-                                    <EventCard {...event} />
+                                    <EventHomePageCardHorizontal
+                                        event={event}
+                                    />
                                 </View>
                             ))}
                     </View>
