@@ -114,7 +114,6 @@ func (request *TestRequest) testOn(existingAppAssert ExistingAppAssert, status i
 
 	appAssert.Assert.NilError(err)
 
-	fmt.Println(respBody)
 	appAssert.Assert.Equal(value, respBody[key].(string))
 
 	appAssert.Assert.Equal(status, resp.StatusCode)
