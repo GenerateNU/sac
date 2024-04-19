@@ -1,5 +1,6 @@
-import { router } from 'expo-router';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+
+import { router } from 'expo-router';
 
 import { FaqCard } from '@/components/faqCard';
 import { useClubFAQs } from '@/hooks/use-club';
