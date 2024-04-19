@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
-
-import { router } from 'expo-router';
+import { Text, View } from 'react-native';
 
 import { Button } from '@/components/button';
 import { useAuthStore } from '@/hooks/use-auth';
@@ -48,9 +46,7 @@ const FollowedClub = ({ club }: { club: Club }) => {
                 />
             </View>
             <View style={{ marginRight: 8, width: 200 }}>
-                <Text numberOfLines={6}>
-                    {club.name}
-                </Text>
+                <Text numberOfLines={6}>{club.name}</Text>
             </View>
             <Button
                 className={`h-8 rounded-lg px-7 py-[1%] ${buttonClicked === 'Following' ? 'bg-gray-500 text-black text-md' : 'bg-gray-500 text-white text-md'}`}
