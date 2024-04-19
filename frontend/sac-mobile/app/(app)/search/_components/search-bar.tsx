@@ -1,11 +1,9 @@
 import { useRef, useState } from 'react';
 import {
-    GestureResponderEvent,
     Pressable,
     Text,
     TextInput,
     TouchableOpacity,
-    TouchableWithoutFeedback,
     View,
     ViewProps
 } from 'react-native';
@@ -67,10 +65,10 @@ export const SearchBar = (p: SearchBarProps) => {
             {p.cancelOrBackButton === 'Back' ? backButton : <></>}
             <Pressable
                 className="flex-grow"
-                onPress={(evt: GestureResponderEvent) => {
+                onPress={() => {
                     if (
                         p.onSearchBoxPressed &&
-                        p.onSearchBoxPressed() == 'Focus'
+                        p.onSearchBoxPressed() === 'Focus'
                     ) {
                         textInputRef.current?.focus();
                     }
@@ -93,12 +91,12 @@ export const SearchBar = (p: SearchBarProps) => {
                                 : text
                         }
                         onChangeText={setText}
-                        onSubmitEditing={(evt) => {
+                        onSubmitEditing={() => {
                             if (p.onSearchSubmitted) {
                                 p.onSearchSubmitted(text);
                             }
                         }}
-                        onLayout={(evt) => {
+                        onLayout={() => {
                             // FIXME: works when going from discover, but not when coming back from results or results/expanded
                             if (
                                 p.focusOnLayout !== undefined &&

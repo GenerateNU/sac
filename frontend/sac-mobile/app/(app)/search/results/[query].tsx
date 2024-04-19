@@ -21,7 +21,7 @@ const Results = () => {
 
     const clubCards =
         !isLoading && error == null
-            ? data!.slice(0, 2).map((club, ind, arr) => {
+            ? data!.slice(0, 2).map((club) => {
                   return <ClubCard club={club} className="h-28 mb-2" />;
               })
             : [];

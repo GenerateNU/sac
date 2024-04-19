@@ -29,7 +29,7 @@ export const EventCard = (p: EventCardProps) => {
 };
 
 export const HorizontalEventCard = (p: EventCardProps) => {
-    const tagComponents = ['Free Food', 'Open To All'].map((val, ind, arr) => {
+    const tagComponents = ['Free Food', 'Open To All'].map((val) => {
         return (
             <View
                 key={val}

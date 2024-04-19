@@ -18,10 +18,10 @@ const Recents = () => {
         "Women's Club Volleyball",
         'NU Italian Club',
         'Generate'
-    ].map((val, ind, arr) => {
+    ].map((val) => {
         return (
             <Pressable
-                onPress={(evt) => {
+                onPress={() => {
                     router.push(`/search/results/${val}`);
                 }}
             >
@@ -29,7 +29,7 @@ const Recents = () => {
                     <SearchIcon className="w-5 h-5 mr-2" />
                     <Text className="text-base flex-grow">{val}</Text>
                     <TouchableOpacity
-                        onPress={(evt) => {
+                        onPress={() => {
                             console.log('Recents removed.');
                         }}
                     >
