@@ -6,8 +6,8 @@ import clsx, { ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 import { majorArr } from '@/lib/const';
-import { categories } from '@/lib/const';
 import { Tokens } from '@/types/auth';
+import { Club } from '@/types/club';
 import { FAQ } from '@/types/faq';
 import { Item } from '@/types/item';
 import { addDays, getDay, getDaysInMonth, isSameWeek, setDate, subDays } from 'date-fns';
@@ -21,6 +21,17 @@ import { Club } from '@/types/club';
  */
 const cn = (...inputs: ClassValue[]) => {
     return twMerge(clsx(inputs));
+};
+
+/**
+ * Updates a string if it's plural or not
+ * @param count - the number of items
+ * @param singular - the singular form of the item
+ * @param plural - the plural form of the item
+ * @returns a string of the item in singular or plural form
+ */
+export const pluralize = (count: number, singular: string, plural: string) => {
+    return count === 1 ? singular : plural;
 };
 
 /**
@@ -97,17 +108,6 @@ export const major = () => {
     return majors;
 };
 
-/**
- * Combine all tags of different categories into one for All tab
- * @return a list of tags
- */
-export const allTags = () => {
-    let allTags: string[] = [];
-    for (let i = 0; i < categories.length; i++) {
-        allTags = allTags.concat(categories[i].tags);
-    }
-    return allTags;
-};
 /**
  * Defines the token cache object.
  * This object is used to interact with the SecureStore API.

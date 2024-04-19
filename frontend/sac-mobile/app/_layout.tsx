@@ -4,7 +4,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 import { useFonts } from 'expo-font';
-import { Slot, Stack, useRouter, useSegments } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 
@@ -60,9 +60,6 @@ const InitalLayout = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoggedIn, isVerified]);
 
-
-
-
     if (isLoggedIn === null)
         return (
             <View className="items-center justify-center flex-1">
@@ -83,13 +80,13 @@ const InitalLayout = () => {
                 <Stack.Screen name="(app)" options={{ headerShown: false }} />
             </Stack>
         </>
-    )
-
+    );
 };
 
 const RootLayout = () => {
     const [loaded, error] = useFonts({
         SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+        'OpenSans-SemiBold': require('../assets/fonts/OpenSans-SemiBold.ttf'),
         ...FontAwesome.font
     });
 
@@ -104,9 +101,9 @@ const RootLayout = () => {
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-                <QueryClientProvider client={queryClient}>
-                    <StatusBar style="light" />
-                    <InitalLayout />
+            <QueryClientProvider client={queryClient}>
+                <StatusBar style="light" />
+                <InitalLayout />
             </QueryClientProvider>
         </GestureHandlerRootView>
     );

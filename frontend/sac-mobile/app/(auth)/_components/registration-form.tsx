@@ -39,7 +39,7 @@ const RegistrationForm = () => {
         formState: { errors }
     } = useForm<RegisterFormData>();
 
-    const { signUp } = useAuthStore();
+    const { onRegister } = useAuthStore();
     const [loading, setLoading] = useState(false);
 
     const onSignUp = async ({
@@ -50,9 +50,8 @@ const RegistrationForm = () => {
 
         try {
             registerSchema.parse({ password_confirmation, ...rest });
-            const updatedData = { ...rest };
-            console.log(updatedData);
-            await signUp(updatedData);
+            console.log({ ...rest });
+            await onRegister({ ...rest });
         } catch (error: any) {
             if (error instanceof ZodError) {
                 Alert.alert(error.errors[0].message);

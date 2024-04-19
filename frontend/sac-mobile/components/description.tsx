@@ -14,18 +14,23 @@ const Description = ({ title, description }: DescriptionProps) => {
 
     return (
         <View>
-            <Text className="text-2xl font-normal leading-relaxed text-zinc-900">
+            <Text className="text-xl font-light leading-relaxed text-zinc-900">
                 {title}
             </Text>
+            <Text className="text-base mt-2 font-bold leading-relaxed text-zinc-900">
+                Description
+            </Text>
             <Text className="text-base font-light tracking-tight text-zinc-900">
-                {expanded ? description : description.slice(0, displayedCharacters)}
+                {expanded
+                    ? description
+                    : description.slice(0, displayedCharacters)}
             </Text>
             {description.length > 100 && (
                 <TouchableOpacity
                     className="py-1 text-xs text-zinc-900 font-extralight"
                     onPress={() => setExpanded(!expanded)}
                 >
-                    <Text>Read more...</Text>
+                    <Text>{expanded ? 'Read less' : 'Read more...'}</Text>
                 </TouchableOpacity>
             )}
         </View>

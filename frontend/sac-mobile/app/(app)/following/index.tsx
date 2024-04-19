@@ -20,7 +20,7 @@ const FollowedClubsPage = () => {
     }
 
     if (error) {
-        return <Text>Loading...</Text>;
+        return <Text>Error loading followed clubs</Text>;
     }
 
     if (!following) {
@@ -31,19 +31,12 @@ const FollowedClubsPage = () => {
         return <FollowedClub club={item} />;
     };
 
-    const renderSeparator = () => {
-        return (
-            <View style={{ borderBottomWidth: 1, borderBottomColor: 'gray' }} />
-        );
-    };
-
     return (
         <View className="flex-col items-center mt-5">
             <FlatList
                 data={following}
                 renderItem={renderFollowing}
                 keyExtractor={(item) => item.id.toString()}
-                ItemSeparatorComponent={renderSeparator}
                 scrollEnabled={following.length >= 7}
             />
         </View>

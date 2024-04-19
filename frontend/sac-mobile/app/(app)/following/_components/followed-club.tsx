@@ -7,19 +7,12 @@ import { Button } from '@/components/button';
 import { useAuthStore } from '@/hooks/use-auth';
 import {
     useCreateClubFollowing,
-    useDeleteClubFollowing,
-    useUserFollowing
+    useDeleteClubFollowing
 } from '@/hooks/use-user';
 import { Club } from '@/types/club';
 
 const FollowedClub = ({ club }: { club: Club }) => {
     const { user } = useAuthStore();
-
-    const {
-        data: following,
-        isLoading,
-        error
-    } = useUserFollowing(user?.id || '');
 
     const followClub = useCreateClubFollowing();
     const unfollowClub = useDeleteClubFollowing();
@@ -29,29 +22,21 @@ const FollowedClub = ({ club }: { club: Club }) => {
     const handlePressFollow = async () => {
         if (buttonClicked === 'Following') {
             await unfollowClub.mutateAsync({
-                userId: user?.id || '',
-                clubId: club.id
+                userID: user?.id || '',
+                clubID: club.id
             });
             setButtonClicked('Follow');
         } else {
             await followClub.mutateAsync({
-                userId: user?.id || '',
-                clubId: club.id
+                userID: user?.id || '',
+                clubID: club.id
             });
             setButtonClicked('Following');
         }
     };
 
-    if (isLoading) {
-        return <Text>Loading...</Text>;
-    }
-
-    if (error) {
-        return <Text>Error: {error.message}</Text>;
-    }
-
     return (
-        <View className="flex-row items-center w-full px-[4%] justify-between">
+        <View className="flex-row items-center w-full px-[4%] justify-between my-3">
             <Pressable
                 className="flex-row items-center"
                 onPress={() => router.push(`/club/${club.id}`)}

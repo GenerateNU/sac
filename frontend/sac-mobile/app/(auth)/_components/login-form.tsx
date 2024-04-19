@@ -31,7 +31,7 @@ const LoginForm = () => {
         formState: { errors }
     } = useForm<LoginFormData>();
 
-    const { signIn } = useAuthStore();
+    const { onLogin } = useAuthStore();
     const [loading, setLoading] = useState(false);
 
     const onSignInPress = async (loginData: LoginFormData) => {
@@ -40,7 +40,7 @@ const LoginForm = () => {
         try {
             const validData = loginSchema.parse(loginData);
             console.log({ validData });
-            await signIn(validData.email, validData.password);
+            await onLogin(validData.email, validData.password);
         } catch (err: any) {
             if (err instanceof ZodError) {
                 Alert.alert(err.errors[0].message);

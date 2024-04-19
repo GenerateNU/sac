@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/GenerateNU/sac/backend/src/constants"
 	"github.com/GenerateNU/sac/backend/src/errors"
 	"github.com/GenerateNU/sac/backend/src/models"
 	"github.com/GenerateNU/sac/backend/src/services"
@@ -31,8 +32,8 @@ func NewClubController(clubService services.ClubServiceInterface) *ClubControlle
 func (cl *ClubController) GetClubs(c *fiber.Ctx) error {
 	var queryParams models.ClubQueryParams
 
-	queryParams.Limit = 10 // default limit
-	queryParams.Page = 1   // default page
+	queryParams.Limit = constants.DEFAULT_LIMIT
+	queryParams.Page = constants.DEFAULT_PAGE
 
 	if err := c.QueryParser(&queryParams); err != nil {
 		return errors.FailedtoParseQueryParams.FiberError(c)

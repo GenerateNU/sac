@@ -9,7 +9,7 @@ const UserDetails = () => {
         <SafeAreaView>
             <ScrollView className="px-[8%] pb-[9%]">
                 <StatusBar style="dark" />
-                <Text className="font-bold text-5xl pt-[8%] pb-[10%]">
+                <Text className="font-bold text-5xl pt-[12%] pb-[10%]">
                     Let's learn more about you
                 </Text>
                 <View className="pb-[10%]">

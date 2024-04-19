@@ -4,8 +4,8 @@ import { Dropdown } from 'react-native-element-dropdown';
 
 import { Item } from '@/types/item';
 
-// Library Component
-// https://www.npmjs.com/package/react-native-element-dropdown?activeTab=code
+// // Library Component
+// // https://www.npmjs.com/package/react-native-element-dropdown?activeTab=code
 
 interface DropdownProps {
     title: string;
@@ -21,7 +21,7 @@ interface DropdownProps {
 
 const DropdownComponent = (props: DropdownProps) => {
     const [isFocus, setIsFocus] = useState(false);
-    const borderColor = props.error ? 'red' : 'black';
+    const borderColor = props.error ? 'red' : '#6E757E';
     const borderWidth = props.error ? 1 : 0.5;
 
     const styles = StyleSheet.create({
