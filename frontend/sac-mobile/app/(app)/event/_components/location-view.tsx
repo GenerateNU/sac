@@ -22,7 +22,7 @@ const LocationView = ({ location }: LocationViewProps) => {
                     {city},<Text className="font-normal">{rest}</Text>
                 </Text>
             </View>
-            <View className="rounded-xl overflow-hidden border-[1px] border-gray-200 shadow-2xl">
+            <View className="rounded-xl overflow-hidden border-[1px] border-gray-200">
                 <MapView
                     onPress={() => openMap()}
                     style={{ width: '100%', height: 200 }}
