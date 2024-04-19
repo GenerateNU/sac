@@ -18,9 +18,11 @@ import { uuid } from '@/types/uuid';
 
 type EventHomePageCardHorizontalProps = {
     event: Event;
-}
+};
 
-const EventHomePageCardHorizontal = ({ event }: EventHomePageCardHorizontalProps) => {
+const EventHomePageCardHorizontal = ({
+    event
+}: EventHomePageCardHorizontalProps) => {
     const { data: host, isLoading, error } = useClub(event.host);
 
     if (isLoading) {

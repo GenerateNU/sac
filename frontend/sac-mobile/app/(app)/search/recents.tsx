@@ -43,7 +43,7 @@ const Recents = () => {
     });
     return (
         <SafeAreaView className="w-full h-full bg-[#fafafa]">
-            <View className='px-[5%]'>
+            <View className="px-[5%]">
                 <SearchBar
                     searchBoxEditable={true}
                     cancelOrBackButton="Cancel"

@@ -10,7 +10,13 @@ import { Club } from '@/types/club';
 
 import { HomePageTagList } from './event-homepage-card';
 
-const ClubHomePageCard = ({ club, partial }: { club: Club, partial?: boolean }) => {
+const ClubHomePageCard = ({
+    club,
+    partial
+}: {
+    club: Club;
+    partial?: boolean;
+}) => {
     const { data: tags, isLoading, error } = useClubTags(club.id);
 
     if (isLoading) {
@@ -60,7 +66,12 @@ const ClubHomePageCard = ({ club, partial }: { club: Club, partial?: boolean }) 
                         </View>
                     </View>
                 </View>
-                {!partial && <HomePageTagList id={club.id} tagQueryResult={useClubTags} />}
+                {!partial && (
+                    <HomePageTagList
+                        id={club.id}
+                        tagQueryResult={useClubTags}
+                    />
+                )}
             </View>
         </Pressable>
     );

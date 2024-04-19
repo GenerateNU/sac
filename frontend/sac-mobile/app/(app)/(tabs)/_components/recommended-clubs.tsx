@@ -24,10 +24,10 @@ const RecommendedClubs = () => {
 
     const renderClubs = ({ item }: { item: Club }) => {
         return (
-            <View className='flex-grow mr-3'>
+            <View className="flex-grow mr-3">
                 <ClubHomePageCard club={item} />
             </View>
-        )
+        );
     };
 
     return (

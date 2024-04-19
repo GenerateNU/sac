@@ -22,9 +22,7 @@ const Layout = () => {
                     statusBarColor: 'dark',
                     headerStyle: { backgroundColor: 'transparent' },
                     headerLeft: () => <Wordmark color={'primary'} />,
-                    headerBackground: () => (
-                        <View className="h-full"/>
-                    )
+                    headerBackground: () => <View className="h-full" />
                 }}
             />
             <Stack.Screen
@@ -55,9 +53,7 @@ const Layout = () => {
                             Login
                         </Button>
                     ),
-                    headerBackground: () => (
-                        <View className="h-full" />
-                    ),
+                    headerBackground: () => <View className="h-full" />,
                     animationTypeForReplace: 'pop',
                     animation: 'slide_from_left'
                 }}
@@ -81,9 +77,7 @@ const Layout = () => {
                     headerShown: true,
                     title: '',
                     headerLeft: () => <Wordmark color={'primary'} />,
-                    headerBackground: () => (
-                        <View className="h-full" />
-                    ),
+                    headerBackground: () => <View className="h-full" />,
                     headerRight: () => (
                         <Arrow
                             direction={'right'}
@@ -98,9 +92,7 @@ const Layout = () => {
                     headerShown: true,
                     title: '',
                     headerLeft: () => <Wordmark color={'primary'} />,
-                    headerBackground: () => (
-                        <View className="h-full " />
-                    ),
+                    headerBackground: () => <View className="h-full " />,
                     headerRight: () => (
                         <Arrow
                             direction={'right'}

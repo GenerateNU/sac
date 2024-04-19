@@ -1,6 +1,7 @@
 import { ScrollView, Text, View } from 'react-native';
 
 import { useEvents } from '@/hooks/use-event';
+
 import { EventHomePageCardHorizontal } from '../../(tabs)/_components/event-homepage-card';
 
 const Events = ({}: { clubID?: string }) => {
@@ -31,7 +32,9 @@ const Events = ({}: { clubID?: string }) => {
                         {events &&
                             events.slice(0, 2).map((event, index) => (
                                 <View key={index}>
-                                    <EventHomePageCardHorizontal event={event} />
+                                    <EventHomePageCardHorizontal
+                                        event={event}
+                                    />
                                 </View>
                             ))}
                     </View>

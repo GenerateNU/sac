@@ -11,11 +11,17 @@ const HomePage = () => {
     return (
         <>
             <StatusBar style="dark" />
-            <View className='px-[5%]'>
+            <View className="px-[5%]">
                 <SectionList
                     sections={[
-                        { title: 'Happening Today', data: [<HappeningToday />] },
-                        { title: 'Upcoming Events', data: [<UpcomingEvents />] },
+                        {
+                            title: 'Happening Today',
+                            data: [<HappeningToday />]
+                        },
+                        {
+                            title: 'Upcoming Events',
+                            data: [<UpcomingEvents />]
+                        },
                         {
                             title: 'Recommended Clubs',
                             data: [<RecommendedClubs />]

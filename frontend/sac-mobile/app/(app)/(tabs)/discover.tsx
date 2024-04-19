@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-    ActivityIndicator,
     SafeAreaView,
     ScrollView,
     Text,
@@ -10,14 +9,13 @@ import {
 
 import { router } from 'expo-router';
 
-import { ClubCardNoTags } from '@/app/(app)/search/_components/club-card';
-import { HorizontalEventCard } from '@/app/(app)/search/_components/event-card';
 import { SearchBar } from '@/app/(app)/search/_components/search-bar';
 import { TopSearch } from '@/app/(app)/search/_components/top-search';
-import { useEvents } from '@/hooks/use-event';
-import { EventHomePageCardHorizontal } from './_components/event-homepage-card';
-import { ClubHomePageCard } from './_components/club-homepage-card';
 import { useClubs } from '@/hooks/use-club';
+import { useEvents } from '@/hooks/use-event';
+
+import { ClubHomePageCard } from './_components/club-homepage-card';
+import { EventHomePageCardHorizontal } from './_components/event-homepage-card';
 
 const Discover = () => {
     const { data: events, isLoading: eIsLoading, error: eError } = useEvents();
@@ -33,7 +31,7 @@ const Discover = () => {
 
     return (
         <SafeAreaView className="w-full h-full bg-[#fafafa]">
-            <View className='px-[5%] mb-12'>
+            <View className="px-[5%] mb-12">
                 <SearchBar
                     searchBoxEditable={false}
                     cancelOrBackButton="Back"
@@ -60,7 +58,10 @@ const Discover = () => {
                         }}
                     >
                         <View className="flex flex-row">
-                            <TopSearch search={'COExist'} className="mr-2 w-40" />
+                            <TopSearch
+                                search={'COExist'}
+                                className="mr-2 w-40"
+                            />
                             <TopSearch
                                 search={'Volleyball'}
                                 className="mr-2 w-40"
@@ -68,7 +69,10 @@ const Discover = () => {
                             <TopSearch search={'iGEM'} className="mr-2 w-40" />
                         </View>
                         <View className="mt-2 flex flex-row">
-                            <TopSearch search={'Jiu Jitsu'} className="mr-2 w-40" />
+                            <TopSearch
+                                search={'Jiu Jitsu'}
+                                className="mr-2 w-40"
+                            />
                             <TopSearch search={'Music'} className="mr-2 w-40" />
                             <TopSearch
                                 search={'Kappa Sigma'}
@@ -82,7 +86,9 @@ const Discover = () => {
                             Discover Clubs
                         </Text>
                         <TouchableOpacity>
-                            <Text className="text-xs text-zinc-600">View All</Text>
+                            <Text className="text-xs text-zinc-600">
+                                View All
+                            </Text>
                         </TouchableOpacity>
                     </View>
 
@@ -97,9 +103,7 @@ const Discover = () => {
                     >
                         <View className="flex flex-row" style={{ gap: 10 }}>
                             {clubs?.map((club) => {
-                                return (
-                                    <ClubHomePageCard club={club} partial/>
-                                )
+                                return <ClubHomePageCard club={club} partial />;
                             })}
                         </View>
                     </ScrollView>
@@ -109,14 +113,16 @@ const Discover = () => {
                             Discover Events
                         </Text>
                         <TouchableOpacity>
-                            <Text className="text-xs text-zinc-600">View All</Text>
+                            <Text className="text-xs text-zinc-600">
+                                View All
+                            </Text>
                         </TouchableOpacity>
                     </View>
-                    <View className='flex flex-col mb-5' style={{ gap: 15 }}>
+                    <View className="flex flex-col mb-5" style={{ gap: 15 }}>
                         {events?.map((event) => {
                             return (
-                                <EventHomePageCardHorizontal event={event}/>
-                            )
+                                <EventHomePageCardHorizontal event={event} />
+                            );
                         })}
                     </View>
                 </ScrollView>

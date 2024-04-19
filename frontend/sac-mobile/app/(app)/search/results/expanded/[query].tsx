@@ -3,10 +3,9 @@ import { SafeAreaView, ScrollView, Text, View } from 'react-native';
 
 import { router, useLocalSearchParams } from 'expo-router';
 
-import { ClubCard } from '@/app/(app)/search/_components/club-card';
+import { ClubHomePageCard } from '@/app/(app)/(tabs)/_components/club-homepage-card';
 import { SearchBar } from '@/app/(app)/search/_components/search-bar';
 import { useClubSearch } from '@/hooks/use-club-search';
-import { ClubHomePageCard } from '@/app/(app)/(tabs)/_components/club-homepage-card';
 
 const ResultsExpanded = () => {
     // TODO: Add grayboxing.
@@ -17,16 +16,16 @@ const ResultsExpanded = () => {
         !isLoading && error == null
             ? data!.map((club) => {
                   return (
-                    <View className='mb-3'>
-                        <ClubHomePageCard club={club}/>
-                    </View>
-                  )
+                      <View className="mb-3">
+                          <ClubHomePageCard club={club} />
+                      </View>
+                  );
               })
             : [];
 
     return (
         <SafeAreaView className="w-full h-full bg-[#fafafa]">
-            <View className='px-[5%]'>
+            <View className="px-[5%]">
                 <SearchBar
                     searchBoxEditable={false}
                     searchBoxText={search}
