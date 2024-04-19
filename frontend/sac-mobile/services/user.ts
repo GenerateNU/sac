@@ -4,114 +4,132 @@ import { api } from '@/services/api';
 import { Club } from '@/types/club';
 import { ErrorResponse } from '@/types/error';
 import { User } from '@/types/user';
+import { uuid } from '@/types/uuid';
 
 /**
  * Gets the user from the access token.
- * @param accessToken The access token of the user.
+ *
  * @returns The user that was retrieved.
+ * @throws Error if the user cannot be retrieved.
+ * @see User
  */
 const getCurrentUser = async (): Promise<User> => {
-    try {
-        const response = await api.get<User>('/users/me');
-
-        return response.data as User;
-    } catch (error: any) {
-        const axiosErr: AxiosError = error;
-        const response = axiosErr.response;
-        if (response) {
-            const data = response.data as ErrorResponse;
-            throw new Error(data.error);
-        } else {
+    return api
+        .get<User>('/users/me')
+        .then((response) => response.data)
+        .catch((error: AxiosError<ErrorResponse>) => {
+            console.error(error);
             throw new Error('Error getting current user');
-        }
-    }
-};
-
-const createUserTags = async (
-    userId: string,
-    tagsId: string[]
-): Promise<void> => {
-    try {
-        await api.post<User>(`/users/${userId}/tags`, { tags: tagsId });
-    } catch (error) {
-        console.log('Error associating users to a tag');
-        throw new Error('Error associating users to a tag');
-    }
+        });
 };
 
 /**
- * Update user details after signup.
- * @param userId ID of this specific user
- * @param updateUserBody JSON body of updated information
- * @returns The user whose info is updated
+ * Associates a user with a tag.
+ *
+ * @param userID The ID of the user.
+ * @param tagIDs The IDs of the tags.
+ * @throws Error if the user cannot be associated with the tag.
+ * @see User
+ * @see Tag
+ */
+const createUserTags = async (userID: uuid, tagIDs: uuid[]): Promise<void> => {
+    return api
+        .post<void>(`/users/${userID}/tags`, { tags: tagIDs })
+        .then((response) => response.data)
+        .catch((error: AxiosError<ErrorResponse>) => {
+            console.error(error);
+            throw new Error('Error associating users to a tag');
+        });
+};
+
+/**
+ * Updates the user's information.
+ *
+ * @param userID The ID of the user.
+ * @param updateUserBody The updated user information.
+ * @returns The updated user.
+ * @throws Error if the user cannot be updated.
+ * @see User
  */
 const updateUser = async (
-    userId: string,
+    userID: uuid,
     updateUserBody: {
         graduation_year: number;
         college: string;
         graduation_cycle: string;
     }
 ): Promise<User> => {
-    try {
-        const response = await api.patch<User>(
-            `/users/${userId}/`,
-            updateUserBody
-        );
-        return response.data as User;
-    } catch (error) {
-        console.log('Error updating user');
-        throw new Error('Error updating user');
-    }
+    return api
+        .patch<User>(`/users/${userID}`, updateUserBody)
+        .then((response) => response.data)
+        .catch((error: AxiosError<ErrorResponse>) => {
+            console.error(error);
+            throw new Error('Error updating user');
+        });
 };
 
 /**
- * Fetches the clubs that the user is following.
- * @param userId The ID of the user.
- * @returns The clubs that the user is following.
+ * Fetches the clubs that a user is following.
+ *
+ * @param userID The ID of the user.
+ * @returns A Promise that resolves to the clubs that the user is following or rejects with an error.
+ * @throws Error if the clubs cannot be fetched.
+ * @see Club
  */
-const fetchUserFollowing = async (userId: string): Promise<Club[]> => {
-    try {
-        const response = await api.get(`/users/${userId}/follower`);
-        return response.data as Club[];
-    } catch (error) {
-        console.log('Error fetching followed clubs');
-        throw new Error('Error fetching followed clubs');
-    }
+const fetchUserFollowing = async (userID: uuid): Promise<Club[]> => {
+    return api
+        .get<Club[]>(`/users/${userID}/follower`)
+        .then((response) => response.data)
+        .catch((error: AxiosError<ErrorResponse>) => {
+            console.error(error);
+            throw new Error('Error fetching followed clubs');
+        });
 };
 
 /**
- * Follows a club.
- * @param userId The ID of the user.
- * @param clubId The ID of the club.
+ * Creates a user following a club.
+ *
+ * @param userID the ID of the user
+ * @param clubID the ID of the club
+ * @returns A Promise that resolves to void or rejects with an error
+ * @throws Error if the user cannot follow the club
+ * @see Club
+ * @see User
  */
 const createUserFollowing = async (
-    userId: string,
-    clubId: string
+    userID: uuid,
+    clubID: uuid
 ): Promise<void> => {
-    try {
-        await api.post(`/users/${userId}/follower/${clubId}`);
-    } catch (error) {
-        console.log('Error following clubs');
-        throw new Error('Error following clubs');
-    }
+    return api
+        .post<void>(`/users/${userID}/follower/${clubID}`)
+        .then((response) => response.data)
+        .catch((error: AxiosError<ErrorResponse>) => {
+            console.error(error);
+            throw new Error('Error following clubs');
+        });
 };
 
 /**
- * Unfollows a club.
- * @param userId The ID of the user.
- * @param clubId The ID of the club.
+ * Deletes a user following a club.
+ *
+ * @param userID the ID of the user
+ * @param clubID the ID of the club
+ * @returns A Promise that resolves to void or rejects with an error
+ * @throws Error if the user cannot unfollow the club
+ * @see Club
+ * @see User
  */
 const deleteUserFollowing = async (
-    userId: string,
-    clubId: string
+    userID: uuid,
+    clubID: uuid
 ): Promise<void> => {
-    try {
-        await api.delete(`/users/${userId}/follower/${clubId}`);
-    } catch (error) {
-        console.log('Error unfollowing clubs');
-        throw new Error('Error unfollowing clubs');
-    }
+    return api
+        .delete<void>(`/users/${userID}/follower/${clubID}`)
+        .then((response) => response.data)
+        .catch((error: AxiosError<ErrorResponse>) => {
+            console.error(error);
+            throw new Error('Error unfollowing clubs');
+        });
 };
 
 export {

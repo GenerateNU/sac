@@ -22,14 +22,14 @@ const FollowedClub = ({ club }: { club: Club }) => {
     const handlePressFollow = async () => {
         if (buttonClicked === 'Following') {
             await unfollowClub.mutateAsync({
-                userId: user?.id || '',
-                clubId: club.id
+                userID: user?.id || '',
+                clubID: club.id
             });
             setButtonClicked('Follow');
         } else {
             await followClub.mutateAsync({
-                userId: user?.id || '',
-                clubId: club.id
+                userID: user?.id || '',
+                clubID: club.id
             });
             setButtonClicked('Following');
         }

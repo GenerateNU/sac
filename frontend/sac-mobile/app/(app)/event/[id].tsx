@@ -2,24 +2,27 @@ import React, { useRef } from 'react';
 import {
     ActivityIndicator,
     Animated,
+    RefreshControl,
     ScrollView,
     Text,
     View
 } from 'react-native';
 
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { useAssets } from 'expo-asset';
+import { useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
 import BottomSheet from '@gorhom/bottom-sheet';
 
-import { AllHosts } from '@/app/(app)/event/_components/all-hosts';
 import { TagList } from '@/components/all-tags';
 import { Button } from '@/components/button';
 import { Description } from '@/components/description';
+import { HeaderImage } from '@/components/entity-header';
 import { Title } from '@/components/title';
-import { useEvent } from '@/hooks/use-event';
+import { useAuthStore } from '@/hooks/use-auth';
+import { useEvent, useEventTags } from '@/hooks/use-event';
 
-import { HeaderImage } from '../../../components/entity-header';
+import { AllHosts } from './_components/all-hosts';
 import { EventDate } from './_components/event-date';
 import { EventLocation } from './_components/event-location';
 import { EventTime } from './_components/event-time';
@@ -30,19 +33,31 @@ import { RSVPBottomSheet } from './_components/rsvp-bottom-sheet';
 // TODO: handle link OR location
 const EventPage = () => {
     const { id } = useLocalSearchParams<{ id: string }>();
+    const { user } = useAuthStore();
 
-    const { data: event, isLoading, error } = useEvent(id);
+    const { data: event, isLoading, error, refetch } = useEvent(id);
 
     const ref = useRef<BottomSheet>(null);
     const pan = useRef(new Animated.ValueXY()).current;
 
-    if (error) {
-        console.error(error);
+    const [asset, assetError] = useAssets(
+        require('@/assets/images/sandbox-header.png')
+    );
+    if (assetError) {
+        console.error(assetError);
         return <Text>Error fetching event</Text>;
+    }
+
+    if (!asset) {
+        return <ActivityIndicator size={'large'} />;
     }
 
     if (isLoading) {
         return <ActivityIndicator size={'large'} />;
+    }
+
+    if (error) {
+        return <Text>Error: {error.message}</Text>;
     }
 
     if (!event) {
@@ -51,9 +66,14 @@ const EventPage = () => {
 
     return (
         <>
-            <Stack.Screen options={{ title: `${event[0].name}` }} />
             <StatusBar style="light" />
             <ScrollView
+                refreshControl={
+                    <RefreshControl
+                        refreshing={isLoading}
+                        onRefresh={refetch}
+                    />
+                }
                 scrollEventThrottle={1}
                 showsVerticalScrollIndicator={false}
                 onScroll={Animated.event(
@@ -69,6 +89,7 @@ const EventPage = () => {
                         pan={pan}
                         type="event"
                         ref={ref}
+                        userID={user?.id ?? ''}
                     />
                     <View
                         style={{
@@ -96,7 +117,10 @@ const EventPage = () => {
                                 <Title title={event[0].name} />
                                 <HostNames eventID={event[0].id} />
                             </View>
-                            <TagList id={event[0].id} />
+                            <TagList
+                                id={event[0].id}
+                                tagQueryResult={useEventTags}
+                            />
                         </View>
                         <View>
                             <View className="flex-row justify-between pb-5">

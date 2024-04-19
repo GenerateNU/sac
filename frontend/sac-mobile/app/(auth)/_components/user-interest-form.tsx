@@ -21,7 +21,7 @@ type UserInterestsData = {
 
 const UserInterestsForm = () => {
     const { user } = useAuthStore();
-    const userId: string = user?.id!;
+    const userId = user?.id!;
 
     const {
         data: categoriesData,
@@ -76,7 +76,7 @@ const UserInterestsForm = () => {
         data.tags = selectedTags;
         const selectedTagsUUID = data.tags.map((tag) => tag.id);
         createUserTags.mutateAsync({
-            userId: userId,
+            userID: userId,
             tagIDs: selectedTagsUUID
         });
         try {

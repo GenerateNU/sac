@@ -6,6 +6,8 @@ import { getCurrentUser } from '@/services/user';
 import { Tokens } from '@/types/auth';
 import { User } from '@/types/user';
 
+// import { login, logout, register, verifyEmail } from '@/services/auth';
+
 type UserSignUp = {
     first_name: string;
     last_name: string;
@@ -24,10 +26,10 @@ type AuthStoreActions = {
     fetchUser: () => void;
     fetchCache: () => Promise<void>;
     setTokens: (tokens: Tokens) => void;
-    signIn: (email: string, password: string) => Promise<void>;
-    signUp: (userObj: UserSignUp) => Promise<void>;
-    completeVerification: (email: string, code: string) => Promise<void>;
-    signOut: () => void;
+    onLogin: (email: string, password: string) => Promise<void>;
+    onRegister: (userObj: UserSignUp) => Promise<void>;
+    onVerify: (email: string, code: string) => Promise<void>;
+    onLogout: () => void;
 };
 
 const useAuthStore = create<AuthStoreState & AuthStoreActions>((set) => ({
@@ -55,7 +57,7 @@ const useAuthStore = create<AuthStoreState & AuthStoreActions>((set) => ({
             set({ isLoggedIn: false });
         }
     },
-    signIn: async (email: string, password: string) => {
+    onLogin: async (email: string, password: string) => {
         const { user, tokens } = await login(email, password);
         if (user.is_verified === false) {
             set({ user, tokens, isLoggedIn: true, isVerified: false });
@@ -66,7 +68,7 @@ const useAuthStore = create<AuthStoreState & AuthStoreActions>((set) => ({
         await tokenCache.saveToken('accessToken', tokens.accessToken);
         await tokenCache.saveToken('refreshToken', tokens.refreshToken);
     },
-    signUp: async (userObj: UserSignUp) => {
+    onRegister: async (userObj: UserSignUp) => {
         const { user, tokens } = await signUp(
             userObj.first_name,
             userObj.last_name,
@@ -78,11 +80,11 @@ const useAuthStore = create<AuthStoreState & AuthStoreActions>((set) => ({
         await tokenCache.saveToken('accessToken', tokens.accessToken);
         await tokenCache.saveToken('refreshToken', tokens.refreshToken);
     },
-    completeVerification: async (email: string, code: string) => {
+    onVerify: async (email: string, code: string) => {
         await completeVerification(email, code);
         set({ isVerified: true });
     },
-    signOut: async () => {
+    onLogout: async () => {
         await logout();
         set({
             tokens: null,

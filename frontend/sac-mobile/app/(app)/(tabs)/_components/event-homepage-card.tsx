@@ -21,8 +21,6 @@ const EventHomePageCard = ({ event }: { event: Event }) => {
         return <Text>Error: {error.message}</Text>;
     }
 
-    console.log('event', event);
-
     return (
         <Pressable
             className="bg-gray-200 rounded-2xl my-[2.5%]"

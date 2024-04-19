@@ -4,7 +4,12 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { Button } from '@/components/button';
 
-const LeftArrow = ({ onPress }: { onPress?: () => void }) => {
+type Arrow = {
+    direction?: 'left' | 'right';
+    onPress?: () => void;
+};
+
+const Arrow = ({ direction, onPress }: Arrow) => {
     return (
         <Button
             onPress={onPress || (() => router.back())}
@@ -13,7 +18,7 @@ const LeftArrow = ({ onPress }: { onPress?: () => void }) => {
             className="flex items-center justify-center bg-gray-300 rounded-full"
         >
             <MaterialCommunityIcons
-                name="chevron-left"
+                name={`chevron-${direction || 'left'}`}
                 size={28}
                 color="rgb(75 85 99)"
             />
@@ -21,4 +26,4 @@ const LeftArrow = ({ onPress }: { onPress?: () => void }) => {
     );
 };
 
-export { LeftArrow };
+export { Arrow };

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 import {
@@ -24,11 +24,15 @@ const Code = ({ onCompleted }: CodeProps) => {
         setValue
     });
 
-    useEffect(() => {
-        if (value.length === CELL_COUNT) {
-            onCompleted(value);
-        }
-    }, [value, onCompleted]);
+    // const handleCodeCompleted = useCallback((value: string) => {
+    //     if (value.length === CELL_COUNT) {
+    //         onCompleted(value);
+    //     }
+    // }, []);
+
+    // useEffect(() => {
+    //     handleCodeCompleted(value);
+    // }, [value]);
 
     return (
         <View className="flex-col gap-y-5">

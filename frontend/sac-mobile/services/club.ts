@@ -1,5 +1,9 @@
+import { AxiosError } from 'axios';
+
 import { Club } from '@/types/club';
 import { Contact } from '@/types/contact';
+import { ErrorResponse } from '@/types/error';
+import { Tag } from '@/types/tag';
 import { uuid } from '@/types/uuid';
 
 import { api } from './api';
@@ -14,9 +18,9 @@ import { Tag } from '@/types/tag';
  */
 const fetchClubs = async (): Promise<Club[]> => {
     return api
-        .get('/clubs')
-        .then((response) => response.data as Club[])
-        .catch((error) => {
+        .get<Club[]>('/clubs')
+        .then((response) => response.data)
+        .catch((error: AxiosError<ErrorResponse>) => {
             console.error(error);
             throw new Error('Error fetching clubs');
         });
@@ -32,9 +36,9 @@ const fetchClubs = async (): Promise<Club[]> => {
  */
 const fetchClub = async (clubID: uuid): Promise<Club> => {
     return api
-        .get(`/clubs/${clubID}`)
-        .then((response) => response.data as Club)
-        .catch((error) => {
+        .get<Club>(`/clubs/${clubID}`)
+        .then((response) => response.data)
+        .catch((error: AxiosError<ErrorResponse>) => {
             console.error(error);
             throw new Error('Error fetching club');
         });
@@ -47,25 +51,66 @@ const fetchClub = async (clubID: uuid): Promise<Club> => {
  * @returns A Promise that resolves to the fetched contacts or rejects with an error
  * @throws Error if the contacts cannot be fetched
  * @see Contact
- * @see Contact[]
+ * @see Club
  */
 const fetchClubContacts = async (clubID: uuid): Promise<Contact[]> => {
     return api
         .get<Contact[]>(`/clubs/${clubID}/contacts`)
         .then((response) => response.data)
-        .catch((error) => {
+        .catch((error: AxiosError<ErrorResponse>) => {
             console.error(error);
             throw new Error('Error fetching contacts');
         });
+};
 
-    // const allContacts = clubContacts[
-    //     clubID as keyof typeof clubContacts
-    // ] as Contact[];
-    // if (!allContacts) {
-    //     throw new Error('Error fetching contacts');
-    // }
+/**
+ * Fetches all tags for a club by its ID.
+ *
+ * @param _clubID The ID of the club to fetch tags for
+ * @returns A Promise that resolves to the fetched tags or rejects with an error
+ * @throws Error if the tags cannot be fetched
+ * @see Tag
+ * @see Club
+ */
+const fetchClubTags = async (_clubID: uuid): Promise<Tag[]> => {
+    // return api
+    //     .get<Tag[]>(`/clubs/${clubID}/tags`)
+    //     .then((response) => response.data)
+    //     .catch((error: AxiosError<ErrorResponse>) => {
+    //         console.error(error);
+    //         throw new Error('Error fetching tags');
+    //     });
 
-    // return allContacts;
+    return [
+        {
+            id: '1',
+            name: 'Software',
+            created_at: new Date(),
+            updated_at: new Date(),
+            category_id: '1'
+        },
+        {
+            id: '2',
+            name: 'Design',
+            created_at: new Date(),
+            updated_at: new Date(),
+            category_id: '2'
+        },
+        {
+            id: '3',
+            name: 'Professional',
+            created_at: new Date(),
+            updated_at: new Date(),
+            category_id: '3'
+        },
+        {
+            id: '4',
+            name: 'Product Development',
+            created_at: new Date(),
+            updated_at: new Date(),
+            category_id: '4'
+        }
+    ];
 };
 
 /**
@@ -100,3 +145,4 @@ export const fetchClubTags = async (clubID: uuid): Promise<Tag[]> => {
             throw new Error('Error fetching contacts');
         });
 };
+export { fetchClubContacts, fetchClub, fetchClubs, fetchClubTags };
