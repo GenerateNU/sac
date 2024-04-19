@@ -1,19 +1,19 @@
 import React, { useEffect } from 'react';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { Tabs } from 'expo-router';
 
 import HomeSelectedIcon from '@/assets/images/svg/home-selected.svg';
 import HomeIcon from '@/assets/images/svg/home.svg';
+import NotificationIcon from '@/assets/images/svg/notification.svg';
 import ProfileSelectedIcon from '@/assets/images/svg/profile-selected.svg';
 import ProfileIcon from '@/assets/images/svg/profile.svg';
 import SearchSelectedIcon from '@/assets/images/svg/search-selected.svg';
 import SearchIcon from '@/assets/images/svg/search.svg';
-import { Wordmark } from '@/components/wordmark';
 import { useAuthStore } from '@/hooks/use-auth';
 
 const Layout = () => {
-    const { isLoggedIn, fetchUser } = useAuthStore();
+    const { isLoggedIn, fetchUser, user } = useAuthStore();
 
     useEffect(() => {
         if (isLoggedIn) fetchUser();
@@ -30,12 +30,27 @@ const Layout = () => {
                     ),
                     headerLeft: () => (
                         <View className="pl-6">
-                            <Wordmark color="primary" />
+                            <Text className="h-8 text-black text-[32px] font-normal">
+                                Hi, {user?.first_name}
+                            </Text>
+                        </View>
+                    ),
+                    headerRight: () => (
+                        <View className="pr-6">
+                            <NotificationIcon />
                         </View>
                     ),
                     headerShown: true,
                     tabBarIcon: ({ focused }) =>
-                        focused ? <HomeSelectedIcon /> : <HomeIcon />
+                        focused ? (
+                            <View className="pt-3">
+                                <HomeSelectedIcon width={35} height={35} />
+                            </View>
+                        ) : (
+                            <View className="pt-3">
+                                <HomeIcon width={35} height={35} />
+                            </View>
+                        )
                 }}
                 redirect={!isLoggedIn}
             />
@@ -45,7 +60,15 @@ const Layout = () => {
                     title: 'search',
                     headerShown: false,
                     tabBarIcon: ({ focused }) =>
-                        focused ? <SearchSelectedIcon /> : <SearchIcon />
+                        focused ? (
+                            <View className="pt-3">
+                                <SearchSelectedIcon width={35} height={35} />
+                            </View>
+                        ) : (
+                            <View className="pt-3">
+                                <SearchIcon width={35} height={35} />
+                            </View>
+                        )
                 }}
                 redirect={!isLoggedIn}
             />
@@ -55,7 +78,15 @@ const Layout = () => {
                     title: 'profile',
                     headerShown: false,
                     tabBarIcon: ({ focused }) =>
-                        focused ? <ProfileSelectedIcon /> : <ProfileIcon />
+                        focused ? (
+                            <View className="pt-3">
+                                <ProfileSelectedIcon width={35} height={35} />
+                            </View>
+                        ) : (
+                            <View className="pt-3">
+                                <ProfileIcon width={35} height={35} />
+                            </View>
+                        )
                 }}
                 redirect={!isLoggedIn}
             />

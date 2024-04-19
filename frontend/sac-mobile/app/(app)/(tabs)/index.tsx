@@ -1,36 +1,33 @@
 import React from 'react';
-import { SectionList, View } from 'react-native';
+import { SectionList, Text, View } from 'react-native';
 
 import { StatusBar } from 'expo-status-bar';
 
-import { FollowingHeader } from '@/app/(app)/(tabs)/_components/following-header';
-import { HomepageList } from '@/app/(app)/(tabs)/_components/homepage';
-import { useAuthStore } from '@/hooks/use-auth';
+import { HappeningToday } from './_components/happening-today';
+import { RecommendedClubs } from './_components/recommended-clubs';
+import { UpcomingEvents } from './_components/upcoming-events';
 
 const HomePage = () => {
-    const { user } = useAuthStore();
-
     return (
         <>
             <StatusBar style="dark" />
             <SectionList
                 sections={[
+                    { title: 'Happening Today', data: [<HappeningToday />] },
+                    { title: 'Upcoming Events', data: [<UpcomingEvents />] },
                     {
-                        data: [
-                            <FollowingHeader
-                                key={user?.id}
-                                id={user?.id || ''}
-                            />
-                        ]
-                    },
-                    {
-                        data: [<HomepageList key={user?.id} />]
+                        title: 'Recommended Clubs',
+                        data: [<RecommendedClubs />]
                     }
                 ]}
                 keyExtractor={(_, index) => index.toString()}
-                renderItem={({ item }) => <>{item}</>}
-                renderSectionHeader={() => <View className="px-[6%] pt-[3%]" />}
-                stickySectionHeadersEnabled={false}
+                renderItem={({ item }) => <View>{item}</View>}
+                renderSectionHeader={({ section: { title } }) => (
+                    <Text className="text-[18px] font-bold px-[6%] py-[3%]">
+                        {title}
+                    </Text>
+                )}
+                stickyHeaderHiddenOnScroll={true}
             />
         </>
     );
