@@ -9,7 +9,7 @@ const Welcome = () => {
     return (
         <View className="flex-col flex-1 bg-neutral-500 px-[5%] gap-y-5">
             <View className="bg-neutral-400 h-[38%] w-full rounded-xl" />
-            <Text className="flex flex-wrap text-5xl font-bold text-white">
+            <Text className="flex text-5xl font-bold text-white">
                 Welcome to Student Activity Calendar
             </Text>
             <Text className="text-2xl text-white leading-8 pl-[1%]">

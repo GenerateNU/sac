@@ -22,9 +22,11 @@ const FAQs = ({}: { clubID?: string }) => {
     }
 
     return (
-        <View className="flex-col w-full pb-[10%] gap-y-4">
+        <View className="flex-col w-full gap-y-1">
             <View className="flex-row items-center justify-between">
-                <Text className="text-lg font-semibold text-black">FAQ</Text>
+                <Text className="text-xl font-light leading-relaxed text-zinc-900">
+                    FAQ
+                </Text>
                 <TouchableOpacity
                     onPress={() => router.push('/(app)/club/faq/view-all-faqs')}
                 >
@@ -34,14 +36,13 @@ const FAQs = ({}: { clubID?: string }) => {
                 </TouchableOpacity>
             </View>
             <ScrollView className="pt-[2%]" horizontal={true}>
-                {faqs &&
-                    faqs.map((faq, index) => (
-                        <FaqCard
-                            key={index}
-                            question={faq.question}
-                            answer={faq.answer}
-                        />
-                    ))}
+                {faqs.map((faq) => (
+                    <FaqCard
+                        key={faq.id}
+                        question={faq.question}
+                        answer={faq.answer}
+                    />
+                ))}
             </ScrollView>
         </View>
     );

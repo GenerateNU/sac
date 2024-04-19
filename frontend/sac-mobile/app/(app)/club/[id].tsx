@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { Animated, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { LogBox } from 'react-native';
 
 import { useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -7,8 +8,8 @@ import { StatusBar } from 'expo-status-bar';
 import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet';
 
 import { TagList } from '@/components/all-tags';
+import { Description } from '@/components/description';
 import { HeaderImage } from '@/components/entity-header';
-import ExpandableText from '@/components/expandable-text';
 import { Title } from '@/components/title';
 import { useAuthStore } from '@/hooks/use-auth';
 import { useClub, useClubTags } from '@/hooks/use-club';
@@ -19,6 +20,28 @@ import ApplyBottomSheet from './_components/application-form-bottom-sheet';
 import { ClubAdmins } from './_components/club-admin-list';
 import { ClubInsights } from './_components/club-insights';
 
+LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
+LogBox.ignoreAllLogs(); //Ignore all log notifications
+
+const randomEventColorData = [
+    {
+        image: 'https://i.imgur.com/TM29405.png',
+        color: '#edadc6'
+    },
+    {
+        image: 'https://i.imgur.com/IfjHhrs.png',
+        color: '#b0e0eb'
+    },
+    {
+        image: 'https://i.imgur.com/TQQ7AEE.png',
+        color: '#adc9ed'
+    },
+    {
+        image: 'https://i.imgur.com/Gp0Wwa8.png',
+        color: '#F0C584'
+    }
+];
+
 const Club = () => {
     const { id } = useLocalSearchParams<{ id: string }>();
     const { user } = useAuthStore();
@@ -27,6 +50,10 @@ const Club = () => {
     const pan = useRef(new Animated.ValueXY()).current;
 
     const { data: club, isLoading, error, refetch } = useClub(id);
+    const randomEventColor =
+        randomEventColorData[
+            Math.round(Math.random() * (randomEventColorData.length - 1))
+        ];
 
     if (isLoading) {
         return <Text>Loading...</Text>;
@@ -61,7 +88,8 @@ const Club = () => {
             >
                 <View className="flex-col justify-between flex-1 w-full">
                     <HeaderImage
-                        image="https://blenderartists.org/uploads/default/optimized/4X/7/e/2/7e2d7bea4ac21388c4a96e1371f375c4ce00094b_2_1024x576.jpg"
+                        image={randomEventColor.image}
+                        logo={randomEventColor.image}
                         pan={pan}
                         type="club"
                         ref={ref}
@@ -72,34 +100,32 @@ const Club = () => {
                         style={{
                             display: 'flex',
                             flexDirection: 'column',
-                            padding: '3%',
+                            padding: '5%',
                             paddingTop: '2%',
                             gap: 30
                         }}
                     >
-                        <Title title={club.name} />
-                        {/* <SocialMediaIcons /> REMOVED Temporary needs new designs*/}
-                        <TagList id={id} tagQueryResult={useClubTags} />
-                        {/*
-                         <View>
-                            <Button variant='gray' size='screenwide' className='flex-col justify-between mb-4' onPress={handleOpenPress}>
-                                <Text className='font-bold text-left text-black'>Application Form</Text>
-                            </Button>
+                        <View
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 20
+                            }}
+                        >
+                            <Title title={club.name} />
+                            <TagList
+                                id={id}
+                                tagQueryResult={useClubTags}
+                                color={randomEventColor.color}
+                            />
                         </View>
-                        */}
-
                         <ClubInsights />
                         <View>
-                            <View className="pb-[2%]">
-                                <Text className="text-lg font-semibold text-black ">
-                                    Who we are
-                                </Text>
-                            </View>
-                            <ExpandableText maxLines={5}>
-                                {club.description}
-                            </ExpandableText>
+                            <Description
+                                title={'About the Club'}
+                                description={club.description}
+                            />
                         </View>
-
                         <ClubAdmins clubID={id} />
                         <Events clubID={id} />
                         <FAQs clubID={id} />
