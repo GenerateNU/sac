@@ -1,5 +1,12 @@
 import React, { useCallback } from 'react';
-import { Alert, Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+    Alert,
+    Button,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
+} from 'react-native';
 
 interface ItemProps {
     item: any;

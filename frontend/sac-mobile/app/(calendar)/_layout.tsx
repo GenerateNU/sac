@@ -1,6 +1,12 @@
 import React from 'react';
 import {
-    Dimensions, Platform, SafeAreaView, StatusBar, StyleSheet, Text, View
+    Dimensions,
+    Platform,
+    SafeAreaView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    View
 } from 'react-native';
 import { CalendarProvider, ExpandableCalendar } from 'react-native-calendars';
 import { Theme } from 'react-native-calendars/src/types';
