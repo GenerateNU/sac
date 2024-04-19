@@ -29,25 +29,7 @@ import { EventTime } from './_components/event-time';
 import { HostNames } from './_components/host-names';
 import { LocationView } from './_components/location-view';
 import { RSVPBottomSheet } from './_components/rsvp-bottom-sheet';
-
-const randomEventColorData = [
-    {
-        image: 'https://i.imgur.com/pLtAoSt.png',
-        color: '#EDA990'
-    },
-    {
-        image: 'https://i.imgur.com/1Auiabb.png',
-        color: '#C5D9A4'
-    },
-    {
-        image: 'https://i.imgur.com/pLtAoSt.png',
-        color: '#EA90BB'
-    },
-    {
-        image: 'https://i.imgur.com/pLtAoSt.png',
-        color: '#EBC767'
-    }
-];
+import { randomEventColorData } from '@/lib/utils';
 
 // TODO: handle link OR location
 const EventPage = () => {

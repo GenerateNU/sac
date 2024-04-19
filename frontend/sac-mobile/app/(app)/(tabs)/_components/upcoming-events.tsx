@@ -19,6 +19,13 @@ const UpcomingEvents = () => {
         return <Text>Error: {error.message}</Text>;
     }
 
+    if (!events) {
+        return <Text>No events found</Text>;
+    }
+
+    // Sort events by date
+    const sortedEvents = events.sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime());
+
     const renderEvents = ({ item }: { item: Event }) => {
         if (!isToday(item.start_time)) {
             return <EventHomePageCard event={item} />;
@@ -30,7 +37,7 @@ const UpcomingEvents = () => {
     return (
         <View style={{ paddingLeft: 20 }}>
             <FlatList
-                data={events}
+                data={sortedEvents}
                 renderItem={renderEvents}
                 keyExtractor={(event) => event.id}
                 horizontal

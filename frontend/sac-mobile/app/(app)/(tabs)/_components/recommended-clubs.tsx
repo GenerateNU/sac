@@ -23,6 +23,10 @@ const RecommendedClubs = () => {
     }
 
     const renderClubs = ({ item }: { item: Club }) => {
+        if (item.name === 'SAC') {
+            return null;
+        }
+
         return <ClubHomePageCard club={item} />;
     };
 

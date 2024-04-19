@@ -179,6 +179,25 @@ const isFAQ = (item: any): FAQ => {
     );
 };
 
+const randomEventColorData = [
+    {
+        image: 'https://i.imgur.com/pLtAoSt.png',
+        color: '#EDA990'
+    },
+    {
+        image: 'https://i.imgur.com/1Auiabb.png',
+        color: '#C5D9A4'
+    },
+    {
+        image: 'https://i.imgur.com/pLtAoSt.png',
+        color: '#EA90BB'
+    },
+    {
+        image: 'https://i.imgur.com/pLtAoSt.png',
+        color: '#EBC767'
+    }
+];
+
 export {
     cn,
     isToday,
@@ -188,5 +207,6 @@ export {
     graduationYear,
     tokenCache,
     experationTime,
-    extractTokens
+    extractTokens,
+    randomEventColorData
 };

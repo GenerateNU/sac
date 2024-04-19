@@ -15,10 +15,7 @@ const HomePage = () => {
                 sections={[
                     { title: 'Happening Today', data: [<HappeningToday />] },
                     { title: 'Upcoming Events', data: [<UpcomingEvents />] },
-                    {
-                        title: 'Recommended Clubs',
-                        data: [<RecommendedClubs />]
-                    }
+                    { title: 'Recommended Clubs', data: [<RecommendedClubs />] }
                 ]}
                 keyExtractor={(_, index) => index.toString()}
                 renderItem={({ item }) => <View>{item}</View>}
