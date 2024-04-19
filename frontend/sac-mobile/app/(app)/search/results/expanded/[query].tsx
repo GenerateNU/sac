@@ -13,7 +13,7 @@ const ResultsExpanded = () => {
 
     const clubCards =
         !isLoading && error == null
-            ? data!.map((club, ind, arr) => {
+            ? data!.map((club) => {
                   return <ClubCard club={club} className="h-28 mb-2" />;
               })
             : [];
