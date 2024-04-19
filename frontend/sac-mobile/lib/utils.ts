@@ -1,8 +1,9 @@
-import * as SecureStore from 'expo-secure-store';
-
 import { AxiosResponseHeaders, RawAxiosResponseHeaders } from 'axios';
 import { Buffer } from 'buffer';
+import calendarize from 'calendarize';
 import clsx, { ClassValue } from 'clsx';
+import { addDays, isSameWeek, setDate, subDays } from 'date-fns';
+import * as SecureStore from 'expo-secure-store';
 import { twMerge } from 'tailwind-merge';
 
 import { majorArr } from '@/lib/const';
@@ -10,9 +11,6 @@ import { Tokens } from '@/types/auth';
 import { Club } from '@/types/club';
 import { FAQ } from '@/types/faq';
 import { Item } from '@/types/item';
-import { addDays, getDay, getDaysInMonth, isSameWeek, setDate, subDays } from 'date-fns';
-import calendarize from 'calendarize';
-import { Club } from '@/types/club';
 
 /**
  * Nativewind CSS classnames generator

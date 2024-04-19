@@ -1,12 +1,5 @@
 import React, { useCallback } from 'react';
-import {
-    Alert,
-    Button,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
-} from 'react-native';
+import { Alert, Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface ItemProps {
     item: any;
@@ -40,8 +33,8 @@ const AgendaItem = (props: ItemProps) => {
                 <Text style={styles.itemDurationText}>{item.duration}</Text>
             </View>
             <View>
-              <Text style={styles.itemTitleText}>{item.title}</Text>
-              <Text style={styles.itemText}>{item.location}</Text>
+                <Text style={styles.itemTitleText}>{item.title}</Text>
+                <Text style={styles.itemText}>{item.location}</Text>
             </View>
             <View style={styles.itemButtonContainer}>
                 <Button color={'grey'} title={'Info'} onPress={buttonPressed} />
@@ -70,9 +63,9 @@ const styles = StyleSheet.create({
         color: 'black'
     },
     itemText: {
-      color: 'black',
-      paddingLeft: 16
-  },
+        color: 'black',
+        paddingLeft: 16
+    },
     itemDurationText: {
         color: 'grey',
         fontSize: 12,

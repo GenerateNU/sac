@@ -199,26 +199,70 @@ export const agendaItems = [
     {
         title: dates[9],
         data: [
-            { hour: '1pm', duration: '1h', title: 'Intramural game', location: 'Carter Field 1'},
-            { hour: '2pm', duration: '1h', title: 'Club GM', location: 'West Village G 102'},
-            { hour: '3pm', duration: '1h', title: 'Marino Yoga', location: 'Marino Center'}
+            {
+                hour: '1pm',
+                duration: '1h',
+                title: 'Intramural game',
+                location: 'Carter Field 1'
+            },
+            {
+                hour: '2pm',
+                duration: '1h',
+                title: 'Club GM',
+                location: 'West Village G 102'
+            },
+            {
+                hour: '3pm',
+                duration: '1h',
+                title: 'Marino Yoga',
+                location: 'Marino Center'
+            }
         ]
     },
     {
         title: dates[10],
-        data: [{ hour: '12am', duration: '1h', title: 'Gym Workout', location: 'Marino Center'}]
+        data: [
+            {
+                hour: '12am',
+                duration: '1h',
+                title: 'Gym Workout',
+                location: 'Marino Center'
+            }
+        ]
     },
     {
         title: dates[11],
         data: [
-            { hour: '1pm', duration: '1h', title: 'Intramural game', location: 'Carter Field 1'},
-            { hour: '2pm', duration: '1h', title: 'Club GM', location: 'Ryder Hall 289'},
-            { hour: '3pm', duration: '1h', title: 'Marino Yoga', location: 'Marino Center'}
+            {
+                hour: '1pm',
+                duration: '1h',
+                title: 'Intramural game',
+                location: 'Carter Field 1'
+            },
+            {
+                hour: '2pm',
+                duration: '1h',
+                title: 'Club GM',
+                location: 'Ryder Hall 289'
+            },
+            {
+                hour: '3pm',
+                duration: '1h',
+                title: 'Marino Yoga',
+                location: 'Marino Center'
+            }
         ]
     },
     {
         title: dates[12],
-        data: [{ hour: '12am', duration: '1h', title: 'Gym Workout', location: 'Marino Center'}]
+        data: [
+            {
+                hour: '12am',
+                duration: '1h',
+                title: 'Gym Workout',
+                location: 'Marino Center'
+            }
+        ]
     },
     {
         title: dates[13],
@@ -230,11 +274,25 @@ export const agendaItems = [
     },
     {
         title: dates[15],
-        data: [{ hour: '12am', duration: '1h', title: 'Gym Workout', location: 'Marino Center'}]
+        data: [
+            {
+                hour: '12am',
+                duration: '1h',
+                title: 'Gym Workout',
+                location: 'Marino Center'
+            }
+        ]
     },
     {
         title: dates[16],
-        data: [{ hour: '12am', duration: '1h', title: 'Gym Workout', location: 'Marino Center'}]
+        data: [
+            {
+                hour: '12am',
+                duration: '1h',
+                title: 'Gym Workout',
+                location: 'Marino Center'
+            }
+        ]
     },
     {
         title: dates[17],
@@ -243,19 +301,53 @@ export const agendaItems = [
     {
         title: dates[18],
         data: [
-            { hour: '12am', duration: '1h', title: 'Gym Workout', location: 'Marino Center'},
-            { hour: '1pm', duration: '1h', title: 'Intramural game', location: 'Carter Field 1'},
-            { hour: '2pm', duration: '1h', title: 'Club GM', location: 'West Village G 102'},
-            { hour: '3pm', duration: '1h', title: 'Marino Yoga', location: 'Marino Center'}
+            {
+                hour: '12am',
+                duration: '1h',
+                title: 'Gym Workout',
+                location: 'Marino Center'
+            },
+            {
+                hour: '1pm',
+                duration: '1h',
+                title: 'Intramural game',
+                location: 'Carter Field 1'
+            },
+            {
+                hour: '2pm',
+                duration: '1h',
+                title: 'Club GM',
+                location: 'West Village G 102'
+            },
+            {
+                hour: '3pm',
+                duration: '1h',
+                title: 'Marino Yoga',
+                location: 'Marino Center'
+            }
         ]
     },
     {
         title: dates[19],
-        data: [{ hour: '12am', duration: '1h', title: 'Gym Workout', location: 'Marino Center'}]
+        data: [
+            {
+                hour: '12am',
+                duration: '1h',
+                title: 'Gym Workout',
+                location: 'Marino Center'
+            }
+        ]
     },
     {
         title: dates[20],
-        data: [{ hour: '12am', duration: '1h', title: 'Gym Workout', location: 'Marino Center'}]
+        data: [
+            {
+                hour: '12am',
+                duration: '1h',
+                title: 'Gym Workout',
+                location: 'Marino Center'
+            }
+        ]
     },
     {
         title: dates[21],
@@ -263,7 +355,14 @@ export const agendaItems = [
     },
     {
         title: dates[22],
-        data: [{ hour: '12am', duration: '1h', title: 'Gym Workout', location: 'Marino Center'}]
+        data: [
+            {
+                hour: '12am',
+                duration: '1h',
+                title: 'Gym Workout',
+                location: 'Marino Center'
+            }
+        ]
     },
     {
         title: dates[23],
@@ -271,11 +370,25 @@ export const agendaItems = [
     },
     {
         title: dates[24],
-        data: [{ hour: '12am', duration: '1h', title: 'Gym Workout', location: 'Marino Center'}]
+        data: [
+            {
+                hour: '12am',
+                duration: '1h',
+                title: 'Gym Workout',
+                location: 'Marino Center'
+            }
+        ]
     },
     {
         title: dates[25],
-        data: [{ hour: '12am', duration: '1h', title: 'Gym Workout', location: 'Marino Center'}]
+        data: [
+            {
+                hour: '12am',
+                duration: '1h',
+                title: 'Gym Workout',
+                location: 'Marino Center'
+            }
+        ]
     },
     {
         title: dates[26],
