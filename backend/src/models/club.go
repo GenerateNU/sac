@@ -32,7 +32,7 @@ type Club struct {
 
 	Name                 string           `gorm:"type:varchar(255);not null" json:"name" validate:"required,max=255"`
 	Preview              string           `gorm:"type:varchar(255);not null" json:"preview" validate:"required,max=255"`
-	Description          string           `gorm:"type:text;not null" json:"description" validate:"required,http_url,s3_url,max=255"` // S3 URL
+	Description          string           `gorm:"type:text;not null" json:"description" validate:"required,http_url,s3_url,max=255"`
 	NumMembers           int              `gorm:"type:int;not null" json:"num_members" validate:"required,min=1"`
 	IsRecruiting         bool             `gorm:"type:bool;default:false;not null" json:"is_recruiting" validate:"required"`
 	RecruitmentCycle     RecruitmentCycle `gorm:"type:varchar(255);default:always;not null" json:"recruitment_cycle" validate:"required,max=255,oneof=fall spring fallSpring always"`
@@ -40,7 +40,7 @@ type Club struct {
 	WeeklyTimeCommitment int              `gorm:"type:int;default:NULL" json:"weekly_time_commitment" validate:"omitempty,min=1"`
 	OneWordToDescribeUs  string           `gorm:"type:varchar(255);default:NULL" json:"one_word_to_describe_us" validate:"omitempty,max=255"`
 	ApplicationLink      string           `gorm:"type:varchar(255);default:NULL" json:"application_link" validate:"required,max=255,http_url"`
-	Logo                 string           `gorm:"type:varchar(255);default:NULL" json:"logo" validate:"omitempty,http_url,s3_url,max=255"` // S3 URL
+	Logo                 string           `gorm:"type:varchar(255);default:NULL" json:"logo" validate:"omitempty,http_url,s3_url,max=255"`
 
 	Parent            *uuid.UUID       `gorm:"foreignKey:Parent" json:"-" validate:"uuid4"`
 	Tag               []Tag            `gorm:"many2many:club_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
@@ -61,27 +61,27 @@ type CreateClubRequestBody struct {
 	UserID               uuid.UUID        `json:"user_id" validate:"required,uuid4"`
 	Name                 string           `json:"name" validate:"required,max=255"`
 	Preview              string           `json:"preview" validate:"required,max=255"`
-	Description          string           `json:"description" validate:"required,http_url,s3_url,max=255"` // S3 URL
+	Description          string           `json:"description" validate:"required,http_url,s3_url,max=255"`
 	IsRecruiting         bool             `json:"is_recruiting" validate:"required"`
 	RecruitmentCycle     RecruitmentCycle `json:"recruitment_cycle" validate:"required,max=255,oneof=fall spring fallSpring always"`
 	RecruitmentType      RecruitmentType  `json:"recruitment_type" validate:"required,max=255,oneof=unrestricted tryout application"`
 	WeeklyTimeCommitment *int             `json:"weekly_time_commitment" validate:"omitempty,min=1"`
 	OneWordToDescribeUs  string           `json:"one_word_to_describe_us" validate:"omitempty,max=255"`
 	ApplicationLink      string           `json:"application_link" validate:"required,max=255,http_url"`
-	Logo                 string           `json:"logo" validate:"omitempty,http_url,s3_url,max=255"` // S3 URL
+	Logo                 string           `json:"logo" validate:"omitempty,http_url,s3_url,max=255"`
 }
 
 type UpdateClubRequestBody struct {
 	Name                 string           `json:"name" validate:"omitempty,max=255"`
 	Preview              string           `json:"preview" validate:"omitempty,max=255"`
-	Description          string           `json:"description" validate:"omitempty,http_url,s3_url,max=255"` // S3 URL
+	Description          string           `json:"description" validate:"omitempty,http_url,s3_url,max=255"`
 	IsRecruiting         bool             `json:"is_recruiting" validate:"omitempty"`
 	RecruitmentCycle     RecruitmentCycle `json:"recruitment_cycle" validate:"required,max=255,oneof=fall spring fallSpring always"`
 	RecruitmentType      RecruitmentType  `json:"recruitment_type" validate:"required,max=255,oneof=unrestricted tryout application"`
 	WeeklyTimeCommitment *int             `json:"weekly_time_commitment" validate:"omitempty,min=1"`
 	OneWordToDescribeUs  string           `json:"one_word_to_describe_us" validate:"omitempty,max=255"`
 	ApplicationLink      string           `json:"application_link" validate:"omitempty,required,max=255,http_url"`
-	Logo                 string           `json:"logo" validate:"omitempty,s3_url,max=255,http_url"` // S3 URL
+	Logo                 string           `json:"logo" validate:"omitempty,s3_url,max=255,http_url"`
 }
 
 type CreateClubTagsRequestBody struct {
