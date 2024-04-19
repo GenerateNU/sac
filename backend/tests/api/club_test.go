@@ -167,7 +167,9 @@ func TestCreateClubWorks(t *testing.T) {
 }
 
 func TestGetClubsWorks(t *testing.T) {
-	h.InitTest(t).TestOnStatusAndTester(h.TestRequest{
+	existingAppAssert, _, _ := CreateSampleClub(h.InitTest(t))
+
+	existingAppAssert.TestOnStatusAndTester(h.TestRequest{
 		Method: fiber.MethodGet,
 		Path:   "/api/v1/clubs/",
 		Role:   &models.Super,
@@ -191,7 +193,7 @@ func TestGetClubsWorks(t *testing.T) {
 
 				eaa.Assert.NilError(err)
 
-				eaa.Assert.Equal(1, len(dbClubs))
+				eaa.Assert.Equal(2, len(dbClubs)) // SAC super club AND the club we just created
 
 				dbClub := dbClubs[0]
 
@@ -207,16 +209,6 @@ func TestGetClubsWorks(t *testing.T) {
 				eaa.Assert.Equal(dbClub.OneWordToDescribeUs, respClub.OneWordToDescribeUs)
 				eaa.Assert.Equal(dbClub.ApplicationLink, respClub.ApplicationLink)
 				eaa.Assert.Equal(dbClub.Logo, respClub.Logo)
-
-				eaa.Assert.Equal("SAC", dbClub.Name)
-				eaa.Assert.Equal("SAC", dbClub.Preview)
-				eaa.Assert.Equal("SAC", dbClub.Description)
-				eaa.Assert.Equal(1, dbClub.NumMembers)
-				eaa.Assert.Equal(true, dbClub.IsRecruiting)
-				eaa.Assert.Equal(models.Always, dbClub.RecruitmentCycle)
-				eaa.Assert.Equal(models.Application, dbClub.RecruitmentType)
-				eaa.Assert.Equal("https://generatenu.com/apply", dbClub.ApplicationLink)
-				eaa.Assert.Equal("https://aws.amazon.com/s3", dbClub.Logo)
 			},
 		},
 	).Close()
