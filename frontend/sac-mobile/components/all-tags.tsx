@@ -30,9 +30,15 @@ const TagList = ({ tagQueryResult, id, color }: TagListProps) => {
     return (
         <FlatList
             data={tags}
-            renderItem={({ item }) => <TagComponent color={color} key={item.id} tag={item} />}
+            renderItem={({ item }) => (
+                <TagComponent color={color} key={item.id} tag={item} />
+            )}
             keyExtractor={(item) => item.id}
-            contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}
+            contentContainerStyle={{
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                gap: 10
+            }}
         />
     );
 };

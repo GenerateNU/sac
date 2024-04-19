@@ -41,17 +41,21 @@ const buttonStyles = cva(
 export interface ButtonProps
     extends PressableProps,
         VariantProps<typeof buttonStyles> {
-            color?: string;
-        }
+    color?: string;
+}
 
 const Button = ({ children, variant, size, color, ...props }: ButtonProps) => {
     return (
         <Pressable
             className={cn(buttonStyles({ variant, size }), props.className)}
             {...props}
-            style={color ? {
-                backgroundColor: color,
-            }: {}}
+            style={
+                color
+                    ? {
+                          backgroundColor: color
+                      }
+                    : {}
+            }
         >
             <Text
                 className={cn(

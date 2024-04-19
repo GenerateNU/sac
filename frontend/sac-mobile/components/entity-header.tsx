@@ -3,7 +3,6 @@ import { Animated, Image, Text, View } from 'react-native';
 
 import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet';
 
-import EventDemoDay from '@/assets/images/svg/event-demo-day.svg';
 import { Button } from '@/components/button';
 
 const HEADER_HEIGHT = 175;
@@ -14,7 +13,6 @@ const HEADER_TRANSLATE = HEADER_HEIGHT - HALF_LOGO_HEIGHT;
 type HeaderImageProps = {
     image: string;
     logo: string;
-    color?: string;
     pan: Animated.ValueXY;
     type: 'club' | 'event';
     userID: string;
@@ -24,7 +22,7 @@ type HeaderImageProps = {
 type Ref = BottomSheet;
 
 const HeaderImage = forwardRef<Ref, HeaderImageProps>(
-    ({ color, image, logo, pan, type }, ref) => {
+    ({ image, logo, pan, type }, ref) => {
         if (!ref) {
             return null;
         }

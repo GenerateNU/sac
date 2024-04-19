@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { Animated, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { LogBox } from 'react-native';
 
 import { useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -7,6 +8,7 @@ import { StatusBar } from 'expo-status-bar';
 import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet';
 
 import { TagList } from '@/components/all-tags';
+import { Description } from '@/components/description';
 import { HeaderImage } from '@/components/entity-header';
 import { Title } from '@/components/title';
 import { useAuthStore } from '@/hooks/use-auth';
@@ -17,10 +19,9 @@ import { FAQs } from './_components/all-faqs';
 import ApplyBottomSheet from './_components/application-form-bottom-sheet';
 import { ClubAdmins } from './_components/club-admin-list';
 import { ClubInsights } from './_components/club-insights';
-import { Description } from '@/components/description';
-import { LogBox } from 'react-native';
+
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
-LogBox.ignoreAllLogs();//Ignore all log notifications
+LogBox.ignoreAllLogs(); //Ignore all log notifications
 
 const randomEventColorData = [
     {
@@ -38,8 +39,8 @@ const randomEventColorData = [
     {
         image: 'https://i.imgur.com/Gp0Wwa8.png',
         color: '#F0C584'
-    },
-]
+    }
+];
 
 const Club = () => {
     const { id } = useLocalSearchParams<{ id: string }>();
@@ -49,7 +50,10 @@ const Club = () => {
     const pan = useRef(new Animated.ValueXY()).current;
 
     const { data: club, isLoading, error, refetch } = useClub(id);
-    const randomEventColor = randomEventColorData[Math.round(Math.random() * (randomEventColorData.length - 1))];
+    const randomEventColor =
+        randomEventColorData[
+            Math.round(Math.random() * (randomEventColorData.length - 1))
+        ];
 
     if (isLoading) {
         return <Text>Loading...</Text>;
@@ -86,7 +90,6 @@ const Club = () => {
                     <HeaderImage
                         image={randomEventColor.image}
                         logo={randomEventColor.image}
-                        color={randomEventColor.color}
                         pan={pan}
                         type="club"
                         ref={ref}
@@ -110,7 +113,11 @@ const Club = () => {
                             }}
                         >
                             <Title title={club.name} />
-                            <TagList id={id} tagQueryResult={useClubTags} color={randomEventColor.color} />
+                            <TagList
+                                id={id}
+                                tagQueryResult={useClubTags}
+                                color={randomEventColor.color}
+                            />
                         </View>
                         <ClubInsights />
                         <View>

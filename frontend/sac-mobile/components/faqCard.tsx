@@ -13,7 +13,7 @@ const FaqCard = ({ question, answer }: FaqCardProps) => {
 
     return (
         <View className="bg-white mr-3 p-4 rounded-2xl w-72 h-80 border flex-col justify-between border-[#CDCBCB]">
-            <View className='flex gap-y-2'>
+            <View className="flex gap-y-2">
                 {question && (
                     <Text className="w-10/12 text-lg font-semibold text-black">
                         {question}
