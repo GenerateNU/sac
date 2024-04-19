@@ -50,7 +50,7 @@ func (c *PineconeClient) Seed(db *gorm.DB) *errors.Error {
 
 	searchables := make([]Searchable, len(clubs))
 	for i := range clubs {
-		searchables = append(searchables, &clubs[i])
+		searchables[i] = &clubs[i]
 	}
 
 	var chunks [][]Searchable
