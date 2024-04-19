@@ -30,6 +30,25 @@ import { HostNames } from './_components/host-names';
 import { LocationView } from './_components/location-view';
 import { RSVPBottomSheet } from './_components/rsvp-bottom-sheet';
 
+const randomEventColorData = [
+    {
+        image: 'https://i.imgur.com/pLtAoSt.png',
+        color: '#EDA990',
+    },
+    {
+        image: 'https://i.imgur.com/1Auiabb.png',
+        color: '#C5D9A4',
+    },
+    {
+        image: 'https://i.imgur.com/pLtAoSt.png',
+        color: '#EA90BB',
+    },
+    {
+        image: 'https://i.imgur.com/pLtAoSt.png',
+        color: '#EBC767',
+    }
+]
+
 // TODO: handle link OR location
 const EventPage = () => {
     const { id } = useLocalSearchParams<{ id: string }>();
@@ -39,6 +58,7 @@ const EventPage = () => {
 
     const ref = useRef<BottomSheet>(null);
     const pan = useRef(new Animated.ValueXY()).current;
+    const randomEventColor = randomEventColorData[Math.round(Math.random() * (randomEventColorData.length - 1))];
 
     const [asset, assetError] = useAssets(
         require('@/assets/images/sandbox-header.png')
@@ -85,7 +105,8 @@ const EventPage = () => {
             >
                 <View>
                     <HeaderImage
-                        image="https://blenderartists.org/uploads/default/optimized/4X/7/e/2/7e2d7bea4ac21388c4a96e1371f375c4ce00094b_2_1024x576.jpg"
+                        image={randomEventColor.image}
+                        logo={randomEventColor.image}
                         pan={pan}
                         type="event"
                         ref={ref}
@@ -118,6 +139,7 @@ const EventPage = () => {
                                 <HostNames eventID={event[0].id} />
                             </View>
                             <TagList
+                                color={randomEventColor.color}
                                 id={event[0].id}
                                 tagQueryResult={useEventTags}
                             />

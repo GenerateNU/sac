@@ -14,7 +14,7 @@ const buttonVariants = {
         gray: ['bg-card-bg', 'text-black'],
         icon: ['bg-transparent'],
         underline: ['border-b font-bold border-gray-600 text-lg'],
-        pill: ['bg-[#FFE3AA]', 'text-black'],
+        pill: ['text-black'],
         menu: ['text-black text-lg']
     },
     size: {
@@ -40,13 +40,18 @@ const buttonStyles = cva(
 
 export interface ButtonProps
     extends PressableProps,
-        VariantProps<typeof buttonStyles> {}
+        VariantProps<typeof buttonStyles> {
+            color?: string;
+        }
 
-const Button = ({ children, variant, size, ...props }: ButtonProps) => {
+const Button = ({ children, variant, size, color, ...props }: ButtonProps) => {
     return (
         <Pressable
             className={cn(buttonStyles({ variant, size }), props.className)}
             {...props}
+            style={color ? {
+                backgroundColor: color,
+            }: {}}
         >
             <Text
                 className={cn(

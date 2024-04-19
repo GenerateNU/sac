@@ -51,7 +51,7 @@ const FollowingHeader = ({ id }: { id: string }) => {
                 <Text
                     numberOfLines={1}
                     ellipsizeMode="tail"
-                    className="flex-wrap pt-2 text-xs"
+                    className="pt-2 text-xs"
                 >
                     {item.name}
                 </Text>
