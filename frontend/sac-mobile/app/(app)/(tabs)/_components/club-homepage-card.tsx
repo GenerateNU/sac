@@ -42,11 +42,11 @@ const ClubHomePageCard = ({
             style={{ height: 'auto' }}
             onPress={() => router.push(`/club/${club.id}`)}
         >
-            <View className="flex-col items-start w-full gap-y-2">
-                <View className="flex-row items-center pb-2">
-                    <Image
-                        source={{ uri: randomEventColor.image }}
-                        style={{ width: 64, height: 64 }}
+            <View className="flex-col items-start">
+                <View className="flex-row items-center">
+                    <EventDemoDay
+                        width={64}
+                        height={64}
                         className="rounded-xl"
                     />
                     <View className="flex-col ml-5">

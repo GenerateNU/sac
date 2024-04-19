@@ -47,10 +47,10 @@ const EventHomePageCardHorizontal = ({
         >
             <View className="flex-row">
                 <View className="px-3 my-5">
-                    <View className="flex-row items-start pb-2">
-                        <Image
-                            source={{ uri: randomEventColor.image }}
-                            style={{ width: 98, height: 98 }}
+                    <View className="flex-row items-start">
+                        <EventDemoDay
+                            width={98}
+                            height={98}
                             className="rounded-xl"
                         />
                         <View className="pl-[5%] flex-col gap-y-1 shrink pr-[3%]">
