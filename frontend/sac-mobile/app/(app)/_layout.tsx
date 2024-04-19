@@ -35,7 +35,7 @@ const Layout = () => {
                         color: 'white'
                     },
                     headerLeft: () => <Arrow />,
-                    headerRight: () => <EventKabab />
+                    headerRight: () => <ClubKebab />
                 }}
             />
             <Stack.Screen

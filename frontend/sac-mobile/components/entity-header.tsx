@@ -1,11 +1,10 @@
-import React, { forwardRef, useState } from 'react';
-import { Animated, View } from 'react-native';
+import React, { forwardRef } from 'react';
+import { Animated, Text, View } from 'react-native';
 
 import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet';
 
 import EventDemoDay from '@/assets/images/svg/event-demo-day.svg';
 import { Button } from '@/components/button';
-import { useCreateClubFollowing, useDeleteClubFollowing, useUserFollowing } from '@/hooks/use-user';
 
 const HEADER_HEIGHT = 175;
 const LOGO_HEIGHT = 100;
@@ -23,43 +22,47 @@ type HeaderImageProps = {
 type Ref = BottomSheet;
 
 const HeaderImage = forwardRef<Ref, HeaderImageProps>(
-    ({ image, pan, type, userID, clubID }, ref) => {
-
+    ({ image, pan, type }, ref) => {
         if (!ref) {
             return null;
         }
 
-        const followClub = useCreateClubFollowing();
-        const unfollowClub = useDeleteClubFollowing();
-        const userFollowing = useUserFollowing(userID);
+        // Causing a rerender issue
+        // const followClub = useCreateClubFollowing();
+        // const unfollowClub = useDeleteClubFollowing();
+        // const userFollowing = useUserFollowing(userID);
 
-        const isFollowing = userFollowing.data?.map((club) => club.id).includes(clubID || '');
-        const [buttonClicked, setButtonClicked] = useState(isFollowing ? 'Following' : 'Follow');
+        // const isFollowing = userFollowing.data
+        //     ?.map((club) => club.id)
+        //     .includes(clubID || '');
+        // const [buttonClicked, setButtonClicked] = useState(
+        //     isFollowing ? 'Following' : 'Follow'
+        // );
 
-        const handlePressFollow = async () => {
-            if (buttonClicked === 'Following') {
-                await unfollowClub.mutateAsync({
-                    userID: userID,
-                    clubID: clubID || ''
-                });
+        // const handlePressFollow = async () => {
+        //     if (buttonClicked === 'Following') {
+        //         await unfollowClub.mutateAsync({
+        //             userID: userID,
+        //             clubID: clubID || ''
+        //         });
 
-                // force a refetch of the user following data
-                userFollowing.refetch();
-                setButtonClicked('Follow');
-            } else {
-                await followClub.mutateAsync({
-                    userID: userID,
-                    clubID: clubID || ''
-                });
+        //         // force a refetch of the user following data
+        //         userFollowing.refetch();
+        //         setButtonClicked('Follow');
+        //     } else {
+        //         await followClub.mutateAsync({
+        //             userID: userID,
+        //             clubID: clubID || ''
+        //         });
 
-                // force a refetch of the user following data
-                userFollowing.refetch();
-                setButtonClicked('Following');
-            }
-        };
+        //         // force a refetch of the user following data
+        //         userFollowing.refetch();
+        //         setButtonClicked('Following');
+        //     }
+        // };
         const buttonOnPress = {
             club: {
-                follow: handlePressFollow
+                follow: () => {}
             }
         };
 
@@ -121,7 +124,10 @@ const HeaderImage = forwardRef<Ref, HeaderImageProps>(
                                     className="w-18"
                                     onPress={buttonOnPress[type].follow}
                                 >
-                                    {buttonClicked === 'Following' ? 'Following' : 'Follow'}
+                                    <Text> Follow </Text>
+                                    {/* {buttonClicked === 'Following'
+                                        ? 'Following'
+                                        : 'Follow'} */}
                                 </Button>
                             </View>
                         </View>

@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
-import { Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
-
+import {
+    Text,
+    TouchableOpacity,
+    TouchableOpacityProps,
+    View
+} from 'react-native';
 
 export interface ExpandableTextProps extends TouchableOpacityProps {
     children: React.ReactNode;
     maxLines?: number;
 }
 
-const ExpandableText = ({ children, maxLines = 5, }: ExpandableTextProps) => {
+const ExpandableText = ({ children, maxLines = 5 }: ExpandableTextProps) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
     return (
@@ -17,7 +21,7 @@ const ExpandableText = ({ children, maxLines = 5, }: ExpandableTextProps) => {
                     {children}
                 </Text>
                 {!isExpanded && (
-                    <Text className='pt-2 font-light'>Read More...</Text>
+                    <Text className="pt-2 font-light">Read More...</Text>
                 )}
             </View>
         </TouchableOpacity>

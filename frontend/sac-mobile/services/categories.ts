@@ -1,8 +1,9 @@
+import { AxiosError } from 'axios';
+
 import { Category } from '@/types/category';
+import { ErrorResponse } from '@/types/error';
 
 import { api } from './api';
-import { AxiosError } from 'axios';
-import { ErrorResponse } from '@/types/error';
 
 const fetchCategories = async (): Promise<Category[]> => {
     return api
@@ -12,7 +13,6 @@ const fetchCategories = async (): Promise<Category[]> => {
             console.error(error);
             throw new Error('Error fetching categories');
         });
-
 };
 
 export { fetchCategories };

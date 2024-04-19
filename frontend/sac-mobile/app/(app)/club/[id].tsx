@@ -1,32 +1,22 @@
-import React, { useRef, useState } from 'react';
-import { Alert, Animated, Platform, RefreshControl, ScrollView, SectionList, Share, Text, Touchable, TouchableOpacity, View } from 'react-native';
-import { Button } from '@/components/button';
+import React, { useRef } from 'react';
+import { Animated, RefreshControl, ScrollView, Text, View } from 'react-native';
 
-import { useAuthStore } from '@/hooks/use-auth';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import ExpandableText from '@/components/expandable-text';
-import { ClubAdmins } from './_components/club-admin-list';
-import { FAQs } from './_components/all-faqs';
-import { SocialMediaIcons } from './_components/all-social-media';
-import { Events } from './_components/all-events';
-import { Link, router, Stack, useLocalSearchParams } from 'expo-router';
-import { MenuView } from '@react-native-menu/menu';
+import { useLocalSearchParams } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+
 import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet';
-import ApplyBottomSheet from './_components/application-form-bottom-sheet';
+
+import { TagList } from '@/components/all-tags';
+import { HeaderImage } from '@/components/entity-header';
+import ExpandableText from '@/components/expandable-text';
+import { Title } from '@/components/title';
+import { useAuthStore } from '@/hooks/use-auth';
 import { useClub, useClubTags } from '@/hooks/use-club';
 
-import SandboxLogo from '@/assets/images/svg/sandbox-logo.svg';
-import SandboxHeader from '@/assets/images/svg/sandbox-header.svg';
-import { TagList } from '@/components/all-tags';
-
-import CircleClock from '@/assets/images/svg/circle-clock.svg';
-import MemberCount from '@/assets/images/svg/members.svg';
-import PeaceHand from '@/assets/images/svg/peace-hand.svg';
-import { pluralize } from '@/lib/utils';
-import { useCreateClubFollowing, useDeleteClubFollowing, useUserFollowing } from '@/hooks/use-user';
-import { HeaderImage } from '@/components/entity-header';
-import { StatusBar } from 'expo-status-bar';
-import { Title } from '@/components/title';
+import { Events } from './_components/all-events';
+import { FAQs } from './_components/all-faqs';
+import ApplyBottomSheet from './_components/application-form-bottom-sheet';
+import { ClubAdmins } from './_components/club-admin-list';
 import { ClubInsights } from './_components/club-insights';
 
 const Club = () => {
@@ -88,18 +78,22 @@ const Club = () => {
                         }}
                     >
                         <Title title={club.name} />
-                        {/* <SocialMediaIcons /> */}
+                        {/* <SocialMediaIcons /> REMOVED Temporary needs new designs*/}
                         <TagList id={id} tagQueryResult={useClubTags} />
-                        {/* <View>
+                        {/*
+                         <View>
                             <Button variant='gray' size='screenwide' className='flex-col justify-between mb-4' onPress={handleOpenPress}>
                                 <Text className='font-bold text-left text-black'>Application Form</Text>
-                        </Button>
-                        </View> */}
+                            </Button>
+                        </View>
+                        */}
 
                         <ClubInsights />
                         <View>
-                            <View className='pb-[2%]'>
-                                <Text className="text-lg font-semibold text-black ">Who we are</Text>
+                            <View className="pb-[2%]">
+                                <Text className="text-lg font-semibold text-black ">
+                                    Who we are
+                                </Text>
                             </View>
                             <ExpandableText maxLines={5}>
                                 {club.description}
@@ -116,7 +110,6 @@ const Club = () => {
         </>
     );
 };
-
 
 // export const ClubHeader = ({ userID, clubID }: { userID: string; clubID: string }) => {
 //     const followClub = useCreateClubFollowing();

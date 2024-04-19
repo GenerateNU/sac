@@ -29,13 +29,13 @@ const useUpdateUser = () => {
             userID,
             updateUserRequestBody
         }: {
-                userID: uuid;
+            userID: uuid;
             updateUserRequestBody: {
                 graduation_year: number;
                 college: string;
                 graduation_cycle: string;
             };
-            }) => updateUser(userID, updateUserRequestBody),
+        }) => updateUser(userID, updateUserRequestBody),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['user'] });
         }
@@ -71,7 +71,9 @@ const useCreateClubFollowing = (): UseMutationResult<
     return useMutation({
         mutationFn: ({ userID, clubID }) => createUserFollowing(userID, clubID),
         onSuccess: (_, variables: { userID: uuid; clubID: uuid }, __) => {
-            queryClient.invalidateQueries({ queryKey: [`user${variables.userID}following`] });
+            queryClient.invalidateQueries({
+                queryKey: [`user${variables.userID}following`]
+            });
         }
     });
 };

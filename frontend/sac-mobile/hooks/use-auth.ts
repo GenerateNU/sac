@@ -1,10 +1,11 @@
 import { create } from 'zustand';
 
 import { tokenCache } from '@/lib/utils';
+import { completeVerification, login, logout, signUp } from '@/services/auth';
 import { getCurrentUser } from '@/services/user';
 import { Tokens } from '@/types/auth';
 import { User } from '@/types/user';
-import { completeVerification, login, logout, signUp } from '@/services/auth';
+
 // import { login, logout, register, verifyEmail } from '@/services/auth';
 
 type UserSignUp = {

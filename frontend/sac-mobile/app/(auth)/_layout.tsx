@@ -3,8 +3,8 @@ import { View } from 'react-native';
 
 import { Stack, router } from 'expo-router';
 
-import { Button } from '@/components/button';
 import { Arrow } from '@/components/arrow';
+import { Button } from '@/components/button';
 import { Wordmark } from '@/components/wordmark';
 import { useAuthStore } from '@/hooks/use-auth';
 
@@ -81,7 +81,10 @@ const Layout = () => {
                         <View className="h-full bg-neutral-100" />
                     ),
                     headerRight: () => (
-                        <Arrow direction={'right'} onPress={() => router.replace('/(app)/(tabs)/')} />
+                        <Arrow
+                            direction={'right'}
+                            onPress={() => router.replace('/(app)/(tabs)/')}
+                        />
                     )
                 }}
             />
@@ -95,7 +98,10 @@ const Layout = () => {
                         <View className="h-full bg-neutral-100" />
                     ),
                     headerRight: () => (
-                        <Arrow direction={'right'} onPress={() => router.replace('/(app)/(tabs)/')} />
+                        <Arrow
+                            direction={'right'}
+                            onPress={() => router.replace('/(app)/(tabs)/')}
+                        />
                     )
                 }}
             />

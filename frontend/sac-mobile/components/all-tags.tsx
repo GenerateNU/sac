@@ -1,13 +1,14 @@
 import { FlatList, Text } from 'react-native';
 
-import { Tag as TagComponent } from '@/components/tag';
-import { uuid } from '@/types/uuid';
 import { UseQueryResult } from '@tanstack/react-query';
+
+import { Tag as TagComponent } from '@/components/tag';
 import { Tag } from '@/types/tag';
+import { uuid } from '@/types/uuid';
 
 type TagListProps = {
-    id: uuid
-    tagQueryResult: (id: uuid) => UseQueryResult<Tag[], Error>
+    id: uuid;
+    tagQueryResult: (id: uuid) => UseQueryResult<Tag[], Error>;
 };
 
 const TagList = ({ tagQueryResult, id }: TagListProps) => {

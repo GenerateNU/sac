@@ -32,10 +32,7 @@ const getCurrentUser = async (): Promise<User> => {
  * @see User
  * @see Tag
  */
-const createUserTags = async (
-    userID: uuid,
-    tagIDs: uuid[]
-): Promise<void> => {
+const createUserTags = async (userID: uuid, tagIDs: uuid[]): Promise<void> => {
     return api
         .post<void>(`/users/${userID}/tags`, { tags: tagIDs })
         .then((response) => response.data)
@@ -43,7 +40,7 @@ const createUserTags = async (
             console.error(error);
             throw new Error('Error associating users to a tag');
         });
-}
+};
 
 /**
  * Updates the user's information.
@@ -109,8 +106,8 @@ const createUserFollowing = async (
         .catch((error: AxiosError<ErrorResponse>) => {
             console.error(error);
             throw new Error('Error following clubs');
-        })
-}
+        });
+};
 
 /**
  * Deletes a user following a club.

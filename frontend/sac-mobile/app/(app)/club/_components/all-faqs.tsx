@@ -1,12 +1,13 @@
-import { Button } from '@/components/button';
-import { FaqCard } from '@/components/faqCard';
-import { useClubFAQs } from '@/hooks/use-club';
-import { Link, router } from 'expo-router';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
-const FAQs = ({ clubID }: { clubID: string }) => {
-// const { data: faqs, isLoading, error } = useClubFAQs(clubID);
-    const { data: faqs, isLoading, error } = useClubFAQs("sac");
+import { router } from 'expo-router';
+
+import { FaqCard } from '@/components/faqCard';
+import { useClubFAQs } from '@/hooks/use-club';
+
+const FAQs = ({}: { clubID?: string }) => {
+    // const { data: faqs, isLoading, error } = useClubFAQs(clubID);
+    const { data: faqs, isLoading, error } = useClubFAQs('sac');
 
     if (isLoading) {
         return <Text>Loading...</Text>;
@@ -27,17 +28,23 @@ const FAQs = ({ clubID }: { clubID: string }) => {
                 <TouchableOpacity
                     onPress={() => router.push('/(app)/club/faq/view-all-faqs')}
                 >
-                    <Text className='text-neutral-400 text-[15px] font-normal'>View All</Text>
+                    <Text className="text-neutral-400 text-[15px] font-normal">
+                        View All
+                    </Text>
                 </TouchableOpacity>
             </View>
             <ScrollView className="pt-[2%]" horizontal={true}>
-                {faqs && faqs.map((faq, index) => (
-                    <FaqCard key={index} question={faq.question} answer={faq.answer} />
-                ))}
+                {faqs &&
+                    faqs.map((faq, index) => (
+                        <FaqCard
+                            key={index}
+                            question={faq.question}
+                            answer={faq.answer}
+                        />
+                    ))}
             </ScrollView>
-
-        </View >
+        </View>
     );
-}
+};
 
 export { FAQs };

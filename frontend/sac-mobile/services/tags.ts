@@ -1,8 +1,9 @@
+import { AxiosError } from 'axios';
+
+import { ErrorResponse } from '@/types/error';
 import { Tag } from '@/types/tag';
 
 import { api } from './api';
-import { ErrorResponse } from '@/types/error';
-import { AxiosError } from 'axios';
 
 /**
  * Fetches all tags.
@@ -21,4 +22,4 @@ const fetchTags = async (): Promise<Tag[]> => {
         });
 };
 
-export { fetchTags }
+export { fetchTags };

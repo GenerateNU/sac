@@ -8,31 +8,27 @@ import {
     View
 } from 'react-native';
 
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { useAssets } from 'expo-asset';
+import { useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
 import BottomSheet from '@gorhom/bottom-sheet';
 
-import { MenuView } from '@react-native-menu/menu';
-
-// import { HostList } from '@/app/(app)/event/_components/host-list';
-import ShareIcon from '@/assets/images/svg/share.svg';
 import { TagList } from '@/components/all-tags';
 import { Button } from '@/components/button';
 import { Description } from '@/components/description';
+import { HeaderImage } from '@/components/entity-header';
 import { Title } from '@/components/title';
+import { useAuthStore } from '@/hooks/use-auth';
 import { useEvent, useEventTags } from '@/hooks/use-event';
 
+import { AllHosts } from './_components/all-hosts';
 import { EventDate } from './_components/event-date';
 import { EventLocation } from './_components/event-location';
 import { EventTime } from './_components/event-time';
 import { HostNames } from './_components/host-names';
 import { LocationView } from './_components/location-view';
-import { AllHosts } from './_components/all-hosts';
 import { RSVPBottomSheet } from './_components/rsvp-bottom-sheet';
-import { HeaderImage } from '@/components/entity-header';
-import { useAssets } from 'expo-asset';
-import { useAuthStore } from '@/hooks/use-auth';
 
 // TODO: handle link OR location
 const EventPage = () => {
@@ -44,7 +40,9 @@ const EventPage = () => {
     const ref = useRef<BottomSheet>(null);
     const pan = useRef(new Animated.ValueXY()).current;
 
-    const [asset, assetError] = useAssets(require('@/assets/images/sandbox-header.png'));
+    const [asset, assetError] = useAssets(
+        require('@/assets/images/sandbox-header.png')
+    );
     if (assetError) {
         console.error(assetError);
         return <Text>Error fetching event</Text>;
@@ -56,6 +54,10 @@ const EventPage = () => {
 
     if (isLoading) {
         return <ActivityIndicator size={'large'} />;
+    }
+
+    if (error) {
+        return <Text>Error: {error.message}</Text>;
     }
 
     if (!event) {
@@ -115,7 +117,10 @@ const EventPage = () => {
                                 <Title title={event[0].name} />
                                 <HostNames eventID={event[0].id} />
                             </View>
-                            <TagList id={event[0].id} tagQueryResult={useEventTags} />
+                            <TagList
+                                id={event[0].id}
+                                tagQueryResult={useEventTags}
+                            />
                         </View>
                         <View>
                             <View className="flex-row justify-between pb-5">

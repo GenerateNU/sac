@@ -1,4 +1,4 @@
-import { Text, Pressable, PressableProps } from 'react-native';
+import { Pressable, PressableProps, Text } from 'react-native';
 
 import { VariantProps, cva } from 'class-variance-authority';
 
@@ -40,7 +40,7 @@ const buttonStyles = cva(
 
 export interface ButtonProps
     extends PressableProps,
-    VariantProps<typeof buttonStyles> { }
+        VariantProps<typeof buttonStyles> {}
 
 const Button = ({ children, variant, size, ...props }: ButtonProps) => {
     return (
@@ -48,13 +48,18 @@ const Button = ({ children, variant, size, ...props }: ButtonProps) => {
             className={cn(buttonStyles({ variant, size }), props.className)}
             {...props}
         >
-            <Text className={cn(...(buttonVariants.variant[variant ?? 'default'] ?? buttonVariants.variant.default), 'text-center')}>
+            <Text
+                className={cn(
+                    ...(buttonVariants.variant[variant ?? 'default'] ??
+                        buttonVariants.variant.default),
+                    'text-center'
+                )}
+            >
                 {children as React.ReactNode}
             </Text>
         </Pressable>
     );
 };
-
 
 Button.displayName = 'Button';
 

@@ -241,7 +241,6 @@ export const refreshAccessToken = async (
 //         });
 // };
 
-
 // /**
 //  * Completes the verification process for the user with the given email and code.
 //  *
@@ -300,7 +299,6 @@ export const refreshAccessToken = async (
 //             throw new Error('Error logging in');
 //         });
 // };
-
 
 // /**
 //  * Logout the user.

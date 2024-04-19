@@ -1,7 +1,7 @@
+import { UseQueryResult, useQuery } from '@tanstack/react-query';
+
 import { fetchTags } from '@/services/tags';
 import { Tag } from '@/types/tag';
-import { uuid } from '@/types/uuid';
-import { UseQueryResult, useQuery } from '@tanstack/react-query';
 
 const useTags = (): UseQueryResult<Tag[], Error> => {
     return useQuery<Tag[], Error>({
@@ -10,4 +10,4 @@ const useTags = (): UseQueryResult<Tag[], Error> => {
     });
 };
 
-export { useTags }
+export { useTags };

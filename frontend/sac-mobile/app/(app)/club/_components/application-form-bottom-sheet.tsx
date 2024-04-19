@@ -59,7 +59,9 @@ const ApplyBottomSheet = forwardRef<Ref>((_, ref) => {
             backdropComponent={renderBackdrop}
         >
             <View className="flex flex-col p-4">
-                <Text className="text-xl font-bold mb-2 text-center">Application Form</Text>
+                <Text className="text-xl font-bold mb-2 text-center">
+                    Application Form
+                </Text>
                 <View className="flex flex-col space-y-2">
                     <TouchableOpacity
                         className={`flex-row items-center p-2 rounded-md
@@ -80,11 +82,15 @@ const ApplyBottomSheet = forwardRef<Ref>((_, ref) => {
                        ${selectedOption === 'both' ? 'bg-gray-400' : 'bg-gray-100'}`}
                         onPress={() => handleOptionChange('both')}
                     >
-                        <Text className="text-lg">Open in browser and send to email</Text>
+                        <Text className="text-lg">
+                            Open in browser and send to email
+                        </Text>
                     </TouchableOpacity>
                 </View>
                 <Button className="p-3 mt-4 rounded-md" onPress={handleSubmit}>
-                    <Text className="text-white font-medium text-center">Send</Text>
+                    <Text className="text-white font-medium text-center">
+                        Send
+                    </Text>
                 </Button>
             </View>
         </BottomSheet>

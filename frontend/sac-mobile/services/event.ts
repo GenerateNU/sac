@@ -1,11 +1,12 @@
+import { AxiosError } from 'axios';
+
 import { Club } from '@/types/club';
+import { ErrorResponse } from '@/types/error';
 import { Event } from '@/types/event';
 import { Tag } from '@/types/tag';
 import { uuid } from '@/types/uuid';
 
 import { api } from './api';
-import { AxiosError } from 'axios';
-import { ErrorResponse } from '@/types/error';
 
 /**
  * Fetches an event by its ID.
