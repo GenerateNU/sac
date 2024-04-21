@@ -1,11 +1,11 @@
 import React from 'react';
-import { Pressable, Text, View, Image } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 import { router } from 'expo-router';
 
 import EventDemoDay from '@/assets/images/svg/event-demo-day.svg';
 import { useClubTags } from '@/hooks/use-club';
-import { pluralize, randomEventColorData } from '@/lib/utils';
+import { pluralize } from '@/lib/utils';
 import { Club } from '@/types/club';
 
 import { HomePageTagList } from './event-homepage-card';
@@ -30,11 +30,6 @@ const ClubHomePageCard = ({
     if (!tags) {
         return <Text>No tags found</Text>;
     }
-
-    const randomEventColor =
-        randomEventColorData[
-        Math.round(Math.random() * (randomEventColorData.length - 1))
-        ];
 
     return (
         <Pressable

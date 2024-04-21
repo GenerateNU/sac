@@ -21,6 +21,7 @@ import { HeaderImage } from '@/components/entity-header';
 import { Title } from '@/components/title';
 import { useAuthStore } from '@/hooks/use-auth';
 import { useEvent, useEventTags } from '@/hooks/use-event';
+import { randomEventColorData } from '@/lib/utils';
 
 import { AllHosts } from './_components/all-hosts';
 import { EventDate } from './_components/event-date';
@@ -29,7 +30,6 @@ import { EventTime } from './_components/event-time';
 import { HostNames } from './_components/host-names';
 import { LocationView } from './_components/location-view';
 import { RSVPBottomSheet } from './_components/rsvp-bottom-sheet';
-import { randomEventColorData } from '@/lib/utils';
 
 // TODO: handle link OR location
 const EventPage = () => {

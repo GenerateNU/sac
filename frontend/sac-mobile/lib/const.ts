@@ -1,4 +1,3 @@
-// export const API_BASE_URL = ' https://f2d8-155-33-133-25.ngrok-free.app/api/v1';
 import { FAQ } from '@/types/faq';
 
 export const API_BASE_URL = 'http://localhost:8080/api/v1'; // 'http://localhost:8080/api/v1';

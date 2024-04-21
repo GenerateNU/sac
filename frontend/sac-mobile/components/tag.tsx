@@ -13,7 +13,7 @@ type TagProps = {
 const Tag = ({ tag, color }: TagProps) => {
     return (
         <Button
-            onPress={() => router.push(`/tag/${tag.id}`)}
+            onPress={() => router.push(`/(app)/search/results/${tag.name}`)}
             size={'pill'}
             variant={'pill'}
             color={color}
