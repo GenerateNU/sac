@@ -23,8 +23,10 @@ const UpcomingEvents = () => {
         return <Text>No events found</Text>;
     }
 
-    // Sort events by date
-    const sortedEvents = events.sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime());
+    const sortedEvents = events.sort(
+        (a, b) =>
+            new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
+    );
 
     const renderEvents = ({ item }: { item: Event }) => {
         if (!isToday(item.start_time)) {

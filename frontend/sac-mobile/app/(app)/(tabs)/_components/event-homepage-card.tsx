@@ -1,21 +1,19 @@
 import React from 'react';
 import { ActivityIndicator, Image, Pressable, Text, View } from 'react-native';
 
-import { useAssets } from 'expo-asset';
 import { router } from 'expo-router';
 
 import { UseQueryResult } from '@tanstack/react-query';
 
 import BluePin from '@/assets/images/svg/blue-pin.svg';
-import EventDemoDay from '@/assets/images/svg/event-demo-day.svg';
 import Pin from '@/assets/images/svg/pin.svg';
 import { useClub } from '@/hooks/use-club';
 import { useEventTags } from '@/hooks/use-event';
 import { isToday } from '@/lib/utils';
+import { randomEventColorData } from '@/lib/utils';
 import { Event } from '@/types/event';
 import { Tag } from '@/types/tag';
 import { uuid } from '@/types/uuid';
-import { randomEventColorData } from '@/lib/utils';
 
 type EventHomePageCardHorizontalProps = {
     event: Event;
@@ -37,7 +35,7 @@ const EventHomePageCardHorizontal = ({
 
     const randomEventColor =
         randomEventColorData[
-        Math.round(Math.random() * (randomEventColorData.length - 1))
+            Math.round(Math.random() * (randomEventColorData.length - 1))
         ];
 
     return (
@@ -48,9 +46,10 @@ const EventHomePageCardHorizontal = ({
             <View className="flex-row">
                 <View className="px-3 my-5">
                     <View className="flex-row items-start">
-                        <EventDemoDay
-                            width={98}
-                            height={98}
+                        <Image
+                            source={{ uri: randomEventColor.image }}
+                            style={{ width: 98, height: 98 }}
+                            resizeMode="cover"
                             className="rounded-xl"
                         />
                         <View className="pl-[5%] flex-col gap-y-1 shrink pr-[3%]">
@@ -105,10 +104,9 @@ const EventHomePageCard = ({ event }: { event: Event }) => {
         return <Text>Error: {error.message}</Text>;
     }
 
-
     const randomEventColor =
         randomEventColorData[
-        Math.round(Math.random() * (randomEventColorData.length - 1))
+            Math.round(Math.random() * (randomEventColorData.length - 1))
         ];
 
     return (
@@ -164,8 +162,8 @@ const EventHomePageCard = ({ event }: { event: Event }) => {
                         </Text>
                     </View>
                 </View>
-            </View >
-        </Pressable >
+            </View>
+        </Pressable>
     );
 };
 

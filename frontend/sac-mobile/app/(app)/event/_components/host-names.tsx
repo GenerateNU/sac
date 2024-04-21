@@ -32,11 +32,23 @@ const HostNames = ({ eventID }: { eventID: uuid }) => {
                         onPress={() => router.push(`/club/${host.id}`)}
                         style={{ flexDirection: 'row', flexWrap: 'wrap' }}
                     >
-                        <Text style={{ fontSize: 14, fontWeight: 'bold', color: 'black' }}>
+                        <Text
+                            style={{
+                                fontSize: 14,
+                                fontWeight: 'bold',
+                                color: 'black'
+                            }}
+                        >
                             {host.name}
                         </Text>
                     </Pressable>
-                    <Text style={{ fontSize: 14, fontWeight: '300', color: 'gray' }}>
+                    <Text
+                        style={{
+                            fontSize: 14,
+                            fontWeight: '300',
+                            color: 'gray'
+                        }}
+                    >
                         {index < hosts.length - 2
                             ? ', '
                             : index === hosts.length - 2
