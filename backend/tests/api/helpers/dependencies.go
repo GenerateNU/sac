@@ -1,10 +1,10 @@
 package helpers
 
 import (
-	"github.com/GenerateNU/sac/backend/src/email"
-	"github.com/GenerateNU/sac/backend/src/file"
-	"github.com/GenerateNU/sac/backend/src/search"
-	"github.com/GenerateNU/sac/backend/src/types"
+	"github.com/GenerateNU/sac/backend/email"
+	"github.com/GenerateNU/sac/backend/file"
+	"github.com/GenerateNU/sac/backend/search"
+	"github.com/GenerateNU/sac/backend/types"
 )
 
 func NewMockDependencies() *types.Dependencies {

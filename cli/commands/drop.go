@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/GenerateNU/sac/backend/src/config"
+	"github.com/GenerateNU/sac/backend/config"
 	"github.com/urfave/cli/v2"
 )
 

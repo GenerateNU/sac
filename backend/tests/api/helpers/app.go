@@ -5,8 +5,8 @@ import (
 	"net"
 	"path/filepath"
 
-	"github.com/GenerateNU/sac/backend/src/config"
-	"github.com/GenerateNU/sac/backend/src/server"
+	"github.com/GenerateNU/sac/backend/config"
+	"github.com/GenerateNU/sac/backend/server"
 	"github.com/gofiber/fiber/v2"
 	"github.com/huandu/go-assert"
 	"gorm.io/gorm"

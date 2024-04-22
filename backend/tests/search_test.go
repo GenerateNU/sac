@@ -3,9 +3,9 @@ package tests
 import (
 	"testing"
 
-	"github.com/GenerateNU/sac/backend/src/config"
-	"github.com/GenerateNU/sac/backend/src/constants"
-	"github.com/GenerateNU/sac/backend/src/search"
+	"github.com/GenerateNU/sac/backend/config"
+	"github.com/GenerateNU/sac/backend/constants"
+	"github.com/GenerateNU/sac/backend/search"
 	m "github.com/garrettladley/mattress"
 	"github.com/h2non/gock"
 	"github.com/huandu/go-assert"

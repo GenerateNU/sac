@@ -7,7 +7,7 @@ import (
 	"os/user"
 	"sync"
 
-	"github.com/GenerateNU/sac/backend/src/config"
+	"github.com/GenerateNU/sac/backend/config"
 	_ "github.com/lib/pq"
 	"github.com/urfave/cli/v2"
 )
