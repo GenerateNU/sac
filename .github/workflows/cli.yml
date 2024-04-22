@@ -65,3 +65,9 @@ jobs:
         with:
           version: latest
           working-directory: ./cli/
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run tests
+        run: echo "Woah there, we have no CLI tests as of right now. Let's just say we're passing." && exit 0

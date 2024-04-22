@@ -25,7 +25,7 @@ if [[ -z "${SKIP_DOCKER}" ]]
 then
   RUNNING_POSTGRES_CONTAINER=$(docker ps --filter 'name=postgres' --format '{{.ID}}')
   if [[ -n $RUNNING_POSTGRES_CONTAINER ]]; then
-    echo >&2 "there is a postgres container already running, kill it with"
+    echo >&2 "there is a postgres container already running, killing it..."
     docker kill ${RUNNING_POSTGRES_CONTAINER}
   fi
   docker run \
@@ -45,6 +45,6 @@ done
 
 >&2 echo "Postgres is up and running on port ${DB_PORT} - running migrations now!"
 
-migrate -path ./backend/migrations/ -database postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable up
+migrate -path ./backend/migrations/ -database postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable -verbose up
 
 >&2 echo "Postgres has been migrated, ready to go!"

@@ -4,7 +4,6 @@ import (
 	"os"
 	"os/exec"
 
-	_ "github.com/lib/pq"
 	"github.com/urfave/cli/v2"
 )
 
