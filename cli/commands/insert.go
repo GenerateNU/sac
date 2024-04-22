@@ -6,7 +6,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/GenerateNU/sac/backend/src/config"
+	"github.com/GenerateNU/sac/backend/config"
 	"github.com/lib/pq"
 	"github.com/urfave/cli/v2"
 )
