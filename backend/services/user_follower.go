@@ -1,0 +1,56 @@
+package services
+
+import (
+	"github.com/GenerateNU/sac/backend/errors"
+	"github.com/GenerateNU/sac/backend/models"
+	"github.com/GenerateNU/sac/backend/transactions"
+	"github.com/GenerateNU/sac/backend/types"
+	"github.com/GenerateNU/sac/backend/utilities"
+)
+
+type UserFollowerServiceInterface interface {
+	CreateFollowing(userId string, clubId string) *errors.Error
+	DeleteFollowing(userId string, clubId string) *errors.Error
+	GetFollowing(userId string) ([]models.Club, *errors.Error)
+}
+
+type UserFollowerService struct {
+	types.ServiceParams
+}
+
+func NewUserFollowerService(serviceParams types.ServiceParams) UserFollowerServiceInterface {
+	return &UserFollowerService{serviceParams}
+}
+
+func (u *UserFollowerService) CreateFollowing(userId string, clubId string) *errors.Error {
+	userIdAsUUID, err := utilities.ValidateID(userId)
+	if err != nil {
+		return err
+	}
+	clubIdAsUUID, err := utilities.ValidateID(clubId)
+	if err != nil {
+		return err
+	}
+	return transactions.CreateFollowing(u.DB, *userIdAsUUID, *clubIdAsUUID)
+}
+
+func (u *UserFollowerService) DeleteFollowing(userId string, clubId string) *errors.Error {
+	userIdAsUUID, err := utilities.ValidateID(userId)
+	if err != nil {
+		return err
+	}
+	clubIdAsUUID, err := utilities.ValidateID(clubId)
+	if err != nil {
+		return err
+	}
+	return transactions.DeleteFollowing(u.DB, *userIdAsUUID, *clubIdAsUUID)
+}
+
+func (u *UserFollowerService) GetFollowing(userId string) ([]models.Club, *errors.Error) {
+	userIdAsUUID, err := utilities.ValidateID(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	return transactions.GetClubFollowing(u.DB, *userIdAsUUID)
+}

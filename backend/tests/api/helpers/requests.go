@@ -7,8 +7,8 @@ import (
 	"net/http/httptest"
 	"strings"
 
-	"github.com/GenerateNU/sac/backend/src/errors"
-	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/GenerateNU/sac/backend/errors"
+	"github.com/GenerateNU/sac/backend/models"
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/goccy/go-json"

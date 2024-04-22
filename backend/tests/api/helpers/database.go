@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/GenerateNU/sac/backend/src/config"
-	"github.com/GenerateNU/sac/backend/src/database"
+	"github.com/GenerateNU/sac/backend/config"
+	"github.com/GenerateNU/sac/backend/database"
 	"gorm.io/gorm"
 )
 
