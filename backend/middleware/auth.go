@@ -21,7 +21,7 @@ func getExcludedPaths() []map[string]string {
 		{"/api/v1/auth/login": "POST"},
 		{"/api/v1/auth/logout": "POST"},
 		{"/api/v1/auth/refresh": "POST"},
-		{"/api/v1/auth/send-code": "POST"},
+		{"/api/v1/auth/send-code/": "POST"},
 		{"/api/v1/auth/verify-email": "POST"},
 		{"/api/v1/auth/verify-reset": "POST"},
 		{"/api/v1/auth/forgot-password": "POST"},
