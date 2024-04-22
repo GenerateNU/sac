@@ -1,10 +1,13 @@
-package email
+package mocks
 
-import "github.com/GenerateNU/sac/backend/errors"
+import (
+	"github.com/GenerateNU/sac/backend/email"
+	"github.com/GenerateNU/sac/backend/errors"
+)
 
 type ResendMockClient struct{}
 
-func NewResendMockClient() EmailClientInterface {
+func NewResendMockClient() email.EmailClientInterface {
 	return &ResendMockClient{}
 }
 
