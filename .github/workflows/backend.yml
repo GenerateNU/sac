@@ -100,6 +100,8 @@ jobs:
           docker exec $CONTAINER_ID cat /var/lib/postgresql/data/postgresql.conf | grep max_connections
       - name: Restart PostgreSQL Container
         run: docker restart $(docker ps --filter "publish=5432" --format "{{.ID}}")
+      - name: Migrate Database
+        run: SKIP_DOCKER=true ./scripts/init_db.sh
       - name: Run Tests with Coverage
         run: cd ./backend/ && go test -v -race -coverprofile=coverage.txt ./...
       - name: Print Coverage
