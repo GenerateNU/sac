@@ -13,7 +13,7 @@ type TestAppConfigurator func(*TestApp)
 
 func WithScrapedData() TestAppConfigurator {
 	return func(app *TestApp) {
-		migrationSQL, err := os.ReadFile(filepath.Join("..", "..", "src", "migrations", "data.sql"))
+		migrationSQL, err := os.ReadFile(filepath.Join("..", "..", "mock", "data.sql"))
 		if err != nil {
 			panic(fmt.Errorf("error reading migration file: %w", err))
 		}

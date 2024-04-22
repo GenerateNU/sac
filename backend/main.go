@@ -55,7 +55,7 @@ func main() {
 	onlyMigrate := flag.Bool("only-migrate", false, "Specify if you want to only perform the database migration")
 	onlySeedPinecone := flag.Bool("seed-pinecone", false, "Specify if want to only perform the pinecone database seeding")
 	connectToPinecone := flag.Bool("connect-to-pinecone", false, "Connect to a real Pinecone instance instead of mock")
-	configPath := flag.String("config", filepath.Join("..", "..", "config"), "Specify the path to the config directory")
+	configPath := flag.String("config", filepath.Join("..", "config"), "Specify the path to the config directory")
 	useDevDotEnv := flag.Bool("use-dev-dot-env", true, "Specify if you want to use the .env.dev file")
 
 	flag.Parse()

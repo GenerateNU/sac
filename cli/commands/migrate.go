@@ -33,7 +33,7 @@ func Migrate() error {
 	fmt.Println("Migrating database")
 
 	goCmd := exec.Command("go", "run", "main.go", "--only-migrate", "--use-dev-dot-env=false")
-	goCmd.Dir = BACKEND_SRC_DIR
+	goCmd.Dir = BACKEND_DIR
 
 	output, err := goCmd.CombinedOutput()
 	if err != nil {

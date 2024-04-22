@@ -6,6 +6,8 @@ set -o pipefail
 # Get the absolute path to the current script
 SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+echo $SCRIPT_PATH
+
 # Build the Go CLI tool
 # Check if the command is already installed to avoid adding it to path multiple times
 COMMAND_NAME="sac"
