@@ -14,8 +14,15 @@ func ConfigureDB(settings config.Settings) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	if err := MigrateDB(settings, db); err != nil {
-		return nil, err
+	// if err := MigrateDB(settings, db); err != nil {
+	// 	return nil, err
+	// }
+
+	var superUser models.User
+	if err := db.Where("role = ?", models.Super).First(&superUser).Error; err != nil {
+		if err := createSuperUser(settings, db); err != nil {
+			return nil, err
+		}
 	}
 
 	return db, nil
