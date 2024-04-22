@@ -56,3 +56,14 @@ func (s *DatabaseSettings) WithoutDb() string {
 func (s *DatabaseSettings) WithDb() string {
 	return fmt.Sprintf("%s dbname=%s", s.WithoutDb(), s.DatabaseName)
 }
+
+func (s *DatabaseSettings) PostgresConn() string {
+	var sslMode string
+	if s.RequireSSL {
+		sslMode = "require"
+	} else {
+		sslMode = "disable"
+	}
+
+	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=%s", s.Username, s.Password.Expose(), s.Host, s.Port, s.DatabaseName, sslMode)
+}
