@@ -100,6 +100,8 @@ jobs:
           docker exec $CONTAINER_ID cat /var/lib/postgresql/data/postgresql.conf | grep max_connections
       - name: Restart PostgreSQL Container
         run: docker restart $(docker ps --filter "publish=5432" --format "{{.ID}}")
+      - name: Install migrate CLI
+        run: go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
       - name: Migrate Database
         run: SKIP_DOCKER=true ./scripts/init_db.sh
       - name: Run Tests with Coverage
