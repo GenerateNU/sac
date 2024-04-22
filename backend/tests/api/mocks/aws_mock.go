@@ -1,19 +1,20 @@
-package file
+package mocks
 
 import (
 	"mime/multipart"
 
 	"github.com/GenerateNU/sac/backend/errors"
+	"github.com/GenerateNU/sac/backend/file"
 	"github.com/GenerateNU/sac/backend/models"
 )
 
 type AWSMockClient struct{}
 
-func NewAWSMockClient() FileClientInterface {
+func NewAWSMockClient() file.FileClientInterface {
 	return &AWSMockClient{}
 }
 
-func (c *AWSMockClient) UploadFile(folder string, fileHeader *multipart.FileHeader, allowedTypes []FileType) (*models.FileInfo, *errors.Error) {
+func (c *AWSMockClient) UploadFile(folder string, fileHeader *multipart.FileHeader, allowedTypes []file.FileType) (*models.FileInfo, *errors.Error) {
 	return nil, nil
 }
 

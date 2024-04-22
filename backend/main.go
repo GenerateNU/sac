@@ -14,6 +14,7 @@ import (
 	"github.com/GenerateNU/sac/backend/file"
 	"github.com/GenerateNU/sac/backend/search"
 	"github.com/GenerateNU/sac/backend/server"
+	"github.com/GenerateNU/sac/backend/tests/api/mocks"
 	t "github.com/GenerateNU/sac/backend/types"
 )
 
@@ -39,7 +40,7 @@ func configureDependencies(config *config.Settings, connectToPinecone bool) t.De
 	if connectToPinecone {
 		pinecone = search.NewPineconeClient(openAi, config.PineconeSettings)
 	} else {
-		pinecone = search.NewPineconeMockClient()
+		pinecone = mocks.NewPineconeMockClient()
 	}
 
 	dependencies := t.Dependencies{
