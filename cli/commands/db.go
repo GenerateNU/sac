@@ -81,6 +81,7 @@ func DownDB() error {
 		return err
 	}
 
+	// #nosec G204 -- MIGRATIONS is a constant file path configured in cli/commands/config.go and config.Database.PostgresConn() is configured by the config/local.yml
 	cmd := exec.Command("migrate", "-path", MIGRATIONS, "-database", config.Database.PostgresConn(), "-verbose", "down", "-all")
 
 	cmd.Dir = ROOT_DIR
