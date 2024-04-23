@@ -1,4 +1,4 @@
-package root
+package tests
 
 import (
 	stdliberrors "errors"
@@ -9,8 +9,6 @@ import (
 
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/errors"
-	clubsRoot "github.com/GenerateNU/sac/backend/tests/api/entities/clubs/root"
-	usersRoot "github.com/GenerateNU/sac/backend/tests/api/entities/users/root"
 	h "github.com/GenerateNU/sac/backend/tests/api/helpers"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
@@ -190,19 +188,19 @@ func AssertNumSeriesRemainsAtN(eaa h.ExistingAppAssert, resp *http.Response, n i
 }
 
 func TestCreateEventWorks(t *testing.T) {
-	eaa, _, clubID := clubsRoot.CreateSampleClub(h.InitTest(t))
+	eaa, _, clubID := CreateSampleClub(h.InitTest(t))
 	eaa, _ = CreateSampleEvent(eaa, clubID, SampleEventFactory)
 	eaa.Close()
 }
 
 func TestCreateEventSeriesWorks(t *testing.T) {
-	eaa, _, clubID := clubsRoot.CreateSampleClub(h.InitTest(t))
+	eaa, _, clubID := CreateSampleClub(h.InitTest(t))
 	eaa, _ = CreateSampleEvent(eaa, clubID, SampleSeriesFactory)
 	eaa.Close()
 }
 
 func TestGetEventWorks(t *testing.T) {
-	existingAppAssert, _, clubID := clubsRoot.CreateSampleClub(h.InitTest(t))
+	existingAppAssert, _, clubID := CreateSampleClub(h.InitTest(t))
 	existingAppAssert, eventUUID := CreateSampleEvent(existingAppAssert, clubID, SampleEventFactory)
 	existingAppAssert.TestOnStatusAndTester(h.TestRequest{
 		Method: fiber.MethodGet,
@@ -219,7 +217,7 @@ func TestGetEventWorks(t *testing.T) {
 }
 
 func TestGetEventsWorks(t *testing.T) {
-	existingAppAssert, _, clubID := clubsRoot.CreateSampleClub(h.InitTest(t))
+	existingAppAssert, _, clubID := CreateSampleClub(h.InitTest(t))
 	existingAppAssert, _ = CreateSampleEvent(existingAppAssert, clubID, SampleEventFactory)
 
 	existingAppAssert.TestOnStatusAndTester(h.TestRequest{
@@ -243,7 +241,7 @@ func TestGetEventsWorks(t *testing.T) {
 }
 
 func TestGetSeriesByEventIDWorks(t *testing.T) {
-	existingAppAssert, _, clubID := clubsRoot.CreateSampleClub(h.InitTest(t))
+	existingAppAssert, _, clubID := CreateSampleClub(h.InitTest(t))
 	existingAppAssert, eventUUIDs := CreateSampleEvent(existingAppAssert, clubID, SampleSeriesFactory)
 
 	existingAppAssert.TestOnStatusAndTester(h.TestRequest{
@@ -262,8 +260,8 @@ func TestGetSeriesByEventIDWorks(t *testing.T) {
 }
 
 func AssertCreateBadEventDataFails(t *testing.T, jsonKey string, badValues []interface{}, expectedErr errors.Error) {
-	appAssert, _, _ := usersRoot.CreateSampleStudent(t, nil)
-	appAssert, _, clubID := clubsRoot.CreateSampleClub(appAssert)
+	appAssert, _, _ := CreateSampleStudent(t, nil)
+	appAssert, _, clubID := CreateSampleClub(appAssert)
 
 	for _, badValue := range badValues {
 		sampleEventPermutation := *SampleEventFactory(clubID)
@@ -329,8 +327,8 @@ func TestCreateEventFailsOnInvalidEventType(t *testing.T) {
 }
 
 func AssertCreateBadEventSeriesDataFails(t *testing.T, badSeries models.CreateSeriesRequestBody, expectedErr errors.Error) {
-	appAssert, _, _ := usersRoot.CreateSampleStudent(t, nil)
-	appAssert, _, clubID := clubsRoot.CreateSampleClub(appAssert)
+	appAssert, _, _ := CreateSampleStudent(t, nil)
+	appAssert, _, clubID := CreateSampleClub(appAssert)
 
 	sampleSeriesPermutation := CustomSampleSeriesFactory(clubID, badSeries)
 
@@ -372,7 +370,7 @@ func TestCreateSeriesFailsOnInvalidMaxOccurrences(t *testing.T) {
 }
 
 func TestUpdateEventWorks(t *testing.T) {
-	appAssert, _, clubID := clubsRoot.CreateSampleClub(h.InitTest(t))
+	appAssert, _, clubID := CreateSampleClub(h.InitTest(t))
 	appAssert, eventUUID := CreateSampleEvent(appAssert, clubID, SampleEventFactory)
 
 	updatedEvent := SampleEventFactory(clubID)
@@ -396,7 +394,7 @@ func TestUpdateEventWorks(t *testing.T) {
 }
 
 func TestUpdateEventSeriesWorks(t *testing.T) {
-	appAssert, _, clubID := clubsRoot.CreateSampleClub(h.InitTest(t))
+	appAssert, _, clubID := CreateSampleClub(h.InitTest(t))
 	appAssert, eventUUIDs := CreateSampleEvent(appAssert, clubID, SampleSeriesFactory)
 
 	updatedSeries := &map[string]interface{}{
@@ -432,7 +430,7 @@ func TestUpdateEventSeriesWorks(t *testing.T) {
 }
 
 func TestUpdateEventFailsOnInvalidBody(t *testing.T) {
-	appAssert, _, clubID := clubsRoot.CreateSampleClub(h.InitTest(t))
+	appAssert, _, clubID := CreateSampleClub(h.InitTest(t))
 	appAssert, eventUUID := CreateSampleEvent(appAssert, clubID, SampleEventFactory)
 
 	body := SampleEventFactory(clubID)
@@ -481,7 +479,7 @@ func TestUpdateEventFailsOnInvalidBody(t *testing.T) {
 }
 
 func TestUpdateEventFailsBadRequest(t *testing.T) {
-	appAssert, _, clubID := clubsRoot.CreateSampleClub(h.InitTest(t))
+	appAssert, _, clubID := CreateSampleClub(h.InitTest(t))
 
 	badRequests := []string{
 		"0",
@@ -507,7 +505,7 @@ func TestUpdateEventFailsBadRequest(t *testing.T) {
 }
 
 func TestUpdateEventFailsOnEventIdNotExist(t *testing.T) {
-	eaa, _, clubID := clubsRoot.CreateSampleClub(h.InitTest(t))
+	eaa, _, clubID := CreateSampleClub(h.InitTest(t))
 
 	uuid := uuid.New()
 
@@ -532,7 +530,7 @@ func TestUpdateEventFailsOnEventIdNotExist(t *testing.T) {
 }
 
 func TestUpdateSeriesFailsBadRequest(t *testing.T) {
-	appAssert, _, clubID := clubsRoot.CreateSampleClub(h.InitTest(t))
+	appAssert, _, clubID := CreateSampleClub(h.InitTest(t))
 
 	badRequests := []string{
 		"0",
@@ -558,7 +556,7 @@ func TestUpdateSeriesFailsBadRequest(t *testing.T) {
 }
 
 func AssertDeleteWorks(t *testing.T, factoryFunction EventFactory, requestPath string, tester h.Tester) {
-	appAssert, _, clubID := clubsRoot.CreateSampleClub(h.InitTest(t))
+	appAssert, _, clubID := CreateSampleClub(h.InitTest(t))
 	appAssert, eventUUIDs := CreateSampleEvent(appAssert, clubID, factoryFunction)
 
 	appAssert.TestOnStatusAndTester(
@@ -588,7 +586,7 @@ func TestDeleteSeriesByEventIDWorks(t *testing.T) {
 }
 
 func AssertDeleteNotExistFails(t *testing.T, factoryFunction EventFactory, requestPath string, tester h.Tester, badUUID uuid.UUID) {
-	appAssert, _, clubID := clubsRoot.CreateSampleClub(h.InitTest(t))
+	appAssert, _, clubID := CreateSampleClub(h.InitTest(t))
 	appAssert, _ = CreateSampleEvent(appAssert, clubID, factoryFunction)
 
 	appAssert.TestOnErrorAndTester(

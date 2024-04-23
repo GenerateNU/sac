@@ -1,4 +1,4 @@
-package root
+package tests
 
 import (
 	"fmt"
@@ -7,15 +7,92 @@ import (
 
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/errors"
-	categoriesRoot "github.com/GenerateNU/sac/backend/tests/api/entities/categories/root"
 	h "github.com/GenerateNU/sac/backend/tests/api/helpers"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+
+	"github.com/goccy/go-json"
 )
+
+func SampleTagFactory(categoryID uuid.UUID) *map[string]interface{} {
+	return &map[string]interface{}{
+		"name":        "Generate",
+		"category_id": categoryID,
+	}
+}
+
+func AssertTagWithBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, body *map[string]interface{}) uuid.UUID {
+	var respTag models.Tag
+
+	err := json.NewDecoder(resp.Body).Decode(&respTag)
+
+	eaa.Assert.NilError(err)
+
+	var dbTag models.Tag
+
+	err = eaa.App.Conn.First(&dbTag).Error
+
+	eaa.Assert.NilError(err)
+
+	eaa.Assert.Equal(dbTag.ID, respTag.ID)
+	eaa.Assert.Equal(dbTag.Name, respTag.Name)
+	eaa.Assert.Equal(dbTag.CategoryID, respTag.CategoryID)
+
+	eaa.Assert.Equal((*body)["name"].(string), dbTag.Name)
+	eaa.Assert.Equal((*body)["category_id"].(uuid.UUID), dbTag.CategoryID)
+
+	return dbTag.ID
+}
+
+func AssertSampleTagBodyRespDB(t *testing.T, eaa h.ExistingAppAssert, resp *http.Response) uuid.UUID {
+	appAssert, uuid := CreateSampleCategory(eaa)
+	return AssertTagWithBodyRespDB(appAssert, resp, SampleTagFactory(uuid))
+}
+
+func CreateSampleTag(appAssert h.ExistingAppAssert) (existingAppAssert h.ExistingAppAssert, categoryUUID uuid.UUID, tagUUID uuid.UUID) {
+	appAssert, categoryUUID = CreateSampleCategory(appAssert)
+
+	AssertSampleTagBodyRespDB := func(eaa h.ExistingAppAssert, resp *http.Response) {
+		tagUUID = AssertTagWithBodyRespDB(appAssert, resp, SampleTagFactory(categoryUUID))
+	}
+
+	appAssert.TestOnStatusAndTester(
+		h.TestRequest{
+			Method: fiber.MethodPost,
+			Path:   "/api/v1/tags/",
+			Body:   SampleTagFactory(categoryUUID),
+			Role:   &models.Super,
+		},
+		h.TesterWithStatus{
+			Status: fiber.StatusCreated,
+			Tester: AssertSampleTagBodyRespDB,
+		},
+	)
+
+	return appAssert, categoryUUID, tagUUID
+}
 
 func TestCreateTagWorks(t *testing.T) {
 	appAssert, _, _ := CreateSampleTag(h.InitTest(t))
 	appAssert.Close()
+}
+
+func AssertNumTagsRemainsAtN(eaa h.ExistingAppAssert, resp *http.Response, n int) {
+	var tags []models.Tag
+
+	err := eaa.App.Conn.Find(&tags).Error
+
+	eaa.Assert.NilError(err)
+
+	eaa.Assert.Equal(n, len(tags))
+}
+
+func AssertNoTags(eaa h.ExistingAppAssert, resp *http.Response) {
+	AssertNumTagsRemainsAtN(eaa, resp, 0)
+}
+
+func Assert1Tag(eaa h.ExistingAppAssert, resp *http.Response) {
+	AssertNumTagsRemainsAtN(eaa, resp, 1)
 }
 
 func TestCreateTagFailsBadRequest(t *testing.T) {
@@ -164,13 +241,13 @@ func TestUpdateTagWorksUpdateName(t *testing.T) {
 func TestUpdateTagWorksUpdateCategory(t *testing.T) {
 	existingAppAssert, _, tagUUID := CreateSampleTag(h.InitTest(t))
 
-	technologyCategory := *categoriesRoot.SampleCategoryFactory()
+	technologyCategory := *SampleCategoryFactory()
 	technologyCategory["name"] = "Technology"
 
 	var technologyCategoryUUID uuid.UUID
 
 	AssertNewCategoryBodyRespDB := func(eaa h.ExistingAppAssert, resp *http.Response) {
-		technologyCategoryUUID = categoriesRoot.AssertCategoryWithBodyRespDBMostRecent(eaa, resp, &technologyCategory)
+		technologyCategoryUUID = AssertCategoryWithBodyRespDBMostRecent(eaa, resp, &technologyCategory)
 	}
 
 	existingAppAssert.TestOnStatusAndTester(
@@ -226,7 +303,7 @@ func TestUpdateTagWorksWithSameDetails(t *testing.T) {
 }
 
 func TestUpdateTagFailsBadRequest(t *testing.T) {
-	appAssert, uuid := categoriesRoot.CreateSampleCategory(h.InitTest(t))
+	appAssert, uuid := CreateSampleCategory(h.InitTest(t))
 
 	badRequests := []string{
 		"0",

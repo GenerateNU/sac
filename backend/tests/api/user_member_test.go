@@ -1,4 +1,4 @@
-package follower
+package tests
 
 import (
 	"fmt"
@@ -9,19 +9,18 @@ import (
 
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/errors"
-	clubsRoot "github.com/GenerateNU/sac/backend/tests/api/entities/clubs/root"
 	h "github.com/GenerateNU/sac/backend/tests/api/helpers"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
 
-func TestCreateFollowingWorks(t *testing.T) {
-	appAssert, _, clubUUID := clubsRoot.CreateSampleClub(h.InitTest(t))
+func TestCreateMembershipWorks(t *testing.T) {
+	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	appAssert.TestOnStatusAndTester(
 		h.TestRequest{
 			Method:             fiber.MethodPost,
-			Path:               fmt.Sprintf("/api/v1/users/:userID/follower/%s", clubUUID),
+			Path:               fmt.Sprintf("/api/v1/users/:userID/member/%s", clubUUID),
 			Role:               &models.Super,
 			TestUserIDReplaces: h.StringToPointer(":userID"),
 		},
@@ -30,37 +29,37 @@ func TestCreateFollowingWorks(t *testing.T) {
 			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
 				var user models.User
 
-				err := eaa.App.Conn.Where("id = ?", eaa.App.TestUser.UUID).Preload("Follower").First(&user)
+				err := eaa.App.Conn.Where("id = ?", eaa.App.TestUser.UUID).Preload("Member").First(&user)
 
 				eaa.Assert.NilError(err)
 
-				eaa.Assert.Equal(2, len(user.Follower))
+				eaa.Assert.Equal(2, len(user.Member)) // SAC Super Club and the one just added
 
-				eaa.Assert.Equal(clubUUID, user.Follower[1].ID)
+				eaa.Assert.Equal(clubUUID, user.Member[1].ID) // second club AKA the one just added
 
 				var club models.Club
 
-				err = eaa.App.Conn.Where("id = ?", clubUUID).Preload("Follower").First(&club)
+				err = eaa.App.Conn.Where("id = ?", clubUUID).Preload("Member").First(&club)
 
 				eaa.Assert.NilError(err)
 
-				eaa.Assert.Equal(1, len(club.Follower))
+				eaa.Assert.Equal(1, len(club.Member))
 
-				eaa.Assert.Equal(eaa.App.TestUser.UUID, club.Follower[0].ID)
+				eaa.Assert.Equal(eaa.App.TestUser.UUID, club.Member[0].ID)
 			},
 		},
 	).Close()
 }
 
-func TestCreateFollowingFailsClubIdNotExists(t *testing.T) {
-	appAssert, _, _ := clubsRoot.CreateSampleClub(h.InitTest(t))
+func TestCreateMembershipFailsClubIdNotExists(t *testing.T) {
+	appAssert, _, _ := CreateSampleClub(h.InitTest(t))
 
 	uuid := uuid.New()
 
 	appAssert.TestOnErrorAndTester(
 		h.TestRequest{
 			Method:             fiber.MethodPost,
-			Path:               fmt.Sprintf("/api/v1/users/:userID/follower/%s", uuid),
+			Path:               fmt.Sprintf("/api/v1/users/:userID/member/%s", uuid),
 			Role:               &models.Super,
 			TestUserIDReplaces: h.StringToPointer(":userID"),
 		},
@@ -77,15 +76,15 @@ func TestCreateFollowingFailsClubIdNotExists(t *testing.T) {
 	).Close()
 }
 
-func TestCreateFollowingFailsUserIdNotExists(t *testing.T) {
-	appAssert, _, clubUUID := clubsRoot.CreateSampleClub(h.InitTest(t))
+func TestCreateMembershipFailsUserIdNotExists(t *testing.T) {
+	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	uuid := uuid.New()
 
 	appAssert.TestOnErrorAndTester(
 		h.TestRequest{
 			Method: fiber.MethodPost,
-			Path:   fmt.Sprintf("/api/v1/users/%s/follower/%s", uuid, clubUUID),
+			Path:   fmt.Sprintf("/api/v1/users/%s/member/%s", uuid, clubUUID),
 			Role:   &models.Super,
 		},
 		h.ErrorWithTester{
@@ -101,13 +100,13 @@ func TestCreateFollowingFailsUserIdNotExists(t *testing.T) {
 	).Close()
 }
 
-func TestDeleteFollowingWorks(t *testing.T) {
-	appAssert, _, clubUUID := clubsRoot.CreateSampleClub(h.InitTest(t))
+func TestDeleteMembershipWorks(t *testing.T) {
+	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	appAssert.TestOnStatus(
 		h.TestRequest{
 			Method:             fiber.MethodPost,
-			Path:               fmt.Sprintf("/api/v1/users/:userID/follower/%s", clubUUID),
+			Path:               fmt.Sprintf("/api/v1/users/:userID/member/%s", clubUUID),
 			Role:               &models.Super,
 			TestUserIDReplaces: h.StringToPointer(":userID"),
 		},
@@ -115,7 +114,7 @@ func TestDeleteFollowingWorks(t *testing.T) {
 	).TestOnStatusAndTester(
 		h.TestRequest{
 			Method:             fiber.MethodDelete,
-			Path:               fmt.Sprintf("/api/v1/users/:userID/follower/%s", clubUUID),
+			Path:               fmt.Sprintf("/api/v1/users/:userID/member/%s", clubUUID),
 			Role:               &models.Super,
 			TestUserIDReplaces: h.StringToPointer(":userID"),
 		},
@@ -124,75 +123,75 @@ func TestDeleteFollowingWorks(t *testing.T) {
 			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
 				var user models.User
 
-				err := eaa.App.Conn.Where("id = ?", eaa.App.TestUser.UUID).Preload("Follower").First(&user)
+				err := eaa.App.Conn.Where("id = ?", eaa.App.TestUser.UUID).Preload("Member").First(&user)
 
 				eaa.Assert.NilError(err)
 
-				eaa.Assert.Equal(1, len(user.Follower))
+				eaa.Assert.Equal(1, len(user.Member)) // SAC Super Club
 
 				var club models.Club
 
-				err = eaa.App.Conn.Where("id = ?", clubUUID).Preload("Follower").First(&club)
+				err = eaa.App.Conn.Where("id = ?", clubUUID).Preload("Member").First(&club)
 
 				eaa.Assert.NilError(err)
 
-				eaa.Assert.Equal(0, len(club.Follower))
+				eaa.Assert.Equal(0, len(club.Member))
 			},
 		},
 	).Close()
 }
 
-// TODO: test can't work because you become a follower when you create a club
-// func TestDeleteFollwerNotFollower(t *testing.T) {
-// 	appAssert, _, clubUUID :=clubsRoot.CreateSampleClub(h.InitTest(t))
+// TODO: test can't work because you become a member when you create a club
+// func TestDeleteMembershipNotMembership(t *testing.T) {
+// 	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
-// 	userClubsFollowerBefore, err := transactions.GetClubFollowing(appAssert.App.Conn, appAssert.App.TestUser.UUID)
+// 	userClubsMemberBefore, err := transactions.GetClubMembership(appAssert.App.Conn, appAssert.App.TestUser.UUID)
 
 // 	appAssert.Assert.Assert(err == nil)
 
-// 	clubUsersFollowerBefore, err := transactions.GetClubFollowers(appAssert.App.Conn, clubUUID, 10, 0)
+// 	clubUsersMemberBefore, err := transactions.GetClubMembers(appAssert.App.Conn, clubUUID, 10, 0)
 
 // 	appAssert.Assert.Assert(err == nil)
 
 // 	appAssert.TestOnErrorAndTester(
 // 		h.TestRequest{
 // 			Method:             fiber.MethodDelete,
-// 			Path:               fmt.Sprintf("/api/v1/users/:userID/follower/%s", clubUUID),
+// 			Path:               fmt.Sprintf("/api/v1/users/:userID/member/%s", clubUUID),
 // 			Role:               &models.Super,
 // 			TestUserIDReplaces: h.StringToPointer(":userID"),
 // 		},
 // 		h.ErrorWithTester{
-// 			Error: errors.UserNotFollowingClub,
+// 			Error: errors.UserNotMemberOfClub,
 // 			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
 // 				var user models.User
 
-// 				err := eaa.App.Conn.Where("id = ?", eaa.App.TestUser.UUID).Preload("Follower").First(&user)
+// 				err := eaa.App.Conn.Where("id = ?", eaa.App.TestUser.UUID).Preload("Member").First(&user)
 
 // 				eaa.Assert.NilError(err)
 
-// 				eaa.Assert.Equal(userClubsFollowerBefore, user.Follower)
+// 				eaa.Assert.Equal(userClubsMemberBefore, user.Member)
 
 // 				var club models.Club
 
-// 				err = eaa.App.Conn.Where("id = ?", clubUUID).Preload("Follower").First(&club)
+// 				err = eaa.App.Conn.Where("id = ?", clubUUID).Preload("Member").First(&club)
 
 // 				eaa.Assert.NilError(err)
 
-// 				eaa.Assert.Equal(clubUsersFollowerBefore, club.Follower)
+// 				eaa.Assert.Equal(clubUsersMemberBefore, club.Member)
 // 			},
 // 		},
 // 	).Close()
 // }
 
-func TestDeleteFollowingFailsClubIdNotExists(t *testing.T) {
-	appAssert, _, _ := clubsRoot.CreateSampleClub(h.InitTest(t))
+func TestDeleteMembershipFailsClubIdNotExists(t *testing.T) {
+	appAssert, _, _ := CreateSampleClub(h.InitTest(t))
 
 	uuid := uuid.New()
 
 	appAssert.TestOnErrorAndTester(
 		h.TestRequest{
 			Method:             fiber.MethodDelete,
-			Path:               fmt.Sprintf("/api/v1/users/:userID/follower/%s", uuid),
+			Path:               fmt.Sprintf("/api/v1/users/:userID/member/%s", uuid),
 			Role:               &models.Super,
 			TestUserIDReplaces: h.StringToPointer(":userID"),
 		},
@@ -209,15 +208,15 @@ func TestDeleteFollowingFailsClubIdNotExists(t *testing.T) {
 	).Close()
 }
 
-func TestDeleteFollowingFailsUserIdNotExists(t *testing.T) {
-	appAssert, _, clubUUID := clubsRoot.CreateSampleClub(h.InitTest(t))
+func TestDeleteMembershipFailsUserIdNotExists(t *testing.T) {
+	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	uuid := uuid.New()
 
 	appAssert.TestOnErrorAndTester(
 		h.TestRequest{
 			Method: fiber.MethodDelete,
-			Path:   fmt.Sprintf("/api/v1/users/%s/follower/%s", uuid, clubUUID),
+			Path:   fmt.Sprintf("/api/v1/users/%s/member/%s", uuid, clubUUID),
 			Role:   &models.Super,
 		},
 		h.ErrorWithTester{
@@ -233,13 +232,13 @@ func TestDeleteFollowingFailsUserIdNotExists(t *testing.T) {
 	).Close()
 }
 
-func TestGetFollowingWorks(t *testing.T) {
-	appAssert, _, clubUUID := clubsRoot.CreateSampleClub(h.InitTest(t))
+func TestGetMembershipWorks(t *testing.T) {
+	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	appAssert.TestOnStatus(
 		h.TestRequest{
 			Method:             fiber.MethodPost,
-			Path:               fmt.Sprintf("/api/v1/users/:userID/follower/%s", clubUUID),
+			Path:               fmt.Sprintf("/api/v1/users/:userID/member/%s", clubUUID),
 			Role:               &models.Super,
 			TestUserIDReplaces: h.StringToPointer(":userID"),
 		},
@@ -247,7 +246,7 @@ func TestGetFollowingWorks(t *testing.T) {
 	).TestOnStatusAndTester(
 		h.TestRequest{
 			Method:             fiber.MethodGet,
-			Path:               "/api/v1/users/:userID/follower",
+			Path:               "/api/v1/users/:userID/member",
 			Role:               &models.Super,
 			TestUserIDReplaces: h.StringToPointer(":userID"),
 		},
@@ -260,29 +259,29 @@ func TestGetFollowingWorks(t *testing.T) {
 
 				eaa.Assert.NilError(err)
 
-				eaa.Assert.Equal(2, len(clubs))
+				eaa.Assert.Equal(2, len(clubs)) // SAC Super Club and the one just added
 
 				var dbClubs []models.Club
 
-				err = eaa.App.Conn.Where("id = ?", clubUUID).Preload("Follower").First(&dbClubs).Error
+				err = eaa.App.Conn.Where("id = ?", clubUUID).Preload("Member").First(&dbClubs).Error
 
 				eaa.Assert.NilError(err)
 
-				eaa.Assert.Equal(2, len(clubs))
+				eaa.Assert.Equal(2, len(clubs)) // SAC Super Club and the one just added
 			},
 		},
 	).Close()
 }
 
-func TestGetFollowingFailsUserIdNotExists(t *testing.T) {
-	appAssert, _, _ := clubsRoot.CreateSampleClub(h.InitTest(t))
+func TestGetMembershipFailsUserIdNotExists(t *testing.T) {
+	appAssert, _, _ := CreateSampleClub(h.InitTest(t))
 
 	uuid := uuid.New()
 
 	appAssert.TestOnErrorAndTester(
 		h.TestRequest{
 			Method: fiber.MethodGet,
-			Path:   fmt.Sprintf("/api/v1/users/%s/follower", uuid),
+			Path:   fmt.Sprintf("/api/v1/users/%s/member", uuid),
 			Role:   &models.Super,
 		},
 		h.ErrorWithTester{

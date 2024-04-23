@@ -1,4 +1,4 @@
-package contact
+package tests
 
 import (
 	stdliberrors "errors"
@@ -8,8 +8,6 @@ import (
 
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/errors"
-	clubsRoot "github.com/GenerateNU/sac/backend/tests/api/entities/clubs/root"
-	contactsRoot "github.com/GenerateNU/sac/backend/tests/api/entities/contacts/root"
 	h "github.com/GenerateNU/sac/backend/tests/api/helpers"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
@@ -18,10 +16,10 @@ import (
 )
 
 func AssertCreateBadContactDataFails(t *testing.T, jsonKey string, badValues []interface{}) {
-	appAssert, _, clubUUID := clubsRoot.CreateSampleClub(h.InitTest(t))
+	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	for _, badValue := range badValues {
-		sampleContactPermutation := *contactsRoot.SampleContactFactory()
+		sampleContactPermutation := *SampleContactFactory()
 		sampleContactPermutation[jsonKey] = badValue
 
 		appAssert = appAssert.TestOnErrorAndTester(h.TestRequest{
@@ -33,7 +31,7 @@ func AssertCreateBadContactDataFails(t *testing.T, jsonKey string, badValues []i
 			h.ErrorWithTester{
 				Error: errors.FailedToValidateContact,
 				Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
-					contactsRoot.AssertNumContactsRemainsAtN(eaa, resp, 0)
+					AssertNumContactsRemainsAtN(eaa, resp, 0)
 				},
 			},
 		)
@@ -62,14 +60,14 @@ func TestCreateContactFailsOnInvalidContent(t *testing.T) {
 }
 
 func TestPutContactFailsOnClubIdNotExist(t *testing.T) {
-	appAssert, _, _ := clubsRoot.CreateSampleClub(h.InitTest(t))
+	appAssert, _, _ := CreateSampleClub(h.InitTest(t))
 
 	uuid := uuid.New()
 
 	appAssert.TestOnErrorAndTester(h.TestRequest{
 		Method: fiber.MethodPut,
 		Path:   fmt.Sprintf("/api/v1/clubs/%s/contacts", uuid),
-		Body:   contactsRoot.SampleContactFactory(),
+		Body:   SampleContactFactory(),
 		Role:   &models.Super,
 	},
 		h.ErrorWithTester{
@@ -86,9 +84,9 @@ func TestPutContactFailsOnClubIdNotExist(t *testing.T) {
 }
 
 func TestPutContactUpdatesExistingContact(t *testing.T) {
-	appAssert, clubUUID, contactUUID := contactsRoot.CreateSampleContact(h.InitTest(t))
+	appAssert, clubUUID, contactUUID := CreateSampleContact(h.InitTest(t))
 
-	updatedContact := contactsRoot.SampleContactFactory()
+	updatedContact := SampleContactFactory()
 	(*updatedContact)["content"] = "nedFlanders@gmail.com"
 
 	appAssert.TestOnStatusAndTester(h.TestRequest{
@@ -113,7 +111,7 @@ func TestPutContactUpdatesExistingContact(t *testing.T) {
 }
 
 func TestGetClubContacts(t *testing.T) {
-	appAssert, clubUUID, _ := contactsRoot.CreateManyContacts(h.InitTest(t))
+	appAssert, clubUUID, _ := CreateManyContacts(h.InitTest(t))
 
 	appAssert.TestOnStatusAndTester(h.TestRequest{
 		Method: fiber.MethodGet,

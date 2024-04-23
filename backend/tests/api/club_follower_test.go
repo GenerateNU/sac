@@ -1,4 +1,4 @@
-package member
+package tests
 
 import (
 	"fmt"
@@ -6,19 +6,18 @@ import (
 	"testing"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
-	clubsRoot "github.com/GenerateNU/sac/backend/tests/api/entities/clubs/root"
 	h "github.com/GenerateNU/sac/backend/tests/api/helpers"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 )
 
-func TestClubMemberWorks(t *testing.T) {
-	appAssert, _, clubUUID := clubsRoot.CreateSampleClub(h.InitTest(t))
+func TestClubFollowerWorks(t *testing.T) {
+	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	appAssert.TestOnStatus(
 		h.TestRequest{
 			Method:             fiber.MethodPost,
-			Path:               fmt.Sprintf("/api/v1/users/:userID/member/%s", clubUUID),
+			Path:               fmt.Sprintf("/api/v1/users/:userID/follower/%s", clubUUID),
 			Role:               &models.Super,
 			TestUserIDReplaces: h.StringToPointer(":userID"),
 		},
@@ -26,19 +25,19 @@ func TestClubMemberWorks(t *testing.T) {
 	).TestOnStatusAndTester(
 		h.TestRequest{
 			Method: fiber.MethodGet,
-			Path:   fmt.Sprintf("/api/v1/clubs/%s/members", clubUUID),
+			Path:   fmt.Sprintf("/api/v1/clubs/%s/followers", clubUUID),
 			Role:   &models.Super,
 		},
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
 			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
-				var members []models.User
+				var followers []models.User
 
-				err := json.NewDecoder(resp.Body).Decode(&members)
+				err := json.NewDecoder(resp.Body).Decode(&followers)
 
 				eaa.Assert.NilError(err)
 
-				eaa.Assert.Equal(1, len(members))
+				eaa.Assert.Equal(1, len(followers))
 
 				var club models.Club
 
@@ -46,13 +45,13 @@ func TestClubMemberWorks(t *testing.T) {
 
 				eaa.Assert.NilError(err)
 
-				var dbMembers []models.User
+				var dbFollowers []models.User
 
-				err = eaa.App.Conn.Model(&club).Association("Member").Find(&dbMembers)
+				err = eaa.App.Conn.Model(&club).Association("Follower").Find(&dbFollowers)
 
 				eaa.Assert.NilError(err)
 
-				eaa.Assert.Equal(len(dbMembers), len(members))
+				eaa.Assert.Equal(len(dbFollowers), len(followers))
 			},
 		},
 	).Close()

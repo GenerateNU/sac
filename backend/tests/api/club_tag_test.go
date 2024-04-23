@@ -1,4 +1,4 @@
-package tag
+package tests
 
 import (
 	"fmt"
@@ -7,8 +7,6 @@ import (
 
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/errors"
-	clubsRoot "github.com/GenerateNU/sac/backend/tests/api/entities/clubs/root"
-	tagsRoot "github.com/GenerateNU/sac/backend/tests/api/entities/tags/root"
 	h "github.com/GenerateNU/sac/backend/tests/api/helpers"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
@@ -46,7 +44,7 @@ func AssertSampleClubTagsRespDB(eaa h.ExistingAppAssert, resp *http.Response, uu
 }
 
 func TestCreateClubTagsFailsOnInvalidDataType(t *testing.T) {
-	appAssert, _, clubUUID := clubsRoot.CreateSampleClub(h.InitTest(t))
+	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	invalidTags := []interface{}{
 		[]string{"1", "2", "34"},
@@ -55,7 +53,7 @@ func TestCreateClubTagsFailsOnInvalidDataType(t *testing.T) {
 	}
 
 	for _, tag := range invalidTags {
-		malformedTag := *tagsRoot.SampleTagIDsFactory(nil)
+		malformedTag := *SampleTagIDsFactory(nil)
 		malformedTag["tags"] = tag
 
 		appAssert = appAssert.TestOnError(
@@ -88,7 +86,7 @@ func TestCreateClubTagsFailsOnInvalidUserID(t *testing.T) {
 			h.TestRequest{
 				Method: fiber.MethodPost,
 				Path:   fmt.Sprintf("/api/v1/clubs/%s/tags", badRequest),
-				Body:   tagsRoot.SampleTagIDsFactory(nil),
+				Body:   SampleTagIDsFactory(nil),
 				Role:   &models.Student,
 			},
 			errors.FailedToValidateID,
@@ -99,11 +97,11 @@ func TestCreateClubTagsFailsOnInvalidUserID(t *testing.T) {
 }
 
 func TestCreateClubTagsFailsOnInvalidKey(t *testing.T) {
-	appAssert, _, clubUUID := clubsRoot.CreateSampleClub(h.InitTest(t))
+	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	invalidBody := []map[string]interface{}{
 		{
-			"tag": []uuid.UUID{uuid.New(), uuid.New()},
+			"tag": UUIDSlice{uuid.New(), uuid.New()},
 		},
 		{
 			"tagIDs": []uint{1, 2, 3},
@@ -133,7 +131,7 @@ func TestCreateClubTagsFailsOnNonExistentClub(t *testing.T) {
 		h.TestRequest{
 			Method: fiber.MethodPost,
 			Path:   fmt.Sprintf("/api/v1/clubs/%s/tags/", uuid),
-			Body:   tagsRoot.SampleTagIDsFactory(nil),
+			Body:   SampleTagIDsFactory(nil),
 			Role:   &models.Super,
 		},
 		h.ErrorWithTester{
@@ -150,14 +148,14 @@ func TestCreateClubTagsFailsOnNonExistentClub(t *testing.T) {
 }
 
 func TestCreateClubTagsWorks(t *testing.T) {
-	appAssert, _, clubUUID := clubsRoot.CreateSampleClub(h.InitTest(t))
-	tagUUIDs, appAssert := tagsRoot.CreateSetOfTags(appAssert)
+	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
+	tagUUIDs, appAssert := CreateSetOfTags(appAssert)
 
 	appAssert.TestOnStatusAndTester(
 		h.TestRequest{
 			Method: fiber.MethodPost,
 			Path:   fmt.Sprintf("/api/v1/clubs/%s/tags/", clubUUID),
-			Body:   tagsRoot.SampleTagIDsFactory(&tagUUIDs),
+			Body:   SampleTagIDsFactory(&tagUUIDs),
 			Role:   &models.Super,
 		},
 		h.TesterWithStatus{
@@ -172,13 +170,13 @@ func TestCreateClubTagsWorks(t *testing.T) {
 }
 
 func TestCreateClubTagsNoneAddedIfInvalid(t *testing.T) {
-	appAssert, _, clubUUID := clubsRoot.CreateSampleClub(h.InitTest(t))
+	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	appAssert.TestOnStatusAndTester(
 		h.TestRequest{
 			Method: fiber.MethodPost,
 			Path:   fmt.Sprintf("/api/v1/clubs/%s/tags/", clubUUID),
-			Body:   tagsRoot.SampleTagIDsFactory(nil),
+			Body:   SampleTagIDsFactory(nil),
 			Role:   &models.Super,
 		},
 		h.TesterWithStatus{
@@ -219,7 +217,7 @@ func TestGetClubTagsFailsOnNonExistentClub(t *testing.T) {
 }
 
 func TestGetClubTagsReturnsEmptyListWhenNoneAdded(t *testing.T) {
-	appAssert, _, clubUUID := clubsRoot.CreateSampleClub(h.InitTest(t))
+	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
 	appAssert.TestOnStatusAndTester(
 		h.TestRequest{
@@ -243,15 +241,15 @@ func TestGetClubTagsReturnsEmptyListWhenNoneAdded(t *testing.T) {
 }
 
 func TestGetClubTagsReturnsCorrectList(t *testing.T) {
-	appAssert, _, clubUUID := clubsRoot.CreateSampleClub(h.InitTest(t))
+	appAssert, _, clubUUID := CreateSampleClub(h.InitTest(t))
 
-	tagUUIDs, appAssert := tagsRoot.CreateSetOfTags(appAssert)
+	tagUUIDs, appAssert := CreateSetOfTags(appAssert)
 
 	appAssert.TestOnStatus(
 		h.TestRequest{
 			Method: fiber.MethodPost,
 			Path:   fmt.Sprintf("/api/v1/clubs/%s/tags/", clubUUID),
-			Body:   tagsRoot.SampleTagIDsFactory(&tagUUIDs),
+			Body:   SampleTagIDsFactory(&tagUUIDs),
 			Role:   &models.Student,
 		},
 		fiber.StatusCreated,

@@ -1,4 +1,4 @@
-package tag
+package tests
 
 import (
 	"fmt"
@@ -7,8 +7,6 @@ import (
 
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/errors"
-	categoriesRoot "github.com/GenerateNU/sac/backend/tests/api/entities/categories/root"
-	tagsRoot "github.com/GenerateNU/sac/backend/tests/api/entities/tags/root"
 	h "github.com/GenerateNU/sac/backend/tests/api/helpers"
 
 	"github.com/goccy/go-json"
@@ -46,9 +44,9 @@ func AssertTagsWithBodyRespDB(eaa h.ExistingAppAssert, resp *http.Response, body
 }
 
 func TestGetCategoryTagsWorks(t *testing.T) {
-	appAssert, categoryUUID, tagID := tagsRoot.CreateSampleTag(h.InitTest(t))
+	appAssert, categoryUUID, tagID := CreateSampleTag(h.InitTest(t))
 
-	body := tagsRoot.SampleTagFactory(categoryUUID)
+	body := SampleTagFactory(categoryUUID)
 	(*body)["id"] = tagID
 
 	appAssert.TestOnStatusAndTester(
@@ -67,7 +65,7 @@ func TestGetCategoryTagsWorks(t *testing.T) {
 }
 
 func TestGetCategoryTagsFailsCategoryBadRequest(t *testing.T) {
-	appAssert, _ := categoriesRoot.CreateSampleCategory(h.InitTest(t))
+	appAssert, _ := CreateSampleCategory(h.InitTest(t))
 
 	badRequests := []string{
 		"0",
@@ -92,7 +90,7 @@ func TestGetCategoryTagsFailsCategoryBadRequest(t *testing.T) {
 }
 
 func TestGetCategoryTagsFailsCategoryNotFound(t *testing.T) {
-	appAssert, _ := categoriesRoot.CreateSampleCategory(h.InitTest(t))
+	appAssert, _ := CreateSampleCategory(h.InitTest(t))
 
 	uuid := uuid.New()
 
@@ -113,7 +111,7 @@ func TestGetCategoryTagsFailsCategoryNotFound(t *testing.T) {
 }
 
 func TestGetCategoryTagWorks(t *testing.T) {
-	existingAppAssert, categoryUUID, tagUUID := tagsRoot.CreateSampleTag(h.InitTest(t))
+	existingAppAssert, categoryUUID, tagUUID := CreateSampleTag(h.InitTest(t))
 
 	existingAppAssert.TestOnStatusAndTester(
 		h.TestRequest{
@@ -124,14 +122,14 @@ func TestGetCategoryTagWorks(t *testing.T) {
 		h.TesterWithStatus{
 			Status: fiber.StatusOK,
 			Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
-				tagsRoot.AssertTagWithBodyRespDB(eaa, resp, tagsRoot.SampleTagFactory(categoryUUID))
+				AssertTagWithBodyRespDB(eaa, resp, SampleTagFactory(categoryUUID))
 			},
 		},
 	).Close()
 }
 
 func TestGetCategoryTagFailsCategoryBadRequest(t *testing.T) {
-	appAssert, _, tagUUID := tagsRoot.CreateSampleTag(h.InitTest(t))
+	appAssert, _, tagUUID := CreateSampleTag(h.InitTest(t))
 
 	badRequests := []string{
 		"0",
@@ -155,7 +153,7 @@ func TestGetCategoryTagFailsCategoryBadRequest(t *testing.T) {
 }
 
 func TestGetCategoryTagFailsTagBadRequest(t *testing.T) {
-	appAssert, categoryUUID := categoriesRoot.CreateSampleCategory(h.InitTest(t))
+	appAssert, categoryUUID := CreateSampleCategory(h.InitTest(t))
 
 	badRequests := []string{
 		"0",
@@ -179,7 +177,7 @@ func TestGetCategoryTagFailsTagBadRequest(t *testing.T) {
 }
 
 func TestGetCategoryTagFailsCategoryNotFound(t *testing.T) {
-	appAssert, _, tagUUID := tagsRoot.CreateSampleTag(h.InitTest(t))
+	appAssert, _, tagUUID := CreateSampleTag(h.InitTest(t))
 
 	appAssert.TestOnError(
 		h.TestRequest{
@@ -192,7 +190,7 @@ func TestGetCategoryTagFailsCategoryNotFound(t *testing.T) {
 }
 
 func TestGetCategoryTagFailsTagNotFound(t *testing.T) {
-	appAssert, categoryUUID := categoriesRoot.CreateSampleCategory(h.InitTest(t))
+	appAssert, categoryUUID := CreateSampleCategory(h.InitTest(t))
 
 	appAssert.TestOnError(
 		h.TestRequest{
