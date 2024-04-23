@@ -360,8 +360,6 @@ func TestDeleteUserBadRequest(t *testing.T) {
 	appAssert.Close()
 }
 
-
-
 func TestCreateUserWorks(t *testing.T) {
 	appAssert, _, _ := CreateSampleStudent(t, nil)
 	appAssert.Close()
