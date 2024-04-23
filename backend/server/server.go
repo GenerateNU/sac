@@ -6,8 +6,17 @@ import (
 
 	"github.com/GenerateNU/sac/backend/auth"
 	"github.com/GenerateNU/sac/backend/config"
+	authBase "github.com/GenerateNU/sac/backend/entities/auth/base"
+	categories "github.com/GenerateNU/sac/backend/entities/categories/base"
+	clubs "github.com/GenerateNU/sac/backend/entities/clubs/base"
+	contacts "github.com/GenerateNU/sac/backend/entities/contacts/base"
+	events "github.com/GenerateNU/sac/backend/entities/events/base"
+	files "github.com/GenerateNU/sac/backend/entities/files/base"
+	pocs "github.com/GenerateNU/sac/backend/entities/pocs/base"
+	tags "github.com/GenerateNU/sac/backend/entities/tags/base"
+	users "github.com/GenerateNU/sac/backend/entities/users/base"
 	"github.com/GenerateNU/sac/backend/middleware"
-	"github.com/GenerateNU/sac/backend/server/routes"
+
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/fiber/v2"
@@ -15,6 +24,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"github.com/golang-jwt/jwt"
+
 	"gorm.io/gorm"
 )
 
@@ -59,16 +69,16 @@ func Init(db *gorm.DB, dependencies types.Dependencies, settings config.Settings
 }
 
 func allRoutes(app *fiber.App, routeParams types.RouteParams) {
-	routes.Utility(app)
-	routes.Auth(routeParams)
-	routes.UserRoutes(routeParams)
-	routes.ClubRoutes(routeParams)
-	routes.Contact(routeParams)
-	routes.PointOfContact(routeParams)
-	routes.Tag(routeParams)
-	routes.CategoryRoutes(routeParams)
-	routes.Event(routeParams)
-	routes.File(routeParams)
+	Utility(app)
+	authBase.Auth(routeParams)
+	users.UserRoutes(routeParams)
+	clubs.ClubRoutes(routeParams)
+	contacts.Contact(routeParams)
+	pocs.PointOfContact(routeParams)
+	tags.Tag(routeParams)
+	categories.CategoryRoutes(routeParams)
+	events.Event(routeParams)
+	files.File(routeParams)
 }
 
 func newFiberApp(appSettings config.ApplicationSettings) *fiber.App {

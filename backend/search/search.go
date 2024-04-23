@@ -14,8 +14,8 @@ import (
 
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/constants"
+	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/errors"
-	"github.com/GenerateNU/sac/backend/models"
 	"github.com/GenerateNU/sac/backend/utilities"
 )
 

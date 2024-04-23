@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/entities/users/tag"
 	"github.com/GenerateNU/sac/backend/errors"
-	"github.com/GenerateNU/sac/backend/models"
 	h "github.com/GenerateNU/sac/backend/tests/api/helpers"
-	"github.com/GenerateNU/sac/backend/transactions"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -487,7 +487,7 @@ func TestDeleteUserTagDoesNotAlterTagListOnNonAssociation(t *testing.T) {
 		fiber.StatusCreated,
 	)
 
-	userTagsBeforeDeletion, err := transactions.GetUserTags(appAssert.App.Conn, appAssert.App.TestUser.UUID)
+	userTagsBeforeDeletion, err := tag.GetUserTags(appAssert.App.Conn, appAssert.App.TestUser.UUID)
 	appAssert.Assert.NilError(&err)
 
 	appAssert.TestOnStatusAndTester(
