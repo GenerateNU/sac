@@ -10,7 +10,7 @@ import (
 	"github.com/GenerateNU/sac/backend/auth"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/entities/users"
-	usersRoot "github.com/GenerateNU/sac/backend/entities/users/root"
+	usersBase "github.com/GenerateNU/sac/backend/entities/users/base"
 	"github.com/GenerateNU/sac/backend/errors"
 	h "github.com/GenerateNU/sac/backend/tests/api/helpers"
 	"github.com/gofiber/fiber/v2"
@@ -50,7 +50,7 @@ func TestGetUsersWorksForSuper(t *testing.T) {
 				eaa.Assert.Equal(models.May, respUser.GraduationCycle)
 				eaa.Assert.Equal(int16(2025), respUser.GraduationYear)
 
-				dbUsers, err := usersRoot.GetUsers(eaa.App.Conn, 1, 1)
+				dbUsers, err := usersBase.GetUsers(eaa.App.Conn, 1, 1)
 
 				eaa.Assert.NilError(&err)
 

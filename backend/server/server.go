@@ -6,15 +6,15 @@ import (
 
 	"github.com/GenerateNU/sac/backend/auth"
 	"github.com/GenerateNU/sac/backend/config"
-	authRoot "github.com/GenerateNU/sac/backend/entities/auth/root"
-	categories "github.com/GenerateNU/sac/backend/entities/categories/root"
-	clubs "github.com/GenerateNU/sac/backend/entities/clubs/root"
-	contacts "github.com/GenerateNU/sac/backend/entities/contacts/root"
-	events "github.com/GenerateNU/sac/backend/entities/events/root"
-	files "github.com/GenerateNU/sac/backend/entities/files/root"
-	pocs "github.com/GenerateNU/sac/backend/entities/pocs/root"
-	tags "github.com/GenerateNU/sac/backend/entities/tags/root"
-	users "github.com/GenerateNU/sac/backend/entities/users/root"
+	authBase "github.com/GenerateNU/sac/backend/entities/auth/base"
+	categories "github.com/GenerateNU/sac/backend/entities/categories/base"
+	clubs "github.com/GenerateNU/sac/backend/entities/clubs/base"
+	contacts "github.com/GenerateNU/sac/backend/entities/contacts/base"
+	events "github.com/GenerateNU/sac/backend/entities/events/base"
+	files "github.com/GenerateNU/sac/backend/entities/files/base"
+	pocs "github.com/GenerateNU/sac/backend/entities/pocs/base"
+	tags "github.com/GenerateNU/sac/backend/entities/tags/base"
+	users "github.com/GenerateNU/sac/backend/entities/users/base"
 	"github.com/GenerateNU/sac/backend/middleware"
 
 	"github.com/GenerateNU/sac/backend/types"
@@ -70,7 +70,7 @@ func Init(db *gorm.DB, dependencies types.Dependencies, settings config.Settings
 
 func allRoutes(app *fiber.App, routeParams types.RouteParams) {
 	Utility(app)
-	authRoot.Auth(routeParams)
+	authBase.Auth(routeParams)
 	users.UserRoutes(routeParams)
 	clubs.ClubRoutes(routeParams)
 	contacts.Contact(routeParams)

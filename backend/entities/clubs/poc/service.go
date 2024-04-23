@@ -3,8 +3,9 @@ package poc
 import (
 	"mime/multipart"
 
-	"github.com/GenerateNU/sac/backend/entities/files/root"
+	"github.com/GenerateNU/sac/backend/entities/files/base"
 	"github.com/GenerateNU/sac/backend/entities/models"
+
 	"github.com/GenerateNU/sac/backend/errors"
 	"github.com/GenerateNU/sac/backend/file"
 	"github.com/GenerateNU/sac/backend/types"
@@ -84,7 +85,7 @@ func (cpoc *ClubPointOfContactService) CreateClubPointOfContact(clubID string, p
 		return nil, err
 	}
 
-	file, err := root.CreateFile(tx, poc.ID, "point_of_contacts", *fileInfo)
+	file, err := base.CreateFile(tx, poc.ID, "point_of_contacts", *fileInfo)
 	if err != nil {
 		tx.Rollback()
 		return nil, err
@@ -128,7 +129,7 @@ func (cpoc *ClubPointOfContactService) UpdateClubPointOfContactPhoto(clubID, poc
 		return nil, err
 	}
 
-	file, err := root.UpdateFile(cpoc.DB, pointOfContact.PhotoFile.ID, *fileInfo)
+	file, err := base.UpdateFile(cpoc.DB, pointOfContact.PhotoFile.ID, *fileInfo)
 	if err != nil {
 		return nil, err
 	}
@@ -186,7 +187,7 @@ func (cpoc *ClubPointOfContactService) DeleteClubPointOfContact(clubID, pocID st
 		return &errors.FailedToDeleteClubPointOfContact
 	}
 
-	err = root.DeleteFile(tx, pointOfContact.PhotoFile.ID)
+	err = base.DeleteFile(tx, pointOfContact.PhotoFile.ID)
 	if err != nil {
 		tx.Rollback()
 		return err
