@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/errors"
-	"github.com/GenerateNU/sac/backend/models"
 
 	"github.com/google/uuid"
 	"github.com/mcnijman/go-emailaddress"

@@ -1,0 +1,78 @@
+package root
+
+import (
+	stdliberrors "errors"
+
+	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/errors"
+	"github.com/google/uuid"
+
+	"gorm.io/gorm"
+)
+
+func CreateUser(db *gorm.DB, user *models.User) (*models.User, *errors.Error) {
+	if err := db.Create(user).Error; err != nil {
+		if stdliberrors.Is(err, gorm.ErrDuplicatedKey) {
+			return nil, &errors.UserAlreadyExists
+		} else {
+			return nil, &errors.FailedToCreateUser
+		}
+	}
+
+	return user, nil
+}
+
+func GetUsers(db *gorm.DB, limit int, page int) ([]models.User, *errors.Error) {
+	var users []models.User
+
+	offset := (page - 1) * limit
+
+	if err := db.Omit("password_hash").Limit(limit).Offset(offset).Find(&users).Error; err != nil {
+		return nil, &errors.FailedToGetUsers
+	}
+
+	return users, nil
+}
+
+func GetUserPasswordHash(db *gorm.DB, id uuid.UUID) (*string, *errors.Error) {
+	var user models.User
+	if err := db.Select("password_hash").First(&user, id).Error; err != nil {
+		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, &errors.UserNotFound
+		} else {
+			return nil, &errors.FailedToGetUser
+		}
+	}
+
+	return &user.PasswordHash, nil
+}
+
+func UpdateUser(db *gorm.DB, id uuid.UUID, user models.User) (*models.User, *errors.Error) {
+	var existingUser models.User
+
+	err := db.First(&existingUser, id).Error
+	if err != nil {
+		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, &errors.UserNotFound
+		} else {
+			return nil, &errors.FailedToUpdateUser
+		}
+	}
+
+	if err := db.Model(&existingUser).Updates(&user).Error; err != nil {
+		return nil, &errors.FailedToUpdateUser
+	}
+
+	return &existingUser, nil
+}
+
+func DeleteUser(db *gorm.DB, id uuid.UUID) *errors.Error {
+	if result := db.Delete(&models.User{}, id); result.RowsAffected == 0 {
+		if result.Error == nil {
+			return &errors.UserNotFound
+		} else {
+			return &errors.FailedToDeleteUser
+		}
+	}
+	return nil
+}

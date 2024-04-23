@@ -3,9 +3,9 @@ package mocks
 import (
 	"mime/multipart"
 
+	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/errors"
 	"github.com/GenerateNU/sac/backend/file"
-	"github.com/GenerateNU/sac/backend/models"
 )
 
 type AWSMockClient struct{}

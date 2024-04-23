@@ -1,6 +1,6 @@
 package auth
 
-import "github.com/GenerateNU/sac/backend/models"
+import "github.com/GenerateNU/sac/backend/entities/models"
 
 type Permission string
 

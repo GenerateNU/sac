@@ -2,7 +2,7 @@ package database
 
 import (
 	"github.com/GenerateNU/sac/backend/config"
-	"github.com/GenerateNU/sac/backend/models"
+	"github.com/GenerateNU/sac/backend/entities/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"

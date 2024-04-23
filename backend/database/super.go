@@ -3,8 +3,8 @@ package database
 import (
 	"github.com/GenerateNU/sac/backend/auth"
 	"github.com/GenerateNU/sac/backend/config"
+	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/errors"
-	"github.com/GenerateNU/sac/backend/models"
 	"github.com/google/uuid"
 )
 
