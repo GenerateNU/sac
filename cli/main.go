@@ -15,7 +15,6 @@ func main() {
 		Commands: []*cli.Command{
 			commands.SwaggerCommand(),
 			commands.DBCommand(),
-			commands.ClearDBCommand(),
 			commands.InsertCommand(),
 			commands.BackendCommand(),
 			commands.FrontendCommand(),
