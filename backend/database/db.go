@@ -1,8 +1,6 @@
 package database
 
 import (
-	stdliberrors "errors"
-
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/entities/models"
@@ -65,18 +63,27 @@ func ConnPooling(db *gorm.DB) error {
 
 func CreateSuperUserIfNotExists(settings config.Settings, db *gorm.DB) error {
 	var superUser models.User
-
 	if err := db.Where("role = ?", models.Super).First(&superUser).Error; err != nil {
-		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
-			if err := createSuperUser(settings, db); err != nil {
-				return err
-			}
-		} else {
+		if err := createSuperUser(settings, db); err != nil {
 			return err
 		}
 	}
 
 	return nil
+
+	// var superUser models.User
+
+	// if err := db.Where("role = ?", models.Super).First(&superUser).Error; err != nil {
+	// 	if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
+	// 		if err := createSuperUser(settings, db); err != nil {
+	// 			return err
+	// 		}
+	// 	} else {
+	// 		return err
+	// 	}
+	// }
+
+	// return nil
 }
 
 func createSuperUser(settings config.Settings, db *gorm.DB) error {
@@ -116,6 +123,8 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 			tx.Rollback()
 			return err
 		}
+
+		SuperUserUUID = superUser.ID
 
 		membership := models.Membership{
 			ClubID:         superClub.ID,
