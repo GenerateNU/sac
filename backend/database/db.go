@@ -4,6 +4,7 @@ import (
 	stdliberrors "errors"
 
 	"github.com/GenerateNU/sac/backend/config"
+	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -56,8 +57,8 @@ func ConnPooling(db *gorm.DB) error {
 		return err
 	}
 
-	sqlDB.SetMaxIdleConns(10)
-	sqlDB.SetMaxOpenConns(100)
+	sqlDB.SetMaxIdleConns(constants.MAX_IDLE_CONNECTIONS)
+	sqlDB.SetMaxOpenConns(constants.MAX_OPEN_CONNECTIONS)
 
 	return nil
 }
