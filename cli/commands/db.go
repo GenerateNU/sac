@@ -1,9 +1,13 @@
 package commands
 
 import (
+	"context"
+	"database/sql"
 	"fmt"
 	"os"
 	"os/exec"
+	"os/user"
+	"sync"
 
 	"github.com/GenerateNU/sac/backend/config"
 	_ "github.com/lib/pq"
@@ -56,6 +60,13 @@ func DBCommand() *cli.Command {
 					return nil
 				},
 			},
+			{
+				Name:  "clean-tests",
+				Usage: "Remove databases used for testing",
+				Action: func(c *cli.Context) error {
+					return CleanTestDBs(context.Background())
+				},
+			},
 		},
 	}
 
@@ -91,5 +102,67 @@ func DownDB() error {
 	if err != nil {
 		return fmt.Errorf("error running down migrations: %w", err)
 	}
+	return nil
+}
+
+func CleanTestDBs(ctx context.Context) error {
+	fmt.Println("Cleaning test databases")
+
+	config, err := config.GetConfiguration(CONFIG, false)
+	if err != nil {
+		return err
+	}
+
+	db, err := sql.Open("postgres", config.Database.WithDb())
+	if err != nil {
+		return err
+	}
+
+	defer db.Close()
+
+	currentUser, err := user.Current()
+	if err != nil {
+		return fmt.Errorf("failed to get current user: %w", err)
+	}
+
+	rows, err := db.Query("SELECT datname FROM pg_database WHERE datistemplate = false AND datname != 'postgres' AND datname != $1 AND datname != $2 AND datname LIKE 'sac_test_%';", currentUser.Username, config.Database.DatabaseName)
+	if err != nil {
+		return err
+	}
+
+	var wg sync.WaitGroup
+	var dropped, failed int
+
+	for rows.Next() {
+		var dbName string
+
+		if err := rows.Scan(&dbName); err != nil {
+			return err
+		}
+
+		wg.Add(1)
+		go func(dbName string) {
+			defer wg.Done()
+
+			fmt.Printf("Dropping database %s\n", dbName)
+
+			_, err := db.Exec(fmt.Sprintf("DROP DATABASE %s", dbName))
+			if err != nil {
+				fmt.Printf("Failed to drop database %s: %v\n", dbName, err)
+				failed++
+			} else {
+				dropped++
+			}
+		}(dbName)
+	}
+
+	wg.Wait()
+
+	fmt.Printf("\nSummary:\n  - Databases dropped: %d\n  - Databases failed to drop: %d\n", dropped, failed)
+
+	if failed > 0 {
+		return fmt.Errorf("failed to drop %d database(s)", failed)
+	}
+
 	return nil
 }
