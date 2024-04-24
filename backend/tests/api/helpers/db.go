@@ -37,7 +37,7 @@ func configureDatabase(settings config.Settings) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	err = database.MigrateDB(settings, dbWithDB)
+	err = database.CreateSuperUserIfNotExists(settings, dbWithDB)
 	if err != nil {
 		return nil, err
 	}
