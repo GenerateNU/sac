@@ -27,6 +27,7 @@ then
   if [[ -n $RUNNING_POSTGRES_CONTAINER ]]; then
     echo >&2 "there is a postgres container already running, killing it..."
     docker kill ${RUNNING_POSTGRES_CONTAINER}
+    docker rm ${RUNNING_POSTGRES_CONTAINER}
   fi
   docker run \
       -e POSTGRES_USER=${DB_USER} \
