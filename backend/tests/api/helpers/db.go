@@ -2,11 +2,16 @@ package helpers
 
 import (
 	"fmt"
+	"path/filepath"
 	"sync"
 
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/database"
 	"gorm.io/gorm"
+
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 var (
@@ -32,12 +37,34 @@ func configureDatabase(settings config.Settings) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	dbWithDB, err := database.EstablishConn(settings.Database.WithDb())
+	dbWithDB, err := database.EstablishConn(settings.Database.WithDb(), database.WithLoggerInfo())
 	if err != nil {
 		return nil, err
 	}
 
-	err = database.MigrateDB(settings, dbWithDB)
+	db, err := dbWithDB.DB()
+	if err != nil {
+		return nil, err
+	}
+
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
+	if err != nil {
+		return nil, err
+	}
+
+	m, err := migrate.NewWithDatabaseInstance(
+		fmt.Sprintf("file://%s", filepath.Join("..", "..", "migrations")),
+		"postgres", driver)
+	if err != nil {
+		return nil, err
+	}
+
+	err = m.Up()
+	if err != nil {
+		return nil, err
+	}
+
+	err = database.CreateSuperUserIfNotExists(settings, dbWithDB)
 	if err != nil {
 		return nil, err
 	}

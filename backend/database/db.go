@@ -1,7 +1,10 @@
 package database
 
 import (
+	stdliberrors "errors"
+
 	"github.com/GenerateNU/sac/backend/config"
+	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -14,7 +17,7 @@ func ConfigureDB(settings config.Settings) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	if err := MigrateDB(settings, db); err != nil {
+	if err := CreateSuperUserIfNotExists(settings, db); err != nil {
 		return nil, err
 	}
 
@@ -45,11 +48,6 @@ func EstablishConn(dsn string, opts ...OptionalFunc) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	err = db.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"").Error
-	if err != nil {
-		return nil, err
-	}
-
 	return db, nil
 }
 
@@ -59,38 +57,21 @@ func ConnPooling(db *gorm.DB) error {
 		return err
 	}
 
-	sqlDB.SetMaxIdleConns(10)
-	sqlDB.SetMaxOpenConns(100)
+	sqlDB.SetMaxIdleConns(constants.MAX_IDLE_CONNECTIONS)
+	sqlDB.SetMaxOpenConns(constants.MAX_OPEN_CONNECTIONS)
 
 	return nil
 }
 
-func MigrateDB(settings config.Settings, db *gorm.DB) error {
-	err := db.AutoMigrate(
-		&models.Category{},
-		&models.Club{},
-		&models.Contact{},
-		&models.Series{},
-		&models.Event{},
-		&models.EventSeries{},
-		&models.Notification{},
-		&models.PointOfContact{},
-		&models.Tag{},
-		&models.User{},
-		&models.File{},
-		&models.Verification{},
-		&models.Series{},
-		&models.EventInstanceException{},
-		&models.EventSeries{},
-		&models.Membership{},
-	)
-	if err != nil {
-		return err
-	}
-
+func CreateSuperUserIfNotExists(settings config.Settings, db *gorm.DB) error {
 	var superUser models.User
+
 	if err := db.Where("role = ?", models.Super).First(&superUser).Error; err != nil {
-		if err := createSuperUser(settings, db); err != nil {
+		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
+			if err := createSuperUser(settings, db); err != nil {
+				return err
+			}
+		} else {
 			return err
 		}
 	}
