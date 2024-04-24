@@ -37,7 +37,7 @@ func configureDatabase(settings config.Settings) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	dbWithDB, err := database.EstablishConn(settings.Database.WithDb(), database.WithLoggerInfo())
+	dbWithDB, err := database.EstablishConn(settings.Database.WithDb())
 	if err != nil {
 		return nil, err
 	}
