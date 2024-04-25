@@ -46,7 +46,7 @@ type Series struct {
 	Model
 	RecurringType  RecurringType `json:"recurring_type" validate:"max=255"`
 	MaxOccurrences int           `json:"max_occurrences" validate:"min=1"`
-	Events         []Event       `json:"events" validate:"-"`
+	Events         []Event       `gorm:"many2many:event_series;" json:"events" validate:"-"`
 }
 
 type EventSeries struct {

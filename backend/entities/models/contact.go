@@ -46,7 +46,7 @@ type Contact struct {
 	Type    ContactType `json:"type" validate:"required,max=255,oneof=facebook instagram x linkedin youtube github slack discord email customSite"`
 	Content string      `json:"content" validate:"required,max=255"`
 
-	ClubID uuid.UUID `json:"-" validate:"uuid4"`
+	ClubID uuid.UUID `gorm:"foreignKey:ClubID;" json:"-" validate:"uuid4"`
 }
 
 type PutContactRequestBody struct {

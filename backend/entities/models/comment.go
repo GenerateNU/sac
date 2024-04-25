@@ -10,11 +10,11 @@ type Comment struct {
 	NumFoundHelpful uint   `json:"num_found_helpful" validate:"min=0"`
 
 	AskedByID uuid.UUID `json:"-" validate:"uuid4"`
-	AskedBy   User      `json:"-" validate:"-"`
+	AskedBy   User      `gorm:"foreignKey:AskedByID;" json:"-" validate:"-"`
 
 	ClubID uuid.UUID `json:"-" validate:"uuid4"`
-	Club   Club      `json:"-" validate:"-"`
+	Club   Club      `gorm:"foreignKey:ClubID;" json:"-" validate:"-"`
 
 	AnsweredByID *uuid.UUID `json:"-" validate:"uuid4"`
-	AnsweredBy   *User      `json:"-" validate:"-"`
+	AnsweredBy   *User      `gorm:"foreignKey:AnsweredBy" json:"-" validate:"-"`
 }
