@@ -4,18 +4,18 @@ import { rootModelSchema } from "./root";
 
 // Schemas:
 export const createTagRequestBodySchema = z.object({
-    name: z.string(),
-    categoryID: z.string().uuid(),
-})
+  name: z.string(),
+  categoryID: z.string().uuid(),
+});
 
 export const updateTagRequestBodySchema = z.object({
-    name: z.string().optional(),
-    categoryID: z.string().uuid().optional(),
-})
+  name: z.string().optional(),
+  categoryID: z.string().uuid().optional(),
+});
 
 export const tagSchemaIntermediate = z.object({
-    name: z.string().max(255),
-    category_id: z.string().uuid(),
+  name: z.string().max(255),
+  category_id: z.string().uuid(),
 });
 
 export const tagSchema = tagSchemaIntermediate.merge(rootModelSchema);

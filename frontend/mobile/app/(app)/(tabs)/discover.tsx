@@ -9,17 +9,25 @@ import {
 
 import { router } from 'expo-router';
 
+import { useClubsQuery, useEventsQuery } from '@sac/lib';
+
 import { SearchBar } from '@/app/(app)/search/_components/search-bar';
 import { TopSearch } from '@/app/(app)/search/_components/top-search';
-import { useClubsQuery, useEventsQuery } from '@sac/lib';
-import { useEvents } from '@/hooks/use-event';
 
 import { ClubHomePageCard } from './_components/club-homepage-card';
 import { EventHomePageCardHorizontal } from './_components/event-homepage-card';
 
 const Discover = () => {
-    const { data: events, isLoading: eIsLoading, error: eError } = useEventsQuery();
-    const { data: clubs, isLoading: cIsLoading, error: cError } = useClubsQuery();
+    const {
+        data: events,
+        isLoading: eIsLoading,
+        error: eError
+    } = useEventsQuery();
+    const {
+        data: clubs,
+        isLoading: cIsLoading,
+        error: cError
+    } = useClubsQuery();
 
     if (eIsLoading || cIsLoading) {
         return <Text>Loading...</Text>;

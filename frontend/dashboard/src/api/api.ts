@@ -1,15 +1,15 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-export const API_BASE_URL = 'http://127.0.0.1:8080/api/v1';
+export const API_BASE_URL = "http://127.0.0.1:8080/api/v1";
 
 // BaseAPI for the entire application:
 export const baseApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: API_BASE_URL,
-    credentials: 'include',
+    credentials: "include",
   }),
   tagTypes: [
-    "User", 
+    "User",
     "Tag",
     "Category",
     "Club",
@@ -24,7 +24,10 @@ export const baseApi = createApi({
 });
 
 // Add query params to a request:
-export function handleQueryParams(baseUrl: string, queryParams?: Record<string, string | number | boolean>): string {
+export function handleQueryParams(
+  baseUrl: string,
+  queryParams?: Record<string, string | number | boolean>,
+): string {
   const url = new URL(baseUrl);
   if (queryParams) {
     Object.entries(queryParams).forEach(([key, value]) => {

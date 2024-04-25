@@ -5,12 +5,12 @@ permissions: read-all
 on:
   push:
     paths:
-      - frontend/sac-web/**
+      - frontend/web/**
       - .github/workflows/web.yml
   pull_request:
     types: opened
     paths:
-      - frontend/sac-web/**
+      - frontend/web/**
       - .github/workflows/web.yml
 
 jobs:
@@ -25,14 +25,14 @@ jobs:
         with:
           node-version: 18.x
           cache: yarn
-          cache-dependency-path: frontend/sac-web/yarn.lock
+          cache-dependency-path: frontend/web/yarn.lock
       - name: Install dependencies
         run: |
-          cd frontend/sac-web
+          cd frontend/web
           yarn install
       - name: Format
         run: |
-          cd frontend/sac-web
+          cd frontend/web
           yarn format
   lint:
     name: Lint
@@ -45,14 +45,14 @@ jobs:
         with:
           node-version: 18.x
           cache: yarn
-          cache-dependency-path: frontend/sac-web/yarn.lock
+          cache-dependency-path: frontend/web/yarn.lock
       - name: Install dependencies
         run: |
-          cd frontend/sac-web
+          cd frontend/web
           yarn install
       - name: Lint
         run: |
-          cd frontend/sac-web
+          cd frontend/web
           yarn lint
   test:
     name: Test
@@ -65,12 +65,12 @@ jobs:
         with:
           node-version: 18.x
           cache: yarn
-          cache-dependency-path: frontend/sac-web/yarn.lock
+          cache-dependency-path: frontend/web/yarn.lock
       - name: Install dependencies
         run: |
-          cd frontend/sac-web
+          cd frontend/web
           yarn install
       - name: Test
         run: |
-          cd frontend/sac-web
+          cd frontend/web
           yarn test
