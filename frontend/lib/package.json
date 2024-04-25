@@ -1,15 +1,15 @@
 {
-    "name": "@sac/lib",
-    "main": "index.ts",
-    "version": "0.1.0",
-    "private": true,
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "lint": "eslint . --ext .ts",
-        "format": "prettier --write ."
-    },
-    "dependencies": {
-        "@reduxjs/toolkit": "^2.2.3",
-        "zod": "^3.22.4"
-    }
+  "name": "@sac/lib",
+  "main": "index.ts",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@reduxjs/toolkit": "^2.2.3",
+    "zod": "^3.22.4"
+  }
 }

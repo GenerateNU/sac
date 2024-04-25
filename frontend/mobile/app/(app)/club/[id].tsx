@@ -1,11 +1,7 @@
-import React, { useRef } from 'react';
-import { Animated, RefreshControl, ScrollView, Text, View } from 'react-native';
-import { LogBox } from 'react-native';
-
 import { useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-
-import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet';
+import React, { useRef } from 'react';
+import { Animated, LogBox, RefreshControl, ScrollView, Text, View } from 'react-native';
 
 import { TagList } from '@/components/all-tags';
 import { Description } from '@/components/description';

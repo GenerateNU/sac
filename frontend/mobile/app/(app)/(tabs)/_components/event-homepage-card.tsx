@@ -1,16 +1,12 @@
+import { router } from 'expo-router';
 import React from 'react';
 import { ActivityIndicator, Image, Pressable, Text, View } from 'react-native';
-
-import { router } from 'expo-router';
-
-import { UseQueryResult } from '@tanstack/react-query';
 
 import BluePin from '@/assets/images/svg/blue-pin.svg';
 import Pin from '@/assets/images/svg/pin.svg';
 // import { useClub } from '@/hooks/use-club';
 import { useEventTags } from '@/hooks/use-event';
-import { isToday } from '@/lib/utils';
-import { randomEventColorData } from '@/lib/utils';
+import { isToday, randomEventColorData } from '@/lib/utils';
 import { Event } from '@/types/event';
 import { Tag } from '@/types/tag';
 import { uuid } from '@/types/uuid';

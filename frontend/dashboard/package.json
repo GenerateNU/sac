@@ -9,7 +9,6 @@
     "lint": "next lint",
     "format": "prettier --write .",
     "test": "echo \"Woah there, we have no frontend tests as of right now. Let's just say we're passing.\" && exit 0"
-
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.3",

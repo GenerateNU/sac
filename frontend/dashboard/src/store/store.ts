@@ -10,7 +10,7 @@ export const makeStore = () => {
 
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware()
-      .concat(baseApi.middleware)
+        .concat(baseApi.middleware)
   })
 };
 

@@ -1,8 +1,6 @@
 import React, { forwardRef, useEffect, useState } from 'react';
 import { Animated, Image, View } from 'react-native';
 
-import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet';
-
 import { Button } from '@/components/button';
 import {
     useCreateClubFollowing,
@@ -34,6 +32,9 @@ const HeaderImage = forwardRef<Ref, HeaderImageProps>(
         const [createClubUserFollowing, { data, isLoading, error }] = useCreateUserClubFollowingMutation();
         const userFollowing = useUserFollowing(userID);
         const [buttonClicked, setButtonClicked] = useState(false);
+
+        // MARK to resolve unused variables on L29
+        console.log(data, isLoading, error);
 
         // Effects
         useEffect(() => {

@@ -7,6 +7,7 @@ import { useClubsQuery, useEventsQuery, Event, Club } from '@sac/lib'
 import { HomepageFAQ } from '@/lib/const';
 import { isClub, isEvent, isFAQ } from '@/lib/utils';
 import { FAQ } from '@/types/faq';
+import { Club, Event, useClubsQuery, useEventsQuery } from '@sac/lib';
 
 import { ClubHomePageCard } from './club-homepage-card';
 import { EventHomePageCard } from './event-homepage-card';
