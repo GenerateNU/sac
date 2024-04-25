@@ -42,7 +42,7 @@ type Club struct {
 	ApplicationLink      string           `json:"application_link" validate:"required,max=255,http_url"`
 	Logo                 string           `json:"logo" validate:"omitempty,http_url,s3_url,max=255"`
 
-	Parent            *uuid.UUID       `json:"-" validate:"uuid4"`
+	Parent            *uuid.UUID       `gorm:"foreignKey:Parent;" json:"-" validate:"uuid4"`
 	Tag               []Tag            `gorm:"many2many:club_tags;" json:"-" validate:"-"`
 	Member            []User           `gorm:"many2many:user_club_members;" json:"-" validate:"required"`
 	Follower          []User           `gorm:"many2many:user_club_followers;" json:"-" validate:"-"`

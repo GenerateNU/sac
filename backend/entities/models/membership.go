@@ -16,8 +16,8 @@ func (Membership) TableName() string {
 }
 
 type Membership struct {
-	UserID uuid.UUID `json:"user_id" validate:"required,uuid4"`
-	ClubID uuid.UUID `json:"club_id" validate:"required,uuid4"`
+	UserID uuid.UUID `gorm:"primaryKey;" json:"user_id" validate:"required,uuid4"`
+	ClubID uuid.UUID `gorm:"primaryKey;" json:"club_id" validate:"required,uuid4"`
 
 	Club *Club `json:"-" validate:"-"`
 	User *User `json:"-" validate:"-"`

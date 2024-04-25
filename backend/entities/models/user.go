@@ -165,7 +165,7 @@ type User struct {
 	Follower          []Club    `gorm:"many2many:user_club_followers;" json:"-" validate:"-"`
 	IntendedApplicant []Club    `gorm:"many2many:user_club_intended_applicants;" json:"-" validate:"-"`
 	Asked             []Comment `gorm:"foreignKey:AskedByID;" json:"-" validate:"-"`
-	Answered          []Comment `gorm:"foreignKey:AnsweredByID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"-" validate:"-"`
+	Answered          []Comment `gorm:"foreignKey:AnsweredByID;" json:"-" validate:"-"`
 	RSVP              []Event   `gorm:"many2many:user_event_rsvps;" json:"-" validate:"-"`
 	Waitlist          []Event   `gorm:"many2many:user_event_waitlists;" json:"-" validate:"-"`
 }

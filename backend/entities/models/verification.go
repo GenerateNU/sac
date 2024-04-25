@@ -14,9 +14,9 @@ const (
 )
 
 type Verification struct {
-	UserID    uuid.UUID        `gorm:"primaryKey" json:"user_id" validate:"required,uuid4"`
+	UserID    uuid.UUID        `json:"user_id" validate:"required,uuid4"`
 	Token     string           `json:"token" validate:"required,max=255"`
-	ExpiresAt time.Time        `gorm:"primaryKey" json:"expires_at" validate:"required"`
+	ExpiresAt time.Time        `json:"expires_at" validate:"required"`
 	Type      VerificationType `json:"type" validate:"required,oneof=email_verification password_reset"`
 }
 
