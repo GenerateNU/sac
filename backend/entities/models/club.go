@@ -28,32 +28,32 @@ const (
 type Club struct {
 	Model
 
-	SoftDeletedAt gorm.DeletedAt `gorm:"type:timestamptz;default:NULL" json:"-" validate:"-"`
+	SoftDeletedAt gorm.DeletedAt `json:"-" validate:"-"`
 
-	Name                 string           `gorm:"type:varchar(255);not null" json:"name" validate:"required,max=255"`
-	Preview              string           `gorm:"type:varchar(255);not null" json:"preview" validate:"required,max=255"`
-	Description          string           `gorm:"type:text;not null" json:"description" validate:"required,http_url,s3_url,max=255"`
-	NumMembers           int              `gorm:"type:int;not null" json:"num_members" validate:"required,min=1"`
-	IsRecruiting         bool             `gorm:"type:bool;default:false;not null" json:"is_recruiting" validate:"required"`
-	RecruitmentCycle     RecruitmentCycle `gorm:"type:varchar(255);default:always;not null" json:"recruitment_cycle" validate:"required,max=255,oneof=fall spring fallSpring always"`
-	RecruitmentType      RecruitmentType  `gorm:"type:varchar(255);default:unrestricted;not null" json:"recruitment_type" validate:"required,max=255,oneof=unrestricted tryout application"`
-	WeeklyTimeCommitment int              `gorm:"type:int;default:NULL" json:"weekly_time_commitment" validate:"omitempty,min=1"`
-	OneWordToDescribeUs  string           `gorm:"type:varchar(255);default:NULL" json:"one_word_to_describe_us" validate:"omitempty,max=255"`
-	ApplicationLink      string           `gorm:"type:varchar(255);default:NULL" json:"application_link" validate:"required,max=255,http_url"`
-	Logo                 string           `gorm:"type:varchar(255);default:NULL" json:"logo" validate:"omitempty,http_url,s3_url,max=255"`
+	Name                 string           `json:"name" validate:"required,max=255"`
+	Preview              string           `json:"preview" validate:"required,max=255"`
+	Description          string           `json:"description" validate:"required,http_url,s3_url,max=255"`
+	NumMembers           int              `json:"num_members" validate:"required,min=1"`
+	IsRecruiting         bool             `json:"is_recruiting" validate:"required"`
+	RecruitmentCycle     RecruitmentCycle `json:"recruitment_cycle" validate:"required,max=255,oneof=fall spring fallSpring always"`
+	RecruitmentType      RecruitmentType  `json:"recruitment_type" validate:"required,max=255,oneof=unrestricted tryout application"`
+	WeeklyTimeCommitment int              `json:"weekly_time_commitment" validate:"omitempty,min=1"`
+	OneWordToDescribeUs  string           `json:"one_word_to_describe_us" validate:"omitempty,max=255"`
+	ApplicationLink      string           `json:"application_link" validate:"required,max=255,http_url"`
+	Logo                 string           `json:"logo" validate:"omitempty,http_url,s3_url,max=255"`
 
-	Parent            *uuid.UUID       `gorm:"foreignKey:Parent" json:"-" validate:"uuid4"`
-	Tag               []Tag            `gorm:"many2many:club_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
-	Member            []User           `gorm:"many2many:user_club_members;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"required"`
-	Follower          []User           `gorm:"many2many:user_club_followers;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
-	IntendedApplicant []User           `gorm:"many2many:user_club_intended_applicants;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
-	Comment           []Comment        `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
-	PointOfContact    []PointOfContact `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
-	Contact           []Contact        `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
+	Parent            *uuid.UUID       `gorm:"foreignKey:Parent;" json:"-" validate:"uuid4"`
+	Tag               []Tag            `gorm:"many2many:club_tags;" json:"-" validate:"-"`
+	Member            []User           `gorm:"many2many:user_club_members;" json:"-" validate:"required"`
+	Follower          []User           `gorm:"many2many:user_club_followers;" json:"-" validate:"-"`
+	IntendedApplicant []User           `gorm:"many2many:user_club_intended_applicants;" json:"-" validate:"-"`
+	Comment           []Comment        `json:"-" validate:"-"`
+	PointOfContact    []PointOfContact `json:"-" validate:"-"`
+	Contact           []Contact        `json:"-" validate:"-"`
 	// Event
-	HostEvent   []Event        `gorm:"foreignKey:Host;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
-	Event       []Event        `gorm:"many2many:club_events;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
-	Notifcation []Notification `gorm:"polymorphic:Reference;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
+	HostEvent   []Event        `gorm:"foreignKey:Host;" json:"-" validate:"-"`
+	Event       []Event        `gorm:"many2many:club_events;" json:"-" validate:"-"`
+	Notifcation []Notification `gorm:"polymorphic:Reference;" json:"-" validate:"-"`
 }
 
 type CreateClubRequestBody struct {

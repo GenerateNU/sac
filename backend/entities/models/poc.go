@@ -7,13 +7,13 @@ import (
 type PointOfContact struct {
 	Model
 
-	Name     string `gorm:"type:varchar(255);not null" json:"name" validate:"required,max=255"`
-	Email    string `gorm:"uniqueIndex:compositeindex;index;not null;type:varchar(255)" json:"email" validate:"required,email,max=255"`
-	Position string `gorm:"type:varchar(255);not null" json:"position" validate:"required,max=255"`
+	Name     string `json:"name" validate:"required,max=255"`
+	Email    string `json:"email" validate:"required,email,max=255"`
+	Position string `json:"position" validate:"required,max=255"`
 
-	ClubID uuid.UUID `gorm:"uniqueIndex:compositeindex;index;foreignKey:ClubID;not null" json:"-" validate:"required,uuid4"`
+	ClubID uuid.UUID `json:"-" validate:"required,uuid4"`
 
-	PhotoFile File `gorm:"polymorphic:Owner;not null" json:"photo_file"`
+	PhotoFile File `gorm:"polymorphic:Owner;" json:"photo_file"`
 }
 
 type CreatePointOfContactBody struct {

@@ -14,10 +14,10 @@ const (
 )
 
 type Verification struct {
-	UserID    uuid.UUID        `gorm:"type:varchar(36);primaryKey;not null" json:"user_id" validate:"required,uuid4"`
-	Token     string           `gorm:"type:varchar(255);unique" json:"token" validate:"required,max=255"`
-	ExpiresAt time.Time        `gorm:"type:timestamp;primaryKey;not null" json:"expires_at" validate:"required"`
-	Type      VerificationType `gorm:"type:varchar(255);not null" json:"type" validate:"required,oneof=email_verification password_reset"`
+	UserID    uuid.UUID        `json:"user_id" validate:"required,uuid4"`
+	Token     string           `json:"token" validate:"required,max=255"`
+	ExpiresAt time.Time        `json:"expires_at" validate:"required"`
+	Type      VerificationType `json:"type" validate:"required,oneof=email_verification password_reset"`
 }
 
 type VerifyEmailRequestBody struct {
