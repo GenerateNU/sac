@@ -18,6 +18,8 @@
   - It requires you to add all the exports to path so read the end of the installation carefully!
 - [Trunk](https://marketplace.visualstudio.com/items?itemName=Trunk.io) (Recommended!)
   - Visual Studio Code extension for linting/formatting
+- [migrate](https://github.com/golang-migrate/migrate)
+  - CLI tool for running migrations
 - [gofumpt](https://github.com/mvdan/gofumpt)
   - A stricter gofmt
 - [golangci-lint](https://golangci-lint.run/welcome/install/)
@@ -73,41 +75,6 @@
 
    - You can then open the app in the Expo app in the simulator.
 
-### Postgresql Setup
-
-1. **Turn on postgresql**
-
-   - MacOS
-
-   ```console
-   brew services start postgresql@15
-   ```
-
-   - Windows
-
-   ```console
-   pg_ctl -D /usr/local/var/postgres start
-   ```
-
-2. **Create a user**
-
-   ```console
-   createdb
-   ```
-
-3. **Create a database**
-
-   ```console
-   psql // opens psql shell
-   CREATE DATABASE sac;
-   ```
-
-4. **Create a user**
-
-   ```console
-   createuser postgres -U <your username>
-   ```
-
 # Commands
 
 ## React Native
@@ -129,9 +96,30 @@
    golangci-lint run --fix // lint code
    ```
 
+## migrate
+
+The majority of migrate commands you will use during development, up and down, are handled by the CLI
+
+   ```console
+   sac db init
+   sac db down
+   ```
+
+Sometimes you may need to force the migration version with the CLI
+
+   ```console
+   migrate -path backend/migrations -database "postgres://localhost:5432/sac?sslmode=disable" force <version>
+   ```
+
+To create a new migration, you can use the CLI
+
+   ```console
+   migrate create -ext sql -dir migrations -seq <descriptive-migration-name>
+   ```
+
 ### SAC CLI
 
-   To install use `./install.sh` and then run `sac` to see all commands.
+   To install use `./scripts/install_cli.sh` and then run `sac` to see all commands.
 
 # Git Flow
 

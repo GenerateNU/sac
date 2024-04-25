@@ -1,17 +1,15 @@
 package helpers
 
 import (
-	"github.com/GenerateNU/sac/backend/src/email"
-	"github.com/GenerateNU/sac/backend/src/file"
-	"github.com/GenerateNU/sac/backend/src/search"
-	"github.com/GenerateNU/sac/backend/src/types"
+	"github.com/GenerateNU/sac/backend/integrations"
+	"github.com/GenerateNU/sac/backend/tests/api/mocks"
 )
 
-func NewMockDependencies() *types.Dependencies {
-	return &types.Dependencies{
-		Search: search.NewPineconeMockClient(),
-		AI:     search.NewOpenAIMockClient(),
-		Email:  email.NewResendMockClient(),
-		File:   file.NewAWSMockClient(),
+func NewMockDependencies() *integrations.Integrations {
+	return &integrations.Integrations{
+		Search: mocks.NewPineconeMockClient(),
+		AI:     mocks.NewOpenAIMockClient(),
+		Email:  mocks.NewResendMockClient(),
+		File:   mocks.NewAWSMockClient(),
 	}
 }

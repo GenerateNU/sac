@@ -7,10 +7,10 @@ import (
 )
 
 var (
-	ROOT_DIR, _     = utils.GetRootDir()
-	FRONTEND_DIR    = filepath.Join(ROOT_DIR, "/frontend")
-	BACKEND_DIR     = filepath.Join(ROOT_DIR, "/backend")
-	BACKEND_SRC_DIR = filepath.Join(BACKEND_DIR, "/src")
-	CONFIG          = filepath.Join(ROOT_DIR, "/config")
-	MIGRATION_FILE  = filepath.Join(BACKEND_SRC_DIR, "/migrations/data.sql")
+	ROOT_DIR, _  = utils.GetRootDir()
+	FRONTEND_DIR = filepath.Join(ROOT_DIR, "/frontend")
+	BACKEND_DIR  = filepath.Join(ROOT_DIR, "/backend")
+	CONFIG       = filepath.Join(ROOT_DIR, "/config")
+	MIGRATIONS   = filepath.Join(BACKEND_DIR, "/migrations")
+	MOCK_FILE    = filepath.Join(BACKEND_DIR, "/mock/data.sql")
 )

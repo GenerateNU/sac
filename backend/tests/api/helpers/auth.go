@@ -3,9 +3,9 @@ package helpers
 import (
 	"fmt"
 
-	"github.com/GenerateNU/sac/backend/src/auth"
-	"github.com/GenerateNU/sac/backend/src/database"
-	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/GenerateNU/sac/backend/auth"
+	"github.com/GenerateNU/sac/backend/database"
+	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"

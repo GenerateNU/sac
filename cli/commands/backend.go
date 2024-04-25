@@ -5,7 +5,6 @@ import (
 	"os"
 	"os/exec"
 
-	_ "github.com/lib/pq"
 	"github.com/urfave/cli/v2"
 )
 
@@ -28,12 +27,21 @@ func BackendCommand() *cli.Command {
 }
 
 func RunBackend() error {
-	cmd := exec.Command("go", "run", "main.go")
-
-	cmd.Dir = BACKEND_SRC_DIR
+	cmd := exec.Command("./scripts/init_db.sh")
+	cmd.Dir = ROOT_DIR
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
+	if err != nil {
+		return fmt.Errorf("error initializing database: %w", err)
+	}
+
+	cmd = exec.Command("go", "run", "main.go")
+
+	cmd.Dir = BACKEND_DIR
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
 	if err != nil {
 		return fmt.Errorf("error starting backend: %w", err)
 	}
