@@ -15,14 +15,14 @@ type FileInfo struct {
 type File struct {
 	Model
 
-	OwnerID   uuid.UUID `gorm:"uniqueIndex:compositeindex;index;not null;type:uuid" json:"-" validate:"required,uuid4"`
-	OwnerType string    `gorm:"uniqueIndex:compositeindex;index;not null;type:varchar(255)" json:"-" validate:"required,max=255"`
+	OwnerID   uuid.UUID `json:"-" validate:"required,uuid4"`
+	OwnerType string    `json:"-" validate:"required,max=255"`
 
-	FileName  string `gorm:"type:varchar(255);not null" json:"file_name" validate:"required,max=255"`
-	FileType  string `gorm:"type:varchar(255);not null" json:"file_type" validate:"required,max=255"`
-	FileSize  int    `gorm:"type:int;not null" json:"file_size" validate:"required,min=1"`
-	FileURL   string `gorm:"type:varchar(255);not null" json:"file_url" validate:"required,max=255"`
-	ObjectKey string `gorm:"type:varchar(255);not null" json:"object_key" validate:"required,max=255"`
+	FileName  string `json:"file_name" validate:"required,max=255"`
+	FileType  string `json:"file_type" validate:"required,max=255"`
+	FileSize  int    `json:"file_size" validate:"required,min=1"`
+	FileURL   string `json:"file_url" validate:"required,max=255"`
+	ObjectKey string `json:"object_key" validate:"required,max=255"`
 }
 
 type CreateFileRequestBody struct {

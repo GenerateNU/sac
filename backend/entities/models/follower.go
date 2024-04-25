@@ -9,9 +9,9 @@ func (Follower) TableName() string {
 }
 
 type Follower struct {
-	UserID uuid.UUID `gorm:"type:uuid;primaryKey;not null" json:"user_id" validate:"required,uuid4"`
-	ClubID uuid.UUID `gorm:"type:uuid;primaryKey;not null" json:"club_id" validate:"required,uuid4"`
+	UserID uuid.UUID `json:"user_id" validate:"required,uuid4"`
+	ClubID uuid.UUID `json:"club_id" validate:"required,uuid4"`
 
-	Club *Club `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
-	User *User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"-" validate:"-"`
+	Club *Club `json:"-" validate:"-"`
+	User *User `json:"-" validate:"-"`
 }
