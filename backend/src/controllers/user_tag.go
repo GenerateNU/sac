@@ -78,7 +78,7 @@ func (ut *UserTagController) CreateUserTags(c *fiber.Ctx) error {
 // @Accept		json
 // @Produce		json
 // @Param		userID		path	string	true	"User ID"
-// @Success		201	  {object}	  []models.Tag
+// @Success		201	  {object}	  fiber.StatusNoContent
 // @Failure     400   {object}    errors.Error
 // @Failure     401   {object}    errors.Error
 // @Failure     404   {object}    errors.Error
