@@ -7,7 +7,7 @@ import (
 	"github.com/GenerateNU/sac/backend/entities/models"
 
 	"github.com/GenerateNU/sac/backend/errors"
-	"github.com/GenerateNU/sac/backend/file"
+	"github.com/GenerateNU/sac/backend/integrations/file"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
 )
@@ -67,7 +67,7 @@ func (cpoc *ClubPointOfContactService) CreateClubPointOfContact(clubID string, p
 		return nil, &errors.PointOfContactAlreadyExists
 	}
 
-	fileInfo, err := cpoc.Deps.File.UploadFile("point_of_contacts", fileHeader, []file.FileType{file.IMAGE})
+	fileInfo, err := cpoc.Integrations.File.UploadFile("point_of_contacts", fileHeader, []file.FileType{file.IMAGE})
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +92,7 @@ func (cpoc *ClubPointOfContactService) CreateClubPointOfContact(clubID string, p
 	}
 
 	if err := tx.Commit().Error; err != nil {
-		if err := cpoc.Deps.File.DeleteFile(fileInfo.FileURL); err != nil {
+		if err := cpoc.Integrations.File.DeleteFile(fileInfo.FileURL); err != nil {
 			return nil, err
 		}
 
@@ -120,11 +120,11 @@ func (cpoc *ClubPointOfContactService) UpdateClubPointOfContactPhoto(clubID, poc
 		return nil, err
 	}
 
-	if err := cpoc.Deps.File.DeleteFile(pointOfContact.PhotoFile.FileURL); err != nil {
+	if err := cpoc.Integrations.File.DeleteFile(pointOfContact.PhotoFile.FileURL); err != nil {
 		return nil, err
 	}
 
-	fileInfo, err := cpoc.Deps.File.UploadFile("point_of_contacts", fileHeader, []file.FileType{file.IMAGE})
+	fileInfo, err := cpoc.Integrations.File.UploadFile("point_of_contacts", fileHeader, []file.FileType{file.IMAGE})
 	if err != nil {
 		return nil, err
 	}
@@ -173,7 +173,7 @@ func (cpoc *ClubPointOfContactService) DeleteClubPointOfContact(clubID, pocID st
 		return err
 	}
 
-	if err := cpoc.Deps.File.DeleteFile(pointOfContact.PhotoFile.FileURL); err != nil {
+	if err := cpoc.Integrations.File.DeleteFile(pointOfContact.PhotoFile.FileURL); err != nil {
 		return err
 	}
 

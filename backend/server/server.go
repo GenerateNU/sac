@@ -15,6 +15,7 @@ import (
 	pocs "github.com/GenerateNU/sac/backend/entities/pocs/base"
 	tags "github.com/GenerateNU/sac/backend/entities/tags/base"
 	users "github.com/GenerateNU/sac/backend/entities/users/base"
+	"github.com/GenerateNU/sac/backend/integrations"
 	"github.com/GenerateNU/sac/backend/middleware"
 
 	"github.com/GenerateNU/sac/backend/types"
@@ -37,7 +38,7 @@ import (
 // @host 127.0.0.1:8080
 // @BasePath /
 // @schemes http
-func Init(db *gorm.DB, dependencies types.Dependencies, settings config.Settings) *fiber.App {
+func Init(db *gorm.DB, integrations integrations.Integrations, settings config.Settings) *fiber.App {
 	app := newFiberApp(settings.Application)
 
 	validate, err := utilities.RegisterCustomValidators()
@@ -59,7 +60,7 @@ func Init(db *gorm.DB, dependencies types.Dependencies, settings config.Settings
 			Validate:     validate,
 			AuthSettings: &settings.Auth,
 			JWT:          jwt,
-			Deps:         dependencies,
+			Integrations: integrations,
 		},
 	}
 

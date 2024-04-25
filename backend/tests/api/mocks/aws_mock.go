@@ -5,7 +5,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/errors"
-	"github.com/GenerateNU/sac/backend/file"
+	"github.com/GenerateNU/sac/backend/integrations/file"
 )
 
 type AWSMockClient struct{}

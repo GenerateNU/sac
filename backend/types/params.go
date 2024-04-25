@@ -3,10 +3,8 @@ package types
 import (
 	"github.com/GenerateNU/sac/backend/auth"
 	"github.com/GenerateNU/sac/backend/config"
-	"github.com/GenerateNU/sac/backend/email"
-	"github.com/GenerateNU/sac/backend/file"
+	"github.com/GenerateNU/sac/backend/integrations"
 	"github.com/GenerateNU/sac/backend/middleware"
-	"github.com/GenerateNU/sac/backend/search"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
@@ -23,12 +21,5 @@ type ServiceParams struct {
 	Validate     *validator.Validate
 	AuthSettings *config.AuthSettings
 	JWT          auth.JWTClientInterface
-	Deps         Dependencies
-}
-
-type Dependencies struct {
-	Search search.SearchClientInterface
-	AI     search.AIClientInterface
-	Email  email.EmailClientInterface
-	File   file.FileClientInterface
+	Integrations integrations.Integrations
 }
