@@ -54,7 +54,7 @@ func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models
 	user.Email = strings.ToLower(userBody.Email)
 	user.PasswordHash = *passwordHash
 
-	emailErr := u.Deps.Email.SendWelcomeEmail(fmt.Sprintf("%s %s", user.FirstName, user.LastName), user.Email)
+	emailErr := u.Integrations.Email.SendWelcomeEmail(fmt.Sprintf("%s %s", user.FirstName, user.LastName), user.Email)
 	if emailErr != nil {
 		return nil, nil, &errors.FailedToSendEmail
 	}

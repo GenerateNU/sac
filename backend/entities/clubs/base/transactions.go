@@ -3,7 +3,7 @@ package base
 import (
 	stdliberrors "errors"
 
-	"github.com/GenerateNU/sac/backend/search"
+	"github.com/GenerateNU/sac/backend/integrations/search"
 	"github.com/sahilm/fuzzy"
 
 	"github.com/GenerateNU/sac/backend/entities/models"

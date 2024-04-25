@@ -1,8 +1,8 @@
 package mocks
 
 import (
-	"github.com/GenerateNU/sac/backend/email"
 	"github.com/GenerateNU/sac/backend/errors"
+	"github.com/GenerateNU/sac/backend/integrations/email"
 )
 
 type ResendMockClient struct{}

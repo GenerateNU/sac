@@ -2,7 +2,7 @@ package mocks
 
 import (
 	"github.com/GenerateNU/sac/backend/errors"
-	"github.com/GenerateNU/sac/backend/search"
+	"github.com/GenerateNU/sac/backend/integrations/search"
 	"gorm.io/gorm"
 )
 

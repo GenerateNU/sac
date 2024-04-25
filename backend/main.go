@@ -10,12 +10,12 @@ import (
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/database"
 	_ "github.com/GenerateNU/sac/backend/docs"
-	"github.com/GenerateNU/sac/backend/email"
-	"github.com/GenerateNU/sac/backend/file"
-	"github.com/GenerateNU/sac/backend/search"
+	"github.com/GenerateNU/sac/backend/integrations"
+	"github.com/GenerateNU/sac/backend/integrations/email"
+	"github.com/GenerateNU/sac/backend/integrations/file"
+	"github.com/GenerateNU/sac/backend/integrations/search"
 	"github.com/GenerateNU/sac/backend/server"
 	"github.com/GenerateNU/sac/backend/tests/api/mocks"
-	t "github.com/GenerateNU/sac/backend/types"
 )
 
 func CheckServerRunning(host string, port uint16) error {
@@ -33,7 +33,7 @@ func Exit(format string, a ...interface{}) {
 	os.Exit(0)
 }
 
-func configureDependencies(config *config.Settings, connectToPinecone bool) t.Dependencies {
+func configureIntegrations(config *config.Settings, connectToPinecone bool) integrations.Integrations {
 	openAi := search.NewOpenAIClient(config.OpenAISettings)
 	var pinecone search.SearchClientInterface
 
@@ -43,13 +43,13 @@ func configureDependencies(config *config.Settings, connectToPinecone bool) t.De
 		pinecone = mocks.NewPineconeMockClient()
 	}
 
-	dependencies := t.Dependencies{
+	integrations := integrations.Integrations{
 		File:   file.NewAWSProvider(config.AWS),
 		AI:     openAi,
 		Email:  email.NewResendClient(config.ResendSettings, true),
 		Search: pinecone,
 	}
-	return dependencies
+	return integrations
 }
 
 func main() {
@@ -96,9 +96,9 @@ func main() {
 		Exit("Error with connection pooling: %s", err.Error())
 	}
 
-	dependencies := configureDependencies(config, *connectToPinecone)
+	integrations := configureIntegrations(config, *connectToPinecone)
 
-	app := server.Init(db, dependencies, *config)
+	app := server.Init(db, integrations, *config)
 
 	err = app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
 	if err != nil {

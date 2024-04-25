@@ -5,7 +5,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/errors"
-	"github.com/GenerateNU/sac/backend/file"
+	"github.com/GenerateNU/sac/backend/integrations/file"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
 )
@@ -53,7 +53,7 @@ func (f *FileService) CreateFile(fileBody *models.CreateFileRequestBody, fileHea
 		return nil, &errors.FailedToValidateFile
 	}
 
-	fileInfo, err := f.Deps.File.UploadFile(fileBody.OwnerType, fileHeader, []file.FileType{file.ALL})
+	fileInfo, err := f.Integrations.File.UploadFile(fileBody.OwnerType, fileHeader, []file.FileType{file.ALL})
 	if err != nil {
 		return nil, &errors.FailedToUploadFile
 	}

@@ -5,7 +5,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/constants"
-	"github.com/GenerateNU/sac/backend/search"
+	"github.com/GenerateNU/sac/backend/integrations/search"
 	m "github.com/garrettladley/mattress"
 	"github.com/h2non/gock"
 	"github.com/huandu/go-assert"
