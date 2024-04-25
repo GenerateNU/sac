@@ -1,14 +1,18 @@
 import { Text, View } from 'react-native';
 
-import { useClubContacts } from '@/hooks/use-club';
+import { useClubContactsQuery } from '@sac/lib';
+
 import { Contact } from '@/types/contact';
 import { uuid } from '@/types/uuid';
 
 import { ContactIcon } from './contact-icon';
-import { useClubContactsQuery } from '@sac/lib';
 
 const ClubContacts = ({ clubID }: { clubID: uuid }) => {
-    const { data: clubContacts, error, isLoading } = useClubContactsQuery(clubID);
+    const {
+        data: clubContacts,
+        error,
+        isLoading
+    } = useClubContactsQuery(clubID);
 
     if (isLoading) {
         return <Text>Loading...</Text>;

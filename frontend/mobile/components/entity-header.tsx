@@ -7,7 +7,8 @@ import {
     useDeleteClubFollowing,
     useUserFollowing
 } from '@/hooks/use-user';
-import { useCreateUserClubFollowingMutation } from '@sac/lib';
+import { useCreateUserFollowingMutation } from '@sac/lib';
+import BottomSheet from '@gorhom/bottom-sheet';
 
 const HEADER_HEIGHT = 175;
 const LOGO_HEIGHT = 100;
@@ -29,7 +30,8 @@ const HeaderImage = forwardRef<Ref, HeaderImageProps>(
     ({ image, logo, pan, type, userID, clubID }, ref) => {
         // const followClub = useCreateClubFollowing();
         const unfollowClub = useDeleteClubFollowing();
-        const [createClubUserFollowing, { data, isLoading, error }] = useCreateUserClubFollowingMutation();
+        const [createClubUserFollowing, { data, isLoading, error }] =
+            useCreateUserFollowingMutation();
         const userFollowing = useUserFollowing(userID);
         const [buttonClicked, setButtonClicked] = useState(false);
 

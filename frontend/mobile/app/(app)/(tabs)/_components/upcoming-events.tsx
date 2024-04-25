@@ -5,7 +5,6 @@ import { FlatList } from 'react-native-gesture-handler';
 import { useEvents } from '@/hooks/use-event';
 import { isToday } from '@/lib/utils';
 import { Event } from '@/types/event';
-import { useEventsQuery } from '@sac/lib';
 
 import { EventHomePageCard } from './event-homepage-card';
 
@@ -17,7 +16,7 @@ const UpcomingEvents = () => {
     }
 
     if (error) {
-        return <Text>Error</Text>
+        return <Text>Error</Text>;
     }
 
     if (!events) {

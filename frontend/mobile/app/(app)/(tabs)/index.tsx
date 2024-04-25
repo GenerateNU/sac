@@ -3,24 +3,35 @@ import { SectionList, Text, View } from 'react-native';
 
 import { StatusBar } from 'expo-status-bar';
 
+import { useUserFollowingQuery } from '@sac/lib';
+
+import { useAuthStore } from '@/hooks/use-auth';
+
 import { HappeningToday } from './_components/happening-today';
 import { RecommendedClubs } from './_components/recommended-clubs';
 import { UpcomingEvents } from './_components/upcoming-events';
-import { useUserFollowingQuery } from '@sac/lib';
-import { useAuthStore } from '@/hooks/use-auth';
 
 const HomePage = () => {
     const { user } = useAuthStore();
-    const { data: clubs, isLoading: cIsLoading, error: cError } = useUserFollowingQuery(user?.id!);
+    const {
+        data: clubs,
+        isLoading: cIsLoading,
+        error: cError
+    } = useUserFollowingQuery(user?.id!);
     return (
         <>
             <StatusBar style="dark" />
             <View>
                 {cIsLoading && <Text>Loading...</Text>}
                 {cError && <Text>Error...</Text>}
-                {clubs && clubs.length === 0 && <Text>Follow some clubs to see them here!</Text>}
-                {clubs && clubs.length > 0 && <Text>Following Clubs: {clubs.length}</Text>}
-                {clubs && clubs.map((club) => <Text key={club.id}>{club.name}</Text>)}
+                {clubs && clubs.length === 0 && (
+                    <Text>Follow some clubs to see them here!</Text>
+                )}
+                {clubs && clubs.length > 0 && (
+                    <Text>Following Clubs: {clubs.length}</Text>
+                )}
+                {clubs &&
+                    clubs.map((club) => <Text key={club.id}>{club.name}</Text>)}
             </View>
             <View className="px-[5%]">
                 <SectionList

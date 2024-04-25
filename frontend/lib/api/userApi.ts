@@ -110,26 +110,26 @@ export const userApi = baseApi.injectEndpoints({
         }),
         createUserFollowing: builder.mutation<
             void,
-            { userId: string; clubId: string }
+            { userID: string; clubID: string }
         >({
-            query: ({ userId, clubId }) => ({
-                url: `${USER_API_BASE_URL}/${userId}/follower/${clubId}`,
+            query: ({ userID, clubID }) => ({
+                url: `${USER_API_BASE_URL}/${userID}/follower/${clubID}`,
                 method: 'POST'
             }),
-            invalidatesTags: (_result, _, { userId }) => [
-                { type: 'Follower', id: userId }
+            invalidatesTags: (_result, _, { userID }) => [
+                { type: 'Follower', id: userID }
             ]
         }),
         deleteUserFollowing: builder.mutation<
             void,
-            { userId: string; clubId: string }
+            { userID: string; clubID: string }
         >({
-            query: ({ userId, clubId }) => ({
-                url: `${USER_API_BASE_URL}/${userId}/follower/${clubId}`,
+            query: ({ userID, clubID }) => ({
+                url: `${USER_API_BASE_URL}/${userID}/follower/${clubID}`,
                 method: 'DELETE'
             }),
-            invalidatesTags: (_result, _, { userId }) => [
-                { type: 'Follower', id: userId }
+            invalidatesTags: (_result, _, { userID }) => [
+                { type: 'Follower', id: userID }
             ]
         }),
         userMembership: builder.query<Club[], string>({
@@ -147,27 +147,27 @@ export const userApi = baseApi.injectEndpoints({
         }),
         createUserMembership: builder.mutation<
             void,
-            { userId: string; clubId: string }
+            { userID: string; clubID: string }
         >({
-            query: ({ userId, clubId }) => ({
-                url: `${USER_API_BASE_URL}/${userId}/member/${clubId}`,
+            query: ({ userID, clubID }) => ({
+                url: `${USER_API_BASE_URL}/${userID}/member/${clubID}`,
                 method: 'POST'
             }),
-            invalidatesTags: (_result, _, { userId }) => [
-                { type: 'Follower', id: userId },
-                { type: 'Member', id: userId }
+            invalidatesTags: (_result, _, { userID }) => [
+                { type: 'Follower', id: userID },
+                { type: 'Member', id: userID }
             ]
         }),
         deleteUserMembership: builder.mutation<
             void,
-            { userId: string; clubId: string }
+            { userID: string; clubID: string }
         >({
-            query: ({ userId, clubId }) => ({
-                url: `${USER_API_BASE_URL}/${userId}/member/${clubId}`,
+            query: ({ userID, clubID }) => ({
+                url: `${USER_API_BASE_URL}/${userID}/member/${clubID}`,
                 method: 'DELETE'
             }),
-            invalidatesTags: (_result, _, { userId }) => [
-                { type: 'Member', id: userId }
+            invalidatesTags: (_result, _, { userID }) => [
+                { type: 'Member', id: userID }
             ]
         }),
         userTags: builder.query<Tag[], void>({

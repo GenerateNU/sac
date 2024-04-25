@@ -1,6 +1,10 @@
-import { router } from 'expo-router';
 import React from 'react';
 import { ActivityIndicator, Image, Pressable, Text, View } from 'react-native';
+
+import { router } from 'expo-router';
+
+import { useClubQuery } from '@sac/lib';
+import { UseQueryResult } from '@tanstack/react-query';
 
 import BluePin from '@/assets/images/svg/blue-pin.svg';
 import Pin from '@/assets/images/svg/pin.svg';
@@ -10,7 +14,6 @@ import { isToday, randomEventColorData } from '@/lib/utils';
 import { Event } from '@/types/event';
 import { Tag } from '@/types/tag';
 import { uuid } from '@/types/uuid';
-import { useClubQuery } from '@sac/lib';
 
 type EventHomePageCardHorizontalProps = {
     event: Event;

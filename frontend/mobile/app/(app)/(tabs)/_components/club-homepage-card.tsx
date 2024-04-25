@@ -1,6 +1,7 @@
-import { router } from 'expo-router';
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
+
+import { router } from 'expo-router';
 
 import EventDemoDay from '@/assets/images/svg/event-demo-day.svg';
 import { useClubTags } from '@/hooks/use-club';
