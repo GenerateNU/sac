@@ -159,15 +159,15 @@ type User struct {
 	GraduationYear  int16           `json:"graduation_year" validate:"required"`
 	IsVerified      bool            `json:"is_verified"`
 
-	Tag               []Tag     `json:"-" validate:"-"`
-	Admin             []Club    `json:"-" validate:"-"`
-	Member            []Club    `json:"-" validate:"-"`
-	Follower          []Club    `json:"-" validate:"-"`
-	IntendedApplicant []Club    `json:"-" validate:"-"`
-	Asked             []Comment `json:"-" validate:"-"`
-	Answered          []Comment `json:"-" validate:"-"`
-	RSVP              []Event   `json:"-" validate:"-"`
-	Waitlist          []Event   `json:"-" validate:"-"`
+	Tag               []Tag     `gorm:"many2many:user_tags;" json:"-" validate:"-"`
+	Admin             []Club    `gorm:"many2many:user_club_admins;" json:"-" validate:"-"`
+	Member            []Club    `gorm:"many2many:user_club_members;" json:"-" validate:"-"`
+	Follower          []Club    `gorm:"many2many:user_club_followers;" json:"-" validate:"-"`
+	IntendedApplicant []Club    `gorm:"many2many:user_club_intended_applicants;" json:"-" validate:"-"`
+	Asked             []Comment `gorm:"foreignKey:AskedByID;" json:"-" validate:"-"`
+	Answered          []Comment `gorm:"foreignKey:AnsweredByID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"-" validate:"-"`
+	RSVP              []Event   `gorm:"many2many:user_event_rsvps;" json:"-" validate:"-"`
+	Waitlist          []Event   `gorm:"many2many:user_event_waitlists;" json:"-" validate:"-"`
 }
 
 type CreateUserRequestBody struct {

@@ -9,9 +9,9 @@ type Tag struct {
 
 	CategoryID uuid.UUID `json:"category_id" validate:"required,uuid4"`
 
-	User  []User  `json:"-" validate:"-"`
-	Club  []Club  `json:"-" validate:"-"`
-	Event []Event `json:"-" validate:"-"`
+	User  []User  `gorm:"many2many:user_tags;" json:"-" validate:"-"`
+	Club  []Club  `gorm:"many2many:club_tags;" json:"-" validate:"-"`
+	Event []Event `gorm:"many2many:event_tags;" json:"-" validate:"-"`
 }
 
 type CreateTagRequestBody struct {

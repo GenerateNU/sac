@@ -13,7 +13,7 @@ type PointOfContact struct {
 
 	ClubID uuid.UUID `json:"-" validate:"required,uuid4"`
 
-	PhotoFile File `json:"photo_file"`
+	PhotoFile File `gorm:"polymorphic:Owner;" json:"photo_file"`
 }
 
 type CreatePointOfContactBody struct {

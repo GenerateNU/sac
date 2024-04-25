@@ -43,17 +43,17 @@ type Club struct {
 	Logo                 string           `json:"logo" validate:"omitempty,http_url,s3_url,max=255"`
 
 	Parent            *uuid.UUID       `json:"-" validate:"uuid4"`
-	Tag               []Tag            `json:"-" validate:"-"`
-	Member            []User           `json:"-" validate:"required"`
-	Follower          []User           `json:"-" validate:"-"`
-	IntendedApplicant []User           `json:"-" validate:"-"`
+	Tag               []Tag            `gorm:"many2many:club_tags;" json:"-" validate:"-"`
+	Member            []User           `gorm:"many2many:user_club_members;" json:"-" validate:"required"`
+	Follower          []User           `gorm:"many2many:user_club_followers;" json:"-" validate:"-"`
+	IntendedApplicant []User           `gorm:"many2many:user_club_intended_applicants;" json:"-" validate:"-"`
 	Comment           []Comment        `json:"-" validate:"-"`
 	PointOfContact    []PointOfContact `json:"-" validate:"-"`
 	Contact           []Contact        `json:"-" validate:"-"`
 	// Event
-	HostEvent   []Event        `json:"-" validate:"-"`
-	Event       []Event        `json:"-" validate:"-"`
-	Notifcation []Notification `json:"-" validate:"-"`
+	HostEvent   []Event        `gorm:"foreignKey:Host;" json:"-" validate:"-"`
+	Event       []Event        `gorm:"many2many:club_events;" json:"-" validate:"-"`
+	Notifcation []Notification `gorm:"polymorphic:Reference;" json:"-" validate:"-"`
 }
 
 type CreateClubRequestBody struct {

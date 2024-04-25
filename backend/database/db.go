@@ -107,7 +107,7 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 			return err
 		}
 
-		if err := tx.Model(&superClub).Update("num_members", gorm.Expr("num_members + 1")).Error; err != nil {
+		if err := tx.Model(&models.Club{}).Where("id = ?", superClub.ID).Update("num_members", gorm.Expr("num_members + 1")).Error; err != nil {
 			tx.Rollback()
 			return err
 		}

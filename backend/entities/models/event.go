@@ -35,11 +35,11 @@ type Event struct {
 	MeetingLink string     `json:"meeting_link" validate:"url"`
 	Host        *uuid.UUID `json:"host" validate:"uuid4"`
 
-	RSVP         []User         `json:"-" validate:"-"`
-	Waitlist     []User         `json:"-" validate:"-"`
-	Clubs        []Club         `json:"-" validate:"-"`
-	Tag          []Tag          `json:"-" validate:"-"`
-	Notification []Notification `json:"-" validate:"-"`
+	RSVP         []User         `gorm:"many2many:user_event_rsvps;" json:"-" validate:"-"`
+	Waitlist     []User         `gorm:"many2many:user_event_waitlists;" json:"-" validate:"-"`
+	Clubs        []Club         `gorm:"many2many:club_events;" json:"-" validate:"-"`
+	Tag          []Tag          `gorm:"many2many:event_tags;" json:"-" validate:"-"`
+	Notification []Notification `gorm:"polymorphic:Reference;" json:"-" validate:"-"`
 }
 
 type Series struct {
