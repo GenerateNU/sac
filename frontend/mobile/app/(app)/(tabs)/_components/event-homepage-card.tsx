@@ -1,7 +1,6 @@
+import { router } from 'expo-router';
 import React from 'react';
 import { ActivityIndicator, Image, Pressable, Text, View } from 'react-native';
-
-import { router } from 'expo-router';
 
 import { useClubQuery } from '@sac/lib';
 import { UseQueryResult } from '@tanstack/react-query';

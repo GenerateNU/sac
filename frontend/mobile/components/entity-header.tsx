@@ -27,8 +27,12 @@ const HeaderImage = forwardRef<Ref, HeaderImageProps>(
     ({ image, logo, pan, type, userID, clubID }, ref) => {
         // const followClub = useCreateClubFollowing();
         const unfollowClub = useDeleteClubFollowing();
+<<<<<<< HEAD
         const [createClubUserFollowing, { data, isLoading, error }] =
             useCreateUserFollowingMutation();
+=======
+        const [createClubUserFollowing, { data, isLoading, error }] = useCreateUserClubFollowingMutation();
+>>>>>>> a28089a2 (feat: frontend lib, rtk migration, & dashboard init (#632))
         const userFollowing = useUserFollowing(userID);
         const [buttonClicked, setButtonClicked] = useState(false);
 

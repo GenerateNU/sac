@@ -60,7 +60,7 @@ const Club = () => {
 
     const randomEventColor =
         randomEventColorData[
-            Math.round(Math.random() * (randomEventColorData.length - 1))
+        Math.round(Math.random() * (randomEventColorData.length - 1))
         ];
 
     if (isLoading) {

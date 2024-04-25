@@ -42,7 +42,7 @@ const EventPage = () => {
     const pan = useRef(new Animated.ValueXY()).current;
     const randomEventColor =
         randomEventColorData[
-            Math.round(Math.random() * (randomEventColorData.length - 1))
+        Math.round(Math.random() * (randomEventColorData.length - 1))
         ];
 
     const [asset, assetError] = useAssets(
