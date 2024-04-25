@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - "frontend/sac-web/**"
-      - ".github/workflows/mweb_codeql.yml"
+      - ".github/workflows/web_codeql.yml"
   pull_request:
     types: [opened]
     paths:
