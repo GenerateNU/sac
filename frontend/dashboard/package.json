@@ -10,6 +10,11 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.3",
+    "@tiptap/pm": "^2.3.0",
+    "@tiptap/react": "^2.3.0",
+    "@tiptap/starter-kit": "^2.3.0",
+    "@tiptap/suggestion": "^2.3.0",
+    "firebase": "^10.11.0",
     "next": "14.2.2",
     "react": "^18",
     "react-dom": "^18",
