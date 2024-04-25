@@ -43,10 +43,10 @@ func GetContentPrefix(contactType ContactType) string {
 type Contact struct {
 	Model
 
-	Type    ContactType `gorm:"type:varchar(255);uniqueIndex:idx_contact_type;not null" json:"type" validate:"required,max=255,oneof=facebook instagram x linkedin youtube github slack discord email customSite"`
-	Content string      `gorm:"type:varchar(255);not null" json:"content" validate:"required,max=255"`
+	Type    ContactType `json:"type" validate:"required,max=255,oneof=facebook instagram x linkedin youtube github slack discord email customSite"`
+	Content string      `json:"content" validate:"required,max=255"`
 
-	ClubID uuid.UUID `gorm:"foreignKey:ClubID;uniqueIndex:idx_contact_type;not null" json:"-" validate:"uuid4"`
+	ClubID uuid.UUID `json:"-" validate:"uuid4"`
 }
 
 type PutContactRequestBody struct {

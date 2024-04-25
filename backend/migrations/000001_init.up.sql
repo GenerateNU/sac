@@ -231,7 +231,7 @@ CREATE TABLE IF NOT EXISTS user_tags(
 CREATE UNIQUE INDEX IF NOT EXISTS uni_users_email ON users USING btree ("email");
 
 CREATE TABLE IF NOT EXISTS verifications(
-    user_id varchar(36) NOT NULL,
+    user_id uuid NOT NULL,
     token varchar(255),
     expires_at timestamp without time zone NOT NULL,
     "type" varchar(255) NOT NULL,
