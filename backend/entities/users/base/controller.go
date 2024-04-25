@@ -69,12 +69,12 @@ func (u *UserController) CreateUser(c *fiber.Ctx) error {
 // @Failure     500   {object}      errors.Error
 // @Router		/users/  [get]
 func (u *UserController) GetUsers(c *fiber.Ctx) error {
-	categories, err := u.userService.GetUsers(c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING))
+	users, err := u.userService.GetUsers(c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING))
 	if err != nil {
 		return err.FiberError(c)
 	}
 
-	return c.Status(fiber.StatusOK).JSON(&categories)
+	return c.Status(fiber.StatusOK).JSON(&users)
 }
 
 // Me godoc
