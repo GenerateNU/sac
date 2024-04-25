@@ -56,6 +56,18 @@
     <img src="https://github.com/GenerateNU/sac/actions/workflows/web_codeql.yml/badge.svg"
       alt="Web CodeQL Workflow Status" />
   </a>
+
+  <br />
+
+  <a href="https://github.com/GenerateNU/sac/actions/workflows/dashboard.yml">
+    <img src="https://github.com/GenerateNU/sac/actions/workflows/dashboard.yml/badge.svg"
+      alt="Dashboard Workflow Status" />
+  </a>
+  
+  <a href="https://github.com/GenerateNU/sac/actions/workflows/dashboard_codeql.yml">
+    <img src="https://github.com/GenerateNU/sac/actions/workflows/dashboard_codeql.yml/badge.svg"
+      alt="Dashboard CodeQL Workflow Status" />
+  </a>
 </div>
 
 ## Repo Activity
