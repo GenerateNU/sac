@@ -1,5 +1,6 @@
-import { z } from "zod";
-import { rootModelSchema } from "./root";
+import { z } from 'zod';
+
+import { rootModelSchema } from './root';
 
 // Enums:
 export const userRoleEnum = z.enum([
@@ -125,7 +126,7 @@ export const majorEnum = z.enum([
 export const graduationCycleEnum = z.enum([
     "december",
     "may",
-])
+]);
 
 export const yearEnum = z.enum([
     "1", "2", "3", "4", "5"

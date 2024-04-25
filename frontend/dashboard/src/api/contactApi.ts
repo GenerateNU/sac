@@ -1,7 +1,8 @@
-import { z } from "zod";
-import { Contact, contactSchema } from "../types/contact";
-import { baseApi, handleQueryParams } from "./api";
-import { PaginationQueryParams } from "../types/root";
+import { z } from 'zod';
+
+import { Contact, contactSchema } from '../types/contact';
+import { PaginationQueryParams } from '../types/root';
+import { baseApi, handleQueryParams } from './api';
 
 const CONTACT_API_BASE_URL = '/contacts';
 
@@ -39,3 +40,9 @@ const contactApi = baseApi.injectEndpoints({
         }),
     })
 });
+
+export const {
+    useContactQuery,
+    useContactsQuery,
+    useDeleteContactMutation,
+} = contactApi;

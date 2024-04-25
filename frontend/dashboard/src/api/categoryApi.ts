@@ -1,8 +1,9 @@
-import { API_BASE_URL, baseApi, handleQueryParams } from "./api";
-import { Category, CreateCategoryRequestBody, categorySchema } from "../types/category";
-import { z } from "zod";
-import { Tag } from "../types/tag";
-import { PaginationQueryParams } from "../types/root";
+import { z } from 'zod';
+
+import { Category, categorySchema, CreateCategoryRequestBody } from '../types/category';
+import { PaginationQueryParams } from '../types/root';
+import { Tag } from '../types/tag';
+import { baseApi, handleQueryParams } from './api';
 
 const CATEGORY_API_BASE_URL = '/categories';
 
