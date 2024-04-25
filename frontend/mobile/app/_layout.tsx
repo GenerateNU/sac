@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Spinner from 'react-native-loading-spinner-overlay';
+import { Provider } from 'react-redux';
 
 import { useFonts } from 'expo-font';
 import { Stack, useRouter, useSegments } from 'expo-router';
@@ -9,11 +10,11 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { store } from '@sac/lib';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { useAuthStore } from '@/hooks/use-auth';
-import { Provider } from 'react-redux';
-import { store } from '@sac/lib';
+
 export {
     // Catch any errors thrown by the Layout component.
     ErrorBoundary

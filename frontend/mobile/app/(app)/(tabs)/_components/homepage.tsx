@@ -1,10 +1,11 @@
 import React from 'react';
 import { FlatList, Text, View } from 'react-native';
 
+import { Club, Event, useClubsQuery, useEventsQuery } from '@sac/lib';
+
 import { HomepageFAQ } from '@/lib/const';
 import { isClub, isEvent, isFAQ } from '@/lib/utils';
 import { FAQ } from '@/types/faq';
-import { Club, Event, useClubsQuery, useEventsQuery } from '@sac/lib';
 
 import { ClubHomePageCard } from './club-homepage-card';
 import { EventHomePageCard } from './event-homepage-card';
@@ -13,8 +14,16 @@ import { FAQHomePageCard } from './faq-homepage-card';
 export type HomepageItem = Event | Club | FAQ;
 
 const HomepageList = () => {
-    const { data: events, isLoading: eIsLoading, error: eError } = useEventsQuery();
-    const { data: clubs, isLoading: cIsLoading, error: cError } = useClubsQuery();
+    const {
+        data: events,
+        isLoading: eIsLoading,
+        error: eError
+    } = useEventsQuery();
+    const {
+        data: clubs,
+        isLoading: cIsLoading,
+        error: cError
+    } = useClubsQuery();
 
     if (eIsLoading || cIsLoading) {
         return <Text>Loading...</Text>;

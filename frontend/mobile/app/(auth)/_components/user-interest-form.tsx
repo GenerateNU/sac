@@ -4,17 +4,15 @@ import { Alert, FlatList, Text, View } from 'react-native';
 
 import { router } from 'expo-router';
 
+import { useCategoriesQuery, useTagsQuery } from '@sac/lib';
 import { ZodError } from 'zod';
 
 import { Button } from '@/components/button';
 import { Error } from '@/components/error';
 import { useAuthStore } from '@/hooks/use-auth';
-import { useCategories } from '@/hooks/use-categories';
-import { useTags } from '@/hooks/use-tags';
 import { useCreateUserTags } from '@/hooks/use-user';
 import { Category } from '@/types/category';
 import { Tag } from '@/types/tag';
-import { useCategoriesQuery, useTagsQuery } from '@sac/lib';
 
 type UserInterestsData = {
     tags: Tag[];

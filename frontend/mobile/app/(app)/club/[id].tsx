@@ -1,7 +1,18 @@
+import React, { useRef } from 'react';
+import {
+    Animated,
+    LogBox,
+    RefreshControl,
+    ScrollView,
+    Text,
+    View
+} from 'react-native';
+
 import { useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useRef } from 'react';
-import { Animated, LogBox, RefreshControl, ScrollView, Text, View } from 'react-native';
+
+import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet';
+import { useClubQuery } from '@sac/lib';
 
 import { TagList } from '@/components/all-tags';
 import { Description } from '@/components/description';
@@ -9,8 +20,6 @@ import { HeaderImage } from '@/components/entity-header';
 import { Title } from '@/components/title';
 import { useAuthStore } from '@/hooks/use-auth';
 import { useClubTags } from '@/hooks/use-club';
-import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet';
-import { useClubQuery } from '@sac/lib';
 
 import { Events } from './_components/all-events';
 import { FAQs } from './_components/all-faqs';
@@ -51,7 +60,7 @@ const Club = () => {
 
     const randomEventColor =
         randomEventColorData[
-        Math.round(Math.random() * (randomEventColorData.length - 1))
+            Math.round(Math.random() * (randomEventColorData.length - 1))
         ];
 
     if (isLoading) {
