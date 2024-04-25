@@ -50,7 +50,6 @@ func Init(db *gorm.DB, integrations integrations.Integrations, settings config.S
 	authMiddleware := middleware.NewAuthAuthMiddlewareService(db, validate, settings.Auth)
 
 	apiv1 := app.Group("/api/v1")
-	// apiv1.Use(authMiddleware.Authenticate)
 
 	routeParams := types.RouteParams{
 		Router:         apiv1,
