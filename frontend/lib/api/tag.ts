@@ -1,9 +1,9 @@
-import { z } from "zod";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { z } from 'zod';
 
-import { API_BASE_URL } from "../const";
-import { Tag, tagSchema } from "@/types/tag";
-import { uuid } from "@/types/uuid";
+import { API_BASE_URL } from '@/const';
+import { Tag, tagSchema } from '@/types/tag';
+import { uuid } from '@/types/uuid';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const tagsApi = createApi({
     reducerPath: "tagsApi",

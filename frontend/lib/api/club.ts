@@ -1,11 +1,9 @@
-import { z } from "zod";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
-import { API_BASE_URL } from "../const";
-import { Club, clubSchema } from "@/types/club";
-import { Contact, contactSchema } from "@/types/contact";
-import { Tag, tagSchema } from "@/types/tag";
-import { uuid } from "@/types/uuid";
+import { API_BASE_URL } from '@/const';
+import { Club } from '@/types/club';
+import { Contact } from '@/types/contact';
+import { Tag } from '@/types/tag';
+import { uuid } from '@/types/uuid';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const clubsApi = createApi({
   reducerPath: "clubsApi",

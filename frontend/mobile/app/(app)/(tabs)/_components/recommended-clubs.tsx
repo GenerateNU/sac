@@ -2,10 +2,9 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 
-// import { useClubs } from '@/hooks/use-club';
+import { Club, useClubsQuery } from '@sac/lib';
 
 import { ClubHomePageCard } from './club-homepage-card';
-import { Club, useClubsQuery } from '@sac/lib';
 
 const RecommendedClubs = () => {
     const { data: clubs, isLoading, error } = useClubsQuery();

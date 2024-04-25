@@ -1,9 +1,9 @@
-import { z } from "zod";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { z } from 'zod';
 
-import { API_BASE_URL } from "../const";
-import { Contact, contactSchema } from "@/types/contact";
-import { uuid } from "@/types/uuid";
+import { API_BASE_URL } from '@/const';
+import { Contact, contactSchema } from '@/types/contact';
+import { uuid } from '@/types/uuid';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const contactsApi = createApi({
   reducerPath: "contactApi",
