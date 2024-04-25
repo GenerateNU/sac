@@ -28,7 +28,7 @@ func UsersRouter(userParams types.RouteParams) fiber.Router {
 
 	users.Get("/", userParams.AuthMiddleware.Authorize(p.ReadAll), userController.GetUsers)
 	users.Post("/", userController.CreateUser)
-	users.Get("/me", userController.GetMe)
+	users.Get("/me", userParams.AuthMiddleware.Authorize(p.UserRead), userController.GetMe)
 
 	// api/v1/users/:userID/*
 	usersID := users.Group("/:userID")
