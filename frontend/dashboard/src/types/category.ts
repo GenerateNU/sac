@@ -5,7 +5,7 @@ import { tagSchema } from "./tag";
 
 // Schemas:
 export const createCategoryRequestBodySchema = z.object({
-    name: z.string().min(1),
+  name: z.string().min(1),
 });
 
 export const categorySchemaIntermediate = z.object({
@@ -16,5 +16,7 @@ export const categorySchemaIntermediate = z.object({
 export const categorySchema = categorySchemaIntermediate.merge(rootModelSchema);
 
 // Types:
-export type CreateCategoryRequestBody = z.infer<typeof createCategoryRequestBodySchema>;
+export type CreateCategoryRequestBody = z.infer<
+  typeof createCategoryRequestBodySchema
+>;
 export type Category = z.infer<typeof categorySchema>;

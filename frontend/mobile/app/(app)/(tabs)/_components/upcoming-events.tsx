@@ -2,9 +2,10 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 
+import { useEventsQuery } from '@sac/lib';
+
 import { isToday } from '@/lib/utils';
 import { Event } from '@/types/event';
-import { useEventsQuery } from '@sac/lib';
 
 import { EventHomePageCard } from './event-homepage-card';
 
@@ -16,7 +17,7 @@ const UpcomingEvents = () => {
     }
 
     if (error) {
-        return <Text>Error</Text>
+        return <Text>Error</Text>;
     }
 
     if (!events) {
