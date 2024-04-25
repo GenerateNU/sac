@@ -1,4 +1,3 @@
-import { router } from 'expo-router';
 import React from 'react';
 import { ActivityIndicator, Image, Pressable, Text, View } from 'react-native';
 
@@ -12,6 +11,7 @@ import { isToday, randomEventColorData } from '@/lib/utils';
 import { Event } from '@/types/event';
 import { Tag } from '@/types/tag';
 import { uuid } from '@/types/uuid';
+import { router } from 'expo-router';
 
 type EventHomePageCardHorizontalProps = {
     event: Event;

@@ -13,7 +13,6 @@ import { useAuthStore } from '@/hooks/use-auth';
 import { useCreateUserTags } from '@/hooks/use-user';
 import { Category } from '@/types/category';
 import { Tag } from '@/types/tag';
-import { useCategoriesQuery, useTagsQuery } from '@sac/lib';
 
 type UserInterestsData = {
     tags: Tag[];
