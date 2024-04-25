@@ -8,6 +8,11 @@ import (
 )
 
 func (m *AuthMiddlewareService) UserAuthorizeById(c *fiber.Ctx) error {
+	authErr := m.Authenticate(c)
+	if authErr != nil {
+		return errors.Unauthorized.FiberError(c)
+	}
+
 	if m.IsSuper(c) {
 		return c.Next()
 	}

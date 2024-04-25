@@ -301,14 +301,6 @@ func GenerateRefreshCookie(value string) *fiber.Cookie {
 }
 
 func SetResponseTokens(c *fiber.Ctx, tokens *Token) *errors.Error {
-	// c.Cookie(&fiber.Cookie{
-	// 	Name:     "refresh_token",
-	// 	Value:    "",
-	// 	Expires:  time.Now().Add(-time.Hour),
-	// 	HTTPOnly: true,
-	// })
-	// c.Set("Authorization", "")
-
 	// Set the tokens in the response
 	// should also blacklist the old refresh and access tokens
 
