@@ -70,7 +70,7 @@ const docTemplate = `{
         },
         "/auth/login": {
             "post": {
-                "description": "Authenticates a user and returns a token upon successful login.",
+                "description": "Logs in a user",
                 "consumes": [
                     "application/json"
                 ],
@@ -80,11 +80,11 @@ const docTemplate = `{
                 "tags": [
                     "auth"
                 ],
-                "summary": "User Login",
+                "summary": "Logs in a user",
                 "operationId": "login-user",
                 "parameters": [
                     {
-                        "description": "User credentials for login",
+                        "description": "Login Body",
                         "name": "loginBody",
                         "in": "body",
                         "required": true,
@@ -95,25 +95,25 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successfully authenticated user",
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.User"
                         }
                     },
                     "400": {
-                        "description": "Invalid request, check the request body",
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/errors.Error"
                         }
                     },
                     "404": {
-                        "description": "User not found, check the provided credentials",
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/errors.Error"
                         }
                     },
                     "500": {
-                        "description": "Internal server error",
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/errors.Error"
                         }
@@ -1386,6 +1386,345 @@ const docTemplate = `{
                 }
             }
         },
+        "/clubs/{clubID}/poc/": {
+            "post": {
+                "description": "Creates a point of contact associated with a club",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "club-point-of-contact"
+                ],
+                "summary": "Create a point of contact for a club",
+                "operationId": "create-point-of-contact-by-club",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Club ID",
+                        "name": "clubID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.PointOfContact"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/clubs/{clubID}/poc/{pocID}": {
+            "put": {
+                "description": "Updates a point of contact associated with a club",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "club-point-of-contact"
+                ],
+                "summary": "Update a point of contact for a club",
+                "operationId": "update-point-of-contact-by-club",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Club ID",
+                        "name": "clubID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Point of Contact ID",
+                        "name": "pocID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.PointOfContact"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a point of contact associated with a club",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "club-point-of-contact"
+                ],
+                "summary": "Delete a point of contact for a club",
+                "operationId": "delete-point-of-contact-by-club",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Club ID",
+                        "name": "clubID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Point of Contact ID",
+                        "name": "pocID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Updates a point of contact photo associated with a club",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "club-point-of-contact"
+                ],
+                "summary": "Update a point of contact photo for a club",
+                "operationId": "update-point-of-contact-photo-by-club",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Club ID",
+                        "name": "clubID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Point of Contact ID",
+                        "name": "pocID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.PointOfContact"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/clubs/{clubID}/pocs/": {
+            "get": {
+                "description": "Retrieves all point of contacts associated with a club",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "club-point-of-contact"
+                ],
+                "summary": "Retrieve all point of contacts for a club",
+                "operationId": "get-point-of-contacts-by-club",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Club ID",
+                        "name": "clubID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.PointOfContact"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/clubs/{clubID}/pocs/{pocID}": {
+            "get": {
+                "description": "Retrieves a point of contact associated with a club",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "club-point-of-contact"
+                ],
+                "summary": "Retrieve a point of contact for a club",
+                "operationId": "get-point-of-contact-by-club",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Club ID",
+                        "name": "clubID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Point of Contact ID",
+                        "name": "pocID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.PointOfContact"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/clubs/{clubID}/tags/": {
             "get": {
                 "description": "Retrieves all tags associated with a club",
@@ -1934,6 +2273,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/events/{eventID}/hosts": {
+            "get": {
+                "description": "Retrieves all hosts associated with an event",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "event"
+                ],
+                "summary": "Retrieve all hosts by event",
+                "operationId": "get-hosts-by-event",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Event ID",
+                        "name": "eventID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Club"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/events/{eventID}/series/": {
             "get": {
                 "description": "Retrieves all series associated with an event",
@@ -2274,6 +2664,386 @@ const docTemplate = `{
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/errors.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/events/{eventID}/tags": {
+            "get": {
+                "description": "Retrieves all tags associated with an event",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "event"
+                ],
+                "summary": "Retrieve all tags by event",
+                "operationId": "get-tags-by-event",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Event ID",
+                        "name": "eventID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Tag"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/files/": {
+            "get": {
+                "description": "Retrieves all files",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "file"
+                ],
+                "summary": "Retrieve all files",
+                "operationId": "get-files",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.File"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a file",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "file"
+                ],
+                "summary": "Create a file",
+                "operationId": "create-file",
+                "parameters": [
+                    {
+                        "description": "File",
+                        "name": "file",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateFileRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.File"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/files/:fileID": {
+            "get": {
+                "description": "Retrieves a file",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "file"
+                ],
+                "summary": "Retrieve a file",
+                "operationId": "get-file",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "File ID",
+                        "name": "fileID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.File"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes a file",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "file"
+                ],
+                "summary": "Delete a file",
+                "operationId": "delete-file",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "File ID",
+                        "name": "fileID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.File"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/pocs/": {
+            "get": {
+                "description": "Retrieves all point of contacts",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "point of contact"
+                ],
+                "summary": "Retrieve all point of contacts",
+                "operationId": "get-point-of-contacts",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.PointOfContact"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/pocs/{pocID}/": {
+            "get": {
+                "description": "Retrieves a point of contact by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "point of contact"
+                ],
+                "summary": "Retrieves a point of contact",
+                "operationId": "get-point-of-contact",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Point of Contact ID",
+                        "name": "pocID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.PointOfContact"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 }
@@ -3331,6 +4101,15 @@ const docTemplate = `{
                         "name": "userID",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "User Tags Body",
+                        "name": "userTagsBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/tag.CreateUserTagsBody"
+                        }
                     }
                 ],
                 "responses": {
@@ -3342,6 +4121,58 @@ const docTemplate = `{
                                 "$ref": "#/definitions/models.Tag"
                             }
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors.Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Creates tags for a user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user-tag"
+                ],
+                "summary": "Create user tags",
+                "operationId": "create-user-tags",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
                     },
                     "400": {
                         "description": "Bad Request",
@@ -3441,8 +4272,8 @@ const docTemplate = `{
                     "example": "2023-09-20T16:34:50Z"
                 },
                 "description": {
-                    "description": "FIXME: make description a mongodb url again\nDescription      string           ` + "`" + `gorm:\"type:varchar(255)\" json:\"description\" validate:\"required,http_url,mongo_url,max=255\"` + "`" + ` // MongoDB URL",
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255
                 },
                 "id": {
                     "type": "string",
@@ -3452,7 +4283,6 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "logo": {
-                    "description": "S3 URL",
                     "type": "string",
                     "maxLength": 255
                 },
@@ -3463,6 +4293,10 @@ const docTemplate = `{
                 "num_members": {
                     "type": "integer",
                     "minimum": 1
+                },
+                "one_word_to_describe_us": {
+                    "type": "string",
+                    "maxLength": 255
                 },
                 "preview": {
                     "type": "string",
@@ -3495,15 +4329,13 @@ const docTemplate = `{
                         }
                     ]
                 },
-                "tags": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Tag"
-                    }
-                },
                 "updated_at": {
                     "type": "string",
                     "example": "2023-09-20T16:34:50Z"
+                },
+                "weekly_time_commitment": {
+                    "type": "integer",
+                    "minimum": 1
                 }
             }
         },
@@ -3567,7 +4399,7 @@ const docTemplate = `{
                     "enum": [
                         "facebook",
                         "instagram",
-                        "twitter",
+                        "x",
                         "linkedin",
                         "youtube",
                         "github",
@@ -3593,7 +4425,7 @@ const docTemplate = `{
             "enum": [
                 "facebook",
                 "instagram",
-                "twitter",
+                "x",
                 "linkedin",
                 "youtube",
                 "github",
@@ -3605,7 +4437,7 @@ const docTemplate = `{
             "x-enum-varnames": [
                 "Facebook",
                 "Instagram",
-                "Twitter",
+                "X",
                 "LinkedIn",
                 "YouTube",
                 "GitHub",
@@ -3633,7 +4465,6 @@ const docTemplate = `{
                     "maxLength": 255
                 },
                 "description": {
-                    "description": "MongoDB URL",
                     "type": "string",
                     "maxLength": 255
                 },
@@ -3641,11 +4472,14 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "logo": {
-                    "description": "S3 URL",
                     "type": "string",
                     "maxLength": 255
                 },
                 "name": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "one_word_to_describe_us": {
                     "type": "string",
                     "maxLength": 255
                 },
@@ -3682,6 +4516,10 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "string"
+                },
+                "weekly_time_commitment": {
+                    "type": "integer",
+                    "minimum": 1
                 }
             }
         },
@@ -3705,6 +4543,7 @@ const docTemplate = `{
                 "content",
                 "end_time",
                 "event_type",
+                "host",
                 "is_recurring",
                 "location",
                 "name",
@@ -3730,6 +4569,10 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.EventType"
                         }
                     ]
+                },
+                "host": {
+                    "description": "TODO club/tag/notification logic",
+                    "type": "string"
                 },
                 "is_recurring": {
                     "type": "boolean"
@@ -3759,27 +4602,29 @@ const docTemplate = `{
                 }
             }
         },
+        "models.CreateFileRequestBody": {
+            "type": "object",
+            "required": [
+                "owner_id",
+                "owner_type"
+            ],
+            "properties": {
+                "owner_id": {
+                    "type": "string"
+                },
+                "owner_type": {
+                    "type": "string",
+                    "maxLength": 255
+                }
+            }
+        },
         "models.CreateSeriesRequestBody": {
             "type": "object",
             "required": [
-                "day_of_month",
-                "day_of_week",
                 "max_occurrences",
-                "recurring_type",
-                "separation_count",
-                "week_of_month"
+                "recurring_type"
             ],
             "properties": {
-                "day_of_month": {
-                    "type": "integer",
-                    "maximum": 31,
-                    "minimum": 1
-                },
-                "day_of_week": {
-                    "type": "integer",
-                    "maximum": 7,
-                    "minimum": 1
-                },
                 "max_occurrences": {
                     "type": "integer",
                     "minimum": 2
@@ -3796,15 +4641,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.RecurringType"
                         }
                     ]
-                },
-                "separation_count": {
-                    "type": "integer",
-                    "minimum": 0
-                },
-                "week_of_month": {
-                    "type": "integer",
-                    "maximum": 5,
-                    "minimum": 1
                 }
             }
         },
@@ -3859,41 +4695,360 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 255
                 },
+                "graduation_cycle": {
+                    "maxLength": 255,
+                    "enum": [
+                        "december",
+                        "may"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.GraduationCycle"
+                        }
+                    ]
+                },
+                "graduation_year": {
+                    "type": "integer"
+                },
                 "last_name": {
                     "type": "string",
                     "maxLength": 255
                 },
-                "nuid": {
+                "major0": {
                     "description": "Optional fields",
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string",
                     "maxLength": 255,
-                    "minLength": 8
-                },
-                "year": {
-                    "maximum": 6,
-                    "minimum": 1,
+                    "enum": [
+                        "africanaStudies",
+                        "americanSignLanguage",
+                        "americanSignLanguage-EnglishInterpreting",
+                        "appliedPhysics",
+                        "architecturalStudies",
+                        "architecture",
+                        "art:ArtVisualStudies",
+                        "behavioralNeuroscience",
+                        "biochemistry",
+                        "bioengineering",
+                        "biology",
+                        "biomedicalPhysics",
+                        "businessAdministration",
+                        "businessAdministration:Accounting",
+                        "businessAdministration:AccountingAndAdvisoryServices",
+                        "businessAdministration:BrandManagement",
+                        "businessAdministration:BusinessAnalytics",
+                        "businessAdministration:CorporateInnovation",
+                        "businessAdministration:EntrepreneurialStartups",
+                        "businessAdministration:FamilyBusiness",
+                        "businessAdministration:Finance",
+                        "businessAdministration:Fintech",
+                        "businessAdministration:HealthcareManagementAndConsulting",
+                        "businessAdministration:Management",
+                        "businessAdministration:ManagementInformationSystems",
+                        "businessAdministration:Marketing",
+                        "businessAdministration:MarketingAnalytics",
+                        "businessAdministration:SocialInnovationAndEntrepreneurship",
+                        "businessAdministration:SupplyChainManagement",
+                        "cellAndMolecularBiology",
+                        "chemicalEngineering",
+                        "chemistry",
+                        "civilEngineering",
+                        "communicationStudies",
+                        "computerEngineering",
+                        "computerScience",
+                        "computingAndLaw",
+                        "criminologyAndCriminalJustice",
+                        "culturalAnthropology",
+                        "cybersecurity",
+                        "dataScience",
+                        "design",
+                        "economics",
+                        "electricalEngineering",
+                        "english",
+                        "environmentalAndSustainabilityStudies",
+                        "environmentalEngineering",
+                        "environmentalScience",
+                        "environmentalStudies",
+                        "gameArtAndAnimation",
+                        "gameDesign",
+                        "globalAsianStudies",
+                        "healthScience",
+                        "history",
+                        "historyCultureAndLaw",
+                        "humanServices",
+                        "industrialEngineering",
+                        "internationalAffairs",
+                        "internationalBusiness",
+                        "internationalBusiness:Accounting",
+                        "internationalBusiness:AccountingAndAdvisoryServices",
+                        "internationalBusiness:BrandManagement",
+                        "internationalBusiness:BusinessAnalytics",
+                        "internationalBusiness:CorporateInnovation",
+                        "internationalBusiness:EntrepreneurialStartups",
+                        "internationalBusiness:FamilyBusiness",
+                        "internationalBusiness:Finance",
+                        "internationalBusiness:Fintech",
+                        "internationalBusiness:HealthcareManagementAndConsulting",
+                        "internationalBusiness:Management",
+                        "internationalBusiness:ManagementInformationSystems",
+                        "internationalBusiness:Marketing",
+                        "internationalBusiness:MarketingAnalytics",
+                        "internationalBusiness:SocialInnovationAndEntrepreneurship",
+                        "internationalBusiness:SupplyChainManagement",
+                        "journalism",
+                        "landscapeArchitecture",
+                        "linguistics",
+                        "marineBiology",
+                        "mathematics",
+                        "mechanicalEngineering",
+                        "mediaAndScreenStudies",
+                        "mediaArts",
+                        "music",
+                        "musicTechnology",
+                        "nursing",
+                        "pharmaceuticalSciences",
+                        "pharmacy(PharmD)",
+                        "philosophy",
+                        "physics",
+                        "politicalScience",
+                        "politicsPhilosophyEconomics",
+                        "psychology",
+                        "publicHealth",
+                        "publicRelations",
+                        "religiousStudies",
+                        "sociology",
+                        "spanish",
+                        "speechLanguagePathologyAndAudiology",
+                        "theatre"
+                    ],
                     "allOf": [
                         {
-                            "$ref": "#/definitions/models.Year"
+                            "$ref": "#/definitions/models.Major"
                         }
                     ]
-                }
-            }
-        },
-        "models.CreateUserTagsBody": {
-            "type": "object",
-            "required": [
-                "tags"
-            ],
-            "properties": {
-                "tags": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                },
+                "major1": {
+                    "maxLength": 255,
+                    "enum": [
+                        "africanaStudies",
+                        "americanSignLanguage",
+                        "americanSignLanguage-EnglishInterpreting",
+                        "appliedPhysics",
+                        "architecturalStudies",
+                        "architecture",
+                        "art:ArtVisualStudies",
+                        "behavioralNeuroscience",
+                        "biochemistry",
+                        "bioengineering",
+                        "biology",
+                        "biomedicalPhysics",
+                        "businessAdministration",
+                        "businessAdministration:Accounting",
+                        "businessAdministration:AccountingAndAdvisoryServices",
+                        "businessAdministration:BrandManagement",
+                        "businessAdministration:BusinessAnalytics",
+                        "businessAdministration:CorporateInnovation",
+                        "businessAdministration:EntrepreneurialStartups",
+                        "businessAdministration:FamilyBusiness",
+                        "businessAdministration:Finance",
+                        "businessAdministration:Fintech",
+                        "businessAdministration:HealthcareManagementAndConsulting",
+                        "businessAdministration:Management",
+                        "businessAdministration:ManagementInformationSystems",
+                        "businessAdministration:Marketing",
+                        "businessAdministration:MarketingAnalytics",
+                        "businessAdministration:SocialInnovationAndEntrepreneurship",
+                        "businessAdministration:SupplyChainManagement",
+                        "cellAndMolecularBiology",
+                        "chemicalEngineering",
+                        "chemistry",
+                        "civilEngineering",
+                        "communicationStudies",
+                        "computerEngineering",
+                        "computerScience",
+                        "computingAndLaw",
+                        "criminologyAndCriminalJustice",
+                        "culturalAnthropology",
+                        "cybersecurity",
+                        "dataScience",
+                        "design",
+                        "economics",
+                        "electricalEngineering",
+                        "english",
+                        "environmentalAndSustainabilityStudies",
+                        "environmentalEngineering",
+                        "environmentalScience",
+                        "environmentalStudies",
+                        "gameArtAndAnimation",
+                        "gameDesign",
+                        "globalAsianStudies",
+                        "healthScience",
+                        "history",
+                        "historyCultureAndLaw",
+                        "humanServices",
+                        "industrialEngineering",
+                        "internationalAffairs",
+                        "internationalBusiness",
+                        "internationalBusiness:Accounting",
+                        "internationalBusiness:AccountingAndAdvisoryServices",
+                        "internationalBusiness:BrandManagement",
+                        "internationalBusiness:BusinessAnalytics",
+                        "internationalBusiness:CorporateInnovation",
+                        "internationalBusiness:EntrepreneurialStartups",
+                        "internationalBusiness:FamilyBusiness",
+                        "internationalBusiness:Finance",
+                        "internationalBusiness:Fintech",
+                        "internationalBusiness:HealthcareManagementAndConsulting",
+                        "internationalBusiness:Management",
+                        "internationalBusiness:ManagementInformationSystems",
+                        "internationalBusiness:Marketing",
+                        "internationalBusiness:MarketingAnalytics",
+                        "internationalBusiness:SocialInnovationAndEntrepreneurship",
+                        "internationalBusiness:SupplyChainManagement",
+                        "journalism",
+                        "landscapeArchitecture",
+                        "linguistics",
+                        "marineBiology",
+                        "mathematics",
+                        "mechanicalEngineering",
+                        "mediaAndScreenStudies",
+                        "mediaArts",
+                        "music",
+                        "musicTechnology",
+                        "nursing",
+                        "pharmaceuticalSciences",
+                        "pharmacy(PharmD)",
+                        "philosophy",
+                        "physics",
+                        "politicalScience",
+                        "politicsPhilosophyEconomics",
+                        "psychology",
+                        "publicHealth",
+                        "publicRelations",
+                        "religiousStudies",
+                        "sociology",
+                        "spanish",
+                        "speechLanguagePathologyAndAudiology",
+                        "theatre"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Major"
+                        }
+                    ]
+                },
+                "major2": {
+                    "maxLength": 255,
+                    "enum": [
+                        "africanaStudies",
+                        "americanSignLanguage",
+                        "americanSignLanguage-EnglishInterpreting",
+                        "appliedPhysics",
+                        "architecturalStudies",
+                        "architecture",
+                        "art:ArtVisualStudies",
+                        "behavioralNeuroscience",
+                        "biochemistry",
+                        "bioengineering",
+                        "biology",
+                        "biomedicalPhysics",
+                        "businessAdministration",
+                        "businessAdministration:Accounting",
+                        "businessAdministration:AccountingAndAdvisoryServices",
+                        "businessAdministration:BrandManagement",
+                        "businessAdministration:BusinessAnalytics",
+                        "businessAdministration:CorporateInnovation",
+                        "businessAdministration:EntrepreneurialStartups",
+                        "businessAdministration:FamilyBusiness",
+                        "businessAdministration:Finance",
+                        "businessAdministration:Fintech",
+                        "businessAdministration:HealthcareManagementAndConsulting",
+                        "businessAdministration:Management",
+                        "businessAdministration:ManagementInformationSystems",
+                        "businessAdministration:Marketing",
+                        "businessAdministration:MarketingAnalytics",
+                        "businessAdministration:SocialInnovationAndEntrepreneurship",
+                        "businessAdministration:SupplyChainManagement",
+                        "cellAndMolecularBiology",
+                        "chemicalEngineering",
+                        "chemistry",
+                        "civilEngineering",
+                        "communicationStudies",
+                        "computerEngineering",
+                        "computerScience",
+                        "computingAndLaw",
+                        "criminologyAndCriminalJustice",
+                        "culturalAnthropology",
+                        "cybersecurity",
+                        "dataScience",
+                        "design",
+                        "economics",
+                        "electricalEngineering",
+                        "english",
+                        "environmentalAndSustainabilityStudies",
+                        "environmentalEngineering",
+                        "environmentalScience",
+                        "environmentalStudies",
+                        "gameArtAndAnimation",
+                        "gameDesign",
+                        "globalAsianStudies",
+                        "healthScience",
+                        "history",
+                        "historyCultureAndLaw",
+                        "humanServices",
+                        "industrialEngineering",
+                        "internationalAffairs",
+                        "internationalBusiness",
+                        "internationalBusiness:Accounting",
+                        "internationalBusiness:AccountingAndAdvisoryServices",
+                        "internationalBusiness:BrandManagement",
+                        "internationalBusiness:BusinessAnalytics",
+                        "internationalBusiness:CorporateInnovation",
+                        "internationalBusiness:EntrepreneurialStartups",
+                        "internationalBusiness:FamilyBusiness",
+                        "internationalBusiness:Finance",
+                        "internationalBusiness:Fintech",
+                        "internationalBusiness:HealthcareManagementAndConsulting",
+                        "internationalBusiness:Management",
+                        "internationalBusiness:ManagementInformationSystems",
+                        "internationalBusiness:Marketing",
+                        "internationalBusiness:MarketingAnalytics",
+                        "internationalBusiness:SocialInnovationAndEntrepreneurship",
+                        "internationalBusiness:SupplyChainManagement",
+                        "journalism",
+                        "landscapeArchitecture",
+                        "linguistics",
+                        "marineBiology",
+                        "mathematics",
+                        "mechanicalEngineering",
+                        "mediaAndScreenStudies",
+                        "mediaArts",
+                        "music",
+                        "musicTechnology",
+                        "nursing",
+                        "pharmaceuticalSciences",
+                        "pharmacy(PharmD)",
+                        "philosophy",
+                        "physics",
+                        "politicalScience",
+                        "politicsPhilosophyEconomics",
+                        "psychology",
+                        "publicHealth",
+                        "publicRelations",
+                        "religiousStudies",
+                        "sociology",
+                        "spanish",
+                        "speechLanguagePathologyAndAudiology",
+                        "theatre"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Major"
+                        }
+                    ]
+                },
+                "password": {
+                    "description": "MARK: must be validated manually",
+                    "type": "string",
+                    "maxLength": 255
                 }
             }
         },
@@ -3932,6 +5087,9 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "host": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string",
                     "example": "123e4567-e89b-12d3-a456-426614174000"
@@ -3942,6 +5100,9 @@ const docTemplate = `{
                 "location": {
                     "type": "string",
                     "maxLength": 255
+                },
+                "meeting_link": {
+                    "type": "string"
                 },
                 "name": {
                     "type": "string",
@@ -3971,6 +5132,61 @@ const docTemplate = `{
                 "MembersOnly"
             ]
         },
+        "models.File": {
+            "type": "object",
+            "required": [
+                "file_name",
+                "file_size",
+                "file_type",
+                "file_url",
+                "object_key"
+            ],
+            "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2023-09-20T16:34:50Z"
+                },
+                "file_name": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "file_size": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "file_type": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "file_url": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "object_key": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2023-09-20T16:34:50Z"
+                }
+            }
+        },
+        "models.GraduationCycle": {
+            "type": "string",
+            "enum": [
+                "december",
+                "may"
+            ],
+            "x-enum-varnames": [
+                "December",
+                "May"
+            ]
+        },
         "models.LoginUserResponseBody": {
             "type": "object",
             "required": [
@@ -3982,9 +5198,253 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
+                    "description": "MARK: must be validated manually",
                     "type": "string",
-                    "maxLength": 255,
-                    "minLength": 8
+                    "maxLength": 255
+                }
+            }
+        },
+        "models.Major": {
+            "type": "string",
+            "enum": [
+                "africanaStudies",
+                "americanSignLanguage",
+                "americanSignLanguage-EnglishInterpreting",
+                "appliedPhysics",
+                "architecturalStudies",
+                "architecture",
+                "art:ArtVisualStudies",
+                "behavioralNeuroscience",
+                "biochemistry",
+                "bioengineering",
+                "biology",
+                "biomedicalPhysics",
+                "businessAdministration",
+                "businessAdministration:Accounting",
+                "businessAdministration:AccountingAndAdvisoryServices",
+                "businessAdministration:BrandManagement",
+                "businessAdministration:BusinessAnalytics",
+                "businessAdministration:CorporateInnovation",
+                "businessAdministration:EntrepreneurialStartups",
+                "businessAdministration:FamilyBusiness",
+                "businessAdministration:Finance",
+                "businessAdministration:Fintech",
+                "businessAdministration:HealthcareManagementAndConsulting",
+                "businessAdministration:Management",
+                "businessAdministration:ManagementInformationSystems",
+                "businessAdministration:Marketing",
+                "businessAdministration:MarketingAnalytics",
+                "businessAdministration:SocialInnovationAndEntrepreneurship",
+                "businessAdministration:SupplyChainManagement",
+                "cellAndMolecularBiology",
+                "chemicalEngineering",
+                "chemistry",
+                "civilEngineering",
+                "communicationStudies",
+                "computerEngineering",
+                "computerScience",
+                "computingAndLaw",
+                "criminologyAndCriminalJustice",
+                "culturalAnthropology",
+                "cybersecurity",
+                "dataScience",
+                "design",
+                "economics",
+                "electricalEngineering",
+                "english",
+                "environmentalAndSustainabilityStudies",
+                "environmentalEngineering",
+                "environmentalScience",
+                "environmentalStudies",
+                "gameArtAndAnimation",
+                "gameDesign",
+                "globalAsianStudies",
+                "healthScience",
+                "history",
+                "historyCultureAndLaw",
+                "humanServices",
+                "industrialEngineering",
+                "internationalAffairs",
+                "internationalBusiness",
+                "internationalBusiness:Accounting",
+                "internationalBusiness:AccountingAndAdvisoryServices",
+                "internationalBusiness:BrandManagement",
+                "internationalBusiness:BusinessAnalytics",
+                "internationalBusiness:CorporateInnovation",
+                "internationalBusiness:EntrepreneurialStartups",
+                "internationalBusiness:FamilyBusiness",
+                "internationalBusiness:Finance",
+                "internationalBusiness:Fintech",
+                "internationalBusiness:HealthcareManagementAndConsulting",
+                "internationalBusiness:Management",
+                "internationalBusiness:ManagementInformationSystems",
+                "internationalBusiness:Marketing",
+                "internationalBusiness:MarketingAnalytics",
+                "internationalBusiness:SocialInnovationAndEntrepreneurship",
+                "internationalBusiness:SupplyChainManagement",
+                "journalism",
+                "landscapeArchitecture",
+                "linguistics",
+                "marineBiology",
+                "mathematics",
+                "mechanicalEngineering",
+                "mediaAndScreenStudies",
+                "mediaArts",
+                "music",
+                "musicTechnology",
+                "nursing",
+                "pharmaceuticalSciences",
+                "pharmacy(PharmD)",
+                "philosophy",
+                "physics",
+                "politicalScience",
+                "politicsPhilosophyEconomics",
+                "psychology",
+                "publicHealth",
+                "publicRelations",
+                "religiousStudies",
+                "sociology",
+                "spanish",
+                "speechLanguagePathologyAndAudiology",
+                "theatre"
+            ],
+            "x-enum-varnames": [
+                "AfricanaStudies",
+                "AmericanSignLanguage",
+                "AmericanSignLanguageEnglishInterpreting",
+                "AppliedPhysics",
+                "ArchitecturalStudies",
+                "Architecture",
+                "ArtArtVisualStudies",
+                "BehavioralNeuroscience",
+                "Biochemistry",
+                "Bioengineering",
+                "Biology",
+                "BiomedicalPhysics",
+                "BusinessAdministration",
+                "BusinessAdministrationAccounting",
+                "BusinessAdministrationAccountingAndAdvisoryServices",
+                "BusinessAdministrationBrandManagement",
+                "BusinessAdministrationBusinessAnalytics",
+                "BusinessAdministrationCorporateInnovation",
+                "BusinessAdministrationEntrepreneurialStartups",
+                "BusinessAdministrationFamilyBusiness",
+                "BusinessAdministrationFinance",
+                "BusinessAdministrationFintech",
+                "BusinessAdministrationHealthcareManagementAndConsulting",
+                "BusinessAdministrationManagement",
+                "BusinessAdministrationManagementInformationSystems",
+                "BusinessAdministrationMarketing",
+                "BusinessAdministrationMarketingAnalytics",
+                "BusinessAdministrationSocialInnovationAndEntrepreneurship",
+                "BusinessAdministrationSupplyChainManagement",
+                "CellAndMolecularBiology",
+                "ChemicalEngineering",
+                "Chemistry",
+                "CivilEngineering",
+                "CommunicationStudies",
+                "ComputerEngineering",
+                "ComputerScience",
+                "ComputingAndLaw",
+                "CriminologyAndCriminalJustice",
+                "CulturalAnthropology",
+                "Cybersecurity",
+                "DataScience",
+                "Design",
+                "Economics",
+                "ElectricalEngineering",
+                "English",
+                "EnvironmentalAndSustainabilityStudies",
+                "EnvironmentalEngineering",
+                "EnvironmentalScience",
+                "EnvironmentalStudies",
+                "GameArtAndAnimation",
+                "GameDesign",
+                "GlobalAsianStudies",
+                "HealthScience",
+                "History",
+                "HistoryCultureAndLaw",
+                "HumanServices",
+                "IndustrialEngineering",
+                "InternationalAffairs",
+                "InternationalBusiness",
+                "InternationalBusinessAccounting",
+                "InternationalBusinessAccountingAndAdvisoryServices",
+                "InternationalBusinessBrandManagement",
+                "InternationalBusinessBusinessAnalytics",
+                "InternationalBusinessCorporateInnovation",
+                "InternationalBusinessEntrepreneurialStartups",
+                "InternationalBusinessFamilyBusiness",
+                "InternationalBusinessFinance",
+                "InternationalBusinessFintech",
+                "InternationalBusinessHealthcareManagementAndConsulting",
+                "InternationalBusinessManagement",
+                "InternationalBusinessManagementInformationSystems",
+                "InternationalBusinessMarketing",
+                "InternationalBusinessMarketingAnalytics",
+                "InternationalBusinessSocialInnovationAndEntrepreneurship",
+                "InternationalBusinessSupplyChainManagement",
+                "Journalism",
+                "LandscapeArchitecture",
+                "Linguistics",
+                "MarineBiology",
+                "Mathematics",
+                "MechanicalEngineering",
+                "MediaAndScreenStudies",
+                "MediaArts",
+                "Music",
+                "MusicTechnology",
+                "Nursing",
+                "PharmaceuticalSciences",
+                "PharmacyPharmD",
+                "Philosophy",
+                "Physics",
+                "PoliticalScience",
+                "PoliticsPhilosophyEconomics",
+                "Psychology",
+                "PublicHealth",
+                "PublicRelations",
+                "ReligiousStudies",
+                "Sociology",
+                "Spanish",
+                "SpeechLanguagePathologyAndAudiology",
+                "Theatre"
+            ]
+        },
+        "models.PointOfContact": {
+            "type": "object",
+            "required": [
+                "email",
+                "name",
+                "position"
+            ],
+            "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2023-09-20T16:34:50Z"
+                },
+                "email": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "photo_file": {
+                    "$ref": "#/definitions/models.File"
+                },
+                "position": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2023-09-20T16:34:50Z"
                 }
             }
         },
@@ -4004,7 +5464,7 @@ const docTemplate = `{
                     "enum": [
                         "facebook",
                         "instagram",
-                        "twitter",
+                        "x",
                         "linkedin",
                         "youtube",
                         "github",
@@ -4069,16 +5529,6 @@ const docTemplate = `{
                     "type": "string",
                     "example": "2023-09-20T16:34:50Z"
                 },
-                "day_of_month": {
-                    "type": "integer",
-                    "maximum": 31,
-                    "minimum": 1
-                },
-                "day_of_week": {
-                    "type": "integer",
-                    "maximum": 7,
-                    "minimum": 1
-                },
                 "events": {
                     "type": "array",
                     "items": {
@@ -4101,18 +5551,9 @@ const docTemplate = `{
                         }
                     ]
                 },
-                "separation_count": {
-                    "type": "integer",
-                    "minimum": 0
-                },
                 "updated_at": {
                     "type": "string",
                     "example": "2023-09-20T16:34:50Z"
-                },
-                "week_of_month": {
-                    "type": "integer",
-                    "maximum": 5,
-                    "minimum": 1
                 }
             }
         },
@@ -4157,7 +5598,6 @@ const docTemplate = `{
                     "maxLength": 255
                 },
                 "description": {
-                    "description": "MongoDB URL",
                     "type": "string",
                     "maxLength": 255
                 },
@@ -4165,11 +5605,14 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "logo": {
-                    "description": "S3 URL",
                     "type": "string",
                     "maxLength": 255
                 },
                 "name": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "one_word_to_describe_us": {
                     "type": "string",
                     "maxLength": 255
                 },
@@ -4203,6 +5646,10 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.RecruitmentType"
                         }
                     ]
+                },
+                "weekly_time_commitment": {
+                    "type": "integer",
+                    "minimum": 1
                 }
             }
         },
@@ -4227,6 +5674,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.EventType"
                         }
                     ]
+                },
+                "host": {
+                    "type": "string"
                 },
                 "location": {
                     "type": "string",
@@ -4253,30 +5703,20 @@ const docTemplate = `{
             ],
             "properties": {
                 "new_password": {
+                    "description": "MARK: must be validated manually",
                     "type": "string",
-                    "maxLength": 255,
-                    "minLength": 8
+                    "maxLength": 255
                 },
                 "old_password": {
+                    "description": "MARK: must be validated manually",
                     "type": "string",
-                    "maxLength": 255,
-                    "minLength": 8
+                    "maxLength": 255
                 }
             }
         },
         "models.UpdateSeriesRequestBody": {
             "type": "object",
             "properties": {
-                "day_of_month": {
-                    "type": "integer",
-                    "maximum": 31,
-                    "minimum": 1
-                },
-                "day_of_week": {
-                    "type": "integer",
-                    "maximum": 7,
-                    "minimum": 1
-                },
                 "event_details": {
                     "$ref": "#/definitions/models.UpdateEventRequestBody"
                 },
@@ -4296,15 +5736,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.RecurringType"
                         }
                     ]
-                },
-                "separation_count": {
-                    "type": "integer",
-                    "minimum": 0
-                },
-                "week_of_month": {
-                    "type": "integer",
-                    "maximum": 5,
-                    "minimum": 1
                 }
             }
         },
@@ -4345,20 +5776,352 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 255
                 },
+                "graduation_cycle": {
+                    "maxLength": 255,
+                    "enum": [
+                        "december",
+                        "may"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.GraduationCycle"
+                        }
+                    ]
+                },
+                "graduation_year": {
+                    "type": "integer"
+                },
                 "last_name": {
                     "type": "string",
                     "maxLength": 255
                 },
-                "nuid": {
-                    "description": "TODO: remove this",
-                    "type": "string"
-                },
-                "year": {
-                    "maximum": 6,
-                    "minimum": 1,
+                "major0": {
+                    "maxLength": 255,
+                    "enum": [
+                        "africanaStudies",
+                        "americanSignLanguage",
+                        "americanSignLanguage-EnglishInterpreting",
+                        "appliedPhysics",
+                        "architecturalStudies",
+                        "architecture",
+                        "art:ArtVisualStudies",
+                        "behavioralNeuroscience",
+                        "biochemistry",
+                        "bioengineering",
+                        "biology",
+                        "biomedicalPhysics",
+                        "businessAdministration",
+                        "businessAdministration:Accounting",
+                        "businessAdministration:AccountingAndAdvisoryServices",
+                        "businessAdministration:BrandManagement",
+                        "businessAdministration:BusinessAnalytics",
+                        "businessAdministration:CorporateInnovation",
+                        "businessAdministration:EntrepreneurialStartups",
+                        "businessAdministration:FamilyBusiness",
+                        "businessAdministration:Finance",
+                        "businessAdministration:Fintech",
+                        "businessAdministration:HealthcareManagementAndConsulting",
+                        "businessAdministration:Management",
+                        "businessAdministration:ManagementInformationSystems",
+                        "businessAdministration:Marketing",
+                        "businessAdministration:MarketingAnalytics",
+                        "businessAdministration:SocialInnovationAndEntrepreneurship",
+                        "businessAdministration:SupplyChainManagement",
+                        "cellAndMolecularBiology",
+                        "chemicalEngineering",
+                        "chemistry",
+                        "civilEngineering",
+                        "communicationStudies",
+                        "computerEngineering",
+                        "computerScience",
+                        "computingAndLaw",
+                        "criminologyAndCriminalJustice",
+                        "culturalAnthropology",
+                        "cybersecurity",
+                        "dataScience",
+                        "design",
+                        "economics",
+                        "electricalEngineering",
+                        "english",
+                        "environmentalAndSustainabilityStudies",
+                        "environmentalEngineering",
+                        "environmentalScience",
+                        "environmentalStudies",
+                        "gameArtAndAnimation",
+                        "gameDesign",
+                        "globalAsianStudies",
+                        "healthScience",
+                        "history",
+                        "historyCultureAndLaw",
+                        "humanServices",
+                        "industrialEngineering",
+                        "internationalAffairs",
+                        "internationalBusiness",
+                        "internationalBusiness:Accounting",
+                        "internationalBusiness:AccountingAndAdvisoryServices",
+                        "internationalBusiness:BrandManagement",
+                        "internationalBusiness:BusinessAnalytics",
+                        "internationalBusiness:CorporateInnovation",
+                        "internationalBusiness:EntrepreneurialStartups",
+                        "internationalBusiness:FamilyBusiness",
+                        "internationalBusiness:Finance",
+                        "internationalBusiness:Fintech",
+                        "internationalBusiness:HealthcareManagementAndConsulting",
+                        "internationalBusiness:Management",
+                        "internationalBusiness:ManagementInformationSystems",
+                        "internationalBusiness:Marketing",
+                        "internationalBusiness:MarketingAnalytics",
+                        "internationalBusiness:SocialInnovationAndEntrepreneurship",
+                        "internationalBusiness:SupplyChainManagement",
+                        "journalism",
+                        "landscapeArchitecture",
+                        "linguistics",
+                        "marineBiology",
+                        "mathematics",
+                        "mechanicalEngineering",
+                        "mediaAndScreenStudies",
+                        "mediaArts",
+                        "music",
+                        "musicTechnology",
+                        "nursing",
+                        "pharmaceuticalSciences",
+                        "pharmacy(PharmD)",
+                        "philosophy",
+                        "physics",
+                        "politicalScience",
+                        "politicsPhilosophyEconomics",
+                        "psychology",
+                        "publicHealth",
+                        "publicRelations",
+                        "religiousStudies",
+                        "sociology",
+                        "spanish",
+                        "speechLanguagePathologyAndAudiology",
+                        "theatre"
+                    ],
                     "allOf": [
                         {
-                            "$ref": "#/definitions/models.Year"
+                            "$ref": "#/definitions/models.Major"
+                        }
+                    ]
+                },
+                "major1": {
+                    "maxLength": 255,
+                    "enum": [
+                        "africanaStudies",
+                        "americanSignLanguage",
+                        "americanSignLanguage-EnglishInterpreting",
+                        "appliedPhysics",
+                        "architecturalStudies",
+                        "architecture",
+                        "art:ArtVisualStudies",
+                        "behavioralNeuroscience",
+                        "biochemistry",
+                        "bioengineering",
+                        "biology",
+                        "biomedicalPhysics",
+                        "businessAdministration",
+                        "businessAdministration:Accounting",
+                        "businessAdministration:AccountingAndAdvisoryServices",
+                        "businessAdministration:BrandManagement",
+                        "businessAdministration:BusinessAnalytics",
+                        "businessAdministration:CorporateInnovation",
+                        "businessAdministration:EntrepreneurialStartups",
+                        "businessAdministration:FamilyBusiness",
+                        "businessAdministration:Finance",
+                        "businessAdministration:Fintech",
+                        "businessAdministration:HealthcareManagementAndConsulting",
+                        "businessAdministration:Management",
+                        "businessAdministration:ManagementInformationSystems",
+                        "businessAdministration:Marketing",
+                        "businessAdministration:MarketingAnalytics",
+                        "businessAdministration:SocialInnovationAndEntrepreneurship",
+                        "businessAdministration:SupplyChainManagement",
+                        "cellAndMolecularBiology",
+                        "chemicalEngineering",
+                        "chemistry",
+                        "civilEngineering",
+                        "communicationStudies",
+                        "computerEngineering",
+                        "computerScience",
+                        "computingAndLaw",
+                        "criminologyAndCriminalJustice",
+                        "culturalAnthropology",
+                        "cybersecurity",
+                        "dataScience",
+                        "design",
+                        "economics",
+                        "electricalEngineering",
+                        "english",
+                        "environmentalAndSustainabilityStudies",
+                        "environmentalEngineering",
+                        "environmentalScience",
+                        "environmentalStudies",
+                        "gameArtAndAnimation",
+                        "gameDesign",
+                        "globalAsianStudies",
+                        "healthScience",
+                        "history",
+                        "historyCultureAndLaw",
+                        "humanServices",
+                        "industrialEngineering",
+                        "internationalAffairs",
+                        "internationalBusiness",
+                        "internationalBusiness:Accounting",
+                        "internationalBusiness:AccountingAndAdvisoryServices",
+                        "internationalBusiness:BrandManagement",
+                        "internationalBusiness:BusinessAnalytics",
+                        "internationalBusiness:CorporateInnovation",
+                        "internationalBusiness:EntrepreneurialStartups",
+                        "internationalBusiness:FamilyBusiness",
+                        "internationalBusiness:Finance",
+                        "internationalBusiness:Fintech",
+                        "internationalBusiness:HealthcareManagementAndConsulting",
+                        "internationalBusiness:Management",
+                        "internationalBusiness:ManagementInformationSystems",
+                        "internationalBusiness:Marketing",
+                        "internationalBusiness:MarketingAnalytics",
+                        "internationalBusiness:SocialInnovationAndEntrepreneurship",
+                        "internationalBusiness:SupplyChainManagement",
+                        "journalism",
+                        "landscapeArchitecture",
+                        "linguistics",
+                        "marineBiology",
+                        "mathematics",
+                        "mechanicalEngineering",
+                        "mediaAndScreenStudies",
+                        "mediaArts",
+                        "music",
+                        "musicTechnology",
+                        "nursing",
+                        "pharmaceuticalSciences",
+                        "pharmacy(PharmD)",
+                        "philosophy",
+                        "physics",
+                        "politicalScience",
+                        "politicsPhilosophyEconomics",
+                        "psychology",
+                        "publicHealth",
+                        "publicRelations",
+                        "religiousStudies",
+                        "sociology",
+                        "spanish",
+                        "speechLanguagePathologyAndAudiology",
+                        "theatre"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Major"
+                        }
+                    ]
+                },
+                "major2": {
+                    "maxLength": 255,
+                    "enum": [
+                        "africanaStudies",
+                        "americanSignLanguage",
+                        "americanSignLanguage-EnglishInterpreting",
+                        "appliedPhysics",
+                        "architecturalStudies",
+                        "architecture",
+                        "art:ArtVisualStudies",
+                        "behavioralNeuroscience",
+                        "biochemistry",
+                        "bioengineering",
+                        "biology",
+                        "biomedicalPhysics",
+                        "businessAdministration",
+                        "businessAdministration:Accounting",
+                        "businessAdministration:AccountingAndAdvisoryServices",
+                        "businessAdministration:BrandManagement",
+                        "businessAdministration:BusinessAnalytics",
+                        "businessAdministration:CorporateInnovation",
+                        "businessAdministration:EntrepreneurialStartups",
+                        "businessAdministration:FamilyBusiness",
+                        "businessAdministration:Finance",
+                        "businessAdministration:Fintech",
+                        "businessAdministration:HealthcareManagementAndConsulting",
+                        "businessAdministration:Management",
+                        "businessAdministration:ManagementInformationSystems",
+                        "businessAdministration:Marketing",
+                        "businessAdministration:MarketingAnalytics",
+                        "businessAdministration:SocialInnovationAndEntrepreneurship",
+                        "businessAdministration:SupplyChainManagement",
+                        "cellAndMolecularBiology",
+                        "chemicalEngineering",
+                        "chemistry",
+                        "civilEngineering",
+                        "communicationStudies",
+                        "computerEngineering",
+                        "computerScience",
+                        "computingAndLaw",
+                        "criminologyAndCriminalJustice",
+                        "culturalAnthropology",
+                        "cybersecurity",
+                        "dataScience",
+                        "design",
+                        "economics",
+                        "electricalEngineering",
+                        "english",
+                        "environmentalAndSustainabilityStudies",
+                        "environmentalEngineering",
+                        "environmentalScience",
+                        "environmentalStudies",
+                        "gameArtAndAnimation",
+                        "gameDesign",
+                        "globalAsianStudies",
+                        "healthScience",
+                        "history",
+                        "historyCultureAndLaw",
+                        "humanServices",
+                        "industrialEngineering",
+                        "internationalAffairs",
+                        "internationalBusiness",
+                        "internationalBusiness:Accounting",
+                        "internationalBusiness:AccountingAndAdvisoryServices",
+                        "internationalBusiness:BrandManagement",
+                        "internationalBusiness:BusinessAnalytics",
+                        "internationalBusiness:CorporateInnovation",
+                        "internationalBusiness:EntrepreneurialStartups",
+                        "internationalBusiness:FamilyBusiness",
+                        "internationalBusiness:Finance",
+                        "internationalBusiness:Fintech",
+                        "internationalBusiness:HealthcareManagementAndConsulting",
+                        "internationalBusiness:Management",
+                        "internationalBusiness:ManagementInformationSystems",
+                        "internationalBusiness:Marketing",
+                        "internationalBusiness:MarketingAnalytics",
+                        "internationalBusiness:SocialInnovationAndEntrepreneurship",
+                        "internationalBusiness:SupplyChainManagement",
+                        "journalism",
+                        "landscapeArchitecture",
+                        "linguistics",
+                        "marineBiology",
+                        "mathematics",
+                        "mechanicalEngineering",
+                        "mediaAndScreenStudies",
+                        "mediaArts",
+                        "music",
+                        "musicTechnology",
+                        "nursing",
+                        "pharmaceuticalSciences",
+                        "pharmacy(PharmD)",
+                        "philosophy",
+                        "physics",
+                        "politicalScience",
+                        "politicsPhilosophyEconomics",
+                        "psychology",
+                        "publicHealth",
+                        "publicRelations",
+                        "religiousStudies",
+                        "sociology",
+                        "spanish",
+                        "speechLanguagePathologyAndAudiology",
+                        "theatre"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Major"
                         }
                     ]
                 }
@@ -4370,10 +6133,11 @@ const docTemplate = `{
                 "college",
                 "email",
                 "first_name",
+                "graduation_cycle",
+                "graduation_year",
                 "last_name",
-                "nuid",
-                "role",
-                "year"
+                "major0",
+                "role"
             ],
             "properties": {
                 "college": {
@@ -4396,6 +6160,21 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 255
                 },
+                "graduation_cycle": {
+                    "maxLength": 255,
+                    "enum": [
+                        "december",
+                        "may"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.GraduationCycle"
+                        }
+                    ]
+                },
+                "graduation_year": {
+                    "type": "integer"
+                },
                 "id": {
                     "type": "string",
                     "example": "123e4567-e89b-12d3-a456-426614174000"
@@ -4407,8 +6186,335 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 255
                 },
-                "nuid": {
-                    "type": "string"
+                "major0": {
+                    "maxLength": 255,
+                    "enum": [
+                        "africanaStudies",
+                        "americanSignLanguage",
+                        "americanSignLanguage-EnglishInterpreting",
+                        "appliedPhysics",
+                        "architecturalStudies",
+                        "architecture",
+                        "art:ArtVisualStudies",
+                        "behavioralNeuroscience",
+                        "biochemistry",
+                        "bioengineering",
+                        "biology",
+                        "biomedicalPhysics",
+                        "businessAdministration",
+                        "businessAdministration:Accounting",
+                        "businessAdministration:AccountingAndAdvisoryServices",
+                        "businessAdministration:BrandManagement",
+                        "businessAdministration:BusinessAnalytics",
+                        "businessAdministration:CorporateInnovation",
+                        "businessAdministration:EntrepreneurialStartups",
+                        "businessAdministration:FamilyBusiness",
+                        "businessAdministration:Finance",
+                        "businessAdministration:Fintech",
+                        "businessAdministration:HealthcareManagementAndConsulting",
+                        "businessAdministration:Management",
+                        "businessAdministration:ManagementInformationSystems",
+                        "businessAdministration:Marketing",
+                        "businessAdministration:MarketingAnalytics",
+                        "businessAdministration:SocialInnovationAndEntrepreneurship",
+                        "businessAdministration:SupplyChainManagement",
+                        "cellAndMolecularBiology",
+                        "chemicalEngineering",
+                        "chemistry",
+                        "civilEngineering",
+                        "communicationStudies",
+                        "computerEngineering",
+                        "computerScience",
+                        "computingAndLaw",
+                        "criminologyAndCriminalJustice",
+                        "culturalAnthropology",
+                        "cybersecurity",
+                        "dataScience",
+                        "design",
+                        "economics",
+                        "electricalEngineering",
+                        "english",
+                        "environmentalAndSustainabilityStudies",
+                        "environmentalEngineering",
+                        "environmentalScience",
+                        "environmentalStudies",
+                        "gameArtAndAnimation",
+                        "gameDesign",
+                        "globalAsianStudies",
+                        "healthScience",
+                        "history",
+                        "historyCultureAndLaw",
+                        "humanServices",
+                        "industrialEngineering",
+                        "internationalAffairs",
+                        "internationalBusiness",
+                        "internationalBusiness:Accounting",
+                        "internationalBusiness:AccountingAndAdvisoryServices",
+                        "internationalBusiness:BrandManagement",
+                        "internationalBusiness:BusinessAnalytics",
+                        "internationalBusiness:CorporateInnovation",
+                        "internationalBusiness:EntrepreneurialStartups",
+                        "internationalBusiness:FamilyBusiness",
+                        "internationalBusiness:Finance",
+                        "internationalBusiness:Fintech",
+                        "internationalBusiness:HealthcareManagementAndConsulting",
+                        "internationalBusiness:Management",
+                        "internationalBusiness:ManagementInformationSystems",
+                        "internationalBusiness:Marketing",
+                        "internationalBusiness:MarketingAnalytics",
+                        "internationalBusiness:SocialInnovationAndEntrepreneurship",
+                        "internationalBusiness:SupplyChainManagement",
+                        "journalism",
+                        "landscapeArchitecture",
+                        "linguistics",
+                        "marineBiology",
+                        "mathematics",
+                        "mechanicalEngineering",
+                        "mediaAndScreenStudies",
+                        "mediaArts",
+                        "music",
+                        "musicTechnology",
+                        "nursing",
+                        "pharmaceuticalSciences",
+                        "pharmacy(PharmD)",
+                        "philosophy",
+                        "physics",
+                        "politicalScience",
+                        "politicsPhilosophyEconomics",
+                        "psychology",
+                        "publicHealth",
+                        "publicRelations",
+                        "religiousStudies",
+                        "sociology",
+                        "spanish",
+                        "speechLanguagePathologyAndAudiology",
+                        "theatre"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Major"
+                        }
+                    ]
+                },
+                "major1": {
+                    "maxLength": 255,
+                    "enum": [
+                        "africanaStudies",
+                        "americanSignLanguage",
+                        "americanSignLanguage-EnglishInterpreting",
+                        "appliedPhysics",
+                        "architecturalStudies",
+                        "architecture",
+                        "art:ArtVisualStudies",
+                        "behavioralNeuroscience",
+                        "biochemistry",
+                        "bioengineering",
+                        "biology",
+                        "biomedicalPhysics",
+                        "businessAdministration",
+                        "businessAdministration:Accounting",
+                        "businessAdministration:AccountingAndAdvisoryServices",
+                        "businessAdministration:BrandManagement",
+                        "businessAdministration:BusinessAnalytics",
+                        "businessAdministration:CorporateInnovation",
+                        "businessAdministration:EntrepreneurialStartups",
+                        "businessAdministration:FamilyBusiness",
+                        "businessAdministration:Finance",
+                        "businessAdministration:Fintech",
+                        "businessAdministration:HealthcareManagementAndConsulting",
+                        "businessAdministration:Management",
+                        "businessAdministration:ManagementInformationSystems",
+                        "businessAdministration:Marketing",
+                        "businessAdministration:MarketingAnalytics",
+                        "businessAdministration:SocialInnovationAndEntrepreneurship",
+                        "businessAdministration:SupplyChainManagement",
+                        "cellAndMolecularBiology",
+                        "chemicalEngineering",
+                        "chemistry",
+                        "civilEngineering",
+                        "communicationStudies",
+                        "computerEngineering",
+                        "computerScience",
+                        "computingAndLaw",
+                        "criminologyAndCriminalJustice",
+                        "culturalAnthropology",
+                        "cybersecurity",
+                        "dataScience",
+                        "design",
+                        "economics",
+                        "electricalEngineering",
+                        "english",
+                        "environmentalAndSustainabilityStudies",
+                        "environmentalEngineering",
+                        "environmentalScience",
+                        "environmentalStudies",
+                        "gameArtAndAnimation",
+                        "gameDesign",
+                        "globalAsianStudies",
+                        "healthScience",
+                        "history",
+                        "historyCultureAndLaw",
+                        "humanServices",
+                        "industrialEngineering",
+                        "internationalAffairs",
+                        "internationalBusiness",
+                        "internationalBusiness:Accounting",
+                        "internationalBusiness:AccountingAndAdvisoryServices",
+                        "internationalBusiness:BrandManagement",
+                        "internationalBusiness:BusinessAnalytics",
+                        "internationalBusiness:CorporateInnovation",
+                        "internationalBusiness:EntrepreneurialStartups",
+                        "internationalBusiness:FamilyBusiness",
+                        "internationalBusiness:Finance",
+                        "internationalBusiness:Fintech",
+                        "internationalBusiness:HealthcareManagementAndConsulting",
+                        "internationalBusiness:Management",
+                        "internationalBusiness:ManagementInformationSystems",
+                        "internationalBusiness:Marketing",
+                        "internationalBusiness:MarketingAnalytics",
+                        "internationalBusiness:SocialInnovationAndEntrepreneurship",
+                        "internationalBusiness:SupplyChainManagement",
+                        "journalism",
+                        "landscapeArchitecture",
+                        "linguistics",
+                        "marineBiology",
+                        "mathematics",
+                        "mechanicalEngineering",
+                        "mediaAndScreenStudies",
+                        "mediaArts",
+                        "music",
+                        "musicTechnology",
+                        "nursing",
+                        "pharmaceuticalSciences",
+                        "pharmacy(PharmD)",
+                        "philosophy",
+                        "physics",
+                        "politicalScience",
+                        "politicsPhilosophyEconomics",
+                        "psychology",
+                        "publicHealth",
+                        "publicRelations",
+                        "religiousStudies",
+                        "sociology",
+                        "spanish",
+                        "speechLanguagePathologyAndAudiology",
+                        "theatre"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Major"
+                        }
+                    ]
+                },
+                "major2": {
+                    "maxLength": 255,
+                    "enum": [
+                        "africanaStudies",
+                        "americanSignLanguage",
+                        "americanSignLanguage-EnglishInterpreting",
+                        "appliedPhysics",
+                        "architecturalStudies",
+                        "architecture",
+                        "art:ArtVisualStudies",
+                        "behavioralNeuroscience",
+                        "biochemistry",
+                        "bioengineering",
+                        "biology",
+                        "biomedicalPhysics",
+                        "businessAdministration",
+                        "businessAdministration:Accounting",
+                        "businessAdministration:AccountingAndAdvisoryServices",
+                        "businessAdministration:BrandManagement",
+                        "businessAdministration:BusinessAnalytics",
+                        "businessAdministration:CorporateInnovation",
+                        "businessAdministration:EntrepreneurialStartups",
+                        "businessAdministration:FamilyBusiness",
+                        "businessAdministration:Finance",
+                        "businessAdministration:Fintech",
+                        "businessAdministration:HealthcareManagementAndConsulting",
+                        "businessAdministration:Management",
+                        "businessAdministration:ManagementInformationSystems",
+                        "businessAdministration:Marketing",
+                        "businessAdministration:MarketingAnalytics",
+                        "businessAdministration:SocialInnovationAndEntrepreneurship",
+                        "businessAdministration:SupplyChainManagement",
+                        "cellAndMolecularBiology",
+                        "chemicalEngineering",
+                        "chemistry",
+                        "civilEngineering",
+                        "communicationStudies",
+                        "computerEngineering",
+                        "computerScience",
+                        "computingAndLaw",
+                        "criminologyAndCriminalJustice",
+                        "culturalAnthropology",
+                        "cybersecurity",
+                        "dataScience",
+                        "design",
+                        "economics",
+                        "electricalEngineering",
+                        "english",
+                        "environmentalAndSustainabilityStudies",
+                        "environmentalEngineering",
+                        "environmentalScience",
+                        "environmentalStudies",
+                        "gameArtAndAnimation",
+                        "gameDesign",
+                        "globalAsianStudies",
+                        "healthScience",
+                        "history",
+                        "historyCultureAndLaw",
+                        "humanServices",
+                        "industrialEngineering",
+                        "internationalAffairs",
+                        "internationalBusiness",
+                        "internationalBusiness:Accounting",
+                        "internationalBusiness:AccountingAndAdvisoryServices",
+                        "internationalBusiness:BrandManagement",
+                        "internationalBusiness:BusinessAnalytics",
+                        "internationalBusiness:CorporateInnovation",
+                        "internationalBusiness:EntrepreneurialStartups",
+                        "internationalBusiness:FamilyBusiness",
+                        "internationalBusiness:Finance",
+                        "internationalBusiness:Fintech",
+                        "internationalBusiness:HealthcareManagementAndConsulting",
+                        "internationalBusiness:Management",
+                        "internationalBusiness:ManagementInformationSystems",
+                        "internationalBusiness:Marketing",
+                        "internationalBusiness:MarketingAnalytics",
+                        "internationalBusiness:SocialInnovationAndEntrepreneurship",
+                        "internationalBusiness:SupplyChainManagement",
+                        "journalism",
+                        "landscapeArchitecture",
+                        "linguistics",
+                        "marineBiology",
+                        "mathematics",
+                        "mechanicalEngineering",
+                        "mediaAndScreenStudies",
+                        "mediaArts",
+                        "music",
+                        "musicTechnology",
+                        "nursing",
+                        "pharmaceuticalSciences",
+                        "pharmacy(PharmD)",
+                        "philosophy",
+                        "physics",
+                        "politicalScience",
+                        "politicsPhilosophyEconomics",
+                        "psychology",
+                        "publicHealth",
+                        "publicRelations",
+                        "religiousStudies",
+                        "sociology",
+                        "spanish",
+                        "speechLanguagePathologyAndAudiology",
+                        "theatre"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Major"
+                        }
+                    ]
                 },
                 "role": {
                     "type": "string",
@@ -4420,15 +6526,6 @@ const docTemplate = `{
                 "updated_at": {
                     "type": "string",
                     "example": "2023-09-20T16:34:50Z"
-                },
-                "year": {
-                    "maximum": 6,
-                    "minimum": 1,
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.Year"
-                        }
-                    ]
                 }
             }
         },
@@ -4468,24 +6565,19 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Year": {
-            "type": "integer",
-            "enum": [
-                1,
-                2,
-                3,
-                4,
-                5,
-                6
+        "tag.CreateUserTagsBody": {
+            "type": "object",
+            "required": [
+                "tags"
             ],
-            "x-enum-varnames": [
-                "First",
-                "Second",
-                "Third",
-                "Fourth",
-                "Fifth",
-                "Graduate"
-            ]
+            "properties": {
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
         },
         "utilities.SuccessResponse": {
             "type": "object",
