@@ -7,13 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "format": "prettier --write .",
     "test": "echo \"Woah there, we have no frontend tests as of right now. Let's just say we're passing.\" && exit 0"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.3",
-    "next": "14.2.2",
+    "next": "14.2.3",
     "react": "^18",
     "react-dom": "^18",
     "react-redux": "^9.1.1",
