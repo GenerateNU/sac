@@ -2,26 +2,26 @@ import { z } from "zod";
 import { rootModelSchema } from "./root";
 
 export const userSchemaIntermediate = z.object({
-    role: z.enum(["super", "student"]),
-    first_name: z.string().min(1),
-    last_name: z.string().min(1),
-    email: z.string().email(),
-    college: z.string().optional(),
-    graduation_cycle: z.string().optional(),
-    graduation_year: z.number().optional(),
-    is_verified: z.boolean(),
+  role: z.enum(["super", "student"]),
+  first_name: z.string().min(1),
+  last_name: z.string().min(1),
+  email: z.string().email(),
+  college: z.string().optional(),
+  graduation_cycle: z.string().optional(),
+  graduation_year: z.number().optional(),
+  is_verified: z.boolean(),
 });
 
 export const collegeSchema = z.enum([
-    "CAMD",
-    "DMSB",
-    "KCCS",
-    "CE",
-    "BCHS",
-    "SL",
-    "CPS",
-    "CS",
-    "CSSH",
+  "CAMD",
+  "DMSB",
+  "KCCS",
+  "CE",
+  "BCHS",
+  "SL",
+  "CPS",
+  "CS",
+  "CSSH",
 ]);
 export type College = z.infer<typeof collegeSchema>;
 
