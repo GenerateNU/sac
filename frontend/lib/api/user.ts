@@ -1,22 +1,22 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-import { API_BASE_URL } from '@/const';
-import { Club, clubSchema } from '@/types/club';
-import { User, userSchema } from '@/types/user';
-import { uuid } from '@/types/uuid';
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { API_BASE_URL } from "@/const";
+import { Club, clubSchema } from "@/types/club";
+import { User, userSchema } from "@/types/user";
+import { uuid } from "@/types/uuid";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const usersApi = createApi({
   reducerPath: "usersApi",
   baseQuery: fetchBaseQuery({ baseUrl: API_BASE_URL }),
-  tagTypes: ['Users'],
+  tagTypes: ["Users"],
   endpoints: (builder) => ({
     users: builder.query<User[], void>({
       query: () => "users",
       transformResponse: (rawResponse: unknown) => {
         return z.array(userSchema).parse(rawResponse);
       },
-      providesTags: [{ type: 'Users', id: 'LIST' }],
+      providesTags: [{ type: "Users", id: "LIST" }],
     }),
     user: builder.query<User, uuid>({
       query: (userID: uuid) => `users/${userID}`,
@@ -24,7 +24,7 @@ export const usersApi = createApi({
         return userSchema.parse(rawResponse);
       },
       providesTags: (result, _, userID) =>
-        result ? [{ type: 'Users', id: userID }] : [],
+        result ? [{ type: "Users", id: userID }] : [],
     }),
     userFollowing: builder.query<Club[], uuid>({
       query: (userID: uuid) => `users/${userID}/follower`,
@@ -32,21 +32,27 @@ export const usersApi = createApi({
         return z.array(clubSchema).parse(rawResponse);
       },
       providesTags: (result, _, userID) =>
-        result ? [{ type: 'Users', id: userID }] : [],
+        result ? [{ type: "Users", id: userID }] : [],
     }),
-    createUserClubFollowing: builder.mutation<void, { userID: uuid; clubID: uuid }>({
+    createUserClubFollowing: builder.mutation<
+      void,
+      { userID: uuid; clubID: uuid }
+    >({
       query: ({ userID, clubID }) => ({
         url: `users/${userID}/follower/${clubID}`,
-        method: 'POST',
+        method: "POST",
       }),
-      invalidatesTags: ['Users'],
+      invalidatesTags: ["Users"],
     }),
-    deleteUserClubFollowing: builder.mutation<void, { userID: uuid; clubID: uuid }>({
+    deleteUserClubFollowing: builder.mutation<
+      void,
+      { userID: uuid; clubID: uuid }
+    >({
       query: ({ userID, clubID }) => ({
         url: `users/${userID}/follower/${clubID}`,
-        method: 'DELETE',
+        method: "DELETE",
       }),
-      invalidatesTags: ['Users'],
+      invalidatesTags: ["Users"],
     }),
   }),
 });
@@ -56,5 +62,5 @@ export const {
   useUserQuery,
   useUserFollowingQuery,
   useCreateUserClubFollowingMutation,
-  useDeleteUserClubFollowingMutation
+  useDeleteUserClubFollowingMutation,
 } = usersApi;

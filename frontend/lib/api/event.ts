@@ -1,8 +1,8 @@
-import { API_BASE_URL } from '@/const';
-import { Club } from '@/types/club';
-import { Event } from '@/types/event';
-import { uuid } from '@/types/uuid';
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { API_BASE_URL } from "@/const";
+import { Club } from "@/types/club";
+import { Event } from "@/types/event";
+import { uuid } from "@/types/uuid";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const eventsApi = createApi({
   reducerPath: "eventsApi",
