@@ -43,9 +43,7 @@ func LintCommand() *cli.Command {
 						return cli.Exit("Invalid frontend type: must be 'web', 'mobile', 'dashboard', or 'lib'", 1)
 					}
 
-					fix := c.Bool("fix")
-
-					err := LintFrontend(target, fix)
+					err := LintFrontend(target)
 					if err != nil {
 						return cli.Exit(err.Error(), 1)
 					}
@@ -76,18 +74,14 @@ func LintCommand() *cli.Command {
 	return &command
 }
 
-func LintFrontend(target string, fix bool) error {
+func LintFrontend(target string) error {
 	dir, ok := TARGET_DIRS[target]
 	if !ok {
 		return cli.Exit("Invalid frontend type", 1)
 	}
 
-	var cmd *exec.Cmd
-	if fix {
-		cmd = exec.Command("yarn", "run", "lint", "--fix")
-	} else {
-		cmd = exec.Command("yarn", "run", "lint")
-	}
+	cmd := exec.Command("yarn", "run", "lint")
+
 	cmd.Dir = dir
 
 	cmd.Stdout = os.Stdout
