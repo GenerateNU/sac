@@ -61,7 +61,7 @@ func RunFE(feType string, platform string) error {
 
 func RunMobileFE(platform string) error {
 	mobileCmd := exec.Command("yarn", "run", platform)
-	mobileCmd.Dir = FRONTEND_DIR + "/sac-mobile"
+	mobileCmd.Dir = FRONTEND_DIR + "/mobile"
 
 	mobileCmd.Stdout = os.Stdout
 	mobileCmd.Stderr = os.Stderr

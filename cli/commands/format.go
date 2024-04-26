@@ -100,7 +100,7 @@ func FormatWeb() error {
 
 func FormatMobile() error {
 	mobileCmd := exec.Command("yarn", "run", "format")
-	mobileCmd.Dir = FRONTEND_DIR + "/sac-mobile"
+	mobileCmd.Dir = FRONTEND_DIR + "/mobile"
 
 	mobileCmd.Stdout = os.Stdout
 	mobileCmd.Stderr = os.Stderr
