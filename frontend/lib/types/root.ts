@@ -1,11 +1,11 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export type uuid = string;
 
 export const rootModelSchema = z.object({
-    id: z.string().uuid(),
-    created_at: z.date(),
-    updated_at: z.date()
+  id: z.string().uuid(),
+  created_at: z.date(),
+  updated_at: z.date(),
 });
 
 const paginationQueryParams = z.object({
