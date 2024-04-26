@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"slices"
 
 	"github.com/urfave/cli/v2"
 )
@@ -38,8 +39,8 @@ func LintCommand() *cli.Command {
 					}
 
 					target := c.String("target")
-					if target != "web" && target != "mobile" {
-						return cli.Exit("Invalid frontend type: must be 'web' or 'mobile'", 1)
+					if !slices.Contains(FRONTEND_CI_TARGETS, target) {
+						return cli.Exit("Invalid frontend type: must be 'web', 'mobile', 'dashboard', or 'lib'", 1)
 					}
 
 					fix := c.Bool("fix")
@@ -76,14 +77,28 @@ func LintCommand() *cli.Command {
 }
 
 func LintFrontend(target string, fix bool) error {
-	switch target {
-	case "web":
-		return LintWeb(fix)
-	case "mobile":
-		return LintMobile(fix)
-	default:
-		return LintMobile(fix)
+	dir, ok := TARGET_DIRS[target]
+	if !ok {
+		return cli.Exit("Invalid frontend type", 1)
 	}
+
+	var cmd *exec.Cmd
+	if fix {
+		cmd = exec.Command("yarn", "run", "lint", "--fix")
+	} else {
+		cmd = exec.Command("yarn", "run", "lint")
+	}
+	cmd.Dir = dir
+
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func LintBackend() error {
@@ -98,30 +113,6 @@ func LintBackend() error {
 	}
 
 	fmt.Println("Backend linted")
-
-	return nil
-}
-
-func LintWeb(fix bool) error {
-	return nil
-}
-
-func LintMobile(fix bool) error {
-	var mobileCmd *exec.Cmd
-	if fix {
-		mobileCmd = exec.Command("yarn", "run", "lint", "--fix")
-	} else {
-		mobileCmd = exec.Command("yarn", "run", "lint")
-	}
-	mobileCmd.Dir = FRONTEND_DIR + "/mobile"
-
-	mobileCmd.Stdout = os.Stdout
-	mobileCmd.Stderr = os.Stderr
-	mobileCmd.Stdin = os.Stdin
-
-	if err := mobileCmd.Run(); err != nil {
-		return err
-	}
 
 	return nil
 }
