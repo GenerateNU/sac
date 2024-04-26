@@ -13,7 +13,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { useAuthStore } from '@/hooks/use-auth';
 import { Provider } from 'react-redux';
-import { store } from '@sac/lib';
+import { store } from '@/store/store';
 export {
     // Catch any errors thrown by the Layout component.
     ErrorBoundary

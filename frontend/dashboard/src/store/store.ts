@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { useDispatch, useSelector, useStore } from 'react-redux';
-import { baseApi } from '../api/api';
+import { baseApi } from '@sac/lib';
 
 export const makeStore = () => {
   return configureStore({

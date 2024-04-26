@@ -8,10 +8,12 @@
     "start": "next start",
     "test": "echo \"Woah there, we have no frontend tests as of right now. Let's just say we're passing.\" && exit 0",
     "lint": "next lint",
+    "lint:fix": "next lint --fix",
     "format": "prettier --write ."
   },
   "dependencies": {
     "next": "14.2.2",
+    "@sac/lib": "*",
     "react": "^18",
     "react-dom": "^18",
     "semver": "7.6.0"
