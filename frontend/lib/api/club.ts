@@ -1,9 +1,9 @@
-import { API_BASE_URL } from '@/const';
-import { Club } from '@/types/club';
-import { Contact } from '@/types/contact';
-import { Tag } from '@/types/tag';
-import { uuid } from '@/types/uuid';
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { API_BASE_URL } from "@/const";
+import { Club } from "@/types/club";
+import { Contact } from "@/types/contact";
+import { Tag } from "@/types/tag";
+import { uuid } from "@/types/uuid";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const clubsApi = createApi({
   reducerPath: "clubsApi",
@@ -41,7 +41,6 @@ export const clubsApi = createApi({
       providesTags: (result, _, clubID) =>
         result ? [{ type: "Clubs", id: clubID }] : [],
     }),
-
   }),
 });
 
@@ -49,5 +48,5 @@ export const {
   useClubsQuery,
   useClubQuery,
   useClubContactsQuery,
-  useClubTagsQuery
+  useClubTagsQuery,
 } = clubsApi;
