@@ -46,7 +46,7 @@ func (ut *UserTagController) GetUserTags(c *fiber.Ctx) error {
 // @Accept		json
 // @Produce		json
 // @Param		userID		path	string	true	"User ID"
-// @Param		userTagsBody	body	models.CreateUserTagsBody	true	"User Tags Body"
+// @Param		userTagsBody	body	CreateUserTagsBody	true	"User Tags Body"
 // @Success		201	  {object}	  []models.Tag
 // @Failure     400   {object}    errors.Error
 // @Failure     401   {object}    errors.Error
@@ -77,12 +77,12 @@ func (ut *UserTagController) CreateUserTags(c *fiber.Ctx) error {
 // @Accept		json
 // @Produce		json
 // @Param		userID		path	string	true	"User ID"
-// @Success		201	  {object}	  fiber.StatusNoContent
+// @Success		201
 // @Failure     400   {object}    errors.Error
 // @Failure     401   {object}    errors.Error
 // @Failure     404   {object}    errors.Error
 // @Failure     500   {object}    errors.Error
-// @Router		/users/{userID}/tags/  [post]
+// @Router		/users/{userID}/tags/  [delete]
 func (ut *UserTagController) DeleteUserTag(c *fiber.Ctx) error {
 	err := ut.userTagService.DeleteUserTag(c.Params("userID"), c.Params("tagID"))
 	if err != nil {

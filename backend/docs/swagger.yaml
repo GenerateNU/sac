@@ -40,9 +40,7 @@ definitions:
         example: "2023-09-20T16:34:50Z"
         type: string
       description:
-        description: |-
-          FIXME: make description a mongodb url again
-          Description      string           `gorm:"type:varchar(255)" json:"description" validate:"required,http_url,mongo_url,max=255"` // MongoDB URL
+        maxLength: 255
         type: string
       id:
         example: 123e4567-e89b-12d3-a456-426614174000
@@ -50,7 +48,6 @@ definitions:
       is_recruiting:
         type: boolean
       logo:
-        description: S3 URL
         maxLength: 255
         type: string
       name:
@@ -59,6 +56,9 @@ definitions:
       num_members:
         minimum: 1
         type: integer
+      one_word_to_describe_us:
+        maxLength: 255
+        type: string
       preview:
         maxLength: 255
         type: string
@@ -79,13 +79,12 @@ definitions:
         - tryout
         - application
         maxLength: 255
-      tags:
-        items:
-          $ref: '#/definitions/models.Tag'
-        type: array
       updated_at:
         example: "2023-09-20T16:34:50Z"
         type: string
+      weekly_time_commitment:
+        minimum: 1
+        type: integer
     required:
     - application_link
     - description
@@ -145,7 +144,7 @@ definitions:
         enum:
         - facebook
         - instagram
-        - twitter
+        - x
         - linkedin
         - youtube
         - github
@@ -165,7 +164,7 @@ definitions:
     enum:
     - facebook
     - instagram
-    - twitter
+    - x
     - linkedin
     - youtube
     - github
@@ -177,7 +176,7 @@ definitions:
     x-enum-varnames:
     - Facebook
     - Instagram
-    - Twitter
+    - X
     - LinkedIn
     - YouTube
     - GitHub
@@ -191,16 +190,17 @@ definitions:
         maxLength: 255
         type: string
       description:
-        description: MongoDB URL
         maxLength: 255
         type: string
       is_recruiting:
         type: boolean
       logo:
-        description: S3 URL
         maxLength: 255
         type: string
       name:
+        maxLength: 255
+        type: string
+      one_word_to_describe_us:
         maxLength: 255
         type: string
       preview:
@@ -225,6 +225,9 @@ definitions:
         maxLength: 255
       user_id:
         type: string
+      weekly_time_commitment:
+        minimum: 1
+        type: integer
     required:
     - application_link
     - description
@@ -258,6 +261,9 @@ definitions:
         - open
         - membersOnly
         maxLength: 255
+      host:
+        description: TODO club/tag/notification logic
+        type: string
       is_recurring:
         type: boolean
       location:
@@ -279,22 +285,26 @@ definitions:
     - content
     - end_time
     - event_type
+    - host
     - is_recurring
     - location
     - name
     - preview
     - start_time
     type: object
+  models.CreateFileRequestBody:
+    properties:
+      owner_id:
+        type: string
+      owner_type:
+        maxLength: 255
+        type: string
+    required:
+    - owner_id
+    - owner_type
+    type: object
   models.CreateSeriesRequestBody:
     properties:
-      day_of_month:
-        maximum: 31
-        minimum: 1
-        type: integer
-      day_of_week:
-        maximum: 7
-        minimum: 1
-        type: integer
       max_occurrences:
         minimum: 2
         type: integer
@@ -306,20 +316,9 @@ definitions:
         - weekly
         - monthly
         maxLength: 255
-      separation_count:
-        minimum: 0
-        type: integer
-      week_of_month:
-        maximum: 5
-        minimum: 1
-        type: integer
     required:
-    - day_of_month
-    - day_of_week
     - max_occurrences
     - recurring_type
-    - separation_count
-    - week_of_month
     type: object
   models.CreateTagRequestBody:
     properties:
@@ -353,35 +352,343 @@ definitions:
       first_name:
         maxLength: 255
         type: string
+      graduation_cycle:
+        allOf:
+        - $ref: '#/definitions/models.GraduationCycle'
+        enum:
+        - december
+        - may
+        maxLength: 255
+      graduation_year:
+        type: integer
       last_name:
         maxLength: 255
         type: string
-      nuid:
-        description: Optional fields
-        type: string
-      password:
-        maxLength: 255
-        minLength: 8
-        type: string
-      year:
+      major0:
         allOf:
-        - $ref: '#/definitions/models.Year'
-        maximum: 6
-        minimum: 1
+        - $ref: '#/definitions/models.Major'
+        description: Optional fields
+        enum:
+        - africanaStudies
+        - americanSignLanguage
+        - americanSignLanguage-EnglishInterpreting
+        - appliedPhysics
+        - architecturalStudies
+        - architecture
+        - art:ArtVisualStudies
+        - behavioralNeuroscience
+        - biochemistry
+        - bioengineering
+        - biology
+        - biomedicalPhysics
+        - businessAdministration
+        - businessAdministration:Accounting
+        - businessAdministration:AccountingAndAdvisoryServices
+        - businessAdministration:BrandManagement
+        - businessAdministration:BusinessAnalytics
+        - businessAdministration:CorporateInnovation
+        - businessAdministration:EntrepreneurialStartups
+        - businessAdministration:FamilyBusiness
+        - businessAdministration:Finance
+        - businessAdministration:Fintech
+        - businessAdministration:HealthcareManagementAndConsulting
+        - businessAdministration:Management
+        - businessAdministration:ManagementInformationSystems
+        - businessAdministration:Marketing
+        - businessAdministration:MarketingAnalytics
+        - businessAdministration:SocialInnovationAndEntrepreneurship
+        - businessAdministration:SupplyChainManagement
+        - cellAndMolecularBiology
+        - chemicalEngineering
+        - chemistry
+        - civilEngineering
+        - communicationStudies
+        - computerEngineering
+        - computerScience
+        - computingAndLaw
+        - criminologyAndCriminalJustice
+        - culturalAnthropology
+        - cybersecurity
+        - dataScience
+        - design
+        - economics
+        - electricalEngineering
+        - english
+        - environmentalAndSustainabilityStudies
+        - environmentalEngineering
+        - environmentalScience
+        - environmentalStudies
+        - gameArtAndAnimation
+        - gameDesign
+        - globalAsianStudies
+        - healthScience
+        - history
+        - historyCultureAndLaw
+        - humanServices
+        - industrialEngineering
+        - internationalAffairs
+        - internationalBusiness
+        - internationalBusiness:Accounting
+        - internationalBusiness:AccountingAndAdvisoryServices
+        - internationalBusiness:BrandManagement
+        - internationalBusiness:BusinessAnalytics
+        - internationalBusiness:CorporateInnovation
+        - internationalBusiness:EntrepreneurialStartups
+        - internationalBusiness:FamilyBusiness
+        - internationalBusiness:Finance
+        - internationalBusiness:Fintech
+        - internationalBusiness:HealthcareManagementAndConsulting
+        - internationalBusiness:Management
+        - internationalBusiness:ManagementInformationSystems
+        - internationalBusiness:Marketing
+        - internationalBusiness:MarketingAnalytics
+        - internationalBusiness:SocialInnovationAndEntrepreneurship
+        - internationalBusiness:SupplyChainManagement
+        - journalism
+        - landscapeArchitecture
+        - linguistics
+        - marineBiology
+        - mathematics
+        - mechanicalEngineering
+        - mediaAndScreenStudies
+        - mediaArts
+        - music
+        - musicTechnology
+        - nursing
+        - pharmaceuticalSciences
+        - pharmacy(PharmD)
+        - philosophy
+        - physics
+        - politicalScience
+        - politicsPhilosophyEconomics
+        - psychology
+        - publicHealth
+        - publicRelations
+        - religiousStudies
+        - sociology
+        - spanish
+        - speechLanguagePathologyAndAudiology
+        - theatre
+        maxLength: 255
+      major1:
+        allOf:
+        - $ref: '#/definitions/models.Major'
+        enum:
+        - africanaStudies
+        - americanSignLanguage
+        - americanSignLanguage-EnglishInterpreting
+        - appliedPhysics
+        - architecturalStudies
+        - architecture
+        - art:ArtVisualStudies
+        - behavioralNeuroscience
+        - biochemistry
+        - bioengineering
+        - biology
+        - biomedicalPhysics
+        - businessAdministration
+        - businessAdministration:Accounting
+        - businessAdministration:AccountingAndAdvisoryServices
+        - businessAdministration:BrandManagement
+        - businessAdministration:BusinessAnalytics
+        - businessAdministration:CorporateInnovation
+        - businessAdministration:EntrepreneurialStartups
+        - businessAdministration:FamilyBusiness
+        - businessAdministration:Finance
+        - businessAdministration:Fintech
+        - businessAdministration:HealthcareManagementAndConsulting
+        - businessAdministration:Management
+        - businessAdministration:ManagementInformationSystems
+        - businessAdministration:Marketing
+        - businessAdministration:MarketingAnalytics
+        - businessAdministration:SocialInnovationAndEntrepreneurship
+        - businessAdministration:SupplyChainManagement
+        - cellAndMolecularBiology
+        - chemicalEngineering
+        - chemistry
+        - civilEngineering
+        - communicationStudies
+        - computerEngineering
+        - computerScience
+        - computingAndLaw
+        - criminologyAndCriminalJustice
+        - culturalAnthropology
+        - cybersecurity
+        - dataScience
+        - design
+        - economics
+        - electricalEngineering
+        - english
+        - environmentalAndSustainabilityStudies
+        - environmentalEngineering
+        - environmentalScience
+        - environmentalStudies
+        - gameArtAndAnimation
+        - gameDesign
+        - globalAsianStudies
+        - healthScience
+        - history
+        - historyCultureAndLaw
+        - humanServices
+        - industrialEngineering
+        - internationalAffairs
+        - internationalBusiness
+        - internationalBusiness:Accounting
+        - internationalBusiness:AccountingAndAdvisoryServices
+        - internationalBusiness:BrandManagement
+        - internationalBusiness:BusinessAnalytics
+        - internationalBusiness:CorporateInnovation
+        - internationalBusiness:EntrepreneurialStartups
+        - internationalBusiness:FamilyBusiness
+        - internationalBusiness:Finance
+        - internationalBusiness:Fintech
+        - internationalBusiness:HealthcareManagementAndConsulting
+        - internationalBusiness:Management
+        - internationalBusiness:ManagementInformationSystems
+        - internationalBusiness:Marketing
+        - internationalBusiness:MarketingAnalytics
+        - internationalBusiness:SocialInnovationAndEntrepreneurship
+        - internationalBusiness:SupplyChainManagement
+        - journalism
+        - landscapeArchitecture
+        - linguistics
+        - marineBiology
+        - mathematics
+        - mechanicalEngineering
+        - mediaAndScreenStudies
+        - mediaArts
+        - music
+        - musicTechnology
+        - nursing
+        - pharmaceuticalSciences
+        - pharmacy(PharmD)
+        - philosophy
+        - physics
+        - politicalScience
+        - politicsPhilosophyEconomics
+        - psychology
+        - publicHealth
+        - publicRelations
+        - religiousStudies
+        - sociology
+        - spanish
+        - speechLanguagePathologyAndAudiology
+        - theatre
+        maxLength: 255
+      major2:
+        allOf:
+        - $ref: '#/definitions/models.Major'
+        enum:
+        - africanaStudies
+        - americanSignLanguage
+        - americanSignLanguage-EnglishInterpreting
+        - appliedPhysics
+        - architecturalStudies
+        - architecture
+        - art:ArtVisualStudies
+        - behavioralNeuroscience
+        - biochemistry
+        - bioengineering
+        - biology
+        - biomedicalPhysics
+        - businessAdministration
+        - businessAdministration:Accounting
+        - businessAdministration:AccountingAndAdvisoryServices
+        - businessAdministration:BrandManagement
+        - businessAdministration:BusinessAnalytics
+        - businessAdministration:CorporateInnovation
+        - businessAdministration:EntrepreneurialStartups
+        - businessAdministration:FamilyBusiness
+        - businessAdministration:Finance
+        - businessAdministration:Fintech
+        - businessAdministration:HealthcareManagementAndConsulting
+        - businessAdministration:Management
+        - businessAdministration:ManagementInformationSystems
+        - businessAdministration:Marketing
+        - businessAdministration:MarketingAnalytics
+        - businessAdministration:SocialInnovationAndEntrepreneurship
+        - businessAdministration:SupplyChainManagement
+        - cellAndMolecularBiology
+        - chemicalEngineering
+        - chemistry
+        - civilEngineering
+        - communicationStudies
+        - computerEngineering
+        - computerScience
+        - computingAndLaw
+        - criminologyAndCriminalJustice
+        - culturalAnthropology
+        - cybersecurity
+        - dataScience
+        - design
+        - economics
+        - electricalEngineering
+        - english
+        - environmentalAndSustainabilityStudies
+        - environmentalEngineering
+        - environmentalScience
+        - environmentalStudies
+        - gameArtAndAnimation
+        - gameDesign
+        - globalAsianStudies
+        - healthScience
+        - history
+        - historyCultureAndLaw
+        - humanServices
+        - industrialEngineering
+        - internationalAffairs
+        - internationalBusiness
+        - internationalBusiness:Accounting
+        - internationalBusiness:AccountingAndAdvisoryServices
+        - internationalBusiness:BrandManagement
+        - internationalBusiness:BusinessAnalytics
+        - internationalBusiness:CorporateInnovation
+        - internationalBusiness:EntrepreneurialStartups
+        - internationalBusiness:FamilyBusiness
+        - internationalBusiness:Finance
+        - internationalBusiness:Fintech
+        - internationalBusiness:HealthcareManagementAndConsulting
+        - internationalBusiness:Management
+        - internationalBusiness:ManagementInformationSystems
+        - internationalBusiness:Marketing
+        - internationalBusiness:MarketingAnalytics
+        - internationalBusiness:SocialInnovationAndEntrepreneurship
+        - internationalBusiness:SupplyChainManagement
+        - journalism
+        - landscapeArchitecture
+        - linguistics
+        - marineBiology
+        - mathematics
+        - mechanicalEngineering
+        - mediaAndScreenStudies
+        - mediaArts
+        - music
+        - musicTechnology
+        - nursing
+        - pharmaceuticalSciences
+        - pharmacy(PharmD)
+        - philosophy
+        - physics
+        - politicalScience
+        - politicsPhilosophyEconomics
+        - psychology
+        - publicHealth
+        - publicRelations
+        - religiousStudies
+        - sociology
+        - spanish
+        - speechLanguagePathologyAndAudiology
+        - theatre
+        maxLength: 255
+      password:
+        description: 'MARK: must be validated manually'
+        maxLength: 255
+        type: string
     required:
     - email
     - first_name
     - last_name
     - password
-    type: object
-  models.CreateUserTagsBody:
-    properties:
-      tags:
-        items:
-          type: string
-        type: array
-    required:
-    - tags
     type: object
   models.Event:
     properties:
@@ -400,6 +707,8 @@ definitions:
         - open
         - membersOnly
         maxLength: 255
+      host:
+        type: string
       id:
         example: 123e4567-e89b-12d3-a456-426614174000
         type: string
@@ -407,6 +716,8 @@ definitions:
         type: boolean
       location:
         maxLength: 255
+        type: string
+      meeting_link:
         type: string
       name:
         maxLength: 255
@@ -436,17 +747,289 @@ definitions:
     x-enum-varnames:
     - Open
     - MembersOnly
+  models.File:
+    properties:
+      created_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      file_name:
+        maxLength: 255
+        type: string
+      file_size:
+        minimum: 1
+        type: integer
+      file_type:
+        maxLength: 255
+        type: string
+      file_url:
+        maxLength: 255
+        type: string
+      id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      object_key:
+        maxLength: 255
+        type: string
+      updated_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+    required:
+    - file_name
+    - file_size
+    - file_type
+    - file_url
+    - object_key
+    type: object
+  models.GraduationCycle:
+    enum:
+    - december
+    - may
+    type: string
+    x-enum-varnames:
+    - December
+    - May
   models.LoginUserResponseBody:
     properties:
       email:
         type: string
       password:
+        description: 'MARK: must be validated manually'
         maxLength: 255
-        minLength: 8
         type: string
     required:
     - email
     - password
+    type: object
+  models.Major:
+    enum:
+    - africanaStudies
+    - americanSignLanguage
+    - americanSignLanguage-EnglishInterpreting
+    - appliedPhysics
+    - architecturalStudies
+    - architecture
+    - art:ArtVisualStudies
+    - behavioralNeuroscience
+    - biochemistry
+    - bioengineering
+    - biology
+    - biomedicalPhysics
+    - businessAdministration
+    - businessAdministration:Accounting
+    - businessAdministration:AccountingAndAdvisoryServices
+    - businessAdministration:BrandManagement
+    - businessAdministration:BusinessAnalytics
+    - businessAdministration:CorporateInnovation
+    - businessAdministration:EntrepreneurialStartups
+    - businessAdministration:FamilyBusiness
+    - businessAdministration:Finance
+    - businessAdministration:Fintech
+    - businessAdministration:HealthcareManagementAndConsulting
+    - businessAdministration:Management
+    - businessAdministration:ManagementInformationSystems
+    - businessAdministration:Marketing
+    - businessAdministration:MarketingAnalytics
+    - businessAdministration:SocialInnovationAndEntrepreneurship
+    - businessAdministration:SupplyChainManagement
+    - cellAndMolecularBiology
+    - chemicalEngineering
+    - chemistry
+    - civilEngineering
+    - communicationStudies
+    - computerEngineering
+    - computerScience
+    - computingAndLaw
+    - criminologyAndCriminalJustice
+    - culturalAnthropology
+    - cybersecurity
+    - dataScience
+    - design
+    - economics
+    - electricalEngineering
+    - english
+    - environmentalAndSustainabilityStudies
+    - environmentalEngineering
+    - environmentalScience
+    - environmentalStudies
+    - gameArtAndAnimation
+    - gameDesign
+    - globalAsianStudies
+    - healthScience
+    - history
+    - historyCultureAndLaw
+    - humanServices
+    - industrialEngineering
+    - internationalAffairs
+    - internationalBusiness
+    - internationalBusiness:Accounting
+    - internationalBusiness:AccountingAndAdvisoryServices
+    - internationalBusiness:BrandManagement
+    - internationalBusiness:BusinessAnalytics
+    - internationalBusiness:CorporateInnovation
+    - internationalBusiness:EntrepreneurialStartups
+    - internationalBusiness:FamilyBusiness
+    - internationalBusiness:Finance
+    - internationalBusiness:Fintech
+    - internationalBusiness:HealthcareManagementAndConsulting
+    - internationalBusiness:Management
+    - internationalBusiness:ManagementInformationSystems
+    - internationalBusiness:Marketing
+    - internationalBusiness:MarketingAnalytics
+    - internationalBusiness:SocialInnovationAndEntrepreneurship
+    - internationalBusiness:SupplyChainManagement
+    - journalism
+    - landscapeArchitecture
+    - linguistics
+    - marineBiology
+    - mathematics
+    - mechanicalEngineering
+    - mediaAndScreenStudies
+    - mediaArts
+    - music
+    - musicTechnology
+    - nursing
+    - pharmaceuticalSciences
+    - pharmacy(PharmD)
+    - philosophy
+    - physics
+    - politicalScience
+    - politicsPhilosophyEconomics
+    - psychology
+    - publicHealth
+    - publicRelations
+    - religiousStudies
+    - sociology
+    - spanish
+    - speechLanguagePathologyAndAudiology
+    - theatre
+    type: string
+    x-enum-varnames:
+    - AfricanaStudies
+    - AmericanSignLanguage
+    - AmericanSignLanguageEnglishInterpreting
+    - AppliedPhysics
+    - ArchitecturalStudies
+    - Architecture
+    - ArtArtVisualStudies
+    - BehavioralNeuroscience
+    - Biochemistry
+    - Bioengineering
+    - Biology
+    - BiomedicalPhysics
+    - BusinessAdministration
+    - BusinessAdministrationAccounting
+    - BusinessAdministrationAccountingAndAdvisoryServices
+    - BusinessAdministrationBrandManagement
+    - BusinessAdministrationBusinessAnalytics
+    - BusinessAdministrationCorporateInnovation
+    - BusinessAdministrationEntrepreneurialStartups
+    - BusinessAdministrationFamilyBusiness
+    - BusinessAdministrationFinance
+    - BusinessAdministrationFintech
+    - BusinessAdministrationHealthcareManagementAndConsulting
+    - BusinessAdministrationManagement
+    - BusinessAdministrationManagementInformationSystems
+    - BusinessAdministrationMarketing
+    - BusinessAdministrationMarketingAnalytics
+    - BusinessAdministrationSocialInnovationAndEntrepreneurship
+    - BusinessAdministrationSupplyChainManagement
+    - CellAndMolecularBiology
+    - ChemicalEngineering
+    - Chemistry
+    - CivilEngineering
+    - CommunicationStudies
+    - ComputerEngineering
+    - ComputerScience
+    - ComputingAndLaw
+    - CriminologyAndCriminalJustice
+    - CulturalAnthropology
+    - Cybersecurity
+    - DataScience
+    - Design
+    - Economics
+    - ElectricalEngineering
+    - English
+    - EnvironmentalAndSustainabilityStudies
+    - EnvironmentalEngineering
+    - EnvironmentalScience
+    - EnvironmentalStudies
+    - GameArtAndAnimation
+    - GameDesign
+    - GlobalAsianStudies
+    - HealthScience
+    - History
+    - HistoryCultureAndLaw
+    - HumanServices
+    - IndustrialEngineering
+    - InternationalAffairs
+    - InternationalBusiness
+    - InternationalBusinessAccounting
+    - InternationalBusinessAccountingAndAdvisoryServices
+    - InternationalBusinessBrandManagement
+    - InternationalBusinessBusinessAnalytics
+    - InternationalBusinessCorporateInnovation
+    - InternationalBusinessEntrepreneurialStartups
+    - InternationalBusinessFamilyBusiness
+    - InternationalBusinessFinance
+    - InternationalBusinessFintech
+    - InternationalBusinessHealthcareManagementAndConsulting
+    - InternationalBusinessManagement
+    - InternationalBusinessManagementInformationSystems
+    - InternationalBusinessMarketing
+    - InternationalBusinessMarketingAnalytics
+    - InternationalBusinessSocialInnovationAndEntrepreneurship
+    - InternationalBusinessSupplyChainManagement
+    - Journalism
+    - LandscapeArchitecture
+    - Linguistics
+    - MarineBiology
+    - Mathematics
+    - MechanicalEngineering
+    - MediaAndScreenStudies
+    - MediaArts
+    - Music
+    - MusicTechnology
+    - Nursing
+    - PharmaceuticalSciences
+    - PharmacyPharmD
+    - Philosophy
+    - Physics
+    - PoliticalScience
+    - PoliticsPhilosophyEconomics
+    - Psychology
+    - PublicHealth
+    - PublicRelations
+    - ReligiousStudies
+    - Sociology
+    - Spanish
+    - SpeechLanguagePathologyAndAudiology
+    - Theatre
+  models.PointOfContact:
+    properties:
+      created_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      email:
+        maxLength: 255
+        type: string
+      id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      name:
+        maxLength: 255
+        type: string
+      photo_file:
+        $ref: '#/definitions/models.File'
+      position:
+        maxLength: 255
+        type: string
+      updated_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+    required:
+    - email
+    - name
+    - position
     type: object
   models.PutContactRequestBody:
     properties:
@@ -459,7 +1042,7 @@ definitions:
         enum:
         - facebook
         - instagram
-        - twitter
+        - x
         - linkedin
         - youtube
         - github
@@ -509,14 +1092,6 @@ definitions:
       created_at:
         example: "2023-09-20T16:34:50Z"
         type: string
-      day_of_month:
-        maximum: 31
-        minimum: 1
-        type: integer
-      day_of_week:
-        maximum: 7
-        minimum: 1
-        type: integer
       events:
         items:
           $ref: '#/definitions/models.Event'
@@ -531,16 +1106,9 @@ definitions:
         allOf:
         - $ref: '#/definitions/models.RecurringType'
         maxLength: 255
-      separation_count:
-        minimum: 0
-        type: integer
       updated_at:
         example: "2023-09-20T16:34:50Z"
         type: string
-      week_of_month:
-        maximum: 5
-        minimum: 1
-        type: integer
     type: object
   models.Tag:
     properties:
@@ -568,16 +1136,17 @@ definitions:
         maxLength: 255
         type: string
       description:
-        description: MongoDB URL
         maxLength: 255
         type: string
       is_recruiting:
         type: boolean
       logo:
-        description: S3 URL
         maxLength: 255
         type: string
       name:
+        maxLength: 255
+        type: string
+      one_word_to_describe_us:
         maxLength: 255
         type: string
       preview:
@@ -600,6 +1169,9 @@ definitions:
         - tryout
         - application
         maxLength: 255
+      weekly_time_commitment:
+        minimum: 1
+        type: integer
     required:
     - application_link
     - recruitment_cycle
@@ -619,6 +1191,8 @@ definitions:
         - open
         - membersOnly
         maxLength: 255
+      host:
+        type: string
       location:
         maxLength: 255
         type: string
@@ -634,12 +1208,12 @@ definitions:
   models.UpdatePasswordRequestBody:
     properties:
       new_password:
+        description: 'MARK: must be validated manually'
         maxLength: 255
-        minLength: 8
         type: string
       old_password:
+        description: 'MARK: must be validated manually'
         maxLength: 255
-        minLength: 8
         type: string
     required:
     - new_password
@@ -647,14 +1221,6 @@ definitions:
     type: object
   models.UpdateSeriesRequestBody:
     properties:
-      day_of_month:
-        maximum: 31
-        minimum: 1
-        type: integer
-      day_of_week:
-        maximum: 7
-        minimum: 1
-        type: integer
       event_details:
         $ref: '#/definitions/models.UpdateEventRequestBody'
       max_occurrences:
@@ -668,13 +1234,6 @@ definitions:
         - weekly
         - monthly
         maxLength: 255
-      separation_count:
-        minimum: 0
-        type: integer
-      week_of_month:
-        maximum: 5
-        minimum: 1
-        type: integer
     type: object
   models.UpdateTagRequestBody:
     properties:
@@ -702,17 +1261,333 @@ definitions:
       first_name:
         maxLength: 255
         type: string
+      graduation_cycle:
+        allOf:
+        - $ref: '#/definitions/models.GraduationCycle'
+        enum:
+        - december
+        - may
+        maxLength: 255
+      graduation_year:
+        type: integer
       last_name:
         maxLength: 255
         type: string
-      nuid:
-        description: 'TODO: remove this'
-        type: string
-      year:
+      major0:
         allOf:
-        - $ref: '#/definitions/models.Year'
-        maximum: 6
-        minimum: 1
+        - $ref: '#/definitions/models.Major'
+        enum:
+        - africanaStudies
+        - americanSignLanguage
+        - americanSignLanguage-EnglishInterpreting
+        - appliedPhysics
+        - architecturalStudies
+        - architecture
+        - art:ArtVisualStudies
+        - behavioralNeuroscience
+        - biochemistry
+        - bioengineering
+        - biology
+        - biomedicalPhysics
+        - businessAdministration
+        - businessAdministration:Accounting
+        - businessAdministration:AccountingAndAdvisoryServices
+        - businessAdministration:BrandManagement
+        - businessAdministration:BusinessAnalytics
+        - businessAdministration:CorporateInnovation
+        - businessAdministration:EntrepreneurialStartups
+        - businessAdministration:FamilyBusiness
+        - businessAdministration:Finance
+        - businessAdministration:Fintech
+        - businessAdministration:HealthcareManagementAndConsulting
+        - businessAdministration:Management
+        - businessAdministration:ManagementInformationSystems
+        - businessAdministration:Marketing
+        - businessAdministration:MarketingAnalytics
+        - businessAdministration:SocialInnovationAndEntrepreneurship
+        - businessAdministration:SupplyChainManagement
+        - cellAndMolecularBiology
+        - chemicalEngineering
+        - chemistry
+        - civilEngineering
+        - communicationStudies
+        - computerEngineering
+        - computerScience
+        - computingAndLaw
+        - criminologyAndCriminalJustice
+        - culturalAnthropology
+        - cybersecurity
+        - dataScience
+        - design
+        - economics
+        - electricalEngineering
+        - english
+        - environmentalAndSustainabilityStudies
+        - environmentalEngineering
+        - environmentalScience
+        - environmentalStudies
+        - gameArtAndAnimation
+        - gameDesign
+        - globalAsianStudies
+        - healthScience
+        - history
+        - historyCultureAndLaw
+        - humanServices
+        - industrialEngineering
+        - internationalAffairs
+        - internationalBusiness
+        - internationalBusiness:Accounting
+        - internationalBusiness:AccountingAndAdvisoryServices
+        - internationalBusiness:BrandManagement
+        - internationalBusiness:BusinessAnalytics
+        - internationalBusiness:CorporateInnovation
+        - internationalBusiness:EntrepreneurialStartups
+        - internationalBusiness:FamilyBusiness
+        - internationalBusiness:Finance
+        - internationalBusiness:Fintech
+        - internationalBusiness:HealthcareManagementAndConsulting
+        - internationalBusiness:Management
+        - internationalBusiness:ManagementInformationSystems
+        - internationalBusiness:Marketing
+        - internationalBusiness:MarketingAnalytics
+        - internationalBusiness:SocialInnovationAndEntrepreneurship
+        - internationalBusiness:SupplyChainManagement
+        - journalism
+        - landscapeArchitecture
+        - linguistics
+        - marineBiology
+        - mathematics
+        - mechanicalEngineering
+        - mediaAndScreenStudies
+        - mediaArts
+        - music
+        - musicTechnology
+        - nursing
+        - pharmaceuticalSciences
+        - pharmacy(PharmD)
+        - philosophy
+        - physics
+        - politicalScience
+        - politicsPhilosophyEconomics
+        - psychology
+        - publicHealth
+        - publicRelations
+        - religiousStudies
+        - sociology
+        - spanish
+        - speechLanguagePathologyAndAudiology
+        - theatre
+        maxLength: 255
+      major1:
+        allOf:
+        - $ref: '#/definitions/models.Major'
+        enum:
+        - africanaStudies
+        - americanSignLanguage
+        - americanSignLanguage-EnglishInterpreting
+        - appliedPhysics
+        - architecturalStudies
+        - architecture
+        - art:ArtVisualStudies
+        - behavioralNeuroscience
+        - biochemistry
+        - bioengineering
+        - biology
+        - biomedicalPhysics
+        - businessAdministration
+        - businessAdministration:Accounting
+        - businessAdministration:AccountingAndAdvisoryServices
+        - businessAdministration:BrandManagement
+        - businessAdministration:BusinessAnalytics
+        - businessAdministration:CorporateInnovation
+        - businessAdministration:EntrepreneurialStartups
+        - businessAdministration:FamilyBusiness
+        - businessAdministration:Finance
+        - businessAdministration:Fintech
+        - businessAdministration:HealthcareManagementAndConsulting
+        - businessAdministration:Management
+        - businessAdministration:ManagementInformationSystems
+        - businessAdministration:Marketing
+        - businessAdministration:MarketingAnalytics
+        - businessAdministration:SocialInnovationAndEntrepreneurship
+        - businessAdministration:SupplyChainManagement
+        - cellAndMolecularBiology
+        - chemicalEngineering
+        - chemistry
+        - civilEngineering
+        - communicationStudies
+        - computerEngineering
+        - computerScience
+        - computingAndLaw
+        - criminologyAndCriminalJustice
+        - culturalAnthropology
+        - cybersecurity
+        - dataScience
+        - design
+        - economics
+        - electricalEngineering
+        - english
+        - environmentalAndSustainabilityStudies
+        - environmentalEngineering
+        - environmentalScience
+        - environmentalStudies
+        - gameArtAndAnimation
+        - gameDesign
+        - globalAsianStudies
+        - healthScience
+        - history
+        - historyCultureAndLaw
+        - humanServices
+        - industrialEngineering
+        - internationalAffairs
+        - internationalBusiness
+        - internationalBusiness:Accounting
+        - internationalBusiness:AccountingAndAdvisoryServices
+        - internationalBusiness:BrandManagement
+        - internationalBusiness:BusinessAnalytics
+        - internationalBusiness:CorporateInnovation
+        - internationalBusiness:EntrepreneurialStartups
+        - internationalBusiness:FamilyBusiness
+        - internationalBusiness:Finance
+        - internationalBusiness:Fintech
+        - internationalBusiness:HealthcareManagementAndConsulting
+        - internationalBusiness:Management
+        - internationalBusiness:ManagementInformationSystems
+        - internationalBusiness:Marketing
+        - internationalBusiness:MarketingAnalytics
+        - internationalBusiness:SocialInnovationAndEntrepreneurship
+        - internationalBusiness:SupplyChainManagement
+        - journalism
+        - landscapeArchitecture
+        - linguistics
+        - marineBiology
+        - mathematics
+        - mechanicalEngineering
+        - mediaAndScreenStudies
+        - mediaArts
+        - music
+        - musicTechnology
+        - nursing
+        - pharmaceuticalSciences
+        - pharmacy(PharmD)
+        - philosophy
+        - physics
+        - politicalScience
+        - politicsPhilosophyEconomics
+        - psychology
+        - publicHealth
+        - publicRelations
+        - religiousStudies
+        - sociology
+        - spanish
+        - speechLanguagePathologyAndAudiology
+        - theatre
+        maxLength: 255
+      major2:
+        allOf:
+        - $ref: '#/definitions/models.Major'
+        enum:
+        - africanaStudies
+        - americanSignLanguage
+        - americanSignLanguage-EnglishInterpreting
+        - appliedPhysics
+        - architecturalStudies
+        - architecture
+        - art:ArtVisualStudies
+        - behavioralNeuroscience
+        - biochemistry
+        - bioengineering
+        - biology
+        - biomedicalPhysics
+        - businessAdministration
+        - businessAdministration:Accounting
+        - businessAdministration:AccountingAndAdvisoryServices
+        - businessAdministration:BrandManagement
+        - businessAdministration:BusinessAnalytics
+        - businessAdministration:CorporateInnovation
+        - businessAdministration:EntrepreneurialStartups
+        - businessAdministration:FamilyBusiness
+        - businessAdministration:Finance
+        - businessAdministration:Fintech
+        - businessAdministration:HealthcareManagementAndConsulting
+        - businessAdministration:Management
+        - businessAdministration:ManagementInformationSystems
+        - businessAdministration:Marketing
+        - businessAdministration:MarketingAnalytics
+        - businessAdministration:SocialInnovationAndEntrepreneurship
+        - businessAdministration:SupplyChainManagement
+        - cellAndMolecularBiology
+        - chemicalEngineering
+        - chemistry
+        - civilEngineering
+        - communicationStudies
+        - computerEngineering
+        - computerScience
+        - computingAndLaw
+        - criminologyAndCriminalJustice
+        - culturalAnthropology
+        - cybersecurity
+        - dataScience
+        - design
+        - economics
+        - electricalEngineering
+        - english
+        - environmentalAndSustainabilityStudies
+        - environmentalEngineering
+        - environmentalScience
+        - environmentalStudies
+        - gameArtAndAnimation
+        - gameDesign
+        - globalAsianStudies
+        - healthScience
+        - history
+        - historyCultureAndLaw
+        - humanServices
+        - industrialEngineering
+        - internationalAffairs
+        - internationalBusiness
+        - internationalBusiness:Accounting
+        - internationalBusiness:AccountingAndAdvisoryServices
+        - internationalBusiness:BrandManagement
+        - internationalBusiness:BusinessAnalytics
+        - internationalBusiness:CorporateInnovation
+        - internationalBusiness:EntrepreneurialStartups
+        - internationalBusiness:FamilyBusiness
+        - internationalBusiness:Finance
+        - internationalBusiness:Fintech
+        - internationalBusiness:HealthcareManagementAndConsulting
+        - internationalBusiness:Management
+        - internationalBusiness:ManagementInformationSystems
+        - internationalBusiness:Marketing
+        - internationalBusiness:MarketingAnalytics
+        - internationalBusiness:SocialInnovationAndEntrepreneurship
+        - internationalBusiness:SupplyChainManagement
+        - journalism
+        - landscapeArchitecture
+        - linguistics
+        - marineBiology
+        - mathematics
+        - mechanicalEngineering
+        - mediaAndScreenStudies
+        - mediaArts
+        - music
+        - musicTechnology
+        - nursing
+        - pharmaceuticalSciences
+        - pharmacy(PharmD)
+        - philosophy
+        - physics
+        - politicalScience
+        - politicsPhilosophyEconomics
+        - psychology
+        - publicHealth
+        - publicRelations
+        - religiousStudies
+        - sociology
+        - spanish
+        - speechLanguagePathologyAndAudiology
+        - theatre
+        maxLength: 255
     type: object
   models.User:
     properties:
@@ -729,6 +1604,15 @@ definitions:
       first_name:
         maxLength: 255
         type: string
+      graduation_cycle:
+        allOf:
+        - $ref: '#/definitions/models.GraduationCycle'
+        enum:
+        - december
+        - may
+        maxLength: 255
+      graduation_year:
+        type: integer
       id:
         example: 123e4567-e89b-12d3-a456-426614174000
         type: string
@@ -737,8 +1621,321 @@ definitions:
       last_name:
         maxLength: 255
         type: string
-      nuid:
-        type: string
+      major0:
+        allOf:
+        - $ref: '#/definitions/models.Major'
+        enum:
+        - africanaStudies
+        - americanSignLanguage
+        - americanSignLanguage-EnglishInterpreting
+        - appliedPhysics
+        - architecturalStudies
+        - architecture
+        - art:ArtVisualStudies
+        - behavioralNeuroscience
+        - biochemistry
+        - bioengineering
+        - biology
+        - biomedicalPhysics
+        - businessAdministration
+        - businessAdministration:Accounting
+        - businessAdministration:AccountingAndAdvisoryServices
+        - businessAdministration:BrandManagement
+        - businessAdministration:BusinessAnalytics
+        - businessAdministration:CorporateInnovation
+        - businessAdministration:EntrepreneurialStartups
+        - businessAdministration:FamilyBusiness
+        - businessAdministration:Finance
+        - businessAdministration:Fintech
+        - businessAdministration:HealthcareManagementAndConsulting
+        - businessAdministration:Management
+        - businessAdministration:ManagementInformationSystems
+        - businessAdministration:Marketing
+        - businessAdministration:MarketingAnalytics
+        - businessAdministration:SocialInnovationAndEntrepreneurship
+        - businessAdministration:SupplyChainManagement
+        - cellAndMolecularBiology
+        - chemicalEngineering
+        - chemistry
+        - civilEngineering
+        - communicationStudies
+        - computerEngineering
+        - computerScience
+        - computingAndLaw
+        - criminologyAndCriminalJustice
+        - culturalAnthropology
+        - cybersecurity
+        - dataScience
+        - design
+        - economics
+        - electricalEngineering
+        - english
+        - environmentalAndSustainabilityStudies
+        - environmentalEngineering
+        - environmentalScience
+        - environmentalStudies
+        - gameArtAndAnimation
+        - gameDesign
+        - globalAsianStudies
+        - healthScience
+        - history
+        - historyCultureAndLaw
+        - humanServices
+        - industrialEngineering
+        - internationalAffairs
+        - internationalBusiness
+        - internationalBusiness:Accounting
+        - internationalBusiness:AccountingAndAdvisoryServices
+        - internationalBusiness:BrandManagement
+        - internationalBusiness:BusinessAnalytics
+        - internationalBusiness:CorporateInnovation
+        - internationalBusiness:EntrepreneurialStartups
+        - internationalBusiness:FamilyBusiness
+        - internationalBusiness:Finance
+        - internationalBusiness:Fintech
+        - internationalBusiness:HealthcareManagementAndConsulting
+        - internationalBusiness:Management
+        - internationalBusiness:ManagementInformationSystems
+        - internationalBusiness:Marketing
+        - internationalBusiness:MarketingAnalytics
+        - internationalBusiness:SocialInnovationAndEntrepreneurship
+        - internationalBusiness:SupplyChainManagement
+        - journalism
+        - landscapeArchitecture
+        - linguistics
+        - marineBiology
+        - mathematics
+        - mechanicalEngineering
+        - mediaAndScreenStudies
+        - mediaArts
+        - music
+        - musicTechnology
+        - nursing
+        - pharmaceuticalSciences
+        - pharmacy(PharmD)
+        - philosophy
+        - physics
+        - politicalScience
+        - politicsPhilosophyEconomics
+        - psychology
+        - publicHealth
+        - publicRelations
+        - religiousStudies
+        - sociology
+        - spanish
+        - speechLanguagePathologyAndAudiology
+        - theatre
+        maxLength: 255
+      major1:
+        allOf:
+        - $ref: '#/definitions/models.Major'
+        enum:
+        - africanaStudies
+        - americanSignLanguage
+        - americanSignLanguage-EnglishInterpreting
+        - appliedPhysics
+        - architecturalStudies
+        - architecture
+        - art:ArtVisualStudies
+        - behavioralNeuroscience
+        - biochemistry
+        - bioengineering
+        - biology
+        - biomedicalPhysics
+        - businessAdministration
+        - businessAdministration:Accounting
+        - businessAdministration:AccountingAndAdvisoryServices
+        - businessAdministration:BrandManagement
+        - businessAdministration:BusinessAnalytics
+        - businessAdministration:CorporateInnovation
+        - businessAdministration:EntrepreneurialStartups
+        - businessAdministration:FamilyBusiness
+        - businessAdministration:Finance
+        - businessAdministration:Fintech
+        - businessAdministration:HealthcareManagementAndConsulting
+        - businessAdministration:Management
+        - businessAdministration:ManagementInformationSystems
+        - businessAdministration:Marketing
+        - businessAdministration:MarketingAnalytics
+        - businessAdministration:SocialInnovationAndEntrepreneurship
+        - businessAdministration:SupplyChainManagement
+        - cellAndMolecularBiology
+        - chemicalEngineering
+        - chemistry
+        - civilEngineering
+        - communicationStudies
+        - computerEngineering
+        - computerScience
+        - computingAndLaw
+        - criminologyAndCriminalJustice
+        - culturalAnthropology
+        - cybersecurity
+        - dataScience
+        - design
+        - economics
+        - electricalEngineering
+        - english
+        - environmentalAndSustainabilityStudies
+        - environmentalEngineering
+        - environmentalScience
+        - environmentalStudies
+        - gameArtAndAnimation
+        - gameDesign
+        - globalAsianStudies
+        - healthScience
+        - history
+        - historyCultureAndLaw
+        - humanServices
+        - industrialEngineering
+        - internationalAffairs
+        - internationalBusiness
+        - internationalBusiness:Accounting
+        - internationalBusiness:AccountingAndAdvisoryServices
+        - internationalBusiness:BrandManagement
+        - internationalBusiness:BusinessAnalytics
+        - internationalBusiness:CorporateInnovation
+        - internationalBusiness:EntrepreneurialStartups
+        - internationalBusiness:FamilyBusiness
+        - internationalBusiness:Finance
+        - internationalBusiness:Fintech
+        - internationalBusiness:HealthcareManagementAndConsulting
+        - internationalBusiness:Management
+        - internationalBusiness:ManagementInformationSystems
+        - internationalBusiness:Marketing
+        - internationalBusiness:MarketingAnalytics
+        - internationalBusiness:SocialInnovationAndEntrepreneurship
+        - internationalBusiness:SupplyChainManagement
+        - journalism
+        - landscapeArchitecture
+        - linguistics
+        - marineBiology
+        - mathematics
+        - mechanicalEngineering
+        - mediaAndScreenStudies
+        - mediaArts
+        - music
+        - musicTechnology
+        - nursing
+        - pharmaceuticalSciences
+        - pharmacy(PharmD)
+        - philosophy
+        - physics
+        - politicalScience
+        - politicsPhilosophyEconomics
+        - psychology
+        - publicHealth
+        - publicRelations
+        - religiousStudies
+        - sociology
+        - spanish
+        - speechLanguagePathologyAndAudiology
+        - theatre
+        maxLength: 255
+      major2:
+        allOf:
+        - $ref: '#/definitions/models.Major'
+        enum:
+        - africanaStudies
+        - americanSignLanguage
+        - americanSignLanguage-EnglishInterpreting
+        - appliedPhysics
+        - architecturalStudies
+        - architecture
+        - art:ArtVisualStudies
+        - behavioralNeuroscience
+        - biochemistry
+        - bioengineering
+        - biology
+        - biomedicalPhysics
+        - businessAdministration
+        - businessAdministration:Accounting
+        - businessAdministration:AccountingAndAdvisoryServices
+        - businessAdministration:BrandManagement
+        - businessAdministration:BusinessAnalytics
+        - businessAdministration:CorporateInnovation
+        - businessAdministration:EntrepreneurialStartups
+        - businessAdministration:FamilyBusiness
+        - businessAdministration:Finance
+        - businessAdministration:Fintech
+        - businessAdministration:HealthcareManagementAndConsulting
+        - businessAdministration:Management
+        - businessAdministration:ManagementInformationSystems
+        - businessAdministration:Marketing
+        - businessAdministration:MarketingAnalytics
+        - businessAdministration:SocialInnovationAndEntrepreneurship
+        - businessAdministration:SupplyChainManagement
+        - cellAndMolecularBiology
+        - chemicalEngineering
+        - chemistry
+        - civilEngineering
+        - communicationStudies
+        - computerEngineering
+        - computerScience
+        - computingAndLaw
+        - criminologyAndCriminalJustice
+        - culturalAnthropology
+        - cybersecurity
+        - dataScience
+        - design
+        - economics
+        - electricalEngineering
+        - english
+        - environmentalAndSustainabilityStudies
+        - environmentalEngineering
+        - environmentalScience
+        - environmentalStudies
+        - gameArtAndAnimation
+        - gameDesign
+        - globalAsianStudies
+        - healthScience
+        - history
+        - historyCultureAndLaw
+        - humanServices
+        - industrialEngineering
+        - internationalAffairs
+        - internationalBusiness
+        - internationalBusiness:Accounting
+        - internationalBusiness:AccountingAndAdvisoryServices
+        - internationalBusiness:BrandManagement
+        - internationalBusiness:BusinessAnalytics
+        - internationalBusiness:CorporateInnovation
+        - internationalBusiness:EntrepreneurialStartups
+        - internationalBusiness:FamilyBusiness
+        - internationalBusiness:Finance
+        - internationalBusiness:Fintech
+        - internationalBusiness:HealthcareManagementAndConsulting
+        - internationalBusiness:Management
+        - internationalBusiness:ManagementInformationSystems
+        - internationalBusiness:Marketing
+        - internationalBusiness:MarketingAnalytics
+        - internationalBusiness:SocialInnovationAndEntrepreneurship
+        - internationalBusiness:SupplyChainManagement
+        - journalism
+        - landscapeArchitecture
+        - linguistics
+        - marineBiology
+        - mathematics
+        - mechanicalEngineering
+        - mediaAndScreenStudies
+        - mediaArts
+        - music
+        - musicTechnology
+        - nursing
+        - pharmaceuticalSciences
+        - pharmacy(PharmD)
+        - philosophy
+        - physics
+        - politicalScience
+        - politicsPhilosophyEconomics
+        - psychology
+        - publicHealth
+        - publicRelations
+        - religiousStudies
+        - sociology
+        - spanish
+        - speechLanguagePathologyAndAudiology
+        - theatre
+        maxLength: 255
       role:
         enum:
         - super
@@ -747,19 +1944,15 @@ definitions:
       updated_at:
         example: "2023-09-20T16:34:50Z"
         type: string
-      year:
-        allOf:
-        - $ref: '#/definitions/models.Year'
-        maximum: 6
-        minimum: 1
     required:
     - college
     - email
     - first_name
+    - graduation_cycle
+    - graduation_year
     - last_name
-    - nuid
+    - major0
     - role
-    - year
     type: object
   models.VerifyEmailRequestBody:
     properties:
@@ -786,22 +1979,15 @@ definitions:
     - token
     - verify_new_password
     type: object
-  models.Year:
-    enum:
-    - 1
-    - 2
-    - 3
-    - 4
-    - 5
-    - 6
-    type: integer
-    x-enum-varnames:
-    - First
-    - Second
-    - Third
-    - Fourth
-    - Fifth
-    - Graduate
+  tag.CreateUserTagsBody:
+    properties:
+      tags:
+        items:
+          type: string
+        type: array
+    required:
+    - tags
+    type: object
   utilities.SuccessResponse:
     properties:
       message:
@@ -849,10 +2035,10 @@ paths:
     post:
       consumes:
       - application/json
-      description: Authenticates a user and returns a token upon successful login.
+      description: Logs in a user
       operationId: login-user
       parameters:
-      - description: User credentials for login
+      - description: Login Body
         in: body
         name: loginBody
         required: true
@@ -862,22 +2048,22 @@ paths:
       - application/json
       responses:
         "200":
-          description: Successfully authenticated user
+          description: OK
           schema:
             $ref: '#/definitions/models.User'
         "400":
-          description: Invalid request, check the request body
+          description: Bad Request
           schema:
             $ref: '#/definitions/errors.Error'
         "404":
-          description: User not found, check the provided credentials
+          description: Not Found
           schema:
             $ref: '#/definitions/errors.Error'
         "500":
-          description: Internal server error
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/errors.Error'
-      summary: User Login
+      summary: Logs in a user
       tags:
       - auth
   /auth/logout:
@@ -1721,6 +2907,234 @@ paths:
       summary: Retrieve all members for a club
       tags:
       - club-member
+  /clubs/{clubID}/poc/:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Creates a point of contact associated with a club
+      operationId: create-point-of-contact-by-club
+      parameters:
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.PointOfContact'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Create a point of contact for a club
+      tags:
+      - club-point-of-contact
+  /clubs/{clubID}/poc/{pocID}:
+    delete:
+      description: Delete a point of contact associated with a club
+      operationId: delete-point-of-contact-by-club
+      parameters:
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      - description: Point of Contact ID
+        in: path
+        name: pocID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Delete a point of contact for a club
+      tags:
+      - club-point-of-contact
+    patch:
+      consumes:
+      - multipart/form-data
+      description: Updates a point of contact photo associated with a club
+      operationId: update-point-of-contact-photo-by-club
+      parameters:
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      - description: Point of Contact ID
+        in: path
+        name: pocID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.PointOfContact'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Update a point of contact photo for a club
+      tags:
+      - club-point-of-contact
+    put:
+      consumes:
+      - application/json
+      description: Updates a point of contact associated with a club
+      operationId: update-point-of-contact-by-club
+      parameters:
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      - description: Point of Contact ID
+        in: path
+        name: pocID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.PointOfContact'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Update a point of contact for a club
+      tags:
+      - club-point-of-contact
+  /clubs/{clubID}/pocs/:
+    get:
+      description: Retrieves all point of contacts associated with a club
+      operationId: get-point-of-contacts-by-club
+      parameters:
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.PointOfContact'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve all point of contacts for a club
+      tags:
+      - club-point-of-contact
+  /clubs/{clubID}/pocs/{pocID}:
+    get:
+      description: Retrieves a point of contact associated with a club
+      operationId: get-point-of-contact-by-club
+      parameters:
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      - description: Point of Contact ID
+        in: path
+        name: pocID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.PointOfContact'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve a point of contact for a club
+      tags:
+      - club-point-of-contact
   /clubs/{clubID}/tags/:
     get:
       description: Retrieves all tags associated with a club
@@ -2087,6 +3501,40 @@ paths:
       summary: Retrieve an event
       tags:
       - event
+  /events/{eventID}/hosts:
+    get:
+      description: Retrieves all hosts associated with an event
+      operationId: get-hosts-by-event
+      parameters:
+      - description: Event ID
+        in: path
+        name: eventID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Club'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve all hosts by event
+      tags:
+      - event
   /events/{eventID}/series/:
     delete:
       description: Deletes all series associated with an event
@@ -2319,6 +3767,259 @@ paths:
       summary: Update a series by event ID
       tags:
       - event
+  /events/{eventID}/tags:
+    get:
+      description: Retrieves all tags associated with an event
+      operationId: get-tags-by-event
+      parameters:
+      - description: Event ID
+        in: path
+        name: eventID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Tag'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve all tags by event
+      tags:
+      - event
+  /files/:
+    get:
+      description: Retrieves all files
+      operationId: get-files
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.File'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve all files
+      tags:
+      - file
+    post:
+      consumes:
+      - multipart/form-data
+      description: Creates a file
+      operationId: create-file
+      parameters:
+      - description: File
+        in: body
+        name: file
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateFileRequestBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.File'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Create a file
+      tags:
+      - file
+  /files/:fileID:
+    delete:
+      description: Deletes a file
+      operationId: delete-file
+      parameters:
+      - description: File ID
+        in: path
+        name: fileID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.File'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Delete a file
+      tags:
+      - file
+    get:
+      description: Retrieves a file
+      operationId: get-file
+      parameters:
+      - description: File ID
+        in: path
+        name: fileID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.File'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Retrieve a file
+      tags:
+      - file
+  /pocs/:
+    get:
+      description: Retrieves all point of contacts
+      operationId: get-point-of-contacts
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.PointOfContact'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Retrieve all point of contacts
+      tags:
+      - point of contact
+  /pocs/{pocID}/:
+    get:
+      description: Retrieves a point of contact by id
+      operationId: get-point-of-contact
+      parameters:
+      - description: Point of Contact ID
+        in: path
+        name: pocID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.PointOfContact'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Retrieves a point of contact
+      tags:
+      - point of contact
   /tags:
     get:
       description: Retrieves all tags
@@ -2973,6 +4674,41 @@ paths:
       tags:
       - user
   /users/{userID}/tags/:
+    delete:
+      consumes:
+      - application/json
+      description: Creates tags for a user
+      operationId: create-user-tags
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.Error'
+      summary: Create user tags
+      tags:
+      - user-tag
     get:
       description: Retrieves all tags associated with a user
       operationId: get-tags-by-user
@@ -3021,6 +4757,12 @@ paths:
         name: userID
         required: true
         type: string
+      - description: User Tags Body
+        in: body
+        name: userTagsBody
+        required: true
+        schema:
+          $ref: '#/definitions/tag.CreateUserTagsBody'
       produces:
       - application/json
       responses:
