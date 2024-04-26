@@ -74,7 +74,7 @@ func (f *FileController) GetFile(c *fiber.Ctx) error {
 // @Produce		json
 // @Param		file	body	models.CreateFileRequestBody	true	"File"
 // @Success		201	  {object}	  models.File
-// @Failure     400   {object}    errors.Erro
+// @Failure     400   {object}    errors.Error
 // @Failure     401   {object}    errors.Error
 // @Failure     404   {object}    errors.Error
 // @Failure     500   {object}    errors.Error
