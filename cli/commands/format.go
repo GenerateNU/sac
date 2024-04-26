@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"slices"
 
 	"github.com/urfave/cli/v2"
 )
@@ -33,8 +34,8 @@ func FormatCommand() *cli.Command {
 					}
 
 					target := c.String("target")
-					if target != "web" && target != "mobile" {
-						return cli.Exit("Invalid frontend type: must be 'web' or 'mobile'", 1)
+					if !slices.Contains(FRONTEND_CI_TARGETS, target) {
+						return cli.Exit("Invalid frontend type: must be 'web', 'mobile', 'dashboard', or 'lib'", 1)
 					}
 
 					err := FormatFrontend(target)
@@ -69,14 +70,24 @@ func FormatCommand() *cli.Command {
 }
 
 func FormatFrontend(target string) error {
-	switch target {
-	case "web":
-		return FormatWeb()
-	case "mobile":
-		return FormatMobile()
-	default:
-		return FormatMobile()
+	dir, ok := TARGET_DIRS[target]
+	if !ok {
+		return cli.Exit("Invalid frontend type", 1)
 	}
+
+	cmd := exec.Command("yarn", "run", "format")
+
+	cmd.Dir = dir
+
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func FormatBackend() error {
@@ -91,24 +102,5 @@ func FormatBackend() error {
 	}
 
 	fmt.Println("Backend formatted")
-	return nil
-}
-
-func FormatWeb() error {
-	return nil
-}
-
-func FormatMobile() error {
-	mobileCmd := exec.Command("yarn", "run", "format")
-	mobileCmd.Dir = FRONTEND_DIR + "/mobile"
-
-	mobileCmd.Stdout = os.Stdout
-	mobileCmd.Stderr = os.Stderr
-	mobileCmd.Stdin = os.Stdin
-
-	if err := mobileCmd.Run(); err != nil {
-		return err
-	}
-
 	return nil
 }
