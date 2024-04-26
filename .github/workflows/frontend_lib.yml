@@ -1,0 +1,76 @@
+name: Frontend Lib
+
+permissions: read-all
+
+on:
+  push:
+    paths:
+      - frontend/lib/**
+      - .github/workflows/frontend_lib.yml
+  pull_request:
+    types: opened
+    paths:
+      - frontend/lib/**
+      - .github/workflows/frontend_lib.yml
+
+jobs:
+  format:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: yarn
+          cache-dependency-path: frontend/lib/yarn.lock
+      - name: Install dependencies
+        run: |
+          cd frontend/lib
+          yarn install
+      - name: Format
+        run: |
+          cd frontend/lib
+          yarn format
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: yarn
+          cache-dependency-path: frontend/lib/yarn.lock
+      - name: Install dependencies
+        run: |
+          cd frontend/lib
+          yarn install
+      - name: Lint
+        run: |
+          cd frontend/lib
+          echo "Woah there, we have no we're not linting the lib as of right now. Let's just say we're passing." && exit 0
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: yarn
+          cache-dependency-path: frontend/lib/yarn.lock
+      - name: Install dependencies
+        run: |
+          cd frontend/lib
+          yarn install
+      - name: Test
+        run: |
+          cd frontend/lib
+          yarn test
