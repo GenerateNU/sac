@@ -3,6 +3,7 @@ package commands
 import (
 	"os"
 	"os/exec"
+	"slices"
 
 	"github.com/urfave/cli/v2"
 )
@@ -14,9 +15,9 @@ func FrontendCommand() *cli.Command {
 		Category: "Development",
 		Subcommands: []*cli.Command{
 			{
-				Name:  "mobile",
+				Name:    "mobile",
 				Aliases: []string{"m"},
-				Usage: "Run the mobile frontend",
+				Usage:   "Run the mobile frontend",
 				Flags: []cli.Flag{
 					&cli.StringFlag{
 						Name:  "platform",
@@ -29,21 +30,37 @@ func FrontendCommand() *cli.Command {
 				},
 			},
 			{
-				Name:  "web",
+				Name:    "web",
 				Aliases: []string{"w"},
-				Usage: "Run the web frontend",
+				Usage:   "Run the web frontend",
 				Action: func(c *cli.Context) error {
 					return RunFE("web", "")
 				},
 			},
 			{
-				Name:  "dashboard",
+				Name:    "dashboard",
 				Aliases: []string{"d"},
-				Usage: "Run the dashboard frontend",
+				Usage:   "Run the dashboard frontend",
 				Action: func(c *cli.Context) error {
 					return RunFE("dashboard", "")
 				},
 			},
+		},
+		Action: func(c *cli.Context) error {
+			if c.Args().Len() > 0 {
+				return cli.Exit("Invalid arguments", 1)
+			}
+
+			if !slices.Contains(FRONTEND_RUN_TARGETS, c.String("target")) {
+				return cli.Exit("Invalid frontend type: must be 'web', 'mobile', or 'dashboard'", 1)
+			}
+
+			err := RunFE(c.String("type"), c.String("platform"))
+			if err != nil {
+				return cli.Exit(err.Error(), 1)
+			}
+
+			return nil
 		},
 	}
 
@@ -65,7 +82,7 @@ func RunFE(feType string, platform string) error {
 
 func RunMobileFE(platform string) error {
 	mobileCmd := exec.Command("yarn", "run", platform)
-	mobileCmd.Dir = FRONTEND_DIR + "/mobile"
+	mobileCmd.Dir = MOBILE_DIR
 
 	mobileCmd.Stdout = os.Stdout
 	mobileCmd.Stderr = os.Stderr
@@ -79,8 +96,8 @@ func RunMobileFE(platform string) error {
 }
 
 func RunWebFE() error {
-	webCmd := exec.Command("yarn", "run", "dev")
-	webCmd.Dir = FRONTEND_DIR + "/web"
+	webCmd := exec.Command("yarn", "run")
+	webCmd.Dir = WEB_DIR
 
 	webCmd.Stdout = os.Stdout
 	webCmd.Stderr = os.Stderr
@@ -94,8 +111,8 @@ func RunWebFE() error {
 }
 
 func RunDashboardFE() error {
-	dashboardCmd := exec.Command("yarn", "run", "dev")
-	dashboardCmd.Dir = FRONTEND_DIR + "/dashboard"
+	dashboardCmd := exec.Command("yarn", "run")
+	dashboardCmd.Dir = DASHBOARD_DIR
 
 	dashboardCmd.Stdout = os.Stdout
 	dashboardCmd.Stderr = os.Stderr
