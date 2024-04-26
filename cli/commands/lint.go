@@ -113,7 +113,7 @@ func LintMobile(fix bool) error {
 	} else {
 		mobileCmd = exec.Command("yarn", "run", "lint")
 	}
-	mobileCmd.Dir = FRONTEND_DIR + "/sac-mobile"
+	mobileCmd.Dir = FRONTEND_DIR + "/mobile"
 
 	mobileCmd.Stdout = os.Stdout
 	mobileCmd.Stderr = os.Stderr

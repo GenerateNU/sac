@@ -54,7 +54,7 @@
 1. **Create client build**
 
    ```console
-   cd frotend/sac-mobile
+   cd frotend/mobile
    eas login
    eas build:configure
    # ios
@@ -69,7 +69,7 @@
 3. **Start the client**
 
    ```console
-   cd frontend/sac-mobile
+   cd frontend/mobile
    npx expo start --dev-client
    ```
 
