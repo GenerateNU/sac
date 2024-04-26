@@ -9,11 +9,11 @@ updates:
     schedule:
       interval: weekly
   - package-ecosystem: npm
-    directory: ./frontend/sac-mobile/
+    directory: ./frontend/mobile/
     schedule:
       interval: weekly
   - package-ecosystem: npm
-    directory: ./frontend/sac-web/
+    directory: ./frontend/web/
     schedule:
       interval: weekly
   - package-ecosystem: cargo
