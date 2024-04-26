@@ -17,7 +17,7 @@
     "react-dom": "^18",
     "react-redux": "^9.1.1",
     "@sac/lib": "*",
-    "zod": "^3.23.3"
+    "zod": "^3.23.4"
   },
   "devDependencies": {
     "@types/node": "^20",
