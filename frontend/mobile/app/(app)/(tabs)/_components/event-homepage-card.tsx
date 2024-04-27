@@ -8,7 +8,6 @@ import { UseQueryResult } from '@tanstack/react-query';
 
 import BluePin from '@/assets/images/svg/blue-pin.svg';
 import Pin from '@/assets/images/svg/pin.svg';
-// import { useClub } from '@/hooks/use-club';
 import { useEventTags } from '@/hooks/use-event';
 import { isToday, randomEventColorData } from '@/lib/utils';
 import { Event } from '@/types/event';
