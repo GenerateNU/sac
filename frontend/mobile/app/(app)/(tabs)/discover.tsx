@@ -23,6 +23,7 @@ const Discover = () => {
         isLoading: eIsLoading,
         error: eError
     } = useEventsQuery({});
+
     const {
         data: clubs,
         isLoading: cIsLoading,
