@@ -10,7 +10,7 @@ import { Event } from '@/types/event';
 import { EventHomePageCard } from './event-homepage-card';
 
 const UpcomingEvents = () => {
-    const { data: events, isLoading, error } = useEventsQuery();
+    const { data: events, isLoading, error } = useEventsQuery({});
 
     if (isLoading) {
         return <Text>Loading...</Text>;

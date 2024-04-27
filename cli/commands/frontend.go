@@ -13,18 +13,37 @@ func FrontendCommand() *cli.Command {
 		Name:     "fe",
 		Usage:    "Run the frontend",
 		Category: "Development",
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:    "target",
-				Aliases: []string{"t"},
-				Value:   "mobile",
-				Usage:   "Run a specific frontend type (web or mobile)",
+		Subcommands: []*cli.Command{
+			{
+				Name:    "mobile",
+				Aliases: []string{"m"},
+				Usage:   "Run the mobile frontend",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:  "platform",
+						Usage: "The platform to run the mobile frontend on",
+						Value: "ios",
+					},
+				},
+				Action: func(c *cli.Context) error {
+					return RunFE("mobile", c.String("platform"))
+				},
 			},
-			&cli.StringFlag{
-				Name:    "platform",
-				Aliases: []string{"p"},
-				Usage:   "Run a specific platform for mobile frontend",
-				Value:   "ios",
+			{
+				Name:    "web",
+				Aliases: []string{"w"},
+				Usage:   "Run the web frontend",
+				Action: func(c *cli.Context) error {
+					return RunFE("web", "")
+				},
+			},
+			{
+				Name:    "dashboard",
+				Aliases: []string{"d"},
+				Usage:   "Run the dashboard frontend",
+				Action: func(c *cli.Context) error {
+					return RunFE("dashboard", "")
+				},
 			},
 		},
 		Action: func(c *cli.Context) error {

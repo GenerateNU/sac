@@ -1,8 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, Image, Pressable, Text, View } from 'react-native';
 
-import { router } from 'expo-router';
-
 import { useClubQuery } from '@sac/lib';
 import { UseQueryResult } from '@tanstack/react-query';
 
@@ -13,6 +11,7 @@ import { isToday, randomEventColorData } from '@/lib/utils';
 import { Event } from '@/types/event';
 import { Tag } from '@/types/tag';
 import { uuid } from '@/types/uuid';
+import { router } from 'expo-router';
 
 type EventHomePageCardHorizontalProps = {
     event: Event;
@@ -34,7 +33,7 @@ const EventHomePageCardHorizontal = ({
 
     const randomEventColor =
         randomEventColorData[
-            Math.round(Math.random() * (randomEventColorData.length - 1))
+        Math.round(Math.random() * (randomEventColorData.length - 1))
         ];
 
     return (
@@ -105,7 +104,7 @@ const EventHomePageCard = ({ event }: { event: Event }) => {
 
     const randomEventColor =
         randomEventColorData[
-            Math.round(Math.random() * (randomEventColorData.length - 1))
+        Math.round(Math.random() * (randomEventColorData.length - 1))
         ];
 
     return (

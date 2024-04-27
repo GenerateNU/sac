@@ -32,4 +32,6 @@ export type CreatePointOfContactRequestBody = z.infer<
 export type UpdatePointOfContactRequestBody = z.infer<
   typeof updatePointOfContactRequestBodySchema
 >;
+
+// Types:
 export type PointOfContact = z.infer<typeof pointOfContactSchema>;

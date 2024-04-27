@@ -22,12 +22,13 @@ const Discover = () => {
         data: events,
         isLoading: eIsLoading,
         error: eError
-    } = useEventsQuery();
+    } = useEventsQuery({});
+
     const {
         data: clubs,
         isLoading: cIsLoading,
         error: cError
-    } = useClubsQuery();
+    } = useClubsQuery({});
 
     if (eIsLoading || cIsLoading) {
         return <Text>Loading...</Text>;

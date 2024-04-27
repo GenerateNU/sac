@@ -11,8 +11,8 @@ SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 COMMAND_NAME="sac"
 
 if command -v "$COMMAND_NAME" >/dev/null 2>&1; then
-	echo "Command '$COMMAND_NAME' is already installed. Exiting."
-	exit 1
+	echo "Command '$COMMAND_NAME' is already installed. Removing it..."
+	rm "$(command -v "$COMMAND_NAME")"
 fi
 
 go build -o "sac" "cli/main.go"

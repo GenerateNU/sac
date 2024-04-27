@@ -1,8 +1,8 @@
 import React, { forwardRef, useEffect, useState } from 'react';
 import { Animated, Image, View } from 'react-native';
 
-import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet';
-import { useCreateUserClubFollowingMutation } from '@sac/lib';
+import BottomSheet from '@gorhom/bottom-sheet';
+import { useCreateUserFollowingMutation } from '@sac/lib';
 
 import { Button } from '@/components/button';
 import { useDeleteClubFollowing, useUserFollowing } from '@/hooks/use-user';
@@ -28,7 +28,7 @@ const HeaderImage = forwardRef<Ref, HeaderImageProps>(
         // const followClub = useCreateClubFollowing();
         const unfollowClub = useDeleteClubFollowing();
         const [createClubUserFollowing, { data, isLoading, error }] =
-            useCreateUserClubFollowingMutation();
+            useCreateUserFollowingMutation();
         const userFollowing = useUserFollowing(userID);
         const [buttonClicked, setButtonClicked] = useState(false);
 

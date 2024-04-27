@@ -4,10 +4,11 @@ import { FlatList } from 'react-native-gesture-handler';
 
 import { Club, useClubsQuery } from '@sac/lib';
 
+// import { useClubs } from '@/hooks/use-club';
 import { ClubHomePageCard } from './club-homepage-card';
 
 const RecommendedClubs = () => {
-    const { data: clubs, isLoading, error } = useClubsQuery();
+    const { data: clubs, isLoading, error } = useClubsQuery({});
 
     if (isLoading) {
         return <Text>Loading...</Text>;

@@ -1,27 +1,33 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-import { rootModelSchema } from "./root";
+import { rootModelSchema } from './root';
 
-// TODO: each one needs a svg icons
-const ContactTypeValues = [
-  // 'facebook',
-  // 'instagram',
-  // 'twitter',
-  // 'linkedin',
-  // 'youtube',
-  // 'github',
-  "slack",
-  // 'discord',
-  "email",
-  // 'customSite'
-] as const;
+// Enums:
+const contactTypeEnum = z.enum([
+  'facebook',
+  'instagram',
+  'x',
+  'linkedin',
+  'youtube',
+  'github',
+  'slack',
+  'discord',
+  'email',
+  'customSite'
+]);
 
-export type ContactType = (typeof ContactTypeValues)[number];
-
-const contactSchemaIntermediate = z.object({
-  type: z.enum(ContactTypeValues),
-  content: z.string().max(255),
+// Schemas:
+export const createContactRequestBodySchema = z.object({
+  type: contactTypeEnum,
+  content: z.string().max(255)
 });
 
-export const contactSchema = contactSchemaIntermediate.merge(rootModelSchema);
+export const contactSchema =
+  createContactRequestBodySchema.merge(rootModelSchema);
+
+// Types:
+export type ContactType = z.infer<typeof contactTypeEnum>;
+export type CreateContactRequestBody = z.infer<
+  typeof createContactRequestBodySchema
+>;
 export type Contact = z.infer<typeof contactSchema>;

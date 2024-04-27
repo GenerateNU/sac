@@ -1,6 +1,8 @@
 import React from 'react';
 import { FlatList, Text, View } from 'react-native';
 
+// import { useClubs } from '@/hooks/use-club';
+// import { useEvents } from '@/hooks/use-event';
 import { Club, Event, useClubsQuery, useEventsQuery } from '@sac/lib';
 
 import { HomepageFAQ } from '@/lib/const';
@@ -18,12 +20,12 @@ const HomepageList = () => {
         data: events,
         isLoading: eIsLoading,
         error: eError
-    } = useEventsQuery();
+    } = useEventsQuery({});
     const {
         data: clubs,
         isLoading: cIsLoading,
         error: cError
-    } = useClubsQuery();
+    } = useClubsQuery({});
 
     if (eIsLoading || cIsLoading) {
         return <Text>Loading...</Text>;
