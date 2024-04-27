@@ -1,14 +1,11 @@
 import React, { forwardRef, useEffect, useState } from 'react';
 import { Animated, Image, View } from 'react-native';
 
-import { Button } from '@/components/button';
-import {
-    useCreateClubFollowing,
-    useDeleteClubFollowing,
-    useUserFollowing
-} from '@/hooks/use-user';
-import { useCreateUserFollowingMutation } from '@sac/lib';
 import BottomSheet from '@gorhom/bottom-sheet';
+import { useCreateUserFollowingMutation } from '@sac/lib';
+
+import { Button } from '@/components/button';
+import { useDeleteClubFollowing, useUserFollowing } from '@/hooks/use-user';
 
 const HEADER_HEIGHT = 175;
 const LOGO_HEIGHT = 100;

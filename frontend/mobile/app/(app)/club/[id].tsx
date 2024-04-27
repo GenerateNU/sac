@@ -10,9 +10,9 @@ import {
 
 import { useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useClubQuery, useClubTagsQuery } from '@sac/lib';
 
 import BottomSheet from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheet/BottomSheet';
+import { useClubQuery } from '@sac/lib';
 
 import { TagList } from '@/components/all-tags';
 import { Description } from '@/components/description';
@@ -60,7 +60,7 @@ const Club = () => {
 
     const randomEventColor =
         randomEventColorData[
-        Math.round(Math.random() * (randomEventColorData.length - 1))
+            Math.round(Math.random() * (randomEventColorData.length - 1))
         ];
 
     if (isLoading) {

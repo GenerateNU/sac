@@ -11,6 +11,6 @@ export const rootModelSchema = z.object({
 const paginationQueryParams = z.object({
     page: z.number().int().positive().optional(),
     limit: z.number().int().positive().optional()
-});
+}).optional();
 
 export type PaginationQueryParams = z.infer<typeof paginationQueryParams>;

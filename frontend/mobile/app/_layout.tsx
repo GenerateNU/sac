@@ -10,10 +10,11 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { store } from '@/store/store'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { useAuthStore } from '@/hooks/use-auth';
+import { store } from '@/store/store';
+
 export {
     // Catch any errors thrown by the Layout component.
     ErrorBoundary

@@ -2,14 +2,15 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 
-import { useEvents } from '@/hooks/use-event';
+import { useEventsQuery } from '@sac/lib';
+
 import { isToday } from '@/lib/utils';
 import { Event } from '@/types/event';
 
 import { EventHomePageCard } from './event-homepage-card';
 
 const UpcomingEvents = () => {
-    const { data: events, isLoading, error } = useEventsQuery();
+    const { data: events, isLoading, error } = useEventsQuery({});
 
     if (isLoading) {
         return <Text>Loading...</Text>;

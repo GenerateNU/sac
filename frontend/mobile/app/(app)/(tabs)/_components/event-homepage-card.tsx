@@ -35,7 +35,7 @@ const EventHomePageCardHorizontal = ({
 
     const randomEventColor =
         randomEventColorData[
-        Math.round(Math.random() * (randomEventColorData.length - 1))
+            Math.round(Math.random() * (randomEventColorData.length - 1))
         ];
 
     return (
@@ -106,7 +106,7 @@ const EventHomePageCard = ({ event }: { event: Event }) => {
 
     const randomEventColor =
         randomEventColorData[
-        Math.round(Math.random() * (randomEventColorData.length - 1))
+            Math.round(Math.random() * (randomEventColorData.length - 1))
         ];
 
     return (

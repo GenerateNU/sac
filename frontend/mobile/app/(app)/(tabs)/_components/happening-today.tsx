@@ -2,21 +2,22 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 
-import { useEvents } from '@/hooks/use-event';
+import { useEventsQuery } from '@sac/lib';
+
 import { isToday } from '@/lib/utils';
 import { Event } from '@/types/event';
 
 import { EventHomePageCardHorizontal } from './event-homepage-card';
 
 const HappeningToday = () => {
-    const { data: events, isLoading, error } = useEvents();
+    const { data: events, isLoading, error } = useEventsQuery({});
 
     if (isLoading) {
         return <Text>Loading...</Text>;
     }
 
     if (error) {
-        return <Text>Error: {error.message}</Text>;
+        return <Text>Error</Text>;
     }
 
     const renderEvents = ({ item }: { item: Event }) => {

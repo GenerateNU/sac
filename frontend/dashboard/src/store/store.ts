@@ -1,6 +1,6 @@
-import { configureStore } from '@reduxjs/toolkit'
-import { useDispatch, useSelector, useStore } from 'react-redux';
-import { baseApi } from '@sac/lib';
+import { configureStore } from "@reduxjs/toolkit";
+import { useDispatch, useSelector, useStore } from "react-redux";
+import { baseApi } from "@sac/lib";
 
 export const makeStore = () => {
   return configureStore({
@@ -9,9 +9,8 @@ export const makeStore = () => {
     },
 
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware()
-        .concat(baseApi.middleware)
-  })
+      getDefaultMiddleware().concat(baseApi.middleware),
+  });
 };
 
 // Redux types:
