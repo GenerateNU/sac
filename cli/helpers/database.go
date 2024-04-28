@@ -1,7 +1,6 @@
-package commands
+package helpers
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
 	"os"
@@ -10,79 +9,15 @@ import (
 	"sync"
 
 	"github.com/GenerateNU/sac/backend/config"
-	_ "github.com/lib/pq"
-	"github.com/urfave/cli/v2"
+	"github.com/lib/pq"
 )
 
-func DBCommand() *cli.Command {
-	command := &cli.Command{
-		Name:  "db",
-		Usage: "Database management",
-		Subcommands: []*cli.Command{
-			{
-				Name:  "init",
-				Usage: "Initialize the database",
-				Action: func(c *cli.Context) error {
-					err := InitDB()
-					if err != nil {
-						return cli.Exit(err.Error(), 1)
-					}
-
-					return nil
-				},
-			},
-			{
-				Name:  "down",
-				Usage: "Migrate down the database",
-				Action: func(c *cli.Context) error {
-					err := DownDB()
-					if err != nil {
-						return cli.Exit(err.Error(), 1)
-					}
-
-					return nil
-				},
-			},
-			{
-				Name:  "reset",
-				Usage: "Reset the database",
-				Action: func(c *cli.Context) error {
-					err := DownDB()
-					if err != nil {
-						return cli.Exit(err.Error(), 1)
-					}
-
-					err = InitDB()
-					if err != nil {
-						return cli.Exit(err.Error(), 1)
-					}
-
-					return nil
-				},
-			},
-			{
-				Name:  "clean-tests",
-				Usage: "Remove databases used for testing",
-				Action: func(c *cli.Context) error {
-					return CleanTestDBs(context.Background())
-				},
-			},
-		},
-	}
-
-	return command
-}
-
 func InitDB() error {
-	cmd := exec.Command("./scripts/init_db.sh")
-
-	cmd.Dir = ROOT_DIR
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err := cmd.Run()
+	err := Execute(exec.Command("./scripts/init_db.sh"), ROOT_DIR)
 	if err != nil {
 		return fmt.Errorf("error initializing database: %w", err)
 	}
+	
 	return nil
 }
 
@@ -102,12 +37,11 @@ func DownDB() error {
 	if err != nil {
 		return fmt.Errorf("error running down migrations: %w", err)
 	}
+
 	return nil
 }
 
-func CleanTestDBs(ctx context.Context) error {
-	fmt.Println("Cleaning test databases")
-
+func CleanTestDBs() error {
 	config, err := config.GetConfiguration(CONFIG, false)
 	if err != nil {
 		return err
@@ -162,6 +96,59 @@ func CleanTestDBs(ctx context.Context) error {
 
 	if failed > 0 {
 		return fmt.Errorf("failed to drop %d database(s)", failed)
+	}
+
+	return nil
+}
+
+func InsertDB() error {
+	config, err := config.GetConfiguration(CONFIG, false)
+	if err != nil {
+		return err
+	}
+
+	db, err := sql.Open("postgres", config.Database.WithDb())
+	if err != nil {
+		return err
+	}
+
+	defer db.Close()
+
+	var exists bool
+
+	err = db.QueryRow("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' LIMIT 1);").Scan(&exists)
+	if err != nil {
+		return err
+	}
+
+	if !exists {
+		fmt.Println("Database does not exist or has no tables. Running database migration.")
+
+		migrateCmd := exec.Command("go", "run", "main.go", "--only-migrate")
+
+		migrateCmd.Dir = BACKEND_DIR
+
+		if err := migrateCmd.Run(); err != nil {
+			return fmt.Errorf("error running migration: %w", err)
+		}
+	} else {
+		fmt.Println("Database exists with tables.")
+	}
+
+	migrationSQL, err := os.ReadFile(MOCK_FILE)
+	if err != nil {
+		return fmt.Errorf("error reading migration file: %w", err)
+	}
+
+	_, err = db.Exec(string(migrationSQL))
+	if err != nil {
+		if pqErr, ok := err.(*pq.Error); ok {
+			fmt.Println("PostgreSQL Error:")
+			fmt.Println("Code:", pqErr.Code)
+			fmt.Println("Message:", pqErr.Message)
+		} else {
+			return fmt.Errorf("error executing migration: %w", err)
+		}
 	}
 
 	return nil

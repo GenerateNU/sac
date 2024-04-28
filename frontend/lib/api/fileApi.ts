@@ -1,8 +1,9 @@
 import { z } from 'zod';
 
-import { baseApi, handleQueryParams } from '../api/base';
 import { File, fileSchema } from '@/types/file';
 import { PaginationQueryParams } from '@/types/root';
+
+import { baseApi, handleQueryParams } from '../api/base';
 
 const FILE_API_BASE_URL = '/files';
 

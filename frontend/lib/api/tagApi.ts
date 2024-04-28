@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-import { baseApi, handleQueryParams } from '../api/base';
 import { PaginationQueryParams } from '@/types/root';
 import {
     CreateTagRequestBody,
@@ -8,6 +7,8 @@ import {
     UpdateTagRequestBody,
     tagSchema
 } from '@/types/tag';
+
+import { baseApi, handleQueryParams } from '../api/base';
 
 const TAG_API_BASE_URL = '/tags';
 

@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-import { baseApi, handleQueryParams } from '../api/base';
 import {
     Category,
     CreateCategoryRequestBody,
@@ -8,6 +7,8 @@ import {
 } from '@/types/category';
 import { PaginationQueryParams } from '@/types/root';
 import { Tag } from '@/types/tag';
+
+import { baseApi, handleQueryParams } from '../api/base';
 
 const CATEGORY_API_BASE_URL = '/categories';
 
@@ -38,9 +39,9 @@ export const categoryApi = baseApi.injectEndpoints({
             providesTags: (result, _, _arg) =>
                 result
                     ? result.map((category) => ({
-                        type: 'Category',
-                        id: category.id
-                    }))
+                          type: 'Category',
+                          id: category.id
+                      }))
                     : ['Category']
         }),
         category: builder.query<Category, string>({

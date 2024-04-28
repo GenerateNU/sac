@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 )
 
+
 func GetRootDir() (string, error) {
 	// Get the current working directory
 	currentDir, err := os.Getwd()
