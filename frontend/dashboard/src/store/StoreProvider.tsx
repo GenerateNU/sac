@@ -5,7 +5,7 @@ import { AppStore, makeStore } from "./store";
 import { Provider } from "react-redux";
 
 type StoreProviderProps = {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }
 
 /**
