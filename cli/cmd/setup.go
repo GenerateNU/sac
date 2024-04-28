@@ -8,7 +8,6 @@ import (
 
 var setupCmd = &cobra.Command{
 	Use:   "setup",
-	Aliases: []string{"s"},
 	Short: "Installs and sets up the project",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Not implemented")

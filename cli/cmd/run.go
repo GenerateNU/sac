@@ -10,9 +10,9 @@ import (
 )
 
 var runCmd = &cobra.Command{
-	Use:   "run",
+	Use:     "run",
 	Aliases: []string{"r"},
-	Short: "Run the backend or frontend",
+	Short:   "Run commands",
 }
 
 func init() {
@@ -29,10 +29,10 @@ func init() {
 }
 
 var runBeCmd = &cobra.Command{
-	Use:   "backend",
-	Short: "Run the backend",
+	Use:     "backend",
+	Short:   "Run the backend",
 	Aliases: []string{"be"},
-	Args: cobra.NoArgs,
+	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := helpers.Execute(exec.Command("go", "run", "main.go"), helpers.BACKEND_DIR)
 		if err != nil {
@@ -43,16 +43,16 @@ var runBeCmd = &cobra.Command{
 }
 
 var runFeCmd = &cobra.Command{
-	Use:   "frontend",
-	Short: "Run the frontend",
+	Use:     "frontend",
+	Short:   "Frontend run commands",
 	Aliases: []string{"fe"},
 }
 
 var runWebCmd = &cobra.Command{
-	Use:   "web",
-	Short: "Run the web frontend",
+	Use:     "web",
+	Short:   "Run the web frontend",
 	Aliases: []string{"w"},
-	Args: cobra.NoArgs,
+	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := helpers.Execute(exec.Command("yarn", "run", "dev"), helpers.WEB_DIR)
 		if err != nil {
@@ -63,10 +63,10 @@ var runWebCmd = &cobra.Command{
 }
 
 var runMobileCmd = &cobra.Command{
-	Use:   "mobile",
-	Short: "Run the mobile frontend",
+	Use:     "mobile",
+	Short:   "Run the mobile frontend",
 	Aliases: []string{"m"},
-	Args: cobra.NoArgs,
+	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		platform, _ := cmd.Flags().GetString("platform")
 
@@ -81,10 +81,10 @@ var runMobileCmd = &cobra.Command{
 }
 
 var runDashboardCmd = &cobra.Command{
-	Use:   "dashboard",
-	Short: "Run the dashboard frontend",
+	Use:     "dashboard",
+	Short:   "Run the dashboard frontend",
 	Aliases: []string{"d"},
-	Args: cobra.NoArgs,
+	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := helpers.Execute(exec.Command("yarn", "run", "dev"), helpers.DASHBOARD_DIR)
 		if err != nil {

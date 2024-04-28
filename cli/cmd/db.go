@@ -9,9 +9,9 @@ import (
 )
 
 var dbCmd = &cobra.Command{
-	Use:   "database",
+	Use:     "database",
 	Aliases: []string{"db"},
-	Short: "Database management commands",
+	Short:   "Database management commands",
 }
 
 func init() {

@@ -10,46 +10,36 @@ import (
 )
 
 var lintCmd = &cobra.Command{
-	Use:   "lint",
+	Use:     "lint",
 	Aliases: []string{"l"},
-	Short: "Linting commands",
+	Short:   "Linting commands",
 }
 
 func init() {
 	rootCmd.AddCommand(lintCmd)
 	lintCmd.AddCommand(lintFrontendCmd)
 	lintCmd.AddCommand(lintBackendCmd)
+	lintCmd.AddCommand(lintCliCmd)
 
 	lintFrontendCmd.AddCommand(lintWebCmd)
 	lintFrontendCmd.AddCommand(lintMobileCmd)
 	lintFrontendCmd.AddCommand(lintDashboardCmd)
 	lintFrontendCmd.AddCommand(lintLibCmd)
-
-	lintWebCmd.Flags().BoolP("fix", "f", false, "Fix linting errors")
-	lintMobileCmd.Flags().BoolP("fix", "f", false, "Fix linting errors")
-	lintDashboardCmd.Flags().BoolP("fix", "f", false, "Fix linting errors")
 }
 
 var lintFrontendCmd = &cobra.Command{
-	Use:   "frontend",
+	Use:     "frontend",
 	Aliases: []string{"fe"},
-	Short: "Frontend linting commands",
+	Short:   "Frontend linting commands",
 }
 
 var lintWebCmd = &cobra.Command{
-	Use:   "web",
-	Short: "Frontend web linting commands",
+	Use:     "web",
+	Short:   "Lints the frontend web",
 	Aliases: []string{"w"},
-	Args:  cobra.NoArgs,
+	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		fix, _ := cmd.Flags().GetBool("fix")
-
-		var command string
-		if fix {
-			command = " --fix"
-		}
-
-		err := helpers.Execute(exec.Command("yarn", "run", "lint"+command), helpers.WEB_DIR)
+		err := helpers.Execute(exec.Command("yarn", "run", "lint", "--fix"), helpers.WEB_DIR)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
@@ -58,19 +48,12 @@ var lintWebCmd = &cobra.Command{
 }
 
 var lintMobileCmd = &cobra.Command{
-	Use:   "mobile",
-	Short: "Frontend mobile linting commands",
+	Use:     "mobile",
+	Short:   "Lints the frontend mobile",
 	Aliases: []string{"m"},
-	Args:  cobra.NoArgs,
+	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		fix, _ := cmd.Flags().GetBool("fix")
-
-		var command string
-		if fix {
-			command = " --fix"
-		}
-
-		err := helpers.Execute(exec.Command("yarn", "run", "lint"+command), helpers.MOBILE_DIR)
+		err := helpers.Execute(exec.Command("yarn", "run", "lint", "--fix"), helpers.MOBILE_DIR)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
@@ -79,19 +62,12 @@ var lintMobileCmd = &cobra.Command{
 }
 
 var lintDashboardCmd = &cobra.Command{
-	Use:   "dashboard",
-	Short: "Frontend dashboard linting commands",
+	Use:     "dashboard",
+	Short:   "Lints the frontend dashboard",
 	Aliases: []string{"d"},
-	Args:  cobra.NoArgs,
+	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		fix, _ := cmd.Flags().GetBool("fix")
-
-		var command string
-		if fix {
-			command = " --fix"
-		}
-
-		err := helpers.Execute(exec.Command("yarn", "run", "lint"+command), helpers.DASHBOARD_DIR)
+		err := helpers.Execute(exec.Command("yarn", "run", "lint", "--fix"), helpers.DASHBOARD_DIR)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
@@ -100,19 +76,12 @@ var lintDashboardCmd = &cobra.Command{
 }
 
 var lintLibCmd = &cobra.Command{
-	Use:   "lib",
-	Short: "Frontend lib linting commands",
+	Use:     "lib",
+	Short:   "Lints the lib directory",
 	Aliases: []string{"l"},
-	Args:  cobra.NoArgs,
+	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		fix, _ := cmd.Flags().GetBool("fix")
-
-		var command string
-		if fix {
-			command = " --fix"
-		}
-
-		err := helpers.Execute(exec.Command("yarn", "run", "lint"+command), helpers.LIB_DIR)
+		err := helpers.Execute(exec.Command("yarn", "run", "lint", "--fix"), helpers.LIB_DIR)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
@@ -121,13 +90,39 @@ var lintLibCmd = &cobra.Command{
 }
 
 var lintBackendCmd = &cobra.Command{
-	Use:   "backend",
-	Short: "Backend linting commands",
+	Use:     "backend",
+	Short:   "Lints the backend",
 	Aliases: []string{"be"},
+	Args:    cobra.NoArgs,
+	Run: func(cmd *cobra.Command, args []string) {
+		_, err := exec.LookPath("golangci-lint")
+		if err != nil {
+			fmt.Println("golangci-lint is not installed. Please install it by running the following command:")
+			fmt.Println("curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.57.2")
+			os.Exit(1)
+		}
+
+		err = helpers.Execute(exec.Command("golangci-lint", "run", "--fix"), helpers.BACKEND_DIR)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	},
+}
+
+var lintCliCmd = &cobra.Command{
+	Use:   "cli",
+	Short: "Lints the CLI",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: golangci-lint 
-		err := helpers.Execute(exec.Command("go", "lint", "./..."), helpers.BACKEND_DIR)
+		_, err := exec.LookPath("golangci-lint")
+		if err != nil {
+			fmt.Println("golangci-lint is not installed. Please install it by running the following command:")
+			fmt.Println("curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.57.2")
+			os.Exit(1)
+		}
+
+		err = helpers.Execute(exec.Command("golangci-lint", "run", "--fix"), helpers.CLI_DIR)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

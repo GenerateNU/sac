@@ -14,8 +14,8 @@ var rootCmd = &cobra.Command{
 	Use:   "sac",
 	Short: "SAC manages the GenerateNU Student Activity Calendar platform",
 	RunE: func(cmd *cobra.Command, args []string) error {
-        return cmd.Help()
-    },
+		return cmd.Help()
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

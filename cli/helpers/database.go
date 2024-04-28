@@ -17,7 +17,7 @@ func InitDB() error {
 	if err != nil {
 		return fmt.Errorf("error initializing database: %w", err)
 	}
-	
+
 	return nil
 }
 

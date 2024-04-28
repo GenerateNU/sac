@@ -10,8 +10,8 @@ import (
 )
 
 var swagCmd = &cobra.Command{
-	Use:   "swagger",
-	Short: "Run swagger init",
+	Use:     "swagger",
+	Short:   "Run swagger init",
 	Aliases: []string{"swag"},
 	Run: func(cmd *cobra.Command, args []string) {
 		err := helpers.Execute(exec.Command("swag", "init"), helpers.BACKEND_DIR)

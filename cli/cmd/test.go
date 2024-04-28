@@ -10,15 +10,16 @@ import (
 )
 
 var testCmd = &cobra.Command{
-	Use:   "test",
+	Use:     "test",
 	Aliases: []string{"t"},
-	Short: "Testing commands",
+	Short:   "Testing commands",
 }
 
 func init() {
 	rootCmd.AddCommand(testCmd)
 	testCmd.AddCommand(testFrontendCmd)
 	testCmd.AddCommand(testBackendCmd)
+	testCmd.AddCommand(testCliCmd)
 	testCmd.AddCommand(testCleanDatabaseCmd)
 
 	testBackendCmd.Flags().BoolP("clean", "c", false, "Clean the test cache after running tests")
@@ -30,16 +31,16 @@ func init() {
 }
 
 var testFrontendCmd = &cobra.Command{
-	Use:   "frontend",
+	Use:     "frontend",
 	Aliases: []string{"fe"},
-	Short: "Frontend testing commands",
+	Short:   "Frontend testing commands",
 }
 
 var testWebCmd = &cobra.Command{
-	Use:   "web",
-	Short: "Frontend web testing commands",
+	Use:     "web",
+	Short:   "Frontend web testing commands",
 	Aliases: []string{"w"},
-	Args:  cobra.NoArgs,
+	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := helpers.Execute(exec.Command("yarn", "run", "test"), helpers.WEB_DIR)
 		if err != nil {
@@ -50,10 +51,10 @@ var testWebCmd = &cobra.Command{
 }
 
 var testMobileCmd = &cobra.Command{
-	Use:   "mobile",
-	Short: "Frontend mobile testing commands",
+	Use:     "mobile",
+	Short:   "Frontend mobile testing commands",
 	Aliases: []string{"m"},
-	Args:  cobra.NoArgs,
+	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := helpers.Execute(exec.Command("yarn", "run", "test"), helpers.MOBILE_DIR)
 		if err != nil {
@@ -64,10 +65,10 @@ var testMobileCmd = &cobra.Command{
 }
 
 var testDashboardCmd = &cobra.Command{
-	Use:   "dashboard",
-	Short: "Frontend dashboard testing commands",
+	Use:     "dashboard",
+	Short:   "Frontend dashboard testing commands",
 	Aliases: []string{"d"},
-	Args:  cobra.NoArgs,
+	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := helpers.Execute(exec.Command("yarn", "run", "test"), helpers.DASHBOARD_DIR)
 		if err != nil {
@@ -78,10 +79,10 @@ var testDashboardCmd = &cobra.Command{
 }
 
 var testLibCmd = &cobra.Command{
-	Use:   "lib",
-	Short: "Frontend lib testing commands",
+	Use:     "lib",
+	Short:   "Frontend lib testing commands",
 	Aliases: []string{"l"},
-	Args:  cobra.NoArgs,
+	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := helpers.Execute(exec.Command("yarn", "run", "test"), helpers.LIB_DIR)
 		if err != nil {
@@ -92,10 +93,10 @@ var testLibCmd = &cobra.Command{
 }
 
 var testBackendCmd = &cobra.Command{
-	Use:   "backend",
-	Short: "Backend testing commands",
+	Use:     "backend",
+	Short:   "Backend testing commands",
 	Aliases: []string{"be"},
-	Args:  cobra.NoArgs,
+	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		clear, _ := cmd.Flags().GetBool("clean")
 
@@ -114,12 +115,24 @@ var testBackendCmd = &cobra.Command{
 	},
 }
 
+var testCliCmd = &cobra.Command{
+	Use:   "cli",
+	Short: "CLI testing commands",
+	Args:  cobra.NoArgs,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := helpers.Execute(exec.Command("go", "test", "./..."), helpers.CLI_DIR)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	},
+}
 
 var testCleanDatabaseCmd = &cobra.Command{
-	Use:   "clean-db",
-	Short: "Remove databases used for testing",
+	Use:     "clean-db",
+	Short:   "Remove databases used for testing",
 	Aliases: []string{"clean"},
-	Args:  cobra.NoArgs,
+	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := helpers.CleanTestDBs()
 		if err != nil {
