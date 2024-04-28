@@ -14,11 +14,8 @@ func main() {
 		Usage: "CLI for the GenerateNU SAC",
 		Commands: []*cli.Command{
 			commands.SwaggerCommand(),
-			commands.ClearDBCommand(),
-			commands.MigrateCommand(),
-			commands.ResetCommand(),
+			commands.DBCommand(),
 			commands.InsertCommand(),
-			commands.DropCommand(),
 			commands.BackendCommand(),
 			commands.FrontendCommand(),
 			commands.TestCommand(), // TODO: frontend tests

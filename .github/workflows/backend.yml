@@ -65,6 +65,7 @@ jobs:
         with:
           version: latest
           working-directory: ./backend/
+          args: --timeout=5m
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -96,10 +97,14 @@ jobs:
       - name: Increase max_connections in PostgreSQL
         run: |
           CONTAINER_ID=$(docker ps --filter "publish=5432" --format "{{.ID}}")
-          docker exec $CONTAINER_ID bash -c "sed -i 's/^#* *max_connections *= *[0-9]*/max_connections = 256/' /var/lib/postgresql/data/postgresql.conf"
+          docker exec $CONTAINER_ID bash -c "sed -i 's/^#* *max_connections *= *[0-9]*/max_connections = 512/' /var/lib/postgresql/data/postgresql.conf"
           docker exec $CONTAINER_ID cat /var/lib/postgresql/data/postgresql.conf | grep max_connections
       - name: Restart PostgreSQL Container
         run: docker restart $(docker ps --filter "publish=5432" --format "{{.ID}}")
+      - name: Install migrate CLI
+        run: go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+      - name: Migrate Database
+        run: SKIP_DOCKER=true ./scripts/init_db.sh
       - name: Run Tests with Coverage
         run: cd ./backend/ && go test -v -race -coverprofile=coverage.txt ./...
       - name: Print Coverage

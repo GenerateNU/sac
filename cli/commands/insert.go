@@ -6,7 +6,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/GenerateNU/sac/backend/src/config"
+	"github.com/GenerateNU/sac/backend/config"
 	"github.com/lib/pq"
 	"github.com/urfave/cli/v2"
 )
@@ -59,7 +59,7 @@ func InsertDB() error {
 
 		migrateCmd := exec.Command("go", "run", "main.go", "--only-migrate")
 
-		migrateCmd.Dir = BACKEND_SRC_DIR
+		migrateCmd.Dir = BACKEND_DIR
 
 		if err := migrateCmd.Run(); err != nil {
 			return fmt.Errorf("error running migration: %w", err)
@@ -68,7 +68,7 @@ func InsertDB() error {
 		fmt.Println("Database exists with tables.")
 	}
 
-	migrationSQL, err := os.ReadFile(MIGRATION_FILE)
+	migrationSQL, err := os.ReadFile(MOCK_FILE)
 	if err != nil {
 		return fmt.Errorf("error reading migration file: %w", err)
 	}

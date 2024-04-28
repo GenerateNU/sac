@@ -7,8 +7,8 @@ import (
 
 	"github.com/goccy/go-json"
 
-	"github.com/GenerateNU/sac/backend/src/errors"
-	"github.com/GenerateNU/sac/backend/src/models"
+	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/errors"
 	h "github.com/GenerateNU/sac/backend/tests/api/helpers"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"

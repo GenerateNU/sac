@@ -7,10 +7,11 @@ import (
 
 	stdliberrors "errors"
 
-	"github.com/GenerateNU/sac/backend/src/auth"
-	"github.com/GenerateNU/sac/backend/src/errors"
-	"github.com/GenerateNU/sac/backend/src/models"
-	"github.com/GenerateNU/sac/backend/src/transactions"
+	"github.com/GenerateNU/sac/backend/auth"
+	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/entities/users"
+	usersBase "github.com/GenerateNU/sac/backend/entities/users/base"
+	"github.com/GenerateNU/sac/backend/errors"
 	h "github.com/GenerateNU/sac/backend/tests/api/helpers"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -49,7 +50,7 @@ func TestGetUsersWorksForSuper(t *testing.T) {
 				eaa.Assert.Equal(models.May, respUser.GraduationCycle)
 				eaa.Assert.Equal(int16(2025), respUser.GraduationYear)
 
-				dbUsers, err := transactions.GetUsers(eaa.App.Conn, 1, 1)
+				dbUsers, err := usersBase.GetUsers(eaa.App.Conn, 1, 1)
 
 				eaa.Assert.NilError(&err)
 
@@ -105,7 +106,7 @@ func TestGetUserWorks(t *testing.T) {
 				eaa.Assert.Equal(models.GraduationCycle(sampleUser["graduation_cycle"].(string)), respUser.GraduationCycle)
 				eaa.Assert.Equal(int16(sampleUser["graduation_year"].(int)), respUser.GraduationYear)
 
-				dbUser, err := transactions.GetUser(eaa.App.Conn, eaa.App.TestUser.UUID)
+				dbUser, err := users.GetUser(eaa.App.Conn, eaa.App.TestUser.UUID)
 
 				eaa.Assert.NilError(&err)
 

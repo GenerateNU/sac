@@ -3,8 +3,8 @@ package commands
 import (
 	"os"
 	"os/exec"
+	"slices"
 
-	_ "github.com/lib/pq"
 	"github.com/urfave/cli/v2"
 )
 
@@ -13,18 +13,37 @@ func FrontendCommand() *cli.Command {
 		Name:     "fe",
 		Usage:    "Run the frontend",
 		Category: "Development",
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:    "target",
-				Aliases: []string{"t"},
-				Value:   "mobile",
-				Usage:   "Run a specific frontend type (web or mobile)",
+		Subcommands: []*cli.Command{
+			{
+				Name:    "mobile",
+				Aliases: []string{"m"},
+				Usage:   "Run the mobile frontend",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:  "platform",
+						Usage: "The platform to run the mobile frontend on",
+						Value: "ios",
+					},
+				},
+				Action: func(c *cli.Context) error {
+					return RunFE("mobile", c.String("platform"))
+				},
 			},
-			&cli.StringFlag{
-				Name:    "platform",
-				Aliases: []string{"p"},
-				Usage:   "Run a specific platform for mobile frontend",
-				Value:   "ios",
+			{
+				Name:    "web",
+				Aliases: []string{"w"},
+				Usage:   "Run the web frontend",
+				Action: func(c *cli.Context) error {
+					return RunFE("web", "")
+				},
+			},
+			{
+				Name:    "dashboard",
+				Aliases: []string{"d"},
+				Usage:   "Run the dashboard frontend",
+				Action: func(c *cli.Context) error {
+					return RunFE("dashboard", "")
+				},
 			},
 		},
 		Action: func(c *cli.Context) error {
@@ -32,9 +51,8 @@ func FrontendCommand() *cli.Command {
 				return cli.Exit("Invalid arguments", 1)
 			}
 
-			target := c.String("target")
-			if target != "web" && target != "mobile" {
-				return cli.Exit("Invalid frontend type: must be 'web' or 'mobile'", 1)
+			if !slices.Contains(FRONTEND_RUN_TARGETS, c.String("target")) {
+				return cli.Exit("Invalid frontend type: must be 'web', 'mobile', or 'dashboard'", 1)
 			}
 
 			err := RunFE(c.String("type"), c.String("platform"))
@@ -55,6 +73,8 @@ func RunFE(feType string, platform string) error {
 		return RunMobileFE(platform)
 	case "web":
 		return RunWebFE()
+	case "dashboard":
+		return RunDashboardFE()
 	default:
 		return RunMobileFE(platform)
 	}
@@ -62,7 +82,7 @@ func RunFE(feType string, platform string) error {
 
 func RunMobileFE(platform string) error {
 	mobileCmd := exec.Command("yarn", "run", platform)
-	mobileCmd.Dir = FRONTEND_DIR + "/sac-mobile"
+	mobileCmd.Dir = MOBILE_DIR
 
 	mobileCmd.Stdout = os.Stdout
 	mobileCmd.Stderr = os.Stderr
@@ -76,5 +96,31 @@ func RunMobileFE(platform string) error {
 }
 
 func RunWebFE() error {
+	webCmd := exec.Command("yarn", "run")
+	webCmd.Dir = WEB_DIR
+
+	webCmd.Stdout = os.Stdout
+	webCmd.Stderr = os.Stderr
+	webCmd.Stdin = os.Stdin
+
+	if err := webCmd.Run(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func RunDashboardFE() error {
+	dashboardCmd := exec.Command("yarn", "run")
+	dashboardCmd.Dir = DASHBOARD_DIR
+
+	dashboardCmd.Stdout = os.Stdout
+	dashboardCmd.Stderr = os.Stderr
+	dashboardCmd.Stdin = os.Stdin
+
+	if err := dashboardCmd.Run(); err != nil {
+		return err
+	}
+
 	return nil
 }
