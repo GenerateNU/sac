@@ -43,7 +43,7 @@
    - If you get an error about `expo-cli` not being installed, run `yarn global add expo-cli` and then run `yarn install` again.
 
    ```console
-   cd server
+   cd backend
    go get ./...
    ```
 
@@ -119,7 +119,7 @@ To create a new migration, you can use the CLI
 
 ### SAC CLI
 
-   To install use `./scripts/install_cli.sh` and then run `sac` to see all commands.
+   To install use `./install_cli.sh` and then run `sac` to see all commands.
 
 # Git Flow
 

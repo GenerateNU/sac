@@ -1,8 +1,9 @@
 import { z } from 'zod';
 
-import { baseApi, handleQueryParams } from '../api/base';
 import { PointOfContact, pointOfContactSchema } from '@/types/pointOfContact';
 import { PaginationQueryParams } from '@/types/root';
+
+import { baseApi, handleQueryParams } from '../api/base';
 
 const POC_API_BASE_URL = '/pocs';
 
@@ -17,9 +18,9 @@ export const pointOfContactApi = baseApi.injectEndpoints({
                 providesTags: (result) =>
                     result
                         ? result.map(({ id }) => ({
-                            type: 'PointOfContact',
-                            id
-                        }))
+                              type: 'PointOfContact',
+                              id
+                          }))
                         : ['PointOfContact'],
                 transformResponse: (response) => {
                     return z.array(pointOfContactSchema).parse(response);
@@ -40,7 +41,5 @@ export const pointOfContactApi = baseApi.injectEndpoints({
     })
 });
 
-export const {
-    usePointOfContactsQuery,
-    usePointOfContactQuery
-} = pointOfContactApi;
+export const { usePointOfContactsQuery, usePointOfContactQuery } =
+    pointOfContactApi;
