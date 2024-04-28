@@ -1,22 +1,12 @@
+import { Block } from "@blocknote/core";
 import { FirebaseApp } from "firebase/app";
-import { Firestore, doc, getDoc, setDoc } from "firebase/firestore";
+import { DocumentData, Firestore, doc, getDoc, setDoc } from "firebase/firestore";
+import { db } from "./config";
 
 const FirebaseController = {
-    db: null as Firestore | null,
-    app: null as FirebaseApp | null,
-
-    initialize(app: FirebaseApp, db: Firestore) {
-        this.app = app;
-        this.db = db;
-    },
-
     // Add a new document to firebase:
     async addDescription(description: Record<string, string>, id: string): Promise<void> {
-        if (!this.db) {
-            throw new Error("Firebase Firestore not initialized");
-        }
-
-        await setDoc(doc(this.db, "descriptions", id), { ...description })
+        await setDoc(doc(db, "descriptions", id), { ...description })
             .then(() => {
                 console.log("Document successfully written!");
             })
@@ -26,17 +16,13 @@ const FirebaseController = {
     },
 
     // Reads a document from firebase given an id:
-    async getDescription(id: string): Promise<Record<string, string>> {
-        if (!this.db) {
-            throw new Error("Firebase Firestore not initialized");
-        }
-
-        const docRef = doc(this.db, "descriptions", id);
+    async getDescription(id: string): Promise<DocumentData> {
+        const docRef = doc(db, "descriptions", id);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
             console.log("Document data:", docSnap.data());
-            return docSnap.data() as Record<string, string>;
+            return docSnap.data();
         } else {
             console.error("No such document!");
             return {};
