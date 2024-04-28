@@ -1,4 +1,5 @@
-"use client"; // this registers <Editor> as a Client Component
+"use client";
+
 import { BlockNoteView, useCreateBlockNote } from "@blocknote/react";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/react/style.css";
