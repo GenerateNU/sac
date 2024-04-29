@@ -5,8 +5,8 @@
     "packages": [
       "dashboard",
       "lib",
-      "mobile",
-      "web"
+      "web",
+      "mobile"
     ]
   },
   "private": true
