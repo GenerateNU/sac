@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { PointOfContact, pointOfContactSchema } from '@/types/pointOfContact';
-import { PaginationQueryParams } from '@/types/root';
+import { PointOfContact, pointOfContactSchema } from '../types/pointOfContact';
+import { PaginationQueryParams } from '../types/root';
 
 import { baseApi, handleQueryParams } from '../api/base';
 

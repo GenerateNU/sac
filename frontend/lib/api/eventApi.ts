@@ -1,14 +1,14 @@
 import { z } from 'zod';
 
-import { Club, clubSchema } from '@/types/club';
+import { Club, clubSchema } from '../types/club';
 import {
     CreateEventRequestBody,
     Event,
     UpdateEventRequestBody,
     eventSchema
-} from '@/types/event';
-import { PaginationQueryParams } from '@/types/root';
-import { Tag } from '@/types/tag';
+} from '../types/event';
+import { PaginationQueryParams } from '../types/root';
+import { Tag } from '../types/tag';
 
 import { baseApi, handleQueryParams } from '../api/base';
 

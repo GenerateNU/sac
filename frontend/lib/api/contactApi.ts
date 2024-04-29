@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { Contact, contactSchema } from '@/types/contact';
-import { PaginationQueryParams } from '@/types/root';
+import { Contact, contactSchema } from '../types/contact';
+import { PaginationQueryParams } from '../types/root';
 
 import { baseApi, handleQueryParams } from '../api/base';
 
