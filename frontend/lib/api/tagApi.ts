@@ -1,12 +1,12 @@
 import { z } from 'zod';
 
-import { PaginationQueryParams } from '@/types/root';
+import { PaginationQueryParams } from '../types/root';
 import {
     CreateTagRequestBody,
     Tag,
     UpdateTagRequestBody,
     tagSchema
-} from '@/types/tag';
+} from '../types/tag';
 
 import { baseApi, handleQueryParams } from '../api/base';
 

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { File, fileSchema } from '@/types/file';
-import { PaginationQueryParams } from '@/types/root';
+import { File, fileSchema } from '../types/file';
+import { PaginationQueryParams } from '../types/root';
 
 import { baseApi, handleQueryParams } from '../api/base';
 
