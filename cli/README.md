@@ -16,7 +16,6 @@ The SAC CLI is a tool designed to help manage and automate tasks for the Generat
 3. [Available Commands](#available-commands)
 4. [Command Aliases](#command-aliases)
 5. [Dependencies](#dependencies)
-6. [License](#license)
 
 ## Installation
 
@@ -30,7 +29,7 @@ To install the SAC CLI, clone the repository and run the following script from t
 
 To use the SAC CLI, you can run it with various flags or commands:
 
-```
+```bash
 sac [flags]
 sac [command]
 ```
