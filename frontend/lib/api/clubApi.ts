@@ -7,21 +7,21 @@ import {
     CreateClubTagsRequestBody,
     UpdateClubRequestBody,
     clubSchema
-} from '@/types/club';
+} from '../types/club';
 import {
     Contact,
     CreateContactRequestBody,
     contactSchema
-} from '@/types/contact';
-import { Event, eventSchema } from '@/types/event';
+} from '../types/contact';
+import { Event, eventSchema } from '../types/event';
 import {
     PointOfContact,
     UpdatePointOfContactRequestBody,
     pointOfContactSchema
-} from '@/types/pointOfContact';
-import { PaginationQueryParams } from '@/types/root';
-import { Tag, tagSchema } from '@/types/tag';
-import { User, userSchema } from '@/types/user';
+} from '../types/pointOfContact';
+import { PaginationQueryParams } from '../types/root';
+import { Tag, tagSchema } from '../types/tag';
+import { User, userSchema } from '../types/user';
 
 export const CLUB_API_BASE_URL = '/clubs';
 

@@ -1,11 +1,11 @@
 import { baseApi } from '../api/base';
-import { LoginRequestBody, RefreshTokenRequestBody } from '@/types/auth';
-import { User, userSchema } from '@/types/user';
+import { LoginRequestBody, RefreshTokenRequestBody } from '../types/';
+import { User, userSchema } from '../types/user';
 import {
     EmailRequestBody,
     VerifyEmailRequestBody,
     VerifyPasswordResetTokenRequestBody
-} from '@/types/verification';
+} from '../types/verification';
 
 const AUTH_API_BASE_URL = '/auth';
 

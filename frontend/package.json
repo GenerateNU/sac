@@ -6,8 +6,7 @@
       "dashboard",
       "lib",
       "mobile",
-      "web",
-      "dashboard"
+      "web"
     ]
   },
   "private": true

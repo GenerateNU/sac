@@ -1,13 +1,13 @@
 import { z } from 'zod';
 
 import { baseApi, handleQueryParams } from '../api/base';
-import { PaginationQueryParams } from '@/types/root';
+import { PaginationQueryParams } from '../types/root';
 import {
     CreateTagRequestBody,
     Tag,
     UpdateTagRequestBody,
     tagSchema
-} from '@/types/tag';
+} from '../types/tag';
 
 const TAG_API_BASE_URL = '/tags';
 

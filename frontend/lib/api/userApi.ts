@@ -1,17 +1,17 @@
 import { z } from 'zod';
 
 import { baseApi, handleQueryParams } from '../api/base';
-import { UpdatePasswordRequestBody } from '@/types/auth';
-import { Club, clubSchema } from '@/types/club';
-import { PaginationQueryParams } from '@/types/root';
-import { Tag, tagSchema } from '@/types/tag';
+import { UpdatePasswordRequestBody } from '../types/auth';
+import { Club, clubSchema } from '../types/club';
+import { PaginationQueryParams } from '../types/root';
+import { Tag, tagSchema } from '../types/tag';
 import {
     CreateUserRequestBody,
     CreateUserTagsRequestBody,
     UpdateUserRequestBody,
     User,
     userSchema
-} from '@/types/user';
+} from '../types/user';
 
 const USER_API_BASE_URL = '/users';
 

@@ -11,8 +11,6 @@
     "test": "echo \"Woah there, we have no frontend tests as of right now. Let's just say we're passing.\" && exit 0"
   },
   "dependencies": {
-    "@blocknote/core": "^0.12.4",
-    "@blocknote/react": "^0.12.4",
     "@reduxjs/toolkit": "^2.2.3",
     "next": "14.2.3",
     "react": "^18",

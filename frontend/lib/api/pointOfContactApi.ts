@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 import { baseApi, handleQueryParams } from '../api/base';
-import { PointOfContact, pointOfContactSchema } from '@/types/pointOfContact';
-import { PaginationQueryParams } from '@/types/root';
+import { PointOfContact, pointOfContactSchema } from '../types/pointOfContact';
+import { PaginationQueryParams } from '../types/root';
 
 const POC_API_BASE_URL = '/pocs';
 

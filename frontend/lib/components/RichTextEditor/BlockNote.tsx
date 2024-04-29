@@ -1,9 +1,7 @@
 "use client";
 
 import { BlockNoteView, useCreateBlockNote } from "@blocknote/react";
-import "@blocknote/core/fonts/inter.css";
-import "@blocknote/react/style.css";
-import "@/src/components/RichTextEditor/styles/BlockNote.styles.css"
+import "./styles/BlockNote.styles.css";
 import { PartialBlock } from "@blocknote/core";
 import { Dispatch, SetStateAction } from "react";
 import SuggestionMenu from "./elements/SuggestionMenu";
