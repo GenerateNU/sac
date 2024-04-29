@@ -24,7 +24,7 @@
         "@react-navigation/stack": "^6.3.29",
         "@reduxjs/toolkit": "^2.2.3",
         "@sac/lib": "*",
-        "@tanstack/react-query": "^5.29.0",
+        "@tanstack/react-query": "^5.32.0",
         "@types/uuid": "^9.0.8",
         "axios": "^1.6.8",
         "calendarize": "^1.1.1",
