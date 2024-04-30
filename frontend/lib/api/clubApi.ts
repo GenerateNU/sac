@@ -1,27 +1,28 @@
 import { z } from 'zod';
 
-import { baseApi, handleQueryParams } from '../api/base';
 import {
     Club,
     CreateClubRequestBody,
     CreateClubTagsRequestBody,
     UpdateClubRequestBody,
     clubSchema
-} from '@/types/club';
+} from '../types/club';
 import {
     Contact,
     CreateContactRequestBody,
     contactSchema
-} from '@/types/contact';
-import { Event, eventSchema } from '@/types/event';
+} from '../types/contact';
+import { Event, eventSchema } from '../types/event';
 import {
     PointOfContact,
     UpdatePointOfContactRequestBody,
     pointOfContactSchema
-} from '@/types/pointOfContact';
-import { PaginationQueryParams } from '@/types/root';
-import { Tag, tagSchema } from '@/types/tag';
-import { User, userSchema } from '@/types/user';
+} from '../types/pointOfContact';
+import { PaginationQueryParams } from '../types/root';
+import { Tag, tagSchema } from '../types/tag';
+import { User, userSchema } from '../types/user';
+
+import { baseApi, handleQueryParams } from '../api/base';
 
 export const CLUB_API_BASE_URL = '/clubs';
 
@@ -92,9 +93,9 @@ export const clubApi = baseApi.injectEndpoints({
             providesTags: (result, _, _arg) =>
                 result
                     ? result.map((contact) => ({
-                        type: 'Contact',
-                        id: contact.id
-                    }))
+                          type: 'Contact',
+                          id: contact.id
+                      }))
                     : ['Contact'],
             transformResponse: (response: Contact) => {
                 return z.array(contactSchema).parse(response);
@@ -147,9 +148,9 @@ export const clubApi = baseApi.injectEndpoints({
             providesTags: (result, _, _arg) =>
                 result
                     ? result.map((follower) => ({
-                        type: 'Follower',
-                        id: follower.id
-                    }))
+                          type: 'Follower',
+                          id: follower.id
+                      }))
                     : ['Follower'],
             transformResponse: (response) => {
                 return z.array(userSchema).parse(response);
@@ -182,9 +183,9 @@ export const clubApi = baseApi.injectEndpoints({
             providesTags: (result, _, _arg) =>
                 result
                     ? result.map((poc) => ({
-                        type: 'PointOfContact',
-                        id: poc.id
-                    }))
+                          type: 'PointOfContact',
+                          id: poc.id
+                      }))
                     : ['PointOfContact'],
             transformResponse: (response) => {
                 return z.array(pointOfContactSchema).parse(response);

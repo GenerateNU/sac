@@ -1,8 +1,9 @@
 import { z } from 'zod';
 
+import { Contact, contactSchema } from '../types/contact';
+import { PaginationQueryParams } from '../types/root';
+
 import { baseApi, handleQueryParams } from '../api/base';
-import { Contact, contactSchema } from '@/types/contact';
-import { PaginationQueryParams } from '@/types/root';
 
 const CONTACT_API_BASE_URL = '/contacts';
 

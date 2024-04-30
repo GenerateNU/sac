@@ -59,7 +59,7 @@ const ApplyBottomSheet = forwardRef<Ref>((_, ref) => {
             backdropComponent={renderBackdrop}
         >
             <View className="flex flex-col p-4">
-                <Text className="text-xl font-bold mb-2 text-center">
+                <Text className="mb-2 text-xl font-bold text-center">
                     Application Form
                 </Text>
                 <View className="flex flex-col space-y-2">
@@ -88,7 +88,7 @@ const ApplyBottomSheet = forwardRef<Ref>((_, ref) => {
                     </TouchableOpacity>
                 </View>
                 <Button className="p-3 mt-4 rounded-md" onPress={handleSubmit}>
-                    <Text className="text-white font-medium text-center">
+                    <Text className="font-medium text-center text-white">
                         Send
                     </Text>
                 </Button>
