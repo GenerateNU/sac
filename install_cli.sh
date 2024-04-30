@@ -6,32 +6,20 @@ set -o pipefail
 # Get the absolute path to the current script
 SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Build the Go CLI tool
-# Check if the command is already installed to avoid adding it to path multiple times
-COMMAND_NAME="sac"
+cd "$SCRIPT_PATH/cli"
 
-if command -v "$COMMAND_NAME" >/dev/null 2>&1; then
-	echo "Command '$COMMAND_NAME' is already installed. Removing it..."
-	rm "$(command -v "$COMMAND_NAME")"
-fi
-
-go build -o "sac" "cli/main.go"
-
-# Identify the user's shell
-SHELL_NAME=$(basename "$SHELL")
-
-
-# Add sac to the user's PATH
-if [[ $SHELL_NAME == "zsh" ]]; then
-	echo "export PATH=\"$SCRIPT_PATH:\$PATH\"" >>~/.zshrc
-	source ~/.zshrc
-elif [[ $SHELL_NAME == "bash" ]]; then
-	echo "export PATH=\"$SCRIPT_PATH:\$PATH\"" >>~/.bashrc
-	source ~/.bashrc
+# Check for Windows or Unix-like system
+if [[ $(uname -s) == "MINGW64" || $(uname -s) == "CYGWIN" || $(uname -s) == "MSYS" ]]; then
+  export GOPATH="%USERPROFILE%\go"
 else
-	echo "Unsupported shell: $SHELL_NAME"
-	exit 1
+  export GOPATH="$HOME/go"
 fi
 
-# Inform the user
-echo "Installation complete. You can now run 'sac' from anywhere."
+# Build the executable
+go build -o "sac"
+
+mkdir -p "$GOPATH/bin"
+
+mv "sac" "$GOPATH/bin"
+
+echo "Installation complete. You can now run 'sac'"
