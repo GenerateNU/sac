@@ -1,13 +1,14 @@
-import requests
 import json
-from progress.bar import IncrementalBar as Bar 
+from uuid import uuid4
 import os
 import argparse
 import re
 import datetime
 import random
+
+from progress.bar import IncrementalBar as Bar 
 from openai import OpenAI
-from uuid import uuid4
+import requests
 
 # STEP 0: Initialize constants + utility/helper functions
 parser = argparse.ArgumentParser(prog="Mock data generator",
@@ -127,6 +128,7 @@ for club in clubs_json:
         )
 
         description = json.loads(description_response.choices[0].message.content)['description']
+        # Some description responses will not contain valid JSON, hence this if check.
         if not isinstance(description, str):
             description = ""
             bad_club_descriptions += 1     
@@ -206,7 +208,7 @@ with open(OUTPUT_FILE, 'w', encoding='utf-8') as file:
     
     # Tags <-> Clubs
     # FIXME (maybe)?: The ChatGPT tags prompt will return tags that aren't in the list, hence this if statement being here.
-    # Don't think its a huge issue because a majority of tags are good. 
+    # Don't think its a huge issue because ~half of tags are good. 
     bad_tags = 0
     total_tags = 0 
     for club in clubs:
