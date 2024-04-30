@@ -13,6 +13,7 @@ import (
 
 type ProductionSettings struct {
 	Database    ProductionDatabaseSettings    `yaml:"database"`
+	Redis       ProductionRedisSettings       `yaml:"redis"`
 	Application ProductionApplicationSettings `yaml:"application"`
 }
 
