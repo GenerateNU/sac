@@ -79,7 +79,7 @@ jobs:
     runs-on: ubunto-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Get old version of package.json
         id: get_old_version
