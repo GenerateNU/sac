@@ -16,7 +16,8 @@ jobs:
           node-version: '20.x'
           registry-url: 'https://registry.npmjs.org'
           scope: '@octocat'
-      - run: yarn
-      - run: yarn publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      - run: |
+          cd frontend/lib
+          yarn
+          NODE_AUTH_TOKEN=${{ secrets.NPM_AUTH_TOKEN }}
+          yarn publish
