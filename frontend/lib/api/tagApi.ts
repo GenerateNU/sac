@@ -7,7 +7,7 @@ import {
     Tag,
     UpdateTagRequestBody,
     tagSchema
-} from '@/types/tag';
+} from '../types/tag';
 
 const TAG_API_BASE_URL = '/tags';
 

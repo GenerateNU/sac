@@ -17,9 +17,9 @@ export const pointOfContactApi = baseApi.injectEndpoints({
                 providesTags: (result) =>
                     result
                         ? result.map(({ id }) => ({
-                            type: 'PointOfContact',
-                            id
-                        }))
+                              type: 'PointOfContact',
+                              id
+                          }))
                         : ['PointOfContact'],
                 transformResponse: (response) => {
                     return z.array(pointOfContactSchema).parse(response);
@@ -40,7 +40,5 @@ export const pointOfContactApi = baseApi.injectEndpoints({
     })
 });
 
-export const {
-    usePointOfContactsQuery,
-    usePointOfContactQuery
-} = pointOfContactApi;
+export const { usePointOfContactsQuery, usePointOfContactQuery } =
+    pointOfContactApi;

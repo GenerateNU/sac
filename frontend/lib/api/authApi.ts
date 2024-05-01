@@ -5,7 +5,7 @@ import {
     EmailRequestBody,
     VerifyEmailRequestBody,
     VerifyPasswordResetTokenRequestBody
-} from '@/types/verification';
+} from '../types/verification';
 
 const AUTH_API_BASE_URL = '/auth';
 

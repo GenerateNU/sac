@@ -28,7 +28,7 @@ func FindRootDir(dir string) (string, error) {
 	_, err := os.Stat(mainGoPath)
 	if err == nil {
 		// "sac" found, this is the root directory
-		return dir, nil
+		return filepath.Join(dir, "sac"), nil
 	}
 
 	// If not found, go up one level
