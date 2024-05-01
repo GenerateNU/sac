@@ -1,5 +1,5 @@
 {
-  "name": "@sac/lib",
+  "name": "@generatesac/lib",
   "main": "index.ts",
   "version": "1.0.0",
   "scripts": {
