@@ -13,10 +13,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 16
-      - run: cd frontend/lib
-      - run: yarn install --frozen-lockfile
-      - run: yarn test
+          node-version: 18.x
+          cache: yarn
+          cache-dependency-path: frontend/lib/yarn.lock
+      - name: Install dependencies & Test
+        run: | 
+          cd frontend/lib
+          yarn install --frozen-lockfile
+          yarn test
 
   publish-gpr:
     needs: build
@@ -30,8 +34,10 @@ jobs:
         with:
           node-version: 16
           registry-url: https://npm.pkg.github.com/
-      - run: cd frontend/lib
-      - run: yarn install --frozen-lockfile
-      - run: yarn publish
+      - name: Install dependencies & Publish
+        run: | 
+          cd frontend/lib
+          yarn install --frozen-lockfile
+          yarn test
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
