@@ -2,10 +2,9 @@ name: Generate SAC Frontend Lib Release
 
 on:
   push:
-    branches:
-      - frontend-build-fixes
     paths:
-      - frontend/lib/**
+      - "frontend/lib/**"
+      - ".github/workflows/frontend_lib_codeql.yml"
 
 jobs:
   build:
