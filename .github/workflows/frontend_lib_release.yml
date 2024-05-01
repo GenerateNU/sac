@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - "frontend/lib/**"
-      - ".github/workflows/frontend_lib.yml"
+      - ".github/workflows/frontend_lib_release.yml"
 
 jobs:
   build:
