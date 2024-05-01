@@ -84,7 +84,7 @@ jobs:
       - name: Get old version of package.json
         id: get_old_version
         run: |
-          git checkout HEAD~1 frontend/lib/package.json
+          git checkout main frontend/lib/package.json
           echo "::set-output name=old_version::$(jq -r '.version' frontend/lib/package.json)"
 
       - name: Get new version of package.json
