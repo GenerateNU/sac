@@ -20,4 +20,4 @@ jobs:
           cd frontend/lib
           yarn
           NODE_AUTH_TOKEN=${{ secrets.NPM_AUTH_TOKEN }}
-          yarn publish
+          yarn publish --access public
