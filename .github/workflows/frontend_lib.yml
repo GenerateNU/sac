@@ -88,8 +88,8 @@ jobs:
 
       - name: Get old version of package.json
         uses: actions/checkout@v3
-          with:
-            ref: main
+        with:
+          ref: main
         id: get_old_version
         run: |
           echo "::set-output name=old_version::$(jq -r '.version' frontend/lib/package.json)"
