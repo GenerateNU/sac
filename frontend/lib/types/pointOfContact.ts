@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { fileSchema } from './file';
-import { rootModelSchema } from './root';
+import { fileSchema } from '@/types/file';
+import { rootModelSchema } from '@/types/root';
 
 // Schemas:
 const createPointOfContactRequestBodySchema = z.object({

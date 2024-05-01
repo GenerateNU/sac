@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { rootModelSchema } from "./root";
+import { rootModelSchema } from "@/types/root";
 
 /**
  * TODO: Re-Write After BE Fixes

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { rootModelSchema } from './root';
+import { rootModelSchema } from '@/types/root';
 
 // Enums:
 export const userRoleEnum = z.enum(['super', 'student']);

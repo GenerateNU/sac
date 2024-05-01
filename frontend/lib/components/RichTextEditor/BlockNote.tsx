@@ -3,10 +3,10 @@
 import { BlockNoteView, useCreateBlockNote } from "@blocknote/react";
 import "./styles/BlockNote.styles.css";
 import { PartialBlock } from "@blocknote/core";
-import { Dispatch, SetStateAction } from "react";
 import SuggestionMenu from "./elements/SuggestionMenu";
 import SideBarMenu from "./elements/SideBarMenu";
 import { EditorFonts, editorFonts, schema } from "./config/config";
+import { Dispatch, SetStateAction } from "react";
 
 type EditorProps = {
   description: PartialBlock[];

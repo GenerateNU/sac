@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { rootModelSchema } from './root';
-import { tagSchema } from './tag';
+import { rootModelSchema } from '@/types/root';
+import { tagSchema } from '@/types/tag';
 
 // Schemas:
 export const createCategoryRequestBodySchema = z.object({
