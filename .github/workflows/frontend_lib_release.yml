@@ -1,7 +1,7 @@
 name: Generate SAC Frontend Lib Release
 
 on:
-  commit:
+  push:
     branches:
       - frontend-build-fixes
     paths:
