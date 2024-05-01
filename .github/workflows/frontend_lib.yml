@@ -94,7 +94,7 @@ jobs:
       - name: Get old version of package.json
         id: get_old_version
         run: |
-          echo "old_version=$(jq -r '.version' frontend/lib/package.json)" >> GITHUB_OUTPUT
+          echo "old_version=$(jq -r '.version' frontend/lib/package.json)" >> $GITHUB_OUTPUT
 
       - name: Compare versions
         run: |
