@@ -81,20 +81,16 @@ MOCK_CATEGORIES_AND_TAGS = {
     ]
 }
 
-TAGS_STRING = "" # for tags_prompt
-for key, value in MOCK_CATEGORIES_AND_TAGS.items():
-    for tag in value:
-        TAGS_STRING += f"\"{tag}\", "
-TAGS_STRING = TAGS_STRING[:-2] # remove the last ", "
+TAGS_STRING = ", ".join(f"\"{tag}\"" for tag in sum(MOCK_CATEGORIES_AND_TAGS.values(), [])) # for tags_prompt
 
-def description_prompt(name, preview):
+def description_prompt(name: str, preview: str) -> str:
     return f"""
     I need your help writing club descriptions to create some mock data for an app I'm working on. The club's name is \"{name}\", and its short summary is \"{preview}\".
     Generate a one to two paragraph description of what the club is and what it does. Use a mix of friendly, welcoming, and informative language and content. Store in this a JSON field \"description\".
     Your output should just be the JSON with the generated description, no other text. Thank you!
     """
 
-def tags_prompt(name, description):
+def tags_prompt(name: str, description: str) -> str:
     return f"""
     I need your help picking club tags to create some mock data for an app I'm working on. The club's name is \"{name}\" and its description is \"{description}\".
     Here are the tags you can choose from, in a JSON-formatted array: [{TAGS_STRING}].
@@ -163,16 +159,10 @@ bar.finish()
 print(f"Bad club descriptions (JSON not created properly): {bad_club_descriptions}")
 
 # Generate the UUIDS for Categories, Tags, and a table for tags to categories.
-category_uuids = {}
-for category in MOCK_CATEGORIES_AND_TAGS:
-    category_uuids[category] = str(uuid4())
+category_uuids = {category: str(uuid4()) for category in MOCK_CATEGORIES_AND_TAGS}
 
-tag_uuids = {}
-tags_to_categories = {}
-for category, tags in MOCK_CATEGORIES_AND_TAGS.items():
-    for tag in tags:
-        tag_uuids[tag] = str(uuid4())
-        tags_to_categories[tag] = category 
+tag_uuids = {tag: str(uuid4()) for tag in MOCK_CATEGORIES_AND_TAGS.values() for tag in tags}
+tags_to_categories = {tag: category for category, tags in MOCK_CATEGORIES_AND_TAGS.items() for tag in tags}
 
 # STEP 2: Write to SQL file.
 with open(OUTPUT_FILE, 'w', encoding='utf-8') as file:
