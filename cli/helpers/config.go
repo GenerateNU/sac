@@ -1,4 +1,4 @@
-package commands
+package helpers
 
 import (
 	"path/filepath"
@@ -14,6 +14,7 @@ var (
 	LIB_DIR       = filepath.Join(FRONTEND_DIR, "/lib")
 	WEB_DIR       = filepath.Join(FRONTEND_DIR, "/web")
 	BACKEND_DIR   = filepath.Join(ROOT_DIR, "/backend")
+	CLI_DIR       = filepath.Join(ROOT_DIR, "/cli")
 	CONFIG        = filepath.Join(ROOT_DIR, "/config")
 	MIGRATIONS    = filepath.Join(BACKEND_DIR, "/migrations")
 	MOCK_FILE     = filepath.Join(BACKEND_DIR, "/mock/data.sql")
