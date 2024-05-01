@@ -38,6 +38,6 @@ jobs:
         run: | 
           cd frontend/lib
           yarn install --frozen-lockfile
-          yarn test
+          yarn publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
