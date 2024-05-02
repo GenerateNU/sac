@@ -1,31 +1,15 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
-
-import { categoriesApi } from './api/category';
-import { clubsApi } from './api/club';
-import { contactsApi } from './api/contact';
-import { eventsApi } from './api/event';
-import { tagsApi } from './api/tag';
-import { usersApi } from './api/user';
+import { baseApi } from './api';
 
 export const store = configureStore({
     reducer: {
-        [usersApi.reducerPath]: usersApi.reducer,
-        [clubsApi.reducerPath]: clubsApi.reducer,
-        [eventsApi.reducerPath]: eventsApi.reducer,
-        [categoriesApi.reducerPath]: categoriesApi.reducer,
-        [contactsApi.reducerPath]: contactsApi.reducer,
-        [tagsApi.reducerPath]: tagsApi.reducer
+        [baseApi.reducerPath]: baseApi.reducer,
     },
 
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware()
-            .concat(usersApi.middleware)
-            .concat(clubsApi.middleware)
-            .concat(eventsApi.middleware)
-            .concat(categoriesApi.middleware)
-            .concat(contactsApi.middleware)
-            .concat(tagsApi.middleware)
+            .concat(baseApi.middleware)
 });
 
 setupListeners(store.dispatch);
