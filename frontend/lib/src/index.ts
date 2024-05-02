@@ -1,3 +1,3 @@
-export * from '@/src/api';
-export * from '@/src/types';
-export * from '@/src/components';
+export * from './api';
+export * from './types';
+export * from './components';

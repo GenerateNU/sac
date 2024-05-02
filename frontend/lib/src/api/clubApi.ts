@@ -1,27 +1,27 @@
 import { z } from 'zod';
 
-import { baseApi, handleQueryParams } from '@/src/api/base';
+import { baseApi, handleQueryParams } from './base';
 import {
     Club,
     CreateClubRequestBody,
     CreateClubTagsRequestBody,
     UpdateClubRequestBody,
     clubSchema
-} from '@/src/types/club';
+} from '../types/club';
 import {
     Contact,
     CreateContactRequestBody,
     contactSchema
-} from '@/src/types/contact';
-import { Event, eventSchema } from '@/src/types/event';
+} from '../types/contact';
+import { Event, eventSchema } from '../types/event';
 import {
     PointOfContact,
     UpdatePointOfContactRequestBody,
     pointOfContactSchema
-} from '@/src/types/pointOfContact';
-import { PaginationQueryParams } from '@/src/types/root';
-import { Tag, tagSchema } from '@/src/types/tag';
-import { User, userSchema } from '@/src/types/user';
+} from '../types/pointOfContact';
+import { PaginationQueryParams } from '../types/root';
+import { Tag, tagSchema } from '../types/tag';
+import { User, userSchema } from '../types/user';
 
 export const CLUB_API_BASE_URL = '/clubs';
 

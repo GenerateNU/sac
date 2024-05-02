@@ -1,15 +1,15 @@
 import { z } from 'zod';
 
-import { baseApi, handleQueryParams } from '@/src/api/base';
-import { Club, clubSchema } from '@/src/types/club';
+import { baseApi, handleQueryParams } from './base';
+import { Club, clubSchema } from '../types/club';
 import {
     CreateEventRequestBody,
     Event,
     UpdateEventRequestBody,
     eventSchema
-} from '@/src/types/event';
-import { PaginationQueryParams } from '@/src/types/root';
-import { Tag } from '@/src/types/tag';
+} from '../types/event';
+import { PaginationQueryParams } from '../types/root';
+import { Tag } from '../types/tag';
 
 const EVENT_API_BASE_URL = '/events';
 

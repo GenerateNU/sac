@@ -1,7 +1,9 @@
-name: Generate SAC Frontend Lib Release
+name: Frontend Lib Release
 
 on:
   push:
+    branches:
+      - main
     paths:
       - "frontend/lib/**"
       - ".github/workflows/frontend_lib_release.yml"

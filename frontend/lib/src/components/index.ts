@@ -1,1 +1,1 @@
-export { default as Editor } from '@/src/components/RichTextEditor';
+export { default as Editor } from './RichTextEditor';

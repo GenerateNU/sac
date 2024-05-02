@@ -1,1 +1,1 @@
-export { default } from '@/src/components/RichTextEditor/BlockNote';
+export { default } from './BlockNote';

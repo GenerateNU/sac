@@ -1,6 +1,6 @@
 {
   "name": "@generatesac/lib",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "module": "index.js",
   "types": "dist/index.d.ts",
   "files": ["dist"],
@@ -8,7 +8,8 @@
     "test": "echo \"Woah there, we have no frontend tests as of right now. Let's just say we're passing.\" && exit 0",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "format": "prettier --write .",
-    "build": "rimraf dist && tsc"
+    "build": "rimraf dist && tsc",
+    "watch": "tsc --watch"
   },
   "dependencies": {
     "@blocknote/core": "^0.12.4",

@@ -1,13 +1,13 @@
 import { z } from 'zod';
 
-import { baseApi, handleQueryParams } from '@/src/api/base';
+import { baseApi, handleQueryParams } from './base';
 import {
     Category,
     CreateCategoryRequestBody,
     categorySchema
-} from '@/src/types/category';
-import { PaginationQueryParams } from '@/src/types/root';
-import { Tag } from '@/src/types/tag';
+} from '../types/category';
+import { PaginationQueryParams } from '../types/root';
+import { Tag } from '../types/tag';
 
 
 const CATEGORY_API_BASE_URL = '/categories';

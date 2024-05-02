@@ -1,6 +1,6 @@
-import { baseApi } from '@/src/api/base';
-import { LoginRequestBody, RefreshTokenRequestBody } from '@/src/types/auth';
-import { User, userSchema } from '@/src/types/user';
+import { baseApi } from './base';
+import { LoginRequestBody, RefreshTokenRequestBody } from '../types/auth';
+import { User, userSchema } from '../types/user';
 import {
     EmailRequestBody,
     VerifyEmailRequestBody,
