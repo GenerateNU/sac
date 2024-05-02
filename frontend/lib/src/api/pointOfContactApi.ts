@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
-import { baseApi, handleQueryParams } from '@/api/base';
-import { PointOfContact, pointOfContactSchema } from '@/types/pointOfContact';
-import { PaginationQueryParams } from '@/types/root';
+import { baseApi, handleQueryParams } from '@/src/api/base';
+import { PointOfContact, pointOfContactSchema } from '@/src/types/pointOfContact';
+import { PaginationQueryParams } from '@/src/types/root';
 
 const POC_API_BASE_URL = '/pocs';
 
@@ -39,6 +39,3 @@ export const pointOfContactApi = baseApi.injectEndpoints({
         })
     })
 });
-
-export const { usePointOfContactsQuery, usePointOfContactQuery } =
-    pointOfContactApi;

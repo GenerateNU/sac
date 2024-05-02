@@ -1,7 +1,5 @@
 import { z } from 'zod';
 
-// Small test
-
 // Schemas:
 export const loginRequestBodySchema = z.object({
     email: z.string().email(),

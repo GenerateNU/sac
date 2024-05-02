@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { rootModelSchema } from '@/types/root';
+import { rootModelSchema } from '@/src/types/root';
 
 // Enums:
 const recruitmentCycleEnum = z.enum(['fall', 'spring', 'fallSpring', 'always']);

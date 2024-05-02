@@ -1,15 +1,14 @@
 import { z } from 'zod';
 
-import { baseApi, handleQueryParams } from '@/api/base';
+import { baseApi, handleQueryParams } from '@/src/api/base';
 import {
     Category,
     CreateCategoryRequestBody,
     categorySchema
-} from '../types/category';
-import { PaginationQueryParams } from '../types/root';
-import { Tag } from '../types/tag';
+} from '@/src/types/category';
+import { PaginationQueryParams } from '@/src/types/root';
+import { Tag } from '@/src/types/tag';
 
-import { baseApi, handleQueryParams } from '../api/base';
 
 const CATEGORY_API_BASE_URL = '/categories';
 
@@ -104,13 +103,3 @@ export const categoryApi = baseApi.injectEndpoints({
         })
     })
 });
-
-export const {
-    useCreateCategoryMutation,
-    useCategoriesQuery,
-    useCategoryQuery,
-    useDeleteCategoryMutation,
-    useUpdateCategoryMutation,
-    useCategoryTagsQuery,
-    useCategoryTagQuery
-} = categoryApi;

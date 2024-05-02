@@ -1,27 +1,27 @@
 import { z } from 'zod';
 
-import { baseApi, handleQueryParams } from '@/api/base';
+import { baseApi, handleQueryParams } from '@/src/api/base';
 import {
     Club,
     CreateClubRequestBody,
     CreateClubTagsRequestBody,
     UpdateClubRequestBody,
     clubSchema
-} from '../types/club';
+} from '@/src/types/club';
 import {
     Contact,
     CreateContactRequestBody,
     contactSchema
-} from '../types/contact';
-import { Event, eventSchema } from '../types/event';
+} from '@/src/types/contact';
+import { Event, eventSchema } from '@/src/types/event';
 import {
     PointOfContact,
     UpdatePointOfContactRequestBody,
     pointOfContactSchema
-} from '../types/pointOfContact';
-import { PaginationQueryParams } from '../types/root';
-import { Tag, tagSchema } from '../types/tag';
-import { User, userSchema } from '../types/user';
+} from '@/src/types/pointOfContact';
+import { PaginationQueryParams } from '@/src/types/root';
+import { Tag, tagSchema } from '@/src/types/tag';
+import { User, userSchema } from '@/src/types/user';
 
 export const CLUB_API_BASE_URL = '/clubs';
 
@@ -308,25 +308,3 @@ export const clubApi = baseApi.injectEndpoints({
         })
     })
 });
-
-export const {
-    useCreateClubMutation,
-    useClubsQuery,
-    useClubQuery,
-    useUpdateClubMutation,
-    useDeleteClubMutation,
-    useClubContactsQuery,
-    useCreateContactMutation,
-    useClubEventsQuery,
-    useClubFollowersQuery,
-    useClubMembersQuery,
-    useClubPointOfContactsQuery,
-    useClubPointOfContactQuery,
-    useCreateClubPointOfContactMutation,
-    useUpdateClubPointOfContactPhotoMutation,
-    useUpdateClubPointOfContactMutation,
-    useDeleteClubPointOfContactMutation,
-    useCreateClubTagsMutation,
-    useClubTagsQuery,
-    useDeleteClubTagMutation
-} = clubApi;

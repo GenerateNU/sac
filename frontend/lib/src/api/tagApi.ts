@@ -1,13 +1,13 @@
 import { z } from 'zod';
 
-import { baseApi, handleQueryParams } from '@/api/base';
-import { PaginationQueryParams } from '@/types/root';
+import { baseApi, handleQueryParams } from '@/src/api/base';
+import { PaginationQueryParams } from '@/src/types/root';
 import {
     CreateTagRequestBody,
     Tag,
     UpdateTagRequestBody,
     tagSchema
-} from '../types/tag';
+} from '@/src/types/tag';
 
 const TAG_API_BASE_URL = '/tags';
 
@@ -72,11 +72,3 @@ export const tagApi = baseApi.injectEndpoints({
         })
     })
 });
-
-export const {
-    useTagsQuery,
-    useTagQuery,
-    useCreateTagMutation,
-    useUpdateTagMutation,
-    useDeleteTagMutation
-} = tagApi;

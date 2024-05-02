@@ -1,6 +1,6 @@
-import { baseApi } from '@/api/base';
-import { LoginRequestBody, RefreshTokenRequestBody } from '@/types/auth';
-import { User, userSchema } from '@/types/user';
+import { baseApi } from '@/src/api/base';
+import { LoginRequestBody, RefreshTokenRequestBody } from '@/src/types/auth';
+import { User, userSchema } from '@/src/types/user';
 import {
     EmailRequestBody,
     VerifyEmailRequestBody,
@@ -67,13 +67,3 @@ export const authApi = baseApi.injectEndpoints({
         })
     })
 });
-
-export const {
-    useLoginMutation,
-    useLogoutMutation,
-    useRefreshMutation,
-    useForgotPasswordMutation,
-    useVerifyPasswordResetTokenMutation,
-    useSendCodeMutation,
-    useVerifyEmailMutation
-} = authApi;

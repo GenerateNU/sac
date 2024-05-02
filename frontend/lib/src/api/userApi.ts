@@ -1,17 +1,17 @@
 import { z } from 'zod';
 
-import { baseApi, handleQueryParams } from '@/api/base';
-import { UpdatePasswordRequestBody } from '@/types/auth';
-import { Club, clubSchema } from '@/types/club';
-import { PaginationQueryParams } from '@/types/root';
-import { Tag, tagSchema } from '@/types/tag';
+import { baseApi, handleQueryParams } from '@/src/api/base';
+import { UpdatePasswordRequestBody } from '@/src/types/auth';
+import { Club, clubSchema } from '@/src/types/club';
+import { PaginationQueryParams } from '@/src/types/root';
+import { Tag, tagSchema } from '@/src/types/tag';
 import {
     CreateUserRequestBody,
     CreateUserTagsRequestBody,
     UpdateUserRequestBody,
     User,
     userSchema
-} from '@/types/user';
+} from '@/src/types/user';
 
 const USER_API_BASE_URL = '/users';
 
@@ -206,22 +206,3 @@ export const userApi = baseApi.injectEndpoints({
         })
     })
 });
-
-export const {
-    useUsersQuery,
-    useUserQuery,
-    useCurrentUserQuery,
-    useCreateUserMutation,
-    useUpdateUserMutation,
-    useDeleteUserMutation,
-    useUpdatePasswordMutation,
-    useUserFollowingQuery,
-    useCreateUserFollowingMutation,
-    useDeleteUserFollowingMutation,
-    useUserMembershipQuery,
-    useCreateUserMembershipMutation,
-    useDeleteUserMembershipMutation,
-    useUserTagsQuery,
-    useCreateUserTagsMutation,
-    useDeleteUserTagMutation
-} = userApi;

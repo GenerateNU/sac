@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { rootModelSchema } from '@/types/root';
+import { rootModelSchema } from '@/src/types/root';
 
 // Schemas:
 export const createTagRequestBodySchema = z.object({
