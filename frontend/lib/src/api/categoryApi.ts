@@ -7,8 +7,7 @@ import {
 } from '../types/category';
 import { PaginationQueryParams } from '../types/root';
 import { Tag } from '../types/tag';
-
-import { baseApi, handleQueryParams } from '../api/base';
+import { baseApi, handleQueryParams } from './base';
 
 const CATEGORY_API_BASE_URL = '/categories';
 
@@ -103,13 +102,3 @@ export const categoryApi = baseApi.injectEndpoints({
         })
     })
 });
-
-export const {
-    useCreateCategoryMutation,
-    useCategoriesQuery,
-    useCategoryQuery,
-    useDeleteCategoryMutation,
-    useUpdateCategoryMutation,
-    useCategoryTagsQuery,
-    useCategoryTagQuery
-} = categoryApi;

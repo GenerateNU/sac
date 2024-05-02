@@ -2,8 +2,7 @@ import { z } from 'zod';
 
 import { File, fileSchema } from '../types/file';
 import { PaginationQueryParams } from '../types/root';
-
-import { baseApi, handleQueryParams } from '../api/base';
+import { baseApi, handleQueryParams } from './base';
 
 const FILE_API_BASE_URL = '/files';
 
@@ -53,10 +52,3 @@ export const fileApi = baseApi.injectEndpoints({
         })
     })
 });
-
-export const {
-    useFilesQuery,
-    useFileQuery,
-    useCreateFileMutation,
-    useDeleteFileMutation
-} = fileApi;

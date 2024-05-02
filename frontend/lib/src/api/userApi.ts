@@ -11,8 +11,7 @@ import {
     User,
     userSchema
 } from '../types/user';
-
-import { baseApi, handleQueryParams } from '../api/base';
+import { baseApi, handleQueryParams } from './base';
 
 const USER_API_BASE_URL = '/users';
 
@@ -207,22 +206,3 @@ export const userApi = baseApi.injectEndpoints({
         })
     })
 });
-
-export const {
-    useUsersQuery,
-    useUserQuery,
-    useCurrentUserQuery,
-    useCreateUserMutation,
-    useUpdateUserMutation,
-    useDeleteUserMutation,
-    useUpdatePasswordMutation,
-    useUserFollowingQuery,
-    useCreateUserFollowingMutation,
-    useDeleteUserFollowingMutation,
-    useUserMembershipQuery,
-    useCreateUserMembershipMutation,
-    useDeleteUserMembershipMutation,
-    useUserTagsQuery,
-    useCreateUserTagsMutation,
-    useDeleteUserTagMutation
-} = userApi;

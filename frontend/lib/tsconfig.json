@@ -5,10 +5,12 @@
         "allowJs": true,
         "skipLibCheck": true,
         "strict": true,
-        "noEmit": true,
         "esModuleInterop": true,
+        "outDir": "./dist",
         "module": "esnext",
         "moduleResolution": "bundler",
+        "declaration": true,
+        "emitDeclarationOnly": false,
         "resolveJsonModule": true,
         "isolatedModules": true,
         "jsx": "preserve",
@@ -20,9 +22,9 @@
         ],
         "baseUrl": ".",
         "paths": {
-            "@/*": ["./*"]
+            "@/*": ["src/*"]
         }
     },
-    "include": ["**/*.ts", "**/*.tsx", "types/index.ts"],
-    "exclude": ["node_modules"]
+    "include": ["**/*.ts", "**/*.tsx"],
+    "exclude": ["node_modules", "./dist/**/*"]
 }

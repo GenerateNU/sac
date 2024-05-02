@@ -21,8 +21,7 @@ import {
 import { PaginationQueryParams } from '../types/root';
 import { Tag, tagSchema } from '../types/tag';
 import { User, userSchema } from '../types/user';
-
-import { baseApi, handleQueryParams } from '../api/base';
+import { baseApi, handleQueryParams } from './base';
 
 export const CLUB_API_BASE_URL = '/clubs';
 
@@ -309,25 +308,3 @@ export const clubApi = baseApi.injectEndpoints({
         })
     })
 });
-
-export const {
-    useCreateClubMutation,
-    useClubsQuery,
-    useClubQuery,
-    useUpdateClubMutation,
-    useDeleteClubMutation,
-    useClubContactsQuery,
-    useCreateContactMutation,
-    useClubEventsQuery,
-    useClubFollowersQuery,
-    useClubMembersQuery,
-    useClubPointOfContactsQuery,
-    useClubPointOfContactQuery,
-    useCreateClubPointOfContactMutation,
-    useUpdateClubPointOfContactPhotoMutation,
-    useUpdateClubPointOfContactMutation,
-    useDeleteClubPointOfContactMutation,
-    useCreateClubTagsMutation,
-    useClubTagsQuery,
-    useDeleteClubTagMutation
-} = clubApi;

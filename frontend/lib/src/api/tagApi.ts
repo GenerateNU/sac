@@ -7,8 +7,7 @@ import {
     UpdateTagRequestBody,
     tagSchema
 } from '../types/tag';
-
-import { baseApi, handleQueryParams } from '../api/base';
+import { baseApi, handleQueryParams } from './base';
 
 const TAG_API_BASE_URL = '/tags';
 
@@ -73,11 +72,3 @@ export const tagApi = baseApi.injectEndpoints({
         })
     })
 });
-
-export const {
-    useTagsQuery,
-    useTagQuery,
-    useCreateTagMutation,
-    useUpdateTagMutation,
-    useDeleteTagMutation
-} = tagApi;

@@ -1,19 +1,44 @@
 {
-    "name": "@sac/lib",
-    "main": "index.ts",
-    "version": "0.1.0",
+    "name": "@generatesac/lib",
+    "version": "1.0.5",
+    "module": "index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "description": "This repository holds the common types, apis, and components for frontend library used by the Student Activity Calendar.",
+    "repository": {
+        "url": "https://github.com/GenerateNU/sac"
+    },
+    "license": "ISC",
     "scripts": {
         "test": "echo \"Woah there, we have no frontend tests as of right now. Let's just say we're passing.\" && exit 0",
         "lint": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
-        "format": "prettier --write ."
+        "format": "prettier --write .",
+        "build": "rimraf dist && tsc",
+        "watch": "tsc --watch"
     },
-    "private": true,
     "dependencies": {
+        "@blocknote/core": "^0.12.4",
+        "@blocknote/react": "^0.12.4",
         "@reduxjs/toolkit": "^2.2.3",
+        "@tiptap/pm": "^2.3.1",
+        "eslint": "^9.1.1",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "react-icons": "^5.1.0",
         "zod": "^3.23.4"
     },
     "devDependencies": {
+        "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+        "@types/react": "^18",
         "eslint-plugin-prettier": "^5.1.3",
-        "prettier": "^3.2.4"
+        "postcss": "^8.4.38",
+        "prettier": "^3.2.4",
+        "rimraf": "^5.0.5",
+        "typescript": "^5.4.5"
+    },
+    "publishConfig": {
+        "@generatesac:registry": "https://npm.pkg.github.com"
     }
 }

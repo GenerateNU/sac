@@ -5,8 +5,7 @@ import {
     VerifyEmailRequestBody,
     VerifyPasswordResetTokenRequestBody
 } from '../types/verification';
-
-import { baseApi } from '../api/base';
+import { baseApi } from './base';
 
 const AUTH_API_BASE_URL = '/auth';
 
@@ -68,13 +67,3 @@ export const authApi = baseApi.injectEndpoints({
         })
     })
 });
-
-export const {
-    useLoginMutation,
-    useLogoutMutation,
-    useRefreshMutation,
-    useForgotPasswordMutation,
-    useVerifyPasswordResetTokenMutation,
-    useSendCodeMutation,
-    useVerifyEmailMutation
-} = authApi;

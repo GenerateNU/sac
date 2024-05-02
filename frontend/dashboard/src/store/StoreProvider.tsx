@@ -12,7 +12,7 @@ type StoreProviderProps = {
  * The Redux store provider component. This makes the store accessible globally across the repository
  */
 export default function StoreProvider({ children }: StoreProviderProps) {
-  const storeRef = useRef<AppStore>();
+    const storeRef = useRef<AppStore>();
 
     // Instantiate store singleton:
     if (!storeRef.current) {

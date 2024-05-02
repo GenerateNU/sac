@@ -1,6 +1,5 @@
 export * from './auth';
 export * from './error';
-
 export * from './root';
 export * from './club';
 export * from './contact';

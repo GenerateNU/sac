@@ -74,3 +74,33 @@ jobs:
         run: |
           cd frontend/lib
           yarn test
+  release-check:
+    name: Release Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v3
+
+      - name: Get new version of package.json
+        id: get_new_version
+        run: |
+          echo "new_version=$(jq -r '.version' frontend/lib/package.json)" >> $GITHUB_OUTPUT
+        
+      - name: Checkout main
+        uses: actions/checkout@v3
+        with:
+          ref: main
+
+      - name: Get old version of package.json
+        id: get_old_version
+        run: |
+          echo "old_version=$(jq -r '.version' frontend/lib/package.json)" >> $GITHUB_OUTPUT
+
+      - name: Compare versions
+        run: |
+          if [ "${{ steps.get_old_version.outputs.old_version }}" = "${{ steps.get_new_version.outputs.new_version }}" ]; then
+            echo "Old and new versions of package.json are identical, please bump the version number"
+            exit 1
+          else
+            echo "New package version idenitied!"
+          fi

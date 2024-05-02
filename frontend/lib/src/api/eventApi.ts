@@ -9,8 +9,7 @@ import {
 } from '../types/event';
 import { PaginationQueryParams } from '../types/root';
 import { Tag } from '../types/tag';
-
-import { baseApi, handleQueryParams } from '../api/base';
+import { baseApi, handleQueryParams } from './base';
 
 const EVENT_API_BASE_URL = '/events';
 
@@ -97,13 +96,3 @@ export const eventApi = baseApi.injectEndpoints({
         })
     })
 });
-
-export const {
-    useEventsQuery,
-    useEventQuery,
-    useCreateEventMutation,
-    useUpdateEventMutation,
-    useDeleteEventMutation,
-    useEventHostsQuery,
-    useEventTagsQuery
-} = eventApi;
