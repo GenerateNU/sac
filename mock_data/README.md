@@ -1,31 +1,29 @@
+# SAC Club Scraper
 
+A Python script that creates mock club, tag, and category data for development and testing.
 
-<h1 align="center">SAC Club Scraper</h1>
-
-<br />
-
-<div align="center">
-  <!-- Github Actions -->
-  <a href="https://github.com/GenerateNU/sac/actions/workflows/club_scraper.yml">
-    <img src="https://github.com/GenerateNU/sac/actions/workflows/club_scraper.yml/badge.svg"
-      alt="Club Scraper Workflow Status" />
-  </a>
-</div>
-
-A Rust CLI that scrapes Clubs from to be used as mock data for natural language search.
-
-> [!NOTE]
-> It is assumed you have Rust installed on your machine. If not, you can install it [here](https://www.rust-lang.org/tools/install).
-
-## Usage
+## Installation and Usage
+This script was last developed using Python 3.12.2, and assumes you have Python installed.
 
 ```console
-Usage: sac_club_scraper [OPTIONS]
+pip install -r requirements.txt
+python main.py mock.sql
+```
 
-Options:
-  -t, --top-n <TOP_N>    Top N results to parse [default: 1024]
-  -o, --output <OUTPUT>  Output file [default: mock.sql]
-  -p, --parent <PARENT>  Parent club UUID [default: 00000000-0000-0000-0000-000000000000]
-  -h, --help             Print help
-  -V, --version          Print version
+```console
+usage: Mock data generator [-h] [-a API_KEY] [-t TOP_N] [-p PARENT_UUID] output_file
+
+Generates mock club, category, and tag data for testing/development.
+
+positional arguments:
+  output_file           The SQL file to output the data to.
+
+options:
+  -h, --help            show this help message and exit
+  -a API_KEY, --api-key API_KEY
+                        The OpenAI API key to use for generating descriptions and tags for clubs. (default: key in OPENAI_API_KEY or '' if that doesn't exist.)
+  -t TOP_N, --top-n TOP_N
+                        The max # of clubs to retrieve from NUEngage. (default: 1024)
+  -p PARENT_UUID, --parent_uuid PARENT_UUID
+                        The UUID of the parent club for the generated clubs. (default: 00000000-0000-0000-0000-000000000000)
 ```
