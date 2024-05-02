@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-import { baseApi, handleQueryParams } from './base';
 import {
     Club,
     CreateClubRequestBody,
@@ -22,6 +21,7 @@ import {
 import { PaginationQueryParams } from '../types/root';
 import { Tag, tagSchema } from '../types/tag';
 import { User, userSchema } from '../types/user';
+import { baseApi, handleQueryParams } from './base';
 
 export const CLUB_API_BASE_URL = '/clubs';
 

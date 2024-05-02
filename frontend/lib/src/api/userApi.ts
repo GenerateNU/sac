@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-import { baseApi, handleQueryParams } from './base';
 import { UpdatePasswordRequestBody } from '../types/auth';
 import { Club, clubSchema } from '../types/club';
 import { PaginationQueryParams } from '../types/root';
@@ -12,6 +11,7 @@ import {
     User,
     userSchema
 } from '../types/user';
+import { baseApi, handleQueryParams } from './base';
 
 const USER_API_BASE_URL = '/users';
 
