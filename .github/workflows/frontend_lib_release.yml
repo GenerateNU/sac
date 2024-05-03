@@ -6,7 +6,6 @@ on:
       - main
     paths:
       - "frontend/lib/**"
-      - ".github/workflows/frontend_lib_release.yml"
 
 jobs:
   build:
@@ -21,5 +20,6 @@ jobs:
       - run: |
           cd frontend/lib
           yarn
+          yarn build
           NODE_AUTH_TOKEN=${{ secrets.NPM_AUTH_TOKEN }}
           yarn publish --access public

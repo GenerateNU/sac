@@ -1,6 +1,6 @@
 {
     "name": "@generatesac/lib",
-    "version": "1.0.5",
+    "version": "1.0.51",
     "module": "index.js",
     "types": "dist/index.d.ts",
     "files": [
