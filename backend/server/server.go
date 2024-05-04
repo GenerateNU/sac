@@ -1,8 +1,9 @@
 package server
 
 import (
-	"encoding/json"
 	"fmt"
+
+	go_json "github.com/goccy/go-json"
 
 	"github.com/GenerateNU/sac/backend/auth"
 	"github.com/GenerateNU/sac/backend/config"
@@ -83,8 +84,8 @@ func allRoutes(app *fiber.App, routeParams types.RouteParams) {
 
 func newFiberApp(appSettings config.ApplicationSettings) *fiber.App {
 	app := fiber.New(fiber.Config{
-		JSONEncoder: json.Marshal,
-		JSONDecoder: json.Unmarshal,
+		JSONEncoder: go_json.Marshal,
+		JSONDecoder: go_json.Unmarshal,
 	})
 
 	app.Use(cors.New(cors.Config{
