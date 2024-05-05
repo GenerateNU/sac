@@ -5,11 +5,6 @@ on:
     paths:
       - "frontend/mobile/**"
       - ".github/workflows/mobile_codeql.yml"
-  pull_request:
-    types: [opened]
-    paths:
-      - "frontend/mobile/**"
-      - ".github/workflows/mobile_codeql.yml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
