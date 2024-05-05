@@ -7,11 +7,6 @@ on:
     paths:
       - frontend/web/**
       - .github/workflows/web.yml
-  pull_request:
-    types: opened
-    paths:
-      - frontend/web/**
-      - .github/workflows/web.yml
 
 jobs:
   format:

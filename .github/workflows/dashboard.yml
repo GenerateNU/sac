@@ -7,11 +7,6 @@ on:
     paths:
       - frontend/dashboard/**
       - .github/workflows/dashboard.yml
-  pull_request:
-    types: opened
-    paths:
-      - frontend/dashboard/**
-      - .github/workflows/dashboard.yml
 
 jobs:
   format:
