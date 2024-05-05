@@ -11,6 +11,4 @@ func UserMember(userParams types.RouteParams) {
 	userMember := userParams.Router.Group("/member")
 
 	userMember.Get("/", userMemberController.GetMembership)
-	userMember.Post("/:clubID", userParams.AuthMiddleware.UserAuthorizeById, userMemberController.CreateMembership)
-	userMember.Delete("/:clubID", userParams.AuthMiddleware.UserAuthorizeById, userMemberController.DeleteMembership)
 }

@@ -8,8 +8,6 @@ import (
 )
 
 type UserMemberServiceInterface interface {
-	CreateMembership(userID string, clubID string) *errors.Error
-	DeleteMembership(userID string, clubID string) *errors.Error
 	GetMembership(userID string) ([]models.Club, *errors.Error)
 }
 
@@ -19,32 +17,6 @@ type UserMemberService struct {
 
 func NewUserMemberService(serviceParams types.ServiceParams) UserMemberServiceInterface {
 	return &UserMemberService{serviceParams}
-}
-
-func (u *UserMemberService) CreateMembership(userID string, clubID string) *errors.Error {
-	userIdAsUUID, err := utilities.ValidateID(userID)
-	if err != nil {
-		return err
-	}
-	clubIdAsUUID, err := utilities.ValidateID(clubID)
-	if err != nil {
-		return err
-	}
-
-	return CreateMember(u.DB, *userIdAsUUID, *clubIdAsUUID)
-}
-
-func (u *UserMemberService) DeleteMembership(userID string, clubID string) *errors.Error {
-	userIdAsUUID, err := utilities.ValidateID(userID)
-	if err != nil {
-		return err
-	}
-
-	clubIdAsUUID, err := utilities.ValidateID(clubID)
-	if err != nil {
-		return err
-	}
-	return DeleteMember(u.DB, *userIdAsUUID, *clubIdAsUUID)
 }
 
 func (u *UserMemberService) GetMembership(userID string) ([]models.Club, *errors.Error) {
