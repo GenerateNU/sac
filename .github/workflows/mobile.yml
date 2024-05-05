@@ -7,11 +7,6 @@ on:
     paths:
       - frontend/mobile/**
       - .github/workflows/mobile.yml
-  pull_request:
-    types: opened
-    paths:
-      - frontend/mobile/**
-      - .github/workflows/mobile.yml
 
 jobs:
   format:

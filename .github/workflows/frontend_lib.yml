@@ -7,11 +7,6 @@ on:
     paths:
       - frontend/lib/**
       - .github/workflows/frontend_lib.yml
-  pull_request:
-    types: opened
-    paths:
-      - frontend/lib/**
-      - .github/workflows/frontend_lib.yml
 
 jobs:
   format:
@@ -85,7 +80,7 @@ jobs:
         id: get_new_version
         run: |
           echo "new_version=$(jq -r '.version' frontend/lib/package.json)" >> $GITHUB_OUTPUT
-        
+
       - name: Checkout main
         uses: actions/checkout@v3
         with:
