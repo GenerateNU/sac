@@ -11,5 +11,5 @@ type Integrations struct {
 	AI     search.AIClientInterface
 	Email  email.EmailClientInterface
 	File   file.FileClientInterface
-	Cache  cache.RedisClientInterface
+	// Cache  cache.RedisClientInterface
 }
