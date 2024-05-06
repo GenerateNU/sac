@@ -4,7 +4,7 @@ This repository holds the common types, apis, and components for frontend librar
 
 To install the page, navigate to the target repo and initiate the following command:
 
--   `yarn add @generate/sac`
+-   `yarn add @generatesac/lib`
 
 ## Development / Testing
 

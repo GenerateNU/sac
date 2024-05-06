@@ -5,11 +5,6 @@ on:
     paths:
       - "frontend/lib/**"
       - ".github/workflows/frontend_lib_codeql.yml"
-  pull_request:
-    types: [opened]
-    paths:
-      - "frontend/lib/**"
-      - ".github/workflows/frontend_lib_codeql.yml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

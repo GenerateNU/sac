@@ -9,6 +9,8 @@ import (
 
 type ClubMemberServiceInterface interface {
 	GetClubMembers(clubID string, limit string, page string) ([]models.User, *errors.Error)
+	CreateClubMember(clubID string, userID string) *errors.Error
+	DeleteClubMember(clubID string, userID string) *errors.Error
 }
 
 type ClubMemberService struct {
@@ -20,7 +22,7 @@ func NewClubMemberService(params types.ServiceParams) ClubMemberServiceInterface
 }
 
 func (cms *ClubMemberService) GetClubMembers(clubID string, limit string, page string) ([]models.User, *errors.Error) {
-	idAsUUID, err := utilities.ValidateID(clubID)
+	clubIDAsUUID, err := utilities.ValidateID(clubID)
 	if err != nil {
 		return nil, &errors.FailedToValidateID
 	}
@@ -35,5 +37,33 @@ func (cms *ClubMemberService) GetClubMembers(clubID string, limit string, page s
 		return nil, &errors.FailedToValidatePage
 	}
 
-	return GetClubMembers(cms.DB, *idAsUUID, *limitAsInt, *pageAsInt)
+	return GetClubMembers(cms.DB, *clubIDAsUUID, *limitAsInt, *pageAsInt)
+}
+
+func (cms *ClubMemberService) CreateClubMember(clubID string, userID string) *errors.Error {
+	clubIDAsUUID, err := utilities.ValidateID(clubID)
+	if err != nil {
+		return &errors.FailedToValidateID
+	}
+
+	userIDAsUUID, err := utilities.ValidateID(userID)
+	if err != nil {
+		return &errors.FailedToValidateID
+	}
+
+	return CreateClubMember(cms.DB, *clubIDAsUUID, *userIDAsUUID)
+}
+
+func (cms *ClubMemberService) DeleteClubMember(clubID string, userID string) *errors.Error {
+	clubIDAsUUID, err := utilities.ValidateID(clubID)
+	if err != nil {
+		return &errors.FailedToValidateID
+	}
+
+	userIDAsUUID, err := utilities.ValidateID(userID)
+	if err != nil {
+		return &errors.FailedToValidateID
+	}
+
+	return DeleteClubMember(cms.DB, *clubIDAsUUID, *userIDAsUUID)
 }
