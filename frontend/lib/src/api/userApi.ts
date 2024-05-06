@@ -145,31 +145,6 @@ export const userApi = baseApi.injectEndpoints({
                 return z.array(clubSchema).parse(response);
             }
         }),
-        createUserMembership: builder.mutation<
-            void,
-            { userID: string; clubID: string }
-        >({
-            query: ({ userID, clubID }) => ({
-                url: `${USER_API_BASE_URL}/${userID}/member/${clubID}`,
-                method: 'POST'
-            }),
-            invalidatesTags: (_result, _, { userID }) => [
-                { type: 'Follower', id: userID },
-                { type: 'Member', id: userID }
-            ]
-        }),
-        deleteUserMembership: builder.mutation<
-            void,
-            { userID: string; clubID: string }
-        >({
-            query: ({ userID, clubID }) => ({
-                url: `${USER_API_BASE_URL}/${userID}/member/${clubID}`,
-                method: 'DELETE'
-            }),
-            invalidatesTags: (_result, _, { userID }) => [
-                { type: 'Member', id: userID }
-            ]
-        }),
         userTags: builder.query<Tag[], void>({
             query: () => ({
                 url: `${USER_API_BASE_URL}/tags/`,
