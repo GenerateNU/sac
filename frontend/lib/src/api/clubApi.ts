@@ -174,6 +174,28 @@ export const clubApi = baseApi.injectEndpoints({
                 return z.array(userSchema).parse(response);
             }
         }),
+        createClubMember: builder.mutation<
+            User,
+            { clubID: string; userID: string }
+        >({
+            query: ({ clubID, userID }) => ({
+                url: `${CLUB_API_BASE_URL}/${clubID}/members/${userID}`,
+                method: 'POST'
+            }),
+            invalidatesTags: (result, _, { userID }) =>
+                result ? [{ type: 'User', id: userID }] : []
+        }),
+        deleteClubMember: builder.mutation<
+            void,
+            { clubID: string; userID: string }
+        >({
+            query: ({ clubID, userID }) => ({
+                url: `${CLUB_API_BASE_URL}/${clubID}/members/${userID}`,
+                method: 'DELETE'
+            }),
+            invalidatesTags: (result, _, { userID }) =>
+                result ? [{ type: 'User', id: userID }] : []
+        }),
         clubPointOfContacts: builder.query<PointOfContact[], string>({
             query: (id) => ({
                 url: `${CLUB_API_BASE_URL}/${id}/pocs/`,
@@ -192,10 +214,10 @@ export const clubApi = baseApi.injectEndpoints({
         }),
         clubPointOfContact: builder.query<
             PointOfContact,
-            { clubId: string; pocId: string }
+            { clubID: string; pocId: string }
         >({
-            query: ({ clubId, pocId }) => ({
-                url: `${CLUB_API_BASE_URL}/${clubId}/pocs/${pocId}`,
+            query: ({ clubID, pocId }) => ({
+                url: `${CLUB_API_BASE_URL}/${clubID}/pocs/${pocId}`,
                 method: 'GET'
             }),
             providesTags: (result, _, { pocId }) =>
@@ -220,10 +242,10 @@ export const clubApi = baseApi.injectEndpoints({
         }),
         updateClubPointOfContactPhoto: builder.mutation<
             PointOfContact,
-            { clubId: string; pocId: string; body: FormData }
+            { clubID: string; pocId: string; body: FormData }
         >({
-            query: ({ clubId, pocId, body }) => ({
-                url: `${CLUB_API_BASE_URL}/${clubId}/pocs/${pocId}/photo`,
+            query: ({ clubID, pocId, body }) => ({
+                url: `${CLUB_API_BASE_URL}/${clubID}/pocs/${pocId}/photo`,
                 method: 'PATCH',
                 body
             }),
@@ -236,13 +258,13 @@ export const clubApi = baseApi.injectEndpoints({
         updateClubPointOfContact: builder.mutation<
             PointOfContact,
             {
-                clubId: string;
+                clubID: string;
                 pocId: string;
                 body: UpdatePointOfContactRequestBody;
             }
         >({
-            query: ({ clubId, pocId, body }) => ({
-                url: `${CLUB_API_BASE_URL}/${clubId}/pocs/${pocId}`,
+            query: ({ clubID, pocId, body }) => ({
+                url: `${CLUB_API_BASE_URL}/${clubID}/pocs/${pocId}`,
                 method: 'PATCH',
                 body
             }),
@@ -254,10 +276,10 @@ export const clubApi = baseApi.injectEndpoints({
         }),
         deleteClubPointOfContact: builder.mutation<
             void,
-            { clubId: string; pocId: string }
+            { clubID: string; pocId: string }
         >({
-            query: ({ clubId, pocId }) => ({
-                url: `${CLUB_API_BASE_URL}/${clubId}/pocs/${pocId}`,
+            query: ({ clubID, pocId }) => ({
+                url: `${CLUB_API_BASE_URL}/${clubID}/pocs/${pocId}`,
                 method: 'DELETE'
             }),
             invalidatesTags: (_result, _, { pocId }) => [
@@ -296,10 +318,10 @@ export const clubApi = baseApi.injectEndpoints({
         }),
         deleteClubTag: builder.mutation<
             void,
-            { clubId: string; tagId: string }
+            { clubID: string; tagId: string }
         >({
-            query: ({ clubId, tagId }) => ({
-                url: `${CLUB_API_BASE_URL}/${clubId}/tags/${tagId}`,
+            query: ({ clubID, tagId }) => ({
+                url: `${CLUB_API_BASE_URL}/${clubID}/tags/${tagId}`,
                 method: 'DELETE'
             }),
             invalidatesTags: (_result, _, { tagId }) => [
