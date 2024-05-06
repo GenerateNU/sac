@@ -11,7 +11,7 @@
     "test": "echo \"Woah there, we have no frontend tests as of right now. Let's just say we're passing.\" && exit 0"
   },
   "dependencies": {
-    "@generatesac/lib": "^1.0.41",
+    "@generatesac/lib": "^1.0.51",
     "@reduxjs/toolkit": "^2.2.3",
     "next": "14.2.3",
     "react": "^18",
