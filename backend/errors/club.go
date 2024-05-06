@@ -3,6 +3,10 @@ package errors
 import "github.com/gofiber/fiber/v2"
 
 var (
+	FailedToUpdateClubMembers = Error{
+		StatusCode: fiber.StatusInternalServerError,
+		Message:    "failed to update club members",
+	}
 	FailedToValidateUserID = Error{
 		StatusCode: fiber.StatusBadRequest,
 		Message:    "failed to validate user id",

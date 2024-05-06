@@ -11,4 +11,6 @@ func ClubMember(clubParams types.RouteParams) {
 
 	// api/v1/clubs/:clubID/members/*
 	clubMembers.Get("/", clubMemberController.GetClubMembers)
+	clubMembers.Post("/:userID", clubParams.AuthMiddleware.ClubAuthorizeById, clubMemberController.CreateClubMember)
+	clubMembers.Delete("/:userID", clubParams.AuthMiddleware.ClubAuthorizeById, clubMemberController.DeleteClubMember)
 }

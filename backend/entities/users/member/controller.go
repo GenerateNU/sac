@@ -1,7 +1,6 @@
 package member
 
 import (
-	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -11,54 +10,6 @@ type UserMemberController struct {
 
 func NewUserMemberController(clubMemberService UserMemberServiceInterface) *UserMemberController {
 	return &UserMemberController{clubMemberService: clubMemberService}
-}
-
-// CreateMembership godoc
-//
-// @Summary		Join a club
-// @Description	Join a club
-// @ID			create-membership
-// @Tags      	user-member
-// @Accept		json
-// @Produce		json
-// @Param		userID		path	string	true	"User ID"
-// @Param		clubID		path	string	true	"Club ID"
-// @Success		201	  {object}	    utilities.SuccessResponse
-// @Failure     401   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
-// @Router		/users/{userID}/member/{clubID}/  [post]
-func (um *UserMemberController) CreateMembership(c *fiber.Ctx) error {
-	err := um.clubMemberService.CreateMembership(c.Params("userID"), c.Params("clubID"))
-	if err != nil {
-		return err.FiberError(c)
-	}
-
-	return utilities.FiberMessage(c, fiber.StatusCreated, "Successfully joined club")
-}
-
-// DeleteMembership godoc
-//
-// @Summary		Leave a club
-// @Description	Leave a club
-// @ID			delete-membership
-// @Tags      	user-member
-// @Accept		json
-// @Produce		json
-// @Param		userID		path	string	true	"User ID"
-// @Param		clubID		path	string	true	"Club ID"
-// @Success		204	  {object}	    utilities.SuccessResponse
-// @Failure     401   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
-// @Router		/users/{userID}/member/{clubID}/  [delete]
-func (um *UserMemberController) DeleteMembership(c *fiber.Ctx) error {
-	err := um.clubMemberService.DeleteMembership(c.Params("userID"), c.Params("clubID"))
-	if err != nil {
-		return err.FiberError(c)
-	}
-
-	return c.SendStatus(fiber.StatusNoContent)
 }
 
 // GetMembership godoc
