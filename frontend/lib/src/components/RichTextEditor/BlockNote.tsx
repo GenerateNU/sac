@@ -1,5 +1,3 @@
-'use client';
-
 import { Dispatch, SetStateAction } from 'react';
 
 import { PartialBlock } from '@blocknote/core';
@@ -8,7 +6,8 @@ import { BlockNoteView, useCreateBlockNote } from '@blocknote/react';
 import { EditorFonts, editorFonts, schema } from './config/config';
 import SideBarMenu from './elements/SideBarMenu';
 import SuggestionMenu from './elements/SuggestionMenu';
-import './styles/BlockNote.styles.css';
+import "@blocknote/react/style.css";
+import FormattingToolbar from './elements/FormattingToolbar';
 
 type EditorProps = {
     description: PartialBlock[];
@@ -39,7 +38,6 @@ export default function Editor({
 
     // Save the content to state on any change:
     function onChange() {
-        console.log(editor.document);
         const content: any = editor.document;
         setDescription(content as Record<string, string>);
     }
@@ -59,9 +57,11 @@ export default function Editor({
                 theme={editorFonts[fontFamily]}
                 slashMenu={false}
                 sideMenu={false}
+                formattingToolbar={false}
             >
                 <SuggestionMenu editor={editor} />
                 <SideBarMenu />
+                <FormattingToolbar />
             </BlockNoteView>
         </div>
     );
