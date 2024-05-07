@@ -35,7 +35,7 @@ func TestRecurrenceUntil(t *testing.T) {
 		t.Errorf("unexpected error: %v", err)
 	}
 
-	expected := []protos.Event{
+	expected := []protos.Occurence{
 		{
 			Start: time.Date(2024, 1, 3, 6, 30, 0, 0, time.UTC),
 			End:   time.Date(2024, 1, 3, 9, 0, 0, 0, time.UTC),

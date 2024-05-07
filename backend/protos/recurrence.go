@@ -69,12 +69,12 @@ func NewRecurrence(isWeekly bool, isBiweekly bool, isMonthly bool, happensOnMond
 	}, nil
 }
 
-type Event struct {
+type Occurence struct {
 	Start time.Time
 	End   time.Time
 }
 
-func (r *Recurrence) ReccurUntil(start time.Time, end time.Time, termination time.Time) (result []Event, err error) {
+func (r *Recurrence) ReccurUntil(start time.Time, end time.Time, termination time.Time) (result []Occurence, err error) {
 	if start.After(end) {
 		return nil, errors.New("start date is after end date")
 	}
@@ -94,25 +94,25 @@ func (r *Recurrence) ReccurUntil(start time.Time, end time.Time, termination tim
 		}
 
 		if r.HappensOnMonday && current.Weekday() == time.Monday {
-			result = append(result, Event{current, end})
+			result = append(result, Occurence{current, end})
 		}
 		if r.HappensOnTuesday && current.Weekday() == time.Tuesday {
-			result = append(result, Event{current, end})
+			result = append(result, Occurence{current, end})
 		}
 		if r.HappensOnWednesday && current.Weekday() == time.Wednesday {
-			result = append(result, Event{current, end})
+			result = append(result, Occurence{current, end})
 		}
 		if r.HappensOnThursday && current.Weekday() == time.Thursday {
-			result = append(result, Event{current, end})
+			result = append(result, Occurence{current, end})
 		}
 		if r.HappensOnFriday && current.Weekday() == time.Friday {
-			result = append(result, Event{current, end})
+			result = append(result, Occurence{current, end})
 		}
 		if r.HappensOnSaturday && current.Weekday() == time.Saturday {
-			result = append(result, Event{current, end})
+			result = append(result, Occurence{current, end})
 		}
 		if r.HappensOnSunday && current.Weekday() == time.Sunday {
-			result = append(result, Event{current, end})
+			result = append(result, Occurence{current, end})
 		}
 
 		if r.IsWeekly {
