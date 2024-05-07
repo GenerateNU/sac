@@ -63,4 +63,16 @@ var (
 		StatusCode: fiber.StatusInternalServerError,
 		Message:    "failed to get event hosts",
 	}
+	FailedToUnmarshallRecurrence = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "failed to unmarshall recurrence",
+	}
+	FailedToValidateTermination = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "failed to validate termination",
+	}
+	FailedToCalculateOccurences = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "failed to calculate occurences",
+	}
 )
