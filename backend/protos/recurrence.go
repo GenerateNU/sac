@@ -5,34 +5,6 @@ import (
 	"time"
 )
 
-const (
-	// housekeeping
-	PROTO_VERSION byte = 1
-	PROTO_SIZE    int  = 11
-
-	// indices
-	VERSION_INDEX            int = 0
-	IS_WEEKLY_INDEX          int = 1
-	IS_BIWEEKLY_INDEX        int = 2
-	IS_MONTHLY_INDEX         int = 3
-	START_DAYS_OF_WEEK_INDEX int = 4
-	END_DAYS_OF_WEEK_INDEX   int = 11
-)
-
-// PROTO v1
-// 0: [proto version]
-// 1: [is this weekly?]
-// 2: [is this biweekly?]
-// 3: [is this monthly?]
-// 4: [does this occur on Monday?]
-// 5: [does this occur on Tuesday?]
-// 6: [does this occur on Wednesday?]
-// 7: [does this occur on Thursday?]
-// 8: [does this occur on Friday?]
-// 9: [does this occur on Saturday?]
-// 10: [does this occur on Sunday?]
-type BinaryRecurrence []byte
-
 type Recurrence struct {
 	IsWeekly           bool
 	IsBiweekly         bool
@@ -126,6 +98,34 @@ func (r *Recurrence) ReccurUntil(start time.Time, end time.Time, termination tim
 
 	return result, nil
 }
+
+const (
+	// housekeeping
+	PROTO_VERSION byte = 1
+	PROTO_SIZE    int  = 11
+
+	// indices
+	VERSION_INDEX            int = 0
+	IS_WEEKLY_INDEX          int = 1
+	IS_BIWEEKLY_INDEX        int = 2
+	IS_MONTHLY_INDEX         int = 3
+	START_DAYS_OF_WEEK_INDEX int = 4
+	END_DAYS_OF_WEEK_INDEX   int = 11
+)
+
+// PROTO v1
+// 0: [proto version]
+// 1: [is this weekly?]
+// 2: [is this biweekly?]
+// 3: [is this monthly?]
+// 4: [does this occur on Monday?]
+// 5: [does this occur on Tuesday?]
+// 6: [does this occur on Wednesday?]
+// 7: [does this occur on Thursday?]
+// 8: [does this occur on Friday?]
+// 9: [does this occur on Saturday?]
+// 10: [does this occur on Sunday?]
+type BinaryRecurrence []byte
 
 func (r *Recurrence) MarshallBinary() (data []byte, err error) {
 	data = make([]byte, PROTO_SIZE)
