@@ -9,6 +9,7 @@ func ClubTag(clubParams types.RouteParams) {
 
 	clubTags := clubParams.Router.Group("/tags")
 
+	// api/v1/clubs/:clubID/tags/*
 	clubTags.Get("/", clubTagController.GetClubTags)
 	clubTags.Post("/", clubParams.AuthMiddleware.ClubAuthorizeById, clubTagController.CreateClubTags)
 	clubTags.Delete("/:tagID", clubParams.AuthMiddleware.ClubAuthorizeById, clubTagController.DeleteClubTag)

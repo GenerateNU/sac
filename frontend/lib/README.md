@@ -4,21 +4,21 @@ This repository holds the common types, apis, and components for frontend librar
 
 To install the page, navigate to the target repo and initiate the following command:
 
--   `yarn add @generatesac/lib`
+-   `yarn add @generatesac/blocks`
 
 ## Development / Testing
 
 When contributing to the package, you will likely want to test your code locally before pushing to remote. To link it with real-time updates, following the steps below:
 
 1. Navigate to `/frontend/lib` and run `yarn link`
-2. Mavigate to the target repo, ppen a second terminal and run `yarn link "@generatesac/lib"`
+2. Mavigate to the target repo, ppen a second terminal and run `yarn link "@generatesac/blocks"`
 3. Navigate back to `/frontend/lib` and run `yarn watch`.
 
 When you are ready to finish local development:
 
-1. Exit out of "watch mode" using `cmd + C` / `ctrl + C`
+1. Exit out of "watch mode" using `ctrl + C`
 1. Navigate to `/frontend/lib` and run `yarn unlink`
-1. Navigate to the target repo and run `yarn link "@generatesac/lib"`
+1. Navigate to the target repo and run `yarn link "@generatesac/blocks"`
 
 ## Contributing
 
