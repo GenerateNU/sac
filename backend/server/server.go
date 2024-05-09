@@ -58,9 +58,10 @@ func Init(db *gorm.DB, integrations integrations.Integrations, settings config.S
 		ServiceParams: types.ServiceParams{
 			DB:           db,
 			Validate:     validate,
-			AuthSettings: &settings.Auth,
+			Auth:         &settings.Auth,
 			JWT:          jwt,
 			Integrations: integrations,
+			Calendar:     &settings.Calendar,
 		},
 	}
 

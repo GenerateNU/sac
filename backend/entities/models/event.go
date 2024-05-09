@@ -38,6 +38,9 @@ type Event struct {
 	Start time.Time `json:"start_time" validate:"required,ltecsfield=EndTime"`
 	End   time.Time `json:"end_time" validate:"required,gtecsfield=StartTime"`
 
+	// series
+	SeriesID *uuid.UUID `json:"-" validate:"-"`
+
 	// bridgerton
 	RSVP         []User         `gorm:"many2many:user_event_rsvps;" json:"-" validate:"-"`
 	Waitlist     []User         `gorm:"many2many:user_event_waitlists;" json:"-" validate:"-"`

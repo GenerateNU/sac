@@ -19,7 +19,8 @@ type RouteParams struct {
 type ServiceParams struct {
 	DB           *gorm.DB
 	Validate     *validator.Validate
-	AuthSettings *config.AuthSettings
+	Auth         *config.AuthSettings
 	JWT          auth.JWTClientInterface
+	Calendar     *config.CalendarSettings
 	Integrations integrations.Integrations
 }

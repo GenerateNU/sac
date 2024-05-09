@@ -75,4 +75,8 @@ var (
 		StatusCode: fiber.StatusBadRequest,
 		Message:    "failed to calculate occurences",
 	}
+	FailedToReccurUntil = Error{
+		StatusCode: fiber.StatusBadRequest,
+		Message:    "failed to reccur until",
+	}
 )

@@ -24,7 +24,7 @@ func GetEvents(db *gorm.DB, limit int, page int) ([]models.Event, *errors.Error)
 	return events, nil
 }
 
-func GetEvent(db *gorm.DB, eventID uuid.UUID, preloads ...transactions.OptionalQuery) ([]models.Event, *errors.Error) {
+func GetEvent(db *gorm.DB, eventID uuid.UUID, preloads ...transactions.OptionalQuery) (*models.Event, *errors.Error) {
 	var event models.Event
 
 	query := db
@@ -32,7 +32,6 @@ func GetEvent(db *gorm.DB, eventID uuid.UUID, preloads ...transactions.OptionalQ
 	for _, preload := range preloads {
 		query = preload(query)
 	}
-
 	if err := query.First(&event, eventID).Error; err != nil {
 		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, &errors.EventNotFound
@@ -41,7 +40,7 @@ func GetEvent(db *gorm.DB, eventID uuid.UUID, preloads ...transactions.OptionalQ
 		}
 	}
 
-	return []models.Event{event}, nil
+	return &event, nil
 }
 
 func GetSeriesID(db *gorm.DB, eventID uuid.UUID) (*uuid.UUID, *errors.Error) {
@@ -91,20 +90,12 @@ func GetSeriesByID(db *gorm.DB, id uuid.UUID) ([]models.Event, *errors.Error) {
 	return series.Events, nil
 }
 
-func CreateEvent(db *gorm.DB, event models.Event) ([]models.Event, *errors.Error) {
-	tx := db.Begin()
-
-	if err := tx.Create(&event).Error; err != nil {
-		tx.Rollback()
+func CreateEvent(db *gorm.DB, event models.Event) (*models.Event, *errors.Error) {
+	if err := db.Create(&event).Error; err != nil {
 		return nil, &errors.FailedToCreateEvent
 	}
 
-	if err := tx.Commit().Error; err != nil {
-		tx.Rollback()
-		return nil, &errors.FailedToCreateEvent
-	}
-
-	return []models.Event{event}, nil
+	return &event, nil
 }
 
 func CreateEventSeries(db *gorm.DB, series models.Series) ([]models.Event, *errors.Error) {

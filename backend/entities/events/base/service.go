@@ -8,12 +8,13 @@ import (
 	"github.com/GenerateNU/sac/backend/protos"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/google/uuid"
 )
 
 type EventServiceInterface interface {
 	// getters
 	GetEvents(limit string, page string) ([]models.Event, *errors.Error)
-	GetEvent(eventID string) (models.Event, *errors.Error)
+	GetEvent(eventID string) (*models.Event, *errors.Error)
 	// event cud
 	CreateEvent(body models.CreateEventRequestBody) ([]models.Event, *errors.Error)
 	UpdateEvent(eventID string, eventBody models.UpdateEventRequestBody) ([]models.Event, *errors.Error)
@@ -46,7 +47,7 @@ func (e *EventService) GetEvents(limit string, page string) ([]models.Event, *er
 	return GetEvents(e.DB, *limitAsInt, *pageAsInt)
 }
 
-func (e *EventService) GetEvent(eventID string) (models.Event, *errors.Error) {
+func (e *EventService) GetEvent(eventID string) (*models.Event, *errors.Error) {
 	idAsUUID, err := utilities.ValidateID(eventID)
 	if err != nil {
 		return nil, &errors.FailedToValidateID
@@ -66,34 +67,42 @@ func (e *EventService) CreateEvent(body models.CreateEventRequestBody) ([]models
 	}
 
 	if body.IsSeries {
-		handleEventSeries(event, body.Recurrence, body.Termination)
-	}
+		events, seriesID, err := handleEventSeries(event, body.Recurrence, body.Termination, e.Calendar.MaxTerminationDate)
+		if err != nil {
+			return nil, err
+		}
 
+		return CreateEventSeries(e.DB, events, seriesID)
+	} else {
+		return CreateEvent(e.DB, *event)
+	}
 }
 
-func handleEventSeries(event *models.Event, binaryRecurrence protos.BinaryRecurrence, termination time.Time) ([]models.Event, *errors.Error) {
+func handleEventSeries(event *models.Event, binaryRecurrence protos.BinaryRecurrence, termination time.Time, maxTermination time.Time) ([]models.Event, *uuid.UUID, *errors.Error) {
+	if termination.After(maxTermination) {
+		return nil, nil, &errors.FailedToValidateTermination
+	}
+
 	var recurrence protos.Recurrence
 	if unmarshallErr := recurrence.UnmarshallBinary(binaryRecurrence); unmarshallErr != nil {
-		return nil, &errors.FailedToUnmarshallRecurrence
+		return nil, nil, &errors.FailedToUnmarshallRecurrence
 	}
 
-	if termination.Before(event.Start) || termination.After(event.End) {
-		return nil, &errors.FailedToValidateTermination
+	occurences, err := recurrence.ReccurUntil(event.Start, event.End, termination)
+	if err != nil {
+		return nil, nil, &errors.FailedToReccurUntil
 	}
 
-	currentYear, currentMonth, currentDay := event.Start.Date()
+	events := make([]models.Event, len(occurences))
+	seriesID := uuid.New()
 
-	numOccurences, occurencesBetweenErr := recurrence.OccurencesBetween(event.Start, termination)
-	if occurencesBetweenErr != nil {
-		return nil, &errors.FailedToCalculateOccurences
+	for index, occurence := range occurences {
+		eventCopy := *event
+		eventCopy.SeriesID = &seriesID
+		eventCopy.Start = occurence.Start
+		eventCopy.End = occurence.End
+		events[index] = eventCopy
 	}
 
-	events := make([]models.Event, *numOccurences)
-
-	for index := 0; index < *numOccurences; index++ {
-		events[index] = *event
-		events[index].Start = currentTime
-		events[index].End = currentTime.Add(event.End.Sub(event.Start))
-		currentTime = currentTime.Add(recurrence.GetDuration())
-	}
+	return events, &seriesID, nil
 }

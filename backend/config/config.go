@@ -8,14 +8,15 @@ import (
 )
 
 type Settings struct {
-	Application      ApplicationSettings
-	Database         DatabaseSettings
-	SuperUser        SuperUserSettings
-	Auth             AuthSettings
-	AWS              AWSSettings
-	PineconeSettings PineconeSettings
-	OpenAISettings   OpenAISettings
-	ResendSettings   ResendSettings
+	Application ApplicationSettings
+	Database    DatabaseSettings
+	SuperUser   SuperUserSettings
+	Auth        AuthSettings
+	AWS         AWSSettings
+	Pinecone    PineconeSettings
+	OpenAI      OpenAISettings
+	Resend      ResendSettings
+	Calendar    CalendarSettings
 }
 
 type intermediateSettings struct {
@@ -23,6 +24,7 @@ type intermediateSettings struct {
 	Database    intermediateDatabaseSettings  `yaml:"database"`
 	SuperUser   intermediateSuperUserSettings `yaml:"superuser"`
 	Auth        intermediateAuthSettings      `yaml:"authsecret"`
+	Calendar    CalendarSettings              `yaml:"calendar"`
 }
 
 func (int *intermediateSettings) into() (*Settings, error) {
