@@ -1,7 +1,7 @@
 package database
 
 import (
-	stdliberrors "errors"
+	"errors"
 
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/constants"
@@ -67,7 +67,7 @@ func CreateSuperUserIfNotExists(settings config.Settings, db *gorm.DB) error {
 	var superUser models.User
 
 	if err := db.Where("role = ?", models.Super).First(&superUser).Error; err != nil {
-		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			if err := createSuperUser(settings, db); err != nil {
 				return err
 			}

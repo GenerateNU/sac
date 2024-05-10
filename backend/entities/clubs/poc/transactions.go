@@ -1,58 +1,56 @@
 package poc
 
 import (
-	stdliberrors "errors"
+	"errors"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/errors"
+
+	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
-func GetClubPointOfContacts(db *gorm.DB, clubID uuid.UUID) ([]models.PointOfContact, *errors.Error) {
+func GetClubPointOfContacts(db *gorm.DB, clubID uuid.UUID) ([]models.PointOfContact, error) {
 	var pointOfContacts []models.PointOfContact
 
 	result := db.Preload("PhotoFile").Where("club_id = ?", clubID).Find(&pointOfContacts)
 	if result.Error != nil {
-		if stdliberrors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return nil, &errors.PointOfContactsNotFound
-		} else {
-			return nil, &errors.FailedToGetClubPointOfContacts
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, utilities.ErrNotFound
 		}
+		return nil, result.Error
 	}
 
 	return pointOfContacts, nil
 }
 
-func GetClubPointOfContact(db *gorm.DB, clubID uuid.UUID, pocID uuid.UUID) (*models.PointOfContact, *errors.Error) {
+func GetClubPointOfContact(db *gorm.DB, clubID uuid.UUID, pocID uuid.UUID) (*models.PointOfContact, error) {
 	var pointOfContact models.PointOfContact
 
 	if err := db.Preload("PhotoFile").First(&pointOfContact, "id = ? AND club_id = ?", pocID, clubID).Error; err != nil {
-		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, &errors.PointOfContactNotFound
-		} else {
-			return nil, &errors.FailedToGetClubPointOfContact
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, utilities.ErrNotFound
 		}
+		return nil, err
 	}
 
 	return &pointOfContact, nil
 }
 
-func GetClubPointOfContactByClubIDAndEmail(db *gorm.DB, clubID uuid.UUID, email string) (*models.PointOfContact, *errors.Error) {
+func GetClubPointOfContactByClubIDAndEmail(db *gorm.DB, clubID uuid.UUID, email string) (*models.PointOfContact, error) {
 	var pointOfContact models.PointOfContact
 
 	if err := db.First(&pointOfContact, "email = ? AND club_id = ?", email, clubID).Error; err != nil {
-		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, &errors.PointOfContactNotFound
-		} else {
-			return nil, &errors.FailedToGetClubPointOfContact
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, utilities.ErrNotFound
 		}
+		return nil, err
 	}
 
 	return &pointOfContact, nil
 }
 
-func CreateClubPointOfContact(db *gorm.DB, clubID uuid.UUID, pointOfContactBody models.CreatePointOfContactBody) (*models.PointOfContact, *errors.Error) {
+func CreateClubPointOfContact(db *gorm.DB, clubID uuid.UUID, pointOfContactBody models.CreatePointOfContactBody) (*models.PointOfContact, error) {
 	pointOfContact := models.PointOfContact{
 		Name:     pointOfContactBody.Name,
 		Email:    pointOfContactBody.Email,
@@ -61,12 +59,12 @@ func CreateClubPointOfContact(db *gorm.DB, clubID uuid.UUID, pointOfContactBody 
 	}
 
 	if err := db.Create(&pointOfContact).Error; err != nil {
-		return nil, &errors.FailedToCreatePointOfContact
+		return nil, err
 	}
 	return &pointOfContact, nil
 }
 
-func UpdateClubPointOfContact(db *gorm.DB, clubID uuid.UUID, pocID uuid.UUID, pointOfContactBody models.UpdatePointOfContactBody) (*models.PointOfContact, *errors.Error) {
+func UpdateClubPointOfContact(db *gorm.DB, clubID uuid.UUID, pocID uuid.UUID, pointOfContactBody models.UpdatePointOfContactBody) (*models.PointOfContact, error) {
 	pointOfContact, err := GetClubPointOfContact(db, clubID, pocID)
 	if err != nil {
 		return nil, err
@@ -77,19 +75,18 @@ func UpdateClubPointOfContact(db *gorm.DB, clubID uuid.UUID, pocID uuid.UUID, po
 		Email:    pointOfContactBody.Email,
 		Position: pointOfContactBody.Position,
 	}).Error; err != nil {
-		return nil, &errors.FailedToUpdateClubPointOfContact
+		return nil, err
 	}
 
 	return pointOfContact, nil
 }
 
-func DeleteClubPointOfContact(db *gorm.DB, clubID uuid.UUID, pocID uuid.UUID) *errors.Error {
+func DeleteClubPointOfContact(db *gorm.DB, clubID uuid.UUID, pocID uuid.UUID) error {
 	if result := db.Delete(&models.PointOfContact{}, "id = ? AND club_id = ?", pocID, clubID); result.RowsAffected == 0 {
 		if result.Error == nil {
-			return &errors.PointOfContactNotFound
-		} else {
-			return &errors.FailedToDeleteClubPointOfContact
+			return utilities.ErrNotFound
 		}
+		return result.Error
 	}
 	return nil
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/GenerateNU/sac/backend/entities/clubs/member"
 	"github.com/GenerateNU/sac/backend/entities/clubs/poc"
 	"github.com/GenerateNU/sac/backend/entities/clubs/tag"
+	"github.com/GenerateNU/sac/backend/utilities"
 
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/gofiber/fiber/v2"
@@ -33,15 +34,15 @@ func ClubRouter(clubParams types.RouteParams) fiber.Router {
 	// api/v1/clubs/*
 	clubs := clubParams.Router.Group("/clubs")
 
-	clubs.Get("/", clubController.GetClubs)
-	clubs.Post("/", clubParams.AuthMiddleware.Authorize(p.CreateAll), clubController.CreateClub)
+	clubs.Get("/", utilities.Make(clubController.GetClubs))
+	clubs.Post("/", clubParams.AuthMiddleware.Authorize(p.CreateAll), utilities.Make(clubController.CreateClub))
 
 	// api/v1/clubs/:clubID/*
 	clubID := clubs.Group("/:clubID")
 
-	clubID.Get("/", clubController.GetClub)
-	clubID.Patch("/", clubParams.AuthMiddleware.ClubAuthorizeById, clubController.UpdateClub)
-	clubID.Delete("/", clubParams.AuthMiddleware.Authorize(p.DeleteAll), clubController.DeleteClub)
+	clubID.Get("/", utilities.Make(clubController.GetClub))
+	clubID.Patch("/", clubParams.AuthMiddleware.ClubAuthorizeById, utilities.Make(clubController.UpdateClub))
+	clubID.Delete("/", clubParams.AuthMiddleware.Authorize(p.DeleteAll), utilities.Make(clubController.DeleteClub))
 
 	return clubID
 }

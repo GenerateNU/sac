@@ -1,6 +1,8 @@
 package follower
 
 import (
+	"net/http"
+
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/fiber/v2"
 )
@@ -24,16 +26,16 @@ func NewUserFollowerController(userFollowerService UserFollowerServiceInterface)
 // @Param		userID		path	string	true	"User ID"
 // @Param		clubID		path	string	true	"Club ID"
 // @Success		201	  {object}	    utilities.SuccessResponse
-// @Failure     401   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
+// @Failure     401   {object}      error
+// @Failure     404   {object}      error
+// @Failure     500   {object}      error
 // @Router		/users/{userID}/follower/{clubID}/  [post]
 func (uf *UserFollowerController) CreateFollowing(c *fiber.Ctx) error {
 	err := uf.userFollowerService.CreateFollowing(c.Params("userID"), c.Params("clubID"))
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
-	return utilities.FiberMessage(c, fiber.StatusCreated, "Successfully followed club")
+	return utilities.FiberMessage(c, http.StatusCreated, "Successfully followed club")
 }
 
 // DeleteFollowing godoc
@@ -47,16 +49,16 @@ func (uf *UserFollowerController) CreateFollowing(c *fiber.Ctx) error {
 // @Param		userID		path	string	true	"User ID"
 // @Param		clubID		path	string	true	"Club ID"
 // @Success		204	  {object}	    utilities.SuccessResponse
-// @Failure     401   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
+// @Failure     401   {object}      error
+// @Failure     404   {object}      error
+// @Failure     500   {object}      error
 // @Router		/users/{userID}/follower/{clubID}/  [delete]
 func (uf *UserFollowerController) DeleteFollowing(c *fiber.Ctx) error {
 	err := uf.userFollowerService.DeleteFollowing(c.Params("userID"), c.Params("clubID"))
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
-	return c.SendStatus(fiber.StatusNoContent)
+	return c.SendStatus(http.StatusNoContent)
 }
 
 // GetAllFollowing godoc
@@ -68,15 +70,15 @@ func (uf *UserFollowerController) DeleteFollowing(c *fiber.Ctx) error {
 // @Produce		json
 // @Param		userID	path	string	true	"User ID"
 // @Success		200	  {object}	    []models.Club
-// @Failure     400   {object}      errors.Error
-// @Failure     401   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
+// @Failure     400   {object}      error
+// @Failure     401   {object}      error
+// @Failure     404   {object}      error
+// @Failure     500   {object}      error
 // @Router		/users/{userID}/follower/  [get]
 func (uf *UserFollowerController) GetFollowing(c *fiber.Ctx) error {
 	clubs, err := uf.userFollowerService.GetFollowing(c.Params("userID"))
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
-	return c.Status(fiber.StatusOK).JSON(clubs)
+	return c.Status(http.StatusOK).JSON(clubs)
 }

@@ -1,19 +1,20 @@
 package database
 
 import (
+	"fmt"
+
 	"github.com/GenerateNU/sac/backend/auth"
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/errors"
 	"github.com/google/uuid"
 )
 
 var SuperUserUUID uuid.UUID
 
-func SuperUser(superUserSettings config.SuperUserSettings) (*models.User, *errors.Error) {
+func SuperUser(superUserSettings config.SuperUserSettings) (*models.User, error) {
 	passwordHash, err := auth.ComputeHash(superUserSettings.Password.Expose())
 	if err != nil {
-		return nil, &errors.FailedToComputePasswordHash
+		return nil, fmt.Errorf("failed to hash super user password: %w", err)
 	}
 
 	return &models.User{

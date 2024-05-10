@@ -2,7 +2,6 @@ package base
 
 import (
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/errors"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
 
@@ -11,11 +10,11 @@ import (
 )
 
 type CategoryServiceInterface interface {
-	CreateCategory(categoryBody models.CategoryRequestBody) (*models.Category, *errors.Error)
-	GetCategories(limit string, page string) ([]models.Category, *errors.Error)
-	GetCategory(id string) (*models.Category, *errors.Error)
-	UpdateCategory(id string, params models.CategoryRequestBody) (*models.Category, *errors.Error)
-	DeleteCategory(id string) *errors.Error
+	CreateCategory(categoryBody models.CategoryRequestBody) (*models.Category, error)
+	GetCategories(limit string, page string) ([]models.Category, error)
+	GetCategory(id string) (*models.Category, error)
+	UpdateCategory(id string, params models.CategoryRequestBody) (*models.Category, error)
+	DeleteCategory(id string) error
 }
 
 type CategoryService struct {
@@ -26,14 +25,14 @@ func NewCategoryService(params types.ServiceParams) CategoryServiceInterface {
 	return &CategoryService{params}
 }
 
-func (c *CategoryService) CreateCategory(categoryBody models.CategoryRequestBody) (*models.Category, *errors.Error) {
-	if err := c.Validate.Struct(categoryBody); err != nil {
-		return nil, &errors.FailedToValidateCategory
+func (c *CategoryService) CreateCategory(categoryBody models.CategoryRequestBody) (*models.Category, error) {
+	if err := utilities.Validate(c.Validate, categoryBody); err != nil {
+		return nil, err
 	}
 
 	category, err := utilities.MapRequestToModel(categoryBody, &models.Category{})
 	if err != nil {
-		return nil, &errors.FailedToMapRequestToModel
+		return nil, err
 	}
 
 	category.Name = cases.Title(language.English).String(category.Name)
@@ -41,21 +40,21 @@ func (c *CategoryService) CreateCategory(categoryBody models.CategoryRequestBody
 	return CreateCategory(c.DB, *category)
 }
 
-func (c *CategoryService) GetCategories(limit string, page string) ([]models.Category, *errors.Error) {
+func (c *CategoryService) GetCategories(limit string, page string) ([]models.Category, error) {
 	limitAsInt, err := utilities.ValidateNonNegative(limit)
 	if err != nil {
-		return nil, &errors.FailedToValidateLimit
+		return nil, err
 	}
 
 	pageAsInt, err := utilities.ValidateNonNegative(page)
 	if err != nil {
-		return nil, &errors.FailedToValidatePage
+		return nil, err
 	}
 
 	return GetCategories(c.DB, *limitAsInt, *pageAsInt)
 }
 
-func (c *CategoryService) GetCategory(id string) (*models.Category, *errors.Error) {
+func (c *CategoryService) GetCategory(id string) (*models.Category, error) {
 	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return nil, err
@@ -64,19 +63,19 @@ func (c *CategoryService) GetCategory(id string) (*models.Category, *errors.Erro
 	return GetCategory(c.DB, *idAsUUID)
 }
 
-func (c *CategoryService) UpdateCategory(id string, categoryBody models.CategoryRequestBody) (*models.Category, *errors.Error) {
-	idAsUUID, idErr := utilities.ValidateID(id)
-	if idErr != nil {
-		return nil, idErr
+func (c *CategoryService) UpdateCategory(id string, categoryBody models.CategoryRequestBody) (*models.Category, error) {
+	idAsUUID, err := utilities.ValidateID(id)
+	if err != nil {
+		return nil, err
 	}
 
-	if err := c.Validate.Struct(categoryBody); err != nil {
-		return nil, &errors.FailedToValidateTag
+	if err := utilities.Validate(c.Validate, categoryBody); err != nil {
+		return nil, err
 	}
 
 	category, err := utilities.MapRequestToModel(categoryBody, &models.Category{})
 	if err != nil {
-		return nil, &errors.FailedToMapRequestToModel
+		return nil, err
 	}
 
 	category.Name = cases.Title(language.English).String(category.Name)
@@ -84,7 +83,7 @@ func (c *CategoryService) UpdateCategory(id string, categoryBody models.Category
 	return UpdateCategory(c.DB, *idAsUUID, *category)
 }
 
-func (c *CategoryService) DeleteCategory(id string) *errors.Error {
+func (c *CategoryService) DeleteCategory(id string) error {
 	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return err

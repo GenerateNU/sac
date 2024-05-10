@@ -21,15 +21,15 @@ type AuthMiddlewareInterface interface {
 }
 
 type AuthMiddlewareService struct {
-	DB           *gorm.DB
-	Validate     *validator.Validate
-	AuthSettings config.AuthSettings
+	DB       *gorm.DB
+	Validate *validator.Validate
+	Auth     config.AuthSettings
 }
 
 func NewAuthAuthMiddlewareService(db *gorm.DB, validate *validator.Validate, authSettings config.AuthSettings) *AuthMiddlewareService {
 	return &AuthMiddlewareService{
-		DB:           db,
-		Validate:     validate,
-		AuthSettings: authSettings,
+		DB:       db,
+		Validate: validate,
+		Auth:     authSettings,
 	}
 }

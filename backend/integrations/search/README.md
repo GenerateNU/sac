@@ -54,9 +54,9 @@ type Searchable interface {
 
 // in backend/src/search/pinecone.go
 type PineconeClientInterface interface {
- Upsert(item Searchable) *errors.Error
- Delete(item Searchable) *errors.Error
- Search(item Searchable, topK int) ([]string, *errors.Error)
+ Upsert(item Searchable) error
+ Delete(item Searchable) error
+ Search(item Searchable, topK int) ([]string, error)
 }
 ```
 
