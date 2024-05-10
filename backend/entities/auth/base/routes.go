@@ -5,8 +5,9 @@ import (
 	"github.com/GenerateNU/sac/backend/utilities"
 )
 
-func Auth(params types.RouteParams) {
-	authController := NewAuthController(NewAuthService(params.ServiceParams))
+func Auth(params types.RouteParams) AuthServiceInterface {
+	authService := NewAuthService(params.ServiceParams)
+	authController := NewAuthController(authService)
 
 	// api/v1/auth/*
 	auth := params.Router.Group("/auth")
@@ -22,4 +23,6 @@ func Auth(params types.RouteParams) {
 	// TODO: rate limit
 	auth.Post("/forgot-password", utilities.Make(authController.ForgotPassword))
 	auth.Post("/verify-reset", utilities.Make(authController.VerifyPasswordResetToken))
+
+	return authService
 }
