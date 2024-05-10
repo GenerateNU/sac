@@ -2,6 +2,7 @@ package follower
 
 import (
 	"github.com/GenerateNU/sac/backend/types"
+	"github.com/GenerateNU/sac/backend/utilities"
 )
 
 func ClubFollower(clubParams types.RouteParams) {
@@ -10,5 +11,5 @@ func ClubFollower(clubParams types.RouteParams) {
 	clubFollowers := clubParams.Router.Group("/followers")
 
 	// api/clubs/:clubID/followers/*
-	clubFollowers.Get("/", clubFollowerController.GetClubFollowers)
+	clubFollowers.Get("/", utilities.Make(clubFollowerController.GetClubFollowers))
 }

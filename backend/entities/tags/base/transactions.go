@@ -1,9 +1,9 @@
 package base
 
 import (
-	stdliberrors "errors"
+	"errors"
 
-	"github.com/GenerateNU/sac/backend/errors"
+	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/google/uuid"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
@@ -12,75 +12,76 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateTag(db *gorm.DB, tag models.Tag) (*models.Tag, *errors.Error) {
+func CreateTag(db *gorm.DB, tag models.Tag) (*models.Tag, error) {
 	tx := db.Begin()
 
 	var category models.Category
 	if err := tx.Where("id = ?", tag.CategoryID).First(&category).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			tx.Rollback()
-			return nil, &errors.CategoryNotFound
+			return nil, utilities.ErrNotFound
 		} else {
 			tx.Rollback()
-			return nil, &errors.InternalServerError
+			return nil, err
 		}
 	}
 
 	if err := tx.Create(&tag).Error; err != nil {
 		tx.Rollback()
-		return nil, &errors.FailedToCreateTag
+		return nil, err
 	}
 
-	tx.Commit()
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
 
 	return &tag, nil
 }
 
-func GetTags(db *gorm.DB) ([]models.Tag, *errors.Error) {
+func GetTags(db *gorm.DB) ([]models.Tag, error) {
 	var tags []models.Tag
 
 	if err := db.Find(&tags).Error; err != nil {
-		return nil, &errors.FailedToGetTags
+		return nil, err
 	}
 
 	return tags, nil
 }
 
-func UpdateTag(db *gorm.DB, id uuid.UUID, tag models.Tag) (*models.Tag, *errors.Error) {
+func UpdateTag(db *gorm.DB, id uuid.UUID, tag models.Tag) (*models.Tag, error) {
 	if err := db.Model(&models.Tag{}).Where("id = ?", id).Updates(tag).First(&tag, id).Error; err != nil {
-		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, &errors.TagNotFound
-		} else {
-			return nil, &errors.FailedToUpdateTag
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, utilities.ErrNotFound
 		}
+		return nil, err
 	}
 
 	return &tag, nil
 }
 
-func DeleteTag(db *gorm.DB, tagID uuid.UUID) *errors.Error {
+func DeleteTag(db *gorm.DB, tagID uuid.UUID) error {
 	if result := db.Where("id = ?", tagID).Delete(&models.Tag{}); result.RowsAffected == 0 {
 		if result.Error == nil {
-			return &errors.TagNotFound
-		} else {
-			return &errors.FailedToDeleteTag
+			return utilities.ErrNotFound
 		}
+		return result.Error
 	}
 
 	return nil
 }
 
-// Get clubs for a tag
-func GetTagClubs(db *gorm.DB, id uuid.UUID) ([]models.Club, *errors.Error) {
+func GetTagClubs(db *gorm.DB, id uuid.UUID) ([]models.Club, error) {
 	var clubs []models.Club
 
 	tag, err := tags.GetTag(db, id)
 	if err != nil {
-		return nil, &errors.ClubNotFound
+		return nil, err
 	}
 
 	if err := db.Model(&tag).Association("Club").Find(&clubs); err != nil {
-		return nil, &errors.FailedToGetTag
+		return nil, err
 	}
+
 	return clubs, nil
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/GenerateNU/sac/backend/entities/users/member"
 	"github.com/GenerateNU/sac/backend/entities/users/tag"
 	"github.com/GenerateNU/sac/backend/types"
+	"github.com/GenerateNU/sac/backend/utilities"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -26,17 +27,17 @@ func UsersRouter(userParams types.RouteParams) fiber.Router {
 	// api/v1/users/*
 	users := userParams.Router.Group("/users")
 
-	users.Get("/", userParams.AuthMiddleware.Authorize(p.ReadAll), userController.GetUsers)
-	users.Post("/", userController.CreateUser)
-	users.Get("/me", userParams.AuthMiddleware.Authorize(p.UserRead), userController.GetMe)
+	users.Get("/", userParams.AuthMiddleware.Authorize(p.ReadAll), utilities.Make(userController.GetUsers))
+	users.Post("/", utilities.Make(userController.CreateUser))
+	users.Get("/me", userParams.AuthMiddleware.Authorize(p.UserRead), utilities.Make(userController.GetMe))
 
 	// api/v1/users/:userID/*
 	usersID := users.Group("/:userID")
 
-	usersID.Get("/", userController.GetUser)
-	usersID.Patch("/", userParams.AuthMiddleware.UserAuthorizeById, userController.UpdateUser)
-	usersID.Patch("/password", userParams.AuthMiddleware.UserAuthorizeById, userController.UpdatePassword)
-	usersID.Delete("/", userParams.AuthMiddleware.UserAuthorizeById, userController.DeleteUser)
+	usersID.Get("/", utilities.Make(userController.GetUser))
+	usersID.Patch("/", userParams.AuthMiddleware.UserAuthorizeById, utilities.Make(userController.UpdateUser))
+	usersID.Patch("/password", userParams.AuthMiddleware.UserAuthorizeById, utilities.Make(userController.UpdatePassword))
+	usersID.Delete("/", userParams.AuthMiddleware.UserAuthorizeById, utilities.Make(userController.DeleteUser))
 
 	return usersID
 }

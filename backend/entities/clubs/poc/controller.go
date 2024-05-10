@@ -1,8 +1,10 @@
 package poc
 
 import (
+	"net/http"
+
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/errors"
+	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -23,17 +25,17 @@ func NewClubPointOfContactController(clubPointOfContactService ClubPointOfContac
 // @Produce		json
 // @Param		clubID	path	string	true	"Club ID"
 // @Success		200	  {object}	    []models.PointOfContact
-// @Failure     400   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
+// @Failure     400   {object}      error
+// @Failure     404   {object}      error
+// @Failure     500   {object}      error
 // @Router		/clubs/{clubID}/pocs/  [get]
 func (cpoc *ClubPointOfContactController) GetClubPointOfContacts(c *fiber.Ctx) error {
 	pointOfContact, err := cpoc.clubPointOfContactService.GetClubPointOfContacts(c.Params("clubID"))
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.Status(fiber.StatusOK).JSON(pointOfContact)
+	return c.Status(http.StatusOK).JSON(pointOfContact)
 }
 
 // GetClubPointOfContact godoc
@@ -46,17 +48,17 @@ func (cpoc *ClubPointOfContactController) GetClubPointOfContacts(c *fiber.Ctx) e
 // @Param		clubID	path	string	true	"Club ID"
 // @Param		pocID	path	string	true	"Point of Contact ID"
 // @Success		200	  {object}	    models.PointOfContact
-// @Failure     400   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
+// @Failure     400   {object}      error
+// @Failure     404   {object}      error
+// @Failure     500   {object}      error
 // @Router		/clubs/{clubID}/pocs/{pocID}  [get]
 func (cpoc *ClubPointOfContactController) GetClubPointOfContact(c *fiber.Ctx) error {
 	pointOfContact, err := cpoc.clubPointOfContactService.GetClubPointOfContact(c.Params("clubID"), c.Params("pocID"))
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.Status(fiber.StatusOK).JSON(pointOfContact)
+	return c.Status(http.StatusOK).JSON(pointOfContact)
 }
 
 // UpdateClubPointOfContactPhoto godoc
@@ -70,23 +72,23 @@ func (cpoc *ClubPointOfContactController) GetClubPointOfContact(c *fiber.Ctx) er
 // @Param		clubID	path	string	true	"Club ID"
 // @Param		pocID	path	string	true	"Point of Contact ID"
 // @Success		200	  {object}	    models.PointOfContact
-// @Failure     400   {object}      errors.Error
-// @Failure     401   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
+// @Failure     400   {object}      error
+// @Failure     401   {object}      error
+// @Failure     404   {object}      error
+// @Failure     500   {object}      error
 // @Router		/clubs/{clubID}/poc/{pocID}  [patch]
 func (cpoc *ClubPointOfContactController) UpdateClubPointOfContactPhoto(c *fiber.Ctx) error {
-	formFile, parseErr := c.FormFile("file")
-	if parseErr != nil {
-		return errors.FailedToParseRequestBody.FiberError(c)
+	formFile, err := c.FormFile("file")
+	if err != nil {
+		return err
 	}
 
 	pointOfContact, err := cpoc.clubPointOfContactService.UpdateClubPointOfContactPhoto(c.Params("clubID"), c.Params("pocID"), formFile)
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.Status(fiber.StatusOK).JSON(pointOfContact)
+	return c.Status(http.StatusOK).JSON(pointOfContact)
 }
 
 // UpdateClubPointOfContact godoc
@@ -100,24 +102,24 @@ func (cpoc *ClubPointOfContactController) UpdateClubPointOfContactPhoto(c *fiber
 // @Param		clubID	path	string	true	"Club ID"
 // @Param		pocID	path	string	true	"Point of Contact ID"
 // @Success		200	  {object}	    models.PointOfContact
-// @Failure     400   {object}      errors.Error
-// @Failure     401   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
+// @Failure     400   {object}      error
+// @Failure     401   {object}      error
+// @Failure     404   {object}      error
+// @Failure     500   {object}      error
 // @Router		/clubs/{clubID}/poc/{pocID}  [put]
 func (cpoc *ClubPointOfContactController) UpdateClubPointOfContact(c *fiber.Ctx) error {
 	var pointOfContactBody models.UpdatePointOfContactBody
 
-	if parseErr := c.BodyParser(&pointOfContactBody); parseErr != nil {
-		return errors.FailedToParseRequestBody.FiberError(c)
+	if err := c.BodyParser(&pointOfContactBody); err != nil {
+		return utilities.InvalidJSON()
 	}
 
 	pointOfContact, err := cpoc.clubPointOfContactService.UpdateClubPointOfContact(c.Params("clubID"), c.Params("pocID"), pointOfContactBody)
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.Status(fiber.StatusOK).JSON(pointOfContact)
+	return c.Status(http.StatusOK).JSON(pointOfContact)
 }
 
 // CreateClubPointOfContact godoc
@@ -130,29 +132,29 @@ func (cpoc *ClubPointOfContactController) UpdateClubPointOfContact(c *fiber.Ctx)
 // @Produce		json
 // @Param		clubID	path	string	true	"Club ID"
 // @Success		201	  {object}	    models.PointOfContact
-// @Failure     400   {object}      errors.Error
-// @Failure     401   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
+// @Failure     400   {object}      error
+// @Failure     401   {object}      error
+// @Failure     404   {object}      error
+// @Failure     500   {object}      error
 // @Router		/clubs/{clubID}/poc/  [post]
 func (cpoc *ClubPointOfContactController) CreateClubPointOfContact(c *fiber.Ctx) error {
 	var pointOfContactBody models.CreatePointOfContactBody
 
-	if parseErr := c.BodyParser(&pointOfContactBody); parseErr != nil {
-		return errors.FailedToParseRequestBody.FiberError(c)
+	if err := c.BodyParser(&pointOfContactBody); err != nil {
+		return utilities.InvalidJSON()
 	}
 
-	formFile, parseErr := c.FormFile("file")
-	if parseErr != nil {
-		return errors.FailedToParseRequestBody.FiberError(c)
+	formFile, err := c.FormFile("file")
+	if err != nil {
+		return err
 	}
 
 	pointOfContact, err := cpoc.clubPointOfContactService.CreateClubPointOfContact(c.Params("clubID"), pointOfContactBody, formFile)
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(pointOfContact)
+	return c.Status(http.StatusCreated).JSON(pointOfContact)
 }
 
 // DeleteClubPointOfContact godoc
@@ -165,15 +167,15 @@ func (cpoc *ClubPointOfContactController) CreateClubPointOfContact(c *fiber.Ctx)
 // @Param		clubID	path	string	true	"Club ID"
 // @Param		pocID	path	string	true	"Point of Contact ID"
 // @Success		204	  {object}	    nil
-// @Failure     400   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
+// @Failure     400   {object}      error
+// @Failure     404   {object}      error
+// @Failure     500   {object}      error
 // @Router		/clubs/{clubID}/poc/{pocID}  [delete]
 func (cpoc *ClubPointOfContactController) DeleteClubPointOfContact(c *fiber.Ctx) error {
 	err := cpoc.clubPointOfContactService.DeleteClubPointOfContact(c.Params("clubID"), c.Params("pocID"))
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.SendStatus(fiber.StatusNoContent)
+	return c.SendStatus(http.StatusNoContent)
 }

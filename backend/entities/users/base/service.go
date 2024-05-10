@@ -1,6 +1,7 @@
 package base
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -9,19 +10,18 @@ import (
 	"github.com/GenerateNU/sac/backend/entities/models"
 
 	"github.com/GenerateNU/sac/backend/entities/users"
-	"github.com/GenerateNU/sac/backend/errors"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
 )
 
 type UserServiceInterface interface {
-	GetUsers(limit string, page string) ([]models.User, *errors.Error)
-	GetMe(id string) (*models.User, *errors.Error)
-	GetUser(id string) (*models.User, *errors.Error)
-	CreateUser(userBody models.CreateUserRequestBody) (*models.User, *auth.Token, *errors.Error)
-	UpdateUser(id string, userBody models.UpdateUserRequestBody) (*models.User, *errors.Error)
-	UpdatePassword(id string, passwordBody models.UpdatePasswordRequestBody) *errors.Error
-	DeleteUser(id string) *errors.Error
+	GetUsers(limit string, page string) ([]models.User, error)
+	GetMe(id string) (*models.User, error)
+	GetUser(id string) (*models.User, error)
+	CreateUser(userBody models.CreateUserRequestBody) (*models.User, *auth.Token, error)
+	UpdateUser(id string, userBody models.UpdateUserRequestBody) (*models.User, error)
+	UpdatePassword(id string, passwordBody models.UpdatePasswordRequestBody) error
+	DeleteUser(id string) error
 }
 
 type UserService struct {
@@ -32,70 +32,68 @@ func NewUserService(serviceParams types.ServiceParams) UserServiceInterface {
 	return &UserService{serviceParams}
 }
 
-func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models.User, *auth.Token, *errors.Error) {
-	if err := u.Validate.Struct(userBody); err != nil {
-		return nil, nil, &errors.FailedToValidateUser
+func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models.User, *auth.Token, error) {
+	if err := utilities.Validate(u.Validate, userBody); err != nil {
+		return nil, nil, err
 	}
 
-	if pwordValErr := auth.ValidatePassword(userBody.Password); pwordValErr != nil {
-		return nil, nil, pwordValErr
+	if err := auth.ValidatePassword(userBody.Password); err != nil {
+		return nil, nil, err
 	}
 
 	user, err := utilities.MapRequestToModel(userBody, &models.User{})
 	if err != nil {
-		return nil, nil, &errors.FailedToMapRequestToModel
+		return nil, nil, err
 	}
 
 	passwordHash, err := auth.ComputeHash(userBody.Password)
 	if err != nil {
-		return nil, nil, &errors.FailedToComputePasswordHash
+		return nil, nil, err
 	}
 
 	user.Email = strings.ToLower(userBody.Email)
 	user.PasswordHash = *passwordHash
 
-	emailErr := u.Integrations.Email.SendWelcomeEmail(fmt.Sprintf("%s %s", user.FirstName, user.LastName), user.Email)
-	if emailErr != nil {
-		return nil, nil, &errors.FailedToSendEmail
+	if err := u.Integrations.Email.SendWelcomeEmail(fmt.Sprintf("%s %s", user.FirstName, user.LastName), user.Email); err != nil {
+		return nil, nil, fmt.Errorf("failed to send welcome email: %w", err)
 	}
 
-	user, userErr := CreateUser(u.DB, user)
-	if userErr != nil {
-		return nil, nil, userErr
+	user, err = CreateUser(u.DB, user)
+	if err != nil {
+		return nil, nil, err
 	}
 
 	authService := base.NewAuthService(u.ServiceParams)
-	authErr := authService.SendCode(user.Email)
-	if authErr != nil {
-		return nil, nil, authErr
+	if err := authService.SendCode(user.Email); err != nil {
+		return nil, nil, err
 	}
 
-	_, tokens, authErr := authService.Login(models.LoginUserResponseBody{Email: user.Email, Password: userBody.Password})
-	if authErr != nil {
-		return nil, nil, authErr
+	_, tokens, err := authService.Login(models.LoginUserResponseBody{Email: user.Email, Password: userBody.Password})
+	if err != nil {
+		return nil, nil, err
 	}
 
 	return user, tokens, nil
 }
 
-func (u *UserService) GetUsers(limit string, page string) ([]models.User, *errors.Error) {
+func (u *UserService) GetUsers(limit string, page string) ([]models.User, error) {
 	limitAsInt, err := utilities.ValidateNonNegative(limit)
 	if err != nil {
-		return nil, &errors.FailedToValidateLimit
+		return nil, err
 	}
 
 	pageAsInt, err := utilities.ValidateNonNegative(page)
 	if err != nil {
-		return nil, &errors.FailedToValidatePage
+		return nil, err
 	}
 
 	return GetUsers(u.DB, *limitAsInt, *pageAsInt)
 }
 
-func (u *UserService) GetMe(id string) (*models.User, *errors.Error) {
-	idAsUUID, idErr := utilities.ValidateID(id)
-	if idErr != nil {
-		return nil, idErr
+func (u *UserService) GetMe(id string) (*models.User, error) {
+	idAsUUID, err := utilities.ValidateID(id)
+	if err != nil {
+		return nil, err
 	}
 
 	user, err := users.GetUser(u.DB, *idAsUUID)
@@ -106,53 +104,53 @@ func (u *UserService) GetMe(id string) (*models.User, *errors.Error) {
 	return user, nil
 }
 
-func (u *UserService) GetUser(id string) (*models.User, *errors.Error) {
+func (u *UserService) GetUser(id string) (*models.User, error) {
 	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
-		return nil, &errors.FailedToValidateID
+		return nil, err
 	}
 
 	return users.GetUser(u.DB, *idAsUUID)
 }
 
-func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBody) (*models.User, *errors.Error) {
+func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBody) (*models.User, error) {
 	idAsUUID, idErr := utilities.ValidateID(id)
 	if idErr != nil {
 		return nil, idErr
 	}
 
 	if utilities.AtLeastOne(userBody, models.UpdateUserRequestBody{}) {
-		return nil, &errors.FailedToValidateUser
+		return nil, errors.New("no fields to update")
 	}
 
-	if err := u.Validate.Struct(userBody); err != nil {
-		return nil, &errors.FailedToValidateUser
+	if err := utilities.Validate(u.Validate, userBody); err != nil {
+		return nil, err
 	}
 
 	user, err := utilities.MapRequestToModel(userBody, &models.User{})
 	if err != nil {
-		return nil, &errors.FailedToMapRequestToModel
+		return nil, err
 	}
 
 	return UpdateUser(u.DB, *idAsUUID, *user)
 }
 
-func (u *UserService) UpdatePassword(id string, passwordBody models.UpdatePasswordRequestBody) *errors.Error {
-	idAsUUID, idErr := utilities.ValidateID(id)
-	if idErr != nil {
-		return idErr
+func (u *UserService) UpdatePassword(id string, passwordBody models.UpdatePasswordRequestBody) error {
+	idAsUUID, err := utilities.ValidateID(id)
+	if err != nil {
+		return err
 	}
 
-	if err := u.Validate.Struct(passwordBody); err != nil {
-		return &errors.FailedToValidateUpdatePasswordBody
+	if err := utilities.Validate(u.Validate, passwordBody); err != nil {
+		return err
 	}
 
-	if pwordValErr := auth.ValidatePassword(passwordBody.OldPassword); pwordValErr != nil {
-		return pwordValErr
+	if err := auth.ValidatePassword(passwordBody.OldPassword); err != nil {
+		return err
 	}
 
-	if pwordValErr := auth.ValidatePassword(passwordBody.NewPassword); pwordValErr != nil {
-		return pwordValErr
+	if err := auth.ValidatePassword(passwordBody.NewPassword); err != nil {
+		return err
 	}
 
 	passwordHash, err := GetUserPasswordHash(u.DB, *idAsUUID)
@@ -162,18 +160,18 @@ func (u *UserService) UpdatePassword(id string, passwordBody models.UpdatePasswo
 
 	correct, passwordErr := auth.CompareHash(passwordBody.OldPassword, *passwordHash)
 	if passwordErr != nil || !correct {
-		return &errors.FailedToValidateUser
+		return err
 	}
 
 	hash, hashErr := auth.ComputeHash(passwordBody.NewPassword)
 	if hashErr != nil {
-		return &errors.FailedToValidateUser
+		return err
 	}
 
 	return users.UpdatePassword(u.DB, *idAsUUID, *hash)
 }
 
-func (u *UserService) DeleteUser(id string) *errors.Error {
+func (u *UserService) DeleteUser(id string) error {
 	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return err

@@ -2,15 +2,14 @@ package follower
 
 import (
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/errors"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
 )
 
 type UserFollowerServiceInterface interface {
-	CreateFollowing(userId string, clubId string) *errors.Error
-	DeleteFollowing(userId string, clubId string) *errors.Error
-	GetFollowing(userId string) ([]models.Club, *errors.Error)
+	CreateFollowing(userId string, clubId string) error
+	DeleteFollowing(userId string, clubId string) error
+	GetFollowing(userId string) ([]models.Club, error)
 }
 
 type UserFollowerService struct {
@@ -21,7 +20,7 @@ func NewUserFollowerService(serviceParams types.ServiceParams) UserFollowerServi
 	return &UserFollowerService{serviceParams}
 }
 
-func (u *UserFollowerService) CreateFollowing(userId string, clubId string) *errors.Error {
+func (u *UserFollowerService) CreateFollowing(userId string, clubId string) error {
 	userIdAsUUID, err := utilities.ValidateID(userId)
 	if err != nil {
 		return err
@@ -33,7 +32,7 @@ func (u *UserFollowerService) CreateFollowing(userId string, clubId string) *err
 	return CreateFollowing(u.DB, *userIdAsUUID, *clubIdAsUUID)
 }
 
-func (u *UserFollowerService) DeleteFollowing(userId string, clubId string) *errors.Error {
+func (u *UserFollowerService) DeleteFollowing(userId string, clubId string) error {
 	userIdAsUUID, err := utilities.ValidateID(userId)
 	if err != nil {
 		return err
@@ -45,7 +44,7 @@ func (u *UserFollowerService) DeleteFollowing(userId string, clubId string) *err
 	return DeleteFollowing(u.DB, *userIdAsUUID, *clubIdAsUUID)
 }
 
-func (u *UserFollowerService) GetFollowing(userId string) ([]models.Club, *errors.Error) {
+func (u *UserFollowerService) GetFollowing(userId string) ([]models.Club, error) {
 	userIdAsUUID, err := utilities.ValidateID(userId)
 	if err != nil {
 		return nil, err

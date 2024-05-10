@@ -1,47 +1,44 @@
 package base
 
 import (
-	stdliberrors "errors"
+	"errors"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/errors"
+	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
-func GetContacts(db *gorm.DB, limit int, page int) ([]models.Contact, *errors.Error) {
+func GetContacts(db *gorm.DB, limit int, page int) ([]models.Contact, error) {
 	var contacts []models.Contact
 
 	offset := (page - 1) * limit
 
-	result := db.Limit(limit).Offset(offset).Find(&contacts)
-	if result.Error != nil {
-		return nil, &errors.FailedToGetContacts
+	if err := db.Limit(limit).Offset(offset).Find(&contacts).Error; err != nil {
+		return nil, err
 	}
 
 	return contacts, nil
 }
 
-func GetContact(db *gorm.DB, id uuid.UUID) (*models.Contact, *errors.Error) {
+func GetContact(db *gorm.DB, id uuid.UUID) (*models.Contact, error) {
 	var contact models.Contact
 	if err := db.First(&contact, id).Error; err != nil {
-		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, &errors.ContactNotFound
-		} else {
-			return nil, &errors.FailedToGetContact
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, err
 		}
+		return nil, err
 	}
 
 	return &contact, nil
 }
 
-func DeleteContact(db *gorm.DB, id uuid.UUID) *errors.Error {
+func DeleteContact(db *gorm.DB, id uuid.UUID) error {
 	if result := db.Delete(&models.Contact{}, id); result.RowsAffected == 0 {
 		if result.Error == nil {
-			return &errors.ContactNotFound
-		} else {
-			return &errors.FailedToDeleteContact
+			return utilities.ErrNotFound
 		}
+		return result.Error
 	}
 	return nil
 }
