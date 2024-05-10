@@ -6,16 +6,16 @@ import (
 
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/constants"
-	"github.com/GenerateNU/sac/backend/errors"
+
 	"github.com/afex/hystrix-go/hystrix"
 	"github.com/resend/resend-go/v2"
 )
 
 type EmailClientInterface interface {
-	SendPasswordResetEmail(name, email, token string) *errors.Error
-	SendEmailVerification(email, code string) *errors.Error
-	SendWelcomeEmail(name, email string) *errors.Error
-	SendPasswordChangedEmail(name, email string) *errors.Error
+	SendPasswordResetEmail(name, email, token string) error
+	SendEmailVerification(email, code string) error
+	SendWelcomeEmail(name, email string) error
+	SendPasswordChangedEmail(name, email string) error
 }
 
 type ResendClient struct {
@@ -36,7 +36,7 @@ func NewResendClient(settings config.ResendSettings, dev bool) EmailClientInterf
 	}
 }
 
-func send(email, subject, html string, client *resend.Client) *errors.Error {
+func send(email, subject, html string, client *resend.Client) error {
 	params := &resend.SendEmailRequest{
 		From:    "onboarding" + constants.DOMAIN,
 		To:      []string{email},
@@ -49,59 +49,59 @@ func send(email, subject, html string, client *resend.Client) *errors.Error {
 		return err
 	}, nil)
 	if err != nil {
-		return &errors.FailedToSendEmail
+		return fmt.Errorf("failed to send email: %w", err)
 	}
 
 	return nil
 }
 
-func (r *ResendClient) SendPasswordResetEmail(name, email, token string) *errors.Error {
+func (r *ResendClient) SendPasswordResetEmail(name, email, token string) error {
 	if r.Dev {
 		return nil
 	}
 
 	template, err := getTemplateString("password_reset")
 	if err != nil {
-		return &errors.FailedToGetTemplate
+		return fmt.Errorf("failed to get template: %w", err)
 	}
 
 	return send(email, "Password Reset", fmt.Sprintf(*template, name, token), r.Client)
 }
 
-func (r *ResendClient) SendEmailVerification(email, code string) *errors.Error {
+func (r *ResendClient) SendEmailVerification(email, code string) error {
 	if r.Dev {
 		return nil
 	}
 
 	template, err := getTemplateString("email_verification")
 	if err != nil {
-		return &errors.FailedToGetTemplate
+		return fmt.Errorf("failed to get template: %w", err)
 	}
 
 	return send(email, "Email Verification", fmt.Sprintf(*template, code), r.Client)
 }
 
-func (r *ResendClient) SendWelcomeEmail(name, email string) *errors.Error {
+func (r *ResendClient) SendWelcomeEmail(name, email string) error {
 	if r.Dev {
 		return nil
 	}
 
 	template, err := getTemplateString("welcome")
 	if err != nil {
-		return &errors.FailedToGetTemplate
+		return fmt.Errorf("failed to get template: %w", err)
 	}
 
 	return send(email, "Welcome to Resend", fmt.Sprintf(*template, name), r.Client)
 }
 
-func (r *ResendClient) SendPasswordChangedEmail(name, email string) *errors.Error {
+func (r *ResendClient) SendPasswordChangedEmail(name, email string) error {
 	if r.Dev {
 		return nil
 	}
 
 	template, err := getTemplateString("password_change_complete")
 	if err != nil {
-		return &errors.FailedToGetTemplate
+		return fmt.Errorf("failed to get template: %w", err)
 	}
 
 	return send(email, "Password Changed", fmt.Sprintf(*template, name), r.Client)

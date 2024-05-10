@@ -1,16 +1,16 @@
 package users
 
 import (
-	stdliberrors "errors"
+	"errors"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/errors"
 	"github.com/GenerateNU/sac/backend/transactions"
+	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
-func GetUser(db *gorm.DB, id uuid.UUID, preloads ...transactions.OptionalQuery) (*models.User, *errors.Error) {
+func GetUser(db *gorm.DB, id uuid.UUID, preloads ...transactions.OptionalQuery) (*models.User, error) {
 	var user models.User
 
 	query := db
@@ -20,46 +20,46 @@ func GetUser(db *gorm.DB, id uuid.UUID, preloads ...transactions.OptionalQuery) 
 	}
 
 	if err := query.Omit("password_hash").First(&user, id).Error; err != nil {
-		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, &errors.UserNotFound
-		} else {
-			return nil, &errors.FailedToGetUser
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, utilities.ErrNotFound
 		}
+		return nil, err
 	}
 
 	return &user, nil
 }
 
-func GetUserByEmail(db *gorm.DB, email string) (*models.User, *errors.Error) {
+func GetUserByEmail(db *gorm.DB, email string) (*models.User, error) {
 	var user models.User
 
 	if err := db.Where("email = ?", email).First(&user).Error; err != nil {
-		return nil, &errors.UserNotFound
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, utilities.ErrNotFound
+		}
+		return nil, err
 	}
 
 	return &user, nil
 }
 
-func UpdateEmailVerification(db *gorm.DB, id uuid.UUID) *errors.Error {
+func UpdateEmailVerification(db *gorm.DB, id uuid.UUID) error {
 	result := db.Model(&models.User{}).Where("id = ?", id).Update("is_verified", true)
 	if result.RowsAffected == 0 {
 		if result.Error == nil {
-			return &errors.UserNotFound
-		} else {
-			return &errors.FailedToUpdateEmailVerification
+			return utilities.ErrNotFound
 		}
+		return result.Error
 	}
 	return nil
 }
 
-func UpdatePassword(db *gorm.DB, id uuid.UUID, passwordHash string) *errors.Error {
+func UpdatePassword(db *gorm.DB, id uuid.UUID, passwordHash string) error {
 	result := db.Model(&models.User{}).Where("id = ?", id).Update("password_hash", passwordHash)
 	if result.RowsAffected == 0 {
 		if result.Error == nil {
-			return &errors.UserNotFound
-		} else {
-			return &errors.FailedToUpdateUser
+			return utilities.ErrNotFound
 		}
+		return result.Error
 	}
 	return nil
 }

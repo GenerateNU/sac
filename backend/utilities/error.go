@@ -1,12 +1,26 @@
 package utilities
 
 import (
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
 )
+
+var (
+	ErrNotFound  = errors.New("not found")
+	ErrDuplicate = errors.New("duplicate")
+)
+
+func IsNotFound(err error) bool {
+	return errors.Is(err, ErrNotFound)
+}
+
+func IsDuplicate(err error) bool {
+	return errors.Is(err, ErrDuplicate)
+}
 
 type APIError struct {
 	StatusCode int `json:"statusCode"`
@@ -31,23 +45,50 @@ func InvalidRequestData(errors map[string]string) APIError {
 	}
 }
 
+func BadRequest(err error) APIError {
+	return NewAPIError(http.StatusBadRequest, err)
+}
+
 func InvalidJSON() APIError {
 	return NewAPIError(http.StatusBadRequest, fmt.Errorf("invalid JSON request data"))
+}
+
+func Unauthorized() APIError {
+	return NewAPIError(http.StatusUnauthorized, fmt.Errorf("unauthorized"))
+}
+
+func Forbidden() APIError {
+	return NewAPIError(http.StatusForbidden, fmt.Errorf("forbidden"))
+}
+
+func Conflict() APIError {
+	return NewAPIError(http.StatusConflict, fmt.Errorf("conflict"))
+}
+
+func InternalServerError() APIError {
+	return NewAPIError(http.StatusInternalServerError, fmt.Errorf("internal server error"))
 }
 
 func Make(handler fiber.Handler) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		if err := handler(c); err != nil {
-			slog.Error("HTTP API error", "err", err.Error(), "path", c.Path())
-			if apiErr, ok := err.(APIError); ok {
-				return c.Status(apiErr.StatusCode).JSON(apiErr.Message)
+			var apiErr APIError
+
+			if errors.Is(err, ErrNotFound) {
+				apiErr = NewAPIError(http.StatusNotFound, err)
+			} else if errors.Is(err, ErrDuplicate) {
+				apiErr = NewAPIError(http.StatusConflict, err)
 			} else {
-				errResp := map[string]any{
-					"statusCode": http.StatusInternalServerError,
-					"msg":        "internal server error",
+				if castedErr, ok := err.(APIError); ok {
+					apiErr = castedErr
+				} else {
+					apiErr = InternalServerError()
 				}
-				return c.Status(http.StatusInternalServerError).JSON(errResp)
 			}
+
+			slog.Error("HTTP API error", "err", err.Error(), "method", c.Method(), "path", c.Path())
+
+			return c.Status(apiErr.StatusCode).JSON(apiErr)
 		}
 		return nil
 	}

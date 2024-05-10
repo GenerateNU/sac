@@ -1,11 +1,4 @@
 definitions:
-  errors.Error:
-    properties:
-      message:
-        type: string
-      statusCode:
-        type: integer
-    type: object
   models.Category:
     properties:
       created_at:
@@ -2018,16 +2011,13 @@ paths:
             $ref: '#/definitions/utilities.SuccessResponse'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "429":
           description: Too Many Requests
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Generates a password reset token
       tags:
       - auth
@@ -2053,16 +2043,13 @@ paths:
             $ref: '#/definitions/models.User'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Logs in a user
       tags:
       - auth
@@ -2097,20 +2084,16 @@ paths:
             $ref: '#/definitions/models.User'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       security:
       - Bearer: []
       summary: Retrieves the currently authenticated user
@@ -2131,16 +2114,13 @@ paths:
             $ref: '#/definitions/utilities.SuccessResponse'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Refreshes a user's access token
       tags:
       - auth
@@ -2166,16 +2146,13 @@ paths:
             $ref: '#/definitions/utilities.SuccessResponse'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "429":
           description: Too Many Requests
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Sends a verification code
       tags:
       - auth
@@ -2201,16 +2178,13 @@ paths:
             $ref: '#/definitions/utilities.SuccessResponse'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "429":
           description: Too Many Requests
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Verifies an email
       tags:
       - auth
@@ -2236,16 +2210,13 @@ paths:
             $ref: '#/definitions/utilities.SuccessResponse'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "429":
           description: Too Many Requests
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       security:
       - Bearer: []
       summary: Verifies a password reset token
@@ -2469,16 +2440,13 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all tags by category
       tags:
       - category-tag
@@ -2506,16 +2474,13 @@ paths:
             $ref: '#/definitions/models.Tag'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve a tag by category
       tags:
       - category-tag
@@ -2543,12 +2508,10 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all clubs
       tags:
       - club
@@ -2573,20 +2536,16 @@ paths:
             $ref: '#/definitions/models.Club'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Create a club
       tags:
       - club
@@ -2609,20 +2568,16 @@ paths:
             type: string
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Delete a club
       tags:
       - club
@@ -2644,16 +2599,13 @@ paths:
             $ref: '#/definitions/models.Club'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve a club
       tags:
       - club
@@ -2683,20 +2635,16 @@ paths:
             $ref: '#/definitions/models.Club'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Update a club
       tags:
       - club
@@ -2721,16 +2669,13 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all contacts for a club
       tags:
       - club-contact
@@ -2760,20 +2705,16 @@ paths:
             $ref: '#/definitions/models.Contact'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Creates a contact
       tags:
       - club-contact
@@ -2806,16 +2747,13 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all events for a club
       tags:
       - club-event
@@ -2848,20 +2786,53 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all followers for a club
       tags:
       - club-follower
   /clubs/{clubID}/members/:
+    delete:
+      description: Deletes a member associated with a club
+      operationId: delete-member-from-club
+      parameters:
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema: {}
+        "401":
+          description: Unauthorized
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Delete a member from a club
+      tags:
+      - club-member
     get:
       description: Retrieves all members associated with a club
       operationId: get-members-by-club
@@ -2890,21 +2861,55 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all members for a club
+      tags:
+      - club-member
+    post:
+      consumes:
+      - application/json
+      description: Creates a new member associated with a club
+      operationId: create-member-for-club
+      parameters:
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema: {}
+        "401":
+          description: Unauthorized
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Create a new member for a club
       tags:
       - club-member
   /clubs/{clubID}/poc/:
@@ -2928,20 +2933,16 @@ paths:
             $ref: '#/definitions/models.PointOfContact'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Create a point of contact for a club
       tags:
       - club-point-of-contact
@@ -2967,16 +2968,13 @@ paths:
           description: No Content
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Delete a point of contact for a club
       tags:
       - club-point-of-contact
@@ -3005,20 +3003,16 @@ paths:
             $ref: '#/definitions/models.PointOfContact'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Update a point of contact photo for a club
       tags:
       - club-point-of-contact
@@ -3047,20 +3041,16 @@ paths:
             $ref: '#/definitions/models.PointOfContact'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Update a point of contact for a club
       tags:
       - club-point-of-contact
@@ -3085,16 +3075,13 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all point of contacts for a club
       tags:
       - club-point-of-contact
@@ -3122,16 +3109,13 @@ paths:
             $ref: '#/definitions/models.PointOfContact'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve a point of contact for a club
       tags:
       - club-point-of-contact
@@ -3156,16 +3140,13 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all tags for a club
       tags:
       - club-tag
@@ -3197,20 +3178,16 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Create club tags
       tags:
       - club-tag
@@ -3238,20 +3215,16 @@ paths:
             type: string
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Delete a tag for a club
       tags:
       - club-tag
@@ -3383,16 +3356,13 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all events
       tags:
       - event
@@ -3417,20 +3387,16 @@ paths:
             $ref: '#/definitions/models.Event'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Create an event
       tags:
       - event
@@ -3453,20 +3419,16 @@ paths:
             type: string
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Delete an event
       tags:
       - event
@@ -3488,16 +3450,13 @@ paths:
             $ref: '#/definitions/models.Event'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve an event
       tags:
       - event
@@ -3522,16 +3481,13 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all hosts by event
       tags:
       - event
@@ -3554,20 +3510,16 @@ paths:
             type: string
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Delete all series by event
       tags:
       - event
@@ -3591,16 +3543,13 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all series by event
       tags:
       - event
@@ -3630,20 +3579,16 @@ paths:
             $ref: '#/definitions/models.Series'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Create a series
       tags:
       - event
@@ -3671,20 +3616,16 @@ paths:
             type: string
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Delete a series by ID
       tags:
       - event
@@ -3711,16 +3652,13 @@ paths:
             $ref: '#/definitions/models.Series'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve a series by ID
       tags:
       - event
@@ -3750,20 +3688,16 @@ paths:
             $ref: '#/definitions/models.Series'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Update a series by event ID
       tags:
       - event
@@ -3788,16 +3722,13 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all tags by event
       tags:
       - event
@@ -3825,20 +3756,16 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all files
       tags:
       - file
@@ -3863,20 +3790,16 @@ paths:
             $ref: '#/definitions/models.File'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Create a file
       tags:
       - file
@@ -3899,20 +3822,16 @@ paths:
             $ref: '#/definitions/models.File'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Delete a file
       tags:
       - file
@@ -3934,20 +3853,16 @@ paths:
             $ref: '#/definitions/models.File'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve a file
       tags:
       - file
@@ -4044,16 +3959,13 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all tags
       tags:
       - tag
@@ -4079,20 +3991,16 @@ paths:
             $ref: '#/definitions/models.Tag'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Create a tag
       tags:
       - tag
@@ -4115,20 +4023,16 @@ paths:
             type: string
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Delete a tag
       tags:
       - tag
@@ -4150,16 +4054,13 @@ paths:
             $ref: '#/definitions/models.Tag'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve a tag
       tags:
       - tag
@@ -4189,20 +4090,16 @@ paths:
             $ref: '#/definitions/models.Tag'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Update a tag
       tags:
       - tag
@@ -4230,16 +4127,13 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all users
       tags:
       - user
@@ -4264,24 +4158,19 @@ paths:
             $ref: '#/definitions/models.User'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "409":
           description: Conflict
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Create a user
       tags:
       - user
@@ -4304,20 +4193,16 @@ paths:
             type: string
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Delete a user
       tags:
       - user
@@ -4339,20 +4224,16 @@ paths:
             $ref: '#/definitions/models.User'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve a user
       tags:
       - user
@@ -4382,20 +4263,16 @@ paths:
             $ref: '#/definitions/models.User'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Update a user
       tags:
       - user
@@ -4420,20 +4297,16 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all clubs a user is following
       tags:
       - user-follower
@@ -4463,16 +4336,13 @@ paths:
             $ref: '#/definitions/utilities.SuccessResponse'
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Unfollow a club
       tags:
       - user-follower
@@ -4501,16 +4371,13 @@ paths:
             $ref: '#/definitions/utilities.SuccessResponse'
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Follow a club
       tags:
       - user-follower
@@ -4535,98 +4402,17 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all clubs a user is a member of
-      tags:
-      - user-member
-  /users/{userID}/member/{clubID}/:
-    delete:
-      consumes:
-      - application/json
-      description: Leave a club
-      operationId: delete-membership
-      parameters:
-      - description: User ID
-        in: path
-        name: userID
-        required: true
-        type: string
-      - description: Club ID
-        in: path
-        name: clubID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-          schema:
-            $ref: '#/definitions/utilities.SuccessResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
-      summary: Leave a club
-      tags:
-      - user-member
-    post:
-      consumes:
-      - application/json
-      description: Join a club
-      operationId: create-membership
-      parameters:
-      - description: User ID
-        in: path
-        name: userID
-        required: true
-        type: string
-      - description: Club ID
-        in: path
-        name: clubID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/utilities.SuccessResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
-      summary: Join a club
       tags:
       - user-member
   /users/{userID}/password:
@@ -4656,20 +4442,16 @@ paths:
             type: string
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Update a user's password
       tags:
       - user
@@ -4692,20 +4474,16 @@ paths:
           description: Created
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Create user tags
       tags:
       - user-tag
@@ -4729,20 +4507,16 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all tags for a user
       tags:
       - user-tag
@@ -4774,20 +4548,16 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Create user tags
       tags:
       - user-tag

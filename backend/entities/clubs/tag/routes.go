@@ -2,6 +2,7 @@ package tag
 
 import (
 	"github.com/GenerateNU/sac/backend/types"
+	"github.com/GenerateNU/sac/backend/utilities"
 )
 
 func ClubTag(clubParams types.RouteParams) {
@@ -10,7 +11,7 @@ func ClubTag(clubParams types.RouteParams) {
 	clubTags := clubParams.Router.Group("/tags")
 
 	// api/v1/clubs/:clubID/tags/*
-	clubTags.Get("/", clubTagController.GetClubTags)
-	clubTags.Post("/", clubParams.AuthMiddleware.ClubAuthorizeById, clubTagController.CreateClubTags)
-	clubTags.Delete("/:tagID", clubParams.AuthMiddleware.ClubAuthorizeById, clubTagController.DeleteClubTag)
+	clubTags.Get("/", utilities.Make(clubTagController.GetClubTags))
+	clubTags.Post("/", clubParams.AuthMiddleware.ClubAuthorizeById, utilities.Make(clubTagController.CreateClubTags))
+	clubTags.Delete("/:tagID", clubParams.AuthMiddleware.ClubAuthorizeById, utilities.Make(clubTagController.DeleteClubTag))
 }
