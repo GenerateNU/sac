@@ -65,10 +65,10 @@ func preProcessFile(fileHeader *multipart.FileHeader) (*string, []byte, error) {
 	}
 
 	file, err := fileHeader.Open()
-	defer file.Close()
 	if err != nil {
 		return nil, nil, errors.New("failed to open file")
 	}
+	defer file.Close()
 
 	fileBytes, err := io.ReadAll(file)
 	if err != nil {

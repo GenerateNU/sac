@@ -17,7 +17,6 @@ func CreateCategory(db *gorm.DB, category models.Category) (*models.Category, er
 			return nil, utilities.ErrDuplicate
 		}
 		return nil, err
-
 	}
 
 	return &category, nil

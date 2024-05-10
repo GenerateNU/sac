@@ -74,11 +74,12 @@ func Make(handler fiber.Handler) fiber.Handler {
 		if err := handler(c); err != nil {
 			var apiErr APIError
 
-			if errors.Is(err, ErrNotFound) {
+			switch err {
+			case ErrNotFound:
 				apiErr = NewAPIError(http.StatusNotFound, err)
-			} else if errors.Is(err, ErrDuplicate) {
+			case ErrDuplicate:
 				apiErr = NewAPIError(http.StatusConflict, err)
-			} else {
+			default:
 				if castedErr, ok := err.(APIError); ok {
 					apiErr = castedErr
 				} else {
