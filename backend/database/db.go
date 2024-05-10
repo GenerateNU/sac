@@ -37,6 +37,7 @@ func EstablishConn(dsn string, opts ...OptionalFunc) (*gorm.DB, error) {
 	rootConfig := gorm.Config{
 		SkipDefaultTransaction: true,
 		TranslateError:         true,
+		PrepareStmt:            true,
 	}
 
 	for _, opt := range opts {
