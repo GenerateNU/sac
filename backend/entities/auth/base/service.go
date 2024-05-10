@@ -1,7 +1,9 @@
 package base
 
 import (
+	"errors"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/GenerateNU/sac/backend/auth"
@@ -257,11 +259,12 @@ func verifyEmailHelper(user *models.User, token string, db *gorm.DB) error {
 	}
 
 	if otp.Token != token {
-		return fmt.Errorf("invalid otp. got %s", token)
+		slog.Error("invalid otp", "otp", otp.Token, "token", token)
+		return utilities.BadRequest(errors.New("invalid otp"))
 	}
 
 	if otp.ExpiresAt.Before(time.Now().UTC()) {
-		return fmt.Errorf("otp has expired")
+		return utilities.BadRequest(errors.New("otp expired"))
 	}
 
 	return nil

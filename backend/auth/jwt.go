@@ -217,7 +217,7 @@ func (j *JWTClient) getSecretKey(tokenType JWTType) (string, error) {
 		return j.RefreshKey.Expose(), nil
 	}
 
-	return "", fmt.Errorf("invalid token type: %s", tokenType)
+	return "", utilities.BadRequest(fmt.Errorf("invalid token type: %s", tokenType))
 }
 
 // getExpiry returns the expiry time for the token type.
