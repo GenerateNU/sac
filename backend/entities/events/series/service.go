@@ -42,15 +42,15 @@ func (e *EventSeriesService) CreateEventSeries(body CreateEventSeriesRequestBody
 		return nil, err
 	}
 
-	occurences, err := validatedBody.Recurrence.ReccurUntil(rootEvent.Start, rootEvent.End, validatedBody.Termination)
+	occurrences, err := validatedBody.Recurrence.ReccurUntil(rootEvent.Start, rootEvent.End, validatedBody.Termination)
 	if err != nil {
-		return nil, fmt.Errorf("error reccuring event series: %w", err)
+		return nil, fmt.Errorf("error recurring event series: %w", err)
 	}
 
-	events := make([]models.Event, len(occurences))
+	events := make([]models.Event, len(occurrences))
 	seriesID := uuid.New()
 
-	for index, occurence := range occurences {
+	for index, occurrence := range occurrences {
 		eventOccurence := *rootEvent
 		eventOccurence.SeriesID = &seriesID
 		eventOccurence.Start = occurence.Start

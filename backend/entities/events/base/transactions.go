@@ -30,7 +30,6 @@ func CreateEvent(db *gorm.DB, event models.Event) (*models.Event, error) {
 }
 
 func UpdateEvent(db *gorm.DB, id uuid.UUID, event models.Event) (*models.Event, error) {
-
 	if result := db.Model(&models.Event{}).Where("id = ?", id).Updates(event); result.RowsAffected == 0 {
 		if result.Error == nil {
 			return nil, utilities.ErrNotFound

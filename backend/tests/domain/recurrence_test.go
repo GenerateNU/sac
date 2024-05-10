@@ -30,7 +30,6 @@ func TestRecurrenceUntil(t *testing.T) {
 	termination := time.Date(2024, 2, 1, 0, 0, 0, 0, time.UTC)
 
 	events, err := recurrence.ReccurUntil(start, end, termination)
-
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}
