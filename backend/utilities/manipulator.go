@@ -1,6 +1,8 @@
 package utilities
 
 import (
+	"fmt"
+
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -13,12 +15,12 @@ func MapRequestToModel[T any, U any](responseData T, targetModel *U) (*U, error)
 
 	decoder, err := mapstructure.NewDecoder(config)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create decoder: %w", err)
 	}
 
 	err = decoder.Decode(responseData)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to decode data: %w", err)
 	}
 
 	return targetModel, nil

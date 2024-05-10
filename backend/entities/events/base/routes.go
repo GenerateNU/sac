@@ -1,11 +1,22 @@
 package base
 
 import (
+	"github.com/GenerateNU/sac/backend/entities/events/series"
+	"github.com/GenerateNU/sac/backend/entities/events/tags"
+
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/gofiber/fiber/v2"
 )
 
-func Event(eventParams types.RouteParams) {
+func EventRoutes(eventParams types.RouteParams) {
+	eventParams.Router = EventRouter(eventParams)
+
+	series.EventSeries(eventParams)
+	tags.EventTags(eventParams)
+}
+
+func EventRouter(eventParams types.RouteParams) fiber.Router {
 	eventController := NewEventController(NewEventService(eventParams.ServiceParams))
 
 	// api/v1/events/*
@@ -18,22 +29,8 @@ func Event(eventParams types.RouteParams) {
 	eventID := events.Group("/:eventID")
 
 	eventID.Get("/", utilities.Make(eventController.GetEvent))
-	eventID.Get("/series", utilities.Make(eventController.GetSeriesByEventID))
 	eventID.Patch("/", utilities.Make(eventController.UpdateEvent))
-	eventID.Patch("/series", utilities.Make(eventController.UpdateSeriesByEventID))
 	eventID.Delete("/", utilities.Make(eventController.DeleteEvent))
-	eventID.Delete("/series", utilities.Make(eventController.DeleteSeriesByEventID))
 
-	eventID.Get("/hosts", utilities.Make(eventController.GetHostsByEventID))
-	eventID.Get("/tags", utilities.Make(eventController.GetTagsByEventID))
-
-	// api/v1/events/series/*
-	series := events.Group("/series")
-
-	// api/v1/events/series/:seriesID/*
-	seriesID := series.Group("/:seriesID")
-
-	seriesID.Get("/", utilities.Make(eventController.GetSeriesByID))
-	seriesID.Patch("/", eventParams.AuthMiddleware.ClubAuthorizeById, utilities.Make(eventController.UpdateSeriesByID))
-	seriesID.Delete("/", eventParams.AuthMiddleware.ClubAuthorizeById, utilities.Make(eventController.DeleteSeriesByID))
+	return events
 }

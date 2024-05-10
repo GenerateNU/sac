@@ -69,11 +69,6 @@ type CreateEventRequestBody struct {
 	// timing
 	Start time.Time `json:"start_time" validate:"required,ltecsfield=EndTime"`
 	End   time.Time `json:"end_time" validate:"required,gtecsfield=StartTime"`
-
-	// event series tings
-	IsSeries    bool                    `json:"is_series" validate:"required"`
-	Recurrence  protos.BinaryRecurrence `json:"recurrence" validate:"omitempty, required_if=IsSeries true"`
-	Termination time.Time               `json:"termination" validate:"omitempty, required_if=IsSeries true"`
 }
 
 type UpdateEventRequestBody struct {
@@ -96,7 +91,7 @@ type UpdateEventRequestBody struct {
 	// timing
 	StartTime  time.Time               `json:"start_time" validate:"omitempty,ltecsfield=EndTime"`
 	EndTime    time.Time               `json:"end_time" validate:"omitempty,gtecsfield=StartTime"`
-	Recurrence protos.BinaryRecurrence `json:"recurrence" validate:"omitempty"`
+	Recurrence protos.StringRecurrence `json:"recurrence" validate:"omitempty"`
 
 	UpdateAllInSeries bool `json:"update_all_in_series" validate:"required"`
 }

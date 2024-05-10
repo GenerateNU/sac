@@ -1,105 +1,80 @@
 package series
 
 import (
-	"time"
+	"fmt"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/errors"
-	"github.com/GenerateNU/sac/backend/protos"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/google/uuid"
 )
 
 type EventSeriesServiceInterface interface {
-	// cud
-	CreateEvent(body models.CreateEventRequestBody) ([]models.Event, *errors.Error)
-	UpdateEvent(eventID string, eventBody models.UpdateEventRequestBody) ([]models.Event, *errors.Error)
-	DeleteEvent(eventID string) *errors.Error
-
-	// bridgerton getters (do these belong here?)
-	// TODO: move to events/tags, like clubs
-	GetTags(eventID string) ([]models.Tag, *errors.Error)
+	CreateEventSeries(body CreateEventSeriesRequestBody) ([]models.Event, error)
+	GetEventSeries(seriesID string) ([]models.Event, error)
+	DeleteEventSeries(seriesID string) error
 }
 
 type EventSeriesService struct {
 	types.ServiceParams
 }
 
-func NewEventSeriesService(serviceParams types.ServiceParams) EventSeriesService {
+func NewEventSeriesService(serviceParams types.ServiceParams) EventSeriesServiceInterface {
 	return &EventSeriesService{serviceParams}
 }
 
-func (e *EventService) GetEvents(limit string, page string) ([]models.Event, *errors.Error) {
-	limitAsInt, err := utilities.ValidateNonNegative(limit)
+func (e *EventSeriesService) CreateEventSeries(body CreateEventSeriesRequestBody) ([]models.Event, error) {
+	if err := utilities.Validate(e.Validate, body); err != nil {
+		return nil, err
+	}
+
+	validatedBody, err := body.Into()
 	if err != nil {
-		return nil, &errors.FailedToValidateLimit
+		return nil, err
 	}
 
-	pageAsInt, err := utilities.ValidateNonNegative(page)
+	if validatedBody.Termination.After(e.Calendar.MaxTerminationDate) {
+		return nil, utilities.BadRequest(fmt.Errorf("termination date is after max termination date. termination: %s, max termination: %s", validatedBody.Termination, e.Calendar.MaxTerminationDate))
+	}
+
+	rootEvent, err := utilities.MapRequestToModel(validatedBody, &models.Event{})
 	if err != nil {
-		return nil, &errors.FailedToValidatePage
+		return nil, err
 	}
 
-	return GetEvents(e.DB, *limitAsInt, *pageAsInt)
-}
-
-func (e *EventService) GetEvent(eventID string) (*models.Event, *errors.Error) {
-	idAsUUID, err := utilities.ValidateID(eventID)
+	occurences, err := validatedBody.Recurrence.ReccurUntil(rootEvent.Start, rootEvent.End, validatedBody.Termination)
 	if err != nil {
-		return nil, &errors.FailedToValidateID
-	}
-
-	return GetEvent(e.DB, *idAsUUID)
-}
-
-func (e *EventService) CreateEvent(body models.CreateEventRequestBody) ([]models.Event, *errors.Error) {
-	if err := e.Validate.Struct(body); err != nil {
-		return nil, &errors.FailedToValidateEvent
-	}
-
-	event, err := utilities.MapRequestToModel(body, &models.Event{})
-	if err != nil {
-		return nil, &errors.FailedToMapRequestToModel
-	}
-
-	if body.IsSeries {
-		events, seriesID, err := handleEventSeries(event, body.Recurrence, body.Termination, e.Calendar.MaxTerminationDate)
-		if err != nil {
-			return nil, err
-		}
-
-		return CreateEventSeries(e.DB, events, seriesID)
-	} else {
-		return CreateEvent(e.DB, *event)
-	}
-}
-
-func handleEventSeries(event *models.Event, binaryRecurrence protos.BinaryRecurrence, termination time.Time, maxTermination time.Time) ([]models.Event, *uuid.UUID, *errors.Error) {
-	if termination.After(maxTermination) {
-		return nil, nil, &errors.FailedToValidateTermination
-	}
-
-	var recurrence protos.Recurrence
-	if unmarshallErr := recurrence.UnmarshallBinary(binaryRecurrence); unmarshallErr != nil {
-		return nil, nil, &errors.FailedToUnmarshallRecurrence
-	}
-
-	occurences, err := recurrence.ReccurUntil(event.Start, event.End, termination)
-	if err != nil {
-		return nil, nil, &errors.FailedToReccurUntil
+		return nil, fmt.Errorf("error reccuring event series: %w", err)
 	}
 
 	events := make([]models.Event, len(occurences))
 	seriesID := uuid.New()
 
 	for index, occurence := range occurences {
-		eventCopy := *event
-		eventCopy.SeriesID = &seriesID
-		eventCopy.Start = occurence.Start
-		eventCopy.End = occurence.End
-		events[index] = eventCopy
+		eventOccurence := *rootEvent
+		eventOccurence.SeriesID = &seriesID
+		eventOccurence.Start = occurence.Start
+		eventOccurence.End = occurence.End
+		events[index] = eventOccurence
 	}
 
-	return events, &seriesID, nil
+	return events, nil
+}
+
+func (e *EventSeriesService) GetEventSeries(seriesID string) ([]models.Event, error) {
+	idAsUUID, err := utilities.ValidateID(seriesID)
+	if err != nil {
+		return nil, err
+	}
+
+	return GetEventSeries(e.DB, *idAsUUID)
+}
+
+func (e *EventSeriesService) DeleteEventSeries(seriesID string) error {
+	idAsUUID, err := utilities.ValidateID(seriesID)
+	if err != nil {
+		return err
+	}
+
+	return DeleteEventSeries(e.DB, *idAsUUID)
 }

@@ -79,7 +79,7 @@ func allRoutes(app *fiber.App, routeParams types.RouteParams) {
 	pocs.PointOfContact(routeParams)
 	tags.Tag(routeParams)
 	categories.CategoryRoutes(routeParams)
-	events.Event(routeParams)
+	events.EventRoutes(routeParams)
 	files.File(routeParams)
 }
 

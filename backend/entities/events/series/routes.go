@@ -13,6 +13,5 @@ func EventSeries(eventParams types.RouteParams) {
 	eventSeriedID := eventSeries.Group("/:seriesID")
 
 	eventSeriedID.Get("/", eventSeriesController.GetEventSeries)
-	eventSeriedID.Patch("/", eventSeriesController.UpdateEventSeries)
 	eventSeriedID.Delete("/", eventSeriesController.DeleteEventSeries)
 }

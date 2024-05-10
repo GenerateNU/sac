@@ -15,10 +15,7 @@ import (
 )
 
 func ClubRoutes(clubParams types.RouteParams) {
-	clubIDRouter := ClubRouter(clubParams)
-
-	// update the router in params
-	clubParams.Router = clubIDRouter
+	clubParams.Router = ClubRouter(clubParams)
 
 	tag.ClubTag(clubParams)
 	follower.ClubFollower(clubParams)

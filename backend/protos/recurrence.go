@@ -101,7 +101,7 @@ func (r *Recurrence) ReccurUntil(start time.Time, end time.Time, termination tim
 
 const (
 	// housekeeping
-	PROTO_VERSION byte = 1
+	PROTO_VERSION rune = '1'
 	PROTO_SIZE    int  = 11
 
 	// indices
@@ -125,66 +125,68 @@ const (
 // 8: [does this occur on Friday?]
 // 9: [does this occur on Saturday?]
 // 10: [does this occur on Sunday?]
-type BinaryRecurrence []byte
+type StringRecurrence string
 
-func (r *Recurrence) MarshallBinary() (data []byte, err error) {
-	data = make([]byte, PROTO_SIZE)
+func (r *Recurrence) Into() string {
+	data := make([]rune, PROTO_SIZE)
 
 	data[VERSION_INDEX] = PROTO_VERSION
 
 	if r.IsWeekly {
-		data[IS_WEEKLY_INDEX] = 1
+		data[IS_WEEKLY_INDEX] = '1'
 	}
 	if r.IsBiweekly {
-		data[IS_BIWEEKLY_INDEX] = 1
+		data[IS_BIWEEKLY_INDEX] = '1'
 	}
 	if r.IsMonthly {
-		data[IS_MONTHLY_INDEX] = 1
+		data[IS_MONTHLY_INDEX] = '1'
 	}
 	if r.HappensOnMonday {
-		data[START_DAYS_OF_WEEK_INDEX] = 1
+		data[START_DAYS_OF_WEEK_INDEX] = '1'
 	}
 	if r.HappensOnTuesday {
-		data[START_DAYS_OF_WEEK_INDEX+1] = 1
+		data[START_DAYS_OF_WEEK_INDEX+1] = '1'
 	}
 	if r.HappensOnWednesday {
-		data[START_DAYS_OF_WEEK_INDEX+2] = 1
+		data[START_DAYS_OF_WEEK_INDEX+2] = '1'
 	}
 	if r.HappensOnThursday {
-		data[START_DAYS_OF_WEEK_INDEX+3] = 1
+		data[START_DAYS_OF_WEEK_INDEX+3] = '1'
 	}
 	if r.HappensOnFriday {
-		data[START_DAYS_OF_WEEK_INDEX+4] = 1
+		data[START_DAYS_OF_WEEK_INDEX+4] = '1'
 	}
 	if r.HappensOnSaturday {
-		data[START_DAYS_OF_WEEK_INDEX+5] = 1
+		data[START_DAYS_OF_WEEK_INDEX+5] = '1'
 	}
 	if r.HappensOnSunday {
-		data[START_DAYS_OF_WEEK_INDEX+6] = 1
+		data[START_DAYS_OF_WEEK_INDEX+6] = '1'
 	}
 
-	return data, nil
+	return string(data)
 }
 
-func (r *Recurrence) UnmarshallBinary(data []byte) (err error) {
-	if data[VERSION_INDEX] != PROTO_VERSION {
-		return errors.New("invalid version")
+func RecurrenceFrom(raw StringRecurrence) (recurrence *Recurrence, err error) {
+	runes := []rune(raw)
+
+	if runes[VERSION_INDEX] != PROTO_VERSION {
+		return nil, errors.New("invalid version")
 	}
 
-	if len(data) != PROTO_SIZE {
-		return errors.New("invalid data length")
+	if len(runes) != PROTO_SIZE {
+		return nil, errors.New("invalid data length")
 	}
 
-	r.IsWeekly = data[IS_WEEKLY_INDEX] == 1
-	r.IsBiweekly = data[IS_BIWEEKLY_INDEX] == 1
-	r.IsMonthly = data[IS_MONTHLY_INDEX] == 1
-	r.HappensOnMonday = data[START_DAYS_OF_WEEK_INDEX] == 1
-	r.HappensOnTuesday = data[START_DAYS_OF_WEEK_INDEX+1] == 1
-	r.HappensOnWednesday = data[START_DAYS_OF_WEEK_INDEX+2] == 1
-	r.HappensOnThursday = data[START_DAYS_OF_WEEK_INDEX+3] == 1
-	r.HappensOnFriday = data[START_DAYS_OF_WEEK_INDEX+4] == 1
-	r.HappensOnSaturday = data[START_DAYS_OF_WEEK_INDEX+5] == 1
-	r.HappensOnSunday = data[START_DAYS_OF_WEEK_INDEX+6] == 1
-
-	return nil
+	return NewRecurrence(
+		runes[IS_WEEKLY_INDEX] == '1',
+		runes[IS_BIWEEKLY_INDEX] == '1',
+		runes[IS_MONTHLY_INDEX] == '1',
+		runes[START_DAYS_OF_WEEK_INDEX] == '1',
+		runes[START_DAYS_OF_WEEK_INDEX+1] == '1',
+		runes[START_DAYS_OF_WEEK_INDEX+2] == '1',
+		runes[START_DAYS_OF_WEEK_INDEX+3] == '1',
+		runes[START_DAYS_OF_WEEK_INDEX+4] == '1',
+		runes[START_DAYS_OF_WEEK_INDEX+5] == '1',
+		runes[START_DAYS_OF_WEEK_INDEX+6] == '1',
+	)
 }
