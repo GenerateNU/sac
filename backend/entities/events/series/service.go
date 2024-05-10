@@ -53,8 +53,8 @@ func (e *EventSeriesService) CreateEventSeries(body CreateEventSeriesRequestBody
 	for index, occurrence := range occurrences {
 		eventOccurence := *rootEvent
 		eventOccurence.SeriesID = &seriesID
-		eventOccurence.Start = occurence.Start
-		eventOccurence.End = occurence.End
+		eventOccurence.Start = occurrence.Start
+		eventOccurence.End = occurrence.End
 		events[index] = eventOccurence
 	}
 
