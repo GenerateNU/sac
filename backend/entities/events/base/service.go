@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/errors"
 	"github.com/GenerateNU/sac/backend/protos"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
@@ -13,16 +12,16 @@ import (
 
 type EventServiceInterface interface {
 	// getters
-	GetEvents(limit string, page string) ([]models.Event, *errors.Error)
-	GetEvent(eventID string) (*models.Event, *errors.Error)
+	GetEvents(limit string, page string) ([]models.Event, error)
+	GetEvent(eventID string) (*models.Event, error)
 	// event cud
-	CreateEvent(body models.CreateEventRequestBody) ([]models.Event, *errors.Error)
-	UpdateEvent(eventID string, eventBody models.UpdateEventRequestBody) ([]models.Event, *errors.Error)
-	DeleteEvent(eventID string) *errors.Error
+	CreateEvent(body models.CreateEventRequestBody) ([]models.Event, error)
+	UpdateEvent(eventID string, eventBody models.UpdateEventRequestBody) ([]models.Event, error)
+	DeleteEvent(eventID string) error
 
 	// bridgerton getters (do these belong here?)
 	// TODO: move to events/tags, like clubs
-	GetTags(eventID string) ([]models.Tag, *errors.Error)
+	GetTags(eventID string) ([]models.Tag, error)
 }
 
 type EventService struct {
@@ -33,37 +32,37 @@ func NewEventService(serviceParams types.ServiceParams) EventServiceInterface {
 	return &EventService{serviceParams}
 }
 
-func (e *EventService) GetEvents(limit string, page string) ([]models.Event, *errors.Error) {
+func (e *EventService) GetEvents(limit string, page string) ([]models.Event, error) {
 	limitAsInt, err := utilities.ValidateNonNegative(limit)
 	if err != nil {
-		return nil, &errors.FailedToValidateLimit
+		return nil, err
 	}
 
 	pageAsInt, err := utilities.ValidateNonNegative(page)
 	if err != nil {
-		return nil, &errors.FailedToValidatePage
+		return nil, err
 	}
 
 	return GetEvents(e.DB, *limitAsInt, *pageAsInt)
 }
 
-func (e *EventService) GetEvent(eventID string) (*models.Event, *errors.Error) {
+func (e *EventService) GetEvent(eventID string) (*models.Event, error) {
 	idAsUUID, err := utilities.ValidateID(eventID)
 	if err != nil {
-		return nil, &errors.FailedToValidateID
+		return nil, err
 	}
 
 	return GetEvent(e.DB, *idAsUUID)
 }
 
-func (e *EventService) CreateEvent(body models.CreateEventRequestBody) ([]models.Event, *errors.Error) {
+func (e *EventService) CreateEvent(body models.CreateEventRequestBody) ([]models.Event, error) {
 	if err := e.Validate.Struct(body); err != nil {
-		return nil, &errors.FailedToValidateEvent
+		return nil, err
 	}
 
 	event, err := utilities.MapRequestToModel(body, &models.Event{})
 	if err != nil {
-		return nil, &errors.FailedToMapRequestToModel
+		return nil, err
 	}
 
 	if body.IsSeries {
@@ -78,7 +77,7 @@ func (e *EventService) CreateEvent(body models.CreateEventRequestBody) ([]models
 	}
 }
 
-func handleEventSeries(event *models.Event, binaryRecurrence protos.BinaryRecurrence, termination time.Time, maxTermination time.Time) ([]models.Event, *uuid.UUID, *errors.Error) {
+func handleEventSeries(event *models.Event, binaryRecurrence protos.BinaryRecurrence, termination time.Time, maxTermination time.Time) ([]models.Event, *uuid.UUID, error) {
 	if termination.After(maxTermination) {
 		return nil, nil, &errors.FailedToValidateTermination
 	}
