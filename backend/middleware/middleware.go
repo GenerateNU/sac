@@ -26,7 +26,7 @@ type AuthMiddlewareService struct {
 	Auth     config.AuthSettings
 }
 
-func NewAuthAuthMiddlewareService(db *gorm.DB, validate *validator.Validate, authSettings config.AuthSettings) *AuthMiddlewareService {
+func NewAuthMiddlewareService(db *gorm.DB, validate *validator.Validate, authSettings config.AuthSettings) *AuthMiddlewareService {
 	return &AuthMiddlewareService{
 		DB:       db,
 		Validate: validate,

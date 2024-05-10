@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/GenerateNU/sac/backend/auth"
-	"github.com/GenerateNU/sac/backend/entities/auth/base"
+	authBase "github.com/GenerateNU/sac/backend/entities/auth/base"
 	"github.com/GenerateNU/sac/backend/entities/models"
 
 	"github.com/GenerateNU/sac/backend/entities/users"
@@ -26,10 +26,14 @@ type UserServiceInterface interface {
 
 type UserService struct {
 	types.ServiceParams
+	AuthService authBase.AuthServiceInterface
 }
 
-func NewUserService(serviceParams types.ServiceParams) UserServiceInterface {
-	return &UserService{serviceParams}
+func NewUserService(serviceParams types.ServiceParams, authService authBase.AuthServiceInterface) UserServiceInterface {
+	return &UserService{
+		serviceParams,
+		authService,
+	}
 }
 
 func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models.User, *auth.Token, error) {
@@ -63,12 +67,11 @@ func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models
 		return nil, nil, err
 	}
 
-	authService := base.NewAuthService(u.ServiceParams)
-	if err := authService.SendCode(user.Email); err != nil {
+	if err := u.AuthService.SendCode(user.Email); err != nil {
 		return nil, nil, err
 	}
 
-	_, tokens, err := authService.Login(models.LoginUserResponseBody{Email: user.Email, Password: userBody.Password})
+	_, tokens, err := u.AuthService.Login(models.LoginUserResponseBody{Email: user.Email, Password: userBody.Password})
 	if err != nil {
 		return nil, nil, err
 	}
