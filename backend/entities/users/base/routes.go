@@ -2,6 +2,7 @@ package base
 
 import (
 	p "github.com/GenerateNU/sac/backend/auth"
+	authBase "github.com/GenerateNU/sac/backend/entities/auth/base"
 	"github.com/GenerateNU/sac/backend/entities/users/follower"
 	"github.com/GenerateNU/sac/backend/entities/users/member"
 	"github.com/GenerateNU/sac/backend/entities/users/tag"
@@ -11,8 +12,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func UserRoutes(userParams types.RouteParams) {
-	usersRouter := UsersRouter(userParams)
+func UserRoutes(userParams types.RouteParams, authService authBase.AuthServiceInterface) {
+	usersRouter := UsersRouter(userParams, authService)
 
 	userParams.Router = usersRouter
 
@@ -21,8 +22,8 @@ func UserRoutes(userParams types.RouteParams) {
 	member.UserMember(userParams)
 }
 
-func UsersRouter(userParams types.RouteParams) fiber.Router {
-	userController := NewUserController(NewUserService(userParams.ServiceParams))
+func UsersRouter(userParams types.RouteParams, authService authBase.AuthServiceInterface) fiber.Router {
+	userController := NewUserController(NewUserService(userParams.ServiceParams, authService))
 
 	// api/v1/users/*
 	users := userParams.Router.Group("/users")
