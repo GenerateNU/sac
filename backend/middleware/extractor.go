@@ -70,8 +70,6 @@ func ExtractFromParamIntoQuery(param string, db *gorm.DB, query QueryFn) Extract
 			return nil, err
 		}
 
-		ExtractFromQuery(db, *id, query)
-
-		return id, nil
+		return ExtractFromQuery(db, *id, query)(c)
 	}
 }
