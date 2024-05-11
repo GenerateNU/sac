@@ -2,13 +2,20 @@ package protos
 
 import (
 	"errors"
+	"slices"
 	"time"
 )
 
+type Cadence int
+
+const (
+	Weekly Cadence = iota
+	Biweekly
+	Monthly
+)
+
 type Recurrence struct {
-	IsWeekly           bool
-	IsBiweekly         bool
-	IsMonthly          bool
+	Cadence            Cadence
 	HappensOnMonday    bool
 	HappensOnTuesday   bool
 	HappensOnWednesday bool
@@ -18,27 +25,82 @@ type Recurrence struct {
 	HappensOnSunday    bool
 }
 
-func NewRecurrence(isWeekly bool, isBiweekly bool, isMonthly bool, happensOnMonday bool, happensOnTuesday bool, happensOnWednesday bool, happensOnThursday bool, happensOnFriday bool, happensOnSaturday bool, happensOnSunday bool) (*Recurrence, error) {
-	if !isWeekly && !isBiweekly && !isMonthly {
-		return nil, errors.New("recurrence must be weekly, biweekly, or monthly")
+func (r *Recurrence) HappensOn() []time.Weekday {
+	var result []time.Weekday
+	if r.HappensOnMonday {
+		result = append(result, time.Monday)
+	}
+	if r.HappensOnTuesday {
+		result = append(result, time.Tuesday)
+	}
+	if r.HappensOnWednesday {
+		result = append(result, time.Wednesday)
+	}
+	if r.HappensOnThursday {
+		result = append(result, time.Thursday)
+	}
+	if r.HappensOnFriday {
+		result = append(result, time.Friday)
+	}
+	if r.HappensOnSaturday {
+		result = append(result, time.Saturday)
+	}
+	if r.HappensOnSunday {
+		result = append(result, time.Sunday)
 	}
 
-	if !happensOnMonday && !happensOnTuesday && !happensOnWednesday && !happensOnThursday && !happensOnFriday && !happensOnSaturday && !happensOnSunday {
-		return nil, errors.New("recurrence must happen on at least one day")
+	return result
+}
+
+type HappensOn func(Recurrence) Recurrence
+
+func Monday(r Recurrence) Recurrence {
+	r.HappensOnMonday = true
+	return r
+}
+
+func Tuesday(r Recurrence) Recurrence {
+	r.HappensOnTuesday = true
+	return r
+}
+
+func Wednesday(r Recurrence) Recurrence {
+	r.HappensOnWednesday = true
+	return r
+}
+
+func Thursday(r Recurrence) Recurrence {
+	r.HappensOnThursday = true
+	return r
+}
+
+func Friday(r Recurrence) Recurrence {
+	r.HappensOnFriday = true
+	return r
+}
+
+func Saturday(r Recurrence) Recurrence {
+	r.HappensOnSaturday = true
+	return r
+}
+
+func Sunday(r Recurrence) Recurrence {
+	r.HappensOnSunday = true
+	return r
+}
+
+func NewRecurrence(cadence Cadence, happensOn ...HappensOn) (*Recurrence, error) {
+	if len(happensOn) == 0 {
+		return nil, errors.New("at least one happensOn function must be provided")
 	}
 
-	return &Recurrence{
-		IsWeekly:           isWeekly,
-		IsBiweekly:         isBiweekly,
-		IsMonthly:          isMonthly,
-		HappensOnMonday:    happensOnMonday,
-		HappensOnTuesday:   happensOnTuesday,
-		HappensOnWednesday: happensOnWednesday,
-		HappensOnThursday:  happensOnThursday,
-		HappensOnFriday:    happensOnFriday,
-		HappensOnSaturday:  happensOnSaturday,
-		HappensOnSunday:    happensOnSunday,
-	}, nil
+	var r Recurrence
+	r.Cadence = cadence
+	for _, happens := range happensOn {
+		r = happens(r)
+	}
+
+	return &r, nil
 }
 
 type Occurrence struct {
@@ -59,40 +121,49 @@ func (r *Recurrence) ReccurUntil(start time.Time, end time.Time, termination tim
 		return nil, errors.New("end date is after termination date")
 	}
 
+	if !slices.Contains(r.HappensOn(), start.Weekday()) {
+		return nil, errors.New("start date is on a day that the recurrence does not happen on")
+	}
+
 	current := start
+	currentEnd := end
 	for current.Before(termination) {
-		if current.After(end) {
+		if current.After(currentEnd) {
 			break
 		}
 
 		if r.HappensOnMonday && current.Weekday() == time.Monday {
-			result = append(result, Occurrence{current, end})
+			result = append(result, Occurrence{current, currentEnd})
 		}
 		if r.HappensOnTuesday && current.Weekday() == time.Tuesday {
-			result = append(result, Occurrence{current, end})
+			result = append(result, Occurrence{current, currentEnd})
 		}
 		if r.HappensOnWednesday && current.Weekday() == time.Wednesday {
-			result = append(result, Occurrence{current, end})
+			result = append(result, Occurrence{current, currentEnd})
 		}
 		if r.HappensOnThursday && current.Weekday() == time.Thursday {
-			result = append(result, Occurrence{current, end})
+			result = append(result, Occurrence{current, currentEnd})
 		}
 		if r.HappensOnFriday && current.Weekday() == time.Friday {
-			result = append(result, Occurrence{current, end})
+			result = append(result, Occurrence{current, currentEnd})
 		}
 		if r.HappensOnSaturday && current.Weekday() == time.Saturday {
-			result = append(result, Occurrence{current, end})
+			result = append(result, Occurrence{current, currentEnd})
 		}
 		if r.HappensOnSunday && current.Weekday() == time.Sunday {
-			result = append(result, Occurrence{current, end})
+			result = append(result, Occurrence{current, currentEnd})
 		}
 
-		if r.IsWeekly {
+		switch r.Cadence {
+		case Weekly:
 			current = current.AddDate(0, 0, 7)
-		} else if r.IsBiweekly {
+			currentEnd = currentEnd.AddDate(0, 0, 7)
+		case Biweekly:
 			current = current.AddDate(0, 0, 14)
-		} else if r.IsMonthly {
+			currentEnd = currentEnd.AddDate(0, 0, 14)
+		case Monthly:
 			current = current.AddDate(0, 1, 0)
+			currentEnd = currentEnd.AddDate(0, 1, 0)
 		}
 	}
 
@@ -106,25 +177,21 @@ const (
 
 	// indices
 	VERSION_INDEX            int = 0
-	IS_WEEKLY_INDEX          int = 1
-	IS_BIWEEKLY_INDEX        int = 2
-	IS_MONTHLY_INDEX         int = 3
-	START_DAYS_OF_WEEK_INDEX int = 4
-	END_DAYS_OF_WEEK_INDEX   int = 11
+	CADENCE_INDEX            int = 1
+	START_DAYS_OF_WEEK_INDEX int = 2
+	END_DAYS_OF_WEEK_INDEX   int = 9
 )
 
 // PROTO v1
 // 0: [proto version]
-// 1: [is this weekly?]
-// 2: [is this biweekly?]
-// 3: [is this monthly?]
-// 4: [does this occur on Monday?]
-// 5: [does this occur on Tuesday?]
-// 6: [does this occur on Wednesday?]
-// 7: [does this occur on Thursday?]
-// 8: [does this occur on Friday?]
-// 9: [does this occur on Saturday?]
-// 10: [does this occur on Sunday?]
+// 1: [cadence]
+// 2: [does this occur on Monday?]
+// 3: [does this occur on Tuesday?]
+// 4: [does this occur on Wednesday?]
+// 5: [does this occur on Thursday?]
+// 6: [does this occur on Friday?]
+// 7: [does this occur on Saturday?]
+// 8: [does this occur on Sunday?]
 type StringRecurrence string
 
 func (r *Recurrence) Into() string {
@@ -132,15 +199,15 @@ func (r *Recurrence) Into() string {
 
 	data[VERSION_INDEX] = PROTO_VERSION
 
-	if r.IsWeekly {
-		data[IS_WEEKLY_INDEX] = '1'
+	switch r.Cadence {
+	case Weekly:
+		data[CADENCE_INDEX] = '0'
+	case Biweekly:
+		data[CADENCE_INDEX] = '1'
+	case Monthly:
+		data[CADENCE_INDEX] = '2'
 	}
-	if r.IsBiweekly {
-		data[IS_BIWEEKLY_INDEX] = '1'
-	}
-	if r.IsMonthly {
-		data[IS_MONTHLY_INDEX] = '1'
-	}
+
 	if r.HappensOnMonday {
 		data[START_DAYS_OF_WEEK_INDEX] = '1'
 	}
@@ -177,16 +244,35 @@ func RecurrenceFrom(raw StringRecurrence) (recurrence *Recurrence, err error) {
 		return nil, errors.New("invalid data length")
 	}
 
+	if runes[CADENCE_INDEX] != '0' && runes[CADENCE_INDEX] != '1' && runes[CADENCE_INDEX] != '2' {
+		return nil, errors.New("invalid cadence")
+	}
+
+	var happensOn []HappensOn
+	if runes[START_DAYS_OF_WEEK_INDEX] == '1' {
+		happensOn = append(happensOn, Monday)
+	}
+	if runes[START_DAYS_OF_WEEK_INDEX+1] == '1' {
+		happensOn = append(happensOn, Tuesday)
+	}
+	if runes[START_DAYS_OF_WEEK_INDEX+2] == '1' {
+		happensOn = append(happensOn, Wednesday)
+	}
+	if runes[START_DAYS_OF_WEEK_INDEX+3] == '1' {
+		happensOn = append(happensOn, Thursday)
+	}
+	if runes[START_DAYS_OF_WEEK_INDEX+4] == '1' {
+		happensOn = append(happensOn, Friday)
+	}
+	if runes[START_DAYS_OF_WEEK_INDEX+5] == '1' {
+		happensOn = append(happensOn, Saturday)
+	}
+	if runes[START_DAYS_OF_WEEK_INDEX+6] == '1' {
+		happensOn = append(happensOn, Sunday)
+	}
+
 	return NewRecurrence(
-		runes[IS_WEEKLY_INDEX] == '1',
-		runes[IS_BIWEEKLY_INDEX] == '1',
-		runes[IS_MONTHLY_INDEX] == '1',
-		runes[START_DAYS_OF_WEEK_INDEX] == '1',
-		runes[START_DAYS_OF_WEEK_INDEX+1] == '1',
-		runes[START_DAYS_OF_WEEK_INDEX+2] == '1',
-		runes[START_DAYS_OF_WEEK_INDEX+3] == '1',
-		runes[START_DAYS_OF_WEEK_INDEX+4] == '1',
-		runes[START_DAYS_OF_WEEK_INDEX+5] == '1',
-		runes[START_DAYS_OF_WEEK_INDEX+6] == '1',
+		Cadence(runes[CADENCE_INDEX]),
+		happensOn...,
 	)
 }

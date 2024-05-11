@@ -9,35 +9,26 @@ import (
 
 func TestRecurrenceUntil(t *testing.T) {
 	recurrence, err := protos.NewRecurrence(
-		true,  // isWeekly
-		false, // isBiweekly
-		false, // isYearly
-		false, // happensOnMonday
-		false, // happensOnTuesday
-		true,  // happensOnWednesday
-		false, // happensOnThursday
-		false, // happensOnFriday
-		false, // happensOnSaturday
-		false, // happensOnSunday
+		protos.Weekly,
+		protos.Wednesday,
 	)
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}
 
-	start := time.Date(2024, 1, 1, 6, 30, 0, 0, time.UTC)
-	end := time.Date(2024, 1, 1, 9, 0, 0, 0, time.UTC)
-
-	termination := time.Date(2024, 2, 1, 0, 0, 0, 0, time.UTC)
+	start := time.Date(2024, 1, 3, 6, 30, 0, 0, time.UTC)      // Wednesday January 3, 2024 6:30 AM
+	end := time.Date(2024, 1, 3, 9, 0, 0, 0, time.UTC)         // Wednesday January 3, 2024 9:00 AM
+	termination := time.Date(2024, 2, 1, 0, 0, 0, 0, time.UTC) // Thursday February 1, 2024 12:00 AM
 
 	events, err := recurrence.ReccurUntil(start, end, termination)
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}
 
-	expected := []protos.Occurence{
+	expected := []protos.Occurrence{
 		{
-			Start: time.Date(2024, 1, 3, 6, 30, 0, 0, time.UTC),
-			End:   time.Date(2024, 1, 3, 9, 0, 0, 0, time.UTC),
+			Start: start,
+			End:   end,
 		},
 		{
 			Start: time.Date(2024, 1, 10, 6, 30, 0, 0, time.UTC),
