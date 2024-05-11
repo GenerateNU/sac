@@ -1,11 +1,11 @@
 package middleware
 
 import (
-	go_json "github.com/goccy/go-json"
-	"gorm.io/gorm"
-
 	"errors"
 	"fmt"
+
+	go_json "github.com/goccy/go-json"
+	"gorm.io/gorm"
 
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/fiber/v2"
