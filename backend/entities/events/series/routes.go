@@ -1,6 +1,10 @@
 package series
 
-import "github.com/GenerateNU/sac/backend/types"
+import (
+	"github.com/GenerateNU/sac/backend/middleware"
+	"github.com/GenerateNU/sac/backend/types"
+	"github.com/GenerateNU/sac/backend/utilities"
+)
 
 func EventSeries(eventParams types.RouteParams) {
 	eventSeriesController := NewEventSeriesController(NewEventSeriesService(eventParams.ServiceParams))
@@ -8,10 +12,18 @@ func EventSeries(eventParams types.RouteParams) {
 	// api/v1/events/series/*
 	eventSeries := eventParams.Router.Group("/series")
 
-	eventSeries.Post("/", eventSeriesController.CreateEventSeries)
+	eventSeries.Post(
+		"/",
+		middleware.AttachExtractor(eventParams.AuthMiddleware.ClubAuthorizeById, middleware.ExtractFromBody("host")),
+		utilities.Make(eventSeriesController.CreateEventSeries),
+	)
 
 	eventSeriedID := eventSeries.Group("/:seriesID")
 
 	eventSeriedID.Get("/", eventSeriesController.GetEventSeries)
-	eventSeriedID.Delete("/", eventSeriesController.DeleteEventSeries)
+	eventSeriedID.Delete(
+		"/",
+		middleware.AttachExtractor(eventParams.AuthMiddleware.ClubAuthorizeById, nil), // MARK: ExtractFromParamsIntoQuery
+		eventSeriesController.DeleteEventSeries,
+	)
 }

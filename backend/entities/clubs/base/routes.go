@@ -8,6 +8,7 @@ import (
 	"github.com/GenerateNU/sac/backend/entities/clubs/member"
 	"github.com/GenerateNU/sac/backend/entities/clubs/poc"
 	"github.com/GenerateNU/sac/backend/entities/clubs/tag"
+	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/utilities"
 
 	"github.com/GenerateNU/sac/backend/types"
@@ -38,7 +39,10 @@ func ClubRouter(clubParams types.RouteParams) fiber.Router {
 	clubID := clubs.Group("/:clubID")
 
 	clubID.Get("/", utilities.Make(clubController.GetClub))
-	clubID.Patch("/", clubParams.AuthMiddleware.ClubAuthorizeById, utilities.Make(clubController.UpdateClub))
+	clubID.Patch(
+		"/",
+		middleware.AttachExtractor(clubParams.AuthMiddleware.ClubAuthorizeById, middleware.ExtractFromParams("clubID")),
+		utilities.Make(clubController.UpdateClub))
 	clubID.Delete("/", clubParams.AuthMiddleware.Authorize(p.DeleteAll), utilities.Make(clubController.DeleteClub))
 
 	return clubID

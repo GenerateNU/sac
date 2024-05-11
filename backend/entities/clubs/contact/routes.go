@@ -3,6 +3,7 @@ package contact
 import (
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/GenerateNU/sac/backend/middleware"
 )
 
 func ClubContact(clubParams types.RouteParams) {
@@ -12,5 +13,9 @@ func ClubContact(clubParams types.RouteParams) {
 
 	// api/v1/clubs/:clubID/contacts/*
 	clubContacts.Get("/", utilities.Make(clubContactController.GetClubContacts))
-	clubContacts.Put("/", clubParams.AuthMiddleware.ClubAuthorizeById, utilities.Make(clubContactController.PutContact))
+	clubContacts.Put(
+		"/",
+		middleware.AttachExtractor(clubParams.AuthMiddleware.ClubAuthorizeById, middleware.ExtractFromParams("clubID")),
+		utilities.Make(clubContactController.PutContact),
+	)
 }

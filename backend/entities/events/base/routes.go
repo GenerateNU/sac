@@ -4,6 +4,7 @@ import (
 	"github.com/GenerateNU/sac/backend/entities/events/series"
 	"github.com/GenerateNU/sac/backend/entities/events/tags"
 
+	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/fiber/v2"
@@ -23,7 +24,11 @@ func EventRouter(eventParams types.RouteParams) fiber.Router {
 	events := eventParams.Router.Group("/events")
 
 	events.Get("/", utilities.Make(eventController.GetAllEvents))
-	events.Post("/", eventParams.AuthMiddleware.ClubAuthorizeById, utilities.Make(eventController.CreateEvent))
+	events.Post(
+		"/",
+		middleware.AttachExtractor(eventParams.AuthMiddleware.ClubAuthorizeById, middleware.ExtractFromParams("clubID")),
+		utilities.Make(eventController.CreateEvent),
+	)
 
 	// api/v1/events/:eventID/*
 	eventID := events.Group("/:eventID")

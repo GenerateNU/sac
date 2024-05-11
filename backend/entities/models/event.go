@@ -54,7 +54,7 @@ type CreateEventRequestBody struct {
 	Name        string    `json:"name" validate:"required,max=255"`
 	Preview     string    `json:"preview" validate:"required,max=255"`
 	Description string    `json:"description" validate:"required,max=255"`
-	HostID      uuid.UUID `json:"host" validate:"uuid4"`
+	HostID      uuid.UUID `json:"host" validate:"uuid4"` // TODO ensure you are an admin of the host
 
 	// geoshi
 	EventType EventType `json:"event_type" validate:"required,max=255,oneof=hybrid in_person virtual"`
