@@ -3,15 +3,14 @@ package tag
 import (
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/entities/tags"
-	"github.com/GenerateNU/sac/backend/errors"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
 )
 
 type UserTagServiceInterface interface {
-	GetUserTags(id string) ([]models.Tag, *errors.Error)
-	CreateUserTags(id string, tagIDs CreateUserTagsBody) ([]models.Tag, *errors.Error)
-	DeleteUserTag(id string, tagID string) *errors.Error
+	GetUserTags(id string) ([]models.Tag, error)
+	CreateUserTags(id string, tagIDs CreateUserTagsBody) ([]models.Tag, error)
+	DeleteUserTag(id string, tagID string) error
 }
 
 type UserTagService struct {
@@ -22,7 +21,7 @@ func NewUserTagService(serviceParams types.ServiceParams) UserTagServiceInterfac
 	return &UserTagService{serviceParams}
 }
 
-func (u *UserTagService) GetUserTags(id string) ([]models.Tag, *errors.Error) {
+func (u *UserTagService) GetUserTags(id string) ([]models.Tag, error) {
 	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return nil, err
@@ -31,15 +30,15 @@ func (u *UserTagService) GetUserTags(id string) ([]models.Tag, *errors.Error) {
 	return GetUserTags(u.DB, *idAsUUID)
 }
 
-func (u *UserTagService) CreateUserTags(id string, tagIDs CreateUserTagsBody) ([]models.Tag, *errors.Error) {
+func (u *UserTagService) CreateUserTags(id string, tagIDs CreateUserTagsBody) ([]models.Tag, error) {
 	// Validate the id:
 	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := u.Validate.Struct(tagIDs); err != nil {
-		return nil, &errors.FailedToValidateUserTags
+	if err := utilities.Validate(u.Validate, tagIDs); err != nil {
+		return nil, err
 	}
 
 	// Retrieve a list of valid tags from the ids:
@@ -52,7 +51,7 @@ func (u *UserTagService) CreateUserTags(id string, tagIDs CreateUserTagsBody) ([
 	return CreateUserTags(u.DB, *idAsUUID, tags)
 }
 
-func (u *UserTagService) DeleteUserTag(id string, tagID string) *errors.Error {
+func (u *UserTagService) DeleteUserTag(id string, tagID string) error {
 	// Validate the userID:
 	userIDAsUUID, err := utilities.ValidateID(id)
 	if err != nil {

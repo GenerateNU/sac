@@ -1,8 +1,9 @@
 package tag
 
 import (
-	"github.com/GenerateNU/sac/backend/errors"
+	"net/http"
 
+	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -23,18 +24,18 @@ func NewUserTagController(userTagService UserTagServiceInterface) *UserTagContro
 // @Produce		json
 // @Param		userID	path	string	true	"User ID"
 // @Success		200	  {object}	    []models.Tag
-// @Failure     400   {object}      errors.Error
-// @Failure     401   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
+// @Failure     400   {object}      error
+// @Failure     401   {object}      error
+// @Failure     404   {object}      error
+// @Failure     500   {object}      error
 // @Router		/users/{userID}/tags/  [get]
 func (ut *UserTagController) GetUserTags(c *fiber.Ctx) error {
 	tags, err := ut.userTagService.GetUserTags(c.Params("userID"))
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.Status(fiber.StatusOK).JSON(&tags)
+	return c.Status(http.StatusOK).JSON(&tags)
 }
 
 // CreateUserTags godoc
@@ -48,24 +49,24 @@ func (ut *UserTagController) GetUserTags(c *fiber.Ctx) error {
 // @Param		userID		path	string	true	"User ID"
 // @Param		userTagsBody	body	CreateUserTagsBody	true	"User Tags Body"
 // @Success		201	  {object}	  []models.Tag
-// @Failure     400   {object}    errors.Error
-// @Failure     401   {object}    errors.Error
-// @Failure     404   {object}    errors.Error
-// @Failure     500   {object}    errors.Error
+// @Failure     400   {object}    error
+// @Failure     401   {object}    error
+// @Failure     404   {object}    error
+// @Failure     500   {object}    error
 // @Router		/users/{userID}/tags/  [post]
 func (ut *UserTagController) CreateUserTags(c *fiber.Ctx) error {
 	var requestBody CreateUserTagsBody
 
 	if err := c.BodyParser(&requestBody); err != nil {
-		return errors.FailedToParseRequestBody.FiberError(c)
+		return utilities.InvalidJSON()
 	}
 
 	tags, err := ut.userTagService.CreateUserTags(c.Params("userID"), requestBody)
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(&tags)
+	return c.Status(http.StatusCreated).JSON(&tags)
 }
 
 // DeleteUserTag godoc
@@ -78,16 +79,16 @@ func (ut *UserTagController) CreateUserTags(c *fiber.Ctx) error {
 // @Produce		json
 // @Param		userID		path	string	true	"User ID"
 // @Success		201
-// @Failure     400   {object}    errors.Error
-// @Failure     401   {object}    errors.Error
-// @Failure     404   {object}    errors.Error
-// @Failure     500   {object}    errors.Error
+// @Failure     400   {object}    error
+// @Failure     401   {object}    error
+// @Failure     404   {object}    error
+// @Failure     500   {object}    error
 // @Router		/users/{userID}/tags/  [delete]
 func (ut *UserTagController) DeleteUserTag(c *fiber.Ctx) error {
 	err := ut.userTagService.DeleteUserTag(c.Params("userID"), c.Params("tagID"))
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.SendStatus(fiber.StatusNoContent)
+	return c.SendStatus(http.StatusNoContent)
 }

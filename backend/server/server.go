@@ -48,7 +48,7 @@ func Init(db *gorm.DB, integrations integrations.Integrations, settings config.S
 	}
 
 	jwt := auth.NewJWTClient(settings.Auth, jwt.SigningMethodHS256)
-	authMiddleware := middleware.NewAuthAuthMiddlewareService(db, validate, settings.Auth)
+	authMiddleware := middleware.NewAuthMiddlewareService(db, validate, settings.Auth)
 
 	apiv1 := app.Group("/api/v1")
 
@@ -58,7 +58,7 @@ func Init(db *gorm.DB, integrations integrations.Integrations, settings config.S
 		ServiceParams: types.ServiceParams{
 			DB:           db,
 			Validate:     validate,
-			AuthSettings: &settings.Auth,
+			Auth:         &settings.Auth,
 			JWT:          jwt,
 			Integrations: integrations,
 		},
@@ -71,8 +71,8 @@ func Init(db *gorm.DB, integrations integrations.Integrations, settings config.S
 
 func allRoutes(app *fiber.App, routeParams types.RouteParams) {
 	Utility(app)
-	authBase.Auth(routeParams)
-	users.UserRoutes(routeParams)
+	authService := authBase.Auth(routeParams)
+	users.UserRoutes(routeParams, authService)
 	clubs.ClubRoutes(routeParams)
 	contacts.Contact(routeParams)
 	pocs.PointOfContact(routeParams)

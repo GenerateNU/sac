@@ -54,7 +54,7 @@ appAssert.TestOnStatus(
    Role:               &models.Super,
    TestUserIDReplaces: h.StringToPointer(":userID"),
   },
-  fiber.StatusCreated,
+  http.StatusCreated,
  ).TestOnStatusAndTester(
   h.TestRequest{
    Method:             fiber.MethodDelete,
@@ -63,7 +63,7 @@ appAssert.TestOnStatus(
    TestUserIDReplaces: h.StringToPointer(":userID"),
   },
   h.TesterWithStatus{
-   Status: fiber.StatusNoContent,
+   Status: http.StatusNoContent,
    Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
     var user models.User
 
@@ -134,7 +134,7 @@ Say you want to test hitting the `[APP_ADDRESS]/health` endpoint with a GET requ
    Method: fiber.MethodGet,
    Path:   "/health",
   },
-  fiber.StatusOK,
+  http.StatusOK,
  ).Close()
 ```
 
@@ -151,7 +151,7 @@ existingAppAssert.TestOnStatusAndTester(
    Role:   &models.Super,
   },
   h.TesterWithStatus{
-   Status: fiber.StatusCreated,
+   Status: http.StatusCreated,
    Tester: func(eaa h.ExistingAppAssert, resp *http.Response) {
     sampleCategoryUUID = AssertSampleCategoryBodyRespDB(eaa, resp)
    },
@@ -164,7 +164,7 @@ existingAppAssert.TestOnStatusAndTester(
 Say you want to test a bad request to POST `[APP_ADDRESS]/api/v1/categories/` endpoint returns a `400` status code, the message is `failed to process the request`, and that a category was not created. We can leverage our errors defined in the error package to do this!
 
 ```go
- h.InitTest(t).TestOnErrorAndTester(
+ h.InitTest(t).TestOnStatusAndTester(
   h.TestRequest{
    Method: fiber.MethodPost,
    Path:   "/api/v1/categories/",

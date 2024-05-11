@@ -2,23 +2,27 @@ package base
 
 import (
 	"github.com/GenerateNU/sac/backend/types"
+	"github.com/GenerateNU/sac/backend/utilities"
 )
 
-func Auth(params types.RouteParams) {
-	authController := NewAuthController(NewAuthService(params.ServiceParams))
+func Auth(params types.RouteParams) AuthServiceInterface {
+	authService := NewAuthService(params.ServiceParams)
+	authController := NewAuthController(authService)
 
 	// api/v1/auth/*
 	auth := params.Router.Group("/auth")
 
-	auth.Post("/logout", authController.Logout)
-	auth.Post("/login", authController.Login)
-	auth.Post("/refresh", authController.Refresh)
+	auth.Post("/logout", utilities.Make(authController.Logout))
+	auth.Post("/login", utilities.Make(authController.Login))
+	auth.Post("/refresh", utilities.Make(authController.Refresh))
 
 	// TODO: rate limit
-	auth.Post("/send-code", authController.SendCode)
-	auth.Post("/verify-email", authController.VerifyEmail)
+	auth.Post("/send-code", utilities.Make(authController.SendCode))
+	auth.Post("/verify-email", utilities.Make(authController.VerifyEmail))
 
 	// TODO: rate limit
-	auth.Post("/forgot-password", authController.ForgotPassword)
-	auth.Post("/verify-reset", authController.VerifyPasswordResetToken)
+	auth.Post("/forgot-password", utilities.Make(authController.ForgotPassword))
+	auth.Post("/verify-reset", utilities.Make(authController.VerifyPasswordResetToken))
+
+	return authService
 }
