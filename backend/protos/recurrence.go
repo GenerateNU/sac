@@ -25,6 +25,20 @@ type Recurrence struct {
 	HappensOnSunday    bool
 }
 
+func NewRecurrence(cadence Cadence, happensOn ...HappensOn) (*Recurrence, error) {
+	if len(happensOn) == 0 {
+		return nil, errors.New("at least one happensOn function must be provided")
+	}
+
+	var r Recurrence
+	r.Cadence = cadence
+	for _, happens := range happensOn {
+		r = happens(r)
+	}
+
+	return &r, nil
+}
+
 func (r *Recurrence) HappensOn() []time.Weekday {
 	var result []time.Weekday
 	if r.HappensOnMonday {
@@ -87,20 +101,6 @@ func Saturday(r Recurrence) Recurrence {
 func Sunday(r Recurrence) Recurrence {
 	r.HappensOnSunday = true
 	return r
-}
-
-func NewRecurrence(cadence Cadence, happensOn ...HappensOn) (*Recurrence, error) {
-	if len(happensOn) == 0 {
-		return nil, errors.New("at least one happensOn function must be provided")
-	}
-
-	var r Recurrence
-	r.Cadence = cadence
-	for _, happens := range happensOn {
-		r = happens(r)
-	}
-
-	return &r, nil
 }
 
 type Occurrence struct {
