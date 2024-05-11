@@ -34,7 +34,7 @@ func (c *ClubService) GetClubs(queryParams *models.ClubQueryParams) ([]models.Cl
 		return nil, fmt.Errorf("page must be greater than 0")
 	}
 
-	return GetClubs(c.DB, c.Integrations.Search, queryParams)
+	return GetClubs(c.DB, queryParams)
 }
 
 func (c *ClubService) CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, error) {
@@ -47,7 +47,7 @@ func (c *ClubService) CreateClub(clubBody models.CreateClubRequestBody) (*models
 		return nil, err
 	}
 
-	return CreateClub(c.DB, c.Integrations.Search, clubBody.UserID, *club)
+	return CreateClub(c.DB, clubBody.UserID, *club)
 }
 
 func (c *ClubService) GetClub(id string) (*models.Club, error) {
@@ -78,7 +78,7 @@ func (c *ClubService) UpdateClub(id string, clubBody models.UpdateClubRequestBod
 		return nil, err
 	}
 
-	return UpdateClub(c.DB, c.Integrations.Search, *idAsUUID, *club)
+	return UpdateClub(c.DB, *idAsUUID, *club)
 }
 
 func (c *ClubService) DeleteClub(id string) error {
@@ -87,5 +87,5 @@ func (c *ClubService) DeleteClub(id string) error {
 		return err
 	}
 
-	return DeleteClub(c.DB, c.Integrations.Search, *idAsUUID)
+	return DeleteClub(c.DB, *idAsUUID)
 }

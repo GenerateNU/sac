@@ -7,9 +7,7 @@ import (
 
 func NewMockDependencies() *integrations.Integrations {
 	return &integrations.Integrations{
-		Search: mocks.NewPineconeMockClient(),
-		AI:     mocks.NewOpenAIMockClient(),
-		Email:  mocks.NewResendMockClient(),
-		File:   mocks.NewAWSMockClient(),
+		Email: mocks.NewResendMockClient(),
+		File:  mocks.NewAWSMockClient(),
 	}
 }

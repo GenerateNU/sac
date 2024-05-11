@@ -3,9 +3,7 @@ package base
 import (
 	"errors"
 
-	"github.com/GenerateNU/sac/backend/integrations/search"
 	"github.com/GenerateNU/sac/backend/utilities"
-	"github.com/sahilm/fuzzy"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/entities/users"
@@ -14,7 +12,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetClubs(db *gorm.DB, pinecone search.SearchClientInterface, queryParams *models.ClubQueryParams) ([]models.Club, error) {
+func GetClubs(db *gorm.DB, queryParams *models.ClubQueryParams) ([]models.Club, error) {
 	query := db.Model(&models.Club{})
 
 	if queryParams.Tags != nil && len(queryParams.Tags) > 0 {
@@ -30,46 +28,7 @@ func GetClubs(db *gorm.DB, pinecone search.SearchClientInterface, queryParams *m
 			Group("clubs.id")                                 // ensure unique club records
 	}
 
-	if queryParams.Search != "" {
-		clubSearch := models.NewClubSearch(queryParams.Search)
-		resultIDs, err := pinecone.Search(clubSearch)
-		if err != nil {
-			return nil, err
-		}
-
-		query = query.Where("id IN ?", resultIDs)
-	}
-
 	var clubs models.Clubs
-
-	if queryParams.Search != "" {
-		if err := query.Find(&clubs).Error; err != nil {
-			return nil, err
-		}
-
-		// len(matches) <= len(clubs), because it discardss results that don't fuzz at all.
-		matches := fuzzy.FindFrom(queryParams.Search, clubs)
-
-		// Copy the sorted, fuzzed matches to the top of the list, and record their indices
-		// in a list.
-		clubsSorted := models.Clubs{}
-		idxMap := map[int]bool{}
-		for _, match := range matches {
-			clubsSorted = append(clubsSorted, clubs[match.Index])
-			idxMap[match.Index] = true
-		}
-
-		// For the remaining clubs, append them to the bottom of the list, making sure not
-		// to include the fuzzed clubs again.
-		for i, club := range clubs {
-			_, exists := idxMap[i]
-			if !exists {
-				clubsSorted = append(clubsSorted, club)
-			}
-		}
-
-		return clubsSorted, nil
-	}
 
 	offset := (queryParams.Page - 1) * queryParams.Limit
 
@@ -80,7 +39,7 @@ func GetClubs(db *gorm.DB, pinecone search.SearchClientInterface, queryParams *m
 	return clubs, nil
 }
 
-func CreateClub(db *gorm.DB, pinecone search.SearchClientInterface, userId uuid.UUID, club models.Club) (*models.Club, error) {
+func CreateClub(db *gorm.DB, userId uuid.UUID, club models.Club) (*models.Club, error) {
 	user, err := users.GetUser(db, userId)
 	if err != nil {
 		return nil, err
@@ -111,11 +70,6 @@ func CreateClub(db *gorm.DB, pinecone search.SearchClientInterface, userId uuid.
 		return nil, err
 	}
 
-	if err := pinecone.Upsert([]search.Searchable{&club}); err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-
 	if err := tx.Commit().Error; err != nil {
 		tx.Rollback()
 		return nil, err
@@ -124,7 +78,7 @@ func CreateClub(db *gorm.DB, pinecone search.SearchClientInterface, userId uuid.
 	return &club, nil
 }
 
-func UpdateClub(db *gorm.DB, pinecone search.SearchClientInterface, id uuid.UUID, club models.Club) (*models.Club, error) {
+func UpdateClub(db *gorm.DB, id uuid.UUID, club models.Club) (*models.Club, error) {
 	tx := db.Begin()
 
 	var existingClub models.Club
@@ -143,11 +97,6 @@ func UpdateClub(db *gorm.DB, pinecone search.SearchClientInterface, id uuid.UUID
 		return nil, err
 	}
 
-	if pinecone.Upsert([]search.Searchable{&existingClub}) != nil {
-		tx.Rollback()
-		return nil, err
-	}
-
 	if err := tx.Commit().Error; err != nil {
 		tx.Rollback()
 		return nil, err
@@ -156,7 +105,7 @@ func UpdateClub(db *gorm.DB, pinecone search.SearchClientInterface, id uuid.UUID
 	return &existingClub, nil
 }
 
-func DeleteClub(db *gorm.DB, pinecone search.SearchClientInterface, id uuid.UUID) error {
+func DeleteClub(db *gorm.DB, id uuid.UUID) error {
 	tx := db.Begin()
 
 	var existingClub models.Club
@@ -166,11 +115,6 @@ func DeleteClub(db *gorm.DB, pinecone search.SearchClientInterface, id uuid.UUID
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return utilities.ErrNotFound
 		}
-		return err
-	}
-
-	if err := pinecone.Delete([]search.Searchable{&existingClub}); err != nil {
-		tx.Rollback()
 		return err
 	}
 

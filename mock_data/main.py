@@ -109,7 +109,7 @@ bar = Bar('Making club data', max=len(clubs_json), suffix="%(remaining)d Remaini
 bad_club_descriptions = 0
 for club in clubs_json:
     name = club['Name'].replace("(Tentative) ", "")
-    preview = club['Summary']
+    preview = club['Summary'][:250]
     description = club['Description']
 
     # Generate description for club if needed.
@@ -159,10 +159,19 @@ bar.finish()
 print(f"Bad club descriptions (JSON not created properly): {bad_club_descriptions}")
 
 # Generate the UUIDS for Categories, Tags, and a table for tags to categories.
-category_uuids = {category: str(uuid4()) for category in MOCK_CATEGORIES_AND_TAGS}
+category_uuids = {}
+for category in MOCK_CATEGORIES_AND_TAGS:
+    category_uuids[category] = str(uuid4()) 
 
-tag_uuids = {tag: str(uuid4()) for tag in MOCK_CATEGORIES_AND_TAGS.values() for tag in tags}
-tags_to_categories = {tag: category for category, tags in MOCK_CATEGORIES_AND_TAGS.items() for tag in tags}
+tag_uuids = {}
+for category, tags in MOCK_CATEGORIES_AND_TAGS.items():
+    for tag in tags:
+        tag_uuids[tag] = str(uuid4())
+
+tags_to_categories = {}
+for category, tags in MOCK_CATEGORIES_AND_TAGS.items():
+    for tag in tags:
+        tags_to_categories[tag] = category
 
 # STEP 2: Write to SQL file.
 with open(OUTPUT_FILE, 'w', encoding='utf-8') as file:
@@ -205,7 +214,7 @@ with open(OUTPUT_FILE, 'w', encoding='utf-8') as file:
         total_tags += len(club['tags'])
         for tag in club['tags']:
             if tag in tag_uuids:
-                w(f"""INSERT INTO "club_tags" ("tag_id", "club_id") VALUES ('{tag_uuids[tag]}', '{club['id']}')""")
+                w(f"""INSERT INTO "club_tags" ("tag_id", "club_id") VALUES ('{tag_uuids[tag]}', '{club['id']}');""")
             else:
                 bad_tags += 1
 
