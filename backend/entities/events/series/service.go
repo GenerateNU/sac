@@ -42,7 +42,7 @@ func (e *EventSeriesService) CreateEventSeries(body CreateEventSeriesRequestBody
 		return nil, err
 	}
 
-	occurrences, err := validatedBody.Recurrence.ReccurUntil(rootEvent.Start, rootEvent.End, validatedBody.Termination)
+	occurrences, err := validatedBody.Recurrence.ReccurUntil(rootEvent.StartTime, rootEvent.EndTime, validatedBody.Termination)
 	if err != nil {
 		return nil, fmt.Errorf("error recurring event series: %w", err)
 	}
@@ -53,8 +53,8 @@ func (e *EventSeriesService) CreateEventSeries(body CreateEventSeriesRequestBody
 	for index, occurrence := range occurrences {
 		eventOccurence := *rootEvent
 		eventOccurence.SeriesID = &seriesID
-		eventOccurence.Start = occurrence.Start
-		eventOccurence.End = occurrence.End
+		eventOccurence.StartTime = occurrence.Start
+		eventOccurence.EndTime = occurrence.End
 		events[index] = eventOccurence
 	}
 

@@ -24,7 +24,7 @@ type intermediateSettings struct {
 	Database    intermediateDatabaseSettings  `yaml:"database"`
 	SuperUser   intermediateSuperUserSettings `yaml:"superuser"`
 	Auth        intermediateAuthSettings      `yaml:"authsecret"`
-	Calendar    CalendarSettings              `yaml:"calendar"`
+	Calendar    intermediateCalendarSettings  `yaml:"calendar"`
 }
 
 func (int *intermediateSettings) into() (*Settings, error) {
@@ -43,11 +43,17 @@ func (int *intermediateSettings) into() (*Settings, error) {
 		return nil, err
 	}
 
+	calendarSettings, err := int.Calendar.into()
+	if err != nil {
+		return nil, err
+	}
+
 	return &Settings{
 		Application: int.Application,
 		Database:    *databaseSettings,
 		SuperUser:   *superUserSettings,
 		Auth:        *authSettings,
+		Calendar:    *calendarSettings,
 	}, nil
 }
 

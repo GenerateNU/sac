@@ -50,6 +50,7 @@ type Club struct {
 	Comment           []Comment        `json:"-" validate:"-"`
 	PointOfContact    []PointOfContact `json:"-" validate:"-"`
 	Contact           []Contact        `json:"-" validate:"-"`
+
 	// Event
 	HostEvent   []Event        `gorm:"foreignKey:Host;" json:"-" validate:"-"`
 	Event       []Event        `gorm:"many2many:club_events;" json:"-" validate:"-"`

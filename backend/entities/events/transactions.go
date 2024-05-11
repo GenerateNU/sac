@@ -35,5 +35,5 @@ func GetEventHostAdminIDs(db *gorm.DB, eventID uuid.UUID) ([]uuid.UUID, error) {
 		return nil, err
 	}
 
-	return clubs.GetAdminIDs(db, event.HostID)
+	return clubs.GetAdminIDs(db, *event.Host)
 }

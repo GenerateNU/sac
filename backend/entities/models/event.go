@@ -19,10 +19,10 @@ type Event struct {
 	Model
 
 	// details
-	Name        string    `json:"name" validate:"required,max=255"`
-	Preview     string    `json:"preview" validate:"required,max=255"`
-	Description string    `json:"description" validate:"required,max=255"`
-	HostID      uuid.UUID `json:"host" validate:"uuid4"`
+	Name        string     `json:"name" validate:"required,max=255"`
+	Preview     string     `json:"preview" validate:"required,max=255"`
+	Description string     `json:"description" validate:"required,max=255"`
+	Host        *uuid.UUID `json:"host" validate:"uuid4"`
 
 	// geoshi
 	EventType EventType `json:"event_type" validate:"required,max=255,oneof=hybrid in_person virtual"`
@@ -35,8 +35,8 @@ type Event struct {
 	IsArchived bool `json:"is_archived" validate:"required"`
 
 	// timing
-	Start time.Time `json:"start_time" validate:"required,ltecsfield=EndTime"`
-	End   time.Time `json:"end_time" validate:"required,gtecsfield=StartTime"`
+	StartTime time.Time `json:"start_time" validate:"required,ltecsfield=EndTime"`
+	EndTime   time.Time `json:"end_time" validate:"required,gtecsfield=StartTime"`
 
 	// series
 	SeriesID *uuid.UUID `json:"-" validate:"-"`

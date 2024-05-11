@@ -41,20 +41,28 @@ CREATE TABLE IF NOT EXISTS clubs(
     PRIMARY KEY(id)
 );
 
+CREATE TABLE IF NOT EXISTS series(
+    id uuid NOT NULL DEFAULT uuid_generate_v4(),
+    PRIMARY KEY(id)
+);
+
 CREATE TABLE IF NOT EXISTS events(
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
     created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     name varchar(255) NOT NULL,
     preview varchar(255) NOT NULL,
-    content text NOT NULL,
+    description varchar(255) NOT NULL,
+    event_type varchar(255) NOT NULL,
+    location varchar(255),
+    link varchar(255),
+    is_public boolean NOT NULL,
+    is_draft boolean NOT NULL,
+    is_archived boolean NOT NULL,
     start_time timestamp with time zone NOT NULL,
     end_time timestamp with time zone NOT NULL,
-    location varchar(255) NOT NULL,
-    event_type varchar(255) NOT NULL DEFAULT 'open'::character varying,
-    is_recurring boolean NOT NULL DEFAULT false,
-    meeting_link varchar(255),
     host uuid NOT NULL,
+    series_id uuid REFERENCES series(id),
     PRIMARY KEY(id),
     CONSTRAINT fk_clubs_host_event FOREIGN key(host) REFERENCES clubs(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
@@ -108,22 +116,6 @@ CREATE TABLE IF NOT EXISTS contacts(
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_contact_type ON contacts USING btree ("type","club_id");
-
-CREATE TABLE IF NOT EXISTS series(
-    id uuid NOT NULL DEFAULT uuid_generate_v4(),
-    created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    recurring_type varchar(255) NOT NULL DEFAULT 'open'::character varying,
-    max_occurrences bigint NOT NULL,
-    PRIMARY KEY(id)
-);
-
-CREATE TABLE IF NOT EXISTS event_series(
-    event_id uuid NOT NULL,
-    series_id uuid NOT NULL,
-    CONSTRAINT fk_event_series_event FOREIGN key(event_id) REFERENCES events(id) ON UPDATE CASCADE ON DELETE CASCADE,
-    CONSTRAINT fk_event_series_series FOREIGN key(series_id) REFERENCES series(id) ON UPDATE CASCADE ON DELETE CASCADE
-);
 
 CREATE TABLE IF NOT EXISTS event_tags(
     tag_id uuid NOT NULL DEFAULT uuid_generate_v4(),
