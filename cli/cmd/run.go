@@ -105,7 +105,13 @@ var runMobileCmd = &cobra.Command{
 
 		platform = "run:" + platform
 
-		err := helpers.Execute(exec.Command("npx", "expo", platform), helpers.MOBILE_DIR)
+		output := exec.Command("npx", "expo", platform)
+		output.Dir = helpers.MOBILE_DIR
+		output.Stdout = os.Stdout
+		output.Stderr = os.Stderr
+		output.Stdin = os.Stdin
+
+		err := helpers.Execute(output, helpers.MOBILE_DIR)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
