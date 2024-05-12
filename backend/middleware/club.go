@@ -11,7 +11,7 @@ import (
 
 // Authorizes admins of the specific club to make this request, skips check if super user
 func (m *AuthMiddlewareService) ClubAuthorizeById(c *fiber.Ctx, extractor ExtractID) error {
-	return utilities.Make(func(c *fiber.Ctx) error {
+	return func(c *fiber.Ctx) error {
 		if err := m.Authenticate(c); err != nil {
 			return utilities.Unauthorized()
 		}
@@ -45,5 +45,5 @@ func (m *AuthMiddlewareService) ClubAuthorizeById(c *fiber.Ctx, extractor Extrac
 		}
 
 		return utilities.Forbidden()
-	})(c)
+	}(c)
 }

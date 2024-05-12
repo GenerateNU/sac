@@ -3,7 +3,6 @@ package series
 import (
 	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/types"
-	"github.com/GenerateNU/sac/backend/utilities"
 )
 
 func EventSeries(eventParams types.RouteParams) {
@@ -15,7 +14,7 @@ func EventSeries(eventParams types.RouteParams) {
 	eventSeries.Post(
 		"/",
 		middleware.AttachExtractor(eventParams.AuthMiddleware.ClubAuthorizeById, middleware.ExtractFromBody("host")),
-		utilities.Make(eventSeriesController.CreateEventSeries),
+		eventSeriesController.CreateEventSeries,
 	)
 
 	eventSeriedID := eventSeries.Group("/:seriesID")

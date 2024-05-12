@@ -9,7 +9,6 @@ import (
 	"github.com/GenerateNU/sac/backend/entities/clubs/poc"
 	"github.com/GenerateNU/sac/backend/entities/clubs/tag"
 	"github.com/GenerateNU/sac/backend/middleware"
-	"github.com/GenerateNU/sac/backend/utilities"
 
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/gofiber/fiber/v2"
@@ -38,7 +37,7 @@ func ClubRouter(clubParams types.RouteParams) fiber.Router {
 	// api/v1/clubs/:clubID/*
 	clubID := clubs.Group("/:clubID")
 
-	clubID.Get("/", utilities.Make(clubController.GetClub))
+	clubID.Get("/", clubController.GetClub)
 	clubID.Patch(
 		"/",
 		middleware.AttachExtractor(clubParams.AuthMiddleware.ClubAuthorizeById, middleware.ExtractFromParams("clubID")),

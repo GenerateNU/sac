@@ -11,7 +11,7 @@ func ClubTag(clubParams types.RouteParams) {
 	clubTags := clubParams.Router.Group("/tags")
 
 	// api/v1/clubs/:clubID/tags/*
-	clubTags.Get("/", utilities.Make(clubTagController.GetClubTags))
+	clubTags.Get("/", clubTagController.GetClubTags)
 	clubTags.Post(
 		"/",
 		middleware.AttachExtractor(clubParams.AuthMiddleware.ClubAuthorizeById, middleware.ExtractFromParams("clubID")),

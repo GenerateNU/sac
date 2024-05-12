@@ -45,7 +45,7 @@ func GetAuthroizationToken(c *fiber.Ctx) *string {
 }
 
 func (m *AuthMiddlewareService) Authenticate(c *fiber.Ctx) error {
-	return utilities.Make(func(c *fiber.Ctx) error {
+	return func(c *fiber.Ctx) error {
 		accessToken := GetAuthroizationToken(c)
 		if accessToken == nil {
 			return utilities.Unauthorized()
@@ -72,7 +72,7 @@ func (m *AuthMiddlewareService) Authenticate(c *fiber.Ctx) error {
 		c.Locals("claims", claims)
 
 		return nil
-	})(c)
+	}(c)
 }
 
 func (m *AuthMiddlewareService) Authorize(requiredPermissions ...auth.Permission) func(c *fiber.Ctx) error {

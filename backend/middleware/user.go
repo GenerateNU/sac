@@ -7,7 +7,7 @@ import (
 )
 
 func (m *AuthMiddlewareService) UserAuthorizeById(c *fiber.Ctx) error {
-	return utilities.Make(func(c *fiber.Ctx) error {
+	return func(c *fiber.Ctx) error {
 		if err := m.Authenticate(c); err != nil {
 			return utilities.Unauthorized()
 		}
@@ -36,5 +36,5 @@ func (m *AuthMiddlewareService) UserAuthorizeById(c *fiber.Ctx) error {
 		}
 
 		return utilities.Forbidden()
-	})(c)
+	}(c)
 }
