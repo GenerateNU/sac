@@ -6,7 +6,6 @@ import (
 
 	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/types"
-	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/fiber/v2"
 )
 
