@@ -84,8 +84,9 @@ func allRoutes(app *fiber.App, routeParams types.RouteParams) {
 
 func newFiberApp(appSettings config.ApplicationSettings) *fiber.App {
 	app := fiber.New(fiber.Config{
-		JSONEncoder: go_json.Marshal,
-		JSONDecoder: go_json.Unmarshal,
+		JSONEncoder:  go_json.Marshal,
+		JSONDecoder:  go_json.Unmarshal,
+		ErrorHandler: utilities.ErrorHandler,
 	})
 
 	app.Use(cors.New(cors.Config{

@@ -69,28 +69,23 @@ func InternalServerError() APIError {
 	return NewAPIError(http.StatusInternalServerError, fmt.Errorf("internal server error"))
 }
 
-func Make(handler fiber.Handler) fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		if err := handler(c); err != nil {
-			var apiErr APIError
+func ErrorHandler(c *fiber.Ctx, err error) error {
+	var apiErr APIError
 
-			switch err {
-			case ErrNotFound:
-				apiErr = NewAPIError(http.StatusNotFound, err)
-			case ErrDuplicate:
-				apiErr = NewAPIError(http.StatusConflict, err)
-			default:
-				if castedErr, ok := err.(APIError); ok {
-					apiErr = castedErr
-				} else {
-					apiErr = InternalServerError()
-				}
-			}
-
-			slog.Error("HTTP API error", "err", err.Error(), "method", c.Method(), "path", c.Path())
-
-			return c.Status(apiErr.StatusCode).JSON(apiErr)
+	switch err {
+	case ErrNotFound:
+		apiErr = NewAPIError(http.StatusNotFound, err)
+	case ErrDuplicate:
+		apiErr = NewAPIError(http.StatusConflict, err)
+	default:
+		if castedErr, ok := err.(APIError); ok {
+			apiErr = castedErr
+		} else {
+			apiErr = InternalServerError()
 		}
-		return nil
 	}
+
+	slog.Error("HTTP API error", "err", err.Error(), "method", c.Method(), "path", c.Path())
+
+	return c.Status(apiErr.StatusCode).JSON(apiErr)
 }
