@@ -2,7 +2,6 @@ package member
 
 import (
 	"github.com/GenerateNU/sac/backend/types"
-	"github.com/GenerateNU/sac/backend/utilities"
 )
 
 func ClubMember(clubParams types.RouteParams) {
@@ -11,7 +10,7 @@ func ClubMember(clubParams types.RouteParams) {
 	clubMembers := clubParams.Router.Group("/members")
 
 	// api/v1/clubs/:clubID/members/*
-	clubMembers.Get("/", utilities.Make(clubMemberController.GetClubMembers))
-	clubMembers.Post("/:userID", clubParams.AuthMiddleware.ClubAuthorizeById, utilities.Make(clubMemberController.CreateClubMember))
-	clubMembers.Delete("/:userID", clubParams.AuthMiddleware.ClubAuthorizeById, utilities.Make(clubMemberController.DeleteClubMember))
+	clubMembers.Get("/", clubMemberController.GetClubMembers)
+	clubMembers.Post("/:userID", clubParams.AuthMiddleware.ClubAuthorizeById, clubMemberController.CreateClubMember)
+	clubMembers.Delete("/:userID", clubParams.AuthMiddleware.ClubAuthorizeById, clubMemberController.DeleteClubMember)
 }

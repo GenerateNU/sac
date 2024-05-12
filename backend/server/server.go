@@ -61,6 +61,7 @@ func Init(db *gorm.DB, integrations integrations.Integrations, settings config.S
 			Auth:         &settings.Auth,
 			JWT:          jwt,
 			Integrations: integrations,
+			Calendar:     &settings.Calendar,
 		},
 	}
 
@@ -78,14 +79,15 @@ func allRoutes(app *fiber.App, routeParams types.RouteParams) {
 	pocs.PointOfContact(routeParams)
 	tags.Tag(routeParams)
 	categories.CategoryRoutes(routeParams)
-	events.Event(routeParams)
+	events.EventRoutes(routeParams)
 	files.File(routeParams)
 }
 
 func newFiberApp(appSettings config.ApplicationSettings) *fiber.App {
 	app := fiber.New(fiber.Config{
-		JSONEncoder: go_json.Marshal,
-		JSONDecoder: go_json.Unmarshal,
+		JSONEncoder:  go_json.Marshal,
+		JSONDecoder:  go_json.Unmarshal,
+		ErrorHandler: utilities.ErrorHandler,
 	})
 
 	app.Use(cors.New(cors.Config{
