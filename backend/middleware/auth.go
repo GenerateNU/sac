@@ -76,7 +76,7 @@ func (m *AuthMiddlewareService) Authenticate(c *fiber.Ctx) error {
 }
 
 func (m *AuthMiddlewareService) Authorize(requiredPermissions ...auth.Permission) func(c *fiber.Ctx) error {
-	return utilities.Make(func(c *fiber.Ctx) error {
+	return func(c *fiber.Ctx) error {
 		authErr := m.Authenticate(c)
 		if authErr != nil {
 			return utilities.Unauthorized()
@@ -100,7 +100,7 @@ func (m *AuthMiddlewareService) Authorize(requiredPermissions ...auth.Permission
 		}
 
 		return c.Next()
-	})
+	}
 }
 
 // TODO: implement rate limiting with redis

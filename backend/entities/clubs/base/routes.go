@@ -32,8 +32,8 @@ func ClubRouter(clubParams types.RouteParams) fiber.Router {
 	// api/v1/clubs/*
 	clubs := clubParams.Router.Group("/clubs")
 
-	clubs.Get("/", utilities.Make(clubController.GetClubs))
-	clubs.Post("/", clubParams.AuthMiddleware.Authorize(p.CreateAll), utilities.Make(clubController.CreateClub))
+	clubs.Get("/", clubController.GetClubs)
+	clubs.Post("/", clubParams.AuthMiddleware.Authorize(p.CreateAll), clubController.CreateClub)
 
 	// api/v1/clubs/:clubID/*
 	clubID := clubs.Group("/:clubID")
@@ -42,8 +42,8 @@ func ClubRouter(clubParams types.RouteParams) fiber.Router {
 	clubID.Patch(
 		"/",
 		middleware.AttachExtractor(clubParams.AuthMiddleware.ClubAuthorizeById, middleware.ExtractFromParams("clubID")),
-		utilities.Make(clubController.UpdateClub))
-	clubID.Delete("/", clubParams.AuthMiddleware.Authorize(p.DeleteAll), utilities.Make(clubController.DeleteClub))
+		clubController.UpdateClub)
+	clubID.Delete("/", clubParams.AuthMiddleware.Authorize(p.DeleteAll), clubController.DeleteClub)
 
 	return clubID
 }

@@ -23,19 +23,19 @@ func EventRouter(eventParams types.RouteParams) fiber.Router {
 	// api/v1/events/*
 	events := eventParams.Router.Group("/events")
 
-	events.Get("/", utilities.Make(eventController.GetAllEvents))
+	events.Get("/", eventController.GetAllEvents)
 	events.Post(
 		"/",
 		middleware.AttachExtractor(eventParams.AuthMiddleware.ClubAuthorizeById, middleware.ExtractFromParams("clubID")),
-		utilities.Make(eventController.CreateEvent),
+		eventController.CreateEvent,
 	)
 
 	// api/v1/events/:eventID/*
 	eventID := events.Group("/:eventID")
 
-	eventID.Get("/", utilities.Make(eventController.GetEvent))
-	eventID.Patch("/", utilities.Make(eventController.UpdateEvent))
-	eventID.Delete("/", utilities.Make(eventController.DeleteEvent))
+	eventID.Get("/", eventController.GetEvent)
+	eventID.Patch("/", eventController.UpdateEvent)
+	eventID.Delete("/", eventController.DeleteEvent)
 
 	return events
 }
