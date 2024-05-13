@@ -40,7 +40,7 @@ func NewResendClient(settings config.ResendSettings, dev bool) EmailClientInterf
 	}
 }
 
-func send(email string, subject string, template templ.Component, client *resend.Client) error {
+func send(fromEmail string, toEmail string, subject string, template templ.Component, client *resend.Client) error {
 	buffer := new(bytes.Buffer)
 	err := template.Render(context.Background(), buffer)
 	if err != nil {
@@ -48,8 +48,8 @@ func send(email string, subject string, template templ.Component, client *resend
 	}
 
 	params := &resend.SendEmailRequest{
-		From:    fmt.Sprintf("onboarding%s", constants.DOMAIN),
-		To:      []string{email},
+		From:    fromEmail,
+		To:      []string{toEmail},
 		Subject: subject,
 		Html:    buffer.String(),
 	}
@@ -70,7 +70,7 @@ func (r *ResendClient) SendPasswordResetEmail(name string, email string, token s
 		return nil
 	}
 
-	return send(email, "Password Reset", emails.PasswordReset(name, fmt.Sprintf("https://hipponeu.com/reset/%s", token)), r.Client)
+	return send(constants.DEFAULT_FROM_EMAIL, email, "Password Reset", emails.PasswordReset(name, fmt.Sprintf("https://hipponeu.com/reset/%s", token)), r.Client)
 }
 
 func (r *ResendClient) SendEmailVerification(email string, code string) error {
@@ -78,7 +78,7 @@ func (r *ResendClient) SendEmailVerification(email string, code string) error {
 		return nil
 	}
 
-	return send(email, "Email Verification", emails.Verification(code), r.Client)
+	return send(constants.DEFAULT_FROM_EMAIL, email, "Email Verification", emails.Verification(code), r.Client)
 }
 
 func (r *ResendClient) SendWelcomeEmail(name string, email string) error {
@@ -86,7 +86,7 @@ func (r *ResendClient) SendWelcomeEmail(name string, email string) error {
 		return nil
 	}
 
-	return send(email, "Welcome to Resend", emails.Welcome(name), r.Client)
+	return send(constants.ONBOARDING_EMAIL, email, "Welcome to Hippo", emails.Welcome(name), r.Client)
 }
 
 func (r *ResendClient) SendPasswordChangedEmail(name string, email string) error {
@@ -94,5 +94,5 @@ func (r *ResendClient) SendPasswordChangedEmail(name string, email string) error
 		return nil
 	}
 
-	return send(email, "Password Changed", emails.PasswordChangeComplete(name), r.Client)
+	return send(constants.DEFAULT_FROM_EMAIL, email, "Password Changed", emails.PasswordChangeComplete(name), r.Client)
 }
