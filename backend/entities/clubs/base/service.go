@@ -42,7 +42,7 @@ func (c *ClubService) CreateClub(clubBody models.CreateClubRequestBody) (*models
 		return nil, err
 	}
 
-	club, err := utilities.MapRequestToModel(clubBody, &models.Club{})
+	club, err := utilities.MapJsonTags(clubBody, &models.Club{})
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +73,7 @@ func (c *ClubService) UpdateClub(id string, clubBody models.UpdateClubRequestBod
 		return nil, err
 	}
 
-	club, err := utilities.MapRequestToModel(clubBody, &models.Club{})
+	club, err := utilities.MapJsonTags(clubBody, &models.Club{})
 	if err != nil {
 		return nil, err
 	}

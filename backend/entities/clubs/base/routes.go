@@ -41,7 +41,8 @@ func ClubRouter(clubParams types.RouteParams) fiber.Router {
 	clubID.Patch(
 		"/",
 		middleware.AttachExtractor(clubParams.AuthMiddleware.ClubAuthorizeById, middleware.ExtractFromParams("clubID")),
-		clubController.UpdateClub)
+		clubController.UpdateClub,
+	)
 	clubID.Delete("/", clubParams.AuthMiddleware.Authorize(p.DeleteAll), clubController.DeleteClub)
 
 	return clubID

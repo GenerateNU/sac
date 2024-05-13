@@ -30,7 +30,7 @@ func (c *CategoryService) CreateCategory(categoryBody models.CategoryRequestBody
 		return nil, err
 	}
 
-	category, err := utilities.MapRequestToModel(categoryBody, &models.Category{})
+	category, err := utilities.MapJsonTags(categoryBody, &models.Category{})
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +73,7 @@ func (c *CategoryService) UpdateCategory(id string, categoryBody models.Category
 		return nil, err
 	}
 
-	category, err := utilities.MapRequestToModel(categoryBody, &models.Category{})
+	category, err := utilities.MapJsonTags(categoryBody, &models.Category{})
 	if err != nil {
 		return nil, err
 	}

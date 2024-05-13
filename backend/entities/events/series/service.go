@@ -37,7 +37,7 @@ func (e *EventSeriesService) CreateEventSeries(body CreateEventSeriesRequestBody
 		return nil, utilities.BadRequest(fmt.Errorf("termination date is after max termination date. termination: %s, max termination: %s", validatedBody.Termination, e.Calendar.MaxTerminationDate))
 	}
 
-	rootEvent, err := utilities.MapRequestToModel(validatedBody, &models.Event{})
+	rootEvent, err := utilities.MapJsonTags(validatedBody, &models.Event{})
 	if err != nil {
 		return nil, err
 	}

@@ -45,7 +45,7 @@ func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models
 		return nil, nil, err
 	}
 
-	user, err := utilities.MapRequestToModel(userBody, &models.User{})
+	user, err := utilities.MapJsonTags(userBody, &models.User{})
 	if err != nil {
 		return nil, nil, err
 	}
@@ -130,7 +130,7 @@ func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBod
 		return nil, err
 	}
 
-	user, err := utilities.MapRequestToModel(userBody, &models.User{})
+	user, err := utilities.MapJsonTags(userBody, &models.User{})
 	if err != nil {
 		return nil, err
 	}

@@ -35,8 +35,8 @@ type Event struct {
 	IsArchived bool `json:"is_archived" validate:"required"`
 
 	// timing
-	StartTime time.Time `json:"start_time" validate:"required,ltecsfield=EndTime"`
-	EndTime   time.Time `json:"end_time" validate:"required,gtecsfield=StartTime"`
+	StartTime time.Time `json:"start_time" validate:"required,ltefield=EndTime"`
+	EndTime   time.Time `json:"end_time" validate:"required,gtefield=StartTime"`
 
 	// series
 	SeriesID *uuid.UUID `json:"-" validate:"-"`
@@ -59,16 +59,16 @@ type CreateEventRequestBody struct {
 	// geoshi
 	EventType EventType `json:"event_type" validate:"required,max=255,oneof=hybrid in_person virtual"`
 	Location  string    `json:"location" validate:"max=255,required_if=EventType in_person,required_if=EventType hybrid"`
-	Link      string    `json:"link" validate:"url,max=255,required_if=EventType virtual,required_if=EventType hybrid"`
+	Link      string    `json:"link" validate:"http_url,max=255,required_if=EventType virtual,required_if=EventType hybrid"`
 
 	// internal housekeeping states
-	IsPublic   bool `json:"is_public" validate:"required"`
-	IsDraft    bool `json:"is_draft" validate:"required"`
-	IsArchived bool `json:"is_archived" validate:"required"`
+	IsPublic   *bool `json:"is_public" validate:"required"`
+	IsDraft    *bool `json:"is_draft" validate:"required"` // some logic here. drafts shouldn't be public
+	IsArchived *bool `json:"is_archived" validate:"required"`
 
 	// timing
-	Start time.Time `json:"start_time" validate:"required,ltecsfield=EndTime"`
-	End   time.Time `json:"end_time" validate:"required,gtecsfield=StartTime"`
+	StartTime time.Time `json:"start_time" validate:"required,ltefield=EndTime"`
+	EndTime   time.Time `json:"end_time" validate:"required,gtefield=StartTime"`
 }
 
 type UpdateEventRequestBody struct {

@@ -16,7 +16,6 @@ require (
 	github.com/huandu/go-assert v1.1.6
 	github.com/joho/godotenv v1.5.1
 	github.com/mcnijman/go-emailaddress v1.1.1
-	github.com/mitchellh/mapstructure v1.5.0
 	github.com/resend/resend-go/v2 v2.6.0
 	github.com/sahilm/fuzzy v0.1.1
 	github.com/spf13/viper v1.18.2
@@ -43,6 +42,7 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/lib/pq v1.10.9 // indirect
+	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 )
 
@@ -58,6 +58,7 @@ require (
 	github.com/go-openapi/swag v0.23.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
+	github.com/go-viper/mapstructure/v2 v2.0.0-alpha.1
 	github.com/golang-migrate/migrate/v4 v4.17.1
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect

@@ -3,13 +3,17 @@ package utilities
 import (
 	"fmt"
 
-	"github.com/mitchellh/mapstructure"
+	"github.com/go-viper/mapstructure/v2"
 )
 
-// MapRequestToModel maps request data to a target model using mapstructure
-func MapRequestToModel[T any, U any](responseData T, targetModel *U) (*U, error) {
+// MapJsonTags maps request data to a target model using mapstructure
+// NOTE: this function does not correctly map time.Time fields from from to time.Time fields in intoType
+// see the following GitHub issues:
+// https://github.com/mitchellh/mapstructure/issues/334
+// https://github.com/go-viper/mapstructure/issues/20
+func MapJsonTags[From any, Into any](from From, intoType *Into) (*Into, error) {
 	config := &mapstructure.DecoderConfig{
-		Result:  targetModel,
+		Result:  intoType,
 		TagName: "json",
 	}
 
@@ -18,10 +22,10 @@ func MapRequestToModel[T any, U any](responseData T, targetModel *U) (*U, error)
 		return nil, fmt.Errorf("failed to create decoder: %w", err)
 	}
 
-	err = decoder.Decode(responseData)
+	err = decoder.Decode(from)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode data: %w", err)
 	}
 
-	return targetModel, nil
+	return intoType, nil
 }

@@ -18,10 +18,6 @@ type EventServiceInterface interface {
 	DeleteEvent(eventID string) error
 }
 
-// bridgerton getters (do these belong here?)
-// TODO: move to events/tags, like clubs
-// GetTags(eventID string) ([]models.Tag, error)
-
 type EventService struct {
 	types.ServiceParams
 }
@@ -54,11 +50,11 @@ func (e *EventService) GetEvent(eventID string) (*models.Event, error) {
 }
 
 func (e *EventService) CreateEvent(body models.CreateEventRequestBody) (*models.Event, error) {
-	if err := e.Validate.Struct(body); err != nil {
+	if err := utilities.Validate(e.Validate, body); err != nil {
 		return nil, err
 	}
 
-	event, err := utilities.MapRequestToModel(body, &models.Event{})
+	event, err := utilities.MapJsonTags(body, &models.Event{})
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +72,7 @@ func (e *EventService) UpdateEvent(eventID string, eventBody models.UpdateEventR
 		return nil, err
 	}
 
-	event, err := utilities.MapRequestToModel(eventBody, &models.Event{})
+	event, err := utilities.MapJsonTags(eventBody, &models.Event{})
 	if err != nil {
 		return nil, err
 	}
