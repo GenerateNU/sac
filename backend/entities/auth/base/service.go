@@ -156,7 +156,6 @@ func (a *AuthService) ForgotPassword(email string) error {
 		return err
 	}
 
-	// TODO fmt.Sprintf token to URl
 	if err := a.Integrations.Email.SendPasswordResetEmail(user.FirstName, user.Email, *token); err != nil {
 		return err
 	}
