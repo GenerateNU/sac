@@ -15,7 +15,7 @@
         "preset": "jest-expo"
     },
     "dependencies": {
-        "@expo/vector-icons": "^14.0.0",
+        "@expo/vector-icons": "^14.0.2",
         "@generatesac/lib": "^0.0.1",
         "@react-navigation/native": "^6.0.2",
         "@reduxjs/toolkit": "^2.2.4",
