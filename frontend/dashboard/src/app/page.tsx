@@ -38,7 +38,6 @@ export default function Home() {
           priority
         />
       </div>
-
       <div className="grid mb-32 text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
         <a
           href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"

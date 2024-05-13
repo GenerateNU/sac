@@ -1,13 +1,16 @@
 import { baseApi } from '@generatesac/lib';
-import { configureStore } from '@reduxjs/toolkit'
+import { UnknownAction, configureStore } from '@reduxjs/toolkit'
 import { useDispatch, useSelector, useStore } from 'react-redux';
+import { clubReducer } from '@/src/app/reducers/clubReducer';
+import { Reducer } from 'react';
+import { ClubState } from '../app/actions/actionTypes';
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
       [baseApi.reducerPath]: baseApi.reducer,
+      club: clubReducer as Reducer<ClubState | undefined, UnknownAction>,
     },
-
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware()
       .concat(baseApi.middleware)
