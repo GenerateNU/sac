@@ -7,10 +7,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/constants"
-	"github.com/GenerateNU/sac/backend/templates/emails/password_change_complete"
-	"github.com/GenerateNU/sac/backend/templates/emails/password_reset"
-	"github.com/GenerateNU/sac/backend/templates/emails/verification"
-	"github.com/GenerateNU/sac/backend/templates/emails/welcome"
+	"github.com/GenerateNU/sac/backend/templates/emails"
 
 	"github.com/a-h/templ"
 
@@ -73,7 +70,7 @@ func (r *ResendClient) SendPasswordResetEmail(name string, email string, token s
 		return nil
 	}
 
-	return send(email, "Password Reset", password_reset.Index(name, fmt.Sprintf("https://hipponeu.com/reset/%s", token)), r.Client)
+	return send(email, "Password Reset", emails.PasswordReset(name, fmt.Sprintf("https://hipponeu.com/reset/%s", token)), r.Client)
 }
 
 func (r *ResendClient) SendEmailVerification(email string, code string) error {
@@ -81,7 +78,7 @@ func (r *ResendClient) SendEmailVerification(email string, code string) error {
 		return nil
 	}
 
-	return send(email, "Email Verification", verification.Index(code), r.Client)
+	return send(email, "Email Verification", emails.Verification(code), r.Client)
 }
 
 func (r *ResendClient) SendWelcomeEmail(name string, email string) error {
@@ -89,7 +86,7 @@ func (r *ResendClient) SendWelcomeEmail(name string, email string) error {
 		return nil
 	}
 
-	return send(email, "Welcome to Resend", welcome.Index(name), r.Client)
+	return send(email, "Welcome to Resend", emails.Welcome(name), r.Client)
 }
 
 func (r *ResendClient) SendPasswordChangedEmail(name string, email string) error {
@@ -97,5 +94,5 @@ func (r *ResendClient) SendPasswordChangedEmail(name string, email string) error
 		return nil
 	}
 
-	return send(email, "Password Changed", password_change_complete.Index(name), r.Client)
+	return send(email, "Password Changed", emails.PasswordChangeComplete(name), r.Client)
 }

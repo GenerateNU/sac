@@ -1,9 +1,9 @@
-package welcome
+package emails
 
 import "github.com/GenerateNU/sac/backend/templates/emails/layouts"
 
-templ Index(name string) {
-	@layouts.Base("Welcome to Hippo!", styles()) {
+templ Welcome(name string) {
+	@layouts.Base("Welcome to Hippo!", welcomeStyles()) {
 		<div class="container">
 			<h1>Welcome to Hippo { name }!</h1>
 			<p>
@@ -33,7 +33,7 @@ templ Index(name string) {
 	}
 }
 
-templ styles() {
+templ welcomeStyles() {
 	<style>
         body {
             font-family: Arial, sans-serif;
