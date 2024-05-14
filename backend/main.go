@@ -13,6 +13,7 @@ import (
 	"github.com/GenerateNU/sac/backend/integrations"
 	"github.com/GenerateNU/sac/backend/integrations/email"
 	"github.com/GenerateNU/sac/backend/integrations/file"
+	"github.com/GenerateNU/sac/backend/integrations/search"
 	"github.com/GenerateNU/sac/backend/server"
 )
 
@@ -33,8 +34,9 @@ func Exit(format string, a ...interface{}) {
 
 func configureIntegrations(config *config.Settings) integrations.Integrations {
 	integrations := integrations.Integrations{
-		File:  file.NewAWSProvider(config.AWS),
-		Email: email.NewResendClient(config.ResendSettings, true),
+		Search: search.NewOpenSearchClient("http://127.0.0.1:9200"),
+		File:   file.NewAWSProvider(config.AWS),
+		Email:  email.NewResendClient(config.ResendSettings, true),
 	}
 	return integrations
 }
@@ -43,6 +45,7 @@ func main() {
 	onlyMigrate := flag.Bool("only-migrate", false, "Specify if you want to only perform the database migration")
 	configPath := flag.String("config", filepath.Join("..", "config"), "Specify the path to the config directory")
 	useDevDotEnv := flag.Bool("use-dev-dot-env", true, "Specify if you want to use the .env.dev file")
+	onlySeedSearch := flag.Bool("only-seed-search", false, "Specify if you want to only perform the search seeding.")
 
 	flag.Parse()
 
@@ -71,6 +74,11 @@ func main() {
 	}
 
 	integrations := configureIntegrations(config)
+
+	if *onlySeedSearch {
+		integrations.Search.Seed(db)
+		return
+	}
 
 	app := server.Init(db, integrations, *config)
 
