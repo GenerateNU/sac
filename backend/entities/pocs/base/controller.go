@@ -3,7 +3,7 @@ package base
 import (
 	"net/http"
 
-	"github.com/GenerateNU/sac/backend/constants"
+	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -30,7 +30,12 @@ func NewPointOfContactController(pointOfContactService PointOfContactServiceInte
 // @Failure     500   {string}    error
 // @Router		/pocs/  [get]
 func (poc *PointOfContactController) GetPointOfContacts(c *fiber.Ctx) error {
-	pointOfContacts, err := poc.pointOfContactService.GetPointOfContacts(c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING))
+	pagination, err := middleware.GetPagination(c)
+	if err != nil {
+		return err
+	}
+
+	pointOfContacts, err := poc.pointOfContactService.GetPointOfContacts(*pagination)
 	if err != nil {
 		return err
 	}

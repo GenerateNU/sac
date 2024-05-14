@@ -3,6 +3,7 @@ package base
 import (
 	"errors"
 
+	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/google/uuid"
 
@@ -22,12 +23,10 @@ func CreateCategory(db *gorm.DB, category models.Category) (*models.Category, er
 	return &category, nil
 }
 
-func GetCategories(db *gorm.DB, limit int, page int) ([]models.Category, error) {
+func GetCategories(db *gorm.DB, pagination middleware.Pagination) ([]models.Category, error) {
 	var categories []models.Category
 
-	offset := (page - 1) * limit
-
-	if err := db.Limit(limit).Offset(offset).Find(&categories).Error; err != nil {
+	if err := db.Scopes(pagination.IntoScope(db)).Find(&categories).Error; err != nil {
 		return nil, err
 	}
 

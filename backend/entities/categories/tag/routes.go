@@ -1,6 +1,7 @@
 package tag
 
 import (
+	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/types"
 )
 
@@ -10,6 +11,6 @@ func CategoryTag(categoryParams types.RouteParams) {
 	// api/v1/categories/:categoryID/tags/*
 	categoryTags := categoryParams.Router.Group("/tags")
 
-	categoryTags.Get("/", categoryTagController.GetTagsByCategory)
+	categoryTags.Get("/", middleware.Paginate, categoryTagController.GetTagsByCategory)
 	categoryTags.Get("/:tagID", categoryTagController.GetTagByCategory)
 }
