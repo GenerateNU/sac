@@ -6,12 +6,13 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/utilities"
 
 	"gorm.io/gorm"
 )
 
-func GetTagsByCategory(db *gorm.DB, categoryID uuid.UUID, limit int, page int) ([]models.Tag, error) {
+func GetTagsByCategory(db *gorm.DB, categoryID uuid.UUID, pagination middleware.Pagination) ([]models.Tag, error) {
 	var category models.Category
 
 	if err := db.Where("id = ?", categoryID).First(&category).Error; err != nil {
@@ -23,9 +24,7 @@ func GetTagsByCategory(db *gorm.DB, categoryID uuid.UUID, limit int, page int) (
 
 	var tags []models.Tag
 
-	offset := (page - 1) * limit
-
-	if err := db.Where("category_id = ?", categoryID).Limit(limit).Offset(offset).Find(&tags).Error; err != nil {
+	if err := db.Where("category_id = ?", categoryID).Scopes(pagination.IntoScope(db)).Find(&tags).Error; err != nil {
 		return nil, err
 	}
 

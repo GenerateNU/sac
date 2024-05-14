@@ -1,6 +1,7 @@
 package base
 
 import (
+	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/types"
 )
 
@@ -10,7 +11,7 @@ func Event(eventParams types.RouteParams) {
 	// api/v1/events/*
 	events := eventParams.Router.Group("/events")
 
-	events.Get("/", eventController.GetAllEvents)
+	events.Get("/", middleware.Paginate, eventController.GetAllEvents)
 	events.Post("/", eventParams.AuthMiddleware.ClubAuthorizeById, eventController.CreateEvent)
 
 	// api/v1/events/:eventID/*

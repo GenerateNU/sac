@@ -8,6 +8,7 @@ import (
 	"github.com/GenerateNU/sac/backend/auth"
 	authBase "github.com/GenerateNU/sac/backend/entities/auth/base"
 	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/middleware"
 
 	"github.com/GenerateNU/sac/backend/entities/users"
 	"github.com/GenerateNU/sac/backend/types"
@@ -15,7 +16,7 @@ import (
 )
 
 type UserServiceInterface interface {
-	GetUsers(limit string, page string) ([]models.User, error)
+	GetUsers(pagination middleware.Pagination) ([]models.User, error)
 	GetMe(id string) (*models.User, error)
 	GetUser(id string) (*models.User, error)
 	CreateUser(userBody models.CreateUserRequestBody) (*models.User, *auth.Token, error)
@@ -79,18 +80,8 @@ func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models
 	return user, tokens, nil
 }
 
-func (u *UserService) GetUsers(limit string, page string) ([]models.User, error) {
-	limitAsInt, err := utilities.ValidateNonNegative(limit)
-	if err != nil {
-		return nil, err
-	}
-
-	pageAsInt, err := utilities.ValidateNonNegative(page)
-	if err != nil {
-		return nil, err
-	}
-
-	return GetUsers(u.DB, *limitAsInt, *pageAsInt)
+func (u *UserService) GetUsers(pagination middleware.Pagination) ([]models.User, error) {
+	return GetUsers(u.DB, pagination)
 }
 
 func (u *UserService) GetMe(id string) (*models.User, error) {
