@@ -1,8 +1,8 @@
 package base
 
 import (
+	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/types"
-	"github.com/GenerateNU/sac/backend/utilities"
 )
 
 func PointOfContact(pointOfContactParams types.RouteParams) {
@@ -11,7 +11,7 @@ func PointOfContact(pointOfContactParams types.RouteParams) {
 	// api/v1/pocs/*
 	pointofContact := pointOfContactParams.Router.Group("/pocs")
 
-	pointofContact.Get("/", utilities.Make(pointOfContactController.GetPointOfContacts))
-	pointofContact.Get("/:pocID", utilities.Make(pointOfContactController.GetPointOfContact))
-	// pointOfContact.Get("/:pocID/file", utilities.Make(pointOfContactController.GetPointOfContacFileInfo))
+	pointofContact.Get("/", middleware.Paginate, pointOfContactController.GetPointOfContacts)
+	pointofContact.Get("/:pocID", pointOfContactController.GetPointOfContact)
+	// pointOfContact.Get("/:pocID/file", pointOfContactController.GetPointOfContacFileInfo))
 }

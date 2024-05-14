@@ -2,12 +2,13 @@ package base
 
 import (
 	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
 )
 
 type EventServiceInterface interface {
-	GetEvents(limit string, page string) ([]models.Event, error)
+	GetEvents(pagination middleware.Pagination) ([]models.Event, error)
 	GetEvent(eventID string) ([]models.Event, error)
 	GetSeriesByEventID(eventID string) ([]models.Event, error)
 	GetSeriesByID(seriesID string) ([]models.Event, error)
@@ -30,18 +31,8 @@ func NewEventService(serviceParams types.ServiceParams) EventServiceInterface {
 	return &EventService{serviceParams}
 }
 
-func (e *EventService) GetEvents(limit string, page string) ([]models.Event, error) {
-	limitAsInt, err := utilities.ValidateNonNegative(limit)
-	if err != nil {
-		return nil, err
-	}
-
-	pageAsInt, err := utilities.ValidateNonNegative(page)
-	if err != nil {
-		return nil, err
-	}
-
-	return GetEvents(e.DB, *limitAsInt, *pageAsInt)
+func (e *EventService) GetEvents(pagination middleware.Pagination) ([]models.Event, error) {
+	return GetEvents(e.DB, pagination)
 }
 
 // right now we are always returning a slice

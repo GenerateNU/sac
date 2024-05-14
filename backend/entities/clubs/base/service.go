@@ -5,12 +5,13 @@ import (
 
 	"github.com/GenerateNU/sac/backend/entities/clubs"
 	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
 )
 
 type ClubServiceInterface interface {
-	GetClubs(queryParams *models.ClubQueryParams) ([]models.Club, error)
+	GetClubs(queryParams *models.ClubQueryParams, pagination middleware.Pagination) ([]models.Club, error)
 	GetClub(id string) (*models.Club, error)
 	CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, error)
 	UpdateClub(id string, clubBody models.UpdateClubRequestBody) (*models.Club, error)
@@ -25,16 +26,8 @@ func NewClubService(serviceParams types.ServiceParams) ClubServiceInterface {
 	return &ClubService{serviceParams}
 }
 
-func (c *ClubService) GetClubs(queryParams *models.ClubQueryParams) ([]models.Club, error) {
-	if queryParams.Limit < 0 {
-		return nil, fmt.Errorf("limit must be greater than 0")
-	}
-
-	if queryParams.Page < 0 {
-		return nil, fmt.Errorf("page must be greater than 0")
-	}
-
-	return GetClubs(c.DB, queryParams)
+func (c *ClubService) GetClubs(queryParams *models.ClubQueryParams, pagination middleware.Pagination) ([]models.Club, error) {
+	return GetClubs(c.DB, c.Integrations.Search, queryParams, pagination)
 }
 
 func (c *ClubService) CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, error) {

@@ -3,8 +3,8 @@ package base
 import (
 	"net/http"
 
-	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/fiber/v2"
 )
@@ -32,15 +32,16 @@ func NewClubController(clubService ClubServiceInterface) *ClubController {
 // @Router		/clubs/  [get]
 func (cl *ClubController) GetClubs(c *fiber.Ctx) error {
 	var queryParams models.ClubQueryParams
-
-	queryParams.Limit = constants.DEFAULT_LIMIT
-	queryParams.Page = constants.DEFAULT_PAGE
-
 	if err := c.QueryParser(&queryParams); err != nil {
 		return err
 	}
 
-	clubs, err := cl.clubService.GetClubs(&queryParams)
+	pagination, err := middleware.GetPagination(c)
+	if err != nil {
+		return err
+	}
+
+	clubs, err := cl.clubService.GetClubs(&queryParams, *pagination)
 	if err != nil {
 		return err
 	}

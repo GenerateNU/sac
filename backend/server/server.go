@@ -22,6 +22,7 @@ import (
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
@@ -84,8 +85,9 @@ func allRoutes(app *fiber.App, routeParams types.RouteParams) {
 
 func newFiberApp(appSettings config.ApplicationSettings) *fiber.App {
 	app := fiber.New(fiber.Config{
-		JSONEncoder: go_json.Marshal,
-		JSONDecoder: go_json.Unmarshal,
+		JSONEncoder:  go_json.Marshal,
+		JSONDecoder:  go_json.Unmarshal,
+		ErrorHandler: utilities.ErrorHandler,
 	})
 
 	app.Use(cors.New(cors.Config{
@@ -95,6 +97,9 @@ func newFiberApp(appSettings config.ApplicationSettings) *fiber.App {
 	app.Use(requestid.New())
 	app.Use(logger.New(logger.Config{
 		Format: "[${time}] ${ip}:${port} ${pid} ${locals:requestid} ${status} - ${latency} ${method} ${path}\n",
+	}))
+	app.Use(compress.New(compress.Config{
+		Level: compress.LevelBestSpeed,
 	}))
 
 	return app

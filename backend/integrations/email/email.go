@@ -1,21 +1,25 @@
 package email
 
 import (
+	"bytes"
+	"context"
 	"fmt"
-	"os"
 
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/constants"
+	"github.com/GenerateNU/sac/backend/templates/emails"
+
+	"github.com/a-h/templ"
 
 	"github.com/afex/hystrix-go/hystrix"
 	"github.com/resend/resend-go/v2"
 )
 
 type EmailClientInterface interface {
-	SendPasswordResetEmail(name, email, token string) error
-	SendEmailVerification(email, code string) error
-	SendWelcomeEmail(name, email string) error
-	SendPasswordChangedEmail(name, email string) error
+	SendPasswordResetEmail(name string, email string, token string) error
+	SendEmailVerification(email string, code string) error
+	SendWelcomeEmail(name string, email string) error
+	SendPasswordChangedEmail(name string, email string) error
 }
 
 type ResendClient struct {
@@ -36,15 +40,21 @@ func NewResendClient(settings config.ResendSettings, dev bool) EmailClientInterf
 	}
 }
 
-func send(email, subject, html string, client *resend.Client) error {
-	params := &resend.SendEmailRequest{
-		From:    "onboarding" + constants.DOMAIN,
-		To:      []string{email},
-		Subject: subject,
-		Html:    html,
+func send(fromEmail string, toEmail string, subject string, template templ.Component, client *resend.Client) error {
+	buffer := new(bytes.Buffer)
+	err := template.Render(context.Background(), buffer)
+	if err != nil {
+		return fmt.Errorf("failed to render email template: %w", err)
 	}
 
-	err := hystrix.Do("send-email", func() error {
+	params := &resend.SendEmailRequest{
+		From:    fromEmail,
+		To:      []string{toEmail},
+		Subject: subject,
+		Html:    buffer.String(),
+	}
+
+	err = hystrix.Do("send-email", func() error {
 		_, err := client.Emails.Send(params)
 		return err
 	}, nil)
@@ -55,71 +65,34 @@ func send(email, subject, html string, client *resend.Client) error {
 	return nil
 }
 
-func (r *ResendClient) SendPasswordResetEmail(name, email, token string) error {
+func (r *ResendClient) SendPasswordResetEmail(name string, email string, token string) error {
 	if r.Dev {
 		return nil
 	}
 
-	template, err := getTemplateString("password_reset")
-	if err != nil {
-		return fmt.Errorf("failed to get template: %w", err)
-	}
-
-	return send(email, "Password Reset", fmt.Sprintf(*template, name, token), r.Client)
+	return send(constants.DEFAULT_FROM_EMAIL, email, "Password Reset", emails.PasswordReset(name, fmt.Sprintf("https://hipponeu.com/reset/%s", token)), r.Client)
 }
 
-func (r *ResendClient) SendEmailVerification(email, code string) error {
+func (r *ResendClient) SendEmailVerification(email string, code string) error {
 	if r.Dev {
 		return nil
 	}
 
-	template, err := getTemplateString("email_verification")
-	if err != nil {
-		return fmt.Errorf("failed to get template: %w", err)
-	}
-
-	return send(email, "Email Verification", fmt.Sprintf(*template, code), r.Client)
+	return send(constants.DEFAULT_FROM_EMAIL, email, "Email Verification", emails.Verification(code), r.Client)
 }
 
-func (r *ResendClient) SendWelcomeEmail(name, email string) error {
+func (r *ResendClient) SendWelcomeEmail(name string, email string) error {
 	if r.Dev {
 		return nil
 	}
 
-	template, err := getTemplateString("welcome")
-	if err != nil {
-		return fmt.Errorf("failed to get template: %w", err)
-	}
-
-	return send(email, "Welcome to Resend", fmt.Sprintf(*template, name), r.Client)
+	return send(constants.ONBOARDING_EMAIL, email, "Welcome to Hippo", emails.Welcome(name), r.Client)
 }
 
-func (r *ResendClient) SendPasswordChangedEmail(name, email string) error {
+func (r *ResendClient) SendPasswordChangedEmail(name string, email string) error {
 	if r.Dev {
 		return nil
 	}
 
-	template, err := getTemplateString("password_change_complete")
-	if err != nil {
-		return fmt.Errorf("failed to get template: %w", err)
-	}
-
-	return send(email, "Password Changed", fmt.Sprintf(*template, name), r.Client)
-}
-
-func getTemplateString(name string) (*string, error) {
-	// TODO: use default file location
-	cwd, err := os.Getwd()
-	if err != nil {
-		return nil, err
-	}
-
-	htmlBytes, err := os.ReadFile(fmt.Sprintf("%v/templates/emails/%s.html", cwd, name))
-	if err != nil {
-		return nil, err
-	}
-
-	htmlString := string(htmlBytes)
-
-	return &htmlString, nil
+	return send(constants.DEFAULT_FROM_EMAIL, email, "Password Changed", emails.PasswordChangeComplete(name), r.Client)
 }

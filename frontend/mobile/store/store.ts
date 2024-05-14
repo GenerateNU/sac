@@ -1,6 +1,6 @@
+import { baseApi } from '@generatesac/lib';
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
-import { baseApi } from '@sac/lib';
 
 export const store = configureStore({
     reducer: {

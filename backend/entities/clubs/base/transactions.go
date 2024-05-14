@@ -3,6 +3,8 @@ package base
 import (
 	"errors"
 
+	"github.com/GenerateNU/sac/backend/integrations/search"
+	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/utilities"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
@@ -12,7 +14,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetClubs(db *gorm.DB, queryParams *models.ClubQueryParams) ([]models.Club, error) {
+func GetClubs(db *gorm.DB, pinecone search.SearchClientInterface, queryParams *models.ClubQueryParams, pagination middleware.Pagination) ([]models.Club, error) {
 	query := db.Model(&models.Club{})
 
 	if queryParams.Tags != nil && len(queryParams.Tags) > 0 {

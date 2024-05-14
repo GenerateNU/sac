@@ -1,8 +1,8 @@
 package base
 
 import (
+	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/types"
-	"github.com/GenerateNU/sac/backend/utilities"
 )
 
 func File(fileParams types.RouteParams) {
@@ -10,8 +10,8 @@ func File(fileParams types.RouteParams) {
 
 	file := fileParams.Router.Group("/files")
 
-	file.Get("/", utilities.Make(fileController.GetFiles))
-	file.Get("/:fileID", utilities.Make(fileController.GetFile))
-	file.Post("/", utilities.Make(fileController.CreateFile))
-	file.Delete("/:fileID", utilities.Make(fileController.DeleteFile))
+	file.Get("/", middleware.Paginate, fileController.GetFiles)
+	file.Get("/:fileID", fileController.GetFile)
+	file.Post("/", fileController.CreateFile)
+	file.Delete("/:fileID", fileController.DeleteFile)
 }
