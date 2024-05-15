@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/middleware"
+	"github.com/garrettladley/fiberpaginate"
 
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/google/uuid"
@@ -23,9 +23,9 @@ func CreateUser(db *gorm.DB, user *models.User) (*models.User, error) {
 	return user, nil
 }
 
-func GetUsers(db *gorm.DB, pagination middleware.Pagination) ([]models.User, error) {
+func GetUsers(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.User, error) {
 	var users []models.User
-	if err := db.Omit("password_hash").Scopes(pagination.IntoScope(db)).Find(&users).Error; err != nil {
+	if err := db.Omit("password_hash").Scopes(utilities.IntoScope(pageInfo, db)).Find(&users).Error; err != nil {
 		return nil, err
 	}
 
