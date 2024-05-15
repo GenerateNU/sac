@@ -4,13 +4,12 @@ import (
 	"github.com/GenerateNU/sac/backend/entities/clubs"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/entities/users"
-	"github.com/GenerateNU/sac/backend/errors"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
-func CreateFollowing(db *gorm.DB, userID uuid.UUID, clubID uuid.UUID) *errors.Error {
+func CreateFollowing(db *gorm.DB, userID uuid.UUID, clubID uuid.UUID) error {
 	user, err := users.GetUser(db, userID)
 	if err != nil {
 		return err
@@ -22,13 +21,13 @@ func CreateFollowing(db *gorm.DB, userID uuid.UUID, clubID uuid.UUID) *errors.Er
 	}
 
 	if err := db.Model(&user).Association("Follower").Append(club); err != nil {
-		return &errors.FailedToFollowClub
+		return err
 	}
 
 	return nil
 }
 
-func DeleteFollowing(db *gorm.DB, userID uuid.UUID, clubID uuid.UUID) *errors.Error {
+func DeleteFollowing(db *gorm.DB, userID uuid.UUID, clubID uuid.UUID) error {
 	user, err := users.GetUser(db, userID)
 	if err != nil {
 		return err
@@ -40,13 +39,13 @@ func DeleteFollowing(db *gorm.DB, userID uuid.UUID, clubID uuid.UUID) *errors.Er
 	}
 
 	if err := db.Model(&user).Association("Follower").Delete(club); err != nil {
-		return &errors.UserNotFollowingClub
+		return err
 	}
 
 	return nil
 }
 
-func GetClubFollowing(db *gorm.DB, userID uuid.UUID) ([]models.Club, *errors.Error) {
+func GetClubFollowing(db *gorm.DB, userID uuid.UUID) ([]models.Club, error) {
 	var clubs []models.Club
 
 	user, err := users.GetUser(db, userID)
@@ -55,7 +54,7 @@ func GetClubFollowing(db *gorm.DB, userID uuid.UUID) ([]models.Club, *errors.Err
 	}
 
 	if err := db.Model(&user).Association("Follower").Find(&clubs); err != nil {
-		return nil, &errors.FailedToGetUserFollowing
+		return nil, err
 	}
 
 	return clubs, nil

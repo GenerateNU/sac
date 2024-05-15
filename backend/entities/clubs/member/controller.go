@@ -1,7 +1,10 @@
 package member
 
 import (
-	"github.com/GenerateNU/sac/backend/constants"
+	"net/http"
+
+	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -24,18 +27,23 @@ func NewClubMemberController(clubMemberService ClubMemberServiceInterface) *Club
 // @Param		limit		query	int	    false	"Limit"
 // @Param		page		query	int	    false	"Page"
 // @Success		200	  {object}	    []models.User
-// @Failure     400   {object}      errors.Error
-// @Failure     401   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
+// @Failure     400   {object}      error
+// @Failure     401   {object}      error
+// @Failure     404   {object}      error
+// @Failure     500   {object}      error
 // @Router		/clubs/{clubID}/members/  [get]
 func (cm *ClubMemberController) GetClubMembers(c *fiber.Ctx) error {
-	followers, err := cm.clubMemberService.GetClubMembers(c.Params("clubID"), c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING))
-	if err != nil {
-		return err.FiberError(c)
+	pagination, ok := fiberpaginate.FromContext(c)
+	if !ok {
+		return utilities.ErrExpectedPagination
 	}
 
-	return c.Status(fiber.StatusOK).JSON(followers)
+	followers, err := cm.clubMemberService.GetClubMembers(c.Params("clubID"), *pagination)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(http.StatusOK).JSON(followers)
 }
 
 // CreateClubMember godoc
@@ -49,18 +57,18 @@ func (cm *ClubMemberController) GetClubMembers(c *fiber.Ctx) error {
 // @Param		clubID	path	string	true	"Club ID"
 // @Param		userID	path	string	true	"User ID"
 // @Success		201	  {object}	    models.User
-// @Failure     400   {object}      errors.Error
-// @Failure     401   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
+// @Failure     400   {object}      error
+// @Failure     401   {object}      error
+// @Failure     404   {object}      error
+// @Failure     500   {object}      error
 // @Router		/clubs/{clubID}/members/  [post]
 func (cm *ClubMemberController) CreateClubMember(c *fiber.Ctx) error {
 	err := cm.clubMemberService.CreateClubMember(c.Params("clubID"), c.Params("userID"))
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.SendStatus(fiber.StatusCreated)
+	return c.SendStatus(http.StatusCreated)
 }
 
 // DeleteClubMember godoc
@@ -73,16 +81,16 @@ func (cm *ClubMemberController) CreateClubMember(c *fiber.Ctx) error {
 // @Param		clubID	path	string	true	"Club ID"
 // @Param		userID	path	string	true	"User ID"
 // @Success		204	  {object}	    models.User
-// @Failure     400   {object}      errors.Error
-// @Failure     401   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
+// @Failure     400   {object}      error
+// @Failure     401   {object}      error
+// @Failure     404   {object}      error
+// @Failure     500   {object}      error
 // @Router		/clubs/{clubID}/members/  [delete]
 func (cm *ClubMemberController) DeleteClubMember(c *fiber.Ctx) error {
 	err := cm.clubMemberService.DeleteClubMember(c.Params("clubID"), c.Params("userID"))
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.SendStatus(fiber.StatusNoContent)
+	return c.SendStatus(http.StatusNoContent)
 }

@@ -2,15 +2,13 @@ package middleware
 
 import (
 	"github.com/GenerateNU/sac/backend/auth"
-	"github.com/GenerateNU/sac/backend/errors"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/fiber/v2"
 )
 
 func (m *AuthMiddlewareService) UserAuthorizeById(c *fiber.Ctx) error {
-	authErr := m.Authenticate(c)
-	if authErr != nil {
-		return errors.Unauthorized.FiberError(c)
+	if err := m.Authenticate(c); err != nil {
+		return utilities.Unauthorized()
 	}
 
 	if m.IsSuper(c) {
@@ -19,22 +17,22 @@ func (m *AuthMiddlewareService) UserAuthorizeById(c *fiber.Ctx) error {
 
 	idAsUUID, err := utilities.ValidateID(c.Params("userID"))
 	if err != nil {
-		return errors.FailedToValidateID.FiberError(c)
+		return err
 	}
 
 	claims, err := auth.From(c)
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
 	issuerIDAsUUID, err := utilities.ValidateID(claims.Issuer)
 	if err != nil {
-		return errors.FailedToValidateID.FiberError(c)
+		return err
 	}
 
 	if issuerIDAsUUID.String() == idAsUUID.String() {
 		return c.Next()
 	}
 
-	return errors.Forbidden.FiberError(c)
+	return utilities.Forbidden()
 }

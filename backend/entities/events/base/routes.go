@@ -2,6 +2,7 @@ package base
 
 import (
 	"github.com/GenerateNU/sac/backend/types"
+	"github.com/garrettladley/fiberpaginate"
 )
 
 func Event(eventParams types.RouteParams) {
@@ -10,7 +11,7 @@ func Event(eventParams types.RouteParams) {
 	// api/v1/events/*
 	events := eventParams.Router.Group("/events")
 
-	events.Get("/", eventController.GetAllEvents)
+	events.Get("/", fiberpaginate.New(), eventController.GetAllEvents)
 	events.Post("/", eventParams.AuthMiddleware.ClubAuthorizeById, eventController.CreateEvent)
 
 	// api/v1/events/:eventID/*

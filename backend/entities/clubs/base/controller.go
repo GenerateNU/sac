@@ -1,9 +1,11 @@
 package base
 
 import (
-	"github.com/GenerateNU/sac/backend/constants"
+	"net/http"
+
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/errors"
+	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -25,25 +27,26 @@ func NewClubController(clubService ClubServiceInterface) *ClubController {
 // @Param		limit		query	int	    false	"Limit"
 // @Param		page		query	int	    false	"Page"
 // @Success		200	  {object}	    []models.Club
-// @Failure     400   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
+// @Failure     400   {object}      error
+// @Failure     500   {object}      error
 // @Router		/clubs/  [get]
 func (cl *ClubController) GetClubs(c *fiber.Ctx) error {
 	var queryParams models.ClubQueryParams
-
-	queryParams.Limit = constants.DEFAULT_LIMIT
-	queryParams.Page = constants.DEFAULT_PAGE
-
 	if err := c.QueryParser(&queryParams); err != nil {
-		return errors.FailedtoParseQueryParams.FiberError(c)
+		return err
 	}
 
-	clubs, err := cl.clubService.GetClubs(&queryParams)
+	pagination, ok := fiberpaginate.FromContext(c)
+	if !ok {
+		return utilities.ErrExpectedPagination
+	}
+
+	clubs, err := cl.clubService.GetClubs(&queryParams, *pagination)
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.Status(fiber.StatusOK).JSON(clubs)
+	return c.Status(http.StatusOK).JSON(clubs)
 }
 
 // CreateClub godoc
@@ -56,24 +59,24 @@ func (cl *ClubController) GetClubs(c *fiber.Ctx) error {
 // @Produce		json
 // @Param		club	body	models.CreateClubRequestBody	true	"Club"
 // @Success		201	  {object}	  models.Club
-// @Failure     400   {object}    errors.Error
-// @Failure     401   {object}    errors.Error
-// @Failure     404   {object}    errors.Error
-// @Failure     500   {object}    errors.Error
+// @Failure     400   {object}    error
+// @Failure     401   {object}    error
+// @Failure     404   {object}    error
+// @Failure     500   {object}    error
 // @Router		/clubs/  [post]
 func (cl *ClubController) CreateClub(c *fiber.Ctx) error {
 	var clubBody models.CreateClubRequestBody
 
 	if err := c.BodyParser(&clubBody); err != nil {
-		return errors.FailedToParseRequestBody.FiberError(c)
+		return utilities.InvalidJSON()
 	}
 
 	club, err := cl.clubService.CreateClub(clubBody)
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(club)
+	return c.Status(http.StatusCreated).JSON(club)
 }
 
 // GetClub godoc
@@ -85,17 +88,17 @@ func (cl *ClubController) CreateClub(c *fiber.Ctx) error {
 // @Produce		json
 // @Param		clubID	path	string	true	"Club ID"
 // @Success		200	  {object}	    models.Club
-// @Failure     400   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
+// @Failure     400   {object}      error
+// @Failure     404   {object}      error
+// @Failure     500   {object}      error
 // @Router		/clubs/{clubID}/  [get]
 func (cl *ClubController) GetClub(c *fiber.Ctx) error {
 	club, err := cl.clubService.GetClub(c.Params("clubID"))
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.Status(fiber.StatusOK).JSON(club)
+	return c.Status(http.StatusOK).JSON(club)
 }
 
 // UpdateClub godoc
@@ -109,24 +112,24 @@ func (cl *ClubController) GetClub(c *fiber.Ctx) error {
 // @Param		clubID	path	string	true	"Club ID"
 // @Param		club	body	models.UpdateClubRequestBody	true	"Club"
 // @Success		200	  {object}	  models.Club
-// @Failure     400   {object}    errors.Error
-// @Failure     401   {object}    errors.Error
-// @Failure     404   {object}    errors.Error
-// @Failure     500   {object}    errors.Error
+// @Failure     400   {object}    error
+// @Failure     401   {object}    error
+// @Failure     404   {object}    error
+// @Failure     500   {object}    error
 // @Router		/clubs/{clubID}/  [patch]
 func (cl *ClubController) UpdateClub(c *fiber.Ctx) error {
 	var clubBody models.UpdateClubRequestBody
 
 	if err := c.BodyParser(&clubBody); err != nil {
-		return errors.FailedToParseRequestBody.FiberError(c)
+		return utilities.InvalidJSON()
 	}
 
 	updatedClub, err := cl.clubService.UpdateClub(c.Params("clubID"), clubBody)
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.Status(fiber.StatusOK).JSON(updatedClub)
+	return c.Status(http.StatusOK).JSON(updatedClub)
 }
 
 // DeleteClub godoc
@@ -138,15 +141,15 @@ func (cl *ClubController) UpdateClub(c *fiber.Ctx) error {
 // @Produce		json
 // @Param		clubID	path	string	true	"Club ID"
 // @Success		204	  {string}	    utilities.SuccessResponse
-// @Failure     400   {object}      errors.Error
-// @Failure     401   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
+// @Failure     400   {object}      error
+// @Failure     401   {object}      error
+// @Failure     404   {object}      error
+// @Failure     500   {object}      error
 // @Router		/clubs/{clubID}/  [delete]
 func (cl *ClubController) DeleteClub(c *fiber.Ctx) error {
 	err := cl.clubService.DeleteClub(c.Params("clubID"))
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
-	return c.SendStatus(fiber.StatusNoContent)
+	return c.SendStatus(http.StatusNoContent)
 }

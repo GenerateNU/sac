@@ -2,14 +2,15 @@ package middleware
 
 import (
 	"fmt"
+	"net/http"
 	"slices"
 	"strings"
 	"time"
 
 	"github.com/GenerateNU/sac/backend/auth"
+	"github.com/GenerateNU/sac/backend/utilities"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/errors"
 
 	"github.com/golang-jwt/jwt"
 
@@ -20,7 +21,7 @@ import (
 func (m *AuthMiddlewareService) IsSuper(c *fiber.Ctx) bool {
 	claims, err := auth.From(c)
 	if err != nil {
-		_ = err.FiberError(c)
+		_ = err
 		return false
 	}
 	if claims == nil {
@@ -46,21 +47,21 @@ func GetAuthroizationToken(c *fiber.Ctx) *string {
 func (m *AuthMiddlewareService) Authenticate(c *fiber.Ctx) error {
 	accessToken := GetAuthroizationToken(c)
 	if accessToken == nil {
-		return errors.Unauthorized.FiberError(c)
+		return utilities.Unauthorized()
 	}
 
 	token, err := func() (*jwt.Token, error) {
 		return jwt.ParseWithClaims(*accessToken, &auth.CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
-			return []byte(m.AuthSettings.AccessKey.Expose()), nil
+			return []byte(m.Auth.AccessKey.Expose()), nil
 		})
 	}()
 	if err != nil {
-		return errors.Unauthorized.FiberError(c)
+		return utilities.Unauthorized()
 	}
 
 	claims, ok := token.Claims.(*auth.CustomClaims)
 	if !ok || !token.Valid {
-		return errors.Unauthorized.FiberError(c)
+		return utilities.Unauthorized()
 	}
 
 	// if auth.IsBlacklisted(*accessToken) {
@@ -76,12 +77,12 @@ func (m *AuthMiddlewareService) Authorize(requiredPermissions ...auth.Permission
 	return func(c *fiber.Ctx) error {
 		authErr := m.Authenticate(c)
 		if authErr != nil {
-			return errors.Unauthorized.FiberError(c)
+			return utilities.Unauthorized()
 		}
 
-		claims, fromErr := auth.From(c)
-		if fromErr != nil {
-			return fromErr.FiberError(c)
+		claims, err := auth.From(c)
+		if err != nil {
+			return err
 		}
 
 		if claims != nil && claims.Role == string(models.Super) {
@@ -92,7 +93,7 @@ func (m *AuthMiddlewareService) Authorize(requiredPermissions ...auth.Permission
 
 		for _, requiredPermission := range requiredPermissions {
 			if !slices.Contains(userPermissions, requiredPermission) {
-				return errors.Forbidden.FiberError(c)
+				return utilities.Forbidden()
 			}
 		}
 
@@ -109,7 +110,7 @@ func (m *AuthMiddlewareService) Limiter(rate int, expiration time.Duration) func
 			return fmt.Sprintf("%s-%s", c.IP(), c.Path())
 		},
 		LimitReached: func(c *fiber.Ctx) error {
-			return c.Status(fiber.StatusTooManyRequests).JSON(fiber.Map{
+			return c.Status(http.StatusTooManyRequests).JSON(fiber.Map{
 				"error": "Too many requests",
 			})
 		},

@@ -15,15 +15,15 @@ import (
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/errors"
+
 	"github.com/GenerateNU/sac/backend/utilities"
 )
 
 type SearchClientInterface interface {
-	Seed(db *gorm.DB) *errors.Error
-	Upsert(items []Searchable) *errors.Error
-	Delete(items []Searchable) *errors.Error
-	Search(item Searchable) ([]string, *errors.Error)
+	Seed(db *gorm.DB) error
+	Upsert(items []Searchable) error
+	Delete(items []Searchable) error
+	Search(item Searchable) ([]string, error)
 }
 
 type PineconeClient struct {
@@ -41,11 +41,11 @@ func NewPineconeClient(aiClient AIClientInterface, pineconeSettings config.Pinec
 }
 
 // Seeds the pinecone index with the clubs currently in the database.
-func (c *PineconeClient) Seed(db *gorm.DB) *errors.Error {
+func (c *PineconeClient) Seed(db *gorm.DB) error {
 	var clubs []models.Club
 
 	if err := db.Find(&clubs).Error; err != nil {
-		return &errors.ClubSeedingFailed
+		return fmt.Errorf("failed to get clubs from database: %w", err)
 	}
 
 	searchables := make([]Searchable, len(clubs))
@@ -70,7 +70,7 @@ func (c *PineconeClient) Seed(db *gorm.DB) *errors.Error {
 		log.Info("Uploading chunk #%d (of %d) to pinecone...\n", index+1, len(chunks))
 		err := c.Upsert(chunk)
 		if err != nil {
-			return &errors.ClubSeedingFailed
+			return fmt.Errorf("failed to seed pinecone index: %w", err)
 		}
 	}
 
@@ -96,14 +96,14 @@ type PineconeUpsertRequestBody struct {
 }
 
 // Inserts the given list of searchables to the Pinecone index.
-func (c *PineconeClient) Upsert(items []Searchable) *errors.Error {
+func (c *PineconeClient) Upsert(items []Searchable) error {
 	if len(items) == 0 {
 		return nil
 	}
 
 	embeddings, embeddingErr := c.aiClient.CreateEmbedding(items)
 	if embeddingErr != nil {
-		return &errors.FailedToUpsertToPinecone
+		return fmt.Errorf("failed to create embeddings: %w", embeddingErr)
 	}
 
 	vectors := []Vector{}
@@ -120,26 +120,26 @@ func (c *PineconeClient) Upsert(items []Searchable) *errors.Error {
 			Namespace: items[0].Namespace(),
 		})
 	if err != nil {
-		return &errors.FailedToUpsertToPinecone
+		return fmt.Errorf("failed to marshal upsert body: %w", err)
 	}
 
 	req, err := http.NewRequest(fiber.MethodPost,
 		fmt.Sprintf("%s/vectors/upsert", c.PineconeSettings.IndexHost.Expose()),
 		bytes.NewBuffer(upsertBody))
 	if err != nil {
-		return &errors.FailedToUpsertToPinecone
+		return fmt.Errorf("failed to create upsert request: %w", err)
 	}
 
 	req = pineconeRequest(c.PineconeSettings, req)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return &errors.FailedToUpsertToPinecone
+		return fmt.Errorf("failed to upsert to pinecone: %w", err)
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != fiber.StatusOK {
-		return &errors.FailedToUpsertToPinecone
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("failed to upsert to pinecone: %s", resp.Status)
 	}
 
 	return nil
@@ -152,7 +152,7 @@ type PineconeDeleteRequestBody struct {
 }
 
 // Deletes the given list of searchables from the Pinecone index.
-func (c *PineconeClient) Delete(items []Searchable) *errors.Error {
+func (c *PineconeClient) Delete(items []Searchable) error {
 	if len(items) == 0 {
 		return nil
 	}
@@ -161,7 +161,7 @@ func (c *PineconeClient) Delete(items []Searchable) *errors.Error {
 	namespace := items[0].Namespace()
 	for _, item := range items {
 		if item.Namespace() != namespace {
-			return &errors.ItemsMustHaveSameNamespace
+			return fmt.Errorf("all items must be in the same namespace. item %s is in namespace %s, but expected %s", item.SearchId(), item.Namespace(), namespace)
 		}
 	}
 
@@ -177,25 +177,26 @@ func (c *PineconeClient) Delete(items []Searchable) *errors.Error {
 			DeleteAll: false,
 		})
 	if err != nil {
-		return &errors.FailedToDeleteToPinecone
+		return fmt.Errorf("failed to marshal delete body: %w", err)
 	}
 
 	req, err := http.NewRequest(fiber.MethodPost,
 		fmt.Sprintf("%s/vectors/delete", c.PineconeSettings.IndexHost.Expose()),
 		bytes.NewBuffer(deleteBody))
 	if err != nil {
-		return &errors.FailedToDeleteToPinecone
+		return fmt.Errorf("failed to create delete request: %w", err)
 	}
 
 	req = pineconeRequest(c.PineconeSettings, req)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return &errors.FailedToDeleteToPinecone
+		return fmt.Errorf("failed to delete from pinecone: %w", err)
 	}
+	defer resp.Body.Close()
 
-	if resp.StatusCode != fiber.StatusOK {
-		return &errors.FailedToDeleteToPinecone
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("failed to delete from pinecone: %s", resp.Status)
 	}
 
 	return nil
@@ -222,19 +223,19 @@ type PineconeSearchResponseBody struct {
 
 // Runs a search on the Pinecone index given a searchable item, and returns the topK most similar
 // elements' ids.
-func (c *PineconeClient) Search(item Searchable) ([]string, *errors.Error) {
-	moderation, _err := c.aiClient.CreateModeration([]Searchable{item})
-	if _err != nil {
-		return []string{}, _err
+func (c *PineconeClient) Search(item Searchable) ([]string, error) {
+	moderation, err := c.aiClient.CreateModeration([]Searchable{item})
+	if err != nil {
+		return []string{}, err
 	}
 
 	if moderation[0].Flagged {
-		return []string{}, &errors.PotentiallyHarmfulSearch
+		return []string{}, utilities.BadRequest(fmt.Errorf("potentially harmful content detected in item %s", item))
 	}
 
-	values, embeddingErr := c.aiClient.CreateEmbedding([]Searchable{item})
-	if embeddingErr != nil {
-		return []string{}, embeddingErr
+	values, err := c.aiClient.CreateEmbedding([]Searchable{item})
+	if err != nil {
+		return []string{}, err
 	}
 
 	searchBody, err := json.Marshal(
@@ -247,33 +248,32 @@ func (c *PineconeClient) Search(item Searchable) ([]string, *errors.Error) {
 			Namespace: item.Namespace(),
 		})
 	if err != nil {
-		return []string{}, &errors.FailedToSearchToPinecone
+		return []string{}, fmt.Errorf("failed to marshal search body: %w", err)
 	}
 
 	req, err := http.NewRequest(fiber.MethodPost,
 		fmt.Sprintf("%s/query", c.PineconeSettings.IndexHost.Expose()),
 		bytes.NewBuffer(searchBody))
 	if err != nil {
-		return []string{}, &errors.FailedToSearchToPinecone
+		return []string{}, fmt.Errorf("failed to create search request: %w", err)
 	}
 
 	req = pineconeRequest(c.PineconeSettings, req)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return []string{}, &errors.FailedToSearchToPinecone
+		return []string{}, fmt.Errorf("failed to search to pinecone: %w", err)
 	}
-
 	defer resp.Body.Close()
 
-	if resp.StatusCode != fiber.StatusOK {
-		return []string{}, &errors.FailedToSearchToPinecone
+	if resp.StatusCode != http.StatusOK {
+		return []string{}, fmt.Errorf("failed to search to pinecone: %w", err)
 	}
 
 	var results PineconeSearchResponseBody
 	err = json.NewDecoder(resp.Body).Decode(&results)
 	if err != nil {
-		return []string{}, &errors.FailedToSearchToPinecone
+		return []string{}, fmt.Errorf("failed to decode search response: %w", err)
 	}
 
 	resultsToReturn := []string{}

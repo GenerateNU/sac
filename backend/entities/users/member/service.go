@@ -2,13 +2,12 @@ package member
 
 import (
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/errors"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
 )
 
 type UserMemberServiceInterface interface {
-	GetMembership(userID string) ([]models.Club, *errors.Error)
+	GetMembership(userID string) ([]models.Club, error)
 }
 
 type UserMemberService struct {
@@ -19,7 +18,7 @@ func NewUserMemberService(serviceParams types.ServiceParams) UserMemberServiceIn
 	return &UserMemberService{serviceParams}
 }
 
-func (u *UserMemberService) GetMembership(userID string) ([]models.Club, *errors.Error) {
+func (u *UserMemberService) GetMembership(userID string) ([]models.Club, error) {
 	userIdAsUUID, err := utilities.ValidateID(userID)
 	if err != nil {
 		return nil, err

@@ -6,19 +6,18 @@ import (
 	"github.com/GenerateNU/sac/backend/entities/files/base"
 	"github.com/GenerateNU/sac/backend/entities/models"
 
-	"github.com/GenerateNU/sac/backend/errors"
 	"github.com/GenerateNU/sac/backend/integrations/file"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
 )
 
 type ClubPointOfContactServiceInterface interface {
-	GetClubPointOfContacts(clubID string) ([]models.PointOfContact, *errors.Error)
-	GetClubPointOfContact(clubID, pocID string) (*models.PointOfContact, *errors.Error)
-	CreateClubPointOfContact(clubID string, pointOfContactBody models.CreatePointOfContactBody, fileHeader *multipart.FileHeader) (*models.PointOfContact, *errors.Error)
-	UpdateClubPointOfContactPhoto(clubID, pocID string, fileHeader *multipart.FileHeader) (*models.PointOfContact, *errors.Error)
-	UpdateClubPointOfContact(clubID, pocID string, pointOfContactBody models.UpdatePointOfContactBody) (*models.PointOfContact, *errors.Error)
-	DeleteClubPointOfContact(clubID, pocID string) *errors.Error
+	GetClubPointOfContacts(clubID string) ([]models.PointOfContact, error)
+	GetClubPointOfContact(clubID, pocID string) (*models.PointOfContact, error)
+	CreateClubPointOfContact(clubID string, pointOfContactBody models.CreatePointOfContactBody, fileHeader *multipart.FileHeader) (*models.PointOfContact, error)
+	UpdateClubPointOfContactPhoto(clubID, pocID string, fileHeader *multipart.FileHeader) (*models.PointOfContact, error)
+	UpdateClubPointOfContact(clubID, pocID string, pointOfContactBody models.UpdatePointOfContactBody) (*models.PointOfContact, error)
+	DeleteClubPointOfContact(clubID, pocID string) error
 }
 
 type ClubPointOfContactService struct {
@@ -29,42 +28,42 @@ func NewClubPointOfContactService(serviceParams types.ServiceParams) ClubPointOf
 	return &ClubPointOfContactService{serviceParams}
 }
 
-func (cpoc *ClubPointOfContactService) GetClubPointOfContacts(clubID string) ([]models.PointOfContact, *errors.Error) {
+func (cpoc *ClubPointOfContactService) GetClubPointOfContacts(clubID string) ([]models.PointOfContact, error) {
 	clubIdAsUUID, err := utilities.ValidateID(clubID)
 	if err != nil {
-		return nil, &errors.FailedToValidateClub
+		return nil, err
 	}
 
 	return GetClubPointOfContacts(cpoc.DB, *clubIdAsUUID)
 }
 
-func (cpoc *ClubPointOfContactService) GetClubPointOfContact(clubID, pocID string) (*models.PointOfContact, *errors.Error) {
+func (cpoc *ClubPointOfContactService) GetClubPointOfContact(clubID, pocID string) (*models.PointOfContact, error) {
 	clubIdAsUUID, err := utilities.ValidateID(clubID)
 	if err != nil {
-		return nil, &errors.FailedToValidateClub
+		return nil, err
 	}
 
 	pocIdAsUUID, err := utilities.ValidateID(pocID)
 	if err != nil {
-		return nil, &errors.FailedToValidatePointOfContactId
+		return nil, err
 	}
 
 	return GetClubPointOfContact(cpoc.DB, *clubIdAsUUID, *pocIdAsUUID)
 }
 
-func (cpoc *ClubPointOfContactService) CreateClubPointOfContact(clubID string, pointOfContactBody models.CreatePointOfContactBody, fileHeader *multipart.FileHeader) (*models.PointOfContact, *errors.Error) {
-	if err := cpoc.Validate.Struct(pointOfContactBody); err != nil {
-		return nil, &errors.FailedToValidatePointOfContact
+func (cpoc *ClubPointOfContactService) CreateClubPointOfContact(clubID string, pointOfContactBody models.CreatePointOfContactBody, fileHeader *multipart.FileHeader) (*models.PointOfContact, error) {
+	if err := utilities.Validate(cpoc.Validate, pointOfContactBody); err != nil {
+		return nil, err
 	}
 
 	clubIdAsUUID, err := utilities.ValidateID(clubID)
 	if err != nil {
-		return nil, &errors.FailedToValidateClub
+		return nil, err
 	}
 
 	_, err = GetClubPointOfContactByClubIDAndEmail(cpoc.DB, *clubIdAsUUID, pointOfContactBody.Email)
 	if err == nil {
-		return nil, &errors.PointOfContactAlreadyExists
+		return nil, err
 	}
 
 	fileInfo, err := cpoc.Integrations.File.UploadFile("point_of_contacts", fileHeader, []file.FileType{file.IMAGE})
@@ -96,7 +95,7 @@ func (cpoc *ClubPointOfContactService) CreateClubPointOfContact(clubID string, p
 			return nil, err
 		}
 
-		return nil, &errors.FailedToCreatePointOfContact
+		return nil, err
 	}
 
 	poc.PhotoFile = *file
@@ -104,15 +103,15 @@ func (cpoc *ClubPointOfContactService) CreateClubPointOfContact(clubID string, p
 	return poc, nil
 }
 
-func (cpoc *ClubPointOfContactService) UpdateClubPointOfContactPhoto(clubID, pocID string, fileHeader *multipart.FileHeader) (*models.PointOfContact, *errors.Error) {
+func (cpoc *ClubPointOfContactService) UpdateClubPointOfContactPhoto(clubID, pocID string, fileHeader *multipart.FileHeader) (*models.PointOfContact, error) {
 	clubIdAsUUID, err := utilities.ValidateID(clubID)
 	if err != nil {
-		return nil, &errors.FailedToValidateClub
+		return nil, err
 	}
 
 	pocIdAsUUID, err := utilities.ValidateID(pocID)
 	if err != nil {
-		return nil, &errors.FailedToValidatePointOfContactId
+		return nil, err
 	}
 
 	pointOfContact, err := GetClubPointOfContact(cpoc.DB, *clubIdAsUUID, *pocIdAsUUID)
@@ -139,33 +138,33 @@ func (cpoc *ClubPointOfContactService) UpdateClubPointOfContactPhoto(clubID, poc
 	return pointOfContact, nil
 }
 
-func (cpoc *ClubPointOfContactService) UpdateClubPointOfContact(clubID, pocID string, pointOfContactBody models.UpdatePointOfContactBody) (*models.PointOfContact, *errors.Error) {
-	if err := cpoc.Validate.Struct(pointOfContactBody); err != nil {
-		return nil, &errors.FailedToValidatePointOfContact
+func (cpoc *ClubPointOfContactService) UpdateClubPointOfContact(clubID, pocID string, pointOfContactBody models.UpdatePointOfContactBody) (*models.PointOfContact, error) {
+	if err := utilities.Validate(cpoc.Validate, pointOfContactBody); err != nil {
+		return nil, err
 	}
 
 	clubIdAsUUID, err := utilities.ValidateID(clubID)
 	if err != nil {
-		return nil, &errors.FailedToValidateClub
+		return nil, err
 	}
 
 	pocIdAsUUID, err := utilities.ValidateID(pocID)
 	if err != nil {
-		return nil, &errors.FailedToValidatePointOfContactId
+		return nil, err
 	}
 
 	return UpdateClubPointOfContact(cpoc.DB, *clubIdAsUUID, *pocIdAsUUID, pointOfContactBody)
 }
 
-func (cpoc *ClubPointOfContactService) DeleteClubPointOfContact(clubID, pocID string) *errors.Error {
+func (cpoc *ClubPointOfContactService) DeleteClubPointOfContact(clubID, pocID string) error {
 	clubIdAsUUID, err := utilities.ValidateID(clubID)
 	if err != nil {
-		return &errors.FailedToValidateClub
+		return err
 	}
 
 	pocIdAsUUID, err := utilities.ValidateID(pocID)
 	if err != nil {
-		return &errors.FailedToValidatePointOfContactId
+		return err
 	}
 
 	pointOfContact, err := GetClubPointOfContact(cpoc.DB, *clubIdAsUUID, *pocIdAsUUID)
@@ -184,7 +183,7 @@ func (cpoc *ClubPointOfContactService) DeleteClubPointOfContact(clubID, pocID st
 		}
 	}()
 	if err := tx.Error; err != nil {
-		return &errors.FailedToDeleteClubPointOfContact
+		return err
 	}
 
 	err = base.DeleteFile(tx, pointOfContact.PhotoFile.ID)
@@ -200,7 +199,7 @@ func (cpoc *ClubPointOfContactService) DeleteClubPointOfContact(clubID, pocID st
 	}
 
 	if err := tx.Commit().Error; err != nil {
-		return &errors.FailedToDeleteClubPointOfContact
+		return err
 	}
 
 	return nil

@@ -1,12 +1,15 @@
 package base
 
 import (
+	"errors"
+	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/GenerateNU/sac/backend/auth"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/entities/users"
-	"github.com/GenerateNU/sac/backend/errors"
+
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
 
@@ -16,16 +19,16 @@ import (
 )
 
 type AuthServiceInterface interface {
-	GetRole(id string) (*models.UserRole, *errors.Error)
-	Login(userBody models.LoginUserResponseBody) (*models.User, *auth.Token, *errors.Error)
-	Refresh(refreshToken string) (*auth.Token, *errors.Error)
-	Logout(c *fiber.Ctx) *errors.Error
+	GetRole(id string) (*models.UserRole, error)
+	Login(userBody models.LoginUserResponseBody) (*models.User, *auth.Token, error)
+	Refresh(refreshToken string) (*auth.Token, error)
+	Logout(c *fiber.Ctx) error
 
-	SendCode(email string) *errors.Error
-	VerifyEmail(emailBody models.VerifyEmailRequestBody) *errors.Error
+	SendCode(email string) error
+	VerifyEmail(emailBody models.VerifyEmailRequestBody) error
 
-	ForgotPassword(email string) *errors.Error
-	VerifyPasswordResetToken(passwordBody models.VerifyPasswordResetTokenRequestBody) *errors.Error
+	ForgotPassword(email string) error
+	VerifyPasswordResetToken(passwordBody models.VerifyPasswordResetTokenRequestBody) error
 }
 
 type AuthService struct {
@@ -36,23 +39,23 @@ func NewAuthService(serviceParams types.ServiceParams) AuthServiceInterface {
 	return &AuthService{serviceParams}
 }
 
-func (a *AuthService) Login(loginBody models.LoginUserResponseBody) (*models.User, *auth.Token, *errors.Error) {
-	if err := a.Validate.Struct(loginBody); err != nil {
-		return nil, nil, &errors.FailedToValidateUser
+func (a *AuthService) Login(loginBody models.LoginUserResponseBody) (*models.User, *auth.Token, error) {
+	if err := utilities.Validate(a.Validate, loginBody); err != nil {
+		return nil, nil, err
 	}
 
-	if pwordValErr := auth.ValidatePassword(loginBody.Password); pwordValErr != nil {
-		return nil, nil, pwordValErr
+	if err := auth.ValidatePassword(loginBody.Password); err != nil {
+		return nil, nil, err
 	}
 
-	user, getUserByEmailErr := users.GetUserByEmail(a.DB, loginBody.Email)
-	if getUserByEmailErr != nil {
-		return nil, nil, getUserByEmailErr
+	user, err := users.GetUserByEmail(a.DB, loginBody.Email)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	correct, passwordErr := auth.CompareHash(loginBody.Password, user.PasswordHash)
-	if passwordErr != nil || !correct {
-		return nil, nil, &errors.FailedToValidateUser
+	correct, err := auth.CompareHash(loginBody.Password, user.PasswordHash)
+	if err != nil || !correct {
+		return nil, nil, err
 	}
 
 	tokens, err := a.JWT.GenerateTokenPair(auth.Claims{
@@ -70,21 +73,21 @@ func (a *AuthService) Login(loginBody models.LoginUserResponseBody) (*models.Use
 		},
 	})
 	if err != nil {
-		return nil, nil, &errors.FailedToGenerateToken
+		return nil, nil, err
 	}
 
 	return user, tokens, nil
 }
 
-func (a *AuthService) Refresh(refreshToken string) (*auth.Token, *errors.Error) {
+func (a *AuthService) Refresh(refreshToken string) (*auth.Token, error) {
 	claims, err := a.JWT.ExtractClaims(refreshToken, auth.RefreshToken)
 	if err != nil {
-		return nil, &errors.FailedToExtractClaims
+		return nil, err
 	}
 
-	role, roleErr := a.GetRole(claims["iss"].(string))
-	if roleErr != nil {
-		return nil, roleErr
+	role, err := a.GetRole(claims["iss"].(string))
+	if err != nil {
+		return nil, err
 	}
 
 	tokens, err := a.JWT.GenerateTokenPair(auth.Claims{
@@ -102,16 +105,16 @@ func (a *AuthService) Refresh(refreshToken string) (*auth.Token, *errors.Error) 
 		},
 	})
 	if err != nil {
-		return nil, &errors.FailedToGenerateToken
+		return nil, err
 	}
 
 	return tokens, nil
 }
 
-func (a *AuthService) GetRole(id string) (*models.UserRole, *errors.Error) {
-	idAsUUID, idErr := utilities.ValidateID(id)
-	if idErr != nil {
-		return nil, idErr
+func (a *AuthService) GetRole(id string) (*models.UserRole, error) {
+	idAsUUID, err := utilities.ValidateID(id)
+	if err != nil {
+		return nil, err
 	}
 
 	user, err := users.GetUser(a.DB, *idAsUUID)
@@ -122,63 +125,61 @@ func (a *AuthService) GetRole(id string) (*models.UserRole, *errors.Error) {
 	return &user.Role, nil
 }
 
-func (a *AuthService) ForgotPassword(email string) *errors.Error {
+func (a *AuthService) ForgotPassword(email string) error {
 	user, err := users.GetUserByEmail(a.DB, email)
 	if err != nil {
 		return nil
 	}
 
-	activeToken, tokenErr := GetActiveTokenByUserID(a.DB, user.ID, models.PasswordResetType)
-	if tokenErr != nil {
-		if tokenErr != &errors.TokenNotFound {
-			return tokenErr
+	activeToken, err := GetActiveTokenByUserID(a.DB, user.ID, models.PasswordResetType)
+	if err != nil {
+		if !utilities.IsNotFound(err) {
+			return err
 		}
 	}
 
 	if activeToken != nil {
-		sendErr := a.Integrations.Email.SendPasswordResetEmail(user.FirstName, user.Email, activeToken.Token)
-		if sendErr != nil {
-			return &errors.FailedToSendEmail
+		err := a.Integrations.Email.SendPasswordResetEmail(user.FirstName, user.Email, activeToken.Token)
+		if err != nil {
+			return err
 		}
 
 		return nil
 	}
 
-	token, generateErr := auth.GenerateURLSafeToken(64)
-	if generateErr != nil {
-		return &errors.FailedToGenerateToken
+	token, err := auth.GenerateURLSafeToken(64)
+	if err != nil {
+		return err
 	}
 
-	saveErr := SaveToken(a.DB, user.ID, *token, models.PasswordResetType, time.Now().Add(time.Hour*24).UTC())
-	if saveErr != nil {
-		return saveErr
+	if err := SaveToken(a.DB, user.ID, *token, models.PasswordResetType, time.Now().Add(time.Hour*24).UTC()); err != nil {
+		return err
 	}
 
-	sendErr := a.Integrations.Email.SendPasswordResetEmail(user.FirstName, user.Email, *token)
-	if sendErr != nil {
-		return sendErr
+	if err := a.Integrations.Email.SendPasswordResetEmail(user.FirstName, user.Email, *token); err != nil {
+		return err
 	}
 
 	return nil
 }
 
-func (a *AuthService) VerifyPasswordResetToken(passwordBody models.VerifyPasswordResetTokenRequestBody) *errors.Error {
-	if err := a.Validate.Struct(passwordBody); err != nil {
-		return &errors.FailedToValidateUser
+func (a *AuthService) VerifyPasswordResetToken(passwordBody models.VerifyPasswordResetTokenRequestBody) error {
+	if err := utilities.Validate(a.Validate, passwordBody); err != nil {
+		return err
 	}
 
-	token, tokenErr := GetToken(a.DB, passwordBody.Token, models.PasswordResetType)
-	if tokenErr != nil {
-		return tokenErr
+	token, err := GetToken(a.DB, passwordBody.Token, models.PasswordResetType)
+	if err != nil {
+		return err
 	}
 
 	if token.ExpiresAt.Before(time.Now().UTC()) {
-		return &errors.TokenExpired
+		return utilities.Unauthorized()
 	}
 
-	hash, hashErr := auth.ComputeHash(passwordBody.NewPassword)
-	if hashErr != nil {
-		return &errors.FailedToValidateUser
+	hash, err := auth.ComputeHash(passwordBody.NewPassword)
+	if err != nil {
+		return fmt.Errorf("failed to hash password: %w", err)
 	}
 
 	tx := a.DB.Begin()
@@ -188,73 +189,68 @@ func (a *AuthService) VerifyPasswordResetToken(passwordBody models.VerifyPasswor
 		}
 	}()
 
-	updateErr := users.UpdatePassword(tx, token.UserID, *hash)
-	if updateErr != nil {
+	if err := users.UpdatePassword(tx, token.UserID, *hash); err != nil {
 		tx.Rollback()
-		return updateErr
+		return err
 	}
 
-	deleteErr := DeleteToken(tx, passwordBody.Token, models.PasswordResetType)
-	if deleteErr != nil {
+	if err := DeleteToken(tx, passwordBody.Token, models.PasswordResetType); err != nil {
 		tx.Rollback()
-		return deleteErr
+		return err
 	}
 
 	if err := tx.Commit().Error; err != nil {
 		tx.Rollback()
-		return &errors.FailedToUpdatePassword
+		return err
 	}
 
 	return nil
 }
 
-func (a *AuthService) SendCode(email string) *errors.Error {
+func (a *AuthService) SendCode(email string) error {
 	user, err := users.GetUserByEmail(a.DB, email)
 	if err != nil {
 		return err
 	}
 
 	if user.IsVerified {
-		return &errors.EmailAlreadyVerified
+		return fmt.Errorf("user is already verified")
 	}
 
-	activeOTP, tokenErr := GetActiveTokenByUserID(a.DB, user.ID, models.EmailVerificationType)
-	if tokenErr != nil {
-		if tokenErr != &errors.TokenNotFound {
-			return tokenErr
+	activeOTP, err := GetActiveTokenByUserID(a.DB, user.ID, models.EmailVerificationType)
+	if err != nil {
+		if !utilities.IsNotFound(err) {
+			return err
 		}
 	}
 
 	if activeOTP != nil {
-		sendErr := a.Integrations.Email.SendEmailVerification(user.Email, activeOTP.Token)
-		if sendErr != nil {
-			return &errors.FailedToSendEmail
+		if err := a.Integrations.Email.SendEmailVerification(user.Email, activeOTP.Token); err != nil {
+			return err
 		}
 
 		return nil
 	}
 
-	otp, otpErr := auth.GenerateOTP(6)
-	if otpErr != nil {
-		return &errors.FailedToGenerateOTP
+	otp, err := auth.GenerateOTP(6)
+	if err != nil {
+		return fmt.Errorf("failed to generate OTP: %w", err)
 	}
 
-	saveErr := SaveToken(a.DB, user.ID, *otp, models.EmailVerificationType, time.Now().Add(time.Minute*5).UTC())
-	if saveErr != nil {
-		return saveErr
+	if err := SaveToken(a.DB, user.ID, *otp, models.EmailVerificationType, time.Now().Add(time.Minute*5).UTC()); err != nil {
+		return err
 	}
 
-	sendErr := a.Integrations.Email.SendEmailVerification(user.Email, *otp)
-	if sendErr != nil {
-		return &errors.FailedToSendEmail
+	if err := a.Integrations.Email.SendEmailVerification(user.Email, *otp); err != nil {
+		return err
 	}
 
 	return nil
 }
 
-func verifyEmailHelper(user *models.User, token string, db *gorm.DB) *errors.Error {
+func verifyEmailHelper(user *models.User, token string, db *gorm.DB) error {
 	if user.IsVerified {
-		return &errors.EmailAlreadyVerified
+		return fmt.Errorf("user is already verified")
 	}
 
 	otp, otpErr := GetToken(db, token, models.EmailVerificationType)
@@ -263,19 +259,20 @@ func verifyEmailHelper(user *models.User, token string, db *gorm.DB) *errors.Err
 	}
 
 	if otp.Token != token {
-		return &errors.InvalidOTP
+		slog.Error("invalid otp", "otp", otp.Token, "token", token)
+		return utilities.BadRequest(errors.New("invalid otp"))
 	}
 
 	if otp.ExpiresAt.Before(time.Now().UTC()) {
-		return &errors.OTPExpired
+		return utilities.BadRequest(errors.New("otp expired"))
 	}
 
 	return nil
 }
 
-func (a *AuthService) VerifyEmail(emailBody models.VerifyEmailRequestBody) *errors.Error {
-	if err := a.Validate.Struct(emailBody); err != nil {
-		return &errors.FailedToValidateUser
+func (a *AuthService) VerifyEmail(emailBody models.VerifyEmailRequestBody) error {
+	if err := utilities.Validate(a.Validate, emailBody); err != nil {
+		return err
 	}
 
 	user, err := users.GetUserByEmail(a.DB, emailBody.Email)
@@ -283,9 +280,8 @@ func (a *AuthService) VerifyEmail(emailBody models.VerifyEmailRequestBody) *erro
 		return err
 	}
 
-	verifyErr := verifyEmailHelper(user, emailBody.Token, a.DB)
-	if verifyErr != nil {
-		return verifyErr
+	if err := verifyEmailHelper(user, emailBody.Token, a.DB); err != nil {
+		return err
 	}
 
 	tx := a.DB.Begin()
@@ -295,27 +291,25 @@ func (a *AuthService) VerifyEmail(emailBody models.VerifyEmailRequestBody) *erro
 		}
 	}()
 
-	updateErr := users.UpdateEmailVerification(tx, user.ID)
-	if updateErr != nil {
+	if err := users.UpdateEmailVerification(tx, user.ID); err != nil {
 		tx.Rollback()
-		return updateErr
+		return err
 	}
 
-	deleteErr := DeleteToken(tx, emailBody.Token, models.EmailVerificationType)
-	if deleteErr != nil {
+	if err := DeleteToken(tx, emailBody.Token, models.EmailVerificationType); err != nil {
 		tx.Rollback()
-		return deleteErr
+		return err
 	}
 
 	if err := tx.Commit().Error; err != nil {
 		tx.Rollback()
-		return &errors.FailedToUpdateEmailVerification
+		return err
 	}
 
 	return nil
 }
 
-func (a *AuthService) Logout(c *fiber.Ctx) *errors.Error {
+func (a *AuthService) Logout(c *fiber.Ctx) error {
 	c.Cookie(&fiber.Cookie{
 		Name:     "refresh_token",
 		Value:    "",

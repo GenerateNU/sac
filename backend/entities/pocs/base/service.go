@@ -2,14 +2,14 @@ package base
 
 import (
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/errors"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 )
 
 type PointOfContactServiceInterface interface {
-	GetPointOfContacts(limit string, page string) ([]models.PointOfContact, *errors.Error)
-	GetPointOfContact(pocID string) (*models.PointOfContact, *errors.Error)
+	GetPointOfContacts(pageInfo fiberpaginate.PageInfo) ([]models.PointOfContact, error)
+	GetPointOfContact(pocID string) (*models.PointOfContact, error)
 }
 
 type PointOfContactService struct {
@@ -20,24 +20,14 @@ func NewPointOfContactService(serviceParams types.ServiceParams) PointOfContactS
 	return &PointOfContactService{serviceParams}
 }
 
-func (poc *PointOfContactService) GetPointOfContacts(limit string, page string) ([]models.PointOfContact, *errors.Error) {
-	limitAsInt, err := utilities.ValidateNonNegative(limit)
-	if err != nil {
-		return nil, &errors.FailedToValidateLimit
-	}
-
-	pageAsInt, err := utilities.ValidateNonNegative(page)
-	if err != nil {
-		return nil, &errors.FailedToValidatePage
-	}
-
-	return GetPointOfContacts(poc.DB, *limitAsInt, *pageAsInt)
+func (poc *PointOfContactService) GetPointOfContacts(pageInfo fiberpaginate.PageInfo) ([]models.PointOfContact, error) {
+	return GetPointOfContacts(poc.DB, pageInfo)
 }
 
-func (poc *PointOfContactService) GetPointOfContact(pocID string) (*models.PointOfContact, *errors.Error) {
+func (poc *PointOfContactService) GetPointOfContact(pocID string) (*models.PointOfContact, error) {
 	idAsUUID, err := utilities.ValidateID(pocID)
 	if err != nil {
-		return nil, &errors.FailedToValidateID
+		return nil, err
 	}
 
 	return GetPointOfContact(poc.DB, *idAsUUID)

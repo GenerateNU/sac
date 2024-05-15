@@ -2,6 +2,7 @@ package file
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -10,7 +11,7 @@ import (
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/errors"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -32,8 +33,8 @@ const (
 
 type FileClientInterface interface {
 	GetFileURL(fileURL string) *string
-	UploadFile(folder string, fileHeader *multipart.FileHeader, allowedTypes []FileType) (*models.FileInfo, *errors.Error)
-	DeleteFile(fileURL string) *errors.Error
+	UploadFile(folder string, fileHeader *multipart.FileHeader, allowedTypes []FileType) (*models.FileInfo, error)
+	DeleteFile(fileURL string) error
 }
 
 type AWSClient struct {
@@ -58,22 +59,21 @@ func (aw *AWSClient) GetFileURL(fileURL string) *string {
 	return &fileURL
 }
 
-func preProcessFile(fileHeader *multipart.FileHeader) (*string, []byte, *errors.Error) {
+func preProcessFile(fileHeader *multipart.FileHeader) (*string, []byte, error) {
 	if fileHeader.Size > constants.MAX_FILE_SIZE {
-		return nil, nil, &errors.InvalidFileSize
+		return nil, nil, errors.New("file size is too large")
 	}
 
 	file, err := fileHeader.Open()
 	if err != nil {
-		return nil, nil, &errors.FailedToOpenFile
+		return nil, nil, errors.New("failed to open file")
 	}
+	defer file.Close()
 
 	fileBytes, err := io.ReadAll(file)
 	if err != nil {
-		return nil, nil, &errors.FailedToReadFile
+		return nil, nil, errors.New("failed to read file")
 	}
-
-	defer file.Close()
 
 	fileName := generateUniqueFileName(fileHeader.Filename)
 
@@ -106,10 +106,10 @@ func isFileTypeAllowed(fileType string, allowedTypes []FileType) bool {
 	return false
 }
 
-func (aw *AWSClient) UploadFile(folder string, fileHeader *multipart.FileHeader, allowedTypes []FileType) (*models.FileInfo, *errors.Error) {
+func (aw *AWSClient) UploadFile(folder string, fileHeader *multipart.FileHeader, allowedTypes []FileType) (*models.FileInfo, error) {
 	fileType := fileHeader.Header.Get("Content-Type")
 	if !isFileTypeAllowed(fileType, allowedTypes) {
-		return nil, &errors.InvalidFileType
+		return nil, errors.New("file type is not allowed")
 	}
 
 	fileName, file, err := preProcessFile(fileHeader)
@@ -122,26 +122,25 @@ func (aw *AWSClient) UploadFile(folder string, fileHeader *multipart.FileHeader,
 	bucket := aw.Settings.BUCKET_NAME.Expose()
 	key := fmt.Sprintf("%s/%s", folder, *fileName)
 
-	_, s3Err := svc.PutObject(&s3.PutObjectInput{
+	_, err = svc.PutObject(&s3.PutObjectInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(key),
 		Body:   bytes.NewReader(file),
 	})
-	if s3Err != nil {
-		return nil, &errors.FailedToUploadFile
+	if err != nil {
+		return nil, fmt.Errorf("failed to upload file: %s", err)
 	}
 
-	fileURL := fmt.Sprintf("https://s3.amazonaws.com/%s/%s", bucket, key)
 	return &models.FileInfo{
 		FileName:  *fileName,
 		FileType:  fileHeader.Header.Get("Content-Type"),
 		FileSize:  int(fileHeader.Size),
-		FileURL:   fileURL,
+		FileURL:   fmt.Sprintf("https://s3.amazonaws.com/%s/%s", bucket, key),
 		ObjectKey: key,
 	}, nil
 }
 
-func (aw *AWSClient) DeleteFile(fileURL string) *errors.Error {
+func (aw *AWSClient) DeleteFile(fileURL string) error {
 	svc := s3.New(aw.session)
 
 	bucket := aw.Settings.BUCKET_NAME.Expose()
@@ -152,7 +151,7 @@ func (aw *AWSClient) DeleteFile(fileURL string) *errors.Error {
 		Key:    aws.String(key),
 	})
 	if err != nil {
-		return &errors.FailedToDeleteFile
+		return fmt.Errorf("failed to delete file: %s", err)
 	}
 
 	return nil

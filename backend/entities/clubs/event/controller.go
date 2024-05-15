@@ -1,7 +1,10 @@
 package event
 
 import (
-	"github.com/GenerateNU/sac/backend/constants"
+	"net/http"
+
+	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -24,14 +27,19 @@ func NewClubEventController(clubEventService ClubEventServiceInterface) *ClubEve
 // @Param		limit		query	int	    false	"Limit"
 // @Param		page		query	int	    false	"Page"
 // @Success		200	  {object}	    []models.Event
-// @Failure     400   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
+// @Failure     400   {object}      error
+// @Failure     404   {object}      error
+// @Failure     500   {object}      error
 // @Router		/clubs/{clubID}/events/  [get]
 func (cl *ClubEventController) GetClubEvents(c *fiber.Ctx) error {
-	if events, err := cl.clubEventService.GetClubEvents(c.Params("clubID"), c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING)); err != nil {
-		return err.FiberError(c)
+	pagination, ok := fiberpaginate.FromContext(c)
+	if !ok {
+		return utilities.ErrExpectedPagination
+	}
+
+	if events, err := cl.clubEventService.GetClubEvents(c.Params("clubID"), *pagination); err != nil {
+		return err
 	} else {
-		return c.Status(fiber.StatusOK).JSON(events)
+		return c.Status(http.StatusOK).JSON(events)
 	}
 }

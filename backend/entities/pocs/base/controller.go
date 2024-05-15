@@ -1,7 +1,10 @@
 package base
 
 import (
-	"github.com/GenerateNU/sac/backend/constants"
+	"net/http"
+
+	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -23,17 +26,22 @@ func NewPointOfContactController(pointOfContactService PointOfContactServiceInte
 // @Param		limit		query	int	    false	"Limit"
 // @Param		page		query	int	    false	"Page"
 // @Success		200	  {object}	  []models.PointOfContact
-// @Failure     400   {string}    errors.Error
-// @Failure     404   {string}    errors.Error
-// @Failure     500   {string}    errors.Error
+// @Failure     400   {string}    error
+// @Failure     404   {string}    error
+// @Failure     500   {string}    error
 // @Router		/pocs/  [get]
 func (poc *PointOfContactController) GetPointOfContacts(c *fiber.Ctx) error {
-	pointOfContacts, err := poc.pointOfContactService.GetPointOfContacts(c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING))
-	if err != nil {
-		return err.FiberError(c)
+	pagination, ok := fiberpaginate.FromContext(c)
+	if !ok {
+		return utilities.ErrExpectedPagination
 	}
 
-	return c.Status(fiber.StatusOK).JSON(pointOfContacts)
+	pointOfContacts, err := poc.pointOfContactService.GetPointOfContacts(*pagination)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(http.StatusOK).JSON(pointOfContacts)
 }
 
 // GetPointOfContact godoc
@@ -45,15 +53,15 @@ func (poc *PointOfContactController) GetPointOfContacts(c *fiber.Ctx) error {
 // @Produce		json
 // @Param		pocID	path	string	true	"Point of Contact ID"
 // @Success		200	  {object}	  models.PointOfContact
-// @Failure     400   {string}    errors.Error
-// @Failure     404   {string}    errors.Error
-// @Failure     500   {string}    errors.Error
+// @Failure     400   {string}    error
+// @Failure     404   {string}    error
+// @Failure     500   {string}    error
 // @Router		/pocs/{pocID}/  [get]
 func (poc *PointOfContactController) GetPointOfContact(c *fiber.Ctx) error {
 	pointOfContact, err := poc.pointOfContactService.GetPointOfContact(c.Params("pocID"))
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.Status(fiber.StatusOK).JSON(pointOfContact)
+	return c.Status(http.StatusOK).JSON(pointOfContact)
 }
