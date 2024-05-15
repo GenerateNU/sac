@@ -1,7 +1,10 @@
 package follower
 
 import (
-	"github.com/GenerateNU/sac/backend/constants"
+	"net/http"
+
+	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -24,15 +27,20 @@ func NewClubFollowerController(clubFollowerService ClubFollowerServiceInterface)
 // @Param		limit		query	int	    false	"Limit"
 // @Param		page		query	int	    false	"Page"
 // @Success		200	  {object}	    []models.User
-// @Failure     400   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
+// @Failure     400   {object}      error
+// @Failure     404   {object}      error
+// @Failure     500   {object}      error
 // @Router		/clubs/{clubID}/followers/  [get]
 func (cf *ClubFollowerController) GetClubFollowers(c *fiber.Ctx) error {
-	followers, err := cf.clubFollowerService.GetClubFollowers(c.Params("clubID"), c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING))
-	if err != nil {
-		return err.FiberError(c)
+	pagination, ok := fiberpaginate.FromContext(c)
+	if !ok {
+		return utilities.ErrExpectedPagination
 	}
 
-	return c.Status(fiber.StatusOK).JSON(followers)
+	followers, err := cf.clubFollowerService.GetClubFollowers(c.Params("clubID"), *pagination)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(http.StatusOK).JSON(followers)
 }

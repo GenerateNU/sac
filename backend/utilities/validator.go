@@ -1,12 +1,12 @@
 package utilities
 
 import (
+	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/errors"
 
 	"github.com/google/uuid"
 	"github.com/mcnijman/go-emailaddress"
@@ -93,21 +93,40 @@ func validateNotEqualIfNotEmpty(fl validator.FieldLevel) bool {
 	return field == "" || field != otherField
 }
 
-func ValidateID(id string) (*uuid.UUID, *errors.Error) {
+func ValidateID(id string) (*uuid.UUID, error) {
 	idAsUUID, err := uuid.Parse(id)
 	if err != nil {
-		return nil, &errors.FailedToValidateID
+		return nil, err
 	}
 
 	return &idAsUUID, nil
 }
 
-func ValidateNonNegative(value string) (*int, *errors.Error) {
+func ValidateNonNegative(value string) (*int, error) {
 	valueAsInt, err := strconv.Atoi(value)
 
 	if err != nil || valueAsInt < 0 {
-		return nil, &errors.FailedToValidateNonNegativeValue
+		return nil, fmt.Errorf("value must be a non-negative integer. got %s", value)
 	}
 
 	return &valueAsInt, nil
+}
+
+func Validate(validate *validator.Validate, s any) error {
+	if err := validate.Struct(s); err != nil {
+		validationErrs, ok := err.(validator.ValidationErrors)
+		if ok {
+			errors := make(map[string]string, len(validationErrs))
+
+			for _, validationErr := range validationErrs {
+				errors[validationErr.Field()] = fmt.Sprintf("%s failed %s", validationErr.Field(), validationErr.Tag())
+			}
+
+			return InvalidRequestData(errors)
+		} else {
+			return fmt.Errorf("failed to validate struct: %w", err)
+		}
+	}
+
+	return nil
 }

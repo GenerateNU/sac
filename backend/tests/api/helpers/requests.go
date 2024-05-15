@@ -8,8 +8,6 @@ import (
 	"strings"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/errors"
-	"github.com/gofiber/fiber/v2"
 
 	"github.com/goccy/go-json"
 )
@@ -104,7 +102,7 @@ func (existingAppAssert ExistingAppAssert) TestOnStatus(request TestRequest, sta
 func (request *TestRequest) testOn(existingAppAssert ExistingAppAssert, status int, key string, value string) (ExistingAppAssert, *http.Response) {
 	appAssert, resp := request.test(existingAppAssert)
 
-	if resp.StatusCode == fiber.StatusNoContent {
+	if resp.StatusCode == http.StatusNoContent {
 		return appAssert, resp
 	}
 
@@ -121,20 +119,9 @@ func (request *TestRequest) testOn(existingAppAssert ExistingAppAssert, status i
 	return appAssert, resp
 }
 
-func (existingAppAssert ExistingAppAssert) TestOnError(request TestRequest, expectedError errors.Error) ExistingAppAssert {
-	appAssert, _ := request.testOn(existingAppAssert, expectedError.StatusCode, "error", expectedError.Message)
-	return appAssert
-}
-
 type ErrorWithTester struct {
-	Error  errors.Error
+	Error  error
 	Tester Tester
-}
-
-func (existingAppAssert ExistingAppAssert) TestOnErrorAndTester(request TestRequest, errorWithTester ErrorWithTester) ExistingAppAssert {
-	appAssert, resp := request.testOn(existingAppAssert, errorWithTester.Error.StatusCode, "error", errorWithTester.Error.Message)
-	errorWithTester.Tester(appAssert, resp)
-	return appAssert
 }
 
 func (existingAppAssert ExistingAppAssert) TestOnMessage(request TestRequest, status int, message string) ExistingAppAssert {

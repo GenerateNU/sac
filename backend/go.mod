@@ -3,8 +3,10 @@ module github.com/GenerateNU/sac/backend
 go 1.22.2
 
 require (
+	github.com/a-h/templ v0.2.680
 	github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5
-	github.com/aws/aws-sdk-go v1.51.30
+	github.com/aws/aws-sdk-go v1.53.0
+	github.com/garrettladley/fiberpaginate v0.1.1
 	github.com/garrettladley/mattress v0.4.0
 	github.com/go-playground/validator/v10 v10.20.0
 	github.com/goccy/go-json v0.10.2
@@ -59,7 +61,7 @@ require (
 	go.opentelemetry.io/otel v1.24.0 // indirect
 	go.opentelemetry.io/otel/metric v1.24.0 // indirect
 	go.opentelemetry.io/otel/trace v1.24.0 // indirect
-	go.uber.org/atomic v1.9.0 // indirect
+	go.uber.org/atomic v1.11.0 // indirect
 	golang.org/x/oauth2 v0.20.0 // indirect
 	google.golang.org/api v0.180.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240429193739-8cf5692501f6 // indirect

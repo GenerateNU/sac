@@ -2,13 +2,13 @@ package event
 
 import (
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/errors"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 )
 
 type ClubEventServiceInterface interface {
-	GetClubEvents(clubID string, limit string, page string) ([]models.Event, *errors.Error)
+	GetClubEvents(clubID string, pageInfo fiberpaginate.PageInfo) ([]models.Event, error)
 }
 
 type ClubEventService struct {
@@ -19,21 +19,11 @@ func NewClubEventService(params types.ServiceParams) ClubEventServiceInterface {
 	return &ClubEventService{params}
 }
 
-func (c *ClubEventService) GetClubEvents(clubID string, limit string, page string) ([]models.Event, *errors.Error) {
+func (c *ClubEventService) GetClubEvents(clubID string, pageInfo fiberpaginate.PageInfo) ([]models.Event, error) {
 	idAsUUID, err := utilities.ValidateID(clubID)
 	if err != nil {
-		return nil, &errors.FailedToValidateID
+		return nil, err
 	}
 
-	limitAsInt, err := utilities.ValidateNonNegative(limit)
-	if err != nil {
-		return nil, &errors.FailedToValidateLimit
-	}
-
-	pageAsInt, err := utilities.ValidateNonNegative(page)
-	if err != nil {
-		return nil, &errors.FailedToValidatePage
-	}
-
-	return GetClubEvents(c.DB, *idAsUUID, *limitAsInt, *pageAsInt)
+	return GetClubEvents(c.DB, *idAsUUID, pageInfo)
 }

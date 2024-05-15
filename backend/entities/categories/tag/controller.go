@@ -1,8 +1,10 @@
 package tag
 
 import (
-	"github.com/GenerateNU/sac/backend/constants"
+	"net/http"
 
+	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -25,17 +27,22 @@ func NewCategoryTagController(categoryTagService CategoryTagServiceInterface) *C
 // @Param		limit		query	int	    false	"Limit"
 // @Param		page		query	int	    false	"Page"
 // @Success		200	  {object}	    []models.Tag
-// @Failure     400   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
+// @Failure     400   {object}      error
+// @Failure     404   {object}      error
+// @Failure     500   {object}      error
 // @Router		/categories/{categoryID}/tags/  [get]
 func (ct *CategoryTagController) GetTagsByCategory(c *fiber.Ctx) error {
-	tags, err := ct.categoryTagService.GetTagsByCategory(c.Params("categoryID"), c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING))
-	if err != nil {
-		return err.FiberError(c)
+	pagination, ok := fiberpaginate.FromContext(c)
+	if !ok {
+		return utilities.ErrExpectedPagination
 	}
 
-	return c.Status(fiber.StatusOK).JSON(&tags)
+	tags, err := ct.categoryTagService.GetTagsByCategory(c.Params("categoryID"), *pagination)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(http.StatusOK).JSON(&tags)
 }
 
 // GetTagByCategory godoc
@@ -48,15 +55,15 @@ func (ct *CategoryTagController) GetTagsByCategory(c *fiber.Ctx) error {
 // @Param		categoryID	path	string	true	"Category ID"
 // @Param		tagID		path	string	true	"Tag ID"
 // @Success		200	  {object}	    models.Tag
-// @Failure     400   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
+// @Failure     400   {object}      error
+// @Failure     404   {object}      error
+// @Failure     500   {object}      error
 // @Router		/categories/{categoryID}/tags/{tagID}/  [get]
 func (ct *CategoryTagController) GetTagByCategory(c *fiber.Ctx) error {
 	tag, err := ct.categoryTagService.GetTagByCategory(c.Params("categoryID"), c.Params("tagID"))
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.Status(fiber.StatusOK).JSON(&tag)
+	return c.Status(http.StatusOK).JSON(&tag)
 }

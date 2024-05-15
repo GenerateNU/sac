@@ -8,6 +8,7 @@ import (
 	"github.com/GenerateNU/sac/backend/entities/clubs/member"
 	"github.com/GenerateNU/sac/backend/entities/clubs/poc"
 	"github.com/GenerateNU/sac/backend/entities/clubs/tag"
+	"github.com/garrettladley/fiberpaginate"
 
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/gofiber/fiber/v2"
@@ -33,7 +34,7 @@ func ClubRouter(clubParams types.RouteParams) fiber.Router {
 	// api/v1/clubs/*
 	clubs := clubParams.Router.Group("/clubs")
 
-	clubs.Get("/", clubController.GetClubs)
+	clubs.Get("/", fiberpaginate.New(), clubController.GetClubs)
 	clubs.Post("/", clubParams.AuthMiddleware.Authorize(p.CreateAll), clubController.CreateClub)
 
 	// api/v1/clubs/:clubID/*

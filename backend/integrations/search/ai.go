@@ -2,19 +2,21 @@ package search
 
 import (
 	"bytes"
+	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/goccy/go-json"
 
 	"github.com/GenerateNU/sac/backend/config"
-	"github.com/GenerateNU/sac/backend/errors"
+
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/fiber/v2"
 )
 
 type AIClientInterface interface {
-	CreateEmbedding(items []Searchable) ([]Embedding, *errors.Error)
-	CreateModeration(items []Searchable) ([]ModerationResult, *errors.Error)
+	CreateEmbedding(items []Searchable) ([]Embedding, error)
+	CreateModeration(items []Searchable) ([]ModerationResult, error)
 }
 
 type OpenAIClient struct {
@@ -38,7 +40,7 @@ type CreateEmbeddingResponseBody struct {
 	Data []Embedding `json:"data"`
 }
 
-func (c *OpenAIClient) CreateEmbedding(items []Searchable) ([]Embedding, *errors.Error) {
+func (c *OpenAIClient) CreateEmbedding(items []Searchable) ([]Embedding, error) {
 	embeddingStrings := make([]string, len(items))
 	for i, item := range items {
 		embeddingStrings[i] = item.EmbeddingString()
@@ -50,14 +52,14 @@ func (c *OpenAIClient) CreateEmbedding(items []Searchable) ([]Embedding, *errors
 			Model: "text-embedding-ada-002",
 		})
 	if err != nil {
-		return nil, &errors.FailedToCreateEmbedding
+		return nil, fmt.Errorf("failed to create embedding request body: %w", err)
 	}
 
 	req, err := http.NewRequest(fiber.MethodPost,
 		"https://api.openai.com/v1/embeddings",
 		bytes.NewBuffer(embeddingBody))
 	if err != nil {
-		return nil, &errors.FailedToCreateEmbedding
+		return nil, fmt.Errorf("failed to create embedding: %w", err)
 	}
 
 	req = utilities.ApplyModifiers(req,
@@ -67,20 +69,19 @@ func (c *OpenAIClient) CreateEmbedding(items []Searchable) ([]Embedding, *errors
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return nil, &errors.FailedToCreateEmbedding
+		return nil, fmt.Errorf("failed to create embedding: %w", err)
 	}
-
 	defer resp.Body.Close()
 
 	var embeddingResultBody CreateEmbeddingResponseBody
 
 	err = json.NewDecoder(resp.Body).Decode(&embeddingResultBody)
 	if err != nil {
-		return nil, &errors.FailedToCreateEmbedding
+		return nil, fmt.Errorf("failed to create embedding: %w", err)
 	}
 
 	if len(embeddingResultBody.Data) < 1 {
-		return nil, &errors.FailedToCreateEmbedding
+		return nil, fmt.Errorf("failed to create embedding: %w", err)
 	}
 
 	return embeddingResultBody.Data, nil
@@ -99,7 +100,7 @@ type ModerationResult struct {
 	Flagged bool `json:"flagged"`
 }
 
-func (c *OpenAIClient) CreateModeration(items []Searchable) ([]ModerationResult, *errors.Error) {
+func (c *OpenAIClient) CreateModeration(items []Searchable) ([]ModerationResult, error) {
 	searchStrings := make([]string, len(items))
 	for i, item := range items {
 		searchStrings[i] = item.EmbeddingString()
@@ -111,14 +112,14 @@ func (c *OpenAIClient) CreateModeration(items []Searchable) ([]ModerationResult,
 			Model: "text-moderation-stable",
 		})
 	if err != nil {
-		return nil, &errors.FailedToCreateModeration
+		return nil, fmt.Errorf("failed to create moderation request body: %w", err)
 	}
 
 	req, err := http.NewRequest(fiber.MethodPost,
 		"https://api.openai.com/v1/moderations",
 		bytes.NewBuffer(moderationBody))
 	if err != nil {
-		return nil, &errors.FailedToCreateModeration
+		return nil, fmt.Errorf("failed to create moderation: %w", err)
 	}
 
 	req = utilities.ApplyModifiers(req,
@@ -128,20 +129,19 @@ func (c *OpenAIClient) CreateModeration(items []Searchable) ([]ModerationResult,
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return nil, &errors.FailedToCreateModeration
+		return nil, fmt.Errorf("failed to create moderation: %w", err)
 	}
-
 	defer resp.Body.Close()
 
 	var moderationResultBody CreateModerationResponseBody
 
 	err = json.NewDecoder(resp.Body).Decode(&moderationResultBody)
 	if err != nil {
-		return nil, &errors.FailedToCreateModeration
+		return nil, fmt.Errorf("failed to create moderation: %w", err)
 	}
 
 	if len(moderationResultBody.Results) < 1 {
-		return nil, &errors.FailedToCreateModeration
+		return nil, errors.New("failed to create moderation")
 	}
 
 	return moderationResultBody.Results, nil
