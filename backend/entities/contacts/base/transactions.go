@@ -4,17 +4,15 @@ import (
 	"errors"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
-func GetContacts(db *gorm.DB, limit int, page int) ([]models.Contact, error) {
+func GetContacts(db *gorm.DB, pagination middleware.Pagination) ([]models.Contact, error) {
 	var contacts []models.Contact
-
-	offset := (page - 1) * limit
-
-	if err := db.Limit(limit).Offset(offset).Find(&contacts).Error; err != nil {
+	if err := db.Scopes(pagination.IntoScope(db)).Find(&contacts).Error; err != nil {
 		return nil, err
 	}
 

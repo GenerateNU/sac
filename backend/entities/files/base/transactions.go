@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/middleware"
 
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/google/uuid"
@@ -58,12 +59,9 @@ func UpdateFile(db *gorm.DB, fileID uuid.UUID, fileInfo models.FileInfo) (*model
 	return existingFile, nil
 }
 
-func GetFiles(db *gorm.DB, limit, page int) ([]models.File, error) {
+func GetFiles(db *gorm.DB, pagination middleware.Pagination) ([]models.File, error) {
 	var files []models.File
-
-	offset := (page - 1) * limit
-
-	if err := db.Limit(limit).Offset(offset).Find(&files).Error; err != nil {
+	if err := db.Scopes(pagination.IntoScope(db)).Find(&files).Error; err != nil {
 		return nil, err
 	}
 

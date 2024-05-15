@@ -2,6 +2,7 @@ package base
 
 import (
 	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
 
@@ -11,7 +12,7 @@ import (
 
 type CategoryServiceInterface interface {
 	CreateCategory(categoryBody models.CategoryRequestBody) (*models.Category, error)
-	GetCategories(limit string, page string) ([]models.Category, error)
+	GetCategories(pagination middleware.Pagination) ([]models.Category, error)
 	GetCategory(id string) (*models.Category, error)
 	UpdateCategory(id string, params models.CategoryRequestBody) (*models.Category, error)
 	DeleteCategory(id string) error
@@ -40,18 +41,8 @@ func (c *CategoryService) CreateCategory(categoryBody models.CategoryRequestBody
 	return CreateCategory(c.DB, *category)
 }
 
-func (c *CategoryService) GetCategories(limit string, page string) ([]models.Category, error) {
-	limitAsInt, err := utilities.ValidateNonNegative(limit)
-	if err != nil {
-		return nil, err
-	}
-
-	pageAsInt, err := utilities.ValidateNonNegative(page)
-	if err != nil {
-		return nil, err
-	}
-
-	return GetCategories(c.DB, *limitAsInt, *pageAsInt)
+func (c *CategoryService) GetCategories(pagination middleware.Pagination) ([]models.Category, error) {
+	return GetCategories(c.DB, pagination)
 }
 
 func (c *CategoryService) GetCategory(id string) (*models.Category, error) {

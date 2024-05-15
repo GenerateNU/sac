@@ -3,7 +3,7 @@ package event
 import (
 	"net/http"
 
-	"github.com/GenerateNU/sac/backend/constants"
+	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -31,7 +31,12 @@ func NewClubEventController(clubEventService ClubEventServiceInterface) *ClubEve
 // @Failure     500   {object}      error
 // @Router		/clubs/{clubID}/events/  [get]
 func (cl *ClubEventController) GetClubEvents(c *fiber.Ctx) error {
-	if events, err := cl.clubEventService.GetClubEvents(c.Params("clubID"), c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING)); err != nil {
+	pagination, err := middleware.GetPagination(c)
+	if err != nil {
+		return err
+	}
+
+	if events, err := cl.clubEventService.GetClubEvents(c.Params("clubID"), *pagination); err != nil {
 		return err
 	} else {
 		return c.Status(http.StatusOK).JSON(events)

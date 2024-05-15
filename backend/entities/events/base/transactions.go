@@ -5,6 +5,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/entities/clubs"
 	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/middleware"
 
 	"github.com/GenerateNU/sac/backend/transactions"
 	"github.com/GenerateNU/sac/backend/utilities"
@@ -13,12 +14,9 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetEvents(db *gorm.DB, limit int, page int) ([]models.Event, error) {
+func GetEvents(db *gorm.DB, pagination middleware.Pagination) ([]models.Event, error) {
 	var events []models.Event
-
-	offset := (page - 1) * limit
-
-	if err := db.Limit(limit).Offset(offset).Find(&events).Error; err != nil {
+	if err := db.Scopes(pagination.IntoScope(db)).Find(&events).Error; err != nil {
 		return nil, err
 	}
 

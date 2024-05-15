@@ -3,8 +3,8 @@ package base
 import (
 	"net/http"
 
-	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/fiber/v2"
 )
@@ -32,7 +32,12 @@ func NewEventController(eventService EventServiceInterface) *EventController {
 // @Failure     500   {object}      error
 // @Router		/events/  [get]
 func (e *EventController) GetAllEvents(c *fiber.Ctx) error {
-	events, err := e.eventService.GetEvents(c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING))
+	pagination, err := middleware.GetPagination(c)
+	if err != nil {
+		return err
+	}
+
+	events, err := e.eventService.GetEvents(*pagination)
 	if err != nil {
 		return err
 	}

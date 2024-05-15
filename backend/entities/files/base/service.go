@@ -5,12 +5,13 @@ import (
 
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/integrations/file"
+	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
 )
 
 type FileServiceInterface interface {
-	GetFiles(limit string, page string) ([]models.File, error)
+	GetFiles(pagination middleware.Pagination) ([]models.File, error)
 	GetFile(fileID string) (*models.File, error)
 	CreateFile(fileBody *models.CreateFileRequestBody, formFile *multipart.FileHeader) (*models.File, error)
 	DeleteFile(fileID string) error
@@ -24,18 +25,8 @@ func NewFileService(serviceParams types.ServiceParams) FileServiceInterface {
 	return &FileService{serviceParams}
 }
 
-func (f *FileService) GetFiles(limit string, page string) ([]models.File, error) {
-	limitAsInt, err := utilities.ValidateNonNegative(limit)
-	if err != nil {
-		return nil, err
-	}
-
-	pageAsInt, err := utilities.ValidateNonNegative(page)
-	if err != nil {
-		return nil, err
-	}
-
-	return GetFiles(f.DB, *limitAsInt, *pageAsInt)
+func (f *FileService) GetFiles(pagination middleware.Pagination) ([]models.File, error) {
+	return GetFiles(f.DB, pagination)
 }
 
 func (f *FileService) GetFile(fileID string) (*models.File, error) {

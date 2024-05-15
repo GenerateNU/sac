@@ -1,6 +1,7 @@
 package event
 
 import (
+	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/types"
 )
 
@@ -10,5 +11,5 @@ func ClubEvent(clubParams types.RouteParams) {
 	// api/v1/clubs/:clubID/events/*
 	events := clubParams.Router.Group("/events")
 
-	events.Get("/", clubEventController.GetClubEvents)
+	events.Get("/", middleware.Paginate, clubEventController.GetClubEvents)
 }

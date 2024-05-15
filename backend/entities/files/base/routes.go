@@ -1,6 +1,7 @@
 package base
 
 import (
+	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/types"
 )
 
@@ -9,7 +10,7 @@ func File(fileParams types.RouteParams) {
 
 	file := fileParams.Router.Group("/files")
 
-	file.Get("/", fileController.GetFiles)
+	file.Get("/", middleware.Paginate, fileController.GetFiles)
 	file.Get("/:fileID", fileController.GetFile)
 	file.Post("/", fileController.CreateFile)
 	file.Delete("/:fileID", fileController.DeleteFile)

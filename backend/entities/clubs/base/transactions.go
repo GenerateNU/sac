@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/GenerateNU/sac/backend/integrations/search"
+	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/sahilm/fuzzy"
 
@@ -14,7 +15,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetClubs(db *gorm.DB, pinecone search.SearchClientInterface, queryParams *models.ClubQueryParams) ([]models.Club, error) {
+func GetClubs(db *gorm.DB, pinecone search.SearchClientInterface, queryParams *models.ClubQueryParams, pagination middleware.Pagination) ([]models.Club, error) {
 	query := db.Model(&models.Club{})
 
 	if queryParams.Tags != nil && len(queryParams.Tags) > 0 {
@@ -71,9 +72,7 @@ func GetClubs(db *gorm.DB, pinecone search.SearchClientInterface, queryParams *m
 		return clubsSorted, nil
 	}
 
-	offset := (queryParams.Page - 1) * queryParams.Limit
-
-	if err := query.Limit(queryParams.Limit).Offset(offset).Find(&clubs).Error; err != nil {
+	if err := query.Scopes(pagination.IntoScope(query)).Find(&clubs).Error; err != nil {
 		return nil, err
 	}
 
