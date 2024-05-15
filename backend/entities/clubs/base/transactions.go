@@ -3,7 +3,6 @@ package base
 import (
 	"errors"
 
-	"github.com/GenerateNU/sac/backend/integrations/search"
 	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/utilities"
 
@@ -14,27 +13,10 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetClubs(db *gorm.DB, pinecone search.SearchClientInterface, queryParams *models.ClubQueryParams, pagination middleware.Pagination) ([]models.Club, error) {
-	query := db.Model(&models.Club{})
-
-	if queryParams.Tags != nil && len(queryParams.Tags) > 0 {
-		query = query.Preload("Tags")
-	}
-
-	query = query.Where(queryParams.IntoWhere())
-	query = query.Where("name != ?", "SAC")
-
-	if queryParams.Tags != nil && len(queryParams.Tags) > 0 {
-		query = query.Joins("JOIN club_tags ON club_tags.club_id = clubs.id").
-			Where("club_tags.tag_id IN ?", queryParams.Tags). // add search function here
-			Group("clubs.id")                                 // ensure unique club records
-	}
-
+func GetClubs(db *gorm.DB, pagination middleware.Pagination) ([]models.Club, error) {
 	var clubs models.Clubs
 
-	offset := (queryParams.Page - 1) * queryParams.Limit
-
-	if err := query.Limit(queryParams.Limit).Offset(offset).Find(&clubs).Error; err != nil {
+	if err := db.Scopes(pagination.IntoScope(db)).Where("name != ?", "SAC").Find(&clubs).Error; err != nil {
 		return nil, err
 	}
 

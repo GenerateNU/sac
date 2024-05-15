@@ -87,7 +87,7 @@ type CreateClubTagsRequestBody struct {
 	Tags []uuid.UUID `json:"tags" validate:"required"`
 }
 
-type ClubQueryParams struct {
+type ClubSearchParams struct {
 	Tags                    []string          `query:"tags"`
 	MinMembers              int               `query:"min_members"`
 	MaxMembers              int               `query:"max_members"`
@@ -122,7 +122,7 @@ func (cs *ClubSearch) EmbeddingString() string {
 	return cs.SearchString
 }
 
-func (cqp *ClubQueryParams) IntoWhere() string {
+func (cqp *ClubSearchParams) IntoWhere() string {
 	conditions := make([]string, 0)
 
 	if cqp.MinMembers != 0 {

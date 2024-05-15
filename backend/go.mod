@@ -14,13 +14,11 @@ require (
 	github.com/gofiber/swagger v1.0.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.6.0
-	github.com/h2non/gock v1.2.0
 	github.com/huandu/go-assert v1.1.6
 	github.com/joho/godotenv v1.5.1
 	github.com/mcnijman/go-emailaddress v1.1.1
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/resend/resend-go/v2 v2.6.0
-	github.com/sahilm/fuzzy v0.1.1
 	github.com/spf13/viper v1.18.2
 	github.com/swaggo/swag v1.16.3
 	golang.org/x/crypto v0.23.0
@@ -32,7 +30,6 @@ require (
 require (
 	github.com/awnumar/memcall v0.2.0 // indirect
 	github.com/awnumar/memguard v0.22.5 // indirect
-	github.com/h2non/parth v0.0.0-20190131123155-b4df798d6542 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
 	github.com/smartystreets/goconvey v1.8.1 // indirect
@@ -69,7 +66,6 @@ require (
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/klauspost/compress v1.17.7 // indirect
-	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
