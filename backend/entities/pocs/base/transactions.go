@@ -4,15 +4,15 @@ import (
 	"errors"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
-func GetPointOfContacts(db *gorm.DB, pagination middleware.Pagination) ([]models.PointOfContact, error) {
+func GetPointOfContacts(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.PointOfContact, error) {
 	var pointOfContacts []models.PointOfContact
-	result := db.Preload("PhotoFile").Scopes(pagination.IntoScope(db)).Find(&pointOfContacts)
+	result := db.Preload("PhotoFile").Scopes(utilities.IntoScope(pageInfo, db)).Find(&pointOfContacts)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, utilities.ErrNotFound

@@ -3,7 +3,8 @@ package follower
 import (
 	"net/http"
 
-	"github.com/GenerateNU/sac/backend/middleware"
+	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -31,9 +32,9 @@ func NewClubFollowerController(clubFollowerService ClubFollowerServiceInterface)
 // @Failure     500   {object}      error
 // @Router		/clubs/{clubID}/followers/  [get]
 func (cf *ClubFollowerController) GetClubFollowers(c *fiber.Ctx) error {
-	pagination, err := middleware.GetPagination(c)
-	if err != nil {
-		return err
+	pagination, ok := fiberpaginate.FromContext(c)
+	if !ok {
+		return utilities.ErrExpectedPagination
 	}
 
 	followers, err := cf.clubFollowerService.GetClubFollowers(c.Params("clubID"), *pagination)

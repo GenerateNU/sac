@@ -1,8 +1,8 @@
 package base
 
 import (
-	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/types"
+	"github.com/garrettladley/fiberpaginate"
 )
 
 func PointOfContact(pointOfContactParams types.RouteParams) {
@@ -11,7 +11,7 @@ func PointOfContact(pointOfContactParams types.RouteParams) {
 	// api/v1/pocs/*
 	pointofContact := pointOfContactParams.Router.Group("/pocs")
 
-	pointofContact.Get("/", middleware.Paginate, pointOfContactController.GetPointOfContacts)
+	pointofContact.Get("/", fiberpaginate.New(), pointOfContactController.GetPointOfContacts)
 	pointofContact.Get("/:pocID", pointOfContactController.GetPointOfContact)
 	// pointOfContact.Get("/:pocID/file", pointOfContactController.GetPointOfContacFileInfo))
 }

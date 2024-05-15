@@ -2,13 +2,13 @@ package base
 
 import (
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 )
 
 type EventServiceInterface interface {
-	GetEvents(pagination middleware.Pagination) ([]models.Event, error)
+	GetEvents(pageInfo fiberpaginate.PageInfo) ([]models.Event, error)
 	GetEvent(eventID string) ([]models.Event, error)
 	GetSeriesByEventID(eventID string) ([]models.Event, error)
 	GetSeriesByID(seriesID string) ([]models.Event, error)
@@ -31,8 +31,8 @@ func NewEventService(serviceParams types.ServiceParams) EventServiceInterface {
 	return &EventService{serviceParams}
 }
 
-func (e *EventService) GetEvents(pagination middleware.Pagination) ([]models.Event, error) {
-	return GetEvents(e.DB, pagination)
+func (e *EventService) GetEvents(pageInfo fiberpaginate.PageInfo) ([]models.Event, error) {
+	return GetEvents(e.DB, pageInfo)
 }
 
 // right now we are always returning a slice
