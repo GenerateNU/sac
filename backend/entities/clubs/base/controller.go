@@ -31,11 +31,6 @@ func NewClubController(clubService ClubServiceInterface) *ClubController {
 // @Failure     500   {object}      error
 // @Router		/clubs/  [get]
 func (cl *ClubController) GetClubs(c *fiber.Ctx) error {
-	var queryParams models.ClubQueryParams
-	if err := c.QueryParser(&queryParams); err != nil {
-		return err
-	}
-
 	pagination, ok := fiberpaginate.FromContext(c)
 	if !ok {
 		return utilities.ErrExpectedPagination

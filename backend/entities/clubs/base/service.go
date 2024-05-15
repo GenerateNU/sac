@@ -11,7 +11,7 @@ import (
 )
 
 type ClubServiceInterface interface {
-	GetClubs(queryParams *models.ClubQueryParams, pageInfo fiberpaginate.PageInfo) ([]models.Club, error)
+	GetClubs(pageInfo fiberpaginate.PageInfo) ([]models.Club, error)
 	GetClub(id string) (*models.Club, error)
 	CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, error)
 	UpdateClub(id string, clubBody models.UpdateClubRequestBody) (*models.Club, error)
@@ -26,7 +26,7 @@ func NewClubService(serviceParams types.ServiceParams) ClubServiceInterface {
 	return &ClubService{serviceParams}
 }
 
-func (c *ClubService) GetClubs(pagination middleware.Pagination) ([]models.Club, error) {
+func (c *ClubService) GetClubs(pagination fiberpaginate.PageInfo) ([]models.Club, error) {
 	return GetClubs(c.DB, pagination)
 }
 
