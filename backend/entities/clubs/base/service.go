@@ -5,13 +5,13 @@ import (
 
 	"github.com/GenerateNU/sac/backend/entities/clubs"
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 )
 
 type ClubServiceInterface interface {
-	GetClubs(pagination middleware.Pagination) ([]models.Club, error)
+	GetClubs(queryParams *models.ClubQueryParams, pageInfo fiberpaginate.PageInfo) ([]models.Club, error)
 	GetClub(id string) (*models.Club, error)
 	CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, error)
 	UpdateClub(id string, clubBody models.UpdateClubRequestBody) (*models.Club, error)

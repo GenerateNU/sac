@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -31,9 +31,14 @@ func NewClubController(clubService ClubServiceInterface) *ClubController {
 // @Failure     500   {object}      error
 // @Router		/clubs/  [get]
 func (cl *ClubController) GetClubs(c *fiber.Ctx) error {
-	pagination, err := middleware.GetPagination(c)
-	if err != nil {
+	var queryParams models.ClubQueryParams
+	if err := c.QueryParser(&queryParams); err != nil {
 		return err
+	}
+
+	pagination, ok := fiberpaginate.FromContext(c)
+	if !ok {
+		return utilities.ErrExpectedPagination
 	}
 
 	clubs, err := cl.clubService.GetClubs(*pagination)

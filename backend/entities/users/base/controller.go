@@ -5,8 +5,8 @@ import (
 
 	"github.com/GenerateNU/sac/backend/auth"
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -70,9 +70,9 @@ func (u *UserController) CreateUser(c *fiber.Ctx) error {
 // @Failure     500   {object}      error
 // @Router		/users/  [get]
 func (u *UserController) GetUsers(c *fiber.Ctx) error {
-	pagination, err := middleware.GetPagination(c)
-	if err != nil {
-		return err
+	pagination, ok := fiberpaginate.FromContext(c)
+	if !ok {
+		return utilities.ErrExpectedPagination
 	}
 
 	users, err := u.userService.GetUsers(*pagination)

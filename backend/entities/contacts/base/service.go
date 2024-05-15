@@ -2,13 +2,13 @@ package base
 
 import (
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 )
 
 type ContactServiceInterface interface {
-	GetContacts(pagination middleware.Pagination) ([]models.Contact, error)
+	GetContacts(pageInfo fiberpaginate.PageInfo) ([]models.Contact, error)
 	GetContact(contactID string) (*models.Contact, error)
 	DeleteContact(contactID string) error
 }
@@ -21,8 +21,8 @@ func NewContactService(serviceParams types.ServiceParams) ContactServiceInterfac
 	return &ContactService{serviceParams}
 }
 
-func (c *ContactService) GetContacts(pagination middleware.Pagination) ([]models.Contact, error) {
-	return GetContacts(c.DB, pagination)
+func (c *ContactService) GetContacts(pageInfo fiberpaginate.PageInfo) ([]models.Contact, error) {
+	return GetContacts(c.DB, pageInfo)
 }
 
 func (c *ContactService) GetContact(contactID string) (*models.Contact, error) {

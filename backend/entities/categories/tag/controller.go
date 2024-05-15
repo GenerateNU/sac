@@ -3,8 +3,8 @@ package tag
 import (
 	"net/http"
 
-	"github.com/GenerateNU/sac/backend/middleware"
-
+	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -32,9 +32,9 @@ func NewCategoryTagController(categoryTagService CategoryTagServiceInterface) *C
 // @Failure     500   {object}      error
 // @Router		/categories/{categoryID}/tags/  [get]
 func (ct *CategoryTagController) GetTagsByCategory(c *fiber.Ctx) error {
-	pagination, err := middleware.GetPagination(c)
-	if err != nil {
-		return err
+	pagination, ok := fiberpaginate.FromContext(c)
+	if !ok {
+		return utilities.ErrExpectedPagination
 	}
 
 	tags, err := ct.categoryTagService.GetTagsByCategory(c.Params("categoryID"), *pagination)

@@ -3,8 +3,10 @@ package base
 import (
 	"errors"
 
-	"github.com/GenerateNU/sac/backend/middleware"
+	"github.com/GenerateNU/sac/backend/integrations/search"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
+	"github.com/sahilm/fuzzy"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/entities/users"
@@ -13,10 +15,64 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetClubs(db *gorm.DB, pagination middleware.Pagination) ([]models.Club, error) {
+func GetClubs(db *gorm.DB, pinecone search.SearchClientInterface, queryParams *models.ClubQueryParams, pageInfo fiberpaginate.PageInfo) ([]models.Club, error) {
+	query := db.Model(&models.Club{})
+
+	if queryParams.Tags != nil && len(queryParams.Tags) > 0 {
+		query = query.Preload("Tags")
+	}
+
+	query = query.Where(queryParams.IntoWhere())
+	query = query.Where("name != ?", "SAC")
+
+	if queryParams.Tags != nil && len(queryParams.Tags) > 0 {
+		query = query.Joins("JOIN club_tags ON club_tags.club_id = clubs.id").
+			Where("club_tags.tag_id IN ?", queryParams.Tags). // add search function here
+			Group("clubs.id")                                 // ensure unique club records
+	}
+
+	if queryParams.Search != "" {
+		clubSearch := models.NewClubSearch(queryParams.Search)
+		resultIDs, err := pinecone.Search(clubSearch)
+		if err != nil {
+			return nil, err
+		}
+
+		query = query.Where("id IN ?", resultIDs)
+	}
+
 	var clubs models.Clubs
 
-	if err := db.Scopes(pagination.IntoScope(db)).Where("name != ?", "SAC").Find(&clubs).Error; err != nil {
+	if queryParams.Search != "" {
+		if err := query.Find(&clubs).Error; err != nil {
+			return nil, err
+		}
+
+		// len(matches) <= len(clubs), because it discardss results that don't fuzz at all.
+		matches := fuzzy.FindFrom(queryParams.Search, clubs)
+
+		// Copy the sorted, fuzzed matches to the top of the list, and record their indices
+		// in a list.
+		clubsSorted := models.Clubs{}
+		idxMap := map[int]bool{}
+		for _, match := range matches {
+			clubsSorted = append(clubsSorted, clubs[match.Index])
+			idxMap[match.Index] = true
+		}
+
+		// For the remaining clubs, append them to the bottom of the list, making sure not
+		// to include the fuzzed clubs again.
+		for i, club := range clubs {
+			_, exists := idxMap[i]
+			if !exists {
+				clubsSorted = append(clubsSorted, club)
+			}
+		}
+
+		return clubsSorted, nil
+	}
+
+	if err := query.Scopes(utilities.IntoScope(pageInfo, query)).Find(&clubs).Error; err != nil {
 		return nil, err
 	}
 

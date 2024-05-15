@@ -3,16 +3,16 @@ package tag
 import (
 	"errors"
 
+	"github.com/garrettladley/fiberpaginate"
 	"github.com/google/uuid"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/utilities"
 
 	"gorm.io/gorm"
 )
 
-func GetTagsByCategory(db *gorm.DB, categoryID uuid.UUID, pagination middleware.Pagination) ([]models.Tag, error) {
+func GetTagsByCategory(db *gorm.DB, categoryID uuid.UUID, pageInfo fiberpaginate.PageInfo) ([]models.Tag, error) {
 	var category models.Category
 
 	if err := db.Where("id = ?", categoryID).First(&category).Error; err != nil {
@@ -24,7 +24,7 @@ func GetTagsByCategory(db *gorm.DB, categoryID uuid.UUID, pagination middleware.
 
 	var tags []models.Tag
 
-	if err := db.Where("category_id = ?", categoryID).Scopes(pagination.IntoScope(db)).Find(&tags).Error; err != nil {
+	if err := db.Where("category_id = ?", categoryID).Scopes(utilities.IntoScope(pageInfo, db)).Find(&tags).Error; err != nil {
 		return nil, err
 	}
 
