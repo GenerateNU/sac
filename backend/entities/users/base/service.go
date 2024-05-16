@@ -2,11 +2,8 @@ package base
 
 import (
 	"errors"
-	"fmt"
-	"strings"
 
 	"github.com/GenerateNU/sac/backend/auth"
-	authBase "github.com/GenerateNU/sac/backend/entities/auth/base"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/garrettladley/fiberpaginate"
 
@@ -19,7 +16,6 @@ type UserServiceInterface interface {
 	GetUsers(pageInfo fiberpaginate.PageInfo) ([]models.User, error)
 	GetMe(id string) (*models.User, error)
 	GetUser(id string) (*models.User, error)
-	CreateUser(userBody models.CreateUserRequestBody) (*models.User, *auth.Token, error)
 	UpdateUser(id string, userBody models.UpdateUserRequestBody) (*models.User, error)
 	UpdatePassword(id string, passwordBody models.UpdatePasswordRequestBody) error
 	DeleteUser(id string) error
@@ -27,57 +23,10 @@ type UserServiceInterface interface {
 
 type UserService struct {
 	types.ServiceParams
-	AuthService authBase.AuthServiceInterface
 }
 
-func NewUserService(serviceParams types.ServiceParams, authService authBase.AuthServiceInterface) UserServiceInterface {
-	return &UserService{
-		serviceParams,
-		authService,
-	}
-}
-
-func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models.User, *auth.Token, error) {
-	if err := utilities.Validate(u.Validate, userBody); err != nil {
-		return nil, nil, err
-	}
-
-	if err := auth.ValidatePassword(userBody.Password); err != nil {
-		return nil, nil, err
-	}
-
-	user, err := utilities.MapRequestToModel(userBody, &models.User{})
-	if err != nil {
-		return nil, nil, err
-	}
-
-	passwordHash, err := auth.ComputeHash(userBody.Password)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	user.Email = strings.ToLower(userBody.Email)
-	user.PasswordHash = *passwordHash
-
-	if err := u.Integrations.Email.SendWelcomeEmail(fmt.Sprintf("%s %s", user.FirstName, user.LastName), user.Email); err != nil {
-		return nil, nil, fmt.Errorf("failed to send welcome email: %w", err)
-	}
-
-	user, err = CreateUser(u.DB, user)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	if err := u.AuthService.SendCode(user.Email); err != nil {
-		return nil, nil, err
-	}
-
-	_, tokens, err := u.AuthService.Login(models.LoginUserResponseBody{Email: user.Email, Password: userBody.Password})
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return user, tokens, nil
+func NewUserService(serviceParams types.ServiceParams) UserServiceInterface {
+	return &UserService{serviceParams}
 }
 
 func (u *UserService) GetUsers(pageInfo fiberpaginate.PageInfo) ([]models.User, error) {
