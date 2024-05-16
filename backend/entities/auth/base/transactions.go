@@ -10,6 +10,17 @@ import (
 	"gorm.io/gorm"
 )
 
+func CreateUser(db *gorm.DB, user *models.User) (*models.User, error) {
+	if err := db.Create(user).Error; err != nil {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			return nil, utilities.ErrDuplicate
+		}
+		return nil, err
+	}
+
+	return user, nil
+}
+
 func GetToken(db *gorm.DB, token string, tokenType models.VerificationType) (*models.Verification, error) {
 	tokenModel := models.Verification{}
 	if err := db.Where("token = ? AND type = ?", token, tokenType).First(&tokenModel).Error; err != nil {

@@ -1,6 +1,8 @@
 package utilities
 
 import (
+	"strings"
+
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -22,4 +24,8 @@ func MapRequestToModel[T any, U any](responseData T, targetModel *U) (*U, error)
 	}
 
 	return targetModel, nil
+}
+
+func NormalizeEmail(email string) string {
+	return strings.ToLower(email)
 }
