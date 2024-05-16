@@ -1,5 +1,5 @@
 package models
 
-type CalendarTokenRequest struct {
-	Code *string `json:"code" validate:"required"`
+type CalendarAuthorizationResponse struct {
+	AuthorizationURL string `json:"authorization_url"`
 }

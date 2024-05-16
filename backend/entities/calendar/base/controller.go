@@ -1,8 +1,9 @@
 package base
 
 import (
-	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/errors"
+	"errors"
+
+	"github.com/GenerateNU/sac/backend/integrations/calendar"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/gofiber/fiber/v2"
 )
@@ -18,21 +19,46 @@ func NewCalendarController(serviceSettings types.ServiceParams) *CalendarControl
 func (cal *CalendarController) Authorize(c *fiber.Ctx) error {
 	// Extract the calendar type from the query params:
 	calendarType := c.Query("type")
-	if calendarType == "" {
+	calendar, err := cal.parseCalendarType(calendarType)
+	if err != nil {
+		return err
 	}
+
+	// Call the respective authorize method:
+	authUrl := calendar.Authorize()
+
+	return c.Redirect(authUrl, fiber.StatusFound)
+}
+
+func (cal *CalendarController) Token(c *fiber.Ctx) error {
+	// Extract the calendar type from the query params:
+	calendarType := c.Query("type")
+	calendar, err := cal.parseCalendarType(calendarType)
+	if err != nil {
+		return err
+	}
+	
+	// Extract the grant_type from the query params:
+	grantType := c.Query("grant_type")
+
+	// Extract the calendar type from the query params:
+	calendarToken := c.Get("x-calendar-auth-code")
+
+	// Call the respective token method:
+	calendar.Token(grantType, &calendarToken)
 
 	return nil
 }
 
-func (cal * CalendarController) Token(c *fiber.Ctx) error {
-	// Extract the token from the body:
-	var tokenBody models.CalendarTokenRequest
-
-	if err := c.BodyParser(&tokenBody); err != nil {
-		return errors.FailedToParseRequestBody.FiberError(c)
+func (cal *CalendarController) parseCalendarType(calendarType string) (calendar.CalendarClientInterface, error) {
+	switch calendarType {
+		case "google":
+			return cal.serviceSettings.Integrations.Calendar.Google, nil
+		case "outlook":
+			return cal.serviceSettings.Integrations.Calendar.Outlook, nil
+		default:
+			return nil, errors.New("invalid calendar type")
 	}
-
-	return nil
 }
 
 

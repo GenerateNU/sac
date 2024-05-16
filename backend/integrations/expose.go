@@ -12,5 +12,5 @@ type Integrations struct {
 	AI     search.AIClientInterface
 	Email  email.EmailClientInterface
 	File   file.FileClientInterface
-	Calendar calendar.CalendarClientInterface
+	Calendar calendar.CalendarClient
 }

@@ -1,11 +1,11 @@
 package calendar
 
-import (
-	"github.com/GenerateNU/sac/backend/errors"
-	"github.com/gofiber/fiber/v2"
-)
+type CalendarClient struct {
+	Outlook 	OutlookClient
+	Google 		GoogleClient
+}
 
 type CalendarClientInterface interface {
-	Authorize() *string
-	Token(c *fiber.Ctx) *errors.Error
+	Authorize() string
+	Token(grantType string, code *string) error
 }

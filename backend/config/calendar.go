@@ -7,6 +7,11 @@ import (
 	m "github.com/garrettladley/mattress"
 )
 
+type CalendarSettings struct {
+	GoogleClientSettings 	*GoogleClientSettings
+	OutlookClientSettings 	*OutlookClientSettings
+}
+
 type GoogleClientSettings struct {
 	ClientID				*m.Secret[string]
 	ClientSecret 			*m.Secret[string]

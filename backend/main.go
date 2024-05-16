@@ -11,6 +11,7 @@ import (
 	"github.com/GenerateNU/sac/backend/database"
 	_ "github.com/GenerateNU/sac/backend/docs"
 	"github.com/GenerateNU/sac/backend/integrations"
+	"github.com/GenerateNU/sac/backend/integrations/calendar"
 	"github.com/GenerateNU/sac/backend/integrations/email"
 	"github.com/GenerateNU/sac/backend/integrations/file"
 	"github.com/GenerateNU/sac/backend/integrations/search"
@@ -43,11 +44,22 @@ func configureIntegrations(config *config.Settings, connectToPinecone bool) inte
 		pinecone = mocks.NewPineconeMockClient()
 	}
 
+	// Calendar integrations:
+	googleClient := calendar.GoogleClient{
+		OAuthClient: calendar.NewGoogleOAuthClient(config.GoogleClientSettings),
+	}
+	outlookClient := calendar.OutlookClient{Settings: config.OutlookClientSettings}
+	calendarClient := calendar.CalendarClient{
+		Google: googleClient,
+		Outlook: outlookClient,
+	}
+
 	integrations := integrations.Integrations{
 		File:   file.NewAWSProvider(config.AWS),
 		AI:     openAi,
 		Email:  email.NewResendClient(config.ResendSettings, true),
 		Search: pinecone,
+		Calendar: calendarClient,
 	}
 	return integrations
 }

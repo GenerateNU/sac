@@ -28,6 +28,7 @@ func readLocal(v *viper.Viper, path string, useDevDotEnv bool) (*Settings, error
 	}
 
 	if useDevDotEnv {
+		fmt.Printf("%s/.env.dev", path)
 		err = godotenv.Load(fmt.Sprintf("%s/.env.dev", path))
 	} else {
 		err = godotenv.Load(fmt.Sprintf("%s/.env.template", path))

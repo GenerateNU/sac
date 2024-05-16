@@ -8,6 +8,6 @@ func Calendar(params types.RouteParams) {
 	// api/v1/calendar/*
 	calendar := params.Router.Group("/calendar")
 
-	calendar.Post("/authorize", calendarController.Authorize)
+	calendar.Get("/authorize", calendarController.Authorize)
 	calendar.Post("/token", calendarController.Token)
 }
