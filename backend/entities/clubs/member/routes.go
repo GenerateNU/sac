@@ -1,8 +1,8 @@
 package member
 
 import (
-	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/types"
+	"github.com/garrettladley/fiberpaginate"
 )
 
 func ClubMember(clubParams types.RouteParams) {
@@ -11,7 +11,7 @@ func ClubMember(clubParams types.RouteParams) {
 	clubMembers := clubParams.Router.Group("/members")
 
 	// api/v1/clubs/:clubID/members/*
-	clubMembers.Get("/", middleware.Paginate, clubMemberController.GetClubMembers)
+	clubMembers.Get("/", fiberpaginate.New(), clubMemberController.GetClubMembers)
 	clubMembers.Post("/:userID", clubParams.AuthMiddleware.ClubAuthorizeById, clubMemberController.CreateClubMember)
 	clubMembers.Delete("/:userID", clubParams.AuthMiddleware.ClubAuthorizeById, clubMemberController.DeleteClubMember)
 }

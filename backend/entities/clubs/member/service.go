@@ -2,13 +2,13 @@ package member
 
 import (
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 )
 
 type ClubMemberServiceInterface interface {
-	GetClubMembers(clubID string, pagination middleware.Pagination) ([]models.User, error)
+	GetClubMembers(clubID string, pageInfo fiberpaginate.PageInfo) ([]models.User, error)
 	CreateClubMember(clubID string, userID string) error
 	DeleteClubMember(clubID string, userID string) error
 }
@@ -21,13 +21,13 @@ func NewClubMemberService(params types.ServiceParams) ClubMemberServiceInterface
 	return &ClubMemberService{params}
 }
 
-func (cms *ClubMemberService) GetClubMembers(clubID string, pagination middleware.Pagination) ([]models.User, error) {
+func (cms *ClubMemberService) GetClubMembers(clubID string, pageInfo fiberpaginate.PageInfo) ([]models.User, error) {
 	clubIDAsUUID, err := utilities.ValidateID(clubID)
 	if err != nil {
 		return nil, err
 	}
 
-	return GetClubMembers(cms.DB, *clubIDAsUUID, pagination)
+	return GetClubMembers(cms.DB, *clubIDAsUUID, pageInfo)
 }
 
 func (cms *ClubMemberService) CreateClubMember(clubID string, userID string) error {

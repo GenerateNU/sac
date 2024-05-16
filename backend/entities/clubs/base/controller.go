@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -36,9 +36,9 @@ func (cl *ClubController) GetClubs(c *fiber.Ctx) error {
 		return err
 	}
 
-	pagination, err := middleware.GetPagination(c)
-	if err != nil {
-		return err
+	pagination, ok := fiberpaginate.FromContext(c)
+	if !ok {
+		return utilities.ErrExpectedPagination
 	}
 
 	clubs, err := cl.clubService.GetClubs(&queryParams, *pagination)

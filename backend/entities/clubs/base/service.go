@@ -5,13 +5,13 @@ import (
 
 	"github.com/GenerateNU/sac/backend/entities/clubs"
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 )
 
 type ClubServiceInterface interface {
-	GetClubs(queryParams *models.ClubQueryParams, pagination middleware.Pagination) ([]models.Club, error)
+	GetClubs(queryParams *models.ClubQueryParams, pageInfo fiberpaginate.PageInfo) ([]models.Club, error)
 	GetClub(id string) (*models.Club, error)
 	CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, error)
 	UpdateClub(id string, clubBody models.UpdateClubRequestBody) (*models.Club, error)
@@ -26,8 +26,8 @@ func NewClubService(serviceParams types.ServiceParams) ClubServiceInterface {
 	return &ClubService{serviceParams}
 }
 
-func (c *ClubService) GetClubs(queryParams *models.ClubQueryParams, pagination middleware.Pagination) ([]models.Club, error) {
-	return GetClubs(c.DB, c.Integrations.Search, queryParams, pagination)
+func (c *ClubService) GetClubs(queryParams *models.ClubQueryParams, pageInfo fiberpaginate.PageInfo) ([]models.Club, error) {
+	return GetClubs(c.DB, c.Integrations.Search, queryParams, pageInfo)
 }
 
 func (c *ClubService) CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, error) {

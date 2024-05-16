@@ -4,15 +4,15 @@ import (
 	"errors"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
-func GetContacts(db *gorm.DB, pagination middleware.Pagination) ([]models.Contact, error) {
+func GetContacts(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Contact, error) {
 	var contacts []models.Contact
-	if err := db.Scopes(pagination.IntoScope(db)).Find(&contacts).Error; err != nil {
+	if err := db.Scopes(utilities.IntoScope(pageInfo, db)).Find(&contacts).Error; err != nil {
 		return nil, err
 	}
 

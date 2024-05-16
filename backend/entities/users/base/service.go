@@ -8,7 +8,7 @@ import (
 	"github.com/GenerateNU/sac/backend/auth"
 	authBase "github.com/GenerateNU/sac/backend/entities/auth/base"
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/middleware"
+	"github.com/garrettladley/fiberpaginate"
 
 	"github.com/GenerateNU/sac/backend/entities/users"
 	"github.com/GenerateNU/sac/backend/types"
@@ -16,7 +16,7 @@ import (
 )
 
 type UserServiceInterface interface {
-	GetUsers(pagination middleware.Pagination) ([]models.User, error)
+	GetUsers(pageInfo fiberpaginate.PageInfo) ([]models.User, error)
 	GetMe(id string) (*models.User, error)
 	GetUser(id string) (*models.User, error)
 	CreateUser(userBody models.CreateUserRequestBody) (*models.User, *auth.Token, error)
@@ -80,8 +80,8 @@ func (u *UserService) CreateUser(userBody models.CreateUserRequestBody) (*models
 	return user, tokens, nil
 }
 
-func (u *UserService) GetUsers(pagination middleware.Pagination) ([]models.User, error) {
-	return GetUsers(u.DB, pagination)
+func (u *UserService) GetUsers(pageInfo fiberpaginate.PageInfo) ([]models.User, error) {
+	return GetUsers(u.DB, pageInfo)
 }
 
 func (u *UserService) GetMe(id string) (*models.User, error) {
