@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/middleware"
+	"github.com/garrettladley/fiberpaginate"
 
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/google/uuid"
@@ -59,9 +59,9 @@ func UpdateFile(db *gorm.DB, fileID uuid.UUID, fileInfo models.FileInfo) (*model
 	return existingFile, nil
 }
 
-func GetFiles(db *gorm.DB, pagination middleware.Pagination) ([]models.File, error) {
+func GetFiles(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.File, error) {
 	var files []models.File
-	if err := db.Scopes(pagination.IntoScope(db)).Find(&files).Error; err != nil {
+	if err := db.Scopes(utilities.IntoScope(pageInfo, db)).Find(&files).Error; err != nil {
 		return nil, err
 	}
 

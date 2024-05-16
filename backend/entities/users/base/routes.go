@@ -6,8 +6,8 @@ import (
 	"github.com/GenerateNU/sac/backend/entities/users/follower"
 	"github.com/GenerateNU/sac/backend/entities/users/member"
 	"github.com/GenerateNU/sac/backend/entities/users/tag"
-	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/types"
+	"github.com/garrettladley/fiberpaginate"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -28,7 +28,7 @@ func UsersRouter(userParams types.RouteParams, authService authBase.AuthServiceI
 	// api/v1/users/*
 	users := userParams.Router.Group("/users")
 
-	users.Get("/", userParams.AuthMiddleware.Authorize(p.ReadAll), middleware.Paginate, userController.GetUsers)
+	users.Get("/", userParams.AuthMiddleware.Authorize(p.ReadAll), fiberpaginate.New(), userController.GetUsers)
 	users.Post("/", userController.CreateUser)
 	users.Get("/me", userParams.AuthMiddleware.Authorize(p.UserRead), userController.GetMe)
 

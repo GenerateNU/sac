@@ -2,9 +2,9 @@ package base
 
 import (
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -12,7 +12,7 @@ import (
 
 type CategoryServiceInterface interface {
 	CreateCategory(categoryBody models.CategoryRequestBody) (*models.Category, error)
-	GetCategories(pagination middleware.Pagination) ([]models.Category, error)
+	GetCategories(pageInfo fiberpaginate.PageInfo) ([]models.Category, error)
 	GetCategory(id string) (*models.Category, error)
 	UpdateCategory(id string, params models.CategoryRequestBody) (*models.Category, error)
 	DeleteCategory(id string) error
@@ -41,8 +41,8 @@ func (c *CategoryService) CreateCategory(categoryBody models.CategoryRequestBody
 	return CreateCategory(c.DB, *category)
 }
 
-func (c *CategoryService) GetCategories(pagination middleware.Pagination) ([]models.Category, error) {
-	return GetCategories(c.DB, pagination)
+func (c *CategoryService) GetCategories(pageInfo fiberpaginate.PageInfo) ([]models.Category, error) {
+	return GetCategories(c.DB, pageInfo)
 }
 
 func (c *CategoryService) GetCategory(id string) (*models.Category, error) {

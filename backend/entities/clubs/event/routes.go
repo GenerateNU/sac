@@ -1,8 +1,8 @@
 package event
 
 import (
-	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/types"
+	"github.com/garrettladley/fiberpaginate"
 )
 
 func ClubEvent(clubParams types.RouteParams) {
@@ -11,5 +11,5 @@ func ClubEvent(clubParams types.RouteParams) {
 	// api/v1/clubs/:clubID/events/*
 	events := clubParams.Router.Group("/events")
 
-	events.Get("/", middleware.Paginate, clubEventController.GetClubEvents)
+	events.Get("/", fiberpaginate.New(), clubEventController.GetClubEvents)
 }

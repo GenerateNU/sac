@@ -5,7 +5,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/entities/clubs"
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/middleware"
+	"github.com/garrettladley/fiberpaginate"
 
 	"github.com/GenerateNU/sac/backend/transactions"
 	"github.com/GenerateNU/sac/backend/utilities"
@@ -14,9 +14,9 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetEvents(db *gorm.DB, pagination middleware.Pagination) ([]models.Event, error) {
+func GetEvents(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Event, error) {
 	var events []models.Event
-	if err := db.Scopes(pagination.IntoScope(db)).Find(&events).Error; err != nil {
+	if err := db.Scopes(utilities.IntoScope(pageInfo, db)).Find(&events).Error; err != nil {
 		return nil, err
 	}
 
