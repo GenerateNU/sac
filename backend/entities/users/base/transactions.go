@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/garrettladley/fiberpaginate"
 
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/google/uuid"
@@ -22,12 +23,9 @@ func CreateUser(db *gorm.DB, user *models.User) (*models.User, error) {
 	return user, nil
 }
 
-func GetUsers(db *gorm.DB, limit int, page int) ([]models.User, error) {
+func GetUsers(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.User, error) {
 	var users []models.User
-
-	offset := (page - 1) * limit
-
-	if err := db.Omit("password_hash").Limit(limit).Offset(offset).Find(&users).Error; err != nil {
+	if err := db.Omit("password_hash").Scopes(utilities.IntoScope(pageInfo, db)).Find(&users).Error; err != nil {
 		return nil, err
 	}
 

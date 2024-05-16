@@ -4,10 +4,11 @@ import (
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 )
 
 type ClubFollowerServiceInterface interface {
-	GetClubFollowers(clubID string, limit string, page string) ([]models.User, error)
+	GetClubFollowers(clubID string, pageInfo fiberpaginate.PageInfo) ([]models.User, error)
 }
 
 type ClubFollowerService struct {
@@ -18,21 +19,11 @@ func NewClubFollowerService(params types.ServiceParams) ClubFollowerServiceInter
 	return &ClubFollowerService{params}
 }
 
-func (cf *ClubFollowerService) GetClubFollowers(clubID string, limit string, page string) ([]models.User, error) {
+func (cf *ClubFollowerService) GetClubFollowers(clubID string, pageInfo fiberpaginate.PageInfo) ([]models.User, error) {
 	idAsUUID, err := utilities.ValidateID(clubID)
 	if err != nil {
 		return nil, err
 	}
 
-	limitAsInt, err := utilities.ValidateNonNegative(limit)
-	if err != nil {
-		return nil, err
-	}
-
-	pageAsInt, err := utilities.ValidateNonNegative(page)
-	if err != nil {
-		return nil, err
-	}
-
-	return GetClubFollowers(cf.DB, *idAsUUID, *limitAsInt, *pageAsInt)
+	return GetClubFollowers(cf.DB, *idAsUUID, pageInfo)
 }

@@ -3,7 +3,8 @@ package member
 import (
 	"net/http"
 
-	"github.com/GenerateNU/sac/backend/constants"
+	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -32,7 +33,12 @@ func NewClubMemberController(clubMemberService ClubMemberServiceInterface) *Club
 // @Failure     500   {object}      error
 // @Router		/clubs/{clubID}/members/  [get]
 func (cm *ClubMemberController) GetClubMembers(c *fiber.Ctx) error {
-	followers, err := cm.clubMemberService.GetClubMembers(c.Params("clubID"), c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING))
+	pagination, ok := fiberpaginate.FromContext(c)
+	if !ok {
+		return utilities.ErrExpectedPagination
+	}
+
+	followers, err := cm.clubMemberService.GetClubMembers(c.Params("clubID"), *pagination)
 	if err != nil {
 		return err
 	}

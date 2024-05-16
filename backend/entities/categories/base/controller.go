@@ -3,9 +3,9 @@ package base
 import (
 	"net/http"
 
-	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -64,7 +64,12 @@ func (cat *CategoryController) CreateCategory(c *fiber.Ctx) error {
 // @Failure     500   {string}      error
 // @Router		/categories/  [get]
 func (cat *CategoryController) GetCategories(c *fiber.Ctx) error {
-	categories, err := cat.categoryService.GetCategories(c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING))
+	pagination, ok := fiberpaginate.FromContext(c)
+	if !ok {
+		return utilities.ErrExpectedPagination
+	}
+
+	categories, err := cat.categoryService.GetCategories(*pagination)
 	if err != nil {
 		return err
 	}

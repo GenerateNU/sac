@@ -3,7 +3,8 @@ package base
 import (
 	"net/http"
 
-	"github.com/GenerateNU/sac/backend/constants"
+	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -53,7 +54,12 @@ func (co *ContactController) GetContact(c *fiber.Ctx) error {
 // @Failure     500   {string}    error
 // @Router		/contacts/  [get]
 func (co *ContactController) GetContacts(c *fiber.Ctx) error {
-	contacts, err := co.contactService.GetContacts(c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING))
+	pagination, ok := fiberpaginate.FromContext(c)
+	if !ok {
+		return utilities.ErrExpectedPagination
+	}
+
+	contacts, err := co.contactService.GetContacts(*pagination)
 	if err != nil {
 		return err
 	}
