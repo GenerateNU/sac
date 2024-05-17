@@ -45,32 +45,34 @@ func GetAuthroizationToken(c *fiber.Ctx) *string {
 }
 
 func (m *AuthMiddlewareService) Authenticate(c *fiber.Ctx) error {
-	accessToken := GetAuthroizationToken(c)
-	if accessToken == nil {
-		return utilities.Unauthorized()
-	}
+	return func(c *fiber.Ctx) error {
+		accessToken := GetAuthroizationToken(c)
+		if accessToken == nil {
+			return utilities.Unauthorized()
+		}
 
-	token, err := func() (*jwt.Token, error) {
-		return jwt.ParseWithClaims(*accessToken, &auth.CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
-			return []byte(m.Auth.AccessKey.Expose()), nil
-		})
-	}()
-	if err != nil {
-		return utilities.Unauthorized()
-	}
+		token, err := func() (*jwt.Token, error) {
+			return jwt.ParseWithClaims(*accessToken, &auth.CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+				return []byte(m.Auth.AccessKey.Expose()), nil
+			})
+		}()
+		if err != nil {
+			return utilities.Unauthorized()
+		}
 
-	claims, ok := token.Claims.(*auth.CustomClaims)
-	if !ok || !token.Valid {
-		return utilities.Unauthorized()
-	}
+		claims, ok := token.Claims.(*auth.CustomClaims)
+		if !ok || !token.Valid {
+			return utilities.Unauthorized()
+		}
 
-	// if auth.IsBlacklisted(*accessToken) {
-	// 	return errors.Unauthorized.FiberError(c)
-	// }
+		// if auth.IsBlacklisted(*accessToken) {
+		// 	return errors.Unauthorized.FiberError(c)
+		// }
 
-	c.Locals("claims", claims)
+		c.Locals("claims", claims)
 
-	return nil
+		return nil
+	}(c)
 }
 
 func (m *AuthMiddlewareService) Authorize(requiredPermissions ...auth.Permission) func(c *fiber.Ctx) error {

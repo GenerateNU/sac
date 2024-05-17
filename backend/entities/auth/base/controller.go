@@ -51,6 +51,40 @@ func (a *AuthController) Login(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(user)
 }
 
+// Register godoc
+//
+// @Summary		Registers a user
+// @Description	Registers a user
+// @ID			register-user
+// @Tags      	auth
+// @Accept		json
+// @Produce		json
+// @Param		userBody	body	models.CreateUserRequestBody	true	"User Body"
+// @Success		201	  {object}	    models.User
+// @Failure     400   {object}      error
+// @Failure     404   {object}		error
+// @Failure     500   {object}      error
+// @Router		/auth/register  [post]
+func (a *AuthController) Register(c *fiber.Ctx) error {
+	var userBody models.CreateUserRequestBody
+
+	if err := c.BodyParser(&userBody); err != nil {
+		return utilities.InvalidJSON()
+	}
+
+	user, tokens, err := a.authService.Register(userBody)
+	if err != nil {
+		return err
+	}
+
+	err = auth.SetResponseTokens(c, tokens)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(http.StatusCreated).JSON(user)
+}
+
 // Refresh godoc
 //
 // @Summary		Refreshes a user's access token

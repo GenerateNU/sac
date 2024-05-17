@@ -1,5 +1,5 @@
 "use client";
-import {Button} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {InputWithLabel} from "@/components/ui/inputWithLabel";
 import { SelectScrollable } from "@/components/ui/selectScrollable";
 import { College, Interest } from "@/const/dummyConst";

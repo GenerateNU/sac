@@ -38,7 +38,7 @@ func (c *ClubContactService) PutClubContact(clubID string, contactBody models.Pu
 		return nil, err
 	}
 
-	contact, err := utilities.MapRequestToModel(contactBody, &models.Contact{})
+	contact, err := utilities.MapJsonTags(contactBody, &models.Contact{})
 	if err != nil {
 		return nil, err
 	}

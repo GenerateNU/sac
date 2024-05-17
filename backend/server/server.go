@@ -5,9 +5,9 @@ import (
 
 	go_json "github.com/goccy/go-json"
 
-	"github.com/GenerateNU/sac/backend/auth"
+	authenticator "github.com/GenerateNU/sac/backend/auth"
 	"github.com/GenerateNU/sac/backend/config"
-	authBase "github.com/GenerateNU/sac/backend/entities/auth/base"
+	auth "github.com/GenerateNU/sac/backend/entities/auth/base"
 	categories "github.com/GenerateNU/sac/backend/entities/categories/base"
 	clubs "github.com/GenerateNU/sac/backend/entities/clubs/base"
 	contacts "github.com/GenerateNU/sac/backend/entities/contacts/base"
@@ -48,7 +48,7 @@ func Init(db *gorm.DB, integrations integrations.Integrations, settings config.S
 		panic(fmt.Sprintf("Error registering custom validators: %s", err))
 	}
 
-	jwt := auth.NewJWTClient(settings.Auth, jwt.SigningMethodHS256)
+	jwt := authenticator.NewJWTClient(settings.Auth, jwt.SigningMethodHS256)
 	authMiddleware := middleware.NewAuthMiddlewareService(db, validate, settings.Auth)
 
 	apiv1 := app.Group("/api/v1")
@@ -62,6 +62,7 @@ func Init(db *gorm.DB, integrations integrations.Integrations, settings config.S
 			Auth:         &settings.Auth,
 			JWT:          jwt,
 			Integrations: integrations,
+			Calendar:     &settings.Calendar,
 		},
 	}
 
@@ -72,14 +73,14 @@ func Init(db *gorm.DB, integrations integrations.Integrations, settings config.S
 
 func allRoutes(app *fiber.App, routeParams types.RouteParams) {
 	Utility(app)
-	authService := authBase.Auth(routeParams)
-	users.UserRoutes(routeParams, authService)
+	auth.Auth(routeParams)
+	users.UserRoutes(routeParams)
 	clubs.ClubRoutes(routeParams)
 	contacts.Contact(routeParams)
 	pocs.PointOfContact(routeParams)
 	tags.Tag(routeParams)
 	categories.CategoryRoutes(routeParams)
-	events.Event(routeParams)
+	events.EventRoutes(routeParams)
 	files.File(routeParams)
 }
 

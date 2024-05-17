@@ -12,17 +12,6 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateUser(db *gorm.DB, user *models.User) (*models.User, error) {
-	if err := db.Create(user).Error; err != nil {
-		if errors.Is(err, gorm.ErrDuplicatedKey) {
-			return nil, utilities.ErrDuplicate
-		}
-		return nil, err
-	}
-
-	return user, nil
-}
-
 func GetUsers(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.User, error) {
 	var users []models.User
 	if err := db.Omit("password_hash").Scopes(utilities.IntoScope(pageInfo, db)).Find(&users).Error; err != nil {
