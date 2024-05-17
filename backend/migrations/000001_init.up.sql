@@ -4,8 +4,8 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE IF NOT EXISTS users(
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
-    created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     role varchar(255) NOT NULL DEFAULT 'student'::character varying,
     first_name varchar(255) NOT NULL,
     last_name varchar(255) NOT NULL,
@@ -23,8 +23,8 @@ CREATE TABLE IF NOT EXISTS users(
 
 CREATE TABLE IF NOT EXISTS clubs(
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
-    created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     soft_deleted_at timestamp with time zone,
     name varchar(255) NOT NULL,
     preview varchar(255) NOT NULL,
@@ -43,15 +43,15 @@ CREATE TABLE IF NOT EXISTS clubs(
 
 CREATE TABLE IF NOT EXISTS series(
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
-    created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(id)
 );
 
 CREATE TABLE IF NOT EXISTS events(
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
-    created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     name varchar(255) NOT NULL,
     preview varchar(255) NOT NULL,
     description varchar(255) NOT NULL,
@@ -61,8 +61,8 @@ CREATE TABLE IF NOT EXISTS events(
     is_public boolean NOT NULL,
     is_draft boolean NOT NULL,
     is_archived boolean NOT NULL,
-    start_time timestamp without time zone NOT NULL,
-    end_time timestamp without time zone NOT NULL,
+    start_time timestamp with time zone NOT NULL,
+    end_time timestamp with time zone NOT NULL,
     host uuid NOT NULL,
     series_id uuid,
     PRIMARY KEY(id),
@@ -72,8 +72,8 @@ CREATE TABLE IF NOT EXISTS events(
 
 CREATE TABLE IF NOT EXISTS categories(
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
-    created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     name varchar(255) NOT NULL,
     PRIMARY KEY(id)
 );
@@ -83,8 +83,8 @@ CREATE UNIQUE INDEX IF NOT EXISTS uni_categories_name ON categories USING btree 
 
 CREATE TABLE IF NOT EXISTS tags(
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
-    created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     name varchar(255) NOT NULL,
     category_id uuid NOT NULL,
     PRIMARY KEY(id),
@@ -109,8 +109,8 @@ CREATE TABLE IF NOT EXISTS club_tags(
 
 CREATE TABLE IF NOT EXISTS contacts(
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
-    created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "type" varchar(255) NOT NULL,
     content varchar(255) NOT NULL,
     club_id uuid NOT NULL,
@@ -130,8 +130,8 @@ CREATE TABLE IF NOT EXISTS event_tags(
 
 CREATE TABLE IF NOT EXISTS files(
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
-    created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     owner_id uuid NOT NULL,
     owner_type varchar(255) NOT NULL,
     file_name varchar(255) NOT NULL,
@@ -146,8 +146,8 @@ CREATE INDEX IF NOT EXISTS idx_files_owner_id ON files USING btree ("owner_id");
 
 -- CREATE TABLE IF NOT EXISTS notifications(
 --     id uuid NOT NULL DEFAULT uuid_generate_v4(),
---     created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
---     updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+--     created_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+--     updated_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
 --     send_at timestamp with time zone NOT NULL,
 --     title varchar(255) NOT NULL,
 --     content varchar(255) NOT NULL,
@@ -160,8 +160,8 @@ CREATE INDEX IF NOT EXISTS idx_files_owner_id ON files USING btree ("owner_id");
 
 CREATE TABLE IF NOT EXISTS point_of_contacts(
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
-    created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     name varchar(255) NOT NULL,
     email varchar(255) NOT NULL,
     position varchar(255) NOT NULL,
@@ -228,7 +228,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS uni_users_email ON users USING btree ("email")
 CREATE TABLE IF NOT EXISTS verifications(
     user_id uuid NOT NULL,
     token varchar(255),
-    expires_at timestamp without time zone NOT NULL,
+    expires_at timestamp with time zone NOT NULL,
     "type" varchar(255) NOT NULL,
     PRIMARY KEY(user_id,expires_at)
 );
