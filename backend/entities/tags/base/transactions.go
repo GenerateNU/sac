@@ -10,6 +10,7 @@ import (
 	"github.com/GenerateNU/sac/backend/entities/tags"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func CreateTag(db *gorm.DB, tag models.Tag) (*models.Tag, error) {
@@ -50,14 +51,15 @@ func GetTags(db *gorm.DB) ([]models.Tag, error) {
 }
 
 func UpdateTag(db *gorm.DB, id uuid.UUID, tag models.Tag) (*models.Tag, error) {
-	if err := db.Model(&models.Tag{}).Where("id = ?", id).Updates(tag).First(&tag, id).Error; err != nil {
+	var resultingTag models.Tag
+	if err := db.Model(&resultingTag).Clauses(clause.Returning{}).Where("id = ?", id).Updates(tag).First(&tag, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, utilities.ErrNotFound
 		}
 		return nil, err
 	}
 
-	return &tag, nil
+	return &resultingTag, nil
 }
 
 func DeleteTag(db *gorm.DB, tagID uuid.UUID) error {

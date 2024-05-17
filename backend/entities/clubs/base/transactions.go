@@ -13,6 +13,7 @@ import (
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func GetClubs(db *gorm.DB, pinecone search.SearchClientInterface, queryParams *models.ClubQueryParams, pageInfo fiberpaginate.PageInfo) ([]models.Club, error) {
@@ -136,7 +137,6 @@ func UpdateClub(db *gorm.DB, pinecone search.SearchClientInterface, id uuid.UUID
 	}()
 
 	var existingClub models.Club
-
 	err := tx.First(&existingClub, id).Error
 	if err != nil {
 		tx.Rollback()
@@ -146,7 +146,7 @@ func UpdateClub(db *gorm.DB, pinecone search.SearchClientInterface, id uuid.UUID
 		return nil, err
 	}
 
-	if err := tx.Model(&existingClub).Updates(&club).Error; err != nil {
+	if err := tx.Model(&existingClub).Clauses(clause.Returning{}).Updates(&club).Error; err != nil {
 		tx.Rollback()
 		return nil, err
 	}

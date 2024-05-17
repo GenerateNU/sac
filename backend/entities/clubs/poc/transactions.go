@@ -8,6 +8,7 @@ import (
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func GetClubPointOfContacts(db *gorm.DB, clubID uuid.UUID) ([]models.PointOfContact, error) {
@@ -69,8 +70,7 @@ func UpdateClubPointOfContact(db *gorm.DB, clubID uuid.UUID, pocID uuid.UUID, po
 	if err != nil {
 		return nil, err
 	}
-
-	if err := db.Model(&pointOfContact).Updates(models.PointOfContact{
+	if err := db.Model(&pointOfContact).Clauses(clause.Returning{}).Updates(models.PointOfContact{
 		Name:     pointOfContactBody.Name,
 		Email:    pointOfContactBody.Email,
 		Position: pointOfContactBody.Position,
