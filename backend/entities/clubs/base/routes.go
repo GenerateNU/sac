@@ -8,6 +8,7 @@ import (
 	"github.com/GenerateNU/sac/backend/entities/clubs/member"
 	"github.com/GenerateNU/sac/backend/entities/clubs/poc"
 	"github.com/GenerateNU/sac/backend/entities/clubs/tag"
+	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/garrettladley/fiberpaginate"
 
 	"github.com/GenerateNU/sac/backend/types"

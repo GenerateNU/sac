@@ -3,6 +3,7 @@ package base
 import (
 	"github.com/GenerateNU/sac/backend/entities/events/series"
 	"github.com/GenerateNU/sac/backend/entities/events/tags"
+	"github.com/gofiber/fiber/v2"
 
 	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/types"
