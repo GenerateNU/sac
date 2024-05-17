@@ -15,7 +15,7 @@ type EventServiceInterface interface {
 	GetEvent(eventID string) (*models.Event, error)
 	// event cud
 	CreateEvent(body models.CreateEventRequestBody) (*models.Event, error)
-	UpdateEvent(eventID string, eventBody models.UpdateEventRequestBody) (*models.Event, error)
+	UpdateEvent(eventID string, eventBody models.UpdateEventRequestBody) ([]models.Event, error)
 	DeleteEvent(eventID string) error
 }
 
@@ -45,21 +45,16 @@ func (e *EventService) CreateEvent(body models.CreateEventRequestBody) (*models.
 		return nil, err
 	}
 
-	event, err := utilities.MapJsonTags(body, &models.Event{})
-	if err != nil {
-		return nil, err
-	}
-
-	return CreateEvent(e.DB, *event)
+	return CreateEvent(e.DB, *body.Into())
 }
 
-func (e *EventService) UpdateEvent(eventID string, eventBody models.UpdateEventRequestBody) (*models.Event, error) {
+func (e *EventService) UpdateEvent(eventID string, eventBody models.UpdateEventRequestBody) ([]models.Event, error) {
 	idAsUUID, err := utilities.ValidateID(eventID)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := e.Validate.Struct(eventBody); err != nil {
+	if err := utilities.Validate(e.Validate, eventBody); err != nil {
 		return nil, err
 	}
 
@@ -68,7 +63,7 @@ func (e *EventService) UpdateEvent(eventID string, eventBody models.UpdateEventR
 		return nil, err
 	}
 
-	return UpdateEvent(e.DB, *idAsUUID, *event)
+	return UpdateEvent(e.DB, *idAsUUID, *event, *eventBody.UpdateAllInSeries)
 }
 
 func (e *EventService) DeleteEvent(eventID string) error {

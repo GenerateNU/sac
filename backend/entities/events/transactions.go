@@ -37,3 +37,15 @@ func GetEventHostAdminIDs(db *gorm.DB, eventID uuid.UUID) ([]uuid.UUID, error) {
 
 	return clubs.GetAdminIDs(db, *event.Host)
 }
+
+func GetFirstEventInSeries(db *gorm.DB, seriesID uuid.UUID) (*models.Event, error) {
+	var event models.Event
+	if err := db.Where("series_id = ?", seriesID).First(&event).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, utilities.ErrNotFound
+		}
+		return nil, err
+	}
+
+	return &event, nil
+}

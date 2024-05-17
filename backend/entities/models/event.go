@@ -3,7 +3,6 @@ package models
 import (
 	"time"
 
-	"github.com/GenerateNU/sac/backend/protos"
 	"github.com/google/uuid"
 )
 
@@ -71,12 +70,29 @@ type CreateEventRequestBody struct {
 	EndTime   time.Time `json:"end_time" validate:"required,gtefield=StartTime"`
 }
 
+func (c *CreateEventRequestBody) Into() *Event {
+	return &Event{
+		Name:        c.Name,
+		Preview:     c.Preview,
+		Description: c.Description,
+		Host:        &c.HostID,
+		EventType:   c.EventType,
+		Location:    c.Location,
+		Link:        c.Link,
+		IsPublic:    *c.IsPublic,
+		IsDraft:     *c.IsDraft,
+		IsArchived:  *c.IsArchived,
+		StartTime:   c.StartTime,
+		EndTime:     c.EndTime,
+	}
+}
+
 type UpdateEventRequestBody struct {
 	// details
-	Name        string    `json:"name" validate:"omitempty,max=255"`
-	Preview     string    `json:"preview" validate:"omitempty,max=255"`
-	Description string    `json:"description" validate:"omitempty,max=255"`
-	HostID      uuid.UUID `json:"host" validate:"omitempty,uuid4"`
+	Name        string     `json:"name" validate:"omitempty,max=255"`
+	Preview     string     `json:"preview" validate:"omitempty,max=255"`
+	Description string     `json:"description" validate:"omitempty,max=255"`
+	HostID      *uuid.UUID `json:"host" validate:"omitempty,uuid4"`
 
 	// geoshi
 	EventType EventType `json:"event_type" validate:"omitempty,max=255,oneof=hybrid in_person virtual"`
@@ -89,9 +105,8 @@ type UpdateEventRequestBody struct {
 	IsArchived bool `json:"is_archived" validate:"omitempty"`
 
 	// timing
-	StartTime  time.Time               `json:"start_time" validate:"omitempty,ltecsfield=EndTime"`
-	EndTime    time.Time               `json:"end_time" validate:"omitempty,gtecsfield=StartTime"`
-	Recurrence protos.StringRecurrence `json:"recurrence" validate:"omitempty"`
+	StartTime time.Time `json:"start_time" validate:"omitempty,ltecsfield=EndTime"`
+	EndTime   time.Time `json:"end_time" validate:"omitempty,gtecsfield=StartTime"`
 
-	UpdateAllInSeries bool `json:"update_all_in_series" validate:"required"`
+	UpdateAllInSeries *bool `json:"update_all_in_series" validate:"required"`
 }

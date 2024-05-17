@@ -43,6 +43,8 @@ CREATE TABLE IF NOT EXISTS clubs(
 
 CREATE TABLE IF NOT EXISTS series(
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
+    created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(id)
 );
 
@@ -62,9 +64,10 @@ CREATE TABLE IF NOT EXISTS events(
     start_time timestamp without time zone NOT NULL,
     end_time timestamp without time zone NOT NULL,
     host uuid NOT NULL,
-    series_id uuid REFERENCES series(id),
+    series_id uuid,
     PRIMARY KEY(id),
-    CONSTRAINT fk_clubs_host_event FOREIGN key(host) REFERENCES clubs(id) ON UPDATE CASCADE ON DELETE CASCADE
+    CONSTRAINT fk_clubs_host_event FOREIGN key(host) REFERENCES clubs(id) ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_series_event FOREIGN key(series_id) REFERENCES series(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS categories(

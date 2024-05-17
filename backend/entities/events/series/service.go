@@ -10,7 +10,7 @@ import (
 )
 
 type EventSeriesServiceInterface interface {
-	CreateEventSeries(body CreateEventSeriesRequestBody) ([]models.Event, error)
+	CreateEventSeries(body CreateEventSeriesRequestBody) (*Series, error)
 	GetEventSeries(seriesID string) ([]models.Event, error)
 	DeleteEventSeries(seriesID string) error
 }
@@ -23,12 +23,12 @@ func NewEventSeriesService(serviceParams types.ServiceParams) EventSeriesService
 	return &EventSeriesService{serviceParams}
 }
 
-func (e *EventSeriesService) CreateEventSeries(body CreateEventSeriesRequestBody) ([]models.Event, error) {
+func (e *EventSeriesService) CreateEventSeries(body CreateEventSeriesRequestBody) (*Series, error) {
 	if err := utilities.Validate(e.Validate, body); err != nil {
 		return nil, err
 	}
 
-	validatedBody, err := body.Into()
+	validatedBody, err := body.Validate()
 	if err != nil {
 		return nil, err
 	}
@@ -37,14 +37,11 @@ func (e *EventSeriesService) CreateEventSeries(body CreateEventSeriesRequestBody
 		return nil, utilities.BadRequest(fmt.Errorf("termination date is after max termination date. termination: %s, max termination: %s", validatedBody.Termination, e.Calendar.MaxTerminationDate))
 	}
 
-	rootEvent, err := utilities.MapJsonTags(validatedBody, &models.Event{})
-	if err != nil {
-		return nil, err
-	}
+	rootEvent := validatedBody.Into()
 
 	occurrences, err := validatedBody.Recurrence.ReccurUntil(rootEvent.StartTime, rootEvent.EndTime, validatedBody.Termination)
 	if err != nil {
-		return nil, fmt.Errorf("error recurring event series: %w", err)
+		return nil, utilities.BadRequest(fmt.Errorf("error creating recurring event series: %w", err))
 	}
 
 	events := make([]models.Event, len(occurrences))
@@ -52,13 +49,14 @@ func (e *EventSeriesService) CreateEventSeries(body CreateEventSeriesRequestBody
 
 	for index, occurrence := range occurrences {
 		eventOccurence := *rootEvent
+		eventOccurence.ID = uuid.New()
 		eventOccurence.SeriesID = &seriesID
 		eventOccurence.StartTime = occurrence.Start
 		eventOccurence.EndTime = occurrence.End
 		events[index] = eventOccurence
 	}
 
-	return events, nil
+	return CreateEventSeries(e.DB, seriesID, events)
 }
 
 func (e *EventSeriesService) GetEventSeries(seriesID string) ([]models.Event, error) {

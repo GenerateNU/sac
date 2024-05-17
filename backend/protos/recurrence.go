@@ -125,6 +125,26 @@ func (r *Recurrence) ReccurUntil(start time.Time, end time.Time, termination tim
 		return nil, errors.New("start date is on a day that the recurrence does not happen on")
 	}
 
+	var monthIncrement int
+	switch r.Cadence {
+	case Weekly:
+		monthIncrement = 0
+	case Biweekly:
+		monthIncrement = 0
+	case Monthly:
+		monthIncrement = 1
+	}
+
+	var dayIncrement int
+	switch r.Cadence {
+	case Weekly:
+		dayIncrement = 7
+	case Biweekly:
+		dayIncrement = 14
+	case Monthly:
+		dayIncrement = 0
+	}
+
 	current := start
 	currentEnd := end
 	for current.Before(termination) {
@@ -154,17 +174,8 @@ func (r *Recurrence) ReccurUntil(start time.Time, end time.Time, termination tim
 			result = append(result, Occurrence{current, currentEnd})
 		}
 
-		switch r.Cadence {
-		case Weekly:
-			current = current.AddDate(0, 0, 7)
-			currentEnd = currentEnd.AddDate(0, 0, 7)
-		case Biweekly:
-			current = current.AddDate(0, 0, 14)
-			currentEnd = currentEnd.AddDate(0, 0, 14)
-		case Monthly:
-			current = current.AddDate(0, 1, 0)
-			currentEnd = currentEnd.AddDate(0, 1, 0)
-		}
+		current = current.AddDate(0, monthIncrement, dayIncrement)
+		currentEnd = currentEnd.AddDate(0, monthIncrement, dayIncrement)
 	}
 
 	return result, nil
@@ -173,7 +184,7 @@ func (r *Recurrence) ReccurUntil(start time.Time, end time.Time, termination tim
 const (
 	// housekeeping
 	PROTO_VERSION rune = '1'
-	PROTO_SIZE    int  = 11
+	PROTO_SIZE    int  = 9
 
 	// indices
 	VERSION_INDEX            int = 0
@@ -248,6 +259,8 @@ func RecurrenceFrom(raw StringRecurrence) (recurrence *Recurrence, err error) {
 		return nil, errors.New("invalid cadence")
 	}
 
+	cadence := int(runes[CADENCE_INDEX] - '0')
+
 	var happensOn []HappensOn
 	if runes[START_DAYS_OF_WEEK_INDEX] == '1' {
 		happensOn = append(happensOn, Monday)
@@ -272,7 +285,7 @@ func RecurrenceFrom(raw StringRecurrence) (recurrence *Recurrence, err error) {
 	}
 
 	return NewRecurrence(
-		Cadence(runes[CADENCE_INDEX]),
+		Cadence(cadence),
 		happensOn...,
 	)
 }

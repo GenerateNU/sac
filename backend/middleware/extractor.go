@@ -73,3 +73,9 @@ func ExtractFromParamIntoQuery(param string, db *gorm.DB, query QueryFn) Extract
 		return ExtractFromQuery(db, *id, query)(c)
 	}
 }
+
+func FromExtractFromParamIntoQuery(param string, db *gorm.DB, query QueryFn) ExtractID {
+	return func(c *fiber.Ctx) (*uuid.UUID, error) {
+		return ExtractFromParamIntoQuery(param, db, query)(c)
+	}
+}

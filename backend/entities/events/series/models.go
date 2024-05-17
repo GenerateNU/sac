@@ -15,7 +15,7 @@ type CreateEventSeriesRequestBody struct {
 	Termination time.Time               `json:"termination" validate:"required"`
 }
 
-func (c *CreateEventSeriesRequestBody) Into() (*ValidatedCreateEventSeriesRequestBody, error) {
+func (c *CreateEventSeriesRequestBody) Validate() (*ValidatedCreateEventSeriesRequestBody, error) {
 	errors := make(map[string]string)
 	recurrence, err := protos.RecurrenceFrom(c.Recurrence)
 	if err != nil {
@@ -37,4 +37,13 @@ type ValidatedCreateEventSeriesRequestBody struct {
 	models.CreateEventRequestBody
 	Recurrence  protos.Recurrence `json:"recurrence"`
 	Termination time.Time         `json:"termination"`
+}
+
+func (v *ValidatedCreateEventSeriesRequestBody) Into() *models.Event {
+	return v.CreateEventRequestBody.Into()
+}
+
+type Series struct {
+	models.Model
+	Events []models.Event `gorm:"foreignKey:SeriesID" json:"events"`
 }
