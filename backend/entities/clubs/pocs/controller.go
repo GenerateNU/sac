@@ -3,7 +3,6 @@ package pocs
 import (
 	"net/http"
 
-	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/fiber/v2"
 )
@@ -108,7 +107,7 @@ func (cpoc *ClubPointOfContactController) UpdateClubPointOfContactPhoto(c *fiber
 // @Failure     500   {object}      error
 // @Router		/clubs/{clubID}/poc/{pocID}  [put]
 func (cpoc *ClubPointOfContactController) UpdateClubPointOfContact(c *fiber.Ctx) error {
-	var pointOfContactBody models.UpdatePointOfContactBody
+	var pointOfContactBody UpdatePointOfContactBody
 
 	if err := c.BodyParser(&pointOfContactBody); err != nil {
 		return utilities.InvalidJSON()
@@ -138,7 +137,7 @@ func (cpoc *ClubPointOfContactController) UpdateClubPointOfContact(c *fiber.Ctx)
 // @Failure     500   {object}      error
 // @Router		/clubs/{clubID}/poc/  [post]
 func (cpoc *ClubPointOfContactController) CreateClubPointOfContact(c *fiber.Ctx) error {
-	var pointOfContactBody models.CreatePointOfContactBody
+	var pointOfContactBody CreatePointOfContactBody
 
 	if err := c.BodyParser(&pointOfContactBody); err != nil {
 		return utilities.InvalidJSON()

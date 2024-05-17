@@ -14,9 +14,9 @@ import (
 type ClubPointOfContactServiceInterface interface {
 	GetClubPointOfContacts(clubID string) ([]models.PointOfContact, error)
 	GetClubPointOfContact(clubID, pocID string) (*models.PointOfContact, error)
-	CreateClubPointOfContact(clubID string, pointOfContactBody models.CreatePointOfContactBody, fileHeader *multipart.FileHeader) (*models.PointOfContact, error)
+	CreateClubPointOfContact(clubID string, pointOfContactBody CreatePointOfContactBody, fileHeader *multipart.FileHeader) (*models.PointOfContact, error)
 	UpdateClubPointOfContactPhoto(clubID, pocID string, fileHeader *multipart.FileHeader) (*models.PointOfContact, error)
-	UpdateClubPointOfContact(clubID, pocID string, pointOfContactBody models.UpdatePointOfContactBody) (*models.PointOfContact, error)
+	UpdateClubPointOfContact(clubID, pocID string, pointOfContactBody UpdatePointOfContactBody) (*models.PointOfContact, error)
 	DeleteClubPointOfContact(clubID, pocID string) error
 }
 
@@ -51,7 +51,7 @@ func (cpoc *ClubPointOfContactService) GetClubPointOfContact(clubID, pocID strin
 	return GetClubPointOfContact(cpoc.DB, *clubIdAsUUID, *pocIdAsUUID)
 }
 
-func (cpoc *ClubPointOfContactService) CreateClubPointOfContact(clubID string, pointOfContactBody models.CreatePointOfContactBody, fileHeader *multipart.FileHeader) (*models.PointOfContact, error) {
+func (cpoc *ClubPointOfContactService) CreateClubPointOfContact(clubID string, pointOfContactBody CreatePointOfContactBody, fileHeader *multipart.FileHeader) (*models.PointOfContact, error) {
 	if err := utilities.Validate(cpoc.Validate, pointOfContactBody); err != nil {
 		return nil, err
 	}
@@ -138,7 +138,7 @@ func (cpoc *ClubPointOfContactService) UpdateClubPointOfContactPhoto(clubID, poc
 	return pointOfContact, nil
 }
 
-func (cpoc *ClubPointOfContactService) UpdateClubPointOfContact(clubID, pocID string, pointOfContactBody models.UpdatePointOfContactBody) (*models.PointOfContact, error) {
+func (cpoc *ClubPointOfContactService) UpdateClubPointOfContact(clubID, pocID string, pointOfContactBody UpdatePointOfContactBody) (*models.PointOfContact, error) {
 	if err := utilities.Validate(cpoc.Validate, pointOfContactBody); err != nil {
 		return nil, err
 	}

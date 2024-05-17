@@ -7,8 +7,10 @@ import (
 	"time"
 
 	"github.com/GenerateNU/sac/backend/auth"
+	authEntities "github.com/GenerateNU/sac/backend/entities/auth"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/entities/users"
+	usersEntities "github.com/GenerateNU/sac/backend/entities/users/base"
 
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
@@ -20,8 +22,8 @@ import (
 
 type AuthServiceInterface interface {
 	GetRole(id string) (*models.UserRole, error)
-	Register(userBody models.CreateUserRequestBody) (*models.User, *auth.Token, error)
-	Login(userBody models.LoginUserResponseBody) (*models.User, *auth.Token, error)
+	Register(userBody usersEntities.CreateUserRequestBody) (*models.User, *auth.Token, error)
+	Login(userBody authEntities.LoginResponseBody) (*models.User, *auth.Token, error)
 	Refresh(refreshToken string) (*auth.Token, error)
 	Logout(c *fiber.Ctx) error
 
@@ -40,7 +42,7 @@ func NewAuthService(serviceParams types.ServiceParams) AuthServiceInterface {
 	return &AuthService{serviceParams}
 }
 
-func (a *AuthService) Login(loginBody models.LoginUserResponseBody) (*models.User, *auth.Token, error) {
+func (a *AuthService) Login(loginBody authEntities.LoginResponseBody) (*models.User, *auth.Token, error) {
 	if err := utilities.Validate(a.Validate, loginBody); err != nil {
 		return nil, nil, err
 	}
@@ -80,7 +82,7 @@ func (a *AuthService) Login(loginBody models.LoginUserResponseBody) (*models.Use
 	return user, tokens, nil
 }
 
-func (a *AuthService) Register(userBody models.CreateUserRequestBody) (*models.User, *auth.Token, error) {
+func (a *AuthService) Register(userBody usersEntities.CreateUserRequestBody) (*models.User, *auth.Token, error) {
 	if err := utilities.Validate(a.Validate, userBody); err != nil {
 		return nil, nil, err
 	}
@@ -115,7 +117,7 @@ func (a *AuthService) Register(userBody models.CreateUserRequestBody) (*models.U
 		return nil, nil, err
 	}
 
-	_, tokens, err := a.Login(models.LoginUserResponseBody{Email: user.Email, Password: userBody.Password})
+	_, tokens, err := a.Login(authEntities.LoginResponseBody{Email: user.Email, Password: userBody.Password})
 	if err != nil {
 		return nil, nil, err
 	}

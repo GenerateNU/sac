@@ -8,7 +8,7 @@ import (
 )
 
 type ClubTagServiceInterface interface {
-	CreateClubTags(id string, clubTagsBody models.CreateClubTagsRequestBody) ([]models.Tag, error)
+	CreateClubTags(id string, clubTagsBody CreateClubTagsRequestBody) ([]models.Tag, error)
 	GetClubTags(id string) ([]models.Tag, error)
 	DeleteClubTag(id string, tagId string) error
 }
@@ -21,7 +21,7 @@ func NewClubTagService(serviceParams types.ServiceParams) ClubTagServiceInterfac
 	return &ClubTagService{serviceParams}
 }
 
-func (c *ClubTagService) CreateClubTags(id string, clubTagsBody models.CreateClubTagsRequestBody) ([]models.Tag, error) {
+func (c *ClubTagService) CreateClubTags(id string, clubTagsBody CreateClubTagsRequestBody) ([]models.Tag, error) {
 	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return nil, err

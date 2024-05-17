@@ -3,7 +3,6 @@ package base
 import (
 	"net/http"
 
-	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/utilities"
 
 	"github.com/gofiber/fiber/v2"
@@ -48,7 +47,7 @@ func (t *TagController) GetTags(c *fiber.Ctx) error {
 // @Tags      	tag
 // @Accept		json
 // @Produce		json
-// @Param		tagBody	body	models.CreateTagRequestBody	true	"Tag Body"
+// @Param		tagBody	body	CreateTagRequestBody	true	"Tag Body"
 // @Success		201	  {object}	  models.Tag
 // @Failure     400   {object}    error
 // @Failure     401   {object}    error
@@ -56,7 +55,7 @@ func (t *TagController) GetTags(c *fiber.Ctx) error {
 // @Failure     500   {object}    error
 // @Router		/tags/  [post]
 func (t *TagController) CreateTag(c *fiber.Ctx) error {
-	var tagBody models.CreateTagRequestBody
+	var tagBody CreateTagRequestBody
 
 	if err := c.BodyParser(&tagBody); err != nil {
 		return utilities.InvalidJSON()
@@ -101,7 +100,7 @@ func (t *TagController) GetTag(c *fiber.Ctx) error {
 // @Accept		json
 // @Produce		json
 // @Param		tagID	path	string	true	"Tag ID"
-// @Param		tag	body	models.UpdateTagRequestBody	true	"Tag"
+// @Param		tag	body	UpdateTagRequestBody	true	"Tag"
 // @Success		200	  {object}	  models.Tag
 // @Failure     400   {object}    error
 // @Failure     401   {object}    error
@@ -109,7 +108,7 @@ func (t *TagController) GetTag(c *fiber.Ctx) error {
 // @Failure     500   {object}    error
 // @Router		/tags/{tagID}/  [patch]
 func (t *TagController) UpdateTag(c *fiber.Ctx) error {
-	var tagBody models.UpdateTagRequestBody
+	var tagBody UpdateTagRequestBody
 
 	if err := c.BodyParser(&tagBody); err != nil {
 		return utilities.InvalidJSON()

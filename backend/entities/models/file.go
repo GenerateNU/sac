@@ -24,8 +24,3 @@ type File struct {
 	FileURL   string `json:"file_url"`
 	ObjectKey string `json:"object_key"`
 }
-
-type CreateFileRequestBody struct {
-	OwnerID   uuid.UUID `json:"owner_id" validate:"required,uuid4"`
-	OwnerType string    `json:"owner_type" validate:"required,max=255"`
-}
