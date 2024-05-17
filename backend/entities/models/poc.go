@@ -7,11 +7,11 @@ import (
 type PointOfContact struct {
 	Model
 
-	Name     string `json:"name" validate:"required,max=255"`
-	Email    string `json:"email" validate:"required,email,max=255"`
-	Position string `json:"position" validate:"required,max=255"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Position string `json:"position"`
 
-	ClubID uuid.UUID `json:"-" validate:"required,uuid4"`
+	ClubID uuid.UUID `json:"-"`
 
 	PhotoFile File `gorm:"polymorphic:Owner;" json:"photo_file"`
 }
