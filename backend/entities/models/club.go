@@ -28,37 +28,37 @@ const (
 type Club struct {
 	Model
 
-	SoftDeletedAt gorm.DeletedAt `json:"-" validate:"-"`
+	SoftDeletedAt gorm.DeletedAt `json:"-"`
 
-	Name                 string           `json:"name" validate:"required,max=255"`
-	Preview              string           `json:"preview" validate:"required,max=255"`
-	Description          string           `json:"description" validate:"required,http_url,s3_url,max=255"`
-	NumMembers           int              `json:"num_members" validate:"required,min=1"`
-	IsRecruiting         bool             `json:"is_recruiting" validate:"required"`
-	RecruitmentCycle     RecruitmentCycle `json:"recruitment_cycle" validate:"required,max=255,oneof=fall spring fallSpring always"`
-	RecruitmentType      RecruitmentType  `json:"recruitment_type" validate:"required,max=255,oneof=unrestricted tryout application"`
-	WeeklyTimeCommitment int              `json:"weekly_time_commitment" validate:"omitempty,min=1"`
-	OneWordToDescribeUs  string           `json:"one_word_to_describe_us" validate:"omitempty,max=255"`
-	ApplicationLink      string           `json:"application_link" validate:"required,max=255,http_url"`
-	Logo                 string           `json:"logo" validate:"omitempty,http_url,s3_url,max=255"`
+	Name                 string           `json:"name"`
+	Preview              string           `json:"preview"`
+	Description          string           `json:"description"`
+	NumMembers           int              `json:"num_members"`
+	IsRecruiting         bool             `json:"is_recruiting"`
+	RecruitmentCycle     RecruitmentCycle `json:"recruitment_cycle"`
+	RecruitmentType      RecruitmentType  `json:"recruitment_type"`
+	WeeklyTimeCommitment int              `json:"weekly_time_commitment"`
+	OneWordToDescribeUs  string           `json:"one_word_to_describe_us"`
+	ApplicationLink      string           `json:"application_link"`
+	Logo                 string           `json:"logo"`
 
-	Parent            *uuid.UUID       `gorm:"foreignKey:Parent;" json:"-" validate:"uuid4"`
-	Tag               []Tag            `gorm:"many2many:club_tags;" json:"-" validate:"-"`
-	Member            []User           `gorm:"many2many:user_club_members;" json:"-" validate:"required"`
-	Follower          []User           `gorm:"many2many:user_club_followers;" json:"-" validate:"-"`
-	IntendedApplicant []User           `gorm:"many2many:user_club_intended_applicants;" json:"-" validate:"-"`
-	Comment           []Comment        `json:"-" validate:"-"`
-	PointOfContact    []PointOfContact `json:"-" validate:"-"`
-	Contact           []Contact        `json:"-" validate:"-"`
+	Parent            *uuid.UUID       `gorm:"foreignKey:Parent;" json:"-"`
+	Tag               []Tag            `gorm:"many2many:club_tags;" json:"-"`
+	Member            []User           `gorm:"many2many:user_club_members;" json:"-"`
+	Follower          []User           `gorm:"many2many:user_club_followers;" json:"-"`
+	IntendedApplicant []User           `gorm:"many2many:user_club_intended_applicants;" json:"-"`
+	Comment           []Comment        `json:"-"`
+	PointOfContact    []PointOfContact `json:"-"`
+	Contact           []Contact        `json:"-"`
 
 	// Event
-	HostEvent   []Event        `gorm:"foreignKey:Host;" json:"-" validate:"-"`
-	Event       []Event        `gorm:"many2many:club_events;" json:"-" validate:"-"`
-	Notifcation []Notification `gorm:"polymorphic:Reference;" json:"-" validate:"-"`
+	HostEvent   []Event        `gorm:"foreignKey:Host;" json:"-"`
+	Event       []Event        `gorm:"many2many:club_events;" json:"-"`
+	Notifcation []Notification `gorm:"polymorphic:Reference;" json:"-"`
 }
 
 type CreateClubRequestBody struct {
-	UserID               uuid.UUID        `json:"user_id" validate:"required,uuid4"` // TODO: huh?
+	UserID               uuid.UUID        `json:"user_id" validate:"required,uuid4"`
 	Name                 string           `json:"name" validate:"required,max=255"`
 	Preview              string           `json:"preview" validate:"required,max=255"`
 	Description          string           `json:"description" validate:"required,http_url,s3_url,max=255"`
