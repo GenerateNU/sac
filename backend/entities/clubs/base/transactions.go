@@ -87,6 +87,15 @@ func CreateClub(db *gorm.DB, pinecone search.SearchClientInterface, userId uuid.
 	}
 
 	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Error; err != nil {
+		return nil, err
+	}
 
 	club.NumMembers = 1
 
@@ -116,16 +125,16 @@ func CreateClub(db *gorm.DB, pinecone search.SearchClientInterface, userId uuid.
 		return nil, err
 	}
 
-	if err := tx.Commit().Error; err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-
-	return &club, nil
+	return &club, tx.Commit().Error
 }
 
 func UpdateClub(db *gorm.DB, pinecone search.SearchClientInterface, id uuid.UUID, club models.Club) (*models.Club, error) {
 	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
 
 	var existingClub models.Club
 	err := tx.First(&existingClub, id).Error
@@ -147,16 +156,16 @@ func UpdateClub(db *gorm.DB, pinecone search.SearchClientInterface, id uuid.UUID
 		return nil, err
 	}
 
-	if err := tx.Commit().Error; err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-
-	return &existingClub, nil
+	return &existingClub, tx.Commit().Error
 }
 
 func DeleteClub(db *gorm.DB, pinecone search.SearchClientInterface, id uuid.UUID) error {
 	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
 
 	var existingClub models.Club
 	err := tx.First(&existingClub, id).Error
@@ -181,10 +190,5 @@ func DeleteClub(db *gorm.DB, pinecone search.SearchClientInterface, id uuid.UUID
 		return result.Error
 	}
 
-	if err := tx.Commit().Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	return nil
+	return tx.Commit().Error
 }

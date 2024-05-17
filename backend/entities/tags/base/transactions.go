@@ -15,6 +15,11 @@ import (
 
 func CreateTag(db *gorm.DB, tag models.Tag) (*models.Tag, error) {
 	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
 
 	var category models.Category
 	if err := tx.Where("id = ?", tag.CategoryID).First(&category).Error; err != nil {
@@ -32,12 +37,7 @@ func CreateTag(db *gorm.DB, tag models.Tag) (*models.Tag, error) {
 		return nil, err
 	}
 
-	if err := tx.Commit().Error; err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-
-	return &tag, nil
+	return &tag, tx.Commit().Error
 }
 
 func GetTags(db *gorm.DB) ([]models.Tag, error) {
