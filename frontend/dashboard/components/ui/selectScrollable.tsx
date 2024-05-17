@@ -16,19 +16,20 @@ interface ScrollableProps {
     placeholder: string;
     value: string;
     onChange: () => void;
+    onBlur: (open: boolean) => void;
 }
 
-const SelectScrollable = (props : ScrollableProps) => {
+const SelectScrollable = ({label, value, placeholder, data, onBlur, onChange}: ScrollableProps) => {
     return (
         <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="timezone">{props.label}</Label>
-            <Select value={props.value} onValueChange={props.onChange}>
+            <Label htmlFor="timezone">{label}</Label>
+            <Select value={value} onOpenChange={onBlur} onValueChange={onChange}>
                 <SelectTrigger>
-                    <SelectValue placeholder={props.placeholder} />
+                    <SelectValue placeholder={placeholder} />
                 </SelectTrigger>
                 <SelectContent>
                     <SelectGroup>
-                        {props.data.map((item: Option) => (
+                        {data.map((item: Option) => (
                             <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>
                         ))}
                     </SelectGroup>

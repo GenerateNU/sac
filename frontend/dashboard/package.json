@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@generatesac/lib": "^0.0.1",
-    "@hookform/resolvers": "^3.3.4",
+    "@hookform/resolvers": "^3.4.0",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-popover": "^1.0.7",

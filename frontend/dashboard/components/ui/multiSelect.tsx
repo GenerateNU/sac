@@ -18,6 +18,7 @@ interface GroupOption {
 interface MultipleSelectorProps {
   value?: Option[];
   label: string;
+  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
   defaultOptions?: Option[];
   /** manually controlled options */
   options?: Option[];
@@ -155,6 +156,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
     {
       value,
       onChange,
+      onBlur,
       placeholder,
       defaultOptions: arrayDefaultOptions = [],
       options: arrayOptions,
@@ -414,6 +416,7 @@ const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorP
               }}
               onBlur={(event) => {
                 setOpen(false);
+                onBlur?.(event);
                 inputProps?.onBlur?.(event);
               }}
               onFocus={(event) => {

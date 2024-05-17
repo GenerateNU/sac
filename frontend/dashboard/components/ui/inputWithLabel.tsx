@@ -7,14 +7,15 @@ interface InputProps {
     label: string;
     placeholder: string;
     value: string;
-    onChange: () => void;
+    onChange: (event: React.FocusEvent<HTMLInputElement>) => void;
+    onBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
 }
 
-const InputWithLabel = (props: InputProps) => {
+const InputWithLabel = ({ type, id, label, placeholder, value, onChange, onBlur }: InputProps) => {
     return (
         <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor={props.id}>{props.label}</Label>
-            <Input value={props.value} onChange={props.onChange} type={props.type} id={props.id} placeholder={props.placeholder} />
+            <Label htmlFor={id}>{label}</Label>
+            <Input onBlur={onBlur} value={value} onChange={onChange} type={type} id={id} placeholder={placeholder} />
         </div>
     )
 }
