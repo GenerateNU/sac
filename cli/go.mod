@@ -13,6 +13,7 @@ require (
 	github.com/awnumar/memguard v0.22.5 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/garrettladley/mattress v0.4.0 // indirect
+	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect

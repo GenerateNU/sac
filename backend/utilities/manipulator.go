@@ -29,3 +29,7 @@ func MapJsonTags[From any, Into any](from From, intoType *Into) (*Into, error) {
 
 	return intoType, nil
 }
+
+func NormalizeEmail(email string) string {
+	return strings.ToLower(email)
+}

@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/garrettladley/fiberpaginate"
 
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/google/uuid"
@@ -11,23 +12,9 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateUser(db *gorm.DB, user *models.User) (*models.User, error) {
-	if err := db.Create(user).Error; err != nil {
-		if errors.Is(err, gorm.ErrDuplicatedKey) {
-			return nil, utilities.ErrDuplicate
-		}
-		return nil, err
-	}
-
-	return user, nil
-}
-
-func GetUsers(db *gorm.DB, limit int, page int) ([]models.User, error) {
+func GetUsers(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.User, error) {
 	var users []models.User
-
-	offset := (page - 1) * limit
-
-	if err := db.Omit("password_hash").Limit(limit).Offset(offset).Find(&users).Error; err != nil {
+	if err := db.Omit("password_hash").Scopes(utilities.IntoScope(pageInfo, db)).Find(&users).Error; err != nil {
 		return nil, err
 	}
 

@@ -97,8 +97,6 @@ type ClubQueryParams struct {
 	MinWeeklyTimeCommitment int               `query:"min_weekly_time_commitment"`
 	MaxWeeklyTimeCommitment int               `query:"max_weekly_time_commitment"`
 	OneWordToDescribeUs     string            `query:"one_word_to_describe_us"`
-	Limit                   int               `query:"limit"`
-	Page                    int               `query:"page"`
 	Search                  string            `query:"search"`
 }
 

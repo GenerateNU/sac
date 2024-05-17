@@ -5,9 +5,9 @@ import (
 
 	go_json "github.com/goccy/go-json"
 
-	"github.com/GenerateNU/sac/backend/auth"
+	authenticator "github.com/GenerateNU/sac/backend/auth"
 	"github.com/GenerateNU/sac/backend/config"
-	authBase "github.com/GenerateNU/sac/backend/entities/auth/base"
+	auth "github.com/GenerateNU/sac/backend/entities/auth/base"
 	categories "github.com/GenerateNU/sac/backend/entities/categories/base"
 	clubs "github.com/GenerateNU/sac/backend/entities/clubs/base"
 	contacts "github.com/GenerateNU/sac/backend/entities/contacts/base"
@@ -22,6 +22,7 @@ import (
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
@@ -47,7 +48,7 @@ func Init(db *gorm.DB, integrations integrations.Integrations, settings config.S
 		panic(fmt.Sprintf("Error registering custom validators: %s", err))
 	}
 
-	jwt := auth.NewJWTClient(settings.Auth, jwt.SigningMethodHS256)
+	jwt := authenticator.NewJWTClient(settings.Auth, jwt.SigningMethodHS256)
 	authMiddleware := middleware.NewAuthMiddlewareService(db, validate, settings.Auth)
 
 	apiv1 := app.Group("/api/v1")
@@ -72,8 +73,8 @@ func Init(db *gorm.DB, integrations integrations.Integrations, settings config.S
 
 func allRoutes(app *fiber.App, routeParams types.RouteParams) {
 	Utility(app)
-	authService := authBase.Auth(routeParams)
-	users.UserRoutes(routeParams, authService)
+	auth.Auth(routeParams)
+	users.UserRoutes(routeParams)
 	clubs.ClubRoutes(routeParams)
 	contacts.Contact(routeParams)
 	pocs.PointOfContact(routeParams)
@@ -97,6 +98,9 @@ func newFiberApp(appSettings config.ApplicationSettings) *fiber.App {
 	app.Use(requestid.New())
 	app.Use(logger.New(logger.Config{
 		Format: "[${time}] ${ip}:${port} ${pid} ${locals:requestid} ${status} - ${latency} ${method} ${path}\n",
+	}))
+	app.Use(compress.New(compress.Config{
+		Level: compress.LevelBestSpeed,
 	}))
 
 	return app

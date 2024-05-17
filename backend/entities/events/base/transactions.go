@@ -2,6 +2,7 @@ package base
 
 import (
 	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/garrettladley/fiberpaginate"
 
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/google/uuid"
@@ -9,12 +10,9 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetEvents(db *gorm.DB, limit int, page int) ([]models.Event, error) {
+func GetEvents(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Event, error) {
 	var events []models.Event
-
-	offset := (page - 1) * limit
-
-	if err := db.Limit(limit).Offset(offset).Find(&events).Error; err != nil {
+	if err := db.Scopes(utilities.IntoScope(pageInfo, db)).Find(&events).Error; err != nil {
 		return nil, err
 	}
 

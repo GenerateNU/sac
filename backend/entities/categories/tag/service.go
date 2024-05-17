@@ -4,10 +4,11 @@ import (
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 )
 
 type CategoryTagServiceInterface interface {
-	GetTagsByCategory(categoryID string, limit string, page string) ([]models.Tag, error)
+	GetTagsByCategory(categoryID string, pageInfo fiberpaginate.PageInfo) ([]models.Tag, error)
 	GetTagByCategory(categoryID string, tagID string) (*models.Tag, error)
 }
 
@@ -19,23 +20,13 @@ func NewCategoryTagService(params types.ServiceParams) CategoryTagServiceInterfa
 	return &CategoryTagService{params}
 }
 
-func (t *CategoryTagService) GetTagsByCategory(categoryID string, limit string, page string) ([]models.Tag, error) {
+func (t *CategoryTagService) GetTagsByCategory(categoryID string, pageInfo fiberpaginate.PageInfo) ([]models.Tag, error) {
 	categoryIDAsUUID, err := utilities.ValidateID(categoryID)
 	if err != nil {
 		return nil, err
 	}
 
-	limitAsInt, err := utilities.ValidateNonNegative(limit)
-	if err != nil {
-		return nil, err
-	}
-
-	pageAsInt, err := utilities.ValidateNonNegative(page)
-	if err != nil {
-		return nil, err
-	}
-
-	return GetTagsByCategory(t.DB, *categoryIDAsUUID, *limitAsInt, *pageAsInt)
+	return GetTagsByCategory(t.DB, *categoryIDAsUUID, pageInfo)
 }
 
 func (t *CategoryTagService) GetTagByCategory(categoryID string, tagID string) (*models.Tag, error) {
