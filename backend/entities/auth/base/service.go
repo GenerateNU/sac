@@ -89,7 +89,7 @@ func (a *AuthService) Register(userBody models.CreateUserRequestBody) (*models.U
 		return nil, nil, err
 	}
 
-	user, err := utilities.MapRequestToModel(userBody, &models.User{})
+	user, err := utilities.MapJsonTags(userBody, &models.User{})
 	if err != nil {
 		return nil, nil, err
 	}

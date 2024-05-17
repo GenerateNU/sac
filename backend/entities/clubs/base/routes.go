@@ -8,6 +8,7 @@ import (
 	"github.com/GenerateNU/sac/backend/entities/clubs/member"
 	"github.com/GenerateNU/sac/backend/entities/clubs/poc"
 	"github.com/GenerateNU/sac/backend/entities/clubs/tag"
+	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/garrettladley/fiberpaginate"
 
 	"github.com/GenerateNU/sac/backend/types"
@@ -15,10 +16,7 @@ import (
 )
 
 func ClubRoutes(clubParams types.RouteParams) {
-	clubIDRouter := ClubRouter(clubParams)
-
-	// update the router in params
-	clubParams.Router = clubIDRouter
+	clubParams.Router = ClubRouter(clubParams)
 
 	tag.ClubTag(clubParams)
 	follower.ClubFollower(clubParams)
@@ -41,7 +39,11 @@ func ClubRouter(clubParams types.RouteParams) fiber.Router {
 	clubID := clubs.Group("/:clubID")
 
 	clubID.Get("/", clubController.GetClub)
-	clubID.Patch("/", clubParams.AuthMiddleware.ClubAuthorizeById, clubController.UpdateClub)
+	clubID.Patch(
+		"/",
+		middleware.AttachExtractor(clubParams.AuthMiddleware.ClubAuthorizeById, middleware.ExtractFromParams("clubID")),
+		clubController.UpdateClub,
+	)
 	clubID.Delete("/", clubParams.AuthMiddleware.Authorize(p.DeleteAll), clubController.DeleteClub)
 
 	return clubID

@@ -62,6 +62,7 @@ func Init(db *gorm.DB, integrations integrations.Integrations, settings config.S
 			Auth:         &settings.Auth,
 			JWT:          jwt,
 			Integrations: integrations,
+			Calendar:     &settings.Calendar,
 		},
 	}
 
@@ -79,7 +80,7 @@ func allRoutes(app *fiber.App, routeParams types.RouteParams) {
 	pocs.PointOfContact(routeParams)
 	tags.Tag(routeParams)
 	categories.CategoryRoutes(routeParams)
-	events.Event(routeParams)
+	events.EventRoutes(routeParams)
 	files.File(routeParams)
 }
 

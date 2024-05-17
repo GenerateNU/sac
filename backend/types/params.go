@@ -21,5 +21,6 @@ type ServiceParams struct {
 	Validate     *validator.Validate
 	Auth         *config.AuthSettings
 	JWT          auth.JWTClientInterface
+	Calendar     *config.CalendarSettings
 	Integrations integrations.Integrations
 }

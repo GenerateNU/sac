@@ -50,6 +50,7 @@ type Club struct {
 	Comment           []Comment        `json:"-" validate:"-"`
 	PointOfContact    []PointOfContact `json:"-" validate:"-"`
 	Contact           []Contact        `json:"-" validate:"-"`
+
 	// Event
 	HostEvent   []Event        `gorm:"foreignKey:Host;" json:"-" validate:"-"`
 	Event       []Event        `gorm:"many2many:club_events;" json:"-" validate:"-"`
@@ -57,7 +58,7 @@ type Club struct {
 }
 
 type CreateClubRequestBody struct {
-	UserID               uuid.UUID        `json:"user_id" validate:"required,uuid4"`
+	UserID               uuid.UUID        `json:"user_id" validate:"required,uuid4"` // TODO: huh?
 	Name                 string           `json:"name" validate:"required,max=255"`
 	Preview              string           `json:"preview" validate:"required,max=255"`
 	Description          string           `json:"description" validate:"required,http_url,s3_url,max=255"`

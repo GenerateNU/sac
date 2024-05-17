@@ -34,11 +34,11 @@ func Exit(format string, a ...interface{}) {
 }
 
 func configureIntegrations(config *config.Settings, connectToPinecone bool) integrations.Integrations {
-	openAi := search.NewOpenAIClient(config.OpenAISettings)
+	openAi := search.NewOpenAIClient(config.OpenAI)
 	var pinecone search.SearchClientInterface
 
 	if connectToPinecone {
-		pinecone = search.NewPineconeClient(openAi, config.PineconeSettings)
+		pinecone = search.NewPineconeClient(openAi, config.Pinecone)
 	} else {
 		pinecone = mocks.NewPineconeMockClient()
 	}
@@ -46,7 +46,7 @@ func configureIntegrations(config *config.Settings, connectToPinecone bool) inte
 	integrations := integrations.Integrations{
 		File:   file.NewAWSProvider(config.AWS),
 		AI:     openAi,
-		Email:  email.NewResendClient(config.ResendSettings, true),
+		Email:  email.NewResendClient(config.Resend, true),
 		Search: pinecone,
 	}
 	return integrations
@@ -81,8 +81,8 @@ func main() {
 	}
 
 	if *onlySeedPinecone {
-		openAi := search.NewOpenAIClient(config.OpenAISettings)
-		pinecone := search.NewPineconeClient(openAi, config.PineconeSettings)
+		openAi := search.NewOpenAIClient(config.OpenAI)
+		pinecone := search.NewPineconeClient(openAi, config.Pinecone)
 
 		err := pinecone.Seed(db)
 		if err != nil {

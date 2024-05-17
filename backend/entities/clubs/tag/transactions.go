@@ -11,12 +11,12 @@ import (
 )
 
 func CreateClubTags(db *gorm.DB, id uuid.UUID, tags []models.Tag) ([]models.Tag, error) {
-	user, err := clubs.GetClub(db, id, transactions.PreloadTag())
+	club, err := clubs.GetClub(db, id, transactions.PreloadTag())
 	if err != nil {
 		return nil, err
 	}
 
-	if err := db.Model(&user).Association("Tag").Append(tags); err != nil {
+	if err := db.Model(&club).Association("Tag").Append(tags); err != nil {
 		return nil, err
 	}
 
@@ -26,7 +26,7 @@ func CreateClubTags(db *gorm.DB, id uuid.UUID, tags []models.Tag) ([]models.Tag,
 func GetClubTags(db *gorm.DB, id uuid.UUID) ([]models.Tag, error) {
 	var tags []models.Tag
 
-	club, err := clubs.GetClub(db, id)
+	club, err := clubs.GetClub(db, id, transactions.PreloadTag())
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +38,7 @@ func GetClubTags(db *gorm.DB, id uuid.UUID) ([]models.Tag, error) {
 }
 
 func DeleteClubTag(db *gorm.DB, id uuid.UUID, tagID uuid.UUID) error {
-	club, err := clubs.GetClub(db, id)
+	club, err := clubs.GetClub(db, id, transactions.PreloadTag())
 	if err != nil {
 		return err
 	}
