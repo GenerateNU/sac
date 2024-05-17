@@ -1,10 +1,53 @@
-// Types for incoming requests and outgoing responses.
+// Types that are needed to interact with OpenSearch's API.
 package search
 
-import (
-	"github.com/GenerateNU/sac/backend/entities/models"
-)
+import "github.com/GenerateNU/sac/backend/entities/models"
 
+// Used for making OpenSearch GET /<index>/_search requests.
+type SearchEndpointRequest struct {
+	Query struct {
+		QueryString struct {
+			Query string `json:"query"`
+		} `json:"query_string"`
+	} `json:"query"`
+}
+
+// Used for responses from OpenSearch GET /<index>/_search requests.
+type SearchEndpointResponse struct {
+	Hits struct {
+		Hits []struct {
+			Index string  `json:"_index"`
+			Score float32 `json:"_score"`
+			Id    string  `json:"_id"`
+		} `json:"hits"`
+	} `json:"hits"`
+}
+
+// How Clubs are represented in the OpenSearch index.
+type ClubSearchDocument struct {
+	Name        string   `json:"name"`
+	Preview     string   `json:"preview"`
+	Description string   `json:"description"`
+	NumMembers  int      `json:"num_members"`
+	Tags        []string `json:"tags"`
+}
+
+func ClubSearchDocumentFromClub(c *models.Club) ClubSearchDocument {
+	tagIds := make([]string, len(c.Tag))
+	for i, tag := range c.Tag {
+		tagIds[i] = tag.ID.String()
+	}
+
+	return ClubSearchDocument{
+		Name:        c.Name,
+		Preview:     c.Preview,
+		Description: c.Description,
+		NumMembers:  c.NumMembers,
+		Tags:        tagIds,
+	}
+}
+
+// Query parameters for an API GET /api/v1/search/clubs request.
 type ClubSearchQuery struct {
 	Search string `query:"search"`
 	// Tags                    []string          `query:"tags"`
@@ -19,7 +62,7 @@ type ClubSearchQuery struct {
 }
 
 // To Query DSL JSON
-func (q *ClubSearchQuery) ToRequest() SearchEndpointRequest {
+func (q *ClubSearchQuery) ToSearchEndpointRequest() SearchEndpointRequest {
 	var req SearchEndpointRequest
 
 	req.Query.QueryString.Query = q.Search
@@ -27,6 +70,15 @@ func (q *ClubSearchQuery) ToRequest() SearchEndpointRequest {
 	return req
 }
 
+// The (successful) response of an API GET /api/v1/search/clubs request.
 type ClubSearchResult struct {
 	Results []models.Club `json:"results"`
+}
+
+// Used for making OpenSearch /_bulk requests.
+type BulkRequestCreate struct {
+	Create struct {
+		Index string `json:"_index"`
+		Id    string `json:"_id"`
+	} `json:"create"`
 }

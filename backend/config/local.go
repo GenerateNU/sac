@@ -37,13 +37,6 @@ func readLocal(v *viper.Viper, path string, useDevDotEnv bool) (*Settings, error
 		return nil, fmt.Errorf("failed to load %s/.env.template: %w", path, err)
 	}
 
-	openAISettings, err := readOpenAISettings()
-	if err != nil {
-		return nil, fmt.Errorf("failed to read OpenAI settings: %w", err)
-	}
-
-	settings.OpenAI = *openAISettings
-
 	awsSettings, err := readAWSSettings()
 	if err != nil {
 		return nil, fmt.Errorf("failed to read AWS settings: %w", err)
