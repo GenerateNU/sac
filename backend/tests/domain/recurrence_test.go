@@ -7,45 +7,77 @@ import (
 	"github.com/GenerateNU/sac/backend/protos"
 )
 
-func TestRecurrenceUntil(t *testing.T) {
-	recurrence, err := protos.NewRecurrence(
-		protos.Weekly,
-		protos.Wednesday,
-	)
+func TestRecurrenceUntilWeekly(t *testing.T) {
+	t.Parallel()
+
+	recurrence, err := protos.NewRecurrence(protos.Weekly, protos.Wednesday)
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}
 
-	start := time.Date(2024, 1, 3, 6, 30, 0, 0, time.UTC)      // Wednesday January 3, 2024 6:30 AM
-	end := time.Date(2024, 1, 3, 9, 0, 0, 0, time.UTC)         // Wednesday January 3, 2024 9:00 AM
-	termination := time.Date(2024, 2, 1, 0, 0, 0, 0, time.UTC) // Thursday February 1, 2024 12:00 AM
+	start := time.Date(2024, 1, 3, 6, 30, 0, 0, time.UTC)
+	end := time.Date(2024, 1, 3, 9, 0, 0, 0, time.UTC)
+	termination := time.Date(2024, 2, 1, 0, 0, 0, 0, time.UTC)
 
+	expected := []protos.Occurrence{
+		{Start: start, End: end},
+		{Start: time.Date(2024, 1, 10, 6, 30, 0, 0, time.UTC), End: time.Date(2024, 1, 10, 9, 0, 0, 0, time.UTC)},
+		{Start: time.Date(2024, 1, 17, 6, 30, 0, 0, time.UTC), End: time.Date(2024, 1, 17, 9, 0, 0, 0, time.UTC)},
+		{Start: time.Date(2024, 1, 24, 6, 30, 0, 0, time.UTC), End: time.Date(2024, 1, 24, 9, 0, 0, 0, time.UTC)},
+		{Start: time.Date(2024, 1, 31, 6, 30, 0, 0, time.UTC), End: time.Date(2024, 1, 31, 9, 0, 0, 0, time.UTC)},
+	}
+
+	validateOccurrences(t, recurrence, start, end, termination, expected)
+}
+
+func TestRecurrenceUntilBiweekly(t *testing.T) {
+	t.Parallel()
+
+	recurrence, err := protos.NewRecurrence(protos.Biweekly, protos.Wednesday)
+	if err != nil {
+		t.Errorf("unexpected error: %v", err)
+	}
+
+	start := time.Date(2024, 1, 3, 6, 30, 0, 0, time.UTC)
+	end := time.Date(2024, 1, 3, 9, 0, 0, 0, time.UTC)
+	termination := time.Date(2024, 3, 1, 0, 0, 0, 0, time.UTC)
+
+	expected := []protos.Occurrence{
+		{Start: start, End: end},
+		{Start: time.Date(2024, 1, 17, 6, 30, 0, 0, time.UTC), End: time.Date(2024, 1, 17, 9, 0, 0, 0, time.UTC)},
+		{Start: time.Date(2024, 1, 31, 6, 30, 0, 0, time.UTC), End: time.Date(2024, 1, 31, 9, 0, 0, 0, time.UTC)},
+		{Start: time.Date(2024, 2, 14, 6, 30, 0, 0, time.UTC), End: time.Date(2024, 2, 14, 9, 0, 0, 0, time.UTC)},
+		{Start: time.Date(2024, 2, 28, 6, 30, 0, 0, time.UTC), End: time.Date(2024, 2, 28, 9, 0, 0, 0, time.UTC)},
+	}
+
+	validateOccurrences(t, recurrence, start, end, termination, expected)
+}
+
+func TestRecurrenceUntilMonthly(t *testing.T) {
+	t.Parallel()
+
+	recurrence, err := protos.NewRecurrence(protos.Monthly, protos.Wednesday)
+	if err != nil {
+		t.Errorf("unexpected error: %v", err)
+	}
+
+	start := time.Date(2024, 1, 3, 6, 30, 0, 0, time.UTC)
+	end := time.Date(2024, 1, 3, 9, 0, 0, 0, time.UTC)
+	termination := time.Date(2024, 4, 1, 0, 0, 0, 0, time.UTC)
+
+	expected := []protos.Occurrence{
+		{Start: start, End: end},
+		{Start: time.Date(2024, 2, 3, 6, 30, 0, 0, time.UTC), End: time.Date(2024, 2, 3, 9, 0, 0, 0, time.UTC)},
+		{Start: time.Date(2024, 3, 3, 6, 30, 0, 0, time.UTC), End: time.Date(2024, 3, 3, 9, 0, 0, 0, time.UTC)},
+	}
+
+	validateOccurrences(t, recurrence, start, end, termination, expected)
+}
+
+func validateOccurrences(t *testing.T, recurrence *protos.Recurrence, start, end, termination time.Time, expected []protos.Occurrence) {
 	events, err := recurrence.ReccurUntil(start, end, termination)
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
-	}
-
-	expected := []protos.Occurrence{
-		{
-			Start: start,
-			End:   end,
-		},
-		{
-			Start: time.Date(2024, 1, 10, 6, 30, 0, 0, time.UTC),
-			End:   time.Date(2024, 1, 10, 9, 0, 0, 0, time.UTC),
-		},
-		{
-			Start: time.Date(2024, 1, 17, 6, 30, 0, 0, time.UTC),
-			End:   time.Date(2024, 1, 17, 9, 0, 0, 0, time.UTC),
-		},
-		{
-			Start: time.Date(2024, 1, 24, 6, 30, 0, 0, time.UTC),
-			End:   time.Date(2024, 1, 24, 9, 0, 0, 0, time.UTC),
-		},
-		{
-			Start: time.Date(2024, 1, 31, 6, 30, 0, 0, time.UTC),
-			End:   time.Date(2024, 1, 31, 9, 0, 0, 0, time.UTC),
-		},
 	}
 
 	if len(events) != len(expected) {
