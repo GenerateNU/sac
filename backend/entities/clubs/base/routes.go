@@ -2,12 +2,12 @@ package base
 
 import (
 	p "github.com/GenerateNU/sac/backend/auth"
-	"github.com/GenerateNU/sac/backend/entities/clubs/contact"
-	"github.com/GenerateNU/sac/backend/entities/clubs/event"
-	"github.com/GenerateNU/sac/backend/entities/clubs/follower"
-	"github.com/GenerateNU/sac/backend/entities/clubs/member"
-	"github.com/GenerateNU/sac/backend/entities/clubs/poc"
-	"github.com/GenerateNU/sac/backend/entities/clubs/tag"
+	"github.com/GenerateNU/sac/backend/entities/clubs/contacts"
+	"github.com/GenerateNU/sac/backend/entities/clubs/events"
+	"github.com/GenerateNU/sac/backend/entities/clubs/followers"
+	"github.com/GenerateNU/sac/backend/entities/clubs/members"
+	"github.com/GenerateNU/sac/backend/entities/clubs/pocs"
+	"github.com/GenerateNU/sac/backend/entities/clubs/tags"
 	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/garrettladley/fiberpaginate"
 
@@ -18,12 +18,12 @@ import (
 func ClubRoutes(clubParams types.RouteParams) {
 	clubParams.Router = ClubRouter(clubParams)
 
-	tag.ClubTag(clubParams)
-	follower.ClubFollower(clubParams)
-	member.ClubMember(clubParams)
-	contact.ClubContact(clubParams)
-	event.ClubEvent(clubParams)
-	poc.ClubPointOfContact(clubParams)
+	tags.ClubTag(clubParams)
+	followers.ClubFollower(clubParams)
+	members.ClubMember(clubParams)
+	contacts.ClubContact(clubParams)
+	events.ClubEvent(clubParams)
+	pocs.ClubPointOfContact(clubParams)
 }
 
 func ClubRouter(clubParams types.RouteParams) fiber.Router {

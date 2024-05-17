@@ -2,7 +2,7 @@ package base
 
 import (
 	"github.com/GenerateNU/sac/backend/auth"
-	"github.com/GenerateNU/sac/backend/entities/categories/tag"
+	"github.com/GenerateNU/sac/backend/entities/categories/tags"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/garrettladley/fiberpaginate"
 	"github.com/gofiber/fiber/v2"
@@ -14,7 +14,7 @@ func CategoryRoutes(categoryParams types.RouteParams) {
 	// update the router in params
 	categoryParams.Router = categoryIDRoute
 
-	tag.CategoryTag(categoryParams)
+	tags.CategoryTag(categoryParams)
 }
 
 func Category(categoryParams types.RouteParams) fiber.Router {
