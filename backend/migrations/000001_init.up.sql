@@ -21,6 +21,8 @@ CREATE TABLE IF NOT EXISTS users(
     PRIMARY KEY(id)
 );
 
+CREATE UNIQUE INDEX IF NOT EXISTS uni_users_email ON users USING btree ("email");
+
 CREATE TABLE IF NOT EXISTS clubs(
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
     created_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -40,6 +42,10 @@ CREATE TABLE IF NOT EXISTS clubs(
     parent text,
     PRIMARY KEY(id)
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS uni_clubs_name ON clubs USING btree ("name");
+CREATE INDEX IF NOT EXISTS idx_clubs_num_members ON clubs USING btree ("num_members");
+CREATE INDEX IF NOT EXISTS idx_clubs_one_word_to_describe_us ON clubs USING btree ("one_word_to_describe_us");
 
 CREATE TABLE IF NOT EXISTS series(
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
@@ -70,6 +76,8 @@ CREATE TABLE IF NOT EXISTS events(
     CONSTRAINT fk_series_event FOREIGN key(series_id) REFERENCES series(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+CREATE INDEX IF NOT EXISTS idx_events_series_id ON events USING btree ("series_id");
+
 CREATE TABLE IF NOT EXISTS categories(
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
     created_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -90,6 +98,8 @@ CREATE TABLE IF NOT EXISTS tags(
     PRIMARY KEY(id),
     CONSTRAINT fk_categories_tag FOREIGN key(category_id) REFERENCES categories(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
+
+CREATE INDEX IF NOT EXISTS idx_tags_category_id ON tags USING btree ("category_id");
 
 CREATE TABLE IF NOT EXISTS club_events(
     club_id uuid NOT NULL DEFAULT uuid_generate_v4(),
@@ -169,6 +179,7 @@ CREATE TABLE IF NOT EXISTS point_of_contacts(
     PRIMARY KEY(id),
     CONSTRAINT fk_clubs_point_of_contact FOREIGN key(club_id) REFERENCES clubs(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
+
 CREATE UNIQUE INDEX IF NOT EXISTS compositeindex ON point_of_contacts USING btree ("email","club_id");
 CREATE INDEX IF NOT EXISTS idx_point_of_contacts_club_id ON point_of_contacts USING btree ("club_id");
 CREATE INDEX IF NOT EXISTS idx_point_of_contacts_email ON point_of_contacts USING btree ("email");
@@ -232,6 +243,7 @@ CREATE TABLE IF NOT EXISTS verifications(
     "type" varchar(255) NOT NULL,
     PRIMARY KEY(user_id,expires_at)
 );
+
 CREATE UNIQUE INDEX IF NOT EXISTS uni_verifications_token ON verifications USING btree ("token");
 
 COMMIT;
