@@ -1,8 +1,8 @@
+// Types for incoming requests and outgoing responses.
 package search
 
 import (
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/utilities"
 )
 
 type ClubSearchQuery struct {
@@ -19,18 +19,12 @@ type ClubSearchQuery struct {
 }
 
 // To Query DSL JSON
-func (q *ClubSearchQuery) ToJson() (string, error) {
-	type KV map[string]interface{}
+func (q *ClubSearchQuery) ToRequest() SearchEndpointRequest {
+	var req SearchEndpointRequest
 
-	payload := KV{
-		"query": KV{
-			"query_string": KV{
-				"query": q.Search,
-			},
-		},
-	}
+	req.Query.QueryString.Query = q.Search
 
-	return utilities.ToJsonString(payload)
+	return req
 }
 
 type ClubSearchResult struct {

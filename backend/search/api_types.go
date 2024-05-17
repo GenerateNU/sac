@@ -1,3 +1,4 @@
+// Types that are needed to interact with OpenSearch's API.
 package search
 
 // TODO: Put the query made in ClubSearchQuery.toJSON() in here
