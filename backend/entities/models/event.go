@@ -53,7 +53,7 @@ type CreateEventRequestBody struct {
 	Name        string    `json:"name" validate:"required,max=255"`
 	Preview     string    `json:"preview" validate:"required,max=255"`
 	Description string    `json:"description" validate:"required,max=255"`
-	HostID      uuid.UUID `json:"host" validate:"uuid4"` // TODO ensure you are an admin of the host
+	HostID      uuid.UUID `json:"host" validate:"uuid4"`
 
 	// geoshi
 	EventType EventType `json:"event_type" validate:"required,max=255,oneof=hybrid in_person virtual"`
@@ -62,7 +62,7 @@ type CreateEventRequestBody struct {
 
 	// internal housekeeping states
 	IsPublic   *bool `json:"is_public" validate:"required"`
-	IsDraft    *bool `json:"is_draft" validate:"required"` // some logic here. drafts shouldn't be public
+	IsDraft    *bool `json:"is_draft" validate:"required"`
 	IsArchived *bool `json:"is_archived" validate:"required"`
 
 	// timing
