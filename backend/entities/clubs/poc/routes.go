@@ -1,6 +1,7 @@
 package poc
 
 import (
+	"github.com/GenerateNU/sac/backend/middleware"
 	"github.com/GenerateNU/sac/backend/types"
 )
 
@@ -12,8 +13,24 @@ func ClubPointOfContact(clubParams types.RouteParams) {
 	// api/v1/clubs/:clubID/pocs/*
 	clubPointOfContacts.Get("/", clubPointOfContactController.GetClubPointOfContacts)
 	clubPointOfContacts.Get("/:pocID", clubPointOfContactController.GetClubPointOfContact)
-	clubPointOfContacts.Post("/", clubParams.AuthMiddleware.ClubAuthorizeById, clubPointOfContactController.CreateClubPointOfContact)
-	clubPointOfContacts.Patch("/:pocID", clubParams.AuthMiddleware.ClubAuthorizeById, clubPointOfContactController.UpdateClubPointOfContact)
-	clubPointOfContacts.Patch("/:pocID/photo", clubParams.AuthMiddleware.ClubAuthorizeById, clubPointOfContactController.UpdateClubPointOfContactPhoto)
-	clubPointOfContacts.Delete("/:pocID", clubParams.AuthMiddleware.ClubAuthorizeById, clubPointOfContactController.DeleteClubPointOfContact)
+	clubPointOfContacts.Post(
+		"/",
+		middleware.AttachExtractor(clubParams.AuthMiddleware.ClubAuthorizeById, middleware.ExtractFromParams("clubID")),
+		clubPointOfContactController.CreateClubPointOfContact,
+	)
+	clubPointOfContacts.Patch(
+		"/:pocID",
+		middleware.AttachExtractor(clubParams.AuthMiddleware.ClubAuthorizeById, middleware.ExtractFromParams("clubID")),
+		clubPointOfContactController.UpdateClubPointOfContact,
+	)
+	clubPointOfContacts.Patch(
+		"/:pocID/photo",
+		middleware.AttachExtractor(clubParams.AuthMiddleware.ClubAuthorizeById, middleware.ExtractFromParams("clubID")),
+		clubPointOfContactController.UpdateClubPointOfContactPhoto,
+	)
+	clubPointOfContacts.Delete(
+		"/:pocID",
+		middleware.AttachExtractor(clubParams.AuthMiddleware.ClubAuthorizeById, middleware.ExtractFromParams("clubID")),
+		clubPointOfContactController.DeleteClubPointOfContact,
+	)
 }

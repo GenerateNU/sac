@@ -42,7 +42,7 @@ func readLocal(v *viper.Viper, path string, useDevDotEnv bool) (*Settings, error
 		return nil, fmt.Errorf("failed to read OpenAI settings: %w", err)
 	}
 
-	settings.OpenAISettings = *openAISettings
+	settings.OpenAI = *openAISettings
 
 	awsSettings, err := readAWSSettings()
 	if err != nil {
@@ -56,7 +56,7 @@ func readLocal(v *viper.Viper, path string, useDevDotEnv bool) (*Settings, error
 		return nil, fmt.Errorf("failed to read Resend settings: %w", err)
 	}
 
-	settings.ResendSettings = *resendSettings
+	settings.Resend = *resendSettings
 
 	return settings, nil
 }

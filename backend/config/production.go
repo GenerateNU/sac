@@ -14,6 +14,7 @@ import (
 type ProductionSettings struct {
 	Database    ProductionDatabaseSettings    `yaml:"database"`
 	Application ProductionApplicationSettings `yaml:"application"`
+	Calendar    CalendarSettings              `yaml:"calendar"`
 }
 
 type ProductionDatabaseSettings struct {
@@ -113,8 +114,10 @@ func readProd(v *viper.Viper) (*Settings, error) {
 			AccessKey:  authAccessKey,
 			RefreshKey: authRefreshKey,
 		},
-		OpenAISettings: *openAISettings,
-		AWS:            *awsSettings,
-		ResendSettings: *resendSettings,
+		Pinecone: *pineconeSettings,
+		OpenAI:   *openAISettings,
+		AWS:      *awsSettings,
+		Resend:   *resendSettings,
+		Calendar: prodSettings.Calendar,
 	}, nil
 }

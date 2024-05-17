@@ -31,7 +31,7 @@ func (t *TagService) CreateTag(tagBody models.CreateTagRequestBody) (*models.Tag
 		return nil, err
 	}
 
-	tag, err := utilities.MapRequestToModel(tagBody, &models.Tag{})
+	tag, err := utilities.MapJsonTags(tagBody, &models.Tag{})
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (t *TagService) UpdateTag(tagID string, tagBody models.UpdateTagRequestBody
 		return nil, err
 	}
 
-	tag, err := utilities.MapRequestToModel(tagBody, &models.Tag{})
+	tag, err := utilities.MapJsonTags(tagBody, &models.Tag{})
 	if err != nil {
 		return nil, err
 	}

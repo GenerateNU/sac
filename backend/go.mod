@@ -6,7 +6,7 @@ require (
 	github.com/a-h/templ v0.2.680
 	github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5
 	github.com/aws/aws-sdk-go v1.53.0
-	github.com/garrettladley/fiberpaginate v0.1.1
+	github.com/garrettladley/fiberpaginate v1.0.1
 	github.com/garrettladley/mattress v0.4.0
 	github.com/go-playground/validator/v10 v10.20.0
 	github.com/go-resty/resty/v2 v2.13.1
@@ -18,7 +18,6 @@ require (
 	github.com/huandu/go-assert v1.1.6
 	github.com/joho/godotenv v1.5.1
 	github.com/mcnijman/go-emailaddress v1.1.1
-	github.com/mitchellh/mapstructure v1.5.0
 	github.com/resend/resend-go/v2 v2.6.0
 	github.com/spf13/viper v1.18.2
 	github.com/swaggo/swag v1.16.3
@@ -44,6 +43,7 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/lib/pq v1.10.9 // indirect
+	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 )
 
@@ -59,6 +59,7 @@ require (
 	github.com/go-openapi/swag v0.23.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
+	github.com/go-viper/mapstructure/v2 v2.0.0-alpha.1
 	github.com/golang-migrate/migrate/v4 v4.17.1
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect

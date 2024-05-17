@@ -9,32 +9,38 @@ import (
 type EventType string
 
 const (
-	Open        EventType = "open"
-	MembersOnly EventType = "membersOnly"
-)
-
-type RecurringType string
-
-const (
-	Daily   RecurringType = "daily"
-	Weekly  RecurringType = "weekly"
-	Monthly RecurringType = "monthly"
+	Hybrid   EventType = "hybrid"
+	InPerson EventType = "in_person"
+	Virtual  EventType = "virtual"
 )
 
 type Event struct {
 	Model
 
+	// details
 	Name        string     `json:"name" validate:"required,max=255"`
 	Preview     string     `json:"preview" validate:"required,max=255"`
-	Content     string     `json:"content" validate:"required,max=255"`
-	StartTime   time.Time  `json:"start_time" validate:"required,ltecsfield=EndTime"`
-	EndTime     time.Time  `json:"end_time" validate:"required,gtecsfield=StartTime"`
-	Location    string     `json:"location" validate:"required,max=255"`
-	EventType   EventType  `json:"event_type" validate:"required,max=255,oneof=open membersOnly"`
-	IsRecurring bool       `json:"is_recurring" validate:"-"`
-	MeetingLink string     `json:"meeting_link" validate:"url"`
+	Description string     `json:"description" validate:"required,max=255"`
 	Host        *uuid.UUID `json:"host" validate:"uuid4"`
 
+	// geoshi
+	EventType EventType `json:"event_type" validate:"required,max=255,oneof=hybrid in_person virtual"`
+	Location  string    `json:"location" validate:"max=255,required_if=EventType in_person,required_if=EventType hybrid"`
+	Link      string    `json:"link" validate:"url,max=255,required_if=EventType virtual,required_if=EventType hybrid"`
+
+	// internal housekeeping states
+	IsPublic   bool `json:"is_public" validate:"required"`
+	IsDraft    bool `json:"is_draft" validate:"required"`
+	IsArchived bool `json:"is_archived" validate:"required"`
+
+	// timing
+	StartTime time.Time `json:"start_time" validate:"required,ltefield=EndTime"`
+	EndTime   time.Time `json:"end_time" validate:"required,gtefield=StartTime"`
+
+	// series
+	SeriesID *uuid.UUID `json:"-" validate:"-"`
+
+	// bridgerton
 	RSVP         []User         `gorm:"many2many:user_event_rsvps;" json:"-" validate:"-"`
 	Waitlist     []User         `gorm:"many2many:user_event_waitlists;" json:"-" validate:"-"`
 	Clubs        []Club         `gorm:"many2many:club_events;" json:"-" validate:"-"`
@@ -42,78 +48,65 @@ type Event struct {
 	Notification []Notification `gorm:"polymorphic:Reference;" json:"-" validate:"-"`
 }
 
-type Series struct {
-	Model
-	RecurringType  RecurringType `json:"recurring_type" validate:"max=255"`
-	MaxOccurrences int           `json:"max_occurrences" validate:"min=1"`
-	Events         []Event       `gorm:"many2many:event_series;" json:"events" validate:"-"`
-}
-
-type EventSeries struct {
-	EventID  uuid.UUID `json:"event_id" validate:"uuid4"`
-	Event    Event     `json:"-" validate:"-"`
-	SeriesID uuid.UUID `json:"series_id" validate:"uuid4"`
-	Series   Series    `json:"-" validate:"-"`
-}
-
-// Not needed for now, we will just update the events separately
-type EventInstanceException struct {
-	Model
-	EventID       int `json:"event_id" validate:"required"`
-	Event         Event
-	IsRescheduled bool      `json:"is_rescheduled" validate:"required"`
-	IsCancelled   bool      `json:"is_cancelled" validate:"required"`
-	StartTime     time.Time `json:"start_time" validate:"required,datetime,ltecsfield=EndTime"`
-	EndTime       time.Time `json:"end_time" validate:"required,datetime,gtecsfield=StartTime"`
-}
-
-// TODO We will likely need to update the create and update structs to account for recurring series
 type CreateEventRequestBody struct {
+	// details
 	Name        string    `json:"name" validate:"required,max=255"`
 	Preview     string    `json:"preview" validate:"required,max=255"`
-	Content     string    `json:"content" validate:"required,max=255"`
-	StartTime   time.Time `json:"start_time" validate:"required,ltecsfield=EndTime"`
-	EndTime     time.Time `json:"end_time" validate:"required,gtecsfield=StartTime"`
-	Location    string    `json:"location" validate:"required,max=255"`
-	EventType   EventType `json:"event_type" validate:"required,max=255,oneof=open membersOnly"`
-	IsRecurring *bool     `json:"is_recurring" validate:"required"`
+	Description string    `json:"description" validate:"required,max=255"`
+	HostID      uuid.UUID `json:"host" validate:"uuid4"` // TODO ensure you are an admin of the host
 
-	// TODO club/tag/notification logic
-	Host         *uuid.UUID     `json:"host" validate:"required,uuid4"`
-	Clubs        []Club         `json:"-" validate:"omitempty"`
-	Tag          []Tag          `json:"-" validate:"omitempty"`
-	Notification []Notification `json:"-" validate:"omitempty"`
+	// geoshi
+	EventType EventType `json:"event_type" validate:"required,max=255,oneof=hybrid in_person virtual"`
+	Location  string    `json:"location" validate:"max=255,required_if=EventType in_person,required_if=EventType hybrid"`
+	Link      string    `json:"link" validate:"http_url,max=255,required_if=EventType virtual,required_if=EventType hybrid"`
 
-	// TODO validate if isRecurring, then series is required
-	Series CreateSeriesRequestBody `json:"series" validate:"-"`
+	// internal housekeeping states
+	IsPublic   *bool `json:"is_public" validate:"required"`
+	IsDraft    *bool `json:"is_draft" validate:"required"` // some logic here. drafts shouldn't be public
+	IsArchived *bool `json:"is_archived" validate:"required"`
+
+	// timing
+	StartTime time.Time `json:"start_time" validate:"required,ltefield=EndTime"`
+	EndTime   time.Time `json:"end_time" validate:"required,gtefield=StartTime"`
 }
 
-type CreateSeriesRequestBody struct {
-	RecurringType  RecurringType `json:"recurring_type" validate:"required,max=255,oneof=daily weekly monthly"`
-	MaxOccurrences int           `json:"max_occurrences" validate:"required,min=2"`
+func (c *CreateEventRequestBody) Into() *Event {
+	return &Event{
+		Name:        c.Name,
+		Preview:     c.Preview,
+		Description: c.Description,
+		Host:        &c.HostID,
+		EventType:   c.EventType,
+		Location:    c.Location,
+		Link:        c.Link,
+		IsPublic:    *c.IsPublic,
+		IsDraft:     *c.IsDraft,
+		IsArchived:  *c.IsArchived,
+		StartTime:   c.StartTime,
+		EndTime:     c.EndTime,
+	}
 }
 
 type UpdateEventRequestBody struct {
-	Name      string    `json:"name" validate:"omitempty,max=255"`
-	Preview   string    `json:"preview" validate:"omitempty,max=255"`
-	Content   string    `json:"content" validate:"omitempty,max=255"`
+	// details
+	Name        string     `json:"name" validate:"omitempty,max=255"`
+	Preview     string     `json:"preview" validate:"omitempty,max=255"`
+	Description string     `json:"description" validate:"omitempty,max=255"`
+	HostID      *uuid.UUID `json:"host" validate:"omitempty,uuid4"`
+
+	// geoshi
+	EventType EventType `json:"event_type" validate:"omitempty,max=255,oneof=hybrid in_person virtual"`
+	Location  string    `json:"location" validate:"omitempty,max=255,required_if=EventType in_person,required_if=EventType hybrid"`
+	Link      string    `json:"link" validate:"omitempty,url,max=255,required_if=EventType virtual,required_if=EventType hybrid"`
+
+	// internal housekeeping states
+	IsPublic   bool `json:"is_public" validate:"omitempty"`
+	IsDraft    bool `json:"is_draft" validate:"omitempty"`
+	IsArchived bool `json:"is_archived" validate:"omitempty"`
+
+	// timing
 	StartTime time.Time `json:"start_time" validate:"omitempty,ltecsfield=EndTime"`
 	EndTime   time.Time `json:"end_time" validate:"omitempty,gtecsfield=StartTime"`
-	Location  string    `json:"location" validate:"omitempty,max=255"`
-	EventType EventType `json:"event_type" validate:"omitempty,max=255,oneof=open membersOnly"`
 
-	Host         *uuid.UUID     `json:"host" validate:"omitempty"`
-	RSVP         []User         `json:"-" validate:"omitempty"`
-	Waitlist     []User         `json:"-" validate:"omitempty"`
-	Clubs        []Club         `json:"-" validate:"omitempty"`
-	Tag          []Tag          `json:"-" validate:"omitempty"`
-	Notification []Notification `json:"-" validate:"omitempty"`
-}
-
-// TODO: probably need to make changes to this to update the events as well
-type UpdateSeriesRequestBody struct {
-	RecurringType  RecurringType `json:"recurring_type" validate:"omitempty,max=255,oneof=daily weekly monthly"`
-	MaxOccurrences int           `json:"max_occurrences" validate:"omitempty,min=2"`
-
-	EventDetails UpdateEventRequestBody `json:"event_details" validate:"omitempty"`
+	UpdateAllInSeries *bool `json:"update_all_in_series" validate:"required"`
 }
