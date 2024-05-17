@@ -8,7 +8,7 @@ import (
 
 type ClubContactServiceInterface interface {
 	GetClubContacts(clubID string) ([]models.Contact, error)
-	PutClubContact(clubID string, contactBody models.PutContactRequestBody) (*models.Contact, error)
+	PutClubContact(clubID string, contactBody PutContactRequestBody) (*models.Contact, error)
 }
 
 type ClubContactService struct {
@@ -28,7 +28,7 @@ func (c *ClubContactService) GetClubContacts(clubID string) ([]models.Contact, e
 	return GetClubContacts(c.DB, *idAsUUID)
 }
 
-func (c *ClubContactService) PutClubContact(clubID string, contactBody models.PutContactRequestBody) (*models.Contact, error) {
+func (c *ClubContactService) PutClubContact(clubID string, contactBody PutContactRequestBody) (*models.Contact, error) {
 	idAsUUID, err := utilities.ValidateID(clubID)
 	if err != nil {
 		return nil, err

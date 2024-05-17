@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/GenerateNU/sac/backend/auth"
-	"github.com/GenerateNU/sac/backend/entities/models"
+	authEntities "github.com/GenerateNU/sac/backend/entities/auth"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/garrettladley/fiberpaginate"
 
@@ -108,7 +108,7 @@ func (u *UserController) GetUser(c *fiber.Ctx) error {
 // @Accept		json
 // @Produce		json
 // @Param		userID		path	string	true	"User ID"
-// @Param		userBody	body	models.UpdateUserRequestBody	true	"User Body"
+// @Param		userBody	body	UpdateUserRequestBody	true	"User Body"
 // @Success		200	  {object}	  models.User
 // @Failure     400   {object}    error
 // @Failure     401   {object}    error
@@ -116,7 +116,7 @@ func (u *UserController) GetUser(c *fiber.Ctx) error {
 // @Failure     500   {object}    error
 // @Router		/users/{userID}/  [patch]
 func (u *UserController) UpdateUser(c *fiber.Ctx) error {
-	var user models.UpdateUserRequestBody
+	var user UpdateUserRequestBody
 
 	if err := c.BodyParser(&user); err != nil {
 		return utilities.InvalidJSON()
@@ -139,7 +139,7 @@ func (u *UserController) UpdateUser(c *fiber.Ctx) error {
 // @Accept		json
 // @Produce		json
 // @Param		userID		path	string	true	"User ID"
-// @Param		passwordBody	body	models.UpdatePasswordRequestBody	true	"Password Body"
+// @Param		passwordBody	body	authEntities.UpdatePasswordRequestBody	true	"Password Body"
 // @Success		200	  {string}	    utilities.SuccessResponse
 // @Failure     400   {object}      error
 // @Failure     401   {object}      error
@@ -147,7 +147,7 @@ func (u *UserController) UpdateUser(c *fiber.Ctx) error {
 // @Failure     500   {object}      error
 // @Router		/users/{userID}/password  [patch]
 func (u *UserController) UpdatePassword(c *fiber.Ctx) error {
-	var passwordBody models.UpdatePasswordRequestBody
+	var passwordBody authEntities.UpdatePasswordRequestBody
 
 	if err := c.BodyParser(&passwordBody); err != nil {
 		return utilities.InvalidJSON()

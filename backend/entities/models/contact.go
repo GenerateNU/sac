@@ -48,8 +48,3 @@ type Contact struct {
 
 	ClubID uuid.UUID `json:"-"`
 }
-
-type PutContactRequestBody struct {
-	Type    ContactType `json:"type" validate:"required,max=255,oneof=facebook instagram x linkedin youtube github slack discord email customSite,contact_pointer"`
-	Content string      `json:"content" validate:"required,contact_pointer,max=255"`
-}

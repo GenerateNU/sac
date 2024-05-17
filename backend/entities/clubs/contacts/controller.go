@@ -3,7 +3,6 @@ package contacts
 import (
 	"net/http"
 
-	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/fiber/v2"
 )
@@ -47,7 +46,7 @@ func (cc *ClubContactController) GetClubContacts(c *fiber.Ctx) error {
 // @Accept		json
 // @Produce		json
 // @Param		clubID		path	string	true	"Club ID"
-// @Param		contactBody	body	models.PutContactRequestBody	true	"Contact Body"
+// @Param		contactBody	body	PutContactRequestBody	true	"Contact Body"
 // @Success		201	  {object}	  models.Contact
 // @Failure     400   {object}    error
 // @Failure     401   {object}    error
@@ -55,7 +54,7 @@ func (cc *ClubContactController) GetClubContacts(c *fiber.Ctx) error {
 // @Failure     500   {object}    error
 // @Router		/clubs/{clubID}/contacts/  [put]
 func (cc *ClubContactController) PutContact(c *fiber.Ctx) error {
-	var contactBody models.PutContactRequestBody
+	var contactBody PutContactRequestBody
 
 	if err := c.BodyParser(&contactBody); err != nil {
 		return utilities.InvalidJSON()

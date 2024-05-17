@@ -51,7 +51,7 @@ func GetClubPointOfContactByClubIDAndEmail(db *gorm.DB, clubID uuid.UUID, email 
 	return &pointOfContact, nil
 }
 
-func CreateClubPointOfContact(db *gorm.DB, clubID uuid.UUID, pointOfContactBody models.CreatePointOfContactBody) (*models.PointOfContact, error) {
+func CreateClubPointOfContact(db *gorm.DB, clubID uuid.UUID, pointOfContactBody CreatePointOfContactBody) (*models.PointOfContact, error) {
 	pointOfContact := models.PointOfContact{
 		Name:     pointOfContactBody.Name,
 		Email:    pointOfContactBody.Email,
@@ -65,7 +65,7 @@ func CreateClubPointOfContact(db *gorm.DB, clubID uuid.UUID, pointOfContactBody 
 	return &pointOfContact, nil
 }
 
-func UpdateClubPointOfContact(db *gorm.DB, clubID uuid.UUID, pocID uuid.UUID, pointOfContactBody models.UpdatePointOfContactBody) (*models.PointOfContact, error) {
+func UpdateClubPointOfContact(db *gorm.DB, clubID uuid.UUID, pocID uuid.UUID, pointOfContactBody UpdatePointOfContactBody) (*models.PointOfContact, error) {
 	pointOfContact, err := GetClubPointOfContact(db, clubID, pocID)
 	if err != nil {
 		return nil, err

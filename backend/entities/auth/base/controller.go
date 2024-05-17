@@ -4,7 +4,9 @@ import (
 	"net/http"
 
 	"github.com/GenerateNU/sac/backend/auth"
+	authEntities "github.com/GenerateNU/sac/backend/entities/auth"
 	"github.com/GenerateNU/sac/backend/entities/models"
+	users "github.com/GenerateNU/sac/backend/entities/users/base"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/fiber/v2"
 )
@@ -25,14 +27,14 @@ func NewAuthController(authService AuthServiceInterface) *AuthController {
 // @Tags      	auth
 // @Accept		json
 // @Produce		json
-// @Param		loginBody	body	models.LoginUserResponseBody	true	"Login Body"
+// @Param		loginBody	body	authEntities.LoginResponseBody	true	"Login Body"
 // @Success		200	  {object}	    models.User
 // @Failure     400   {object}      error
 // @Failure     404   {object}		error
 // @Failure     500   {object}      error
 // @Router		/auth/login  [post]
 func (a *AuthController) Login(c *fiber.Ctx) error {
-	var userBody models.LoginUserResponseBody
+	var userBody authEntities.LoginResponseBody
 
 	if err := c.BodyParser(&userBody); err != nil {
 		return utilities.InvalidJSON()
@@ -59,14 +61,14 @@ func (a *AuthController) Login(c *fiber.Ctx) error {
 // @Tags      	auth
 // @Accept		json
 // @Produce		json
-// @Param		userBody	body	models.CreateUserRequestBody	true	"User Body"
+// @Param		userBody	body	CreateUserRequestBody	true	"User Body"
 // @Success		201	  {object}	    models.User
 // @Failure     400   {object}      error
 // @Failure     404   {object}		error
 // @Failure     500   {object}      error
 // @Router		/auth/register  [post]
 func (a *AuthController) Register(c *fiber.Ctx) error {
-	var userBody models.CreateUserRequestBody
+	var userBody users.CreateUserRequestBody
 
 	if err := c.BodyParser(&userBody); err != nil {
 		return utilities.InvalidJSON()
@@ -99,7 +101,7 @@ func (a *AuthController) Register(c *fiber.Ctx) error {
 // @Failure     500   {object}    error
 // @Router		/auth/refresh  [post]
 func (a *AuthController) Refresh(c *fiber.Ctx) error {
-	var refreshBody models.RefreshTokenRequestBody
+	var refreshBody authEntities.RefreshTokenRequestBody
 
 	if err := c.BodyParser(&refreshBody); err != nil {
 		return utilities.InvalidJSON()

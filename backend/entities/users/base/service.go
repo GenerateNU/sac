@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/GenerateNU/sac/backend/auth"
+	authEntities "github.com/GenerateNU/sac/backend/entities/auth"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/garrettladley/fiberpaginate"
 
@@ -16,8 +17,8 @@ type UserServiceInterface interface {
 	GetUsers(pageInfo fiberpaginate.PageInfo) ([]models.User, error)
 	GetMe(id string) (*models.User, error)
 	GetUser(id string) (*models.User, error)
-	UpdateUser(id string, userBody models.UpdateUserRequestBody) (*models.User, error)
-	UpdatePassword(id string, passwordBody models.UpdatePasswordRequestBody) error
+	UpdateUser(id string, userBody UpdateUserRequestBody) (*models.User, error)
+	UpdatePassword(id string, passwordBody authEntities.UpdatePasswordRequestBody) error
 	DeleteUser(id string) error
 }
 
@@ -56,13 +57,13 @@ func (u *UserService) GetUser(id string) (*models.User, error) {
 	return users.GetUser(u.DB, *idAsUUID)
 }
 
-func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBody) (*models.User, error) {
+func (u *UserService) UpdateUser(id string, userBody UpdateUserRequestBody) (*models.User, error) {
 	idAsUUID, idErr := utilities.ValidateID(id)
 	if idErr != nil {
 		return nil, idErr
 	}
 
-	if utilities.AtLeastOne(userBody, models.UpdateUserRequestBody{}) {
+	if utilities.AtLeastOne(userBody, UpdateUserRequestBody{}) {
 		return nil, errors.New("no fields to update")
 	}
 
@@ -78,7 +79,7 @@ func (u *UserService) UpdateUser(id string, userBody models.UpdateUserRequestBod
 	return UpdateUser(u.DB, *idAsUUID, *user)
 }
 
-func (u *UserService) UpdatePassword(id string, passwordBody models.UpdatePasswordRequestBody) error {
+func (u *UserService) UpdatePassword(id string, passwordBody authEntities.UpdatePasswordRequestBody) error {
 	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return err

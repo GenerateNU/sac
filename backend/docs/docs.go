@@ -83,7 +83,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.LoginUserResponseBody"
+                            "$ref": "#/definitions/models.LoginResponseBody"
                         }
                     }
                 ],
@@ -435,7 +435,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CategoryRequestBody"
+                            "$ref": "#/definitions/categories.CategoryRequestBody"
                         }
                     }
                 ],
@@ -605,7 +605,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CategoryRequestBody"
+                            "$ref": "#/definitions/categories.CategoryRequestBody"
                         }
                     }
                 ],
@@ -814,7 +814,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateClubRequestBody"
+                            "$ref": "#/definitions/CreateClubRequestBody"
                         }
                     }
                 ],
@@ -956,7 +956,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UpdateClubRequestBody"
+                            "$ref": "#/definitions/UpdateClubRequestBody"
                         }
                     }
                 ],
@@ -1057,7 +1057,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.PutContactRequestBody"
+                            "$ref": "#/definitions/PutContactRequestBody"
                         }
                     }
                 ],
@@ -1735,7 +1735,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateClubTagsRequestBody"
+                            "$ref": "#/definitions/CreateClubTagsRequestBody"
                         }
                     }
                 ],
@@ -2046,7 +2046,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateEventRequestBody"
+                            "$ref": "#/definitions/events.CreateEventRequestBody"
                         }
                     }
                 ],
@@ -2322,7 +2322,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UpdateEventRequestBody"
+                            "$ref": "#/definitions/events.UpdateEventRequestBody"
                         }
                     }
                 ],
@@ -2626,7 +2626,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateFileRequestBody"
+                            "$ref": "#/definitions/CreateFileRequestBody"
                         }
                     }
                 ],
@@ -2921,7 +2921,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateTagRequestBody"
+                            "$ref": "#/definitions/CreateTagRequestBody"
                         }
                     }
                 ],
@@ -3063,7 +3063,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UpdateTagRequestBody"
+                            "$ref": "#/definitions/UpdateTagRequestBody"
                         }
                     }
                 ],
@@ -3162,7 +3162,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateUserRequestBody"
+                            "$ref": "#/definitions/CreateUserRequestBody"
                         }
                     }
                 ],
@@ -3312,7 +3312,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UpdateUserRequestBody"
+                            "$ref": "#/definitions/UpdateUserRequestBody"
                         }
                     }
                 ],
@@ -3778,7 +3778,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.CategoryRequestBody": {
+        "categories.CategoryRequestBody": {
             "type": "object",
             "required": [
                 "name"
@@ -3987,7 +3987,7 @@ const docTemplate = `{
                 "CustomSite"
             ]
         },
-        "models.CreateClubRequestBody": {
+        "CreateClubRequestBody": {
             "type": "object",
             "required": [
                 "application_link",
@@ -4063,7 +4063,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.CreateClubTagsRequestBody": {
+        "CreateClubTagsRequestBody": {
             "type": "object",
             "required": [
                 "tags"
@@ -4077,7 +4077,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.CreateEventRequestBody": {
+        "events.CreateEventRequestBody": {
             "type": "object",
             "required": [
                 "content",
@@ -4142,7 +4142,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.CreateFileRequestBody": {
+        "CreateFileRequestBody": {
             "type": "object",
             "required": [
                 "owner_id",
@@ -4184,7 +4184,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.CreateTagRequestBody": {
+        "CreateTagRequestBody": {
             "type": "object",
             "required": [
                 "category_id",
@@ -4200,7 +4200,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.CreateUserRequestBody": {
+        "CreateUserRequestBody": {
             "type": "object",
             "required": [
                 "email",
@@ -4727,7 +4727,7 @@ const docTemplate = `{
                 "May"
             ]
         },
-        "models.LoginUserResponseBody": {
+        "models.LoginResponseBody": {
             "type": "object",
             "required": [
                 "email",
@@ -4988,7 +4988,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.PutContactRequestBody": {
+        "PutContactRequestBody": {
             "type": "object",
             "required": [
                 "content",
@@ -5125,7 +5125,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.UpdateClubRequestBody": {
+        "UpdateClubRequestBody": {
             "type": "object",
             "required": [
                 "application_link",
@@ -5193,7 +5193,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.UpdateEventRequestBody": {
+        "events.UpdateEventRequestBody": {
             "type": "object",
             "properties": {
                 "content": {
@@ -5258,7 +5258,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "event_details": {
-                    "$ref": "#/definitions/models.UpdateEventRequestBody"
+                    "$ref": "#/definitions/events.UpdateEventRequestBody"
                 },
                 "max_occurrences": {
                     "type": "integer",
@@ -5279,7 +5279,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.UpdateTagRequestBody": {
+        "UpdateTagRequestBody": {
             "type": "object",
             "properties": {
                 "category_id": {
@@ -5291,7 +5291,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.UpdateUserRequestBody": {
+        "UpdateUserRequestBody": {
             "type": "object",
             "properties": {
                 "college": {

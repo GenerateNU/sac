@@ -3,7 +3,6 @@ package tags
 import (
 	"net/http"
 
-	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/fiber/v2"
 )
@@ -25,7 +24,7 @@ func NewClubTagController(clubTagService ClubTagServiceInterface) *ClubTagContro
 // @Accept		json
 // @Produce		json
 // @Param		clubID		path	string	true	"Club ID"
-// @Param		clubTagsBody	body	models.CreateClubTagsRequestBody	true	"Club Tags Body"
+// @Param		clubTagsBody	body	CreateClubTagsRequestBody	true	"Club Tags Body"
 // @Success		201	  {object}	  []models.Tag
 // @Failure     400   {object}    error
 // @Failure     401   {object}    error
@@ -33,7 +32,7 @@ func NewClubTagController(clubTagService ClubTagServiceInterface) *ClubTagContro
 // @Failure     500   {object}    error
 // @Router		/clubs/{clubID}/tags/  [post]
 func (l *ClubTagController) CreateClubTags(c *fiber.Ctx) error {
-	var clubTagsBody models.CreateClubTagsRequestBody
+	var clubTagsBody CreateClubTagsRequestBody
 	if err := c.BodyParser(&clubTagsBody); err != nil {
 		return utilities.InvalidJSON()
 	}

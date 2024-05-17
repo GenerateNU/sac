@@ -12,9 +12,9 @@ import (
 
 type TagServiceInterface interface {
 	GetTags() ([]models.Tag, error)
-	CreateTag(tagBody models.CreateTagRequestBody) (*models.Tag, error)
+	CreateTag(tagBody CreateTagRequestBody) (*models.Tag, error)
 	GetTag(id string) (*models.Tag, error)
-	UpdateTag(id string, tagBody models.UpdateTagRequestBody) (*models.Tag, error)
+	UpdateTag(id string, tagBody UpdateTagRequestBody) (*models.Tag, error)
 	DeleteTag(id string) error
 }
 
@@ -26,7 +26,7 @@ func NewTagService(serviceParams types.ServiceParams) TagServiceInterface {
 	return &TagService{serviceParams}
 }
 
-func (t *TagService) CreateTag(tagBody models.CreateTagRequestBody) (*models.Tag, error) {
+func (t *TagService) CreateTag(tagBody CreateTagRequestBody) (*models.Tag, error) {
 	if err := utilities.Validate(t.Validate, tagBody); err != nil {
 		return nil, err
 	}
@@ -52,13 +52,13 @@ func (t *TagService) GetTag(tagID string) (*models.Tag, error) {
 	return tags.GetTag(t.DB, *tagIDAsUUID)
 }
 
-func (t *TagService) UpdateTag(tagID string, tagBody models.UpdateTagRequestBody) (*models.Tag, error) {
+func (t *TagService) UpdateTag(tagID string, tagBody UpdateTagRequestBody) (*models.Tag, error) {
 	tagIDAsUUID, err := utilities.ValidateID(tagID)
 	if err != nil {
 		return nil, err
 	}
 
-	if utilities.AtLeastOne(tagBody, models.UpdateTagRequestBody{}) {
+	if utilities.AtLeastOne(tagBody, UpdateTagRequestBody{}) {
 		return nil, errors.New("at least one field must be present")
 	}
 
