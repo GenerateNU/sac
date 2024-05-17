@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func GetUsers(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.User, error) {
@@ -44,7 +45,7 @@ func UpdateUser(db *gorm.DB, id uuid.UUID, user models.User) (*models.User, erro
 		return nil, err
 	}
 
-	if err := db.Model(&existingUser).Updates(&user).Error; err != nil {
+	if err := db.Model(&existingUser).Clauses(clause.Returning{}).Updates(&user).Error; err != nil {
 		return nil, err
 	}
 
