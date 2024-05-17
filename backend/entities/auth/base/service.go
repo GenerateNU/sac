@@ -20,6 +20,7 @@ import (
 
 type AuthServiceInterface interface {
 	GetRole(id string) (*models.UserRole, error)
+	Register(userBody models.CreateUserRequestBody) (*models.User, *auth.Token, error)
 	Login(userBody models.LoginUserResponseBody) (*models.User, *auth.Token, error)
 	Refresh(refreshToken string) (*auth.Token, error)
 	Logout(c *fiber.Ctx) error
@@ -72,6 +73,49 @@ func (a *AuthService) Login(loginBody models.LoginUserResponseBody) (*models.Use
 			Issuer:   user.ID.String(),
 		},
 	})
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return user, tokens, nil
+}
+
+func (a *AuthService) Register(userBody models.CreateUserRequestBody) (*models.User, *auth.Token, error) {
+	if err := utilities.Validate(a.Validate, userBody); err != nil {
+		return nil, nil, err
+	}
+
+	if err := auth.ValidatePassword(userBody.Password); err != nil {
+		return nil, nil, err
+	}
+
+	user, err := utilities.MapRequestToModel(userBody, &models.User{})
+	if err != nil {
+		return nil, nil, err
+	}
+
+	passwordHash, err := auth.ComputeHash(userBody.Password)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	user.Email = utilities.NormalizeEmail(userBody.Email)
+	user.PasswordHash = *passwordHash
+
+	if err := a.Integrations.Email.SendWelcomeEmail(fmt.Sprintf("%s %s", user.FirstName, user.LastName), user.Email); err != nil {
+		return nil, nil, fmt.Errorf("failed to send welcome email: %w", err)
+	}
+
+	user, err = CreateUser(a.DB, user)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if err := a.SendCode(user.Email); err != nil {
+		return nil, nil, err
+	}
+
+	_, tokens, err := a.Login(models.LoginUserResponseBody{Email: user.Email, Password: userBody.Password})
 	if err != nil {
 		return nil, nil, err
 	}

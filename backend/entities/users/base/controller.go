@@ -19,42 +19,6 @@ func NewUserController(userService UserServiceInterface) *UserController {
 	return &UserController{userService: userService}
 }
 
-// CreateUser godoc
-//
-// @Summary		Create a user
-// @Description	Creates a user
-// @ID			create-user
-// @Tags      	user
-// @Accept		json
-// @Produce		json
-// @Param		userBody	body	models.CreateUserRequestBody	true	"User Body"
-// @Success		201	  {object}	  models.User
-// @Failure     400   {object}    error
-// @Failure     401   {object}    error
-// @Failure     404   {object}    error
-// @Failure     409   {object}    error
-// @Failure     500   {object}    error
-// @Router		/users/  [post]
-func (u *UserController) CreateUser(c *fiber.Ctx) error {
-	var userBody models.CreateUserRequestBody
-
-	if err := c.BodyParser(&userBody); err != nil {
-		return utilities.InvalidJSON()
-	}
-
-	user, tokens, err := u.userService.CreateUser(userBody)
-	if err != nil {
-		return err
-	}
-
-	err = auth.SetResponseTokens(c, tokens)
-	if err != nil {
-		return err
-	}
-
-	return c.Status(http.StatusCreated).JSON(user)
-}
-
 // GetUsers godoc
 //
 // @Summary		Retrieve all users
