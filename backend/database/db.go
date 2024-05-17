@@ -82,6 +82,11 @@ func CreateSuperUserIfNotExists(settings config.Settings, db *gorm.DB) error {
 
 func createSuperUser(settings config.Settings, db *gorm.DB) error {
 	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
 
 	if err := tx.Error; err != nil {
 		return err
@@ -144,5 +149,5 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 		return tx.Commit().Error
 	}
 
-	return nil
+	return tx.Commit().Error
 }

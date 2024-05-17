@@ -38,6 +38,11 @@ func CreateClubMember(db *gorm.DB, clubID uuid.UUID, userID uuid.UUID) error {
 	}
 
 	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
 
 	var count int64
 	if err := tx.Model(&models.Membership{}).Where("user_id = ? AND club_id = ?", userID, clubID).Count(&count).Error; err != nil {
@@ -63,11 +68,7 @@ func CreateClubMember(db *gorm.DB, clubID uuid.UUID, userID uuid.UUID) error {
 		return err
 	}
 
-	if err := tx.Commit().Error; err != nil {
-		return err
-	}
-
-	return nil
+	return tx.Commit().Error
 }
 
 func DeleteClubMember(db *gorm.DB, clubID uuid.UUID, userID uuid.UUID) error {
@@ -82,6 +83,11 @@ func DeleteClubMember(db *gorm.DB, clubID uuid.UUID, userID uuid.UUID) error {
 	}
 
 	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
 
 	if err := tx.Model(&user).Association("Member").Delete(club); err != nil {
 		tx.Rollback()
@@ -98,9 +104,5 @@ func DeleteClubMember(db *gorm.DB, clubID uuid.UUID, userID uuid.UUID) error {
 		return err
 	}
 
-	if err := tx.Commit().Error; err != nil {
-		return err
-	}
-
-	return nil
+	return tx.Commit().Error
 }
