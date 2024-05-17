@@ -8,14 +8,13 @@ import (
 )
 
 type Settings struct {
-	Application      ApplicationSettings
-	Database         DatabaseSettings
-	SuperUser        SuperUserSettings
-	Auth             AuthSettings
-	AWS              AWSSettings
-	PineconeSettings PineconeSettings
-	OpenAISettings   OpenAISettings
-	ResendSettings   ResendSettings
+	Application    ApplicationSettings
+	Database       DatabaseSettings
+	SuperUser      SuperUserSettings
+	Auth           AuthSettings
+	AWS            AWSSettings
+	OpenAISettings OpenAISettings
+	ResendSettings ResendSettings
 }
 
 type intermediateSettings struct {

@@ -15,7 +15,7 @@ import (
 
 func GetClubs(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Club, error) {
 	query := db.Model(&models.Club{})
-	var clubs models.Clubs
+	var clubs []models.Club
 
 	if err := query.Scopes(utilities.IntoScope(pageInfo, query)).Find(&clubs).Error; err != nil {
 		return nil, err

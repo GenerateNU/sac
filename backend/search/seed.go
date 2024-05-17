@@ -1,45 +1,21 @@
 package search
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 
+	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"gorm.io/gorm"
-
+	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/go-resty/resty/v2"
+	"gorm.io/gorm"
 )
 
-type SearchClientInterface interface {
-	Seed(db *gorm.DB) error
+func fullUrl(endpoint string) string {
+	return fmt.Sprintf("%s/%s", constants.SEARCH_URL, endpoint)
 }
 
-type OpenSearchClient struct {
-	Url string
-}
-
-func NewOpenSearchClient(Url string) SearchClientInterface {
-	return &OpenSearchClient{
-		Url: Url,
-	}
-}
-
-func jsonString(p map[string]interface{}) (string, error) {
-	jsonData, err := json.Marshal(p)
-
-	if err != nil {
-		return "", err
-	}
-
-	return string(jsonData), nil
-}
-
-func (c *OpenSearchClient) fullUrl(endpoint string) string {
-	return fmt.Sprintf("%s/%s", c.Url, endpoint)
-}
-
-func (c *OpenSearchClient) Seed(db *gorm.DB) error {
+func Seed(db *gorm.DB) error {
 	var clubs []models.Club
 
 	if err := db.Find(&clubs).Error; err != nil {
@@ -49,7 +25,7 @@ func (c *OpenSearchClient) Seed(db *gorm.DB) error {
 	var requestBodyBuilder strings.Builder
 
 	for _, club := range clubs {
-		indexData, err := jsonString(map[string]interface{}{
+		indexData, err := utilities.ToJsonString(map[string]interface{}{
 			"create": map[string]interface{}{
 				"_index": "clubs",
 				"_id":    club.ID.String(),
@@ -60,7 +36,7 @@ func (c *OpenSearchClient) Seed(db *gorm.DB) error {
 			return err
 		}
 
-		bodyData, err := jsonString(map[string]interface{}{
+		bodyData, err := utilities.ToJsonString(map[string]interface{}{
 			"Name":                 club.Name,
 			"Preview":              club.Preview,
 			"Description":          club.Description,
@@ -84,7 +60,7 @@ func (c *OpenSearchClient) Seed(db *gorm.DB) error {
 	resp, err := client.R().
 		SetHeader("Content-Type", "application/json").
 		SetBody(requestBodyBuilder.String()).
-		Post(c.fullUrl("_bulk"))
+		Post(fullUrl("_bulk"))
 
 	if err != nil {
 		return err

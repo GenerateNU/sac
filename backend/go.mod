@@ -20,7 +20,6 @@ require (
 	github.com/mcnijman/go-emailaddress v1.1.1
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/resend/resend-go/v2 v2.6.0
-	github.com/sahilm/fuzzy v0.1.1
 	github.com/spf13/viper v1.18.2
 	github.com/swaggo/swag v1.16.3
 	golang.org/x/crypto v0.23.0

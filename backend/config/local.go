@@ -37,13 +37,6 @@ func readLocal(v *viper.Viper, path string, useDevDotEnv bool) (*Settings, error
 		return nil, fmt.Errorf("failed to load %s/.env.template: %w", path, err)
 	}
 
-	pineconeSettings, err := readPineconeSettings()
-	if err != nil {
-		return nil, fmt.Errorf("failed to read Pinecone settings: %w", err)
-	}
-
-	settings.PineconeSettings = *pineconeSettings
-
 	openAISettings, err := readOpenAISettings()
 	if err != nil {
 		return nil, fmt.Errorf("failed to read OpenAI settings: %w", err)

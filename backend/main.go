@@ -13,7 +13,7 @@ import (
 	"github.com/GenerateNU/sac/backend/integrations"
 	"github.com/GenerateNU/sac/backend/integrations/email"
 	"github.com/GenerateNU/sac/backend/integrations/file"
-	"github.com/GenerateNU/sac/backend/integrations/search"
+	"github.com/GenerateNU/sac/backend/search"
 	"github.com/GenerateNU/sac/backend/server"
 )
 
@@ -34,9 +34,8 @@ func Exit(format string, a ...interface{}) {
 
 func configureIntegrations(config *config.Settings) integrations.Integrations {
 	integrations := integrations.Integrations{
-		Search: search.NewOpenSearchClient("http://127.0.0.1:9200"),
-		File:   file.NewAWSProvider(config.AWS),
-		Email:  email.NewResendClient(config.ResendSettings, true),
+		File:  file.NewAWSProvider(config.AWS),
+		Email: email.NewResendClient(config.ResendSettings, true),
 	}
 	return integrations
 }
@@ -76,7 +75,7 @@ func main() {
 	integrations := configureIntegrations(config)
 
 	if *onlySeedSearch {
-		integrations.Search.Seed(db)
+		search.Seed(db)
 		return
 	}
 

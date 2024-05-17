@@ -14,6 +14,7 @@ import (
 	events "github.com/GenerateNU/sac/backend/entities/events/base"
 	files "github.com/GenerateNU/sac/backend/entities/files/base"
 	pocs "github.com/GenerateNU/sac/backend/entities/pocs/base"
+	search "github.com/GenerateNU/sac/backend/entities/search/base"
 	tags "github.com/GenerateNU/sac/backend/entities/tags/base"
 	users "github.com/GenerateNU/sac/backend/entities/users/base"
 	"github.com/GenerateNU/sac/backend/integrations"
@@ -81,6 +82,7 @@ func allRoutes(app *fiber.App, routeParams types.RouteParams) {
 	categories.CategoryRoutes(routeParams)
 	events.Event(routeParams)
 	files.File(routeParams)
+	search.Search(routeParams)
 }
 
 func newFiberApp(appSettings config.ApplicationSettings) *fiber.App {
