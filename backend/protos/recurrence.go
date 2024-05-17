@@ -148,31 +148,11 @@ func (r *Recurrence) ReccurUntil(start time.Time, end time.Time, termination tim
 	current := start
 	currentEnd := end
 	for current.Before(termination) {
-		if current.After(currentEnd) {
+		if current.After(termination) && currentEnd.After(termination) {
 			break
 		}
 
-		if r.HappensOnMonday && current.Weekday() == time.Monday {
-			result = append(result, Occurrence{current, currentEnd})
-		}
-		if r.HappensOnTuesday && current.Weekday() == time.Tuesday {
-			result = append(result, Occurrence{current, currentEnd})
-		}
-		if r.HappensOnWednesday && current.Weekday() == time.Wednesday {
-			result = append(result, Occurrence{current, currentEnd})
-		}
-		if r.HappensOnThursday && current.Weekday() == time.Thursday {
-			result = append(result, Occurrence{current, currentEnd})
-		}
-		if r.HappensOnFriday && current.Weekday() == time.Friday {
-			result = append(result, Occurrence{current, currentEnd})
-		}
-		if r.HappensOnSaturday && current.Weekday() == time.Saturday {
-			result = append(result, Occurrence{current, currentEnd})
-		}
-		if r.HappensOnSunday && current.Weekday() == time.Sunday {
-			result = append(result, Occurrence{current, currentEnd})
-		}
+		result = append(result, Occurrence{current, currentEnd})
 
 		current = current.AddDate(0, monthIncrement, dayIncrement)
 		currentEnd = currentEnd.AddDate(0, monthIncrement, dayIncrement)
