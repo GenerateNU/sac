@@ -11,3 +11,11 @@ func NewMaybeError(name string, err error) *MaybeError {
 		Err:  err,
 	}
 }
+
+func (me *MaybeError) Unwrap() error {
+	return me.Err
+}
+
+func (me *MaybeError) IsError() bool {
+	return me.Err != nil
+}

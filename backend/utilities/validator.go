@@ -3,7 +3,6 @@ package utilities
 import (
 	"fmt"
 	"reflect"
-	"strconv"
 	"strings"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
@@ -105,39 +104,30 @@ func ValidateID(id string) (*uuid.UUID, error) {
 	return &idAsUUID, nil
 }
 
-func ValidateNonNegative(value string) (*int, error) {
-	valueAsInt, err := strconv.Atoi(value)
-
-	if err != nil || valueAsInt < 0 {
-		return nil, fmt.Errorf("value must be a non-negative integer. got %s", value)
-	}
-
-	return &valueAsInt, nil
-}
-
 func Validate(validate *validator.Validate, s any, maybeErrs ...MaybeError) error {
-	var errors map[string]string
 	hasErrors := false
+	var maybeErrors map[string]string
 
 	for _, maybeErr := range maybeErrs {
 		if maybeErr.Err != nil {
 			if !hasErrors {
-				errors = make(map[string]string)
+				maybeErrors = make(map[string]string)
 				hasErrors = true
 			}
-			errors[maybeErr.Name] = maybeErr.Err.Error()
+			maybeErrors[ToSnakeCase(maybeErr.Name)] = maybeErr.Err.Error()
 		}
 	}
 
+	var validationErrors map[string]string
 	if err := validate.Struct(s); err != nil {
 		validationErrs, ok := err.(validator.ValidationErrors)
 		if ok {
 			if !hasErrors {
-				errors = make(map[string]string)
+				validationErrors = make(map[string]string)
 				hasErrors = true
 			}
 			for _, validationErr := range validationErrs {
-				errors[ToSnakeCase(validationErr.Field())] = fmt.Sprintf("%s failed %s", validationErr.Field(), validationErr.Tag())
+				validationErrors[ToSnakeCase(validationErr.Field())] = fmt.Sprintf("%s failed %s", validationErr.Field(), validationErr.Tag())
 			}
 		} else {
 			return fmt.Errorf("failed to validate struct: %w", err)
@@ -145,7 +135,7 @@ func Validate(validate *validator.Validate, s any, maybeErrs ...MaybeError) erro
 	}
 
 	if hasErrors {
-		return InvalidRequestData(errors)
+		return InvalidRequestData(MergeMaps(maybeErrors, validationErrors))
 	}
 
 	return nil
