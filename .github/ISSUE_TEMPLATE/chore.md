@@ -1,7 +1,7 @@
 ---
 name: Chore
 about: Something you'd like to see done but not urgently
-title: chore
+title: chore: [Short description of the chore]
 labels: chore
 assignees: ''
 
