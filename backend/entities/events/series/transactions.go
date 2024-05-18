@@ -65,10 +65,11 @@ func GetEventSeries(db *gorm.DB, seriesID uuid.UUID) ([]models.Event, error) {
 }
 
 func DeleteEventSeries(db *gorm.DB, seriesID uuid.UUID) error {
-	if err := db.Where("series_id = ?", seriesID).Delete(&models.Event{}).Error; err != nil {
+	if err := db.Where("id = ?", seriesID).Delete(&Series{}).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return utilities.ErrNotFound
 		}
+
 		return err
 	}
 

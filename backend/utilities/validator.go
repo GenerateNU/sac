@@ -60,7 +60,10 @@ func validateS3URL(fl validator.FieldLevel) bool {
 }
 
 func validateContactPointer(validate *validator.Validate, fl validator.FieldLevel) bool {
-	contact, ok := fl.Parent().Interface().(models.PutContactRequestBody)
+	contact, ok := fl.Parent().Interface().(struct {
+		Type    models.ContactType
+		Content string
+	})
 	if !ok {
 		return false
 	}
@@ -112,20 +115,28 @@ func ValidateNonNegative(value string) (*int, error) {
 	return &valueAsInt, nil
 }
 
-func Validate(validate *validator.Validate, s any) error {
+func Validate(validate *validator.Validate, s any, maybeErrs ...MaybeError) error {
+	errors := make(map[string]string)
+
+	for _, maybeErr := range maybeErrs {
+		if maybeErr.Err != nil {
+			errors[maybeErr.Name] = maybeErr.Err.Error()
+		}
+	}
+
 	if err := validate.Struct(s); err != nil {
 		validationErrs, ok := err.(validator.ValidationErrors)
 		if ok {
-			errors := make(map[string]string, len(validationErrs))
-
 			for _, validationErr := range validationErrs {
-				errors[validationErr.Field()] = fmt.Sprintf("%s failed %s", validationErr.Field(), validationErr.Tag())
+				errors[ToSnakeCase(validationErr.Field())] = fmt.Sprintf("%s failed %s", validationErr.Field(), validationErr.Tag())
 			}
-
-			return InvalidRequestData(errors)
 		} else {
 			return fmt.Errorf("failed to validate struct: %w", err)
 		}
+	}
+
+	if len(errors) > 0 {
+		return InvalidRequestData(errors)
 	}
 
 	return nil

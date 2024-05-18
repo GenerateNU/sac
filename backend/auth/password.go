@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
 	"strings"
@@ -9,16 +10,22 @@ import (
 )
 
 func ValidatePassword(password string) error {
+	var errs []string
+
 	if len(password) < 8 {
-		return fmt.Errorf("password must be at least 8 characters long")
+		errs = append(errs, "must be at least 8 characters long")
 	}
 
 	if !hasDigit(password) {
-		return fmt.Errorf("password must contain at least one digit")
+		errs = append(errs, "must contain at least one digit")
 	}
 
 	if !hasSpecialChar(password) {
-		return fmt.Errorf("password must contain at least one special character")
+		errs = append(errs, fmt.Sprintf("must contain at least one special character from: [%v]", string(constants.SPECIAL_CHARACTERS)))
+	}
+
+	if len(errs) > 0 {
+		return errors.New(strings.Join(errs, ", "))
 	}
 
 	return nil
