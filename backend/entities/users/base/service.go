@@ -85,15 +85,9 @@ func (u *UserService) UpdatePassword(id string, passwordBody authEntities.Update
 		return err
 	}
 
-	if err := utilities.Validate(u.Validate, passwordBody); err != nil {
-		return err
-	}
-
-	if err := auth.ValidatePassword(passwordBody.OldPassword); err != nil {
-		return err
-	}
-
-	if err := auth.ValidatePassword(passwordBody.NewPassword); err != nil {
+	if err := utilities.Validate(u.Validate, passwordBody,
+		*utilities.NewMaybeError("old_password", auth.ValidatePassword(passwordBody.OldPassword)),
+		*utilities.NewMaybeError("new_password", auth.ValidatePassword(passwordBody.NewPassword))); err != nil {
 		return err
 	}
 
