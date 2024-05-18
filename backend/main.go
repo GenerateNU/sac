@@ -72,7 +72,7 @@ func main() {
 
 	tp := telemetry.InitTracer()
 
-	slog.Info("appease linter since we aren't tracing anything yet", "tracer", tp)
+	slog.Info("appease linter since we aren't tracing anything yet", "tracer", tracer)
 
 	defer func() {
 		if err := tp.Shutdown(context.Background()); err != nil {
