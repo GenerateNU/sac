@@ -1,10 +1,8 @@
 ---
-name: Chore
+name: "🧹 Chore"
 about: Something you'd like to see done but not urgently
-title: chore: [Short description of the chore]
-labels: chore
-assignees: ''
-
+title: "🧹 chore: [Short description of the chore]"
+labels: ["🧹 chore"]
 ---
 
 **Please describe.**
