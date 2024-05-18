@@ -1,10 +1,8 @@
 ---
-name: Feature Request
+name: "📝 Feature Request"
 about: Suggest an idea for this project
-title: feat: [Short description of the feature]
-labels: feature
-assignees: ''
-
+title: "📝 feat: [Short description of the feature]"
+labels: ["📝 feature"]
 ---
 
 **Is your feature request related to a problem? Please describe.**
