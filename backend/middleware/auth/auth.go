@@ -1,11 +1,8 @@
-package middleware
+package auth
 
 import (
-	"fmt"
-	"net/http"
 	"slices"
 	"strings"
-	"time"
 
 	"github.com/GenerateNU/sac/backend/auth"
 	"github.com/GenerateNU/sac/backend/utilities"
@@ -15,7 +12,6 @@ import (
 	"github.com/golang-jwt/jwt"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/limiter"
 )
 
 func (m *AuthMiddlewareService) IsSuper(c *fiber.Ctx) bool {
@@ -101,20 +97,4 @@ func (m *AuthMiddlewareService) Authorize(requiredPermissions ...auth.Permission
 
 		return c.Next()
 	}
-}
-
-// TODO: implement rate limiting with redis
-func (m *AuthMiddlewareService) Limiter(rate int, expiration time.Duration) func(c *fiber.Ctx) error {
-	return limiter.New(limiter.Config{
-		Max:        rate,
-		Expiration: expiration,
-		KeyGenerator: func(c *fiber.Ctx) string {
-			return fmt.Sprintf("%s-%s", c.IP(), c.Path())
-		},
-		LimitReached: func(c *fiber.Ctx) error {
-			return c.Status(http.StatusTooManyRequests).JSON(fiber.Map{
-				"error": "Too many requests",
-			})
-		},
-	})
 }

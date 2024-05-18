@@ -2,7 +2,7 @@ package series
 
 import (
 	"github.com/GenerateNU/sac/backend/extractors"
-	"github.com/GenerateNU/sac/backend/middleware"
+	authMiddleware "github.com/GenerateNU/sac/backend/middleware/auth"
 	"github.com/GenerateNU/sac/backend/types"
 )
 
@@ -14,7 +14,7 @@ func EventSeries(eventParams types.RouteParams) {
 
 	eventSeries.Post(
 		"/",
-		middleware.AttachExtractor(eventParams.AuthMiddleware.ClubAuthorizeById, middleware.ExtractFromBody("host")),
+		authMiddleware.AttachExtractor(eventParams.AuthMiddleware.ClubAuthorizeById, authMiddleware.ExtractFromBody("host")),
 		eventSeriesController.CreateEventSeries,
 	)
 
@@ -23,9 +23,9 @@ func EventSeries(eventParams types.RouteParams) {
 	eventSeriedID.Get("/", eventSeriesController.GetEventSeries)
 	eventSeriedID.Delete(
 		"/",
-		middleware.AttachExtractor(
+		authMiddleware.AttachExtractor(
 			eventParams.AuthMiddleware.ClubAuthorizeById,
-			middleware.FromExtractFromParamIntoQuery("seriesID", eventParams.ServiceParams.DB, extractors.GetSeriesHost),
+			authMiddleware.FromExtractFromParamIntoQuery("seriesID", eventParams.ServiceParams.DB, extractors.GetSeriesHost),
 		),
 		eventSeriesController.DeleteEventSeries,
 	)
