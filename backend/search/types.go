@@ -1,7 +1,11 @@
 // Types that are needed to interact with OpenSearch's API.
 package search
 
-import "github.com/GenerateNU/sac/backend/entities/models"
+import (
+	"strings"
+
+	"github.com/GenerateNU/sac/backend/entities/models"
+)
 
 type Json map[string]interface{}
 
@@ -62,28 +66,55 @@ type ClubSearchQuery struct {
 
 // To Query DSL JSON
 func (q *ClubSearchQuery) ToSearchEndpointRequest() SearchEndpointRequest {
-	var req SearchEndpointRequest
+	type BooleanQuery struct {
+		Must   []Json `json:"must"`
+		Should []Json `json:"should"`
+		Filter []Json `json:"filter"`
+	}
 
-	/*req.Query.Bool.Must.QueryString.Query = q.Search
+	query := BooleanQuery{}
 
-	req.Query.Bool.Filter.Range.NumMembers.MinMembers = q.MinMembers
+	if q.Search != "" {
+		query.Must = append(query.Must, Json{
+			"query_string": Json{
+				"query": q.Search,
+			},
+		})
+	}
 
+	maxMembers := 0
 	if q.MaxMembers != 0 {
-		req.Query.Bool.Filter.Range.NumMembers.MaxMembers = q.MaxMembers
+		maxMembers = q.MaxMembers
 	} else {
-		// FIXME: This is probably going to break in the future. We should probably be figuring out
-		// what the most members of any club is and set this to the default.
-		req.Query.Bool.Filter.Range.NumMembers.MaxMembers = 16384
+		maxMembers = 16384 // FIXME: may break in the future (will a club ever have more than 16384 members?)
+	}
+	query.Filter = append(query.Filter, Json{
+		"range": Json{
+			"num_members": Json{
+				"lte": maxMembers,
+				// by default this 0, hence why we dont check it similar to maxMembers
+				"gte": q.MinMembers,
+			},
+		},
+	})
+
+	if len(q.Tags) != 0 {
+		query.Filter = append(query.Filter, Json{
+			"match": Json{
+				"tags": Json{
+					"query":                strings.Join(q.Tags, " "),
+					"operator":             "or",
+					"minimum_should_match": 1,
+				},
+			},
+		})
 	}
 
-	for _, tag := range q.Tags {
-		req.Query.Bool.Must.Terms.Tags = append(req.Query.Bool.Must.Terms.Tags, tag)
+	return SearchEndpointRequest{
+		"query": Json{
+			"bool": query,
+		},
 	}
-
-	req.Query.Bool.Must.Terms.MinimumShouldMatch = 1*/
-	// TODO:
-	// must - query_string, filter - tags (done in a match) + members (done in a range)
-	return req
 }
 
 // The (successful) response of an API GET /api/v1/search/clubs request.

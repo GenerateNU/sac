@@ -14,7 +14,7 @@ import (
 )
 
 // Do a GET request to the OpenSearch instance.
-func doSearchGoRequest[T, V any](url string, requestBody T) (*V, error) {
+func doSearchGetRequest[T, V any](url string, requestBody T) (*V, error) {
 	payload, err := json.Marshal(requestBody)
 	print(string(payload))
 	if err != nil {
@@ -48,7 +48,7 @@ func doSearchGoRequest[T, V any](url string, requestBody T) (*V, error) {
 }
 
 func SearchClubs(db *gorm.DB, query search.ClubSearchQuery) (*search.ClubSearchResult, error) {
-	result, err := doSearchGoRequest[search.SearchEndpointRequest, search.SearchEndpointResponse]("/clubs/_search", query.ToSearchEndpointRequest())
+	result, err := doSearchGetRequest[search.SearchEndpointRequest, search.SearchEndpointResponse]("/clubs/_search", query.ToSearchEndpointRequest())
 	if err != nil {
 		return nil, nil
 	}
