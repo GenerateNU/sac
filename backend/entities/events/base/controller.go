@@ -3,7 +3,7 @@ package base
 import (
 	"net/http"
 
-	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/entities/events"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/garrettladley/fiberpaginate"
 	"github.com/gofiber/fiber/v2"
@@ -68,7 +68,7 @@ func (e *EventController) GetEvent(c *fiber.Ctx) error {
 }
 
 func (e *EventController) CreateEvent(c *fiber.Ctx) error {
-	var body models.CreateEventRequestBody
+	var body events.CreateEventRequestBody
 	if err := c.BodyParser(&body); err != nil {
 		return err
 	}
@@ -82,7 +82,7 @@ func (e *EventController) CreateEvent(c *fiber.Ctx) error {
 }
 
 func (e *EventController) UpdateEvent(c *fiber.Ctx) error {
-	var body models.UpdateEventRequestBody
+	var body events.UpdateEventRequestBody
 	if err := c.BodyParser(&body); err != nil {
 		return err
 	}

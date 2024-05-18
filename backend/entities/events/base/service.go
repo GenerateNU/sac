@@ -14,8 +14,8 @@ type EventServiceInterface interface {
 	GetEvents(pageInfo fiberpaginate.PageInfo) ([]models.Event, error)
 	GetEvent(eventID string) (*models.Event, error)
 	// event cud
-	CreateEvent(body models.CreateEventRequestBody) (*models.Event, error)
-	UpdateEvent(eventID string, eventBody models.UpdateEventRequestBody) ([]models.Event, error)
+	CreateEvent(body events.CreateEventRequestBody) (*models.Event, error)
+	UpdateEvent(eventID string, eventBody events.UpdateEventRequestBody) ([]models.Event, error)
 	DeleteEvent(eventID string) error
 }
 
@@ -40,7 +40,7 @@ func (e *EventService) GetEvent(eventID string) (*models.Event, error) {
 	return events.GetEvent(e.DB, *idAsUUID)
 }
 
-func (e *EventService) CreateEvent(body models.CreateEventRequestBody) (*models.Event, error) {
+func (e *EventService) CreateEvent(body events.CreateEventRequestBody) (*models.Event, error) {
 	if err := utilities.Validate(e.Validate, body); err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (e *EventService) CreateEvent(body models.CreateEventRequestBody) (*models.
 	return CreateEvent(e.DB, *body.Into())
 }
 
-func (e *EventService) UpdateEvent(eventID string, eventBody models.UpdateEventRequestBody) ([]models.Event, error) {
+func (e *EventService) UpdateEvent(eventID string, eventBody events.UpdateEventRequestBody) ([]models.Event, error) {
 	idAsUUID, err := utilities.ValidateID(eventID)
 	if err != nil {
 		return nil, err

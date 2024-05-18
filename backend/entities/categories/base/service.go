@@ -1,6 +1,7 @@
 package base
 
 import (
+	"github.com/GenerateNU/sac/backend/entities/categories"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
@@ -11,10 +12,10 @@ import (
 )
 
 type CategoryServiceInterface interface {
-	CreateCategory(categoryBody models.CategoryRequestBody) (*models.Category, error)
+	CreateCategory(categoryBody categories.CategoryRequestBody) (*models.Category, error)
 	GetCategories(pageInfo fiberpaginate.PageInfo) ([]models.Category, error)
 	GetCategory(id string) (*models.Category, error)
-	UpdateCategory(id string, params models.CategoryRequestBody) (*models.Category, error)
+	UpdateCategory(id string, params categories.CategoryRequestBody) (*models.Category, error)
 	DeleteCategory(id string) error
 }
 
@@ -26,7 +27,7 @@ func NewCategoryService(params types.ServiceParams) CategoryServiceInterface {
 	return &CategoryService{params}
 }
 
-func (c *CategoryService) CreateCategory(categoryBody models.CategoryRequestBody) (*models.Category, error) {
+func (c *CategoryService) CreateCategory(categoryBody categories.CategoryRequestBody) (*models.Category, error) {
 	if err := utilities.Validate(c.Validate, categoryBody); err != nil {
 		return nil, err
 	}
@@ -54,7 +55,7 @@ func (c *CategoryService) GetCategory(id string) (*models.Category, error) {
 	return GetCategory(c.DB, *idAsUUID)
 }
 
-func (c *CategoryService) UpdateCategory(id string, categoryBody models.CategoryRequestBody) (*models.Category, error) {
+func (c *CategoryService) UpdateCategory(id string, categoryBody categories.CategoryRequestBody) (*models.Category, error) {
 	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return nil, err

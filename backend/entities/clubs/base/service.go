@@ -13,8 +13,8 @@ import (
 type ClubServiceInterface interface {
 	GetClubs(pageInfo fiberpaginate.PageInfo) ([]models.Club, error)
 	GetClub(id string) (*models.Club, error)
-	CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, error)
-	UpdateClub(id string, clubBody models.UpdateClubRequestBody) (*models.Club, error)
+	CreateClub(clubBody CreateClubRequestBody) (*models.Club, error)
+	UpdateClub(id string, clubBody UpdateClubRequestBody) (*models.Club, error)
 	DeleteClub(id string) error
 }
 
@@ -30,7 +30,7 @@ func (c *ClubService) GetClubs(pagination fiberpaginate.PageInfo) ([]models.Club
 	return GetClubs(c.DB, pagination)
 }
 
-func (c *ClubService) CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, error) {
+func (c *ClubService) CreateClub(clubBody CreateClubRequestBody) (*models.Club, error) {
 	if err := utilities.Validate(c.Validate, clubBody); err != nil {
 		return nil, err
 	}
@@ -52,13 +52,13 @@ func (c *ClubService) GetClub(id string) (*models.Club, error) {
 	return clubs.GetClub(c.DB, *idAsUUID)
 }
 
-func (c *ClubService) UpdateClub(id string, clubBody models.UpdateClubRequestBody) (*models.Club, error) {
+func (c *ClubService) UpdateClub(id string, clubBody UpdateClubRequestBody) (*models.Club, error) {
 	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return nil, err
 	}
 
-	if utilities.AtLeastOne(clubBody, models.UpdateClubRequestBody{}) {
+	if utilities.AtLeastOne(clubBody, UpdateClubRequestBody{}) {
 		return nil, fmt.Errorf("at least one field must be present")
 	}
 

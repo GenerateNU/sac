@@ -13,7 +13,7 @@ import (
 type FileServiceInterface interface {
 	GetFiles(pageInfo fiberpaginate.PageInfo) ([]models.File, error)
 	GetFile(fileID string) (*models.File, error)
-	CreateFile(fileBody *models.CreateFileRequestBody, formFile *multipart.FileHeader) (*models.File, error)
+	CreateFile(fileBody *CreateFileRequestBody, formFile *multipart.FileHeader) (*models.File, error)
 	DeleteFile(fileID string) error
 }
 
@@ -38,7 +38,7 @@ func (f *FileService) GetFile(fileID string) (*models.File, error) {
 	return GetFile(f.DB, *idAsUUID)
 }
 
-func (f *FileService) CreateFile(fileBody *models.CreateFileRequestBody, fileHeader *multipart.FileHeader) (*models.File, error) {
+func (f *FileService) CreateFile(fileBody *CreateFileRequestBody, fileHeader *multipart.FileHeader) (*models.File, error) {
 	if err := utilities.Validate(f.Validate, fileBody); err != nil {
 		return nil, err
 	}
