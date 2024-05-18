@@ -1,12 +1,16 @@
-package middleware
+package auth
 
 import (
+	"slices"
+
 	"github.com/GenerateNU/sac/backend/auth"
+	"github.com/GenerateNU/sac/backend/entities/clubs"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/fiber/v2"
 )
 
-func (m *AuthMiddlewareService) UserAuthorizeById(c *fiber.Ctx) error {
+// Authorizes admins of the specific club to make this request, skips check if super user
+func (m *AuthMiddlewareService) ClubAuthorizeById(c *fiber.Ctx, extractor ExtractID) error {
 	return func(c *fiber.Ctx) error {
 		if err := m.Authenticate(c); err != nil {
 			return utilities.Unauthorized()
@@ -16,7 +20,7 @@ func (m *AuthMiddlewareService) UserAuthorizeById(c *fiber.Ctx) error {
 			return c.Next()
 		}
 
-		idAsUUID, err := utilities.ValidateID(c.Params("userID"))
+		clubUUID, err := extractor(c)
 		if err != nil {
 			return err
 		}
@@ -26,12 +30,17 @@ func (m *AuthMiddlewareService) UserAuthorizeById(c *fiber.Ctx) error {
 			return err
 		}
 
-		issuerIDAsUUID, err := utilities.ValidateID(claims.Issuer)
+		issuerUUID, err := utilities.ValidateID(claims.Issuer)
 		if err != nil {
 			return err
 		}
 
-		if issuerIDAsUUID.String() == idAsUUID.String() {
+		clubAdmin, err := clubs.GetAdminIDs(m.DB, *clubUUID)
+		if err != nil {
+			return err
+		}
+
+		if slices.Contains(clubAdmin, *issuerUUID) {
 			return c.Next()
 		}
 

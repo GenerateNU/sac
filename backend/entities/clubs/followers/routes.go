@@ -2,7 +2,6 @@ package followers
 
 import (
 	"github.com/GenerateNU/sac/backend/types"
-	"github.com/garrettladley/fiberpaginate"
 )
 
 func ClubFollower(clubParams types.RouteParams) {
@@ -11,5 +10,5 @@ func ClubFollower(clubParams types.RouteParams) {
 	clubFollowers := clubParams.Router.Group("/followers")
 
 	// api/clubs/:clubID/followers/*
-	clubFollowers.Get("/", fiberpaginate.New(), clubFollowerController.GetClubFollowers)
+	clubFollowers.Get("/", clubParams.UtilityMiddleware.Paginator, clubFollowerController.GetClubFollowers)
 }
