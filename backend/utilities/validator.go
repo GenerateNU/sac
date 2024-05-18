@@ -116,10 +116,15 @@ func ValidateNonNegative(value string) (*int, error) {
 }
 
 func Validate(validate *validator.Validate, s any, maybeErrs ...MaybeError) error {
-	errors := make(map[string]string)
+	var errors map[string]string
+	hasErrors := false
 
 	for _, maybeErr := range maybeErrs {
 		if maybeErr.Err != nil {
+			if !hasErrors {
+				errors = make(map[string]string)
+				hasErrors = true
+			}
 			errors[maybeErr.Name] = maybeErr.Err.Error()
 		}
 	}
@@ -127,6 +132,10 @@ func Validate(validate *validator.Validate, s any, maybeErrs ...MaybeError) erro
 	if err := validate.Struct(s); err != nil {
 		validationErrs, ok := err.(validator.ValidationErrors)
 		if ok {
+			if !hasErrors {
+				errors = make(map[string]string)
+				hasErrors = true
+			}
 			for _, validationErr := range validationErrs {
 				errors[ToSnakeCase(validationErr.Field())] = fmt.Sprintf("%s failed %s", validationErr.Field(), validationErr.Tag())
 			}
@@ -135,7 +144,7 @@ func Validate(validate *validator.Validate, s any, maybeErrs ...MaybeError) erro
 		}
 	}
 
-	if len(errors) > 0 {
+	if hasErrors {
 		return InvalidRequestData(errors)
 	}
 
