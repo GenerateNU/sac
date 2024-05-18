@@ -1,0 +1,1780 @@
+{
+    "category_uuids": {
+        "PreProfessional": "a5815959-7f50-483b-bb89-428abfba3f6e",
+        "CulturalAndIdentity": "7ca2f046-783a-42fc-98fc-e702d73c2066",
+        "ArtsAndCreativity": "8b4ec755-2487-4f38-bfc9-18c14b98ad03",
+        "SportsAndRecreation": "5ccc23b4-b10b-43a1-8129-ce5c387ae073",
+        "ScienceAndTechnology": "fa6226f7-7b1d-4ec3-a9f8-952af93753c4",
+        "CommunityServiceAndAdvocacy": "297061e8-7e4e-4382-a266-bfcc8334d90b",
+        "MediaAndCommunication": "b2921605-2101-40c0-8267-d15e3847aea0"
+    },
+    "tag_uuids": {
+        "Premed": "e23d0bf3-7a48-4f42-8571-80c566e17e52",
+        "Prelaw": "08d70439-6467-4932-ba34-f8e75854969a",
+        "Judaism": "f882df84-9515-4515-ba5c-de642002c997",
+        "Christianity": "3e1f3d89-29c2-41aa-8182-7fe07990844f",
+        "Hinduism": "67ba702b-0d1a-4cae-b10e-676257abf2ad",
+        "Islam": "ae60c0b0-8571-4232-a03a-ffe56d5d2edb",
+        "LatinAmerica": "8f1ab835-45ea-479a-ae71-afd67367b05a",
+        "AfricanAmerican": "867528d6-ba6c-4ab6-a36c-443af35e7f76",
+        "AsianAmerican": "baead82c-dd80-4bde-9604-cf25bebe8700",
+        "LGBTQ": "b6b8c549-ed6d-41e4-862a-9d69eb120a9e",
+        "PerformingArts": "d5c15d8c-3a6c-415c-82bf-1734e5b483a9",
+        "VisualArts": "94c0508e-e37c-4170-968c-e9b982c24fb4",
+        "CreativeWriting": "00b9e6d2-b58b-42c0-a802-eaed719ba40c",
+        "Music": "4b49c941-ba99-4bdf-a7f7-347dcbf6f2be",
+        "Soccer": "bac7c0a2-198f-48dd-b094-d6383c273ab5",
+        "Hiking": "3bd42857-9aa3-4898-bf85-8142e51de2b7",
+        "Climbing": "4d098611-064c-4524-b216-39c18646557c",
+        "Lacrosse": "ea65d47d-89f3-4846-a93c-e00d640ed453",
+        "Mathematics": "892dcfa9-43a3-4cb2-a3be-0e9692ecfb04",
+        "Physics": "e50839c2-ef44-4626-a234-b396f3ad7b5b",
+        "Biology": "57a99fed-e922-409f-b6a9-2f7270234d36",
+        "Chemistry": "da1c695e-5b91-4c89-b649-0a891e3ee6e7",
+        "EnvironmentalScience": "f6ec4437-814a-448a-86dd-d736ed18794e",
+        "Geology": "be4b2c29-13c1-4534-afec-f10abbe7a362",
+        "Neuroscience": "0dfd39c4-b41c-429c-b0d0-67941eaadcfe",
+        "Psychology": "ab27faa9-0ae9-4d05-8368-7b30440f22c6",
+        "SoftwareEngineering": "0db605c8-6262-4134-a9a4-1163de3b956e",
+        "ArtificialIntelligence": "828d0a07-f925-4ccc-8dec-521130882cc2",
+        "DataScience": "553746c8-1b7f-4fce-ae16-53b9e0e59b13",
+        "MechanicalEngineering": "bf6a7d12-7265-40ee-b5c3-1a3e25b5f9d8",
+        "ElectricalEngineering": "1a207f40-bee6-4163-be9d-8435cf24e4e3",
+        "IndustrialEngineering": "f292f5d5-9416-4f40-a8e9-a673c0799655",
+        "Volunteerism": "3ce370ac-26bb-49b2-a090-bc0b5fbd77b3",
+        "EnvironmentalAdvocacy": "730bd6aa-5562-45a5-a805-a951dc720844",
+        "HumanRights": "2d2100eb-903e-4842-a7c8-5b0afa5506f8",
+        "CommunityOutreach": "066a200e-eb42-4189-9006-4ff6409b29ec",
+        "Journalism": "c6b1a109-7440-4b7c-a307-49514e4bb248",
+        "Broadcasting": "a38297e7-3529-4c5b-bdd4-a817481c4359",
+        "Film": "529a2c0b-b84e-49e9-9254-039cb63786f8",
+        "PublicRelations": "3bab1cfd-b85b-4edb-86da-d967fc682241"
+    },
+    "tags_to_categories": {
+        "Premed": "PreProfessional",
+        "Prelaw": "PreProfessional",
+        "Judaism": "CulturalAndIdentity",
+        "Christianity": "CulturalAndIdentity",
+        "Hinduism": "CulturalAndIdentity",
+        "Islam": "CulturalAndIdentity",
+        "LatinAmerica": "CulturalAndIdentity",
+        "AfricanAmerican": "CulturalAndIdentity",
+        "AsianAmerican": "CulturalAndIdentity",
+        "LGBTQ": "CulturalAndIdentity",
+        "PerformingArts": "ArtsAndCreativity",
+        "VisualArts": "ArtsAndCreativity",
+        "CreativeWriting": "ArtsAndCreativity",
+        "Music": "ArtsAndCreativity",
+        "Soccer": "SportsAndRecreation",
+        "Hiking": "SportsAndRecreation",
+        "Climbing": "SportsAndRecreation",
+        "Lacrosse": "SportsAndRecreation",
+        "Mathematics": "ScienceAndTechnology",
+        "Physics": "ScienceAndTechnology",
+        "Biology": "ScienceAndTechnology",
+        "Chemistry": "ScienceAndTechnology",
+        "EnvironmentalScience": "ScienceAndTechnology",
+        "Geology": "ScienceAndTechnology",
+        "Neuroscience": "ScienceAndTechnology",
+        "Psychology": "ScienceAndTechnology",
+        "SoftwareEngineering": "ScienceAndTechnology",
+        "ArtificialIntelligence": "ScienceAndTechnology",
+        "DataScience": "ScienceAndTechnology",
+        "MechanicalEngineering": "ScienceAndTechnology",
+        "ElectricalEngineering": "ScienceAndTechnology",
+        "IndustrialEngineering": "ScienceAndTechnology",
+        "Volunteerism": "CommunityServiceAndAdvocacy",
+        "EnvironmentalAdvocacy": "CommunityServiceAndAdvocacy",
+        "HumanRights": "CommunityServiceAndAdvocacy",
+        "CommunityOutreach": "CommunityServiceAndAdvocacy",
+        "Journalism": "MediaAndCommunication",
+        "Broadcasting": "MediaAndCommunication",
+        "Film": "MediaAndCommunication",
+        "PublicRelations": "MediaAndCommunication"
+    },
+    "clubs": [
+        {
+            "id": "cc15023d-3e18-4769-a51b-4a6d12214f27",
+            "name": "(Tentative ) Linguistics Club",
+            "preview": "Linguistics Club seeks to provide extra-curricular engagement for students of all backgrounds who are interested in linguistics. Our primary goal is to encourage members to connect more with linguistics and with each other!",
+            "description": "Linguistics Club seeks to provide extra-curricular engagement for students of all backgrounds who are interested in linguistics, regardless of whether they are majors/combined majors, minors, hobbyists, or completely new to the field. Linguistics Club aims to host guest speakers, attend conferences, and coordinate a variety of other outings. We also hold more casual and social meetings, such as the Transcription Bee (a non-competitive bee dedicated to phonetic transcription), game nights, and study breaks. Towards the end of a semester, we aim to provide additional guidance for students in the linguistics program by offering an avenue to practice presenting research posters ahead of fairs, as well as offering informal peer advising on course registration. The club&rsquo;s Discord serves as a digital platform for all students who are interested in linguistics to connect and is extremely active. ",
+            "num_members": 54,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "fallSpring",
+            "recruitment_type": "application",
+            "tags": [
+                "CreativeWriting",
+                "Linguistics",
+                "CommunityOutreach"
+            ]
+        },
+        {
+            "id": "2594575f-4dbe-4ae6-a2d1-0f8c69af6a33",
+            "name": "Adopted Student Organization",
+            "preview": "Adopted Student Organization is a safe space for adoptees to connect over shared and diverse experiences.",
+            "description": "Our mission is to foster a safe space for adoptees to tell their adoption stories and express their feelings, opinions, and thoughts about adoption and other related topics without harsh judgment from others. In addition, we aim to educate anyone interested in adoption-related topics. \r\nOur goals are to represent all adoptees who feel like the adoption narrative has been mistold and educate non-adoptees about the experience of adoption. Our long-standing future mission is for the next generation of adoptees and adopted parents to have a better understanding of each other. In the end, we want to inspire adoptees to be proud of being a part of the adoptee community.",
+            "num_members": 505,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "always",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "HumanRights",
+                "CommunityOutreach",
+                "Volunteerism",
+                "CreativeWriting"
+            ]
+        },
+        {
+            "id": "57458a1c-74ec-49f1-a67a-a1c723eedb16",
+            "name": "Automotive Club",
+            "preview": "Automotive Club is a welcoming space for automotive enthusiasts of all levels. Enjoy outings to car meets, go-kart tracks, virtual sim racing, hands-on activities, and talks by experts in the industry. Join us for all things cars!",
+            "description": "Welcome to the Automotive Club, a vibrant community that caters to automotive enthusiasts of all stripes, whether you're a seasoned gearhead or just dipping your toes into the world of cars. Our club is a hub for thrilling outings to car meets, heart-pounding go-kart tracks, immersive virtual sim racing, engaging hands-on activities, and enlightening talks by industry experts. Come rev your engines with us and delve into all things cars \u2013 from classic beauties to cutting-edge technology, there's something here for everyone!",
+            "num_members": 302,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "fallSpring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "Automotive",
+                "CreativeWriting",
+                "VisualArts",
+                "CommunityOutreach",
+                "SocialEvents"
+            ]
+        },
+        {
+            "id": "e086bd5b-a4d2-415b-bee0-ba3223a55402",
+            "name": "Baltic Northeastern Association",
+            "preview": "The Baltic Northeastern Association serves as a home away from home for students from the Baltic countries, as well as an opportunity to share Baltic culture with interested students. ",
+            "description": "The Baltic Northeastern Association serves as a home away from home for students from the Baltic countries, as well as an opportunity to share Baltic culture with interested students. We will host weekly meetings that can range from cooking sessions, discussions of Baltic culture and language, sharing Baltic traditional dancing and music, and more. ",
+            "num_members": 710,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "Latvian",
+                "Lithuanian",
+                "Estonian",
+                "BalticCulture",
+                "CulturalExchange"
+            ]
+        },
+        {
+            "id": "1ae8a2eb-e321-4dda-9daf-52acaca85b92",
+            "name": "Bangladeshi Organization of Networking, Diversity, Heritage, Unity and Support",
+            "preview": "The BONDHUS is dedicated to fostering a sense of home for Bangladeshi students and those interested in Bangladeshi culture, as well as celebrating the rich cultural heritage of Bangladesh.",
+            "description": "The BONDHUS is dedicated to fostering a sense of home for Bangladeshi students and those interested in Bangladeshi culture. We strive to provide mentorship, build cultural awareness, and offer assistance with college admissions, including hosting events in Bangladesh related to Northeastern University. Our mission is to create an inclusive community that celebrates and promotes the rich heritage of Bangladesh while providing support and growth opportunities for our members. Our target membership includes Bangladeshi international undergraduates and graduates, Bangladeshi diaspora-born undergraduates and graduates, and non-Bangladeshi undergraduates and graduates interested in our culture and mission. We plan to host a wide range of events and initiatives, including:\r\nCultural Celebrations: We will honor significant Bangladeshi events such as Pohela Boishakh (New Year's Day), Ekushe February (International Mother Language Day), and Shadhinota Dibosh (Independence Day).\r\nFestive Gatherings: Observing cultural festivals like Eid and Puja, allowing members to share these joyous occasions together.\r\nFood-Based Events: Showcasing the vibrant and diverse Bangladeshi cuisine through cooking demonstrations, food festivals, and shared meals.\r\nCollaborations with Other BSAs: Building strong connections with other Bangladesh Student Associations to enhance cultural exchange and support.\r\nFundraising Initiatives: Organizing events to support causes related to education and community development in Bangladesh.\r\nIn conclusion, the BONDHUS aims to be a vibrant hub that nurtures a sense of belonging, celebrates cultural identity, and provides avenues for personal and professional growth. Through our planned activities and initiatives, we hope to create a dynamic and supportive community that connects Bangladesh with the broader academic landscape.",
+            "num_members": 188,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "fall",
+            "recruitment_type": "application",
+            "tags": [
+                "AsianAmerican",
+                "CulturalCelebrations",
+                "FoodBasedEvents",
+                "Collaborations",
+                "CommunityOutreach"
+            ]
+        },
+        {
+            "id": "78463f7b-1b86-41fb-9e91-85bce675d5a2",
+            "name": "Binky Patrol",
+            "preview": "Binky Patrol is club that makes blankets by hand to donate to children in hospitals and shelters",
+            "description": "Binky Patrol is a club that makes blankets by hand to donate to children in hospitals and shelters - if you want to get involved, join the slack with the link below!\r\nhttps://join.slack.com/t/binkypatrolnu/shared_invite/zt-2aiwtfdnb-Kmi~pPtsE9_xPTxrwF3ZOQ",
+            "num_members": 658,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "Volunteerism",
+                "CommunityOutreach",
+                "CreativeWriting",
+                "VisualArts"
+            ]
+        },
+        {
+            "id": "5c23d3b5-8139-4aa5-9959-850b297b27c6",
+            "name": "Biokind Analytics Northeastern",
+            "preview": "Biokind Analytics Northeastern brings together undergraduate data scientists and statisticians across the world to apply classroom learning for meaningful, positive societal impact in their communities.",
+            "description": "Biokind Analytics Northeastern is a local chapter of the larger nonprofit organization, Biokind Analytics. The club aims to provide Northeastern students with the opportunity to apply data analysis skills and learnings to further the mission of local healthcare non-profit organizations in the Boston region. Our goal is to promote the development of relationships between Northeastern students and healthcare non-profits to better contribute to our local community. ",
+            "num_members": 284,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "always",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "DataScience",
+                "Healthcare",
+                "CommunityOutreach",
+                "Volunteerism"
+            ]
+        },
+        {
+            "id": "7268a274-c6b8-439f-b754-56af9621627f",
+            "name": "Black Graduate Student Association ",
+            "preview": "The purpose of Black Graduate Student Association is to enhance scholarly and professional development of graduate students at Northeastern through networking, seminars, forums, workshops, and social gatherings in the Boston Area.",
+            "description": "The Black Graduate Student Association is a vibrant community at Northeastern dedicated to supporting the scholarly and professional growth of graduate students. Through engaging networking events, insightful seminars, enlightening forums, skill-building workshops, and fun social gatherings in the Boston Area, we create a rich and inclusive space where students can connect, learn, and thrive. Join us to be part of a supportive family that champions diversity, fosters personal development, and celebrates academic excellence.",
+            "num_members": 414,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "fall",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "AfricanAmerican",
+                "CommunityOutreach",
+                "HumanRights",
+                "Volunteerism",
+                "Journalism"
+            ]
+        },
+        {
+            "id": "72189271-2e2e-434d-9aaa-8ad95ec7d4e8",
+            "name": "Black Pre-Law Association",
+            "preview": "BPLA's purpose is to nurture a supportive and empowering community for Black undergraduate students interested in pursuing a career in the legal field. ",
+            "description": "BPLA's purpose is to nurture a supportive and empowering community for Black undergraduate students interested in pursuing a career in the legal field. We aim to encourage dialogue on social justice/legal issues, academic excellence, personal growth, and professional development.",
+            "num_members": 359,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "always",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "Prelaw",
+                "AfricanAmerican",
+                "CommunityOutreach",
+                "HumanRights"
+            ]
+        },
+        {
+            "id": "25ef7b03-ea36-4eb1-8e24-b5b1b02b1288",
+            "name": "Brazilian Jiu Jitsu at Northeastern University",
+            "preview": "BJJ is primarily a ground based martial art focusing on the submission of the opponent through principles of angles, leverage, pressure and timing, in order to achieve submission of the opponent in a skillful and technical way.\r\n",
+            "description": "Join our Discord: https://discord.gg/3RuzAtZ4WS\r\nFollow us on Instagram: @northeasternbjj",
+            "num_members": 215,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "BrazilianJiuJitsu",
+                "LGBTQ",
+                "CommunityOutreach",
+                "Fitness"
+            ]
+        },
+        {
+            "id": "515a4285-ff5b-4faa-b71c-0b87d4f6669f",
+            "name": "Business of Entertainment ",
+            "preview": "Our goal is to educate and empower students interested in the intersection between the entertainment and business industry through guest speaker sessions, workshops, and panels!",
+            "description": "Welcome to the Business of Entertainment club! Our goal is to enlighten and empower students fascinated by the dynamic world where entertainment and business converge. We achieve this through engaging guest speaker sessions, interactive workshops, and insightful panels that explore the exciting opportunities and challenges in this industry. Join us on a journey of learning, networking, and inspiration as we delve into the diverse facets of entertainment business and pave the way for future leaders!",
+            "num_members": 738,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "fallSpring",
+            "recruitment_type": "application",
+            "tags": [
+                "Film",
+                "Music",
+                "Business of Entertainment",
+                "Broadcasting"
+            ]
+        },
+        {
+            "id": "f464c94c-cab3-482c-ad15-8bcb6416482d",
+            "name": "Color Guard",
+            "preview": "A non-competitive Winter Guard team that meets once a week to practice new skills and meet members in the community. Performance opportunities will be made available throughout the year if members show interest and want to perform. ",
+            "description": "Color Guard is a Dance-based activity that involves the use of equipment including but not limited to Rifles, Sabres and Flags. Members of Color Guards, referred to as spinners, work throughout the season to put together a themed show/performance with theme-based equipment, uniforms and floor tarp. This organization aims to introduce new students into the activity and provide a space for experienced members to come and practice and try new skills. Throughout the year, members interested in performing will put together a short winter guard show. ",
+            "num_members": 220,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "fall",
+            "recruitment_type": "application",
+            "tags": [
+                "PerformingArts",
+                "CreativeWriting",
+                "Music"
+            ]
+        },
+        {
+            "id": "9620eaf5-7696-4f30-aa91-fa199ab0be06",
+            "name": "Community Palette",
+            "preview": "We aim to provide art programs for individuals within underprivileged, clinical, or community centers that may use art to better their mental health. In doing so, we hope to address the issue of limited wellness services in clinical and community cen",
+            "description": "The purpose of this organization is to expand creative and visual arts for individuals within underprivileged, clinical, or community centers in Boston that may use art as a way to cope from stress or require it to better their mental health and wellbeing. In doing so, we hope to destigmatize using the arts as a coping mechanism and foster friendships to address the issue of limited wellness services within clinical settings and community centers. We hope to bring together Northeastern students who are eager to get involved within our surrounding neighborhoods and have a strong desire to help alleviate stresses others may face through helping them escape with visual art projects and group activities.  ",
+            "num_members": 955,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "fallSpring",
+            "recruitment_type": "application",
+            "tags": [
+                "VisualArts",
+                "CommunityOutreach",
+                "Volunteerism",
+                "Psychology"
+            ]
+        },
+        {
+            "id": "89c858e4-8076-47b3-8b36-868b76991fbb",
+            "name": "ConnectED Research ",
+            "preview": "ConnectEd Research promotes educational equality, cultivates scholars, and hosts events to connect students and professors, fostering an inclusive academic community. We aim to bridge gaps in resources, empowering all students to excel in academia.\r\n",
+            "description": "ConnectED Research is a vibrant hub for students passionate about educational equality and academic exploration. Our community-driven club relentlessly works towards fostering inclusive academic excellence by nurturing scholars, organizing engaging events, and connecting students and professors. We pride ourselves on bridging gaps in resources, empowering every member to thrive in academia and unleashing their full potential. Join us on this enriching journey of learning, collaboration, and personal growth!",
+            "num_members": 60,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "fall",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "EducationEquality",
+                "AcademicExploration",
+                "InclusiveExcellence",
+                "CommunityEngagement",
+                "Empowerment",
+                "PersonalGrowth",
+                "LearningJourney"
+            ]
+        },
+        {
+            "id": "4b0203cd-d8bd-4f7c-b38e-409106a2638b",
+            "name": "Crystal Clear",
+            "preview": "Crystal Clear is an inclusive community for students interested in Paganism, Spirituality, Astrology, crystals, tarot, and more. We provide a safe and supportive environment to explore and discuss Paganism, Neopaganism and Spirituality.",
+            "description": "Crystal Clear is an inclusive community for students interested in Paganism, Spirituality, Astrology, crystals, tarot, and more. We explore the history and current context of various Pagan beliefs and the incorporation of Pagan practices into our own. By facilitating meaningful discussions that promote cultural awareness and critical thinking, and providing resources and support, we encourage community building within the Spirituality space on campus, and overall provide a communal space to practice and learn about (Neo)Paganism.",
+            "num_members": 139,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "always",
+            "recruitment_type": "application",
+            "tags": [
+                "Spirituality",
+                "Astrology",
+                "Crystals",
+                "Tarot",
+                "CommunityBuilding"
+            ]
+        },
+        {
+            "id": "6cb351cc-deb2-484c-92f4-3a522a412680",
+            "name": "Dermatology Interest Society",
+            "preview": "DermIS is a collaborative group for Northeastern students interested in skincare and dermatology. At our regular meetings, we discuss and sample various skincare products, chat with experts in the field, and learn about dermatological conditions.",
+            "description": "DermIS is a vibrant community at Northeastern University dedicated to the exploration of skincare and dermatology. Our engaging meetings bring together curious students to discover the latest skincare products, connect with seasoned experts in the field, and deepen their understanding of various dermatological conditions. Whether you're a skincare enthusiast or aspiring dermatologist, DermIS offers a nurturing space where learning and fun intersect.",
+            "num_members": 396,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "fallSpring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "Biology",
+                "Neuroscience",
+                "Chemistry",
+                "Dermatology"
+            ]
+        },
+        {
+            "id": "5c099185-266b-4e6e-a2ab-b0772104072b",
+            "name": "Dominican Student Association ",
+            "preview": "The Dominican Student Association is dedicated to serving as a cultural organization that honors and commemorates both the Dominican and Dominican-American heritage. ",
+            "description": "The Dominican Student Association is dedicated to serving as a cultural organization that honors and commemorates both the Dominican and Dominican-American heritage. Our aim is to provide a safe and inclusive space for individuals who identify as Dominican and those who are eager to explore the rich Dominican culture. At DSA, we prioritize the integration of people from diverse backgrounds and identities, fostering an environment where everyone feels embraced and valued.",
+            "num_members": 987,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "always",
+            "recruitment_type": "application",
+            "tags": [
+                "LatinAmerica",
+                "CommunityOutreach",
+                "CulturalOrganization",
+                "Diversity",
+                "Inclusivity"
+            ]
+        },
+        {
+            "id": "7a4bb170-db20-425b-96cb-3e1f06a2dd1e",
+            "name": "Emerging Markets Club ",
+            "preview": "The Emerging Markets Club is an organization with the mission to educate and collaborate with students to teach them more about the increasing relevance and importance of emerging markets within the economic and financial world. ",
+            "description": "The Emerging Markets Club is an organization with the mission to educate and collaborate with students to teach them more about the increasing relevance and importance of emerging markets within the economic and financial world. We seek to accomplish this goal through providing students with unique opportunities to widen their understanding of emerging markets. Some of these opportunities include exclusive speaker events, hosted in collaboration with other adjacent organizations, engaging lectures hosted by club leaders and members, networking events to put members in touch with real players in the emerging markets world, and researching opportunities to deepen one's understanding of emerging markets experientially. ",
+            "num_members": 667,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "application",
+            "tags": [
+                "Economic",
+                "Finance",
+                "Networking",
+                "Research",
+                "SpeakerEvents",
+                "Collaboration",
+                "ExperientialLearning"
+            ]
+        },
+        {
+            "id": "fdeaaa7f-76ba-4199-b77e-43fbf79a36e9",
+            "name": "First Generation Investors Club of Northeastern University",
+            "preview": "FGI Northeastern is the Northeastern University chapter of a non-profit 501(c)(3) organization that teaches high school students in underserved communities the power of investing and provides students with real money to invest.",
+            "description": "First Generation Investors Club of Northeastern University (FGI Northeastern) is the Northeastern University chapter of First Generation Investors, a non-profit 501(c)(3) organization. Our program leverages a network of intelligent and civic-minded Northeastern students to serve as tutors. We share our financial literacy and investing skills with high school participants across an eight-week program, including lessons in personal finance, the basics of stocks/bonds, diversification/market volatility, and compound interest, among other things.\r\nThrough our intensive coursework, high school students form sophisticated analytical skills when looking at different types of investments. At the conclusion of our program, the student participants present their capstone projects, which break down their investment rationale and asset allocation of a $100 investment account. They invest in a mix of stocks, bonds, mutual funds, and index funds using an account opened in their name and funded by corporate partners. When they graduate from high school and turn 18, the account is transferred to them and serves as the initial seed for their future in investing.",
+            "num_members": 266,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "fallSpring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "FinancialLiteracy",
+                "Investing",
+                "Education",
+                "CommunityOutreach"
+            ]
+        },
+        {
+            "id": "16abd961-0a4a-401c-a48f-b83d42aa2832",
+            "name": "Ghanaian Student Organization",
+            "preview": "The GSO at Northeastern University is a welcoming community focused on celebrating and promoting Ghanaian culture. Our mission is to create a space where students from all backgrounds can come together to appreciate the richness of Ghana.",
+            "description": "The GSO at Northeastern University is a welcoming community focused on celebrating and promoting Ghanaian culture. Our mission is to create a space where students from all backgrounds can come together to appreciate the richness of Ghana.",
+            "num_members": 240,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "AfricanAmerican",
+                "CommunityOutreach",
+                "Volunteerism",
+                "Cultural"
+            ]
+        },
+        {
+            "id": "21c1f409-253e-4182-8209-f8bb6662852e",
+            "name": "Google Developer Students Club - Northeastern",
+            "preview": "Our goal is to create Impact, Innovate and Create. Impact students and empower them to\r\nimpact their communities through technology. ",
+            "description": "Our goal is to create Impact, Innovate and Create. Impact students and empower them to impact their communities through technology. The Google Developers Student Club (GDSC) will host information sessions, hands-on workshops, and student-community collaborative projects centered around the latest and greatest in technology, all with the support of Google and Google Developers.\r\nThe GDSC will enhance the educational, recreational, social, or cultural environment of Northeastern University by being inclusive to all students, by transferring knowledge to students, by forging closer relationships between students and local businesses in the community, and by promoting diversity in the tech community.",
+            "num_members": 670,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "always",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "SoftwareEngineering",
+                "DataScience",
+                "CommunityOutreach",
+                "Volunteerism"
+            ]
+        },
+        {
+            "id": "ae2f32e3-dfc8-4f14-88cc-b4f6b3919ba7",
+            "name": "Graduate Biotechnology and Bioinformatics Association",
+            "preview": "Graduate Biotechnology and Bioinformatics Association is mainly focused on providing a \r\n             platform to students which enables them to connect and interact with their peers in the \r\n             program as well as industry professionals",
+            "description": "We aim to be an extended resource to the students as academic liaisons. Our association also plans to engage with Biotech/Bioinfo students in discussions, case studies, and career development sessions which will add to their portfolio.",
+            "num_members": 250,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "application",
+            "tags": [
+                "Biology",
+                "DataScience",
+                "CareerDevelopment",
+                "Neuroscience"
+            ]
+        },
+        {
+            "id": "dd839703-db60-4cd9-a304-84bbd4e09703",
+            "name": "Graduate Female Leaders Club",
+            "preview": "The Female Leaders Club was formed to connect graduate-level women with one another and congruently with other female leaders in various industries.",
+            "description": "The mission is to build a community of current students and alumni as we navigate the graduate-level degree and professional goals post-graduation. We aspire to fulfill our mission by hosting speaking events with business leaders, networking in person and through virtual platforms, and providing workshops to foster professional growth.",
+            "num_members": 818,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "WomenInLeadership",
+                "Networking",
+                "ProfessionalDevelopment",
+                "CommunityBuilding"
+            ]
+        },
+        {
+            "id": "df9d05d8-2cd5-4e74-988c-4bb80d041402",
+            "name": "Half Asian People's Association",
+            "preview": "HAPA is a community to explore and celebrate the mixed-race Asian experience and identity.",
+            "description": "Hapa: &ldquo;a person who is partially of Asian or Pacific Islander descent.\" We are a vibrant and supportive community centered around our mission of understanding and celebrating what it means to be mixed-race and Asian.\r\nJoin our Slack: https://join.slack.com/t/nuhapa/shared_invite/zt-2aaa37axd-k3DfhWXWyhUJ57Q1Zpvt3Q",
+            "num_members": 142,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "fall",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "AsianAmerican",
+                "LGBTQ",
+                "CommunityOutreach"
+            ]
+        },
+        {
+            "id": "e06b3a20-7807-40c3-b376-46a413ccb47a",
+            "name": "Health Informatics Graduate Society of Northeastern University",
+            "preview": "The primary focus of the Health Informatics Graduate Society centers around our mission to cultivate a vibrant community of graduate students dedicated to advancing the field of health informatics.",
+            "description": "The Health Informatics Graduate Society of Northeastern University is a welcoming community of graduate students passionate about advancing the field of health informatics. Our primary goal is to cultivate a vibrant environment where students can connect, collaborate, and learn together. Through a variety of events, workshops, and networking opportunities, we aim to support our members in their academic and professional development. Join us on this exciting journey to explore the intersection of healthcare and technology!",
+            "num_members": 631,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "fallSpring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "HealthInformatics",
+                "Networking",
+                "ProfessionalDevelopment",
+                "Technology",
+                "Community",
+                "AcademicDevelopment"
+            ]
+        },
+        {
+            "id": "e12e20a4-bcc2-4953-bb4e-ba46f68b9ad2",
+            "name": "Hear Your Song Northeastern",
+            "preview": "Hear Your Song NU is a subsidiary chapter of Hear Your Song, with its mission and purpose being to bring collaborative songwriting to kids and teens with chronic medical conditions. ",
+            "description": "Hear Your Song NU is a subsidiary chapter of Hear Your Song, with its mission and purpose being to bring collaborative songwriting to kids and teens with chronic medical conditions. It will facilitate connections with local hospitals and organizations, perform all areas of music production and music video production, participate in trauma-informed training, and organize events and initiatives to further promote the therapeutic value of the arts.",
+            "num_members": 878,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "application",
+            "tags": [
+                "PerformingArts",
+                "Music",
+                "CreativeWriting",
+                "CommunityOutreach",
+                "Volunteerism"
+            ]
+        },
+        {
+            "id": "9e8e92fd-d51e-48f9-9ddb-1d829f058b94",
+            "name": "Hospitality Business Club",
+            "preview": "The Hospitality Business Club merges hospitality with business, exploring the blend of investments, design, real estate, and cuisine. Join us to unravel how hospitality shapes success across sectors. Interested? Reach out to join the exploration.",
+            "description": "The Hospitality Business Club is an exciting space where the intricate connections between hospitality and business are explored and celebrated. We delve into the seamless amalgamation of investments, design, real estate, cuisine, and more to showcase how hospitality plays a pivotal role in the broader business landscape. Far beyond just a service industry, hospitality shapes experiences and drives success across various sectors. As a member, you'll have the opportunity to engage with a like-minded community passionate about unraveling the complexities of this unique intersection. Our events, discussions, and collaborative projects aim to provide valuable insights into how hospitality functions within the broader scope of business. Whether you're a seasoned professional, an entrepreneur, a student, or an enthusiast, the Hospitality Business Club welcomes all who seek to understand and contribute to the fascinating synergy between hospitality and business.",
+            "num_members": 422,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "fall",
+            "recruitment_type": "application",
+            "tags": [
+                "Hospitality",
+                "Business",
+                "Events",
+                "Community",
+                "Networking",
+                "Collaboration"
+            ]
+        },
+        {
+            "id": "ca967364-688f-4d40-8f2e-0cba322052f7",
+            "name": "Huntington Strategy Group",
+            "preview": "Huntington Strategy Group",
+            "description": "Huntington Strategy Group is the Northeastern's student-led strategy consultancy for non-profits and social organizations. Our mission is to ensure that nonprofits and social enterprises committed to education, health, and poverty alleviation can reach their full potential by meeting their demand for high-quality strategic and operational assistance, and in so doing developing the next generation of social impact leaders. Making an impact is a mutually beneficial process. We hope to provide leading-edge consulting services to social enterprises in the greater Boston area, and in turn, academic enrichment and professional opportunities for our peers through fulfilling client work and corporate sponsorships.",
+            "num_members": 586,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "fallSpring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "CommunityOutreach",
+                "Volunteerism",
+                "HumanRights",
+                "NonProfit",
+                "Consulting",
+                "SocialImpact"
+            ]
+        },
+        {
+            "id": "1d5ff056-82ef-404f-b951-b1df688afabb",
+            "name": "Husky Hemophilia Group",
+            "preview": "HHG\u2019s mission is to support people with bleeding disorders and those with loved one's bleeding disorders in research, education, and advocacy. ",
+            "description": "HHG&rsquo;s mission is to support people with bleeding disorders and those with loved one's bleeding disorders in research, education, and advocacy. Bleeding disorders can be hereditary or acquired, where patients are unable to clot properly. In order to advocate for accessible healthcare for bleeding disorders, we as a chapter hope to educate the Northeastern and Massachusetts community in raising awareness for bleeding disorders. Welcome to our community!",
+            "num_members": 504,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "application",
+            "tags": [
+                "CommunityOutreach",
+                "Volunteerism",
+                "HumanRights",
+                "Healthcare",
+                "Advocacy"
+            ]
+        },
+        {
+            "id": "09da621f-4f32-4cc7-8456-98eb5c5411ed",
+            "name": "IAFIE Northeastern University Chapter ",
+            "preview": "International Association for Intelligence Education (IAFIE): To serve as a local organization for Intelligence and associated professionals to advance research, knowledge, partnerships, and professional development.  \r\n",
+            "description": "To serve as a local organization for Intelligence and associated professionals to advance research, knowledge, partnerships, and professional development.  ",
+            "num_members": 162,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "application",
+            "tags": [
+                "Intelligence",
+                "Research",
+                "Partnerships",
+                "ProfessionalDevelopment"
+            ]
+        },
+        {
+            "id": "a63c4d44-bb2d-4f97-8571-3b9b98683275",
+            "name": "If/When/How: Lawyering for Reproductive Justice at NUSL ",
+            "preview": "If/When/How mobilizes law students to foster legal expertise and support for reproductive justice. We integrate reproductive rights law and justice into legal education and build a foundation of lasting support for reproductive justice. ",
+            "description": "If/When/How: Lawyering for Reproductive Justice at NUSL mobilizes law students to foster legal expertise and support for reproductive justice. It integrates reproductive rights law and justice into legal education to further scholarly discourse and builds a foundation of lasting support for reproductive justice within the legal community. The vision is reproductive justice will exist when all people can exercise their rights and access the resources they need to thrive and to decide whether, when, and how to have and parent children with dignity, free from discrimination, coercion, or violence. If/When/How values (1) dignity: all people deserve to be treated with respect and dignity for their inherent worth as human beings in matters of sexuality, reproduction, birthing, and parenting; (2) empowerment: those with power and privilege must prioritize the needs, amplify the voices, and support the leadership of those from vulnerable, under-served, and marginalized communities; (3) diversity: our movement will be strongest if it includes, reflects, and responds to people representing various identities, communities, and experiences; (4) intersectionality: reproductive oppression is experienced at the intersection of identities, conditions, systems, policies, and practices; and (5) autonomy: all people must have the right and ability to make voluntary, informed decisions about their bodies, sexuality, and reproduction.",
+            "num_members": 628,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "always",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "HumanRights",
+                "CommunityOutreach",
+                "PublicRelations"
+            ]
+        },
+        {
+            "id": "6db8eba6-59d7-483e-a1c0-87a1075c2f2d",
+            "name": "Illume Magazine",
+            "preview": "Illume Magazine is a student-run publication at Northeastern University centered around all Asian-American and Asian/Pacific Islander experiences experiences, identities, and diasporas.",
+            "description": "Illume Magazine is a student-run publication at Northeastern University devoted to the critical thought, exploration, and celebration of Asian-American and Asian/Pacific Islander experiences, stories, issues, and identities across all diasporas.\r\nOur magazine writes on Lifestyle &amp; Culture, Political Review, while also accepting Literary Arts submissions.",
+            "num_members": 492,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "fall",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "AsianAmerican",
+                "Lifestyle&Culture",
+                "PoliticalReview",
+                "CreativeWriting",
+                "Journalism"
+            ]
+        },
+        {
+            "id": "a40d4384-fe89-4b0b-bad1-c5260df36679",
+            "name": "Indian Cultural Association",
+            "preview": "ICA\u2019s mission is to provide a community for all Indian students across the Northeastern campus. Serving as a bridge between international students and Indian Americans, this club will foster dialogue and a sense of unity between the two groups.",
+            "description": "ICA&rsquo;s mission is to provide a community for all Indian students across the Northeastern campus. Serving as a bridge between international students and Indian Americans, this club will foster dialogue and a sense of unity between the two groups, by providing the resources for students to experience and learn about Indian culture during our meetings. Furthermore, our weekly meetings will help to familiarize members with modern India and evolving culture through movie nights and chai time chats. In addition, we will pair first-year international students with local students to help them acclimate to the new environment and to provide exposure to modern Indian culture for local students. ICA is Strictly an Undergraduate Club. ",
+            "num_members": 211,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "fallSpring",
+            "recruitment_type": "application",
+            "tags": [
+                "AsianAmerican",
+                "CommunityOutreach",
+                "CulturalExchange",
+                "Volunteerism"
+            ]
+        },
+        {
+            "id": "48ffa27f-c44a-4dd7-bc3a-238c11ad012b",
+            "name": "International Society for Pharmaceutical Engineering",
+            "preview": "The ISPE Student Chapter provides education, training, and networking opportunities referent to the biotechnology and pharmaceutical industry to graduate students, but also welcomes undergraduate students who want to participate in different activiti",
+            "description": " \r\n",
+            "num_members": 679,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "fall",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "Pharmaceutical",
+                "Biology",
+                "Chemistry",
+                "Engineering",
+                "CommunityOutreach"
+            ]
+        },
+        {
+            "id": "0b7e9f75-b791-46f3-872f-09fe2c390642",
+            "name": "KADA K-Pop Dance Team",
+            "preview": "KADA K-Pop Dance Team aims to empower & connect it's members through dance, exciting events, & shared passions. By creating inclusive learning environments, we hope to give members a fun, flexible space to grow their dance & performance abilities.",
+            "description": "Founded in 2019, KADA is Northeastern University's first and only undergraduate K-Pop Dance Team, celebrating Korean popular culture through dance and offering a space for those looking to grow their dance skills. KADA has won Best Student Organization at Northeastern&rsquo;s Dance4Me charity competition 3 years in a row and has worked to spread appreciation for Asian arts at a variety of other cultural events. With goals based in inclusivity, empowerment, and growth, we strive to create learning environments for all levels of dancers and drive connection through exciting events, shared passions, and an all-around fun time. From workshops, to rehearsals, to performances and projects, we want to create a space for members to to become stronger as both performers and leaders. ",
+            "num_members": 986,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "fallSpring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "PerformingArts",
+                "AsianAmerican",
+                "LGBTQ",
+                "CommunityOutreach"
+            ]
+        },
+        {
+            "id": "d7e1c724-ad6c-4a44-b19e-dc5fde5f778a",
+            "name": "LatAm Business Club",
+            "preview": "Fostering a vibrant Latin American community, while creating an entrepreneurial environment for business development, professional growth, and geopolitical dialogue. ",
+            "description": "Welcome to the LatAm Business Club, where we are dedicated to fostering a vibrant Latin American community. Our club provides a supportive and engaging environment for individuals interested in business development, professional growth, and geopolitical dialogue. Whether you're an entrepreneur, a student, a professional, or simply someone eager to connect with like-minded individuals, our club offers a platform for networking, learning, and collaborating. Join us in building a strong foundation for success and innovation in the Latin American business landscape!",
+            "num_members": 350,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "fallSpring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "LatinAmerica",
+                "BusinessDevelopment",
+                "Networking",
+                "ProfessionalGrowth",
+                "CommunityBuilding"
+            ]
+        },
+        {
+            "id": "5320b39b-a652-48b3-841f-7c7f43264c14",
+            "name": "Musicheads",
+            "preview": "Musicheads is for music enthusiasts, collectors, general listeners, and fanatics. We cover a wide range of genres and styles through our weekly Album Club (like a book club), and in our club group chat. Share your favorite music with us in a comfy sp",
+            "description": "Musicheads is a music appreciation and discussion club. Our primary club activity is hosting a weekly Album Club (like a book club, but for music). Club members take turns nominating albums, or musical releases, to listen to and discuss during album club. \r\nOur mission is to create a space for casual discussion and appreciation of music. Between our in-person meetings and online discussion board, there are always ways to share and discover new favorites!\r\nFollow for our Email Newsletter:\r\nhttp://eepurl.com/iBQzz2\r\nJoin the Musicheads discussion board:\r\nhttps://discord.com/invite/ZseEbC76tx",
+            "num_members": 185,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "Music",
+                "CreativeWriting",
+                "CommunityOutreach",
+                "Media",
+                "SocialJustice"
+            ]
+        },
+        {
+            "id": "25098316-8e35-4d5e-a53a-a3532140fdc7",
+            "name": "NAAD (Northeastern A Cappella Association for Desi Music)",
+            "preview": "NAAD (Northeastern A Cappella Association for Desi Music) embodies the profound resonance of South Asian music. Join us on a cultural journey as we bring the rich tapestry of South Asian music to the A Cappella sphere at Northeastern University!",
+            "description": "Naad literally means &ldquo;sound&rdquo;, but in philosophical terms it is the primordial sound that echoes through the universe, the vibration that is believed to have originated with its creation and has been reverberating through our very being ever since. Therefore, it is considered as the eternal Sound or Melody. NAAD which is our acronym for Northeastern A Cappella Association for Desi Music will be focused on bringing music lovers of South Asian music together. There are different types of music that originated in South Asia like hindustani classical, ghazal, qawali, carnatic music and so on. This will also bring South Asian music to the A Cappella sphere in Northeastern University. The club will consist of musicians from different south asian countries (Afghanistan, Bangladesh, Bhutan, India, Maldives, Nepal, Pakistan, and Sri Lanka) which will be reflected in our music and in our performances. ",
+            "num_members": 150,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "always",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "Music",
+                "AsianAmerican",
+                "PerformingArts",
+                "CommunityOutreach"
+            ]
+        },
+        {
+            "id": "8b359caf-5970-48ec-bc4e-3bc90159042d",
+            "name": "Naloxone Outreach and Education Initiative",
+            "preview": "Our club aims to educate Northeastern students, and surrounding community members on opioid emergencies, and how to use naloxone. We aim to increase access to naloxone and other harm reduction tools in our community. ",
+            "description": "The Naloxone Outreach and Education Initiative is an organization dedicated to educating Northeastern students, and surrounding community members on the opioid public health crisis, opioid emergencies, and reversing an opioid overdose using naloxone in order to save a life. We also aim to increase awareness of the opioid crisis, and oppose the stigma surrounding addiction, opioid use, and seeking treatment. We offer free training sessions, naloxone, fentanyl test strips, along with other resources. The hope of this program is to ultimately increase preparedness for these emergencies, as they are occurring all around us, while also changing the way our community thinks about drug use, addiction, and treatment.",
+            "num_members": 553,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "fallSpring",
+            "recruitment_type": "application",
+            "tags": [
+                "CommunityOutreach",
+                "HumanRights",
+                "Health",
+                "Volunteerism"
+            ]
+        },
+        {
+            "id": "aa092db1-f0f6-4e55-b1bc-3fb143c0836e",
+            "name": "Network of Enlightened Women at Northeastern",
+            "preview": "NeW is a women driven organization which focuses on professional development, the discussion of ideas, and fostering a community. We are like minded women who are open and willing to explore cultural and political issues, often in a conservative ligh",
+            "description": "The Network of Enlightened Women educates, equips, and empowers women to be principled leaders for a free society. NeW is a national community of conservative and independent-minded women from all sectors and backgrounds, passionate about educating, equipping, and empowering all women. \r\n \r\nNeW serves as a thought leader, promoting independent thinking and providing intellectual diversity on college campuses and in public discussions on women, policy, and culture. \r\n \r\nThis NeW chapter intends to bring together women for fun meetings, discussions on current events, professional development training, and service/volunteer work. The chapter helps women find friends on campus, learn something, and build their resumes. \r\n \r\nThe three goals of NeW are to create a network of conservative women on campus and beyond, to become more educated on conservative issues and educate others, and to encourage more women to become leaders on campuses and in the community. \r\n \r\nNeW cultivates a vibrant community of women through campus chapters, professional chapters, and our online presence that emboldens participants to confidently advocate for pro-liberty ideas in their schools, workplaces, homes, and communities. \r\n \r\nNeW also connects program participants with career-advancing professional opportunities.\r\n \r\nNeW trains pro-liberty women to serve as leaders through campus sessions, national conferences, leadership retreats, and professional development programs.",
+            "num_members": 795,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "fall",
+            "recruitment_type": "application",
+            "tags": [
+                "WomenEmpowerment",
+                "Conservatism",
+                "Leadership",
+                "ProfessionalDevelopment",
+                "CommunityBuilding",
+                "Advocacy",
+                "CareerDevelopment",
+                "Education"
+            ]
+        },
+        {
+            "id": "27c3743d-c0f9-49ba-965b-dcfad33313ce",
+            "name": "North African Student Association",
+            "preview": "The North African Student Association at Northeastern University aims to provide a welcoming space for students of North African descent and those interested in North African culture. ",
+            "description": "The North African Student Association at Northeastern University aims to provide a welcoming space for students of North African descent and those interested in North African culture. We strive to foster connections, raise awareness of diverse North African cultures, and offer academic and career support for all members, promoting success and excellence within the Northeastern community.",
+            "num_members": 851,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "application",
+            "tags": [
+                "AfricanAmerican",
+                "CommunityOutreach",
+                "HumanRights",
+                "Volunteerism"
+            ]
+        },
+        {
+            "id": "6eead742-60a3-488b-bc8f-79a4706c575f",
+            "name": "Northeastern University Physical Therapy Club",
+            "preview": "The Physical Therapy Club serves to enhance the professional development of students in the Physical Therapy program by organizing and participating in educational, social, and other charitable events.",
+            "description": "The Physical Therapy Club serves to enhance the professional development of students in the Physical Therapy program by organizing and participating in educational, social, and other charitable events. The NEU PT Club is a student organization that works intimately with the Physical Therapy Department to sponsor the William E. Carter School Prom, host wellness events during National Physical Therapy Month, support the APTA Research Foundation, provide physical therapy-related community outreach opportunities and host social gatherings to help physical therapy majors from all years get to know each other. The Club also sponsors attendees at the APTA's National Conferences yearly, schedules guest lectures, and provides social networking opportunities for all NEU Physical Therapy majors.",
+            "num_members": 383,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "fallSpring",
+            "recruitment_type": "application",
+            "tags": [
+                "Volunteerism",
+                "CommunityOutreach",
+                "HumanRights",
+                "Healthcare",
+                "PhysicalTherapy",
+                "StudentOrganization"
+            ]
+        },
+        {
+            "id": "650c7214-4d01-4121-996b-e5e330714e8d",
+            "name": "null NEU",
+            "preview": "null NEU at Northeastern University promotes cybersecurity education and innovation through events, projects, and resources. Recognized by Khoury College, we welcome students passionate about security. Join our mission to create a safer digital world",
+            "description": "Welcome to null NEU, the cybersecurity hub at Northeastern University. As the official student chapter of the renowned null community, we stand at the forefront of cybersecurity education, collaboration, and innovation within the dynamic environment of the Khoury College of Computer Sciences. Our commitment is to learn about security and live it, shaping the future of digital safety one project at a time.\r\n \r\nWho We Are\r\nnull NEU is more than an organization; we are a movement. Driven by student leadership and recognized by esteemed faculty, our mission is threefold: to elevate security awareness across campus, to build a centralized repository brimming with cutting-edge security knowledge, and to push the boundaries of traditional security research into new and uncharted territories.\r\n \r\nGet Involved\r\nCybersecurity is a vast ocean, and there's a place for everyone in null NEU. Whether you're taking your first dive into security or you're already navigating the deep waters, we offer a plethora of opportunities to engage, learn, and contribute:\r\n- Participate in Our Events: From workshops to guest lectures and hackathons, our events are designed to expand your knowledge and network.\r\n- Contribute Your Skills: Have a knack for coding, research, or design? Our ongoing projects need your expertise.\r\n- Leverage Our Resources: Access our curated content and learning tools to advance your cybersecurity journey.\r\n \r\nStay Connected\r\nThe digital world is our playground, and we're active across several platforms. Connect with us on LinkedIn for professional networking, join our Mastodon community for lively discussions, follow our Instagram for a visual tour of our activities, and stay updated with our Twitter feed for real-time engagement.",
+            "num_members": 88,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "fall",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "SoftwareEngineering",
+                "Cybersecurity",
+                "Technology",
+                "Networking",
+                "Education"
+            ]
+        },
+        {
+            "id": "e1073c96-1808-43a4-91c2-d35f2bb0c4c2",
+            "name": "Orthodox Christian Fellowship",
+            "preview": "Orthodox Christian Fellowship (OCF) is the official collegiate campus ministry program under the ACOBUSA. We work to serve the spiritual and community needs of Eastern Orthodox Christians at Northeastern.",
+            "description": "The purpose of OCF is to serve the spiritual and community needs of Eastern Orthodox Christians on campus. This entails the &ldquo;Four Pillars of OCF&rdquo;:\r\n \r\n\r\nFellowship:\r\n\r\n \r\n\r\n\r\n\r\nCreate a welcoming environment where all students can share their college experience with others who share their values.\r\nEncourage students to engage with the life of the parish and the Church outside of club hours.\r\n\r\n\r\n\r\n \r\n\r\nEducation:\r\n\r\n \r\n\r\n\r\n\r\nAllow students to learn about their faith and engage more deeply with it alongside others.\r\nTeach students how to identify and act on their beliefs and values in their academic and professional lives.\r\n\r\n\r\n\r\n \r\n\r\nWorship:\r\n\r\n \r\n\r\n\r\n\r\nEncourage students to strengthen their relationship with God, in good times and bad, through thankfulness and prayer.\r\nAllow students to have access to the sacraments and sacramental life of the Eastern Orthodox Church.\r\n\r\n\r\n\r\n \r\n\r\nService:\r\n\r\n \r\n\r\n\r\nEncourage students to participate in club-affiliated and non-club-affiliated activities of service to the underprivileged.\r\nTeach students how to incorporate elements of service and compassion into their everyday lives.\r\n\r\n",
+            "num_members": 941,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "always",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "Christianity",
+                "CommunityOutreach",
+                "Volunteerism",
+                "Service",
+                "Fellowship",
+                "Education"
+            ]
+        },
+        {
+            "id": "d7e9bb87-52f5-4205-a2f5-d3de76ac7dfd",
+            "name": "Pages for Pediatrics at NEU",
+            "preview": "We publish and distribute children's storybooks about different pediatric illnesses/disabilities. Through narrative mirroring, our children's books aim to normalize patient adversity, advocate for disability representation, and combat stigma.",
+            "description": "Hospital stays can be stressful and overwhelming for a child of any age. Many children fear the hospital environment and find it difficult to cope with their illness alone. To help alleviate patient anxiety, we center our children&rsquo;s storybooks around characters that pediatric patients can relate to as a means of instilling hope, comfort, and solidarity in our readers. \r\nThrough narrative mirroring, our children&rsquo;s storybooks aim to normalize patient adversity, advocate for disability representation, and combat stigma towards pediatric conditions in the broader community. We believe that every patient should have unhindered access to our therapeutic stories; hence we raise funds to cover the production and distribution of our books so we can donate copies to pediatric patients at Boston Children&rsquo;s Hospital and others nationwide. We also hope to outreach to local elementary schools.",
+            "num_members": 725,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "fall",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "CreativeWriting",
+                "Pediatrics",
+                "Hospital",
+                "Children",
+                "Therapeutic",
+                "Narrative",
+                "ChildrensBooks",
+                "CommunityOutreach"
+            ]
+        },
+        {
+            "id": "1f774dce-6218-4fb8-a240-b6621d4b9bca",
+            "name": "Poker Club",
+            "preview": "We host regular Poker games for players of all skill levels, completely free-of-charge with prizes! We also host regular workshops and general meetings for members to learn more about how to play Poker. Follow us for more on Instagram! @nupokerclub",
+            "description": "Northeastern Poker Club is a student organization for students to play and learn more about Poker on campus. We host regular Poker games on campus, regular workshops and general meetings for members to learn more about how to play Poker.\r\nWe're welcome to poker players of all skill levels. We strictly operate on a non-gambling basis, thus, all of our Poker games are free-of-charge and we give out regular prizes through our Poker games!\r\nWe also participate in the PokerIPA tournament, where the best of the club get to play against top Poker players in colleges around the world for big prizes (learn more at pokeripa.com). ",
+            "num_members": 655,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "fallSpring",
+            "recruitment_type": "application",
+            "tags": [
+                "Volunteerism",
+                "CommunityOutreach",
+                "Social",
+                "StudentOrganization"
+            ]
+        },
+        {
+            "id": "2dd6bd72-77df-4b87-aae8-c62c40c44ef2",
+            "name": "Queer Caucus",
+            "preview": "Queer Caucus is a student-run organization dedicated to supporting lesbian, gay, bisexual, transgender, queer, gender non-conforming, non-binary, asexual, genderqueer, Two-Spirit, intersex, pansexual, and questioning members of the NUSL community.",
+            "description": "Queer Caucus is a student-run organization dedicated to supporting lesbian, gay, bisexual, transgender, queer, gender non-conforming, non-binary, asexual, genderqueer, Two-Spirit, intersex, pansexual, and questioning students, staff, and faculty at NUSL. QC seeks to offer a welcoming space for all queer individuals to connect with other queer students while mobilizing around issues of injustice and oppression. We seek to affirm and support our members who are Black, Indigenous, and people of color, as well as our members with disabilities. Through educational programming, campus visibility, and professional development, Queer Caucus seeks to maintain Northeastern University School of Law&rsquo;s position as the &ldquo;queerest law school in the nation.&rdquo;",
+            "num_members": 891,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "LGBTQ",
+                "HumanRights",
+                "CommunityOutreach",
+                "Volunteerism",
+                "Journalism"
+            ]
+        },
+        {
+            "id": "46f81f45-06d6-4404-b52f-9c59711aa539",
+            "name": "Real Talks",
+            "preview": "We're a group that provides a space for students to connect and talk about real life issues and relevant social topics, and also enjoys fun times and good food!",
+            "description": "Welcome to Real Talks! We are a warm and inviting group dedicated to providing a safe space for students to come together and engage in meaningful discussions about real-life issues and relevant social topics. Our club offers a platform for open dialogue, connection, and support, where everyone's voice is valued and respected. In addition to our thought-provoking conversations, we also know how to have a good time and enjoy delicious food together. Join us at Real Talks for an enriching experience of sharing, learning, and building friendships!",
+            "num_members": 968,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "fall",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "CommunityOutreach",
+                "HumanRights",
+                "Journalism",
+                "EnvironmentalAdvocacy"
+            ]
+        },
+        {
+            "id": "4f005b0e-30f6-4b37-b00f-f747b70c3f8d",
+            "name": "ReNU",
+            "preview": "ReNU is focused on prototyping small-scale renewable energy systems. ",
+            "description": "ReNU is devoted to the technical development of small-scale renewable energy systems. We prototype windmills, solar panels, and other similar technologies at a small scale. If possible, we enter our prototypes into national competitions. The club meets on a weekly basis to design, construct our prototypes, learn engineering skills, and learn about renewable energy. ",
+            "num_members": 64,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "fallSpring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "EnvironmentalScience",
+                "MechanicalEngineering",
+                "RenewableEnergy",
+                "EngineeringSkills"
+            ]
+        },
+        {
+            "id": "f51d6404-da3f-4d5a-8deb-d630491f991b",
+            "name": "rev",
+            "preview": "rev is a community for committed builders, founders, creatives, and researchers at Northeastern University to take ideas from inception to reality.",
+            "description": "rev is a community of builders, founders, creatives, and researchers at Northeastern University. This is a space where students collaborate to work on side projects and take any idea from inception to reality. Our mission is to foster hacker culture in Boston and provide an environment for students to innovate, pursue passion projects, and meet other like-minded individuals in their domain expertise.",
+            "num_members": 261,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "always",
+            "recruitment_type": "application",
+            "tags": [
+                "SoftwareEngineering",
+                "CreativeWriting",
+                "Music"
+            ]
+        },
+        {
+            "id": "91c98681-503e-42da-9177-2aa57b874baa",
+            "name": "Rhythm Games Club",
+            "preview": "We the Northeastern's Rhythm Games Club provide a community where members can play and share their experience with Rhythm Games!",
+            "description": "We are Northeastern's Rhythm Games Club!\r\nOur goal is to bring people together through playing Rhythm Games. We have many different games and events where you can try out and test your rhythm and reaction skills! Please join our discord at https://discord.gg/G4rUWYBqv3 to stay up to date with our meetings and events. ",
+            "num_members": 601,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "always",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "Music",
+                "PerformingArts",
+                "CreativeWriting",
+                "CommunityOutreach"
+            ]
+        },
+        {
+            "id": "6d17242d-7c0e-4d53-966c-eacadac607a3",
+            "name": "Scholars of Finance",
+            "preview": "Scholars of Finance is a rapidly growing organization on a mission to inspire character and integrity in the finance leaders of tomorrow. We seek to solve the world\u2019s largest problems by investing in undergraduate students.",
+            "description": "Scholars of Finance is a vibrant community of driven individuals passionate about cultivating the next generation of finance leaders with a strong sense of integrity and purpose. Our organization is dedicated to empowering undergraduate students to tackle global challenges through innovative thinking and ethical decision-making. By fostering a supportive environment and providing valuable resources, Scholars of Finance is shaping a future where financial success is synonymous with positive change and social impact.",
+            "num_members": 606,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "application",
+            "tags": [
+                "Finance",
+                "Leadership",
+                "Innovation",
+                "Ethics",
+                "Empowerment",
+                "GlobalChallenges",
+                "SocialImpact",
+                "PositiveChange"
+            ]
+        },
+        {
+            "id": "ad23903b-de0f-4eb3-a500-96059fdd272d",
+            "name": "SPIC MACAY NU CHAPTER",
+            "preview": "The Spic Macay chapter of NU aimed at promoting Indian art forms.",
+            "description": "Welcome to the SPIC MACAY NU CHAPTER! Our club is dedicated to celebrating and promoting the rich tapestry of Indian art forms. From classical music to traditional dance, we strive to create an inclusive space where everyone can explore and appreciate the beauty of Indian culture. Join us in our vibrant community as we host engaging performances, workshops, and cultural events that showcase the diversity and creativity of India's artistic heritage. Whether you're a seasoned enthusiast or just starting to explore the wonders of Indian art, there's a place for you in our warm and welcoming club!",
+            "num_members": 991,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "always",
+            "recruitment_type": "application",
+            "tags": [
+                "PerformingArts",
+                "Music",
+                "VisualArts",
+                "CommunityOutreach"
+            ]
+        },
+        {
+            "id": "790e0ec6-44a6-4005-98c6-48274e3c1a3b",
+            "name": "The Libre Software Advocacy Group",
+            "preview": "The goal of our organization is to promote the digital freedom of all through the promotion of Libre Software Ideals. ",
+            "description": "Welcome to The Libre Software Advocacy Group! Our organization is dedicated to promoting the digital freedom of all individuals through the advocacy of Libre Software Ideals. We believe in empowering users with control over their technology and promoting the values of openness, collaboration, and transparency in the digital world. Join us in our mission to champion libre software and create a more inclusive and accessible digital environment for everyone.",
+            "num_members": 489,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "always",
+            "recruitment_type": "application",
+            "tags": [
+                "SoftwareEngineering",
+                "DataScience",
+                "CommunityOutreach",
+                "EnvironmentalAdvocacy"
+            ]
+        },
+        {
+            "id": "133fb59f-fc5d-4bb9-a273-50e77dfe27a0",
+            "name": "The Women's Network Northeastern",
+            "preview": "The Women's Network is the largest collegiate women's networking organization in the nation. There are over 100 chapters at universities across the United States, Canada, and soon Ireland!",
+            "description": "The Women's Network strives to cultivate and celebrate women's ambitions through connecting members to industry leaders, professional development resources, and career opportunities. TWN Northeastern holds a variety of experiential events: speaker events, professional development workshops, networking trips, alumnae receptions, community-based discussions, and more. Being a part of TWN is a great way to authentically expand networks, build confidence, gain exposure to different industries, and discover new career opportunities. Joining TWN has opened doors for tens of thousands of women across the country! Fill out our membership form at bit.ly/jointwn and visit our instagram @thewomensnetwork_northeastern to view our upcoming events!",
+            "num_members": 230,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "always",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "WomenEmpowerment",
+                "ProfessionalDevelopment",
+                "Networking",
+                "CommunityBuilding"
+            ]
+        },
+        {
+            "id": "7fd165fb-6aa7-4d27-b0e2-d1de64cfc48e",
+            "name": "Undergraduate Law Review",
+            "preview": "The Undergraduate Law Review (NUULR) is Northeastern's distinguished undergraduate legal publication. ",
+            "description": "Established in 2023, the Undergraduate Law Review (NUULR) is Northeastern's distinguished undergraduate legal publication. Committed to fostering intellectual discourse and scholarly engagement, NUULR publishes insightful legal scholarship authored by undergraduate students from diverse backgrounds. Our mission is to create a dynamic space where legal ideas are explored, discussed, and shared among the Northeastern University community and the broader public. Our culture is rooted in the values of objectivity, critical thinking, and interdisciplinary exploration, making NUULR a leading forum for undergraduate legal discourse, critical analysis, and academic fervor.\r\nIf you interested in joining NUULR, then please fill out this form to be added onto our listserv: https://forms.gle/g1c883FHAUnz6kky6\r\n ",
+            "num_members": 1014,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "fall",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "Prelaw",
+                "CreativeWriting",
+                "Journalism"
+            ]
+        },
+        {
+            "id": "2fe8f5fc-0f27-4394-babe-a2fa957c1c75",
+            "name": "United Against Trafficking",
+            "preview": "United Against Trafficking, is dedicated to educating, advocating, and taking concrete actions to combat all forms of human trafficking. We strive to create an environment where knowledge, activism, and compassion intersect to drive meaningful change",
+            "description": "United Against Trafficking is an organization dedicated to combating various forms of human trafficking, including sex trafficking, labor trafficking, and forced labor. Embracing the values of dignity and rights for all individuals, our mission centers on eradicating the horrors of trafficking and fostering a world where no one falls victim to such atrocities. Welcoming members from Northeastern University, including students, faculty, and staff, our aim is to build an inclusive and diverse community representing diverse academic disciplines and backgrounds. While our primary focus is within the university, we actively seek collaborations with local and national anti-trafficking entities, survivors, and advocates. Our initiatives span awareness campaigns, advocacy for policy reforms, community outreach, workshops, and training programs. Additionally, we engage in fundraising events to support frontline anti-trafficking efforts and foster collaborative partnerships to maximize impact. Furthermore, our organization encourages research projects aimed at enhancing understanding and driving evidence-based solutions. United Against Trafficking envisions a campus environment where knowledge, activism, and empathy intersect to create substantial change in the fight against human trafficking, aspiring to be a beacon of hope and progress in the global mission for a world free from exploitation and suffering. ",
+            "num_members": 1018,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "HumanRights",
+                "CommunityOutreach",
+                "Volunteerism",
+                "Advocacy",
+                "EnvironmentalAdvocacy"
+            ]
+        },
+        {
+            "id": "3abe793e-e4ef-4d34-9256-8a176a9c5fcc",
+            "name": "United Nations Association at Northeastern",
+            "preview": "Through advocacy, discussion, and education, UNA Northeastern advocates for the UN Sustainable Development Goals and for US leadership at the UN, both our global and local community.  ",
+            "description": "The United Nations Association of the USA is a grassroots organization that advocates for US leadership at the United Nations (UN). With over 20,000 members and more than 200 chapters across the country, UNA-USA members are united in their commitment to global engagement and their belief that each of us can play a part in advancing the UN&rsquo;s mission and achieving the Sustainable Development Goals (SDGs).  As a campus chapter UNA Northeastern advocates for the UN SDGs locally and connects the mission and career opportunities of the UN to our community. \r\nWe&rsquo;re working to build a welcoming community of students who are passionate about international issues. As an organization we come together weekly to learn about and discuss international issues and advocate for change in our community. The SDGs cover a broad range of issues and our focus represents this. Some of our past events, beyond our weekly meetings, have included annual UN Day and Earth Day events, a clothing drive, volunteering in the community, meeting with our representatives, and trips to UN events in New York. ",
+            "num_members": 334,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "EnvironmentalAdvocacy",
+                "HumanRights",
+                "CommunityOutreach",
+                "Volunteerism",
+                "GlobalEngagement",
+                "InternationalIssues"
+            ]
+        },
+        {
+            "id": "f20c7d67-9f4f-4cc3-9115-01a640aebe32",
+            "name": "Women\u2019s + Health Initiative at Northeastern",
+            "preview": "W+HIN is a safe space for all those interested to discuss and learn about disparities that exist in healthcare for women and people with uteruses and how to combat these. We spread this knowledge by producing a student written women's health journal.",
+            "description": "The purpose of this organization is to provide a safe space for all people with uteruses and other interested parties to discuss and learn about the disparities that exist in healthcare for women and how to combat these. Topics surrounding women&rsquo;s health are often viewed as taboo, preventing people with uteruses from becoming fully aware of the issues they face and how they can care best for their health. This organization is meant to combat this struggle by increasing women&rsquo;s health education on campus both within and outside of organizational meetings and contributing to women&rsquo;s health efforts in the greater Boston area. The organization will spread this knowledge mainly by producing a student written journal each semester. ",
+            "num_members": 424,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "Women'sHealth",
+                "HealthEducation",
+                "CommunityOutreach",
+                "Journalism"
+            ]
+        },
+        {
+            "id": "bb89e666-0b0b-4378-b2f5-941d92be2682",
+            "name": "Aaroh",
+            "preview": "Are you proud of your Indian roots? Aaroh is an undergraduate Indian music club with an aim to bring music lovers together with a focus on different types of music bringing musical diversity to the campus and giving students a platform to perform.",
+            "description": "Aaroh is an organization that aims to bring music lovers together with a focus on the different types of Indian music; including but not limited to Bollywood, folk, fusion, Carnatic, and Hindustani classical with a focus on Indian origin instruments.\r\nWe will be actively engaged in bringing musical diversity to the campus, giving students a platform to convene, discuss and perform.",
+            "num_members": 462,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "always",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "Music",
+                "PerformingArts",
+                "AsianAmerican",
+                "CommunityOutreach"
+            ]
+        },
+        {
+            "id": "80188ab4-83af-4705-aeb6-7baa36823c1f",
+            "name": "Acting Out",
+            "preview": "Acting Out is Northeastern University's only acting company dedicated to promoting social change through the work that it produces, events it holds, and discussions it facilitates.  ",
+            "description": "Acting Out is Northeastern University's only acting company dedicated to promoting social change through the work that it produces, events it holds, and discussions it facilitates.",
+            "num_members": 636,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "always",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "PerformingArts",
+                "CommunityOutreach",
+                "HumanRights",
+                "CreativeWriting"
+            ]
+        },
+        {
+            "id": "c6f9e801-6381-45de-9d28-c13f763eea26",
+            "name": "Active Minds at NU",
+            "preview": "As a chapter of the national organization, Active Minds, Inc., Active Minds at NU strives to reduce the stigmas associated with mental health disorders and encourage conversation among Northeastern students about mental health.",
+            "description": "As a chapter of the national organization, Active Minds, Inc., Active Minds at NU strives to reduce the stigmas associated with mental health disorders and encourage conversation among Northeastern students about mental health. We are not a support group or peer counselors, but rather an educational tool and liaison for students. We aim to advocate for students and bring about general awareness through weekly meetings and programming. Drop by any of our events or meetings to say hi! :)\r\nJoin our Slack!\r\nCheck out our website!",
+            "num_members": 752,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "always",
+            "recruitment_type": "application",
+            "tags": [
+                "Psychology",
+                "Neuroscience",
+                "CommunityOutreach",
+                "Volunteerism",
+                "LGBTQ",
+                "HumanRights",
+                "EnvironmentalAdvocacy"
+            ]
+        },
+        {
+            "id": "9a1b9620-32db-4674-84b0-5616c7651071",
+            "name": "Addiction Support and Awareness Group",
+            "preview": "The mission of this organization is to create a community for people struggling with addiction and to educate the Northeastern community on this topic. You do not have to be dealing with addiction to join!",
+            "description": "The mission of this organization is to create a community for people struggling with addiction and to educate the northeastern community on the topic. The National Institute on Drug Abuse has established that as of 2022, 20.4 million people have been diagnosed with a substance use disorder in the past year and only 10.3% of those people received some type of treatment. Massachusetts itself suffers from an opioid crisis, and more people have died from drug overdose in recent years than ever before. In the Boston-Cambridge-Quincy Area, the home of Northeastern, 396,000 people ages 12 or older were classified as having a substance use disorder in the past year, higher than the national rate (NSDUH Report). College students between ages of 18 and 22 particularly are at higher risk for struggling with substance use disorders. The National Survey on Drug Use and Health asked participants in this age group who were at college and who were not if they had used alcohol in the past month; college students' \"yes,\" answers were 10% higher than the group that was not in college.\r\n \r\n ",
+            "num_members": 85,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "fallSpring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "HumanRights",
+                "CommunityOutreach",
+                "Volunteerism",
+                "DrugAddiction",
+                "Psychology"
+            ]
+        },
+        {
+            "id": "efac2b86-35a7-4ac2-a910-ac203327645c",
+            "name": "AerospaceNU",
+            "preview": "This group is for anyone and everyone who wants to design and build projects with the goal of getting them in the air. Whether it's rockets, unmanned aerial vehicles, quadcopters, or weather balloons, you can bet we're building it and teaching anyone",
+            "description": "This group is for anyone and everyone who wants to design and build projects with the goal of getting them in the air. Whether it's rockets, unmanned aerial vehicles, airships, quadcopters, or weather balloons, you can bet we're building it and sending it soaring. This club supports multiple projects at a time, some of which compete against other schools, others are trying to break records, while others are just for research and fun. You don't need to have any experience to join us! We are here to give students the opportunity to get their hands dirty and pursue projects about which they are passionate. Check out our website for more information and to get added to our emailing list!",
+            "num_members": 890,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "application",
+            "tags": [
+                "Aerospace",
+                "Engineering",
+                "STEM",
+                "Technology",
+                "CommunityOutreach"
+            ]
+        },
+        {
+            "id": "2980f89f-3493-4334-b2ea-4363d9ec2370",
+            "name": "African Graduate Students Association",
+            "preview": "AGSA is dedicated to empowering African graduate students and enhancing their educational and personal experiences.",
+            "description": " \r\nThe African Graduate Students Association at Northeastern University is dedicated to empowering African graduate students and enhancing their educational and personal experiences. Our purpose revolves around six core themes: community building, professional development, advocacy, global engagement, leadership empowerment, and cultural integration. Through these focused areas, we aim to support our members in achieving their academic and career goals, advocate for their needs, celebrate the rich diversity of African cultures, and foster a sense of unity and inclusion within the university and beyond.\r\n ",
+            "num_members": 171,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "fallSpring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "AfricanAmerican",
+                "GlobalEngagement",
+                "LeadershipEmpowerment",
+                "CommunityBuilding",
+                "CulturalIntegration"
+            ]
+        },
+        {
+            "id": "8d7071cf-b38a-49c9-8c66-bf6a525d837b",
+            "name": "afterHOURS",
+            "preview": "Afterhours is an extremely unique college entertainment venue located in the Curry Student Center at Northeastern University in Boston, MA. From state-of-the-art video and sound concepts to a full-service Starbucks Coffee, Afterhours programs almost ",
+            "description": "Afterhours is an extremely unique college entertainment venue located in the Curry Student Center at Northeastern University in Boston, MA. From state-of-the-art video and sound concepts to a full-service Starbucks Coffee, Afterhours programs almost every night of the week and supports programming for over 200 student organizations!Come down to check out sweet music and grab your favorite Starbucks treat!",
+            "num_members": 447,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "always",
+            "recruitment_type": "application",
+            "tags": [
+                "PerformingArts",
+                "Music",
+                "Broadcasting",
+                "CommunityOutreach"
+            ]
+        },
+        {
+            "id": "24223793-b457-4fc3-bfc3-cea8d78352e9",
+            "name": "Agape Christian Fellowship",
+            "preview": "We are Agape Christian Fellowship, the Cru chapter at Northeastern University. We are a movement of students loving Jesus, loving each other, and loving our campus. We currently meet at 7:30 EST on Thursdays- feel free to stop by!",
+            "description": "We are Agape Christian Fellowship, the Cru chapter at Northeastern University. We are a movement of students loving Jesus, loving each other, and loving our campus. Our vision is to be a community of people growing in their relationships with Jesus, learning together, and encouraging one another.We currently meet at 7:30PM on Thursdays in West Village G 02 for our weekly meeting, and we'd love if you could stop by!",
+            "num_members": 419,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "fallSpring",
+            "recruitment_type": "application",
+            "tags": [
+                "Christianity",
+                "CommunityOutreach",
+                "Volunteerism",
+                "Neuroscience"
+            ]
+        },
+        {
+            "id": "eedc8765-c42d-4b08-bb23-59d59ddc95da",
+            "name": "Alliance for Diversity in Science and Engineering",
+            "preview": "Our mission is to increase the participation of underrepresented groups (Women, Latinos, African-Americans, Native Americans, the LGBTQIA+ community, persons with disabilities, etc.) in academia, industry, and government. ",
+            "description": "Our mission is to increase the participation of underrepresented groups (Women, Latinos, African-Americans, Native Americans, the LGBTQA community and persons with disabilities, etc.) in academia, industry, and government. ADSE supports, organizes, and oversees local, graduate student-run organizations that reach out to students and scientists of all ages and backgrounds. We aim to connect scientists across the nation, showcase non-traditional career paths and underrepresented minority experiences in STEM, and educate students at all levels about opportunities in the sciences.\r\n \r\nPlease check out our Summer Involvement Fair Information Session at the belowlink to learn more about our organization and what we have to offer you thisyear: https://www.youtube.com/watch?v=ozYtnJDxSHc&amp;t=750s ",
+            "num_members": 194,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "always",
+            "recruitment_type": "application",
+            "tags": [
+                "Women",
+                "LatinAmerica",
+                "AfricanAmerican",
+                "LGBTQ",
+                "Neuroscience",
+                "CommunityOutreach"
+            ]
+        },
+        {
+            "id": "4e951a4a-9e28-4143-b5b4-1c9d1f3b4ff9",
+            "name": "Alpha Chi Omega",
+            "preview": "The Alpha Chi Omega Fraternity is devoted to enriching the lives of members through lifetime opportunities of friendship, leadership, learning and service.",
+            "description": "The Alpha Chi Omega Fraternity is devoted to enriching the lives of members through lifetime opportunities of friendship, leadership, learning and service.",
+            "num_members": 137,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "fallSpring",
+            "recruitment_type": "application",
+            "tags": [
+                "CommunityOutreach",
+                "Leadership",
+                "Friendship",
+                "Service"
+            ]
+        },
+        {
+            "id": "546070b5-4711-4bb2-b278-0604a8cbfdac",
+            "name": "Alpha Epsilon Delta, The National Health Preprofessional Honor Society",
+            "preview": "\r\nAlpha Epsilon Delta is a nationally recognized Health Preprofessional Honors Society. \r\nPlease get in touch with us at northeasternaed@gmail.com if you are interested in applying. ",
+            "description": "\r\nAlpha Epsilon Delta (AED) is the National Health Preprofessional Honor Society dedicated to encouraging and recognizing excellence in preprofessional health scholarship. Our Chapter here at Northeastern includes undergraduate students on the pre-med, pre-PA, pre-vet, pre-PT, and pre-dental tracks. We also have members who are interested in pursuing careers in research. Our biweekly chapter meetings consist of various activities, including focused discussions, student panels, and guest speakers' lectures. Last semester, members also had the opportunity to attend CPR lessons, suture clinics and participate in club sponsored volunteer activities.\r\n\r\n\r\n \r\nTimeline:\r\n\r\n\r\nApplications will be sent out in both the Fall and Spring semesters for an Induction in November and January. If you have any questions, please email us at northeatsernaed@gmail.com. Thank you for your interest!\r\n \r\n\r\n\r\nRequirements to join:\r\n\r\n\r\n- Membership is open to students currently enrolled in chosen health professions, including careers in medicine (allopathic and osteopathic), dentistry, optometry, podiatry, veterinary medicine, and other health care professions requiring post baccalaureate study leading to an advanced degree.\r\n\r\n\r\n- Potential members must have completed at least three semesters or five quarters of health preprofessional studies work by the time of Induction with an overall cumulative GPA of at least 3.20 on a 4.0 scale (A = 4.00) and also with a cumulative GPA of 3.20 in the sciences &ndash; biology, chemistry, physics, and mathematics. \r\n- The Massachusetts Zeta chapter at Northeastern University will accept Associate Members. \r\n- Associate members will be considered full members of the Chapter but will not be formally inducted into it until they meet all the membership requirements. They will have access to all the events, meetings, panels, volunteer opportunities, and the mentorship program and can be elected into committee chair positions. However, they will not be able to run for full e-board positions until they have been inducted. \r\n\r\n\r\n \r\nDues:\r\n\r\n\r\nMembership in Alpha Epsilon Delta is an earned honor for life. There will be no annual dues for returning members for the 2023-2024 academic year. However, there is a one time fee of $90 for newly inducted members which goes to the National Organization. The money sent to the National Organization covers lifetime membership and a certificate.\r\n",
+            "num_members": 710,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "fallSpring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "Premed",
+                "Biology",
+                "Chemistry",
+                "Physics",
+                "HealthProfessions",
+                "Volunteerism",
+                "CommunityOutreach"
+            ]
+        },
+        {
+            "id": "35c5d212-ea6d-483d-83ef-64e539e4c2db",
+            "name": "Alpha Epsilon Phi",
+            "preview": "Alpha Epsilon Phi is a national sorority dedicated to sisterhood, community service and personal growth. AEPhi was founded at Northeastern University on May 6th, 1990, and to this day it continues to be a close-knit, compassionate community that fost",
+            "description": "Alpha Epsilon Phi is a national sorority dedicated to sisterhood, community service, and personal growth. AEPhi was founded at Northeastern University on May 6th, 1990, and to this day it continues to be a close-knit, compassionate community that fosters lifelong friendship and sisterhood. We seek to create an environment of respect and life-long learning through sister's various passions, community service, and engagement with various communities. Above all else, Alpha Epsilon Phi provides a home away from home for college women and unconditional friendships that will last far beyond the time spent at Northeastern University.",
+            "num_members": 914,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "application",
+            "tags": [
+                "Sisterhood",
+                "CommunityService",
+                "LifeLongFriendships",
+                "Learning",
+                "Friendship",
+                "WomenEmpowerment",
+                "PersonalGrowth",
+                "CommunityEngagement"
+            ]
+        },
+        {
+            "id": "986c0b94-052e-4b94-87d3-20432a3f4117",
+            "name": "Alpha Epsilon Pi",
+            "preview": "Our basic purpose is to provide a comprehensive college experience for young men, fuel social and personal growth in our members, and create lasting friendships, mentorship, community and support for our diverse brotherhood",
+            "description": "Our basic purpose is to provide a comprehensive college experience for young men, and create lasting friendships, mentorship, community and support for our diverse brotherhood. Alpha Epsilon Pi, predicated off of socially and culturally Jewish values, strives to strengthen each member's strengths and helps them overcome their weaknesses, and emphasizes personal, professional and social growth. We believe our organization provides a unique opportunity that can not be found as easily through other mediums.",
+            "num_members": 257,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "fallSpring",
+            "recruitment_type": "application",
+            "tags": [
+                "Judaism",
+                "CommunityOutreach",
+                "Mentorship",
+                "HumanRights"
+            ]
+        },
+        {
+            "id": "e767fd6f-28e9-4b43-8aaa-c275fe55e25e",
+            "name": "Alpha Kappa Alpha Sorority, Inc - Iota Gamma Chapter",
+            "preview": "Founded on the campus of Howard University in Washington, DC in 1908, Alpha Kappa Alpha Sorority is the oldest Greek-letter organization established by African American college-trained women. To trace its history is to tell a story of changing patter",
+            "description": "Founded on the campus of Howard University in Washington DC in 1908, Alpha Kappa Alpha Sorority is the oldest Greek-letter organization established by African American college-trained women. To trace its history is to tell a story of changing patterns of human relations in America in the 20th century. The small group of women who organized the Sorority was conscious of a privileged position as college-trained women of color, just one generation removed from slavery. They were resolute that their college experiences should be as meaningful and productive as possible. Alpha Kappa Alpha was founded to apply that determination. As the Sorority grew, it kept in balance two important themes: the importance of the individual and the strength of an organization of women of ability and courage. As the world became more complex, there was a need for associations which cut across racial, geographical, political, physical and social barriers. Alpha Kappa Alpha&rsquo;s influence extends beyond campus quads and student interest. It has a legacy of service that deepens, rather than ends, with college graduation. The goals of its program activities center on significant issues in families, communities, government halls, and world assembly chambers. Its efforts constitute a priceless part of the global experience in the 21st century.",
+            "num_members": 334,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "AfricanAmerican",
+                "CommunityOutreach",
+                "HumanRights",
+                "Volunteerism"
+            ]
+        },
+        {
+            "id": "b4c43ef1-1147-4097-a764-6bb3893aaae7",
+            "name": "Alpha Kappa Psi",
+            "preview": "Alpha Kappa Psi is a professional fraternity that welcomes all individuals with interest in business and provides its members with world-class professional and leadership development opportunities. Learn more at http://www.akpsineu.org/",
+            "description": "Alpha Kappa Psi is a professional fraternity that welcomes all individuals with interest in business and provides its members with world-class professional and leadership development opportunities. We focus on the values of ethics, education, and community leadership that are necessary to succeed in today's evolving world. Learn more at http://www.akpsineu.org/. ",
+            "num_members": 65,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "fall",
+            "recruitment_type": "application",
+            "tags": [
+                "Business",
+                "ProfessionalDevelopment",
+                "Leadership",
+                "Ethics",
+                "CommunityLeadership"
+            ]
+        },
+        {
+            "id": "89b30319-f7f1-49a3-a6a0-22c03f0daefe",
+            "name": "Alpha Kappa Sigma",
+            "preview": "Alpha Kappa Sigma, established here in 1919, is one of Northeastern's only two local fraternities. We are a social fraternity open to anyone interested. Attend one of our fall or spring rush events for more information. Hope to meet you soon!",
+            "description": "Alpha Kappa Sigma, established here in 1919, is one of Northeastern's only two local fraternities. We are a social fraternity who place a strong emphasis on brotherhood, personal and professional growth, and creating lasting memories and lifelong friends. Attend one of our fall or spring rush events for more information. Hope to meet you soon!",
+            "num_members": 822,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "CommunityOutreach",
+                "Volunteerism",
+                "SocialFraternity",
+                "Brotherhood"
+            ]
+        },
+        {
+            "id": "354badb2-a72d-4b30-aa51-daafda9f4267",
+            "name": "Alpha Phi Omega",
+            "preview": "Alpha Phi Omega (APO) is a national co-ed service fraternity.  We partner with over 70 community service organizations in Boston, foster a community of service-minded individuals, and promote leadership development.",
+            "description": "Alpha Phi Omega (APO) is a national coeducational service organization founded on the principles of leadership, friendship, and service. It provides its members the opportunity to develop leadership skills as they volunteer on their campus, in their community, to the nation, and to the organization. As a national organization founded in 1925, Alpha Phi Omega is the largest co-ed service fraternity in the world, with more than 500,000 members on over 375 campuses across the nation. Alpha Phi Omega is an inclusive group, open to all nationalities, backgrounds, and gender. APO provides the sense of belonging to a group while also providing service to the community by donating time and effort to various organizations. Our chapter partners with varied and diverse nonprofits in the Boston area.  Some places we volunteer include Prison Book Program, Community Servings, Y2Y, National Braille Press, and the Boston Marathon.  We also foster community through fellowship and leadership events.\r\nhttps://northeasternapo.com",
+            "num_members": 764,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "Volunteerism",
+                "CommunityOutreach",
+                "HumanRights",
+                "PublicRelations"
+            ]
+        },
+        {
+            "id": "8a59de4a-ae5c-4d5b-ad3c-43ec879fe864",
+            "name": "American Academy of Orthopedic Manual Physical Therapists Student Special Interest Group",
+            "preview": "Develop skills in manual physical therapy & enhance use of current evidenced based manual physical therapy. AAOMPT sSIG serves to supplement the existing didactic education in the physical therapy curriculum to best prepare students for their future.",
+            "description": "The American Academy of Orthopaedic Manual Physical Therapy (AAOMPT) is an organization that fosters learning and research in orthopedic manual physical therapy. The student special interest group (sSIG)  encourages students to develop skills in manual physical therapy and enhance their use of current evidenced based manual physical therapy. Since the curriculum is only able to provide an introduction to manual therapy, this organization serves to supplement the existing didactic education to best prepare students for their co-operative education, clinical rotations, and future career.",
+            "num_members": 528,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "always",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "PhysicalTherapy",
+                "Biology",
+                "MedicalEducation",
+                "Healthcare",
+                "StudentOrganization"
+            ]
+        },
+        {
+            "id": "44f1377c-9337-46ed-9c61-8f6640c02ad6",
+            "name": "American Cancer Society On Campus at Northeastern University",
+            "preview": "A student group on campus supported by the American Cancer Society that is dedicated to education raising awareness and bringing the fight against cancer to the Northeastern community. We do this in four major ways including; Advocacy, Education, Sur",
+            "description": "A student group on campus supported by the American Cancer Society that is dedicated to education raising awareness and bringing the fight against cancer to the Northeastern community. We do this in four major ways including; Advocacy, Education, Survivorship, and Relay For Life.\r\n \r\nWe host many events throughout the year, including Kickoff, Paint the Campus Purple, a Luminaria Ceremony on Centennial Quad, Real Huskies Wear Pink, the Great American Smoke Out, and Relay For Life, in addition to attending off campus events.",
+            "num_members": 107,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "application",
+            "tags": [
+                "Volunteerism",
+                "CommunityOutreach",
+                "EnvironmentalAdvocacy",
+                "Education",
+                "Advocacy",
+                "Survivorship",
+                "RelayForLife"
+            ]
+        },
+        {
+            "id": "8a321366-071a-400c-816a-62efc3a88d37",
+            "name": "American College of Clinical Pharmacy Student Chapter of Northeastern University",
+            "preview": "The objective of the ACCP chapter at Northeastern University is to improve human health by extending the frontiers of clinical pharmacy. Our mission is to concentrate on helping students understand the roles and responsibilities of various specialtie",
+            "description": "The objective of the ACCP chapter at Northeastern University is to improve human health by extending the frontiers of clinical pharmacy. Our mission: Concentrate on helping students understand the roles and responsibilities of various specialties of the clinical pharmacist Explore all the opportunities that exist for students as future experts in this field Provide leadership, professional development, advocacy, and resources that enable student pharmacists to achieve excellence in academics, research, and experiential education Advance clinical pharmacy and pharmacotherapy through the support and promotion of research, training, and education.",
+            "num_members": 409,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "fall",
+            "recruitment_type": "application",
+            "tags": [
+                "ClinicalPharmacy",
+                "Pharmacotherapy",
+                "Healthcare",
+                "ProfessionalDevelopment",
+                "Advocacy",
+                "Research",
+                "Leadership",
+                "Education"
+            ]
+        },
+        {
+            "id": "4d343650-a48c-4ae6-80d9-101474bb5dde",
+            "name": "American Institute of Architecture Students",
+            "preview": "We are a resource to the students, the School of Architecture, and the community. We focus on providing students with more networking, leisure, and professional opportunities. We, the students, have the power to change the profession that we will ent",
+            "description": "The American Institute of Architecture Students (AIAS) is an independent, nonprofit, student-run organization dedicated to providing unmatched progressive programs, information, and resources on issues critical to architecture and the experience of education. The mission of the AIAS is to promote excellence in architectural education, training, and practice; to foster an appreciation of architecture and related disciplines; to enrich communities in a spirit of collaboration; and to organize students and combine their efforts to advance the art and science of architecture. Learn more at: aias.org.\r\nFreedom by Design (FBD) constructs small service projects in the chapter&rsquo;s community.\r\nThe Northeastern AIAS chapter offers many events throughout the school year that aim to meet the national mission. We host firm crawls that allow students to visit local firms in Boston and Cambridge to provide a sense of firm culture expectations and realities. It offers a mentorship program for upper and lower class students to meet and network, and provide a guide for lower class students as they begin in the architecture program. Northeastern&rsquo;s chapter also host BBQ&rsquo;s, game nights, and other architecture related events.",
+            "num_members": 943,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "application",
+            "tags": [
+                "Architecture",
+                "CommunityOutreach",
+                "Mentorship",
+                "Networking"
+            ]
+        },
+        {
+            "id": "b10399e1-d4ed-4d72-b29f-692d43dc4bdb",
+            "name": "American Institute of Chemical Engineers of Northeastern University",
+            "preview": "American Institute of Chemical Engineers is a national organization that caters to the needs of Chemical Engineers. The organization fosters connections between Undergraduate students, Graduate students and Professions in the Chemical Engineering fie",
+            "description": "American Insitute of Chemical Engineers is a national organization that caters to the needs of Chemical Engineers. The organization fosters connections between Undergraduate students, Graduate students and Professions in the Chemical Engineering field. AIChE exists to promote excellence in the Chemical Engineering profession. The organization also strives to promote good ethics, diversity and lifelong development for Chemical Engineers. We host informative and social events that include student panels, industry talks, lab tours, and a ChemE Department BBQ!\r\n \r\nWe also have a Chem-E-Car team that works on building and autonomous shoe box sized car powered by chemical reaction developed by students. On the day of competition we learn the distance the car has to travel and based on our calibration curves determine the quantity of reactants required for the car to travel that distance holding a certain amount of water.",
+            "num_members": 57,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "Chemistry",
+                "Engineering",
+                "Volunteerism",
+                "CommunityOutreach",
+                "Science",
+                "Technology"
+            ]
+        },
+        {
+            "id": "43241e18-235f-4689-8d58-bdebf37e5fed",
+            "name": "American Society of Civil Engineers",
+            "preview": "Northeastern University Student Chapter of the American Society of Civil Engineers",
+            "description": "Founded in 1852, the American Society of Civil Engineers (ASCE) represents more than 145,000 members of the civil engineering profession worldwide and is America&rsquo;s oldest national engineering society.\r\nNortheastern University's ASCE student chapter (NU ASCE) help their members develop interpersonal and professional relationships through a variety of extracurricular activities and community service projects within the field of civil and environmental engineering. Each week we hold a lecture presented by a different professional working in civil and environmental engineering careers. We work closely with a variety of civil and environmental engineering clubs and organizations, such as Engineers Without Borders (EWB), Steel Bridge Club, Concrete Canoe, the Institute of Transportation Engineers (ITE), Northeastern University Sustainable Building Organization (NUSBO), and New England Water Environmental Association (NEWEA); and we participate in the Concrete Canoe and Steel Bridge competitions. NU ASCE also coordinates with Chi Epsilon Civil Engineering Honor Society to organize tutoring for civil and environmental engineering students, and has helped with 30 years of community service projects.",
+            "num_members": 179,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "always",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "CivilEngineering",
+                "CommunityService",
+                "EnvironmentalScience",
+                "Networking",
+                "StudentOrganization"
+            ]
+        },
+        {
+            "id": "5338e4d2-07ed-46cc-a1c1-bf24d1a7b869",
+            "name": "American Society of Mechanical Engineers",
+            "preview": "We are a campus chapter of the American Society of Mechanical Engineers. We host weekly industry meetings from professionals across the field, workshops to gain hands-on skills, a Solidworks certification course, and more events for the MechE communi",
+            "description": "We are a campus chapter of the American Society of Mechanical Engineers. We bring in representatives of companies and other professionals to talk to students about engineering companies as well as new and upcoming information/technology in the field. It is a great way to make connections and explore your future career. We also teach an advanced 3D modeling training course (SolidWorks) to better prepare students for their Co-ops. We aim to help students grow as professionals, gain experience, and build a healthy resume.",
+            "num_members": 370,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "fallSpring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "MechanicalEngineering",
+                "Engineering",
+                "Networking",
+                "ProfessionalDevelopment"
+            ]
+        },
+        {
+            "id": "7f1ac3a4-44af-4313-9f19-0f530bf61c4e",
+            "name": "Anime of NU",
+            "preview": "Twice every week, we watch and discuss Japanese anime and culture. This is a club where you come, watch a couple of episodes, laugh and cry with everyone, then chat about it afterward. \r\n\r\nMake sure to join our discord: https://discord.gg/pwrMBptJ3m",
+            "description": "Do you like stories of traveling to a new world and defeating villains? How about stories of love and sacrifice? Maybe you're more into suspense and drama? At Anime of NU, we offer all of that and more! We are a club with one simple objective: to watch and discuss Japanese anime and culture. Every week, we watch a slice-of-life (typically more humorous, romantic, and/or heartfelt) and action (do we need to explain what \"action\" is?) anime, and we also throw in some seasonal movies and activities. We also act as a social space for members. This is a club where you come, watch a couple of episodes, laugh and cry with everyone, then chat about it afterward. It's a fun time for the whole family!\r\n---\r\nTime and locations coming soon!\r\nMake sure to join us in Discord here so you can get all the updates and vote on which shows we'll watch!",
+            "num_members": 755,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "fall",
+            "recruitment_type": "application",
+            "tags": [
+                "Anime",
+                "JapaneseCulture",
+                "Community",
+                "SocialSpace",
+                "SliceOfLife",
+                "Action",
+                "Humor",
+                "Romance"
+            ]
+        },
+        {
+            "id": "687b0872-4109-4910-a3bc-804e0ff785a9",
+            "name": "Arab Students Association at Northeastern University",
+            "preview": "Our purpose is to bring Arab students attending Northeastern University together to create connections and friendships. Also, we raise awareness about Arabs' diverse and unique cultures, values, and customs within the entire Northeastern Community.",
+            "description": "Arab Students Association at Northeastern University looks to create a space for students of Arab backgrounds, as well as those who seek to create connections with the Arab culture and world, to mingle and meet one another. We also look to bring all Arab students attending Northeastern University together and make them raise awareness of their diverse and unique cultures, values, and customs within the entire Northeastern Community. Also, the ASA will provide its members, both Arab and non-Arab, with the needed academic and career support in order for them to excel and succeed.",
+            "num_members": 389,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "fallSpring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "Arab Students",
+                "CommunityOutreach",
+                "Diverse Cultures",
+                "Academic Support",
+                "Cultural Awareness"
+            ]
+        },
+        {
+            "id": "43e65fc8-8fa9-4825-9f6c-ff7b835b2f04",
+            "name": "Armenian Student Association at Northeastern University",
+            "preview": "ASANU brings together Armenian students within Northeastern University and its nearby schools. It works to introduce Armenian history, language, music, dance, and current events to all its members in an effort to preserve the culture through educatio",
+            "description": "ASA brings together the Armenian students within Northeastern University. It introduces Armenian history, language, music, dance, current events, and food to all Armenian and non-Armenian members of the University. Additionally, ASA works closely with the ASA groups with other colleges in the Boston area including BU, BC, Bentley, MCPHS, Tufts, Harvard, and MIT, but we are not directly affiliated with them.\r\nIf you are at all interested in joining or would like to learn more about what we do, please feel free to reach out to the E-Board at asa@northeastern.edu or find us on instagram @asanortheastern",
+            "num_members": 579,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "application",
+            "tags": [
+                "CulturalExchange",
+                "CommunityOutreach",
+                "History",
+                "Language",
+                "Food"
+            ]
+        },
+        {
+            "id": "13d0e2e3-58a6-4d25-8141-09470414f0ff",
+            "name": "Art Blanche at NEU",
+            "preview": "Art Blanche provides space for everyone to express their visions and ideas through art (painting, drawing, doodling, etc), aka weekly hang-out with other creative and artistic people. Skills & experience do not matter as long as you are open-minded.",
+            "description": "Art Blanche is an art club at NEU that provides art enthusiasts unlimited options to express their creativity. We want to unite everyone interested in creating art and arrange a place where students can express themselves through any fine art. We welcome any 2D and 3D media. We want to give proficient artists a chance to improve their skills through communication and help from other fellow-artists. We will arrange \"critique rounds,\" where we would discuss each other's work and share tips and tricks.\r\nApart from having proficient artists, we also welcome newcomers interested in learning how to do art and express their voice through the art form. By inviting professional artists and students to teach and lecture at our club, newcomers as well as more proficient artist will be able to develop and improve their own style. \r\nWe will organize \"life drawing \" sessions to do figure studies. Having the Museum of Fine Arts right around the corner we will take advantage of it to seek inspiration for our own work by arranging visits and guiding  a group discussion. \r\nAt the end of each semester we will arrange student exhibitions presenting work created during the last months.",
+            "num_members": 906,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "always",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "VisualArts",
+                "CreativeWriting",
+                "PerformingArts",
+                "LGBTQ",
+                "CommunityOutreach"
+            ]
+        },
+        {
+            "id": "5722a3b7-e42d-4275-865e-282cba8484ac",
+            "name": "Art4All",
+            "preview": "Art4All is committed to giving every student an equitable opportunity to foster their creativity. Our free Boston-based virtual mentoring programs and community partnerships view students first and foremost as creators, building more resources for al",
+            "description": "Art4All believes the key to addressing these inequities relies on supporting students and their pursuits at the community and individual level. All our resources are tailored to incorporate the ACE model, which serves as the three main values of Art4All&rsquo;s mission: accessibility, creativity, and education. Our free Boston-based virtual mentoring programs and community partnerships view students first and foremost as creators &mdash; each with unique and individual challenges that require personalized guidance and support. Art4All also organizes arts-based fundraisers and student exhibitions, giving students a quality means and open platform to confidently express their art to the communities. We work in collaboration with EVKids and other community partners. ",
+            "num_members": 421,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "always",
+            "recruitment_type": "application",
+            "tags": [
+                "VisualArts",
+                "CreativeWriting",
+                "CommunityOutreach",
+                "EnvironmentalAdvocacy"
+            ]
+        },
+        {
+            "id": "98bf6535-e17f-4107-ab94-a030fb23f364",
+            "name": "Artificial Intelligence Club",
+            "preview": "Step into the world of artificial intelligence where learning knows no bounds. Join us to explore, create, and innovate through projects, discussions, and a community passionate about the limitless potential of AI and its responsible and ethical use.",
+            "description": "Welcome to the Artificial Intelligence Club, where curiosity meets innovation. Delve into the fascinating world of AI, where learning is endless and creativity knows no boundaries. Our vibrant community invites you to embark on a journey of exploration, collaboration, and discovery. Engage in hands-on projects, lively discussions, and connect with like-minded individuals who share a passion for the transformative power of artificial intelligence. Together, we strive to unlock the full potential of AI while promoting its conscientious and ethical application in the world. Join us in shaping the future with cutting-edge technology and boundless possibilities!",
+            "num_members": 578,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "fallSpring",
+            "recruitment_type": "application",
+            "tags": [
+                "ArtificialIntelligence",
+                "DataScience",
+                "SoftwareEngineering",
+                "Mathematics",
+                "Neuroscience",
+                "CommunityOutreach",
+                "CreativeWriting",
+                "PublicRelations"
+            ]
+        },
+        {
+            "id": "1de32d78-ac0a-4210-b002-2b120282870e",
+            "name": "Artistry Magazine",
+            "preview": "Artistry Magazine is an online and print publication that features articles and student artwork related to any and all forms of art and culture. We welcome all into our community\u00a0and encourage students to engage with the arts and the city of Boston.",
+            "description": "Artistry Magazine is an online and print publication that features articles and student artwork related to any and all forms of art and culture. We welcome all into our community and encourage students to engage with the arts on Northeastern's campus and throughout the city of Boston. We are always looking for talented writers, photographers, and designers to work on web content as well as the semesterly magazine. Check out our website and social media to learn more about the organization and how to get involved and click here to read our latest issue!",
+            "num_members": 905,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "fallSpring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "VisualArts",
+                "CreativeWriting",
+                "Journalism",
+                "Broadcasting"
+            ]
+        },
+        {
+            "id": "d5f4721e-5e7e-4e74-a2d9-3590db0fecb6",
+            "name": "Asian American Center (Campus Resource)",
+            "preview": "The Asian American Center at Northeastern seeks to establish a dynamic presence of the Asian American community at the University. The role of the Center at Northeastern is to ensure the development and enhancement of the University\u2019s commitment to t",
+            "description": "The Asian American Center at Northeastern seeks to establish a dynamic presence of the Asian American community at the University. The role of the Center at Northeastern is to ensure the development and enhancement of the University&rsquo;s commitment to the Asian American community. In providing the Asian American community a vehicle for increasing visibility on campus, the Center aims to support student exploration of social identity development and empower students to take an active role in shaping their experiences at Northeastern. To that end, the Center strives to promote continued dialogue on the rich diversity and complexity of the Asian American experience, and how that complexity manifests itself in various aspects of life within and outside of the University.",
+            "num_members": 799,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "application",
+            "tags": [
+                "AsianAmerican",
+                "CommunityOutreach",
+                "HumanRights",
+                "SocialIdentity",
+                "CreativeWriting"
+            ]
+        },
+        {
+            "id": "b15d73a1-3e31-42e6-83d4-0d5c2290a4a5",
+            "name": "Asian Pacific American Law Student Association",
+            "preview": "The Asian Pacific American Law Students Association (APALSA) is an organization for Asian American and Pacific Islander (AAPI) students at Northeastern University School of Law, including Native Hawaiian, Pacific Islander, South Asian, Southeast Asia",
+            "description": "The Asian Pacific American Law Students Association (APALSA) is an organization for Asian American and Pacific Islander (AAPI) students at Northeastern University School of Law, including Native Hawaiian, Pacific Islander, South Asian, Southeast Asian, East Asian, mixed-race and other students who identify under the AAPI umbrella. In addition to providing a social and academic support network for AAPI students at the law school, APALSA is active both in the Boston community and on campus. APALSA works with the law school administration and other student organizations, and is represented on the Admissions Committee and the Committee Against Institutional Racism (CAIR). Throughout the year, APALSA hosts various social, educational and professional events for both AAPI law students and law students in general.",
+            "num_members": 105,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "fall",
+            "recruitment_type": "application",
+            "tags": [
+                "AsianAmerican",
+                "CommunityOutreach",
+                "HumanRights",
+                "Volunteerism"
+            ]
+        },
+        {
+            "id": "f8603340-68fa-48a1-b59d-20ec100d89bc",
+            "name": "Asian Student Union",
+            "preview": "We are a student organization that strives towards culturally sensitive advising, advocacy, services, programs, and resources for the Asian-American students of Northeastern University as well as the neighboring area.",
+            "description": "We are a community that strives towards culturally sensitive advising, advocacy, services, programs, and resources for the Asian American students of Northeastern University as well as the neighboring area. This organization provides resources for prospective, current or alumni students, offering insight into the Asian American community and experience at Northeastern. We strive in promoting Asian American Spirit, Culture and Unity.",
+            "num_members": 444,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "fallSpring",
+            "recruitment_type": "application",
+            "tags": [
+                "AsianAmerican",
+                "CommunityOutreach",
+                "CulturalAwareness",
+                "HumanRights"
+            ]
+        },
+        {
+            "id": "054b39d8-9bea-462e-9d92-5eb4f0d4ee5f",
+            "name": "ASLA Adapt",
+            "preview": "Northeastern University's only organization centered on landscape design! Advocate for climate action and environmental justice while exploring landscape architecture and adjacent topics.",
+            "description": "Adapt is Northeastern&rsquo;s organization centered on urban landscape design and the professional association for Landscape Architecture students. As a student affiliate chapter of the American Society of Landscape Architects (ASLA) we are working towards growing our department and getting it accredited, advocating for climate action and environmental justice, networking with environmental designers, and encouraging the adaptation of landscape architecture to our ever-changing world. Join us in exploring topics regarding landscape architecture, ecology, environmental science/engineering, urban planning, and related fields! An interest in the landscape is all that is needed to participate, all majors welcome!",
+            "num_members": 797,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "application",
+            "tags": [
+                "EnvironmentalScience",
+                "HumanRights",
+                "CommunityOutreach",
+                "Volunteerism",
+                "ArtificialIntelligence"
+            ]
+        },
+        {
+            "id": "cc97fea9-3466-4c5d-9777-f296dbe0df2f",
+            "name": "Aspiring Product Managers Club",
+            "preview": "Aspiring Product Managers Club at Northeastern University aims to bring like-minded individuals who want to learn more about Product and eventually break into the Product Management domain.",
+            "description": "Aspiring Product Managers Club at Northeastern University aims to bring like-minded individuals who want to learn more about Product and eventually break into the Product Management domain.\r\nTill today we have conducted 80+ events with 800+ participants where our events were broadly classified as &ndash; meetups, Mock Interviews, Workshops, Speaker Series, and Case Study.\r\nThis spring 2024 semester, we plan to bring several upgrades to our flagship programs and several new engaging programs for our members!\r\nWe are expanding and have started working on real-time products with members as product managers. Come join us to get a slice of a product manager's life!\r\n ",
+            "num_members": 457,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "SoftwareEngineering",
+                "DataScience",
+                "CommunityOutreach",
+                "Workshops"
+            ]
+        },
+        {
+            "id": "b4908168-6366-4748-ba1e-b8d4b64c0889",
+            "name": "Association of Latino Professionals for America",
+            "preview": "ALPFA, founded in 1972, stands for the Association of Latino Professionals For America.  ALPFA is a national non-profit organization that has become the largest Latino Association for business professionals and students with more than 21,000 members\u00a0",
+            "description": "ALPFA, founded in 1972, stands for the Association of Latino Professionals For America. ALPFA is a national non-profit organization that has become the largest Latino Association for business professionals and students with more than 21,000 members nationwide (this includes 43 professional and over 135 student chapters). ALPFA serves as the catalyst connecting professionals with decision makers at Fortune 1000 partners and other corporate members seeking diverse opportunities. In addition, ALPFA has developed various events at a local and national level to prepare students from college to career-ready professionals through mentorship, leadership training and development, job placement and community volunteerism. ALPFA-NU was officially recognized in February of 2014 and has successfully become the first student chapter in the city of Boston to continue the growth of the organization with the mission to empower the growth of diverse leaders through networking, professional development, and career opportunities with our corporate sponsors.",
+            "num_members": 17,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "always",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "LatinAmerica",
+                "Volunteerism",
+                "CommunityOutreach",
+                "LeadershipTraining",
+                "HumanRights"
+            ]
+        },
+        {
+            "id": "ee6e28ab-d183-4fb0-b709-be176709df0c",
+            "name": "Baja SAE Northeastern",
+            "preview": "NU Baja is a student-run competition team that designs, builds, and races a single-seat, off-road vehicle. Our team members learn valuable skills in design, manufacturing, and leadership. Visit our website to learn more and join the mailing list!\r\n",
+            "description": "NU Baja is for anyone interested in learning by doing. We are a close-knit team that designs, builds, and races a vehicle from the ground up. Our team members learn the engineering design cycle, CAD, manufacturing techniques, management skills, and leadership qualities. We welcome new members at any experience level! \r\nEvery year, our team races a high-performance vehicle in national Baja SAE collegiate design competitions. The challenges include rock crawls, hill climbs, and a grueling four-hour endurance race. We are a group of highly motivated (mostly) engineers that work together to create a vehicle capable of withstanding these obstacles and outperforming hundreds of other colleges from around the world. \r\nIf this sounds like something that interests you, please sign up for our mailing list! Mailing List Signup\r\nBaja Promo Video",
+            "num_members": 635,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "application",
+            "tags": [
+                "MechanicalEngineering",
+                "ManufacturingTechniques",
+                "EngineeringDesignCycle",
+                "LeadershipQualities",
+                "HighPerformanceVehicle",
+                "EnduranceRace",
+                "Teamwork",
+                "DesignCompetition"
+            ]
+        },
+        {
+            "id": "75ae6ce3-73a3-4ad1-a185-51cba81b14fb",
+            "name": "Bake It Till You Make It",
+            "preview": "Bake It Till You Make It aims to cultivate an inclusive community for students to share and expand their love of baking!",
+            "description": "Bake It Till You Make It is an organization to bring students together who have an interest or passion for baking. Whether you're a seasoned pastry chef or a novice in the kitchen, our club provides a space to explore the art of baking, share delicious recipes, and foster a love for all things sweet. Come join us, and let's bake memories together!",
+            "num_members": 373,
+            "is_recruiting": "TRUE",
+            "recruitment_cycle": "fall",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "Baking",
+                "CreativeWriting",
+                "CommunityOutreach"
+            ]
+        },
+        {
+            "id": "81e694f3-beb7-45bf-90fd-02ae7a368dba",
+            "name": "BAPS Campus Fellowship",
+            "preview": "BCF meets weekly for discussion based on BAPS Swaminarayan concepts and teachings. Students discuss topics that affect them in college and will be able to learn to balance their life as college student while practicing the Hindu faith.",
+            "description": "Through youth group discussions, campus events, and community service projects, students will have the opportunity to introduce the Hindu faith to the rest of the NEU community!",
+            "num_members": 949,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "fall",
+            "recruitment_type": "unrestricted",
+            "tags": [
+                "Hinduism",
+                "CommunityOutreach",
+                "Volunteerism",
+                "EnvironmentalAdvocacy"
+            ]
+        },
+        {
+            "id": "9196ab50-fec4-47c2-ab96-5fd8e0cf5357",
+            "name": "Barkada",
+            "preview": "NU Barkada is NEU's Filipino culture organization. Our mission is to promote diversity and fellowship by sharing the richness of Filipino heritage through member and community engagement in cultural, educational, and social activities.",
+            "description": "Northeastern University's Barkada began as a small group of Filipino/Filipino-American students who aspired to have their culture recognized at the university. They wanted to have an organization that united people who embrace Filipino culture and wish to spread it through cultural, educational, and social activities. With hard work, dedication, and the aid of their club advisor Dean Perkins, Barkada became an official NU organization on January 26, 1998. Throughout its years as an established student organization, NU Barkada has grown to become a bigger family than its founders had ever imagined. However, the organization still holds true to the guidelines and values set forth by its founders, and continues to build upon their strong foundation. \"Barkada\" is a word from the one of the main Filipino languages, Tagalog, which means \"group of friends.\" We embrace each and every one of our members as not only friends, but family, as well.\r\nNU Barkada's logo, from one aspect, resembles the Nipa Hut, a bamboo shelter built in the rural, coastal areas of the Philippines. Barkada, like the Nipa Hut, provides its members with support and is built to withstand adverse conditions, day-in and day-out. Sheltered within the Nipa Hut beneath the sun and the moon, the flag of the Philippines symbolizes the rich Filipino culture from which Barkada draws its roots. The logo also resembles two people, hand-in-hand, dancing Tinikling, a Filipino cultural dance. This encompasses one of the primary goals of NU Barkada, which is to educate others about the Filipino culture and try to bridge the gap that separates people from different walks of life.Keep up with us at all of our social medias, which are linked below! Peace, Love, Barkada! \u2764\ufe0f",
+            "num_members": 30,
+            "is_recruiting": "FALSE",
+            "recruitment_cycle": "spring",
+            "recruitment_type": "application",
+            "tags": [
+                "AsianAmerican",
+                "CommunityOutreach",
+                "PerformingArts",
+                "Journalism"
+            ]
+        }
+    ]
+}
