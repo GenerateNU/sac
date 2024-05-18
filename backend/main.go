@@ -44,7 +44,7 @@ func main() {
 	onlyMigrate := flag.Bool("only-migrate", false, "Specify if you want to only perform the database migration")
 	configPath := flag.String("config", filepath.Join("..", "config"), "Specify the path to the config directory")
 	useDevDotEnv := flag.Bool("use-dev-dot-env", true, "Specify if you want to use the .env.dev file")
-	seedSearch := flag.Bool("seed-search", false, "Specify if you want to perform search seeding.")
+	seedSearch := flag.Bool("seed-search", true, "Specify if you want to perform search seeding.")
 
 	flag.Parse()
 

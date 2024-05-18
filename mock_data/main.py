@@ -207,6 +207,7 @@ with open('MOCK_DATA_OUTPUT.json', 'r', encoding='utf-8') as file:
     category_uuids = data['category_uuids']
 
 
+# FIXME: should probably be in args or something but ughhhhh 
 db_conn = psycopg2.connect(
     dbname="sac",
     user="postgres",

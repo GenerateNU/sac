@@ -16,6 +16,7 @@ import (
 // Do a GET request to the OpenSearch instance.
 func doSearchGoRequest[T, V any](url string, requestBody T) (*V, error) {
 	payload, err := json.Marshal(requestBody)
+	print(string(payload))
 	if err != nil {
 		return nil, err
 	}

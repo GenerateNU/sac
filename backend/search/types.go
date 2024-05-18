@@ -3,13 +3,18 @@ package search
 
 import "github.com/GenerateNU/sac/backend/entities/models"
 
+type Json map[string]interface{}
+
 // Used for making OpenSearch GET /<index>/_search requests.
-type SearchEndpointRequest struct {
-	Query struct {
-		QueryString struct {
-			Query string `json:"query"`
-		} `json:"query_string"`
-	} `json:"query"`
+// OpenSearch's DSL is such that we can't make this a nice static struct with all the fields
+// specified; depending on what we are looking to search we'll need to add different clauses.
+type SearchEndpointRequest Json
+
+// Used in SearchEndpointRequest
+type TagFilterInSearchEndpointRequest struct {
+	Term struct {
+		Tag string `json:"tag"`
+	} `json:"term"`
 }
 
 // Used for responses from OpenSearch GET /<index>/_search requests.
@@ -49,24 +54,35 @@ func ClubSearchDocumentFromClub(c *models.Club) ClubSearchDocument {
 
 // Query parameters for an API GET /api/v1/search/clubs request.
 type ClubSearchQuery struct {
-	Search string `query:"search"`
-	// Tags                    []string          `query:"tags"`
-	// MinMembers              int               `query:"min_members"`
-	// MaxMembers              int               `query:"max_members"`
-	// RecruitmentCycle        *RecruitmentCycle `query:"recruitment_cycle"`
-	// IsRecruiting            *bool             `query:"is_recruiting"`
-	// MinWeeklyTimeCommitment int               `query:"min_weekly_time_commitment"`
-	// MaxWeeklyTimeCommitment int               `query:"max_weekly_time_commitment"`
-	// OneWordToDescribeUs     string            `query:"one_word_to_describe_us"`
-	// Search                  string            `query:"search"`
+	Search     string   `query:"search"`
+	MinMembers int      `query:"min_members"`
+	MaxMembers int      `query:"max_members"`
+	Tags       []string `query:"tags"`
 }
 
 // To Query DSL JSON
 func (q *ClubSearchQuery) ToSearchEndpointRequest() SearchEndpointRequest {
 	var req SearchEndpointRequest
 
-	req.Query.QueryString.Query = q.Search
+	/*req.Query.Bool.Must.QueryString.Query = q.Search
 
+	req.Query.Bool.Filter.Range.NumMembers.MinMembers = q.MinMembers
+
+	if q.MaxMembers != 0 {
+		req.Query.Bool.Filter.Range.NumMembers.MaxMembers = q.MaxMembers
+	} else {
+		// FIXME: This is probably going to break in the future. We should probably be figuring out
+		// what the most members of any club is and set this to the default.
+		req.Query.Bool.Filter.Range.NumMembers.MaxMembers = 16384
+	}
+
+	for _, tag := range q.Tags {
+		req.Query.Bool.Must.Terms.Tags = append(req.Query.Bool.Must.Terms.Tags, tag)
+	}
+
+	req.Query.Bool.Must.Terms.MinimumShouldMatch = 1*/
+	// TODO:
+	// must - query_string, filter - tags (done in a match) + members (done in a range)
 	return req
 }
 
