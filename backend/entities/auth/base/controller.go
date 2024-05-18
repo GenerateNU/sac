@@ -5,7 +5,6 @@ import (
 
 	"github.com/GenerateNU/sac/backend/auth"
 	authEntities "github.com/GenerateNU/sac/backend/entities/auth"
-	"github.com/GenerateNU/sac/backend/entities/models"
 	users "github.com/GenerateNU/sac/backend/entities/users/base"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/fiber/v2"
@@ -154,7 +153,7 @@ func (a *AuthController) Logout(c *fiber.Ctx) error {
 // @Failure     500   {object}       error
 // @Router		/auth/forgot-password  [post]
 func (a *AuthController) ForgotPassword(c *fiber.Ctx) error {
-	var emailBody models.EmailRequestBody
+	var emailBody EmailRequestBody
 
 	if err := c.BodyParser(&emailBody); err != nil {
 		return utilities.InvalidJSON()
@@ -175,7 +174,7 @@ func (a *AuthController) ForgotPassword(c *fiber.Ctx) error {
 // @Tags      	auth
 // @Accept		json
 // @Produce		json
-// @Param		tokenBody	body	 models.VerifyPasswordResetTokenRequestBody	true	"Password Reset Token Body"
+// @Param		tokenBody	body	 VerifyPasswordResetTokenRequestBody	true	"Password Reset Token Body"
 // @Security   Bearer
 // @Success		200	  {object}	     utilities.SuccessResponse
 // @Failure     400   {object}       error
@@ -183,7 +182,7 @@ func (a *AuthController) ForgotPassword(c *fiber.Ctx) error {
 // @Failure     500   {object}       error
 // @Router		/auth/verify-reset  [post]
 func (a *AuthController) VerifyPasswordResetToken(c *fiber.Ctx) error {
-	var tokenBody models.VerifyPasswordResetTokenRequestBody
+	var tokenBody VerifyPasswordResetTokenRequestBody
 
 	if err := c.BodyParser(&tokenBody); err != nil {
 		return utilities.InvalidJSON()
@@ -211,7 +210,7 @@ func (a *AuthController) VerifyPasswordResetToken(c *fiber.Ctx) error {
 // @Failure     500   {object}       error
 // @Router		/auth/send-code [post]
 func (a *AuthController) SendCode(c *fiber.Ctx) error {
-	var emailBody models.EmailRequestBody
+	var emailBody EmailRequestBody
 
 	if err := c.BodyParser(&emailBody); err != nil {
 		return utilities.InvalidJSON()
@@ -232,14 +231,14 @@ func (a *AuthController) SendCode(c *fiber.Ctx) error {
 // @Tags      	auth
 // @Accept		json
 // @Produce		json
-// @Param		tokenBody	body	 models.VerifyEmailRequestBody	true	"Email Verification Token Body"
+// @Param		tokenBody	body	 VerifyEmailRequestBody	true	"Email Verification Token Body"
 // @Success		200	  {object}	     utilities.SuccessResponse
 // @Failure     400   {object}       error
 // @Failure     429   {object}       error
 // @Failure     500   {object}       error
 // @Router		/auth/verify-email  [post]
 func (a *AuthController) VerifyEmail(c *fiber.Ctx) error {
-	var tokenBody models.VerifyEmailRequestBody
+	var tokenBody VerifyEmailRequestBody
 
 	if err := c.BodyParser(&tokenBody); err != nil {
 		return utilities.InvalidJSON()
