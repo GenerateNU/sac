@@ -8,23 +8,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type RecruitmentCycle string
-
-const (
-	Fall       RecruitmentCycle = "fall"
-	Spring     RecruitmentCycle = "spring"
-	FallSpring RecruitmentCycle = "fallSpring"
-	Always     RecruitmentCycle = "always"
-)
-
-type RecruitmentType string
-
-const (
-	Unrestricted RecruitmentType = "unrestricted"
-	Tryout       RecruitmentType = "tryout"
-	Application  RecruitmentType = "application"
-)
-
 type Club struct {
 	Model
 

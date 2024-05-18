@@ -28,10 +28,10 @@ type AuthServiceInterface interface {
 	Logout(c *fiber.Ctx) error
 
 	SendCode(email string) error
-	VerifyEmail(emailBody models.VerifyEmailRequestBody) error
+	VerifyEmail(emailBody VerifyEmailRequestBody) error
 
 	ForgotPassword(email string) error
-	VerifyPasswordResetToken(passwordBody models.VerifyPasswordResetTokenRequestBody) error
+	VerifyPasswordResetToken(passwordBody VerifyPasswordResetTokenRequestBody) error
 }
 
 type AuthService struct {
@@ -209,7 +209,7 @@ func (a *AuthService) ForgotPassword(email string) error {
 	return nil
 }
 
-func (a *AuthService) VerifyPasswordResetToken(passwordBody models.VerifyPasswordResetTokenRequestBody) error {
+func (a *AuthService) VerifyPasswordResetToken(passwordBody VerifyPasswordResetTokenRequestBody) error {
 	if err := utilities.Validate(a.Validate, passwordBody); err != nil {
 		return err
 	}
@@ -316,7 +316,7 @@ func verifyEmailHelper(user *models.User, token string, db *gorm.DB) error {
 	return nil
 }
 
-func (a *AuthService) VerifyEmail(emailBody models.VerifyEmailRequestBody) error {
+func (a *AuthService) VerifyEmail(emailBody VerifyEmailRequestBody) error {
 	if err := utilities.Validate(a.Validate, emailBody); err != nil {
 		return err
 	}
