@@ -1,7 +1,7 @@
 package tags
 
 import (
-	"github.com/GenerateNU/sac/backend/middleware"
+	authMiddleware "github.com/GenerateNU/sac/backend/middleware/auth"
 	"github.com/GenerateNU/sac/backend/types"
 )
 
@@ -14,12 +14,12 @@ func ClubTag(clubParams types.RouteParams) {
 	clubTags.Get("/", clubTagController.GetClubTags)
 	clubTags.Post(
 		"/",
-		middleware.AttachExtractor(clubParams.AuthMiddleware.ClubAuthorizeById, middleware.ExtractFromParams("clubID")),
+		authMiddleware.AttachExtractor(clubParams.AuthMiddleware.ClubAuthorizeById, authMiddleware.ExtractFromParams("clubID")),
 		clubTagController.CreateClubTags,
 	)
 	clubTags.Delete(
 		"/:tagID",
-		middleware.AttachExtractor(clubParams.AuthMiddleware.ClubAuthorizeById, middleware.ExtractFromParams("clubID")),
+		authMiddleware.AttachExtractor(clubParams.AuthMiddleware.ClubAuthorizeById, authMiddleware.ExtractFromParams("clubID")),
 		clubTagController.DeleteClubTag,
 	)
 }

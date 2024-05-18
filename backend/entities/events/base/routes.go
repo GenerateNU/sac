@@ -5,9 +5,8 @@ import (
 	"github.com/GenerateNU/sac/backend/entities/events/tags"
 	"github.com/gofiber/fiber/v2"
 
-	"github.com/GenerateNU/sac/backend/middleware"
+	authMiddleware "github.com/GenerateNU/sac/backend/middleware/auth"
 	"github.com/GenerateNU/sac/backend/types"
-	"github.com/garrettladley/fiberpaginate"
 )
 
 func EventRoutes(eventParams types.RouteParams) {
@@ -23,10 +22,10 @@ func EventRouter(eventParams types.RouteParams) fiber.Router {
 	// api/v1/events/*
 	events := eventParams.Router.Group("/events")
 
-	events.Get("/", fiberpaginate.New(), eventController.GetAllEvents)
+	events.Get("/", eventParams.UtilityMiddleware.Paginator, eventController.GetAllEvents)
 	events.Post(
 		"/",
-		middleware.AttachExtractor(eventParams.AuthMiddleware.ClubAuthorizeById, middleware.ExtractFromParams("clubID")),
+		authMiddleware.AttachExtractor(eventParams.AuthMiddleware.ClubAuthorizeById, authMiddleware.ExtractFromParams("clubID")),
 		eventController.CreateEvent,
 	)
 
