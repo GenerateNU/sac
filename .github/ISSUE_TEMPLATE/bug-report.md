@@ -1,8 +1,8 @@
 ---
-name: "\U0001F41B Fix"
+name: "☢️ Bug"
 about: Create a report to help us improve
-title: "\U0001F41B fix: [Short description of the fix]"
-labels: ["\U0001F41B fix"]
+title: "☢️ bug: [Short description of the bug]"
+labels: ["☢️ bug"]
 ---
 
 **Describe the bug**
