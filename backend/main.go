@@ -72,6 +72,8 @@ func main() {
 
 	tp := telemetry.InitTracer()
 
+	slog.Info("appease linter since we aren't tracing anything yet", "tracer", tp)
+
 	defer func() {
 		if err := tp.Shutdown(context.Background()); err != nil {
 			slog.Error("error shutting down tracer", "error", err)

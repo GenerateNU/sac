@@ -11,7 +11,7 @@ import (
 	stdout "go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
 
 	// uncomment the following line to use Jaeger
-	//"go.opentelemetry.io/otel/exporters/jaeger"
+	// "go.opentelemetry.io/otel/exporters/jaeger"
 	"github.com/gofiber/contrib/otelfiber"
 	"go.opentelemetry.io/otel/propagation"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
