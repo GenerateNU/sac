@@ -43,11 +43,7 @@ func NewAuthService(serviceParams types.ServiceParams) AuthServiceInterface {
 }
 
 func (a *AuthService) Login(loginBody authEntities.LoginResponseBody) (*models.User, *auth.Token, error) {
-	if err := utilities.Validate(a.Validate, loginBody); err != nil {
-		return nil, nil, err
-	}
-
-	if err := auth.ValidatePassword(loginBody.Password); err != nil {
+	if err := utilities.Validate(a.Validate, loginBody, *utilities.NewMaybeError("password", auth.ValidatePassword(loginBody.Password))); err != nil {
 		return nil, nil, err
 	}
 
@@ -83,11 +79,7 @@ func (a *AuthService) Login(loginBody authEntities.LoginResponseBody) (*models.U
 }
 
 func (a *AuthService) Register(userBody usersEntities.CreateUserRequestBody) (*models.User, *auth.Token, error) {
-	if err := utilities.Validate(a.Validate, userBody); err != nil {
-		return nil, nil, err
-	}
-
-	if err := auth.ValidatePassword(userBody.Password); err != nil {
+	if err := utilities.Validate(a.Validate, userBody, *utilities.NewMaybeError("password", auth.ValidatePassword(userBody.Password))); err != nil {
 		return nil, nil, err
 	}
 
@@ -95,6 +87,8 @@ func (a *AuthService) Register(userBody usersEntities.CreateUserRequestBody) (*m
 	if err != nil {
 		return nil, nil, err
 	}
+
+	user.Role = models.Student
 
 	passwordHash, err := auth.ComputeHash(userBody.Password)
 	if err != nil {
