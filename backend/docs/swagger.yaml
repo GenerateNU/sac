@@ -1,190 +1,31 @@
 definitions:
-  errors.Error:
+  auth.LoginResponseBody:
     properties:
-      message:
+      email:
         type: string
-      statusCode:
-        type: integer
-    type: object
-  models.Category:
-    properties:
-      created_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-      id:
-        example: 123e4567-e89b-12d3-a456-426614174000
-        type: string
-      name:
-        maxLength: 255
-        type: string
-      updated_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-    required:
-    - name
-    type: object
-  models.CategoryRequestBody:
-    properties:
-      name:
+      password:
+        description: 'MARK: must be validated manually'
         maxLength: 255
         type: string
     required:
-    - name
-    type: object
-  models.Club:
-    properties:
-      application_link:
-        maxLength: 255
-        type: string
-      created_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-      description:
-        maxLength: 255
-        type: string
-      id:
-        example: 123e4567-e89b-12d3-a456-426614174000
-        type: string
-      is_recruiting:
-        type: boolean
-      logo:
-        maxLength: 255
-        type: string
-      name:
-        maxLength: 255
-        type: string
-      num_members:
-        minimum: 1
-        type: integer
-      one_word_to_describe_us:
-        maxLength: 255
-        type: string
-      preview:
-        maxLength: 255
-        type: string
-      recruitment_cycle:
-        allOf:
-        - $ref: '#/definitions/models.RecruitmentCycle'
-        enum:
-        - fall
-        - spring
-        - fallSpring
-        - always
-        maxLength: 255
-      recruitment_type:
-        allOf:
-        - $ref: '#/definitions/models.RecruitmentType'
-        enum:
-        - unrestricted
-        - tryout
-        - application
-        maxLength: 255
-      updated_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-      weekly_time_commitment:
-        minimum: 1
-        type: integer
-    required:
-    - application_link
-    - description
-    - is_recruiting
-    - name
-    - num_members
-    - preview
-    - recruitment_cycle
-    - recruitment_type
-    type: object
-  models.College:
-    enum:
-    - CAMD
-    - DMSB
-    - KCCS
-    - CE
-    - BCHS
-    - SL
-    - CPS
-    - CS
-    - CSSH
-    type: string
-    x-enum-comments:
-      BCHS: Bouvé College of Health Sciences
-      CAMD: College of Arts, Media and Design
-      CE: College of Engineering
-      CPS: College of Professional Studies
-      CS: College of Science
-      CSSH: College of Social Sciences and Humanities
-      DMSB: D'Amore-McKim School of Business
-      KCCS: Khoury College of Computer Sciences
-      SL: School of Law
-    x-enum-varnames:
-    - CAMD
-    - DMSB
-    - KCCS
-    - CE
-    - BCHS
-    - SL
-    - CPS
-    - CS
-    - CSSH
-  models.Contact:
-    properties:
-      content:
-        maxLength: 255
-        type: string
-      created_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-      id:
-        example: 123e4567-e89b-12d3-a456-426614174000
-        type: string
-      type:
-        allOf:
-        - $ref: '#/definitions/models.ContactType'
-        enum:
-        - facebook
-        - instagram
-        - x
-        - linkedin
-        - youtube
-        - github
-        - slack
-        - discord
-        - email
-        - customSite
-        maxLength: 255
-      updated_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-    required:
-    - content
-    - type
-    type: object
-  models.ContactType:
-    enum:
-    - facebook
-    - instagram
-    - x
-    - linkedin
-    - youtube
-    - github
-    - slack
-    - discord
     - email
-    - customSite
-    type: string
-    x-enum-varnames:
-    - Facebook
-    - Instagram
-    - X
-    - LinkedIn
-    - YouTube
-    - GitHub
-    - Slack
-    - Discord
-    - Email
-    - CustomSite
-  models.CreateClubRequestBody:
+    - password
+    type: object
+  auth.UpdatePasswordRequestBody:
+    properties:
+      new_password:
+        description: 'MARK: must be validated manually'
+        maxLength: 255
+        type: string
+      old_password:
+        description: 'MARK: must be validated manually'
+        maxLength: 255
+        type: string
+    required:
+    - new_password
+    - old_password
+    type: object
+  base.CreateClubRequestBody:
     properties:
       application_link:
         maxLength: 255
@@ -238,61 +79,7 @@ definitions:
     - recruitment_type
     - user_id
     type: object
-  models.CreateClubTagsRequestBody:
-    properties:
-      tags:
-        items:
-          type: string
-        type: array
-    required:
-    - tags
-    type: object
-  models.CreateEventRequestBody:
-    properties:
-      content:
-        maxLength: 255
-        type: string
-      end_time:
-        type: string
-      event_type:
-        allOf:
-        - $ref: '#/definitions/models.EventType'
-        enum:
-        - open
-        - membersOnly
-        maxLength: 255
-      host:
-        description: TODO club/tag/notification logic
-        type: string
-      is_recurring:
-        type: boolean
-      location:
-        maxLength: 255
-        type: string
-      name:
-        maxLength: 255
-        type: string
-      preview:
-        maxLength: 255
-        type: string
-      series:
-        allOf:
-        - $ref: '#/definitions/models.CreateSeriesRequestBody'
-        description: TODO validate if isRecurring, then series is required
-      start_time:
-        type: string
-    required:
-    - content
-    - end_time
-    - event_type
-    - host
-    - is_recurring
-    - location
-    - name
-    - preview
-    - start_time
-    type: object
-  models.CreateFileRequestBody:
+  base.CreateFileRequestBody:
     properties:
       owner_id:
         type: string
@@ -303,24 +90,7 @@ definitions:
     - owner_id
     - owner_type
     type: object
-  models.CreateSeriesRequestBody:
-    properties:
-      max_occurrences:
-        minimum: 2
-        type: integer
-      recurring_type:
-        allOf:
-        - $ref: '#/definitions/models.RecurringType'
-        enum:
-        - daily
-        - weekly
-        - monthly
-        maxLength: 255
-    required:
-    - max_occurrences
-    - recurring_type
-    type: object
-  models.CreateTagRequestBody:
+  base.CreateTagRequestBody:
     properties:
       category_id:
         type: string
@@ -331,7 +101,7 @@ definitions:
     - category_id
     - name
     type: object
-  models.CreateUserRequestBody:
+  base.CreateUserRequestBody:
     properties:
       college:
         allOf:
@@ -690,447 +460,7 @@ definitions:
     - last_name
     - password
     type: object
-  models.Event:
-    properties:
-      content:
-        maxLength: 255
-        type: string
-      created_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-      end_time:
-        type: string
-      event_type:
-        allOf:
-        - $ref: '#/definitions/models.EventType'
-        enum:
-        - open
-        - membersOnly
-        maxLength: 255
-      host:
-        type: string
-      id:
-        example: 123e4567-e89b-12d3-a456-426614174000
-        type: string
-      is_recurring:
-        type: boolean
-      location:
-        maxLength: 255
-        type: string
-      meeting_link:
-        type: string
-      name:
-        maxLength: 255
-        type: string
-      preview:
-        maxLength: 255
-        type: string
-      start_time:
-        type: string
-      updated_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-    required:
-    - content
-    - end_time
-    - event_type
-    - location
-    - name
-    - preview
-    - start_time
-    type: object
-  models.EventType:
-    enum:
-    - open
-    - membersOnly
-    type: string
-    x-enum-varnames:
-    - Open
-    - MembersOnly
-  models.File:
-    properties:
-      created_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-      file_name:
-        maxLength: 255
-        type: string
-      file_size:
-        minimum: 1
-        type: integer
-      file_type:
-        maxLength: 255
-        type: string
-      file_url:
-        maxLength: 255
-        type: string
-      id:
-        example: 123e4567-e89b-12d3-a456-426614174000
-        type: string
-      object_key:
-        maxLength: 255
-        type: string
-      updated_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-    required:
-    - file_name
-    - file_size
-    - file_type
-    - file_url
-    - object_key
-    type: object
-  models.GraduationCycle:
-    enum:
-    - december
-    - may
-    type: string
-    x-enum-varnames:
-    - December
-    - May
-  models.LoginUserResponseBody:
-    properties:
-      email:
-        type: string
-      password:
-        description: 'MARK: must be validated manually'
-        maxLength: 255
-        type: string
-    required:
-    - email
-    - password
-    type: object
-  models.Major:
-    enum:
-    - africanaStudies
-    - americanSignLanguage
-    - americanSignLanguage-EnglishInterpreting
-    - appliedPhysics
-    - architecturalStudies
-    - architecture
-    - art:ArtVisualStudies
-    - behavioralNeuroscience
-    - biochemistry
-    - bioengineering
-    - biology
-    - biomedicalPhysics
-    - businessAdministration
-    - businessAdministration:Accounting
-    - businessAdministration:AccountingAndAdvisoryServices
-    - businessAdministration:BrandManagement
-    - businessAdministration:BusinessAnalytics
-    - businessAdministration:CorporateInnovation
-    - businessAdministration:EntrepreneurialStartups
-    - businessAdministration:FamilyBusiness
-    - businessAdministration:Finance
-    - businessAdministration:Fintech
-    - businessAdministration:HealthcareManagementAndConsulting
-    - businessAdministration:Management
-    - businessAdministration:ManagementInformationSystems
-    - businessAdministration:Marketing
-    - businessAdministration:MarketingAnalytics
-    - businessAdministration:SocialInnovationAndEntrepreneurship
-    - businessAdministration:SupplyChainManagement
-    - cellAndMolecularBiology
-    - chemicalEngineering
-    - chemistry
-    - civilEngineering
-    - communicationStudies
-    - computerEngineering
-    - computerScience
-    - computingAndLaw
-    - criminologyAndCriminalJustice
-    - culturalAnthropology
-    - cybersecurity
-    - dataScience
-    - design
-    - economics
-    - electricalEngineering
-    - english
-    - environmentalAndSustainabilityStudies
-    - environmentalEngineering
-    - environmentalScience
-    - environmentalStudies
-    - gameArtAndAnimation
-    - gameDesign
-    - globalAsianStudies
-    - healthScience
-    - history
-    - historyCultureAndLaw
-    - humanServices
-    - industrialEngineering
-    - internationalAffairs
-    - internationalBusiness
-    - internationalBusiness:Accounting
-    - internationalBusiness:AccountingAndAdvisoryServices
-    - internationalBusiness:BrandManagement
-    - internationalBusiness:BusinessAnalytics
-    - internationalBusiness:CorporateInnovation
-    - internationalBusiness:EntrepreneurialStartups
-    - internationalBusiness:FamilyBusiness
-    - internationalBusiness:Finance
-    - internationalBusiness:Fintech
-    - internationalBusiness:HealthcareManagementAndConsulting
-    - internationalBusiness:Management
-    - internationalBusiness:ManagementInformationSystems
-    - internationalBusiness:Marketing
-    - internationalBusiness:MarketingAnalytics
-    - internationalBusiness:SocialInnovationAndEntrepreneurship
-    - internationalBusiness:SupplyChainManagement
-    - journalism
-    - landscapeArchitecture
-    - linguistics
-    - marineBiology
-    - mathematics
-    - mechanicalEngineering
-    - mediaAndScreenStudies
-    - mediaArts
-    - music
-    - musicTechnology
-    - nursing
-    - pharmaceuticalSciences
-    - pharmacy(PharmD)
-    - philosophy
-    - physics
-    - politicalScience
-    - politicsPhilosophyEconomics
-    - psychology
-    - publicHealth
-    - publicRelations
-    - religiousStudies
-    - sociology
-    - spanish
-    - speechLanguagePathologyAndAudiology
-    - theatre
-    type: string
-    x-enum-varnames:
-    - AfricanaStudies
-    - AmericanSignLanguage
-    - AmericanSignLanguageEnglishInterpreting
-    - AppliedPhysics
-    - ArchitecturalStudies
-    - Architecture
-    - ArtArtVisualStudies
-    - BehavioralNeuroscience
-    - Biochemistry
-    - Bioengineering
-    - Biology
-    - BiomedicalPhysics
-    - BusinessAdministration
-    - BusinessAdministrationAccounting
-    - BusinessAdministrationAccountingAndAdvisoryServices
-    - BusinessAdministrationBrandManagement
-    - BusinessAdministrationBusinessAnalytics
-    - BusinessAdministrationCorporateInnovation
-    - BusinessAdministrationEntrepreneurialStartups
-    - BusinessAdministrationFamilyBusiness
-    - BusinessAdministrationFinance
-    - BusinessAdministrationFintech
-    - BusinessAdministrationHealthcareManagementAndConsulting
-    - BusinessAdministrationManagement
-    - BusinessAdministrationManagementInformationSystems
-    - BusinessAdministrationMarketing
-    - BusinessAdministrationMarketingAnalytics
-    - BusinessAdministrationSocialInnovationAndEntrepreneurship
-    - BusinessAdministrationSupplyChainManagement
-    - CellAndMolecularBiology
-    - ChemicalEngineering
-    - Chemistry
-    - CivilEngineering
-    - CommunicationStudies
-    - ComputerEngineering
-    - ComputerScience
-    - ComputingAndLaw
-    - CriminologyAndCriminalJustice
-    - CulturalAnthropology
-    - Cybersecurity
-    - DataScience
-    - Design
-    - Economics
-    - ElectricalEngineering
-    - English
-    - EnvironmentalAndSustainabilityStudies
-    - EnvironmentalEngineering
-    - EnvironmentalScience
-    - EnvironmentalStudies
-    - GameArtAndAnimation
-    - GameDesign
-    - GlobalAsianStudies
-    - HealthScience
-    - History
-    - HistoryCultureAndLaw
-    - HumanServices
-    - IndustrialEngineering
-    - InternationalAffairs
-    - InternationalBusiness
-    - InternationalBusinessAccounting
-    - InternationalBusinessAccountingAndAdvisoryServices
-    - InternationalBusinessBrandManagement
-    - InternationalBusinessBusinessAnalytics
-    - InternationalBusinessCorporateInnovation
-    - InternationalBusinessEntrepreneurialStartups
-    - InternationalBusinessFamilyBusiness
-    - InternationalBusinessFinance
-    - InternationalBusinessFintech
-    - InternationalBusinessHealthcareManagementAndConsulting
-    - InternationalBusinessManagement
-    - InternationalBusinessManagementInformationSystems
-    - InternationalBusinessMarketing
-    - InternationalBusinessMarketingAnalytics
-    - InternationalBusinessSocialInnovationAndEntrepreneurship
-    - InternationalBusinessSupplyChainManagement
-    - Journalism
-    - LandscapeArchitecture
-    - Linguistics
-    - MarineBiology
-    - Mathematics
-    - MechanicalEngineering
-    - MediaAndScreenStudies
-    - MediaArts
-    - Music
-    - MusicTechnology
-    - Nursing
-    - PharmaceuticalSciences
-    - PharmacyPharmD
-    - Philosophy
-    - Physics
-    - PoliticalScience
-    - PoliticsPhilosophyEconomics
-    - Psychology
-    - PublicHealth
-    - PublicRelations
-    - ReligiousStudies
-    - Sociology
-    - Spanish
-    - SpeechLanguagePathologyAndAudiology
-    - Theatre
-  models.PointOfContact:
-    properties:
-      created_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-      email:
-        maxLength: 255
-        type: string
-      id:
-        example: 123e4567-e89b-12d3-a456-426614174000
-        type: string
-      name:
-        maxLength: 255
-        type: string
-      photo_file:
-        $ref: '#/definitions/models.File'
-      position:
-        maxLength: 255
-        type: string
-      updated_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-    required:
-    - email
-    - name
-    - position
-    type: object
-  models.PutContactRequestBody:
-    properties:
-      content:
-        maxLength: 255
-        type: string
-      type:
-        allOf:
-        - $ref: '#/definitions/models.ContactType'
-        enum:
-        - facebook
-        - instagram
-        - x
-        - linkedin
-        - youtube
-        - github
-        - slack
-        - discord
-        - email
-        - customSite
-        maxLength: 255
-    required:
-    - content
-    - type
-    type: object
-  models.RecruitmentCycle:
-    enum:
-    - fall
-    - spring
-    - fallSpring
-    - always
-    type: string
-    x-enum-varnames:
-    - Fall
-    - Spring
-    - FallSpring
-    - Always
-  models.RecruitmentType:
-    enum:
-    - unrestricted
-    - tryout
-    - application
-    type: string
-    x-enum-varnames:
-    - Unrestricted
-    - Tryout
-    - Application
-  models.RecurringType:
-    enum:
-    - daily
-    - weekly
-    - monthly
-    type: string
-    x-enum-varnames:
-    - Daily
-    - Weekly
-    - Monthly
-  models.Series:
-    properties:
-      created_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-      events:
-        items:
-          $ref: '#/definitions/models.Event'
-        type: array
-      id:
-        example: 123e4567-e89b-12d3-a456-426614174000
-        type: string
-      max_occurrences:
-        minimum: 1
-        type: integer
-      recurring_type:
-        allOf:
-        - $ref: '#/definitions/models.RecurringType'
-        maxLength: 255
-      updated_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-    type: object
-  models.Tag:
-    properties:
-      category_id:
-        type: string
-      created_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-      id:
-        example: 123e4567-e89b-12d3-a456-426614174000
-        type: string
-      name:
-        maxLength: 255
-        type: string
-      updated_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-    required:
-    - category_id
-    - name
-    type: object
-  models.UpdateClubRequestBody:
+  base.UpdateClubRequestBody:
     properties:
       application_link:
         maxLength: 255
@@ -1177,65 +507,7 @@ definitions:
     - recruitment_cycle
     - recruitment_type
     type: object
-  models.UpdateEventRequestBody:
-    properties:
-      content:
-        maxLength: 255
-        type: string
-      end_time:
-        type: string
-      event_type:
-        allOf:
-        - $ref: '#/definitions/models.EventType'
-        enum:
-        - open
-        - membersOnly
-        maxLength: 255
-      host:
-        type: string
-      location:
-        maxLength: 255
-        type: string
-      name:
-        maxLength: 255
-        type: string
-      preview:
-        maxLength: 255
-        type: string
-      start_time:
-        type: string
-    type: object
-  models.UpdatePasswordRequestBody:
-    properties:
-      new_password:
-        description: 'MARK: must be validated manually'
-        maxLength: 255
-        type: string
-      old_password:
-        description: 'MARK: must be validated manually'
-        maxLength: 255
-        type: string
-    required:
-    - new_password
-    - old_password
-    type: object
-  models.UpdateSeriesRequestBody:
-    properties:
-      event_details:
-        $ref: '#/definitions/models.UpdateEventRequestBody'
-      max_occurrences:
-        minimum: 2
-        type: integer
-      recurring_type:
-        allOf:
-        - $ref: '#/definitions/models.RecurringType'
-        enum:
-        - daily
-        - weekly
-        - monthly
-        maxLength: 255
-    type: object
-  models.UpdateTagRequestBody:
+  base.UpdateTagRequestBody:
     properties:
       category_id:
         type: string
@@ -1243,7 +515,7 @@ definitions:
         maxLength: 255
         type: string
     type: object
-  models.UpdateUserRequestBody:
+  base.UpdateUserRequestBody:
     properties:
       college:
         allOf:
@@ -1589,372 +861,7 @@ definitions:
         - theatre
         maxLength: 255
     type: object
-  models.User:
-    properties:
-      college:
-        allOf:
-        - $ref: '#/definitions/models.College'
-        maxLength: 255
-      created_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-      email:
-        maxLength: 255
-        type: string
-      first_name:
-        maxLength: 255
-        type: string
-      graduation_cycle:
-        allOf:
-        - $ref: '#/definitions/models.GraduationCycle'
-        enum:
-        - december
-        - may
-        maxLength: 255
-      graduation_year:
-        type: integer
-      id:
-        example: 123e4567-e89b-12d3-a456-426614174000
-        type: string
-      is_verified:
-        type: boolean
-      last_name:
-        maxLength: 255
-        type: string
-      major0:
-        allOf:
-        - $ref: '#/definitions/models.Major'
-        enum:
-        - africanaStudies
-        - americanSignLanguage
-        - americanSignLanguage-EnglishInterpreting
-        - appliedPhysics
-        - architecturalStudies
-        - architecture
-        - art:ArtVisualStudies
-        - behavioralNeuroscience
-        - biochemistry
-        - bioengineering
-        - biology
-        - biomedicalPhysics
-        - businessAdministration
-        - businessAdministration:Accounting
-        - businessAdministration:AccountingAndAdvisoryServices
-        - businessAdministration:BrandManagement
-        - businessAdministration:BusinessAnalytics
-        - businessAdministration:CorporateInnovation
-        - businessAdministration:EntrepreneurialStartups
-        - businessAdministration:FamilyBusiness
-        - businessAdministration:Finance
-        - businessAdministration:Fintech
-        - businessAdministration:HealthcareManagementAndConsulting
-        - businessAdministration:Management
-        - businessAdministration:ManagementInformationSystems
-        - businessAdministration:Marketing
-        - businessAdministration:MarketingAnalytics
-        - businessAdministration:SocialInnovationAndEntrepreneurship
-        - businessAdministration:SupplyChainManagement
-        - cellAndMolecularBiology
-        - chemicalEngineering
-        - chemistry
-        - civilEngineering
-        - communicationStudies
-        - computerEngineering
-        - computerScience
-        - computingAndLaw
-        - criminologyAndCriminalJustice
-        - culturalAnthropology
-        - cybersecurity
-        - dataScience
-        - design
-        - economics
-        - electricalEngineering
-        - english
-        - environmentalAndSustainabilityStudies
-        - environmentalEngineering
-        - environmentalScience
-        - environmentalStudies
-        - gameArtAndAnimation
-        - gameDesign
-        - globalAsianStudies
-        - healthScience
-        - history
-        - historyCultureAndLaw
-        - humanServices
-        - industrialEngineering
-        - internationalAffairs
-        - internationalBusiness
-        - internationalBusiness:Accounting
-        - internationalBusiness:AccountingAndAdvisoryServices
-        - internationalBusiness:BrandManagement
-        - internationalBusiness:BusinessAnalytics
-        - internationalBusiness:CorporateInnovation
-        - internationalBusiness:EntrepreneurialStartups
-        - internationalBusiness:FamilyBusiness
-        - internationalBusiness:Finance
-        - internationalBusiness:Fintech
-        - internationalBusiness:HealthcareManagementAndConsulting
-        - internationalBusiness:Management
-        - internationalBusiness:ManagementInformationSystems
-        - internationalBusiness:Marketing
-        - internationalBusiness:MarketingAnalytics
-        - internationalBusiness:SocialInnovationAndEntrepreneurship
-        - internationalBusiness:SupplyChainManagement
-        - journalism
-        - landscapeArchitecture
-        - linguistics
-        - marineBiology
-        - mathematics
-        - mechanicalEngineering
-        - mediaAndScreenStudies
-        - mediaArts
-        - music
-        - musicTechnology
-        - nursing
-        - pharmaceuticalSciences
-        - pharmacy(PharmD)
-        - philosophy
-        - physics
-        - politicalScience
-        - politicsPhilosophyEconomics
-        - psychology
-        - publicHealth
-        - publicRelations
-        - religiousStudies
-        - sociology
-        - spanish
-        - speechLanguagePathologyAndAudiology
-        - theatre
-        maxLength: 255
-      major1:
-        allOf:
-        - $ref: '#/definitions/models.Major'
-        enum:
-        - africanaStudies
-        - americanSignLanguage
-        - americanSignLanguage-EnglishInterpreting
-        - appliedPhysics
-        - architecturalStudies
-        - architecture
-        - art:ArtVisualStudies
-        - behavioralNeuroscience
-        - biochemistry
-        - bioengineering
-        - biology
-        - biomedicalPhysics
-        - businessAdministration
-        - businessAdministration:Accounting
-        - businessAdministration:AccountingAndAdvisoryServices
-        - businessAdministration:BrandManagement
-        - businessAdministration:BusinessAnalytics
-        - businessAdministration:CorporateInnovation
-        - businessAdministration:EntrepreneurialStartups
-        - businessAdministration:FamilyBusiness
-        - businessAdministration:Finance
-        - businessAdministration:Fintech
-        - businessAdministration:HealthcareManagementAndConsulting
-        - businessAdministration:Management
-        - businessAdministration:ManagementInformationSystems
-        - businessAdministration:Marketing
-        - businessAdministration:MarketingAnalytics
-        - businessAdministration:SocialInnovationAndEntrepreneurship
-        - businessAdministration:SupplyChainManagement
-        - cellAndMolecularBiology
-        - chemicalEngineering
-        - chemistry
-        - civilEngineering
-        - communicationStudies
-        - computerEngineering
-        - computerScience
-        - computingAndLaw
-        - criminologyAndCriminalJustice
-        - culturalAnthropology
-        - cybersecurity
-        - dataScience
-        - design
-        - economics
-        - electricalEngineering
-        - english
-        - environmentalAndSustainabilityStudies
-        - environmentalEngineering
-        - environmentalScience
-        - environmentalStudies
-        - gameArtAndAnimation
-        - gameDesign
-        - globalAsianStudies
-        - healthScience
-        - history
-        - historyCultureAndLaw
-        - humanServices
-        - industrialEngineering
-        - internationalAffairs
-        - internationalBusiness
-        - internationalBusiness:Accounting
-        - internationalBusiness:AccountingAndAdvisoryServices
-        - internationalBusiness:BrandManagement
-        - internationalBusiness:BusinessAnalytics
-        - internationalBusiness:CorporateInnovation
-        - internationalBusiness:EntrepreneurialStartups
-        - internationalBusiness:FamilyBusiness
-        - internationalBusiness:Finance
-        - internationalBusiness:Fintech
-        - internationalBusiness:HealthcareManagementAndConsulting
-        - internationalBusiness:Management
-        - internationalBusiness:ManagementInformationSystems
-        - internationalBusiness:Marketing
-        - internationalBusiness:MarketingAnalytics
-        - internationalBusiness:SocialInnovationAndEntrepreneurship
-        - internationalBusiness:SupplyChainManagement
-        - journalism
-        - landscapeArchitecture
-        - linguistics
-        - marineBiology
-        - mathematics
-        - mechanicalEngineering
-        - mediaAndScreenStudies
-        - mediaArts
-        - music
-        - musicTechnology
-        - nursing
-        - pharmaceuticalSciences
-        - pharmacy(PharmD)
-        - philosophy
-        - physics
-        - politicalScience
-        - politicsPhilosophyEconomics
-        - psychology
-        - publicHealth
-        - publicRelations
-        - religiousStudies
-        - sociology
-        - spanish
-        - speechLanguagePathologyAndAudiology
-        - theatre
-        maxLength: 255
-      major2:
-        allOf:
-        - $ref: '#/definitions/models.Major'
-        enum:
-        - africanaStudies
-        - americanSignLanguage
-        - americanSignLanguage-EnglishInterpreting
-        - appliedPhysics
-        - architecturalStudies
-        - architecture
-        - art:ArtVisualStudies
-        - behavioralNeuroscience
-        - biochemistry
-        - bioengineering
-        - biology
-        - biomedicalPhysics
-        - businessAdministration
-        - businessAdministration:Accounting
-        - businessAdministration:AccountingAndAdvisoryServices
-        - businessAdministration:BrandManagement
-        - businessAdministration:BusinessAnalytics
-        - businessAdministration:CorporateInnovation
-        - businessAdministration:EntrepreneurialStartups
-        - businessAdministration:FamilyBusiness
-        - businessAdministration:Finance
-        - businessAdministration:Fintech
-        - businessAdministration:HealthcareManagementAndConsulting
-        - businessAdministration:Management
-        - businessAdministration:ManagementInformationSystems
-        - businessAdministration:Marketing
-        - businessAdministration:MarketingAnalytics
-        - businessAdministration:SocialInnovationAndEntrepreneurship
-        - businessAdministration:SupplyChainManagement
-        - cellAndMolecularBiology
-        - chemicalEngineering
-        - chemistry
-        - civilEngineering
-        - communicationStudies
-        - computerEngineering
-        - computerScience
-        - computingAndLaw
-        - criminologyAndCriminalJustice
-        - culturalAnthropology
-        - cybersecurity
-        - dataScience
-        - design
-        - economics
-        - electricalEngineering
-        - english
-        - environmentalAndSustainabilityStudies
-        - environmentalEngineering
-        - environmentalScience
-        - environmentalStudies
-        - gameArtAndAnimation
-        - gameDesign
-        - globalAsianStudies
-        - healthScience
-        - history
-        - historyCultureAndLaw
-        - humanServices
-        - industrialEngineering
-        - internationalAffairs
-        - internationalBusiness
-        - internationalBusiness:Accounting
-        - internationalBusiness:AccountingAndAdvisoryServices
-        - internationalBusiness:BrandManagement
-        - internationalBusiness:BusinessAnalytics
-        - internationalBusiness:CorporateInnovation
-        - internationalBusiness:EntrepreneurialStartups
-        - internationalBusiness:FamilyBusiness
-        - internationalBusiness:Finance
-        - internationalBusiness:Fintech
-        - internationalBusiness:HealthcareManagementAndConsulting
-        - internationalBusiness:Management
-        - internationalBusiness:ManagementInformationSystems
-        - internationalBusiness:Marketing
-        - internationalBusiness:MarketingAnalytics
-        - internationalBusiness:SocialInnovationAndEntrepreneurship
-        - internationalBusiness:SupplyChainManagement
-        - journalism
-        - landscapeArchitecture
-        - linguistics
-        - marineBiology
-        - mathematics
-        - mechanicalEngineering
-        - mediaAndScreenStudies
-        - mediaArts
-        - music
-        - musicTechnology
-        - nursing
-        - pharmaceuticalSciences
-        - pharmacy(PharmD)
-        - philosophy
-        - physics
-        - politicalScience
-        - politicsPhilosophyEconomics
-        - psychology
-        - publicHealth
-        - publicRelations
-        - religiousStudies
-        - sociology
-        - spanish
-        - speechLanguagePathologyAndAudiology
-        - theatre
-        maxLength: 255
-      role:
-        enum:
-        - super
-        - student
-        type: string
-      updated_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-    required:
-    - college
-    - email
-    - first_name
-    - graduation_cycle
-    - graduation_year
-    - last_name
-    - major0
-    - role
-    type: object
-  models.VerifyEmailRequestBody:
+  base.VerifyEmailRequestBody:
     properties:
       email:
         type: string
@@ -1964,7 +871,7 @@ definitions:
     - email
     - token
     type: object
-  models.VerifyPasswordResetTokenRequestBody:
+  base.VerifyPasswordResetTokenRequestBody:
     properties:
       new_password:
         minLength: 8
@@ -1979,7 +886,545 @@ definitions:
     - token
     - verify_new_password
     type: object
-  tag.CreateUserTagsBody:
+  categories.CategoryRequestBody:
+    properties:
+      name:
+        maxLength: 255
+        type: string
+    required:
+    - name
+    type: object
+  contacts.PutContactRequestBody:
+    properties:
+      content:
+        maxLength: 255
+        type: string
+      type:
+        allOf:
+        - $ref: '#/definitions/models.ContactType'
+        enum:
+        - facebook
+        - instagram
+        - x
+        - linkedin
+        - youtube
+        - github
+        - slack
+        - discord
+        - email
+        - customSite
+        maxLength: 255
+    required:
+    - content
+    - type
+    type: object
+  models.Category:
+    properties:
+      created_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      name:
+        type: string
+      updated_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+    type: object
+  models.Club:
+    properties:
+      application_link:
+        type: string
+      created_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      description:
+        type: string
+      id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      is_recruiting:
+        type: boolean
+      logo:
+        type: string
+      name:
+        type: string
+      num_members:
+        type: integer
+      one_word_to_describe_us:
+        type: string
+      preview:
+        type: string
+      recruitment_cycle:
+        $ref: '#/definitions/models.RecruitmentCycle'
+      recruitment_type:
+        $ref: '#/definitions/models.RecruitmentType'
+      updated_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      weekly_time_commitment:
+        type: integer
+    type: object
+  models.College:
+    enum:
+    - CAMD
+    - DMSB
+    - KCCS
+    - CE
+    - BCHS
+    - SL
+    - CPS
+    - CS
+    - CSSH
+    type: string
+    x-enum-comments:
+      BCHS: Bouvé College of Health Sciences
+      CAMD: College of Arts, Media and Design
+      CE: College of Engineering
+      CPS: College of Professional Studies
+      CS: College of Science
+      CSSH: College of Social Sciences and Humanities
+      DMSB: D'Amore-McKim School of Business
+      KCCS: Khoury College of Computer Sciences
+      SL: School of Law
+    x-enum-varnames:
+    - CAMD
+    - DMSB
+    - KCCS
+    - CE
+    - BCHS
+    - SL
+    - CPS
+    - CS
+    - CSSH
+  models.Contact:
+    properties:
+      content:
+        type: string
+      created_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      type:
+        $ref: '#/definitions/models.ContactType'
+      updated_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+    type: object
+  models.ContactType:
+    enum:
+    - facebook
+    - instagram
+    - x
+    - linkedin
+    - youtube
+    - github
+    - slack
+    - discord
+    - email
+    - customSite
+    type: string
+    x-enum-varnames:
+    - Facebook
+    - Instagram
+    - X
+    - LinkedIn
+    - YouTube
+    - GitHub
+    - Slack
+    - Discord
+    - Email
+    - CustomSite
+  models.Event:
+    properties:
+      created_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      description:
+        type: string
+      end_time:
+        type: string
+      event_type:
+        allOf:
+        - $ref: '#/definitions/models.EventType'
+        description: geoshi
+      host:
+        type: string
+      id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      is_archived:
+        type: boolean
+      is_draft:
+        type: boolean
+      is_public:
+        description: internal housekeeping states
+        type: boolean
+      link:
+        type: string
+      location:
+        type: string
+      name:
+        description: details
+        type: string
+      preview:
+        type: string
+      start_time:
+        description: timing
+        type: string
+      updated_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+    type: object
+  models.EventType:
+    enum:
+    - hybrid
+    - in_person
+    - virtual
+    type: string
+    x-enum-varnames:
+    - Hybrid
+    - InPerson
+    - Virtual
+  models.File:
+    properties:
+      created_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      file_name:
+        type: string
+      file_size:
+        type: integer
+      file_type:
+        type: string
+      file_url:
+        type: string
+      id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      object_key:
+        type: string
+      updated_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+    type: object
+  models.GraduationCycle:
+    enum:
+    - december
+    - may
+    type: string
+    x-enum-varnames:
+    - December
+    - May
+  models.Major:
+    enum:
+    - africanaStudies
+    - americanSignLanguage
+    - americanSignLanguage-EnglishInterpreting
+    - appliedPhysics
+    - architecturalStudies
+    - architecture
+    - art:ArtVisualStudies
+    - behavioralNeuroscience
+    - biochemistry
+    - bioengineering
+    - biology
+    - biomedicalPhysics
+    - businessAdministration
+    - businessAdministration:Accounting
+    - businessAdministration:AccountingAndAdvisoryServices
+    - businessAdministration:BrandManagement
+    - businessAdministration:BusinessAnalytics
+    - businessAdministration:CorporateInnovation
+    - businessAdministration:EntrepreneurialStartups
+    - businessAdministration:FamilyBusiness
+    - businessAdministration:Finance
+    - businessAdministration:Fintech
+    - businessAdministration:HealthcareManagementAndConsulting
+    - businessAdministration:Management
+    - businessAdministration:ManagementInformationSystems
+    - businessAdministration:Marketing
+    - businessAdministration:MarketingAnalytics
+    - businessAdministration:SocialInnovationAndEntrepreneurship
+    - businessAdministration:SupplyChainManagement
+    - cellAndMolecularBiology
+    - chemicalEngineering
+    - chemistry
+    - civilEngineering
+    - communicationStudies
+    - computerEngineering
+    - computerScience
+    - computingAndLaw
+    - criminologyAndCriminalJustice
+    - culturalAnthropology
+    - cybersecurity
+    - dataScience
+    - design
+    - economics
+    - electricalEngineering
+    - english
+    - environmentalAndSustainabilityStudies
+    - environmentalEngineering
+    - environmentalScience
+    - environmentalStudies
+    - gameArtAndAnimation
+    - gameDesign
+    - globalAsianStudies
+    - healthScience
+    - history
+    - historyCultureAndLaw
+    - humanServices
+    - industrialEngineering
+    - internationalAffairs
+    - internationalBusiness
+    - internationalBusiness:Accounting
+    - internationalBusiness:AccountingAndAdvisoryServices
+    - internationalBusiness:BrandManagement
+    - internationalBusiness:BusinessAnalytics
+    - internationalBusiness:CorporateInnovation
+    - internationalBusiness:EntrepreneurialStartups
+    - internationalBusiness:FamilyBusiness
+    - internationalBusiness:Finance
+    - internationalBusiness:Fintech
+    - internationalBusiness:HealthcareManagementAndConsulting
+    - internationalBusiness:Management
+    - internationalBusiness:ManagementInformationSystems
+    - internationalBusiness:Marketing
+    - internationalBusiness:MarketingAnalytics
+    - internationalBusiness:SocialInnovationAndEntrepreneurship
+    - internationalBusiness:SupplyChainManagement
+    - journalism
+    - landscapeArchitecture
+    - linguistics
+    - marineBiology
+    - mathematics
+    - mechanicalEngineering
+    - mediaAndScreenStudies
+    - mediaArts
+    - music
+    - musicTechnology
+    - nursing
+    - pharmaceuticalSciences
+    - pharmacy(PharmD)
+    - philosophy
+    - physics
+    - politicalScience
+    - politicsPhilosophyEconomics
+    - psychology
+    - publicHealth
+    - publicRelations
+    - religiousStudies
+    - sociology
+    - spanish
+    - speechLanguagePathologyAndAudiology
+    - theatre
+    type: string
+    x-enum-varnames:
+    - AfricanaStudies
+    - AmericanSignLanguage
+    - AmericanSignLanguageEnglishInterpreting
+    - AppliedPhysics
+    - ArchitecturalStudies
+    - Architecture
+    - ArtArtVisualStudies
+    - BehavioralNeuroscience
+    - Biochemistry
+    - Bioengineering
+    - Biology
+    - BiomedicalPhysics
+    - BusinessAdministration
+    - BusinessAdministrationAccounting
+    - BusinessAdministrationAccountingAndAdvisoryServices
+    - BusinessAdministrationBrandManagement
+    - BusinessAdministrationBusinessAnalytics
+    - BusinessAdministrationCorporateInnovation
+    - BusinessAdministrationEntrepreneurialStartups
+    - BusinessAdministrationFamilyBusiness
+    - BusinessAdministrationFinance
+    - BusinessAdministrationFintech
+    - BusinessAdministrationHealthcareManagementAndConsulting
+    - BusinessAdministrationManagement
+    - BusinessAdministrationManagementInformationSystems
+    - BusinessAdministrationMarketing
+    - BusinessAdministrationMarketingAnalytics
+    - BusinessAdministrationSocialInnovationAndEntrepreneurship
+    - BusinessAdministrationSupplyChainManagement
+    - CellAndMolecularBiology
+    - ChemicalEngineering
+    - Chemistry
+    - CivilEngineering
+    - CommunicationStudies
+    - ComputerEngineering
+    - ComputerScience
+    - ComputingAndLaw
+    - CriminologyAndCriminalJustice
+    - CulturalAnthropology
+    - Cybersecurity
+    - DataScience
+    - Design
+    - Economics
+    - ElectricalEngineering
+    - English
+    - EnvironmentalAndSustainabilityStudies
+    - EnvironmentalEngineering
+    - EnvironmentalScience
+    - EnvironmentalStudies
+    - GameArtAndAnimation
+    - GameDesign
+    - GlobalAsianStudies
+    - HealthScience
+    - History
+    - HistoryCultureAndLaw
+    - HumanServices
+    - IndustrialEngineering
+    - InternationalAffairs
+    - InternationalBusiness
+    - InternationalBusinessAccounting
+    - InternationalBusinessAccountingAndAdvisoryServices
+    - InternationalBusinessBrandManagement
+    - InternationalBusinessBusinessAnalytics
+    - InternationalBusinessCorporateInnovation
+    - InternationalBusinessEntrepreneurialStartups
+    - InternationalBusinessFamilyBusiness
+    - InternationalBusinessFinance
+    - InternationalBusinessFintech
+    - InternationalBusinessHealthcareManagementAndConsulting
+    - InternationalBusinessManagement
+    - InternationalBusinessManagementInformationSystems
+    - InternationalBusinessMarketing
+    - InternationalBusinessMarketingAnalytics
+    - InternationalBusinessSocialInnovationAndEntrepreneurship
+    - InternationalBusinessSupplyChainManagement
+    - Journalism
+    - LandscapeArchitecture
+    - Linguistics
+    - MarineBiology
+    - Mathematics
+    - MechanicalEngineering
+    - MediaAndScreenStudies
+    - MediaArts
+    - Music
+    - MusicTechnology
+    - Nursing
+    - PharmaceuticalSciences
+    - PharmacyPharmD
+    - Philosophy
+    - Physics
+    - PoliticalScience
+    - PoliticsPhilosophyEconomics
+    - Psychology
+    - PublicHealth
+    - PublicRelations
+    - ReligiousStudies
+    - Sociology
+    - Spanish
+    - SpeechLanguagePathologyAndAudiology
+    - Theatre
+  models.PointOfContact:
+    properties:
+      created_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      email:
+        type: string
+      id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      name:
+        type: string
+      photo_file:
+        $ref: '#/definitions/models.File'
+      position:
+        type: string
+      updated_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+    type: object
+  models.RecruitmentCycle:
+    enum:
+    - fall
+    - spring
+    - fallSpring
+    - always
+    type: string
+    x-enum-varnames:
+    - Fall
+    - Spring
+    - FallSpring
+    - Always
+  models.RecruitmentType:
+    enum:
+    - unrestricted
+    - tryout
+    - application
+    type: string
+    x-enum-varnames:
+    - Unrestricted
+    - Tryout
+    - Application
+  models.Tag:
+    properties:
+      category_id:
+        type: string
+      created_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      name:
+        type: string
+      updated_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+    type: object
+  models.User:
+    properties:
+      college:
+        $ref: '#/definitions/models.College'
+      created_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      graduation_cycle:
+        $ref: '#/definitions/models.GraduationCycle'
+      graduation_year:
+        type: integer
+      id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      is_verified:
+        type: boolean
+      last_name:
+        type: string
+      major0:
+        $ref: '#/definitions/models.Major'
+      major1:
+        $ref: '#/definitions/models.Major'
+      major2:
+        $ref: '#/definitions/models.Major'
+      role:
+        type: string
+      updated_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+    type: object
+  tags.CreateClubTagsRequestBody:
+    properties:
+      tags:
+        items:
+          type: string
+        type: array
+    required:
+    - tags
+    type: object
+  tags.CreateUserTagsBody:
     properties:
       tags:
         items:
@@ -2018,16 +1463,13 @@ paths:
             $ref: '#/definitions/utilities.SuccessResponse'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "429":
           description: Too Many Requests
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Generates a password reset token
       tags:
       - auth
@@ -2043,7 +1485,7 @@ paths:
         name: loginBody
         required: true
         schema:
-          $ref: '#/definitions/models.LoginUserResponseBody'
+          $ref: '#/definitions/auth.LoginResponseBody'
       produces:
       - application/json
       responses:
@@ -2053,16 +1495,13 @@ paths:
             $ref: '#/definitions/models.User'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Logs in a user
       tags:
       - auth
@@ -2097,20 +1536,16 @@ paths:
             $ref: '#/definitions/models.User'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       security:
       - Bearer: []
       summary: Retrieves the currently authenticated user
@@ -2131,17 +1566,46 @@ paths:
             $ref: '#/definitions/utilities.SuccessResponse'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Refreshes a user's access token
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Registers a user
+      operationId: register-user
+      parameters:
+      - description: User Body
+        in: body
+        name: userBody
+        required: true
+        schema:
+          $ref: '#/definitions/base.CreateUserRequestBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Registers a user
       tags:
       - auth
   /auth/send-code:
@@ -2166,16 +1630,13 @@ paths:
             $ref: '#/definitions/utilities.SuccessResponse'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "429":
           description: Too Many Requests
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Sends a verification code
       tags:
       - auth
@@ -2191,7 +1652,7 @@ paths:
         name: tokenBody
         required: true
         schema:
-          $ref: '#/definitions/models.VerifyEmailRequestBody'
+          $ref: '#/definitions/base.VerifyEmailRequestBody'
       produces:
       - application/json
       responses:
@@ -2201,16 +1662,13 @@ paths:
             $ref: '#/definitions/utilities.SuccessResponse'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "429":
           description: Too Many Requests
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Verifies an email
       tags:
       - auth
@@ -2226,7 +1684,7 @@ paths:
         name: tokenBody
         required: true
         schema:
-          $ref: '#/definitions/models.VerifyPasswordResetTokenRequestBody'
+          $ref: '#/definitions/base.VerifyPasswordResetTokenRequestBody'
       produces:
       - application/json
       responses:
@@ -2236,16 +1694,13 @@ paths:
             $ref: '#/definitions/utilities.SuccessResponse'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "429":
           description: Too Many Requests
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       security:
       - Bearer: []
       summary: Verifies a password reset token
@@ -2299,7 +1754,7 @@ paths:
         name: categoryBody
         required: true
         schema:
-          $ref: '#/definitions/models.CategoryRequestBody'
+          $ref: '#/definitions/categories.CategoryRequestBody'
       produces:
       - application/json
       responses:
@@ -2413,7 +1868,7 @@ paths:
         name: categoryBody
         required: true
         schema:
-          $ref: '#/definitions/models.CategoryRequestBody'
+          $ref: '#/definitions/categories.CategoryRequestBody'
       produces:
       - application/json
       responses:
@@ -2469,16 +1924,13 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all tags by category
       tags:
       - category-tag
@@ -2506,16 +1958,13 @@ paths:
             $ref: '#/definitions/models.Tag'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve a tag by category
       tags:
       - category-tag
@@ -2543,12 +1992,10 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all clubs
       tags:
       - club
@@ -2563,7 +2010,7 @@ paths:
         name: club
         required: true
         schema:
-          $ref: '#/definitions/models.CreateClubRequestBody'
+          $ref: '#/definitions/base.CreateClubRequestBody'
       produces:
       - application/json
       responses:
@@ -2573,20 +2020,16 @@ paths:
             $ref: '#/definitions/models.Club'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Create a club
       tags:
       - club
@@ -2609,20 +2052,16 @@ paths:
             type: string
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Delete a club
       tags:
       - club
@@ -2644,16 +2083,13 @@ paths:
             $ref: '#/definitions/models.Club'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve a club
       tags:
       - club
@@ -2673,7 +2109,7 @@ paths:
         name: club
         required: true
         schema:
-          $ref: '#/definitions/models.UpdateClubRequestBody'
+          $ref: '#/definitions/base.UpdateClubRequestBody'
       produces:
       - application/json
       responses:
@@ -2683,20 +2119,16 @@ paths:
             $ref: '#/definitions/models.Club'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Update a club
       tags:
       - club
@@ -2721,16 +2153,13 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all contacts for a club
       tags:
       - club-contact
@@ -2750,7 +2179,7 @@ paths:
         name: contactBody
         required: true
         schema:
-          $ref: '#/definitions/models.PutContactRequestBody'
+          $ref: '#/definitions/contacts.PutContactRequestBody'
       produces:
       - application/json
       responses:
@@ -2760,20 +2189,16 @@ paths:
             $ref: '#/definitions/models.Contact'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Creates a contact
       tags:
       - club-contact
@@ -2806,16 +2231,13 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all events for a club
       tags:
       - club-event
@@ -2848,20 +2270,53 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all followers for a club
       tags:
       - club-follower
   /clubs/{clubID}/members/:
+    delete:
+      description: Deletes a member associated with a club
+      operationId: delete-member-from-club
+      parameters:
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema: {}
+        "401":
+          description: Unauthorized
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Delete a member from a club
+      tags:
+      - club-member
     get:
       description: Retrieves all members associated with a club
       operationId: get-members-by-club
@@ -2890,21 +2345,55 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all members for a club
+      tags:
+      - club-member
+    post:
+      consumes:
+      - application/json
+      description: Creates a new member associated with a club
+      operationId: create-member-for-club
+      parameters:
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema: {}
+        "401":
+          description: Unauthorized
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Create a new member for a club
       tags:
       - club-member
   /clubs/{clubID}/poc/:
@@ -2928,20 +2417,16 @@ paths:
             $ref: '#/definitions/models.PointOfContact'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Create a point of contact for a club
       tags:
       - club-point-of-contact
@@ -2967,16 +2452,13 @@ paths:
           description: No Content
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Delete a point of contact for a club
       tags:
       - club-point-of-contact
@@ -3005,20 +2487,16 @@ paths:
             $ref: '#/definitions/models.PointOfContact'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Update a point of contact photo for a club
       tags:
       - club-point-of-contact
@@ -3047,20 +2525,16 @@ paths:
             $ref: '#/definitions/models.PointOfContact'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Update a point of contact for a club
       tags:
       - club-point-of-contact
@@ -3085,16 +2559,13 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all point of contacts for a club
       tags:
       - club-point-of-contact
@@ -3122,16 +2593,13 @@ paths:
             $ref: '#/definitions/models.PointOfContact'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve a point of contact for a club
       tags:
       - club-point-of-contact
@@ -3156,16 +2624,13 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all tags for a club
       tags:
       - club-tag
@@ -3185,7 +2650,7 @@ paths:
         name: clubTagsBody
         required: true
         schema:
-          $ref: '#/definitions/models.CreateClubTagsRequestBody'
+          $ref: '#/definitions/tags.CreateClubTagsRequestBody'
       produces:
       - application/json
       responses:
@@ -3197,20 +2662,16 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Create club tags
       tags:
       - club-tag
@@ -3238,20 +2699,16 @@ paths:
             type: string
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Delete a tag for a club
       tags:
       - club-tag
@@ -3383,93 +2840,17 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all events
       tags:
       - event
-    post:
-      consumes:
-      - application/json
-      description: Creates an event
-      operationId: create-event
-      parameters:
-      - description: Event Body
-        in: body
-        name: event
-        required: true
-        schema:
-          $ref: '#/definitions/models.CreateEventRequestBody'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/models.Event'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
-      summary: Create an event
-      tags:
-      - event
   /events/{eventID}/:
-    delete:
-      description: Deletes an event
-      operationId: delete-event
-      parameters:
-      - description: Event ID
-        in: path
-        name: eventID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-          schema:
-            type: string
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
-      summary: Delete an event
-      tags:
-      - event
     get:
       description: Retrieves an event
       operationId: get-event
@@ -3488,317 +2869,14 @@ paths:
             $ref: '#/definitions/models.Event'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve an event
-      tags:
-      - event
-  /events/{eventID}/hosts:
-    get:
-      description: Retrieves all hosts associated with an event
-      operationId: get-hosts-by-event
-      parameters:
-      - description: Event ID
-        in: path
-        name: eventID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.Club'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
-      summary: Retrieve all hosts by event
-      tags:
-      - event
-  /events/{eventID}/series/:
-    delete:
-      description: Deletes all series associated with an event
-      operationId: delete-series-by-event
-      parameters:
-      - description: Event ID
-        in: path
-        name: eventID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-          schema:
-            type: string
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
-      summary: Delete all series by event
-      tags:
-      - event
-    get:
-      description: Retrieves all series associated with an event
-      operationId: get-series-by-event
-      parameters:
-      - description: Event ID
-        in: path
-        name: eventID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.Series'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
-      summary: Retrieve all series by event
-      tags:
-      - event
-    patch:
-      consumes:
-      - application/json
-      description: Creates a series
-      operationId: create-series
-      parameters:
-      - description: Event ID
-        in: path
-        name: eventID
-        required: true
-        type: string
-      - description: Series Body
-        in: body
-        name: seriesBody
-        required: true
-        schema:
-          $ref: '#/definitions/models.UpdateEventRequestBody'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/models.Series'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
-      summary: Create a series
-      tags:
-      - event
-  /events/{eventID}/series/{seriesID}/:
-    delete:
-      description: Deletes a series by ID
-      operationId: delete-series-by-id
-      parameters:
-      - description: Event ID
-        in: path
-        name: eventID
-        required: true
-        type: string
-      - description: Series ID
-        in: path
-        name: seriesID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-          schema:
-            type: string
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
-      summary: Delete a series by ID
-      tags:
-      - event
-    get:
-      description: Retrieves a series by ID
-      operationId: get-series-by-id
-      parameters:
-      - description: Event ID
-        in: path
-        name: eventID
-        required: true
-        type: string
-      - description: Series ID
-        in: path
-        name: seriesID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Series'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
-      summary: Retrieve a series by ID
-      tags:
-      - event
-    patch:
-      consumes:
-      - application/json
-      description: Updates a series by event ID
-      operationId: update-series-by-event-id
-      parameters:
-      - description: Event ID
-        in: path
-        name: eventID
-        required: true
-        type: string
-      - description: Series Body
-        in: body
-        name: seriesBody
-        required: true
-        schema:
-          $ref: '#/definitions/models.UpdateSeriesRequestBody'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Series'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
-      summary: Update a series by event ID
-      tags:
-      - event
-  /events/{eventID}/tags:
-    get:
-      description: Retrieves all tags associated with an event
-      operationId: get-tags-by-event
-      parameters:
-      - description: Event ID
-        in: path
-        name: eventID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.Tag'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
-      summary: Retrieve all tags by event
       tags:
       - event
   /files/:
@@ -3825,20 +2903,16 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all files
       tags:
       - file
@@ -3853,7 +2927,7 @@ paths:
         name: file
         required: true
         schema:
-          $ref: '#/definitions/models.CreateFileRequestBody'
+          $ref: '#/definitions/base.CreateFileRequestBody'
       produces:
       - application/json
       responses:
@@ -3863,20 +2937,16 @@ paths:
             $ref: '#/definitions/models.File'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Create a file
       tags:
       - file
@@ -3899,20 +2969,16 @@ paths:
             $ref: '#/definitions/models.File'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Delete a file
       tags:
       - file
@@ -3934,20 +3000,16 @@ paths:
             $ref: '#/definitions/models.File'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve a file
       tags:
       - file
@@ -4044,16 +3106,13 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all tags
       tags:
       - tag
@@ -4069,7 +3128,7 @@ paths:
         name: tagBody
         required: true
         schema:
-          $ref: '#/definitions/models.CreateTagRequestBody'
+          $ref: '#/definitions/base.CreateTagRequestBody'
       produces:
       - application/json
       responses:
@@ -4079,20 +3138,16 @@ paths:
             $ref: '#/definitions/models.Tag'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Create a tag
       tags:
       - tag
@@ -4115,20 +3170,16 @@ paths:
             type: string
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Delete a tag
       tags:
       - tag
@@ -4150,16 +3201,13 @@ paths:
             $ref: '#/definitions/models.Tag'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve a tag
       tags:
       - tag
@@ -4179,7 +3227,7 @@ paths:
         name: tag
         required: true
         schema:
-          $ref: '#/definitions/models.UpdateTagRequestBody'
+          $ref: '#/definitions/base.UpdateTagRequestBody'
       produces:
       - application/json
       responses:
@@ -4189,20 +3237,16 @@ paths:
             $ref: '#/definitions/models.Tag'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Update a tag
       tags:
       - tag
@@ -4230,59 +3274,14 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all users
-      tags:
-      - user
-    post:
-      consumes:
-      - application/json
-      description: Creates a user
-      operationId: create-user
-      parameters:
-      - description: User Body
-        in: body
-        name: userBody
-        required: true
-        schema:
-          $ref: '#/definitions/models.CreateUserRequestBody'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/models.User'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "409":
-          description: Conflict
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
-      summary: Create a user
       tags:
       - user
   /users/{userID}/:
@@ -4304,20 +3303,16 @@ paths:
             type: string
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Delete a user
       tags:
       - user
@@ -4339,20 +3334,16 @@ paths:
             $ref: '#/definitions/models.User'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve a user
       tags:
       - user
@@ -4372,7 +3363,7 @@ paths:
         name: userBody
         required: true
         schema:
-          $ref: '#/definitions/models.UpdateUserRequestBody'
+          $ref: '#/definitions/base.UpdateUserRequestBody'
       produces:
       - application/json
       responses:
@@ -4382,20 +3373,16 @@ paths:
             $ref: '#/definitions/models.User'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Update a user
       tags:
       - user
@@ -4420,20 +3407,16 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all clubs a user is following
       tags:
       - user-follower
@@ -4463,16 +3446,13 @@ paths:
             $ref: '#/definitions/utilities.SuccessResponse'
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Unfollow a club
       tags:
       - user-follower
@@ -4501,16 +3481,13 @@ paths:
             $ref: '#/definitions/utilities.SuccessResponse'
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Follow a club
       tags:
       - user-follower
@@ -4535,98 +3512,17 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all clubs a user is a member of
-      tags:
-      - user-member
-  /users/{userID}/member/{clubID}/:
-    delete:
-      consumes:
-      - application/json
-      description: Leave a club
-      operationId: delete-membership
-      parameters:
-      - description: User ID
-        in: path
-        name: userID
-        required: true
-        type: string
-      - description: Club ID
-        in: path
-        name: clubID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-          schema:
-            $ref: '#/definitions/utilities.SuccessResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
-      summary: Leave a club
-      tags:
-      - user-member
-    post:
-      consumes:
-      - application/json
-      description: Join a club
-      operationId: create-membership
-      parameters:
-      - description: User ID
-        in: path
-        name: userID
-        required: true
-        type: string
-      - description: Club ID
-        in: path
-        name: clubID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/utilities.SuccessResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
-      summary: Join a club
       tags:
       - user-member
   /users/{userID}/password:
@@ -4646,7 +3542,7 @@ paths:
         name: passwordBody
         required: true
         schema:
-          $ref: '#/definitions/models.UpdatePasswordRequestBody'
+          $ref: '#/definitions/auth.UpdatePasswordRequestBody'
       produces:
       - application/json
       responses:
@@ -4656,20 +3552,16 @@ paths:
             type: string
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Update a user's password
       tags:
       - user
@@ -4692,20 +3584,16 @@ paths:
           description: Created
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Create user tags
       tags:
       - user-tag
@@ -4729,20 +3617,16 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Retrieve all tags for a user
       tags:
       - user-tag
@@ -4762,7 +3646,7 @@ paths:
         name: userTagsBody
         required: true
         schema:
-          $ref: '#/definitions/tag.CreateUserTagsBody'
+          $ref: '#/definitions/tags.CreateUserTagsBody'
       produces:
       - application/json
       responses:
@@ -4774,20 +3658,16 @@ paths:
             type: array
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "401":
           description: Unauthorized
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "404":
           description: Not Found
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
         "500":
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/errors.Error'
+          schema: {}
       summary: Create user tags
       tags:
       - user-tag

@@ -19,6 +19,9 @@ func init() {
 	rootCmd.AddCommand(runCmd)
 	runCmd.AddCommand(runFeCmd)
 	runCmd.AddCommand(runBeCmd)
+	runBeCmd.Flags().BoolP("migrate", "m", false, "Specify if you want to only perform the database migration")
+	runBeCmd.Flags().BoolP("seed-pinecone", "s", false, "Specify if you want to only perform the pinecone database seeding")
+	runBeCmd.Flags().BoolP("connect-to-pinecone", "c", false, "Connect to a real Pinecone instance instead of mock")
 
 	runFeCmd.AddCommand(runWebCmd)
 	runFeCmd.AddCommand(runMobileCmd)
@@ -34,10 +37,40 @@ var runBeCmd = &cobra.Command{
 	Aliases: []string{"be"},
 	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		err := helpers.Execute(exec.Command("go", "run", "main.go"), helpers.BACKEND_DIR)
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+		migrate, _ := cmd.Flags().GetBool("migrate")
+		seedPinecone, _ := cmd.Flags().GetBool("seed-pinecone")
+		connectToPinecone, _ := cmd.Flags().GetBool("connect-to-pinecone")
+
+		if migrate {
+			err := helpers.Execute(exec.Command("go", "run", "main.go", "--only-migrate"), helpers.BACKEND_DIR)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+		}
+
+		if seedPinecone {
+			err := helpers.Execute(exec.Command("go", "run", "main.go", "--seed-pinecone"), helpers.BACKEND_DIR)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+		}
+
+		if connectToPinecone {
+			err := helpers.Execute(exec.Command("go", "run", "main.go", "--connect-to-pinecone"), helpers.BACKEND_DIR)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+		}
+
+		if !migrate && !seedPinecone && !connectToPinecone {
+			err := helpers.Execute(exec.Command("go", "run", "main.go"), helpers.BACKEND_DIR)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
 		}
 	},
 }
@@ -72,7 +105,13 @@ var runMobileCmd = &cobra.Command{
 
 		platform = "run:" + platform
 
-		err := helpers.Execute(exec.Command("npx", "expo", platform), helpers.MOBILE_DIR)
+		output := exec.Command("npx", "expo", platform)
+		output.Dir = helpers.MOBILE_DIR
+		output.Stdout = os.Stdout
+		output.Stderr = os.Stderr
+		output.Stdin = os.Stdin
+
+		err := helpers.Execute(output, helpers.MOBILE_DIR)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

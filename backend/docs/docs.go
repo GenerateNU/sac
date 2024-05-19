@@ -49,21 +49,15 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "429": {
                         "description": "Too Many Requests",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -89,7 +83,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.LoginUserResponseBody"
+                            "$ref": "#/definitions/auth.LoginResponseBody"
                         }
                     }
                 ],
@@ -102,21 +96,15 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -173,27 +161,19 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -221,21 +201,62 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "description": "Registers a user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Registers a user",
+                "operationId": "register-user",
+                "parameters": [
+                    {
+                        "description": "User Body",
+                        "name": "userBody",
+                        "in": "body",
+                        "required": true,
                         "schema": {
-                            "$ref": "#/definitions/errors.Error"
+                            "$ref": "#/definitions/base.CreateUserRequestBody"
                         }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
                     }
                 }
             }
@@ -274,21 +295,15 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "429": {
                         "description": "Too Many Requests",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -314,7 +329,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.VerifyEmailRequestBody"
+                            "$ref": "#/definitions/base.VerifyEmailRequestBody"
                         }
                     }
                 ],
@@ -327,21 +342,15 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "429": {
                         "description": "Too Many Requests",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -372,7 +381,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.VerifyPasswordResetTokenRequestBody"
+                            "$ref": "#/definitions/base.VerifyPasswordResetTokenRequestBody"
                         }
                     }
                 ],
@@ -385,21 +394,15 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "429": {
                         "description": "Too Many Requests",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -479,7 +482,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CategoryRequestBody"
+                            "$ref": "#/definitions/categories.CategoryRequestBody"
                         }
                     }
                 ],
@@ -649,7 +652,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CategoryRequestBody"
+                            "$ref": "#/definitions/categories.CategoryRequestBody"
                         }
                     }
                 ],
@@ -731,21 +734,15 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -786,21 +783,15 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -842,15 +833,11 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             },
@@ -874,7 +861,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateClubRequestBody"
+                            "$ref": "#/definitions/base.CreateClubRequestBody"
                         }
                     }
                 ],
@@ -887,27 +874,19 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -941,21 +920,15 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             },
@@ -987,27 +960,19 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             },
@@ -1038,7 +1003,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UpdateClubRequestBody"
+                            "$ref": "#/definitions/base.UpdateClubRequestBody"
                         }
                     }
                 ],
@@ -1051,27 +1016,19 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -1108,21 +1065,15 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             },
@@ -1153,7 +1104,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.PutContactRequestBody"
+                            "$ref": "#/definitions/contacts.PutContactRequestBody"
                         }
                     }
                 ],
@@ -1166,27 +1117,19 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -1235,21 +1178,15 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -1298,21 +1235,15 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -1361,27 +1292,124 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new member associated with a club",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "club-member"
+                ],
+                "summary": "Create a new member for a club",
+                "operationId": "create-member-for-club",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Club ID",
+                        "name": "clubID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/errors.Error"
+                            "$ref": "#/definitions/models.User"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes a member associated with a club",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "club-member"
+                ],
+                "summary": "Delete a member from a club",
+                "operationId": "delete-member-from-club",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Club ID",
+                        "name": "clubID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
                     }
                 }
             }
@@ -1418,27 +1446,19 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -1482,27 +1502,19 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             },
@@ -1538,21 +1550,15 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             },
@@ -1594,27 +1600,19 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -1651,21 +1649,15 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -1706,21 +1698,15 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -1757,21 +1743,15 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             },
@@ -1802,7 +1782,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateClubTagsRequestBody"
+                            "$ref": "#/definitions/tags.CreateClubTagsRequestBody"
                         }
                     }
                 ],
@@ -1818,27 +1798,19 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -1879,27 +1851,19 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -2097,78 +2061,15 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Creates an event",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "event"
-                ],
-                "summary": "Create an event",
-                "operationId": "create-event",
-                "parameters": [
-                    {
-                        "description": "Event Body",
-                        "name": "event",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.CreateEventRequestBody"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/models.Event"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -2202,520 +2103,15 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Deletes an event",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "event"
-                ],
-                "summary": "Delete an event",
-                "operationId": "delete-event",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Event ID",
-                        "name": "eventID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/events/{eventID}/hosts": {
-            "get": {
-                "description": "Retrieves all hosts associated with an event",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "event"
-                ],
-                "summary": "Retrieve all hosts by event",
-                "operationId": "get-hosts-by-event",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Event ID",
-                        "name": "eventID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Club"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/events/{eventID}/series/": {
-            "get": {
-                "description": "Retrieves all series associated with an event",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "event"
-                ],
-                "summary": "Retrieve all series by event",
-                "operationId": "get-series-by-event",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Event ID",
-                        "name": "eventID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Series"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Deletes all series associated with an event",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "event"
-                ],
-                "summary": "Delete all series by event",
-                "operationId": "delete-series-by-event",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Event ID",
-                        "name": "eventID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "description": "Creates a series",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "event"
-                ],
-                "summary": "Create a series",
-                "operationId": "create-series",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Event ID",
-                        "name": "eventID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Series Body",
-                        "name": "seriesBody",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.UpdateEventRequestBody"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/models.Series"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/events/{eventID}/series/{seriesID}/": {
-            "get": {
-                "description": "Retrieves a series by ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "event"
-                ],
-                "summary": "Retrieve a series by ID",
-                "operationId": "get-series-by-id",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Event ID",
-                        "name": "eventID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Series ID",
-                        "name": "seriesID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Series"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Deletes a series by ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "event"
-                ],
-                "summary": "Delete a series by ID",
-                "operationId": "delete-series-by-id",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Event ID",
-                        "name": "eventID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Series ID",
-                        "name": "seriesID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "description": "Updates a series by event ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "event"
-                ],
-                "summary": "Update a series by event ID",
-                "operationId": "update-series-by-event-id",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Event ID",
-                        "name": "eventID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Series Body",
-                        "name": "seriesBody",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.UpdateSeriesRequestBody"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Series"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/events/{eventID}/tags": {
-            "get": {
-                "description": "Retrieves all tags associated with an event",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "event"
-                ],
-                "summary": "Retrieve all tags by event",
-                "operationId": "get-tags-by-event",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Event ID",
-                        "name": "eventID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Tag"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -2757,27 +2153,19 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             },
@@ -2801,7 +2189,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateFileRequestBody"
+                            "$ref": "#/definitions/base.CreateFileRequestBody"
                         }
                     }
                 ],
@@ -2814,27 +2202,19 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -2868,27 +2248,19 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             },
@@ -2920,27 +2292,19 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -3086,21 +2450,15 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -3126,7 +2484,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateTagRequestBody"
+                            "$ref": "#/definitions/base.CreateTagRequestBody"
                         }
                     }
                 ],
@@ -3139,27 +2497,19 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -3193,21 +2543,15 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             },
@@ -3239,27 +2583,19 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             },
@@ -3290,7 +2626,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UpdateTagRequestBody"
+                            "$ref": "#/definitions/base.UpdateTagRequestBody"
                         }
                     }
                 ],
@@ -3303,27 +2639,19 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -3365,84 +2693,15 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Creates a user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
-                "summary": "Create a user",
-                "operationId": "create-user",
-                "parameters": [
-                    {
-                        "description": "User Body",
-                        "name": "userBody",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.CreateUserRequestBody"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/models.User"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "409": {
-                        "description": "Conflict",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -3476,27 +2735,19 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             },
@@ -3528,27 +2779,19 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             },
@@ -3579,7 +2822,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UpdateUserRequestBody"
+                            "$ref": "#/definitions/base.UpdateUserRequestBody"
                         }
                     }
                 ],
@@ -3592,27 +2835,19 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -3649,27 +2884,19 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -3713,21 +2940,15 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             },
@@ -3769,21 +2990,15 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -3820,141 +3035,19 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/{userID}/member/{clubID}/": {
-            "post": {
-                "description": "Join a club",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user-member"
-                ],
-                "summary": "Join a club",
-                "operationId": "create-membership",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "userID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Club ID",
-                        "name": "clubID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/utilities.SuccessResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Leave a club",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user-member"
-                ],
-                "summary": "Leave a club",
-                "operationId": "delete-membership",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "userID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Club ID",
-                        "name": "clubID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content",
-                        "schema": {
-                            "$ref": "#/definitions/utilities.SuccessResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -3987,7 +3080,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UpdatePasswordRequestBody"
+                            "$ref": "#/definitions/auth.UpdatePasswordRequestBody"
                         }
                     }
                 ],
@@ -4000,27 +3093,19 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
@@ -4057,27 +3142,19 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             },
@@ -4108,7 +3185,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/tag.CreateUserTagsBody"
+                            "$ref": "#/definitions/tags.CreateUserTagsBody"
                         }
                     }
                 ],
@@ -4124,27 +3201,19 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             },
@@ -4176,278 +3245,62 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/errors.Error"
-                        }
+                        "schema": {}
                     }
                 }
             }
         }
     },
     "definitions": {
-        "errors.Error": {
+        "auth.LoginResponseBody": {
             "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
             "properties": {
-                "message": {
+                "email": {
                     "type": "string"
                 },
-                "statusCode": {
-                    "type": "integer"
+                "password": {
+                    "description": "MARK: must be validated manually",
+                    "type": "string",
+                    "maxLength": 255
                 }
             }
         },
-        "models.Category": {
+        "auth.UpdatePasswordRequestBody": {
             "type": "object",
             "required": [
-                "name"
+                "new_password",
+                "old_password"
             ],
             "properties": {
-                "created_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                },
-                "id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
-                },
-                "name": {
+                "new_password": {
+                    "description": "MARK: must be validated manually",
                     "type": "string",
                     "maxLength": 255
                 },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                }
-            }
-        },
-        "models.CategoryRequestBody": {
-            "type": "object",
-            "required": [
-                "name"
-            ],
-            "properties": {
-                "name": {
+                "old_password": {
+                    "description": "MARK: must be validated manually",
                     "type": "string",
                     "maxLength": 255
                 }
             }
         },
-        "models.Club": {
-            "type": "object",
-            "required": [
-                "application_link",
-                "description",
-                "is_recruiting",
-                "name",
-                "num_members",
-                "preview",
-                "recruitment_cycle",
-                "recruitment_type"
-            ],
-            "properties": {
-                "application_link": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "created_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                },
-                "description": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
-                },
-                "is_recruiting": {
-                    "type": "boolean"
-                },
-                "logo": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "num_members": {
-                    "type": "integer",
-                    "minimum": 1
-                },
-                "one_word_to_describe_us": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "preview": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "recruitment_cycle": {
-                    "maxLength": 255,
-                    "enum": [
-                        "fall",
-                        "spring",
-                        "fallSpring",
-                        "always"
-                    ],
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.RecruitmentCycle"
-                        }
-                    ]
-                },
-                "recruitment_type": {
-                    "maxLength": 255,
-                    "enum": [
-                        "unrestricted",
-                        "tryout",
-                        "application"
-                    ],
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.RecruitmentType"
-                        }
-                    ]
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                },
-                "weekly_time_commitment": {
-                    "type": "integer",
-                    "minimum": 1
-                }
-            }
-        },
-        "models.College": {
-            "type": "string",
-            "enum": [
-                "CAMD",
-                "DMSB",
-                "KCCS",
-                "CE",
-                "BCHS",
-                "SL",
-                "CPS",
-                "CS",
-                "CSSH"
-            ],
-            "x-enum-comments": {
-                "BCHS": "Bouvé College of Health Sciences",
-                "CAMD": "College of Arts, Media and Design",
-                "CE": "College of Engineering",
-                "CPS": "College of Professional Studies",
-                "CS": "College of Science",
-                "CSSH": "College of Social Sciences and Humanities",
-                "DMSB": "D'Amore-McKim School of Business",
-                "KCCS": "Khoury College of Computer Sciences",
-                "SL": "School of Law"
-            },
-            "x-enum-varnames": [
-                "CAMD",
-                "DMSB",
-                "KCCS",
-                "CE",
-                "BCHS",
-                "SL",
-                "CPS",
-                "CS",
-                "CSSH"
-            ]
-        },
-        "models.Contact": {
-            "type": "object",
-            "required": [
-                "content",
-                "type"
-            ],
-            "properties": {
-                "content": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "created_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                },
-                "id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
-                },
-                "type": {
-                    "maxLength": 255,
-                    "enum": [
-                        "facebook",
-                        "instagram",
-                        "x",
-                        "linkedin",
-                        "youtube",
-                        "github",
-                        "slack",
-                        "discord",
-                        "email",
-                        "customSite"
-                    ],
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.ContactType"
-                        }
-                    ]
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                }
-            }
-        },
-        "models.ContactType": {
-            "type": "string",
-            "enum": [
-                "facebook",
-                "instagram",
-                "x",
-                "linkedin",
-                "youtube",
-                "github",
-                "slack",
-                "discord",
-                "email",
-                "customSite"
-            ],
-            "x-enum-varnames": [
-                "Facebook",
-                "Instagram",
-                "X",
-                "LinkedIn",
-                "YouTube",
-                "GitHub",
-                "Slack",
-                "Discord",
-                "Email",
-                "CustomSite"
-            ]
-        },
-        "models.CreateClubRequestBody": {
+        "base.CreateClubRequestBody": {
             "type": "object",
             "required": [
                 "application_link",
@@ -4523,86 +3376,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.CreateClubTagsRequestBody": {
-            "type": "object",
-            "required": [
-                "tags"
-            ],
-            "properties": {
-                "tags": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "models.CreateEventRequestBody": {
-            "type": "object",
-            "required": [
-                "content",
-                "end_time",
-                "event_type",
-                "host",
-                "is_recurring",
-                "location",
-                "name",
-                "preview",
-                "start_time"
-            ],
-            "properties": {
-                "content": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "end_time": {
-                    "type": "string"
-                },
-                "event_type": {
-                    "maxLength": 255,
-                    "enum": [
-                        "open",
-                        "membersOnly"
-                    ],
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.EventType"
-                        }
-                    ]
-                },
-                "host": {
-                    "description": "TODO club/tag/notification logic",
-                    "type": "string"
-                },
-                "is_recurring": {
-                    "type": "boolean"
-                },
-                "location": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "preview": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "series": {
-                    "description": "TODO validate if isRecurring, then series is required",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.CreateSeriesRequestBody"
-                        }
-                    ]
-                },
-                "start_time": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.CreateFileRequestBody": {
+        "base.CreateFileRequestBody": {
             "type": "object",
             "required": [
                 "owner_id",
@@ -4618,33 +3392,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.CreateSeriesRequestBody": {
-            "type": "object",
-            "required": [
-                "max_occurrences",
-                "recurring_type"
-            ],
-            "properties": {
-                "max_occurrences": {
-                    "type": "integer",
-                    "minimum": 2
-                },
-                "recurring_type": {
-                    "maxLength": 255,
-                    "enum": [
-                        "daily",
-                        "weekly",
-                        "monthly"
-                    ],
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.RecurringType"
-                        }
-                    ]
-                }
-            }
-        },
-        "models.CreateTagRequestBody": {
+        "base.CreateTagRequestBody": {
             "type": "object",
             "required": [
                 "category_id",
@@ -4660,7 +3408,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.CreateUserRequestBody": {
+        "base.CreateUserRequestBody": {
             "type": "object",
             "required": [
                 "email",
@@ -5052,540 +3800,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Event": {
-            "type": "object",
-            "required": [
-                "content",
-                "end_time",
-                "event_type",
-                "location",
-                "name",
-                "preview",
-                "start_time"
-            ],
-            "properties": {
-                "content": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "created_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                },
-                "end_time": {
-                    "type": "string"
-                },
-                "event_type": {
-                    "maxLength": 255,
-                    "enum": [
-                        "open",
-                        "membersOnly"
-                    ],
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.EventType"
-                        }
-                    ]
-                },
-                "host": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
-                },
-                "is_recurring": {
-                    "type": "boolean"
-                },
-                "location": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "meeting_link": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "preview": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "start_time": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                }
-            }
-        },
-        "models.EventType": {
-            "type": "string",
-            "enum": [
-                "open",
-                "membersOnly"
-            ],
-            "x-enum-varnames": [
-                "Open",
-                "MembersOnly"
-            ]
-        },
-        "models.File": {
-            "type": "object",
-            "required": [
-                "file_name",
-                "file_size",
-                "file_type",
-                "file_url",
-                "object_key"
-            ],
-            "properties": {
-                "created_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                },
-                "file_name": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "file_size": {
-                    "type": "integer",
-                    "minimum": 1
-                },
-                "file_type": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "file_url": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
-                },
-                "object_key": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                }
-            }
-        },
-        "models.GraduationCycle": {
-            "type": "string",
-            "enum": [
-                "december",
-                "may"
-            ],
-            "x-enum-varnames": [
-                "December",
-                "May"
-            ]
-        },
-        "models.LoginUserResponseBody": {
-            "type": "object",
-            "required": [
-                "email",
-                "password"
-            ],
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "password": {
-                    "description": "MARK: must be validated manually",
-                    "type": "string",
-                    "maxLength": 255
-                }
-            }
-        },
-        "models.Major": {
-            "type": "string",
-            "enum": [
-                "africanaStudies",
-                "americanSignLanguage",
-                "americanSignLanguage-EnglishInterpreting",
-                "appliedPhysics",
-                "architecturalStudies",
-                "architecture",
-                "art:ArtVisualStudies",
-                "behavioralNeuroscience",
-                "biochemistry",
-                "bioengineering",
-                "biology",
-                "biomedicalPhysics",
-                "businessAdministration",
-                "businessAdministration:Accounting",
-                "businessAdministration:AccountingAndAdvisoryServices",
-                "businessAdministration:BrandManagement",
-                "businessAdministration:BusinessAnalytics",
-                "businessAdministration:CorporateInnovation",
-                "businessAdministration:EntrepreneurialStartups",
-                "businessAdministration:FamilyBusiness",
-                "businessAdministration:Finance",
-                "businessAdministration:Fintech",
-                "businessAdministration:HealthcareManagementAndConsulting",
-                "businessAdministration:Management",
-                "businessAdministration:ManagementInformationSystems",
-                "businessAdministration:Marketing",
-                "businessAdministration:MarketingAnalytics",
-                "businessAdministration:SocialInnovationAndEntrepreneurship",
-                "businessAdministration:SupplyChainManagement",
-                "cellAndMolecularBiology",
-                "chemicalEngineering",
-                "chemistry",
-                "civilEngineering",
-                "communicationStudies",
-                "computerEngineering",
-                "computerScience",
-                "computingAndLaw",
-                "criminologyAndCriminalJustice",
-                "culturalAnthropology",
-                "cybersecurity",
-                "dataScience",
-                "design",
-                "economics",
-                "electricalEngineering",
-                "english",
-                "environmentalAndSustainabilityStudies",
-                "environmentalEngineering",
-                "environmentalScience",
-                "environmentalStudies",
-                "gameArtAndAnimation",
-                "gameDesign",
-                "globalAsianStudies",
-                "healthScience",
-                "history",
-                "historyCultureAndLaw",
-                "humanServices",
-                "industrialEngineering",
-                "internationalAffairs",
-                "internationalBusiness",
-                "internationalBusiness:Accounting",
-                "internationalBusiness:AccountingAndAdvisoryServices",
-                "internationalBusiness:BrandManagement",
-                "internationalBusiness:BusinessAnalytics",
-                "internationalBusiness:CorporateInnovation",
-                "internationalBusiness:EntrepreneurialStartups",
-                "internationalBusiness:FamilyBusiness",
-                "internationalBusiness:Finance",
-                "internationalBusiness:Fintech",
-                "internationalBusiness:HealthcareManagementAndConsulting",
-                "internationalBusiness:Management",
-                "internationalBusiness:ManagementInformationSystems",
-                "internationalBusiness:Marketing",
-                "internationalBusiness:MarketingAnalytics",
-                "internationalBusiness:SocialInnovationAndEntrepreneurship",
-                "internationalBusiness:SupplyChainManagement",
-                "journalism",
-                "landscapeArchitecture",
-                "linguistics",
-                "marineBiology",
-                "mathematics",
-                "mechanicalEngineering",
-                "mediaAndScreenStudies",
-                "mediaArts",
-                "music",
-                "musicTechnology",
-                "nursing",
-                "pharmaceuticalSciences",
-                "pharmacy(PharmD)",
-                "philosophy",
-                "physics",
-                "politicalScience",
-                "politicsPhilosophyEconomics",
-                "psychology",
-                "publicHealth",
-                "publicRelations",
-                "religiousStudies",
-                "sociology",
-                "spanish",
-                "speechLanguagePathologyAndAudiology",
-                "theatre"
-            ],
-            "x-enum-varnames": [
-                "AfricanaStudies",
-                "AmericanSignLanguage",
-                "AmericanSignLanguageEnglishInterpreting",
-                "AppliedPhysics",
-                "ArchitecturalStudies",
-                "Architecture",
-                "ArtArtVisualStudies",
-                "BehavioralNeuroscience",
-                "Biochemistry",
-                "Bioengineering",
-                "Biology",
-                "BiomedicalPhysics",
-                "BusinessAdministration",
-                "BusinessAdministrationAccounting",
-                "BusinessAdministrationAccountingAndAdvisoryServices",
-                "BusinessAdministrationBrandManagement",
-                "BusinessAdministrationBusinessAnalytics",
-                "BusinessAdministrationCorporateInnovation",
-                "BusinessAdministrationEntrepreneurialStartups",
-                "BusinessAdministrationFamilyBusiness",
-                "BusinessAdministrationFinance",
-                "BusinessAdministrationFintech",
-                "BusinessAdministrationHealthcareManagementAndConsulting",
-                "BusinessAdministrationManagement",
-                "BusinessAdministrationManagementInformationSystems",
-                "BusinessAdministrationMarketing",
-                "BusinessAdministrationMarketingAnalytics",
-                "BusinessAdministrationSocialInnovationAndEntrepreneurship",
-                "BusinessAdministrationSupplyChainManagement",
-                "CellAndMolecularBiology",
-                "ChemicalEngineering",
-                "Chemistry",
-                "CivilEngineering",
-                "CommunicationStudies",
-                "ComputerEngineering",
-                "ComputerScience",
-                "ComputingAndLaw",
-                "CriminologyAndCriminalJustice",
-                "CulturalAnthropology",
-                "Cybersecurity",
-                "DataScience",
-                "Design",
-                "Economics",
-                "ElectricalEngineering",
-                "English",
-                "EnvironmentalAndSustainabilityStudies",
-                "EnvironmentalEngineering",
-                "EnvironmentalScience",
-                "EnvironmentalStudies",
-                "GameArtAndAnimation",
-                "GameDesign",
-                "GlobalAsianStudies",
-                "HealthScience",
-                "History",
-                "HistoryCultureAndLaw",
-                "HumanServices",
-                "IndustrialEngineering",
-                "InternationalAffairs",
-                "InternationalBusiness",
-                "InternationalBusinessAccounting",
-                "InternationalBusinessAccountingAndAdvisoryServices",
-                "InternationalBusinessBrandManagement",
-                "InternationalBusinessBusinessAnalytics",
-                "InternationalBusinessCorporateInnovation",
-                "InternationalBusinessEntrepreneurialStartups",
-                "InternationalBusinessFamilyBusiness",
-                "InternationalBusinessFinance",
-                "InternationalBusinessFintech",
-                "InternationalBusinessHealthcareManagementAndConsulting",
-                "InternationalBusinessManagement",
-                "InternationalBusinessManagementInformationSystems",
-                "InternationalBusinessMarketing",
-                "InternationalBusinessMarketingAnalytics",
-                "InternationalBusinessSocialInnovationAndEntrepreneurship",
-                "InternationalBusinessSupplyChainManagement",
-                "Journalism",
-                "LandscapeArchitecture",
-                "Linguistics",
-                "MarineBiology",
-                "Mathematics",
-                "MechanicalEngineering",
-                "MediaAndScreenStudies",
-                "MediaArts",
-                "Music",
-                "MusicTechnology",
-                "Nursing",
-                "PharmaceuticalSciences",
-                "PharmacyPharmD",
-                "Philosophy",
-                "Physics",
-                "PoliticalScience",
-                "PoliticsPhilosophyEconomics",
-                "Psychology",
-                "PublicHealth",
-                "PublicRelations",
-                "ReligiousStudies",
-                "Sociology",
-                "Spanish",
-                "SpeechLanguagePathologyAndAudiology",
-                "Theatre"
-            ]
-        },
-        "models.PointOfContact": {
-            "type": "object",
-            "required": [
-                "email",
-                "name",
-                "position"
-            ],
-            "properties": {
-                "created_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                },
-                "email": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "photo_file": {
-                    "$ref": "#/definitions/models.File"
-                },
-                "position": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                }
-            }
-        },
-        "models.PutContactRequestBody": {
-            "type": "object",
-            "required": [
-                "content",
-                "type"
-            ],
-            "properties": {
-                "content": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "type": {
-                    "maxLength": 255,
-                    "enum": [
-                        "facebook",
-                        "instagram",
-                        "x",
-                        "linkedin",
-                        "youtube",
-                        "github",
-                        "slack",
-                        "discord",
-                        "email",
-                        "customSite"
-                    ],
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.ContactType"
-                        }
-                    ]
-                }
-            }
-        },
-        "models.RecruitmentCycle": {
-            "type": "string",
-            "enum": [
-                "fall",
-                "spring",
-                "fallSpring",
-                "always"
-            ],
-            "x-enum-varnames": [
-                "Fall",
-                "Spring",
-                "FallSpring",
-                "Always"
-            ]
-        },
-        "models.RecruitmentType": {
-            "type": "string",
-            "enum": [
-                "unrestricted",
-                "tryout",
-                "application"
-            ],
-            "x-enum-varnames": [
-                "Unrestricted",
-                "Tryout",
-                "Application"
-            ]
-        },
-        "models.RecurringType": {
-            "type": "string",
-            "enum": [
-                "daily",
-                "weekly",
-                "monthly"
-            ],
-            "x-enum-varnames": [
-                "Daily",
-                "Weekly",
-                "Monthly"
-            ]
-        },
-        "models.Series": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                },
-                "events": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Event"
-                    }
-                },
-                "id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
-                },
-                "max_occurrences": {
-                    "type": "integer",
-                    "minimum": 1
-                },
-                "recurring_type": {
-                    "maxLength": 255,
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.RecurringType"
-                        }
-                    ]
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                }
-            }
-        },
-        "models.Tag": {
-            "type": "object",
-            "required": [
-                "category_id",
-                "name"
-            ],
-            "properties": {
-                "category_id": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                },
-                "id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                }
-            }
-        },
-        "models.UpdateClubRequestBody": {
+        "base.UpdateClubRequestBody": {
             "type": "object",
             "required": [
                 "application_link",
@@ -5653,93 +3868,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.UpdateEventRequestBody": {
-            "type": "object",
-            "properties": {
-                "content": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "end_time": {
-                    "type": "string"
-                },
-                "event_type": {
-                    "maxLength": 255,
-                    "enum": [
-                        "open",
-                        "membersOnly"
-                    ],
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.EventType"
-                        }
-                    ]
-                },
-                "host": {
-                    "type": "string"
-                },
-                "location": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "preview": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "start_time": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.UpdatePasswordRequestBody": {
-            "type": "object",
-            "required": [
-                "new_password",
-                "old_password"
-            ],
-            "properties": {
-                "new_password": {
-                    "description": "MARK: must be validated manually",
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "old_password": {
-                    "description": "MARK: must be validated manually",
-                    "type": "string",
-                    "maxLength": 255
-                }
-            }
-        },
-        "models.UpdateSeriesRequestBody": {
-            "type": "object",
-            "properties": {
-                "event_details": {
-                    "$ref": "#/definitions/models.UpdateEventRequestBody"
-                },
-                "max_occurrences": {
-                    "type": "integer",
-                    "minimum": 2
-                },
-                "recurring_type": {
-                    "maxLength": 255,
-                    "enum": [
-                        "daily",
-                        "weekly",
-                        "monthly"
-                    ],
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.RecurringType"
-                        }
-                    ]
-                }
-            }
-        },
-        "models.UpdateTagRequestBody": {
+        "base.UpdateTagRequestBody": {
             "type": "object",
             "properties": {
                 "category_id": {
@@ -5751,7 +3880,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.UpdateUserRequestBody": {
+        "base.UpdateUserRequestBody": {
             "type": "object",
             "properties": {
                 "college": {
@@ -6127,409 +4256,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.User": {
-            "type": "object",
-            "required": [
-                "college",
-                "email",
-                "first_name",
-                "graduation_cycle",
-                "graduation_year",
-                "last_name",
-                "major0",
-                "role"
-            ],
-            "properties": {
-                "college": {
-                    "maxLength": 255,
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.College"
-                        }
-                    ]
-                },
-                "created_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                },
-                "email": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "first_name": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "graduation_cycle": {
-                    "maxLength": 255,
-                    "enum": [
-                        "december",
-                        "may"
-                    ],
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.GraduationCycle"
-                        }
-                    ]
-                },
-                "graduation_year": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
-                },
-                "is_verified": {
-                    "type": "boolean"
-                },
-                "last_name": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "major0": {
-                    "maxLength": 255,
-                    "enum": [
-                        "africanaStudies",
-                        "americanSignLanguage",
-                        "americanSignLanguage-EnglishInterpreting",
-                        "appliedPhysics",
-                        "architecturalStudies",
-                        "architecture",
-                        "art:ArtVisualStudies",
-                        "behavioralNeuroscience",
-                        "biochemistry",
-                        "bioengineering",
-                        "biology",
-                        "biomedicalPhysics",
-                        "businessAdministration",
-                        "businessAdministration:Accounting",
-                        "businessAdministration:AccountingAndAdvisoryServices",
-                        "businessAdministration:BrandManagement",
-                        "businessAdministration:BusinessAnalytics",
-                        "businessAdministration:CorporateInnovation",
-                        "businessAdministration:EntrepreneurialStartups",
-                        "businessAdministration:FamilyBusiness",
-                        "businessAdministration:Finance",
-                        "businessAdministration:Fintech",
-                        "businessAdministration:HealthcareManagementAndConsulting",
-                        "businessAdministration:Management",
-                        "businessAdministration:ManagementInformationSystems",
-                        "businessAdministration:Marketing",
-                        "businessAdministration:MarketingAnalytics",
-                        "businessAdministration:SocialInnovationAndEntrepreneurship",
-                        "businessAdministration:SupplyChainManagement",
-                        "cellAndMolecularBiology",
-                        "chemicalEngineering",
-                        "chemistry",
-                        "civilEngineering",
-                        "communicationStudies",
-                        "computerEngineering",
-                        "computerScience",
-                        "computingAndLaw",
-                        "criminologyAndCriminalJustice",
-                        "culturalAnthropology",
-                        "cybersecurity",
-                        "dataScience",
-                        "design",
-                        "economics",
-                        "electricalEngineering",
-                        "english",
-                        "environmentalAndSustainabilityStudies",
-                        "environmentalEngineering",
-                        "environmentalScience",
-                        "environmentalStudies",
-                        "gameArtAndAnimation",
-                        "gameDesign",
-                        "globalAsianStudies",
-                        "healthScience",
-                        "history",
-                        "historyCultureAndLaw",
-                        "humanServices",
-                        "industrialEngineering",
-                        "internationalAffairs",
-                        "internationalBusiness",
-                        "internationalBusiness:Accounting",
-                        "internationalBusiness:AccountingAndAdvisoryServices",
-                        "internationalBusiness:BrandManagement",
-                        "internationalBusiness:BusinessAnalytics",
-                        "internationalBusiness:CorporateInnovation",
-                        "internationalBusiness:EntrepreneurialStartups",
-                        "internationalBusiness:FamilyBusiness",
-                        "internationalBusiness:Finance",
-                        "internationalBusiness:Fintech",
-                        "internationalBusiness:HealthcareManagementAndConsulting",
-                        "internationalBusiness:Management",
-                        "internationalBusiness:ManagementInformationSystems",
-                        "internationalBusiness:Marketing",
-                        "internationalBusiness:MarketingAnalytics",
-                        "internationalBusiness:SocialInnovationAndEntrepreneurship",
-                        "internationalBusiness:SupplyChainManagement",
-                        "journalism",
-                        "landscapeArchitecture",
-                        "linguistics",
-                        "marineBiology",
-                        "mathematics",
-                        "mechanicalEngineering",
-                        "mediaAndScreenStudies",
-                        "mediaArts",
-                        "music",
-                        "musicTechnology",
-                        "nursing",
-                        "pharmaceuticalSciences",
-                        "pharmacy(PharmD)",
-                        "philosophy",
-                        "physics",
-                        "politicalScience",
-                        "politicsPhilosophyEconomics",
-                        "psychology",
-                        "publicHealth",
-                        "publicRelations",
-                        "religiousStudies",
-                        "sociology",
-                        "spanish",
-                        "speechLanguagePathologyAndAudiology",
-                        "theatre"
-                    ],
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.Major"
-                        }
-                    ]
-                },
-                "major1": {
-                    "maxLength": 255,
-                    "enum": [
-                        "africanaStudies",
-                        "americanSignLanguage",
-                        "americanSignLanguage-EnglishInterpreting",
-                        "appliedPhysics",
-                        "architecturalStudies",
-                        "architecture",
-                        "art:ArtVisualStudies",
-                        "behavioralNeuroscience",
-                        "biochemistry",
-                        "bioengineering",
-                        "biology",
-                        "biomedicalPhysics",
-                        "businessAdministration",
-                        "businessAdministration:Accounting",
-                        "businessAdministration:AccountingAndAdvisoryServices",
-                        "businessAdministration:BrandManagement",
-                        "businessAdministration:BusinessAnalytics",
-                        "businessAdministration:CorporateInnovation",
-                        "businessAdministration:EntrepreneurialStartups",
-                        "businessAdministration:FamilyBusiness",
-                        "businessAdministration:Finance",
-                        "businessAdministration:Fintech",
-                        "businessAdministration:HealthcareManagementAndConsulting",
-                        "businessAdministration:Management",
-                        "businessAdministration:ManagementInformationSystems",
-                        "businessAdministration:Marketing",
-                        "businessAdministration:MarketingAnalytics",
-                        "businessAdministration:SocialInnovationAndEntrepreneurship",
-                        "businessAdministration:SupplyChainManagement",
-                        "cellAndMolecularBiology",
-                        "chemicalEngineering",
-                        "chemistry",
-                        "civilEngineering",
-                        "communicationStudies",
-                        "computerEngineering",
-                        "computerScience",
-                        "computingAndLaw",
-                        "criminologyAndCriminalJustice",
-                        "culturalAnthropology",
-                        "cybersecurity",
-                        "dataScience",
-                        "design",
-                        "economics",
-                        "electricalEngineering",
-                        "english",
-                        "environmentalAndSustainabilityStudies",
-                        "environmentalEngineering",
-                        "environmentalScience",
-                        "environmentalStudies",
-                        "gameArtAndAnimation",
-                        "gameDesign",
-                        "globalAsianStudies",
-                        "healthScience",
-                        "history",
-                        "historyCultureAndLaw",
-                        "humanServices",
-                        "industrialEngineering",
-                        "internationalAffairs",
-                        "internationalBusiness",
-                        "internationalBusiness:Accounting",
-                        "internationalBusiness:AccountingAndAdvisoryServices",
-                        "internationalBusiness:BrandManagement",
-                        "internationalBusiness:BusinessAnalytics",
-                        "internationalBusiness:CorporateInnovation",
-                        "internationalBusiness:EntrepreneurialStartups",
-                        "internationalBusiness:FamilyBusiness",
-                        "internationalBusiness:Finance",
-                        "internationalBusiness:Fintech",
-                        "internationalBusiness:HealthcareManagementAndConsulting",
-                        "internationalBusiness:Management",
-                        "internationalBusiness:ManagementInformationSystems",
-                        "internationalBusiness:Marketing",
-                        "internationalBusiness:MarketingAnalytics",
-                        "internationalBusiness:SocialInnovationAndEntrepreneurship",
-                        "internationalBusiness:SupplyChainManagement",
-                        "journalism",
-                        "landscapeArchitecture",
-                        "linguistics",
-                        "marineBiology",
-                        "mathematics",
-                        "mechanicalEngineering",
-                        "mediaAndScreenStudies",
-                        "mediaArts",
-                        "music",
-                        "musicTechnology",
-                        "nursing",
-                        "pharmaceuticalSciences",
-                        "pharmacy(PharmD)",
-                        "philosophy",
-                        "physics",
-                        "politicalScience",
-                        "politicsPhilosophyEconomics",
-                        "psychology",
-                        "publicHealth",
-                        "publicRelations",
-                        "religiousStudies",
-                        "sociology",
-                        "spanish",
-                        "speechLanguagePathologyAndAudiology",
-                        "theatre"
-                    ],
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.Major"
-                        }
-                    ]
-                },
-                "major2": {
-                    "maxLength": 255,
-                    "enum": [
-                        "africanaStudies",
-                        "americanSignLanguage",
-                        "americanSignLanguage-EnglishInterpreting",
-                        "appliedPhysics",
-                        "architecturalStudies",
-                        "architecture",
-                        "art:ArtVisualStudies",
-                        "behavioralNeuroscience",
-                        "biochemistry",
-                        "bioengineering",
-                        "biology",
-                        "biomedicalPhysics",
-                        "businessAdministration",
-                        "businessAdministration:Accounting",
-                        "businessAdministration:AccountingAndAdvisoryServices",
-                        "businessAdministration:BrandManagement",
-                        "businessAdministration:BusinessAnalytics",
-                        "businessAdministration:CorporateInnovation",
-                        "businessAdministration:EntrepreneurialStartups",
-                        "businessAdministration:FamilyBusiness",
-                        "businessAdministration:Finance",
-                        "businessAdministration:Fintech",
-                        "businessAdministration:HealthcareManagementAndConsulting",
-                        "businessAdministration:Management",
-                        "businessAdministration:ManagementInformationSystems",
-                        "businessAdministration:Marketing",
-                        "businessAdministration:MarketingAnalytics",
-                        "businessAdministration:SocialInnovationAndEntrepreneurship",
-                        "businessAdministration:SupplyChainManagement",
-                        "cellAndMolecularBiology",
-                        "chemicalEngineering",
-                        "chemistry",
-                        "civilEngineering",
-                        "communicationStudies",
-                        "computerEngineering",
-                        "computerScience",
-                        "computingAndLaw",
-                        "criminologyAndCriminalJustice",
-                        "culturalAnthropology",
-                        "cybersecurity",
-                        "dataScience",
-                        "design",
-                        "economics",
-                        "electricalEngineering",
-                        "english",
-                        "environmentalAndSustainabilityStudies",
-                        "environmentalEngineering",
-                        "environmentalScience",
-                        "environmentalStudies",
-                        "gameArtAndAnimation",
-                        "gameDesign",
-                        "globalAsianStudies",
-                        "healthScience",
-                        "history",
-                        "historyCultureAndLaw",
-                        "humanServices",
-                        "industrialEngineering",
-                        "internationalAffairs",
-                        "internationalBusiness",
-                        "internationalBusiness:Accounting",
-                        "internationalBusiness:AccountingAndAdvisoryServices",
-                        "internationalBusiness:BrandManagement",
-                        "internationalBusiness:BusinessAnalytics",
-                        "internationalBusiness:CorporateInnovation",
-                        "internationalBusiness:EntrepreneurialStartups",
-                        "internationalBusiness:FamilyBusiness",
-                        "internationalBusiness:Finance",
-                        "internationalBusiness:Fintech",
-                        "internationalBusiness:HealthcareManagementAndConsulting",
-                        "internationalBusiness:Management",
-                        "internationalBusiness:ManagementInformationSystems",
-                        "internationalBusiness:Marketing",
-                        "internationalBusiness:MarketingAnalytics",
-                        "internationalBusiness:SocialInnovationAndEntrepreneurship",
-                        "internationalBusiness:SupplyChainManagement",
-                        "journalism",
-                        "landscapeArchitecture",
-                        "linguistics",
-                        "marineBiology",
-                        "mathematics",
-                        "mechanicalEngineering",
-                        "mediaAndScreenStudies",
-                        "mediaArts",
-                        "music",
-                        "musicTechnology",
-                        "nursing",
-                        "pharmaceuticalSciences",
-                        "pharmacy(PharmD)",
-                        "philosophy",
-                        "physics",
-                        "politicalScience",
-                        "politicsPhilosophyEconomics",
-                        "psychology",
-                        "publicHealth",
-                        "publicRelations",
-                        "religiousStudies",
-                        "sociology",
-                        "spanish",
-                        "speechLanguagePathologyAndAudiology",
-                        "theatre"
-                    ],
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.Major"
-                        }
-                    ]
-                },
-                "role": {
-                    "type": "string",
-                    "enum": [
-                        "super",
-                        "student"
-                    ]
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                }
-            }
-        },
-        "models.VerifyEmailRequestBody": {
+        "base.VerifyEmailRequestBody": {
             "type": "object",
             "required": [
                 "email",
@@ -6544,7 +4271,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.VerifyPasswordResetTokenRequestBody": {
+        "base.VerifyPasswordResetTokenRequestBody": {
             "type": "object",
             "required": [
                 "new_password",
@@ -6565,7 +4292,676 @@ const docTemplate = `{
                 }
             }
         },
-        "tag.CreateUserTagsBody": {
+        "categories.CategoryRequestBody": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "maxLength": 255
+                }
+            }
+        },
+        "contacts.PutContactRequestBody": {
+            "type": "object",
+            "required": [
+                "content",
+                "type"
+            ],
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "type": {
+                    "maxLength": 255,
+                    "enum": [
+                        "facebook",
+                        "instagram",
+                        "x",
+                        "linkedin",
+                        "youtube",
+                        "github",
+                        "slack",
+                        "discord",
+                        "email",
+                        "customSite"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.ContactType"
+                        }
+                    ]
+                }
+            }
+        },
+        "models.Category": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2023-09-20T16:34:50Z"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2023-09-20T16:34:50Z"
+                }
+            }
+        },
+        "models.Club": {
+            "type": "object",
+            "properties": {
+                "application_link": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2023-09-20T16:34:50Z"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "is_recruiting": {
+                    "type": "boolean"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "num_members": {
+                    "type": "integer"
+                },
+                "one_word_to_describe_us": {
+                    "type": "string"
+                },
+                "preview": {
+                    "type": "string"
+                },
+                "recruitment_cycle": {
+                    "$ref": "#/definitions/models.RecruitmentCycle"
+                },
+                "recruitment_type": {
+                    "$ref": "#/definitions/models.RecruitmentType"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2023-09-20T16:34:50Z"
+                },
+                "weekly_time_commitment": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.College": {
+            "type": "string",
+            "enum": [
+                "CAMD",
+                "DMSB",
+                "KCCS",
+                "CE",
+                "BCHS",
+                "SL",
+                "CPS",
+                "CS",
+                "CSSH"
+            ],
+            "x-enum-comments": {
+                "BCHS": "Bouvé College of Health Sciences",
+                "CAMD": "College of Arts, Media and Design",
+                "CE": "College of Engineering",
+                "CPS": "College of Professional Studies",
+                "CS": "College of Science",
+                "CSSH": "College of Social Sciences and Humanities",
+                "DMSB": "D'Amore-McKim School of Business",
+                "KCCS": "Khoury College of Computer Sciences",
+                "SL": "School of Law"
+            },
+            "x-enum-varnames": [
+                "CAMD",
+                "DMSB",
+                "KCCS",
+                "CE",
+                "BCHS",
+                "SL",
+                "CPS",
+                "CS",
+                "CSSH"
+            ]
+        },
+        "models.Contact": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2023-09-20T16:34:50Z"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "type": {
+                    "$ref": "#/definitions/models.ContactType"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2023-09-20T16:34:50Z"
+                }
+            }
+        },
+        "models.ContactType": {
+            "type": "string",
+            "enum": [
+                "facebook",
+                "instagram",
+                "x",
+                "linkedin",
+                "youtube",
+                "github",
+                "slack",
+                "discord",
+                "email",
+                "customSite"
+            ],
+            "x-enum-varnames": [
+                "Facebook",
+                "Instagram",
+                "X",
+                "LinkedIn",
+                "YouTube",
+                "GitHub",
+                "Slack",
+                "Discord",
+                "Email",
+                "CustomSite"
+            ]
+        },
+        "models.Event": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2023-09-20T16:34:50Z"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "event_type": {
+                    "description": "geoshi",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.EventType"
+                        }
+                    ]
+                },
+                "host": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "is_archived": {
+                    "type": "boolean"
+                },
+                "is_draft": {
+                    "type": "boolean"
+                },
+                "is_public": {
+                    "description": "internal housekeeping states",
+                    "type": "boolean"
+                },
+                "link": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "name": {
+                    "description": "details",
+                    "type": "string"
+                },
+                "preview": {
+                    "type": "string"
+                },
+                "start_time": {
+                    "description": "timing",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2023-09-20T16:34:50Z"
+                }
+            }
+        },
+        "models.EventType": {
+            "type": "string",
+            "enum": [
+                "hybrid",
+                "in_person",
+                "virtual"
+            ],
+            "x-enum-varnames": [
+                "Hybrid",
+                "InPerson",
+                "Virtual"
+            ]
+        },
+        "models.File": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2023-09-20T16:34:50Z"
+                },
+                "file_name": {
+                    "type": "string"
+                },
+                "file_size": {
+                    "type": "integer"
+                },
+                "file_type": {
+                    "type": "string"
+                },
+                "file_url": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "object_key": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2023-09-20T16:34:50Z"
+                }
+            }
+        },
+        "models.GraduationCycle": {
+            "type": "string",
+            "enum": [
+                "december",
+                "may"
+            ],
+            "x-enum-varnames": [
+                "December",
+                "May"
+            ]
+        },
+        "models.Major": {
+            "type": "string",
+            "enum": [
+                "africanaStudies",
+                "americanSignLanguage",
+                "americanSignLanguage-EnglishInterpreting",
+                "appliedPhysics",
+                "architecturalStudies",
+                "architecture",
+                "art:ArtVisualStudies",
+                "behavioralNeuroscience",
+                "biochemistry",
+                "bioengineering",
+                "biology",
+                "biomedicalPhysics",
+                "businessAdministration",
+                "businessAdministration:Accounting",
+                "businessAdministration:AccountingAndAdvisoryServices",
+                "businessAdministration:BrandManagement",
+                "businessAdministration:BusinessAnalytics",
+                "businessAdministration:CorporateInnovation",
+                "businessAdministration:EntrepreneurialStartups",
+                "businessAdministration:FamilyBusiness",
+                "businessAdministration:Finance",
+                "businessAdministration:Fintech",
+                "businessAdministration:HealthcareManagementAndConsulting",
+                "businessAdministration:Management",
+                "businessAdministration:ManagementInformationSystems",
+                "businessAdministration:Marketing",
+                "businessAdministration:MarketingAnalytics",
+                "businessAdministration:SocialInnovationAndEntrepreneurship",
+                "businessAdministration:SupplyChainManagement",
+                "cellAndMolecularBiology",
+                "chemicalEngineering",
+                "chemistry",
+                "civilEngineering",
+                "communicationStudies",
+                "computerEngineering",
+                "computerScience",
+                "computingAndLaw",
+                "criminologyAndCriminalJustice",
+                "culturalAnthropology",
+                "cybersecurity",
+                "dataScience",
+                "design",
+                "economics",
+                "electricalEngineering",
+                "english",
+                "environmentalAndSustainabilityStudies",
+                "environmentalEngineering",
+                "environmentalScience",
+                "environmentalStudies",
+                "gameArtAndAnimation",
+                "gameDesign",
+                "globalAsianStudies",
+                "healthScience",
+                "history",
+                "historyCultureAndLaw",
+                "humanServices",
+                "industrialEngineering",
+                "internationalAffairs",
+                "internationalBusiness",
+                "internationalBusiness:Accounting",
+                "internationalBusiness:AccountingAndAdvisoryServices",
+                "internationalBusiness:BrandManagement",
+                "internationalBusiness:BusinessAnalytics",
+                "internationalBusiness:CorporateInnovation",
+                "internationalBusiness:EntrepreneurialStartups",
+                "internationalBusiness:FamilyBusiness",
+                "internationalBusiness:Finance",
+                "internationalBusiness:Fintech",
+                "internationalBusiness:HealthcareManagementAndConsulting",
+                "internationalBusiness:Management",
+                "internationalBusiness:ManagementInformationSystems",
+                "internationalBusiness:Marketing",
+                "internationalBusiness:MarketingAnalytics",
+                "internationalBusiness:SocialInnovationAndEntrepreneurship",
+                "internationalBusiness:SupplyChainManagement",
+                "journalism",
+                "landscapeArchitecture",
+                "linguistics",
+                "marineBiology",
+                "mathematics",
+                "mechanicalEngineering",
+                "mediaAndScreenStudies",
+                "mediaArts",
+                "music",
+                "musicTechnology",
+                "nursing",
+                "pharmaceuticalSciences",
+                "pharmacy(PharmD)",
+                "philosophy",
+                "physics",
+                "politicalScience",
+                "politicsPhilosophyEconomics",
+                "psychology",
+                "publicHealth",
+                "publicRelations",
+                "religiousStudies",
+                "sociology",
+                "spanish",
+                "speechLanguagePathologyAndAudiology",
+                "theatre"
+            ],
+            "x-enum-varnames": [
+                "AfricanaStudies",
+                "AmericanSignLanguage",
+                "AmericanSignLanguageEnglishInterpreting",
+                "AppliedPhysics",
+                "ArchitecturalStudies",
+                "Architecture",
+                "ArtArtVisualStudies",
+                "BehavioralNeuroscience",
+                "Biochemistry",
+                "Bioengineering",
+                "Biology",
+                "BiomedicalPhysics",
+                "BusinessAdministration",
+                "BusinessAdministrationAccounting",
+                "BusinessAdministrationAccountingAndAdvisoryServices",
+                "BusinessAdministrationBrandManagement",
+                "BusinessAdministrationBusinessAnalytics",
+                "BusinessAdministrationCorporateInnovation",
+                "BusinessAdministrationEntrepreneurialStartups",
+                "BusinessAdministrationFamilyBusiness",
+                "BusinessAdministrationFinance",
+                "BusinessAdministrationFintech",
+                "BusinessAdministrationHealthcareManagementAndConsulting",
+                "BusinessAdministrationManagement",
+                "BusinessAdministrationManagementInformationSystems",
+                "BusinessAdministrationMarketing",
+                "BusinessAdministrationMarketingAnalytics",
+                "BusinessAdministrationSocialInnovationAndEntrepreneurship",
+                "BusinessAdministrationSupplyChainManagement",
+                "CellAndMolecularBiology",
+                "ChemicalEngineering",
+                "Chemistry",
+                "CivilEngineering",
+                "CommunicationStudies",
+                "ComputerEngineering",
+                "ComputerScience",
+                "ComputingAndLaw",
+                "CriminologyAndCriminalJustice",
+                "CulturalAnthropology",
+                "Cybersecurity",
+                "DataScience",
+                "Design",
+                "Economics",
+                "ElectricalEngineering",
+                "English",
+                "EnvironmentalAndSustainabilityStudies",
+                "EnvironmentalEngineering",
+                "EnvironmentalScience",
+                "EnvironmentalStudies",
+                "GameArtAndAnimation",
+                "GameDesign",
+                "GlobalAsianStudies",
+                "HealthScience",
+                "History",
+                "HistoryCultureAndLaw",
+                "HumanServices",
+                "IndustrialEngineering",
+                "InternationalAffairs",
+                "InternationalBusiness",
+                "InternationalBusinessAccounting",
+                "InternationalBusinessAccountingAndAdvisoryServices",
+                "InternationalBusinessBrandManagement",
+                "InternationalBusinessBusinessAnalytics",
+                "InternationalBusinessCorporateInnovation",
+                "InternationalBusinessEntrepreneurialStartups",
+                "InternationalBusinessFamilyBusiness",
+                "InternationalBusinessFinance",
+                "InternationalBusinessFintech",
+                "InternationalBusinessHealthcareManagementAndConsulting",
+                "InternationalBusinessManagement",
+                "InternationalBusinessManagementInformationSystems",
+                "InternationalBusinessMarketing",
+                "InternationalBusinessMarketingAnalytics",
+                "InternationalBusinessSocialInnovationAndEntrepreneurship",
+                "InternationalBusinessSupplyChainManagement",
+                "Journalism",
+                "LandscapeArchitecture",
+                "Linguistics",
+                "MarineBiology",
+                "Mathematics",
+                "MechanicalEngineering",
+                "MediaAndScreenStudies",
+                "MediaArts",
+                "Music",
+                "MusicTechnology",
+                "Nursing",
+                "PharmaceuticalSciences",
+                "PharmacyPharmD",
+                "Philosophy",
+                "Physics",
+                "PoliticalScience",
+                "PoliticsPhilosophyEconomics",
+                "Psychology",
+                "PublicHealth",
+                "PublicRelations",
+                "ReligiousStudies",
+                "Sociology",
+                "Spanish",
+                "SpeechLanguagePathologyAndAudiology",
+                "Theatre"
+            ]
+        },
+        "models.PointOfContact": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2023-09-20T16:34:50Z"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "photo_file": {
+                    "$ref": "#/definitions/models.File"
+                },
+                "position": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2023-09-20T16:34:50Z"
+                }
+            }
+        },
+        "models.RecruitmentCycle": {
+            "type": "string",
+            "enum": [
+                "fall",
+                "spring",
+                "fallSpring",
+                "always"
+            ],
+            "x-enum-varnames": [
+                "Fall",
+                "Spring",
+                "FallSpring",
+                "Always"
+            ]
+        },
+        "models.RecruitmentType": {
+            "type": "string",
+            "enum": [
+                "unrestricted",
+                "tryout",
+                "application"
+            ],
+            "x-enum-varnames": [
+                "Unrestricted",
+                "Tryout",
+                "Application"
+            ]
+        },
+        "models.Tag": {
+            "type": "object",
+            "properties": {
+                "category_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2023-09-20T16:34:50Z"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2023-09-20T16:34:50Z"
+                }
+            }
+        },
+        "models.User": {
+            "type": "object",
+            "properties": {
+                "college": {
+                    "$ref": "#/definitions/models.College"
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2023-09-20T16:34:50Z"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "graduation_cycle": {
+                    "$ref": "#/definitions/models.GraduationCycle"
+                },
+                "graduation_year": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "is_verified": {
+                    "type": "boolean"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "major0": {
+                    "$ref": "#/definitions/models.Major"
+                },
+                "major1": {
+                    "$ref": "#/definitions/models.Major"
+                },
+                "major2": {
+                    "$ref": "#/definitions/models.Major"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2023-09-20T16:34:50Z"
+                }
+            }
+        },
+        "tags.CreateClubTagsRequestBody": {
+            "type": "object",
+            "required": [
+                "tags"
+            ],
+            "properties": {
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "tags.CreateUserTagsBody": {
             "type": "object",
             "required": [
                 "tags"

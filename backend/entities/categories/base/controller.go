@@ -1,9 +1,12 @@
 package base
 
 import (
-	"github.com/GenerateNU/sac/backend/constants"
-	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/errors"
+	"net/http"
+
+	"github.com/GenerateNU/sac/backend/entities/categories"
+	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
+
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -23,27 +26,27 @@ func NewCategoryController(categoryService CategoryServiceInterface) *CategoryCo
 // @Tags      	category
 // @Accept		json
 // @Produce		json
-// @Param		categoryBody	body	models.CategoryRequestBody	true	"Category Body"
+// @Param		categoryBody	body	categories.CategoryRequestBody	true	"Category Body"
 // @Success		201	  {object}	  models.Category
-// @Failure     400   {string}    errors.Error
-// @Failure     401   {string}    errors.Error
-// @Failure     404   {string}    errors.Error
-// @Failure     409   {string}    errors.Error
-// @Failure     500   {string}    errors.Error
+// @Failure     400   {string}    error
+// @Failure     401   {string}    error
+// @Failure     404   {string}    error
+// @Failure     409   {string}    error
+// @Failure     500   {string}    error
 // @Router		/categories/  [post]
 func (cat *CategoryController) CreateCategory(c *fiber.Ctx) error {
-	var categoryBody models.CategoryRequestBody
+	var categoryBody categories.CategoryRequestBody
 
 	if err := c.BodyParser(&categoryBody); err != nil {
-		return errors.FailedToParseRequestBody.FiberError(c)
+		return utilities.InvalidJSON()
 	}
 
 	newCategory, err := cat.categoryService.CreateCategory(categoryBody)
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(newCategory)
+	return c.Status(http.StatusCreated).JSON(newCategory)
 }
 
 // GetCategories godoc
@@ -56,17 +59,22 @@ func (cat *CategoryController) CreateCategory(c *fiber.Ctx) error {
 // @Param		limit		query	int	    false	"Limit"
 // @Param		page		query	int	    false	"Page"
 // @Success		200	  {object}	    []models.Category
-// @Failure     400   {string}      errors.Error
-// @Failure     404   {string}      errors.Error
-// @Failure     500   {string}      errors.Error
+// @Failure     400   {string}      error
+// @Failure     404   {string}      error
+// @Failure     500   {string}      error
 // @Router		/categories/  [get]
 func (cat *CategoryController) GetCategories(c *fiber.Ctx) error {
-	categories, err := cat.categoryService.GetCategories(c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING))
-	if err != nil {
-		return err.FiberError(c)
+	pagination, ok := fiberpaginate.FromContext(c)
+	if !ok {
+		return utilities.ErrExpectedPagination
 	}
 
-	return c.Status(fiber.StatusOK).JSON(&categories)
+	categories, err := cat.categoryService.GetCategories(*pagination)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(http.StatusOK).JSON(&categories)
 }
 
 // GetCategory godoc
@@ -78,17 +86,17 @@ func (cat *CategoryController) GetCategories(c *fiber.Ctx) error {
 // @Produce		json
 // @Param		categoryID	path	string	true	"Category ID"
 // @Success		200	  {object}	    models.Category
-// @Failure     400   {string}      errors.Error
-// @Failure     404   {string}      errors.Error
-// @Failure     500   {string}      errors.Error
+// @Failure     400   {string}      error
+// @Failure     404   {string}      error
+// @Failure     500   {string}      error
 // @Router		/categories/{categoryID}/  [get]
 func (cat *CategoryController) GetCategory(c *fiber.Ctx) error {
 	category, err := cat.categoryService.GetCategory(c.Params("categoryID"))
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.Status(fiber.StatusOK).JSON(&category)
+	return c.Status(http.StatusOK).JSON(&category)
 }
 
 // DeleteCategory godoc
@@ -100,17 +108,17 @@ func (cat *CategoryController) GetCategory(c *fiber.Ctx) error {
 // @Produce		json
 // @Param		categoryID	path	string	true	"Category ID"
 // @Success		204	  {string}	    utilities.SuccessResponse
-// @Failure     400   {string}      errors.Error
-// @Failure     401   {string}      errors.Error
-// @Failure     404   {string}      errors.Error
-// @Failure     500   {string}      errors.Error
+// @Failure     400   {string}      error
+// @Failure     401   {string}      error
+// @Failure     404   {string}      error
+// @Failure     500   {string}      error
 // @Router		/categories/{categoryID}/  [delete]
 func (cat *CategoryController) DeleteCategory(c *fiber.Ctx) error {
 	if err := cat.categoryService.DeleteCategory(c.Params("categoryID")); err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.SendStatus(fiber.StatusNoContent)
+	return c.SendStatus(http.StatusNoContent)
 }
 
 // UpdateCategory godoc
@@ -122,24 +130,23 @@ func (cat *CategoryController) DeleteCategory(c *fiber.Ctx) error {
 // @Accept		json
 // @Produce		json
 // @Param		categoryID	path	string	true	"Category ID"
-// @Param		categoryBody	body	models.CategoryRequestBody	true	"Category Body"
+// @Param		categoryBody	body	categories.CategoryRequestBody	true	"Category Body"
 // @Success		200	  {object}	    models.Category
-// @Failure     400   {string}      errors.Error
-// @Failure     401   {string}      errors.Error
-// @Failure     404   {string}      errors.Error
-// @Failure     500   {string}      errors.Error
+// @Failure     400   {string}      error
+// @Failure     401   {string}      error
+// @Failure     404   {string}      error
+// @Failure     500   {string}      error
 // @Router		/categories/{categoryID}/  [patch]
 func (cat *CategoryController) UpdateCategory(c *fiber.Ctx) error {
-	var category models.CategoryRequestBody
-
+	var category categories.CategoryRequestBody
 	if err := c.BodyParser(&category); err != nil {
-		return errors.FailedToValidateCategory.FiberError(c)
+		return utilities.InvalidJSON()
 	}
 
 	updatedCategory, err := cat.categoryService.UpdateCategory(c.Params("categoryID"), category)
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.Status(fiber.StatusOK).JSON(updatedCategory)
+	return c.Status(http.StatusOK).JSON(updatedCategory)
 }

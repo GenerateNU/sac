@@ -1,19 +1,22 @@
 package base
 
 import (
-	stdliberrors "errors"
+	"errors"
 
 	"github.com/GenerateNU/sac/backend/integrations/search"
+	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 	"github.com/sahilm/fuzzy"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/entities/users"
-	"github.com/GenerateNU/sac/backend/errors"
+
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
-func GetClubs(db *gorm.DB, pinecone search.SearchClientInterface, queryParams *models.ClubQueryParams) ([]models.Club, *errors.Error) {
+func GetClubs(db *gorm.DB, pinecone search.SearchClientInterface, queryParams *models.ClubQueryParams, pageInfo fiberpaginate.PageInfo) ([]models.Club, error) {
 	query := db.Model(&models.Club{})
 
 	if queryParams.Tags != nil && len(queryParams.Tags) > 0 {
@@ -43,7 +46,7 @@ func GetClubs(db *gorm.DB, pinecone search.SearchClientInterface, queryParams *m
 
 	if queryParams.Search != "" {
 		if err := query.Find(&clubs).Error; err != nil {
-			return nil, &errors.FailedToGetClubs
+			return nil, err
 		}
 
 		// len(matches) <= len(clubs), because it discardss results that don't fuzz at all.
@@ -70,29 +73,35 @@ func GetClubs(db *gorm.DB, pinecone search.SearchClientInterface, queryParams *m
 		return clubsSorted, nil
 	}
 
-	offset := (queryParams.Page - 1) * queryParams.Limit
-
-	result := query.Limit(queryParams.Limit).Offset(offset).Find(&clubs)
-	if result.Error != nil {
-		return nil, &errors.FailedToGetClubs
+	if err := query.Scopes(utilities.IntoScope(pageInfo, query)).Find(&clubs).Error; err != nil {
+		return nil, err
 	}
 
 	return clubs, nil
 }
 
-func CreateClub(db *gorm.DB, pinecone search.SearchClientInterface, userId uuid.UUID, club models.Club) (*models.Club, *errors.Error) {
+func CreateClub(db *gorm.DB, pinecone search.SearchClientInterface, userId uuid.UUID, club models.Club) (*models.Club, error) {
 	user, err := users.GetUser(db, userId)
 	if err != nil {
 		return nil, err
 	}
 
 	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Error; err != nil {
+		return nil, err
+	}
 
 	club.NumMembers = 1
 
 	if err := tx.Create(&club).Error; err != nil {
 		tx.Rollback()
-		return nil, &errors.FailedToCreateClub
+		return nil, err
 	}
 
 	membership := models.Membership{
@@ -103,89 +112,83 @@ func CreateClub(db *gorm.DB, pinecone search.SearchClientInterface, userId uuid.
 
 	if err := tx.Create(&membership).Error; err != nil {
 		tx.Rollback()
-		return nil, &errors.FailedToCreateClub
+		return nil, err
 	}
 
 	if err := tx.Model(&user).Association("Follower").Append(&club); err != nil {
 		tx.Rollback()
-		return nil, &errors.FailedToCreateClub
+		return nil, err
 	}
 
 	if err := pinecone.Upsert([]search.Searchable{&club}); err != nil {
 		tx.Rollback()
-		return nil, &errors.FailedToCreateClub
+		return nil, err
 	}
 
-	if err := tx.Commit().Error; err != nil {
-		tx.Rollback()
-		return nil, &errors.FailedToCreateClub
-	}
-
-	return &club, nil
+	return &club, tx.Commit().Error
 }
 
-func UpdateClub(db *gorm.DB, pinecone search.SearchClientInterface, id uuid.UUID, club models.Club) (*models.Club, *errors.Error) {
+func UpdateClub(db *gorm.DB, pinecone search.SearchClientInterface, id uuid.UUID, club models.Club) (*models.Club, error) {
 	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
 
 	var existingClub models.Club
-
 	err := tx.First(&existingClub, id).Error
 	if err != nil {
 		tx.Rollback()
-		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, &errors.ClubNotFound
-		} else {
-			return nil, &errors.FailedToCreateClub
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, utilities.ErrNotFound
 		}
+		return nil, err
 	}
 
-	if err := tx.Model(&existingClub).Updates(&club).Error; err != nil {
+	if err := tx.Model(&existingClub).Clauses(clause.Returning{}).Updates(&club).Error; err != nil {
 		tx.Rollback()
-		return nil, &errors.FailedToUpdateUser
+		return nil, err
 	}
 
 	if pinecone.Upsert([]search.Searchable{&existingClub}) != nil {
 		tx.Rollback()
-		return nil, &errors.FailedToUpsertToPinecone
+		return nil, err
 	}
 
-	if err := tx.Commit().Error; err != nil {
-		tx.Rollback()
-		return nil, &errors.FailedToUpdateClub
-	}
-
-	return &existingClub, nil
+	return &existingClub, tx.Commit().Error
 }
 
-func DeleteClub(db *gorm.DB, pinecone search.SearchClientInterface, id uuid.UUID) *errors.Error {
+func DeleteClub(db *gorm.DB, pinecone search.SearchClientInterface, id uuid.UUID) error {
 	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
 
 	var existingClub models.Club
 	err := tx.First(&existingClub, id).Error
 	if err != nil {
 		tx.Rollback()
-		return &errors.ClubNotFound
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return utilities.ErrNotFound
+		}
+		return err
 	}
 
-	pineconeErr := pinecone.Delete([]search.Searchable{&existingClub})
-	if pineconeErr != nil {
+	if err := pinecone.Delete([]search.Searchable{&existingClub}); err != nil {
 		tx.Rollback()
-		return &errors.FailedToDeleteClub
+		return err
 	}
 
 	if result := tx.Delete(&models.Club{}, id); result.RowsAffected == 0 {
 		tx.Rollback()
 		if result.Error == nil {
-			return &errors.ClubNotFound
-		} else {
-			return &errors.FailedToDeleteClub
+			return utilities.ErrNotFound
 		}
+		return result.Error
 	}
 
-	if err := tx.Commit().Error; err != nil {
-		tx.Rollback()
-		return &errors.FailedToDeleteClub
-	}
-
-	return nil
+	return tx.Commit().Error
 }

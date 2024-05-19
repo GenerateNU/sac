@@ -1,19 +1,21 @@
 package base
 
 import (
+	"fmt"
+
 	"github.com/GenerateNU/sac/backend/entities/clubs"
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/errors"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 )
 
 type ClubServiceInterface interface {
-	GetClubs(queryParams *models.ClubQueryParams) ([]models.Club, *errors.Error)
-	GetClub(id string) (*models.Club, *errors.Error)
-	CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, *errors.Error)
-	UpdateClub(id string, clubBody models.UpdateClubRequestBody) (*models.Club, *errors.Error)
-	DeleteClub(id string) *errors.Error
+	GetClubs(queryParams *models.ClubQueryParams, pageInfo fiberpaginate.PageInfo) ([]models.Club, error)
+	GetClub(id string) (*models.Club, error)
+	CreateClub(clubBody CreateClubRequestBody) (*models.Club, error)
+	UpdateClub(id string, clubBody UpdateClubRequestBody) (*models.Club, error)
+	DeleteClub(id string) error
 }
 
 type ClubService struct {
@@ -24,66 +26,58 @@ func NewClubService(serviceParams types.ServiceParams) ClubServiceInterface {
 	return &ClubService{serviceParams}
 }
 
-func (c *ClubService) GetClubs(queryParams *models.ClubQueryParams) ([]models.Club, *errors.Error) {
-	if queryParams.Limit < 0 {
-		return nil, &errors.FailedToValidateLimit
-	}
-
-	if queryParams.Page < 0 {
-		return nil, &errors.FailedToValidatePage
-	}
-
-	return GetClubs(c.DB, c.Integrations.Search, queryParams)
+func (c *ClubService) GetClubs(queryParams *models.ClubQueryParams, pageInfo fiberpaginate.PageInfo) ([]models.Club, error) {
+	return GetClubs(c.DB, c.Integrations.Search, queryParams, pageInfo)
 }
 
-func (c *ClubService) CreateClub(clubBody models.CreateClubRequestBody) (*models.Club, *errors.Error) {
-	if err := c.Validate.Struct(clubBody); err != nil {
-		return nil, &errors.FailedToValidateClub
+func (c *ClubService) CreateClub(clubBody CreateClubRequestBody) (*models.Club, error) {
+	if err := utilities.Validate(c.Validate, clubBody); err != nil {
+		return nil, err
 	}
 
-	club, err := utilities.MapRequestToModel(clubBody, &models.Club{})
+	club, err := utilities.MapJsonTags(clubBody, &models.Club{})
 	if err != nil {
-		return nil, &errors.FailedToMapRequestToModel
+		return nil, err
 	}
 
 	return CreateClub(c.DB, c.Integrations.Search, clubBody.UserID, *club)
 }
 
-func (c *ClubService) GetClub(id string) (*models.Club, *errors.Error) {
+func (c *ClubService) GetClub(id string) (*models.Club, error) {
 	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
-		return nil, &errors.FailedToValidateID
+		return nil, err
 	}
 
 	return clubs.GetClub(c.DB, *idAsUUID)
 }
 
-func (c *ClubService) UpdateClub(id string, clubBody models.UpdateClubRequestBody) (*models.Club, *errors.Error) {
-	idAsUUID, idErr := utilities.ValidateID(id)
-	if idErr != nil {
-		return nil, idErr
-	}
-
-	if utilities.AtLeastOne(clubBody, models.UpdateClubRequestBody{}) {
-		return nil, &errors.FailedToValidateClub
-	}
-
-	if err := c.Validate.Struct(clubBody); err != nil {
-		return nil, &errors.FailedToValidateClub
-	}
-
-	club, err := utilities.MapRequestToModel(clubBody, &models.Club{})
+func (c *ClubService) UpdateClub(id string, clubBody UpdateClubRequestBody) (*models.Club, error) {
+	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
-		return nil, &errors.FailedToMapRequestToModel
+		return nil, err
+	}
+
+	if utilities.AtLeastOne(clubBody, UpdateClubRequestBody{}) {
+		return nil, fmt.Errorf("at least one field must be present")
+	}
+
+	if err := utilities.Validate(c.Validate, clubBody); err != nil {
+		return nil, err
+	}
+
+	club, err := utilities.MapJsonTags(clubBody, &models.Club{})
+	if err != nil {
+		return nil, err
 	}
 
 	return UpdateClub(c.DB, c.Integrations.Search, *idAsUUID, *club)
 }
 
-func (c *ClubService) DeleteClub(id string) *errors.Error {
+func (c *ClubService) DeleteClub(id string) error {
 	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
-		return &errors.FailedToValidateID
+		return err
 	}
 
 	return DeleteClub(c.DB, c.Integrations.Search, *idAsUUID)

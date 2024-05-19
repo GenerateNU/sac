@@ -1,14 +1,7 @@
 {
-  "name": "sac",
-  "version": "1.0.0",
-  "workspaces": {
-    "packages": [
-      "dashboard",
-      "lib",
-      "mobile",
-      "web",
-      "dashboard"
-    ]
-  },
-  "private": true
+  "dependencies": {
+    "@generatesac/lib": "^0.0.1",
+    "next": "^14.2.3",
+    "tailwindcss": "^3.4.3"
+  }
 }

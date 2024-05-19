@@ -1,9 +1,11 @@
 package base
 
 import (
-	"github.com/GenerateNU/sac/backend/constants"
-	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/errors"
+	"net/http"
+
+	"github.com/GenerateNU/sac/backend/entities/events"
+	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -25,17 +27,22 @@ func NewEventController(eventService EventServiceInterface) *EventController {
 // @Param		limit		query	int	    false	"Limit"
 // @Param		page		query	int	    false	"Page"
 // @Success		200	  {object}	    []models.Event
-// @Failure     400   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
+// @Failure     400   {object}      error
+// @Failure     404   {object}      error
+// @Failure     500   {object}      error
 // @Router		/events/  [get]
 func (e *EventController) GetAllEvents(c *fiber.Ctx) error {
-	events, err := e.eventService.GetEvents(c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING))
-	if err != nil {
-		return err.FiberError(c)
+	pagination, ok := fiberpaginate.FromContext(c)
+	if !ok {
+		return utilities.ErrExpectedPagination
 	}
 
-	return c.Status(fiber.StatusOK).JSON(events)
+	events, err := e.eventService.GetEvents(*pagination)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(http.StatusOK).JSON(events)
 }
 
 // GetEvent godoc
@@ -47,293 +54,52 @@ func (e *EventController) GetAllEvents(c *fiber.Ctx) error {
 // @Produce		json
 // @Param		eventID	path	string	true	"Event ID"
 // @Success		200	  {object}	    models.Event
-// @Failure     400   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
+// @Failure     400   {object}      error
+// @Failure     404   {object}      error
+// @Failure     500   {object}      error
 // @Router		/events/{eventID}/  [get]
 func (e *EventController) GetEvent(c *fiber.Ctx) error {
 	event, err := e.eventService.GetEvent(c.Params("eventID"))
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.Status(fiber.StatusOK).JSON(event)
+	return c.Status(http.StatusOK).JSON(event)
 }
 
-// GetSeriesByEventID godoc
-//
-// @Summary		Retrieve all series by event
-// @Description	Retrieves all series associated with an event
-// @ID			get-series-by-event
-// @Tags      	event
-// @Produce		json
-// @Param		eventID	path	string	true	"Event ID"
-// @Success		200	  {object}	    []models.Series
-// @Failure     400   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
-// @Router		/events/{eventID}/series/  [get]
-func (e *EventController) GetSeriesByEventID(c *fiber.Ctx) error {
-	events, err := e.eventService.GetSeriesByEventID(c.Params("eventID"))
-	if err != nil {
-		return err.FiberError(c)
-	}
-
-	return c.Status(fiber.StatusOK).JSON(events)
-}
-
-// GetSeriesByID godoc
-//
-// @Summary		Retrieve a series by ID
-// @Description	Retrieves a series by ID
-// @ID			get-series-by-id
-// @Tags      	event
-// @Produce		json
-// @Param		eventID  	path	string	true	"Event ID"
-// @Param		seriesID	path	string	true	"Series ID"
-// @Success		200	  {object}	    models.Series
-// @Failure     400   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
-// @Router		/events/{eventID}/series/{seriesID}/  [get]
-func (e *EventController) GetSeriesByID(c *fiber.Ctx) error {
-	events, err := e.eventService.GetSeriesByID(c.Params("seriesID"))
-	if err != nil {
-		return err.FiberError(c)
-	}
-
-	return c.Status(fiber.StatusOK).JSON(events)
-}
-
-// CreateEvent godoc
-//
-// @Summary		Create an event
-// @Description	Creates an event
-// @ID			create-event
-// @Tags      	event
-// @Accept		json
-// @Produce		json
-// @Param		event	body	models.CreateEventRequestBody	true	"Event Body"
-// @Success		201	  {object}	  models.Event
-// @Failure     400   {object}    errors.Error
-// @Failure     401   {object}    errors.Error
-// @Failure     404   {object}    errors.Error
-// @Failure     500   {object}    errors.Error
-// @Router		/events/  [post]
 func (e *EventController) CreateEvent(c *fiber.Ctx) error {
-	var eventBody models.CreateEventRequestBody
-	if err := c.BodyParser(&eventBody); err != nil {
-		return errors.FailedToParseRequestBody.FiberError(c)
+	var body events.CreateEventRequestBody
+	if err := c.BodyParser(&body); err != nil {
+		return err
 	}
 
-	event, err := e.eventService.CreateEvent(eventBody)
+	event, err := e.eventService.CreateEvent(body)
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(event)
+	return c.Status(http.StatusCreated).JSON(event)
 }
 
-// UpdateEvent godoc
-//
-// @Summary		Create a series
-// @Description	Creates a series
-// @ID			create-series
-// @Tags      	event
-// @Accept		json
-// @Produce		json
-// @Param		eventID	path	string	true	"Event ID"
-// @Param		seriesBody	body	models.UpdateEventRequestBody	true	"Series Body"
-// @Success		201	  {object}	  models.Series
-// @Failure     400   {object}    errors.Error
-// @Failure     401   {object}    errors.Error
-// @Failure     404   {object}    errors.Error
-// @Failure     500   {object}    errors.Error
-// @Router		/events/{eventID}/series/  [patch]
 func (e *EventController) UpdateEvent(c *fiber.Ctx) error {
-	var eventBody models.UpdateEventRequestBody
-	if err := c.BodyParser(&eventBody); err != nil {
-		return errors.FailedToParseRequestBody.FiberError(c)
+	var body events.UpdateEventRequestBody
+	if err := c.BodyParser(&body); err != nil {
+		return err
 	}
 
-	updatedEvent, err := e.eventService.UpdateEvent(c.Params("eventID"), eventBody)
+	event, err := e.eventService.UpdateEvent(c.Params("eventID"), body)
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.Status(fiber.StatusOK).JSON(updatedEvent)
+	return c.Status(http.StatusOK).JSON(event)
 }
 
-// UpdateSeriesByID godoc
-//
-// @Summary		Update a series by ID
-// @Description	Updates a series by ID. If individual events have been edited prior,
-//
-//	this update will override the previous changes
-//
-// @ID			update-series-by-id
-// @Tags      	event
-// @Accept		json
-// @Produce		json
-// @Param		seriesID	path	string	true	"Series ID"
-// @Param		seriesBody	body	models.UpdateSeriesRequestBody	true	"Series Body"
-// @Success		200	  {object}	  models.Series
-// @Failure     400   {object}    errors.Error
-// @Failure     401   {object}    errors.Error
-// @Failure     404   {object}    errors.Error
-// @Failure     500   {object}    errors.Error
-// @Router		/events/{eventID}/series/{seriesID}/  [patch]
-func (e *EventController) UpdateSeriesByID(c *fiber.Ctx) error {
-	var seriesBody models.UpdateSeriesRequestBody
-	if err := c.BodyParser(&seriesBody); err != nil {
-		return errors.FailedToParseRequestBody.FiberError(c)
-	}
-
-	updatedSeries, err := e.eventService.UpdateSeries(c.Params("seriesID"), seriesBody)
-	if err != nil {
-		return err.FiberError(c)
-	}
-
-	return c.Status(fiber.StatusOK).JSON(updatedSeries)
-}
-
-// UpdateSeriesByEventID godoc
-//
-// @Summary		Update a series by event ID
-// @Description	Updates a series by event ID
-// @ID			update-series-by-event-id
-// @Tags      	event
-// @Accept		json
-// @Produce		json
-// @Param		eventID	    path	string	true	"Event ID"
-// @Param		seriesBody	body	models.UpdateSeriesRequestBody	true	"Series Body"
-// @Success		200	  {object}	  models.Series
-// @Failure     400   {object}    errors.Error
-// @Failure     401   {object}    errors.Error
-// @Failure     404   {object}    errors.Error
-// @Failure     500   {object}    errors.Error
-// @Router		/events/{eventID}/series/{seriesID}/  [patch]
-func (e *EventController) UpdateSeriesByEventID(c *fiber.Ctx) error {
-	var seriesBody models.UpdateSeriesRequestBody
-	if err := c.BodyParser(&seriesBody); err != nil {
-		return errors.FailedToParseRequestBody.FiberError(c)
-	}
-
-	updatedSeries, err := e.eventService.UpdateSeriesByEventID(c.Params("eventID"), seriesBody)
-	if err != nil {
-		return err.FiberError(c)
-	}
-
-	return c.Status(fiber.StatusOK).JSON(updatedSeries)
-}
-
-// DeleteSeriesByID godoc
-//
-// @Summary		Delete a series by ID
-// @Description	Deletes a series by ID
-// @ID			delete-series-by-id
-// @Tags      	event
-// @Produce		json
-// @Param		eventID  	path	string	true	"Event ID"
-// @Param		seriesID	path	string	true	"Series ID"
-// @Success		204	  {string}	    utilities.SuccessResponse
-// @Failure     400   {object}      errors.Error
-// @Failure     401   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
-// @Router		/events/{eventID}/series/{seriesID}/  [delete]
-func (e *EventController) DeleteSeriesByID(c *fiber.Ctx) error {
-	if err := e.eventService.DeleteSeriesByID(c.Params("seriesID")); err != nil {
-		return err.FiberError(c)
-	}
-
-	return c.SendStatus(fiber.StatusNoContent)
-}
-
-// DeleteSeriesByEventID godoc
-//
-// @Summary		Delete all series by event
-// @Description	Deletes all series associated with an event
-// @ID			delete-series-by-event
-// @Tags      	event
-// @Produce		json
-// @Param		eventID	path	string	true	"Event ID"
-// @Success		204	  {string}	    utilities.SuccessResponse
-// @Failure     400   {object}      errors.Error
-// @Failure     401   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
-// @Router		/events/{eventID}/series/  [delete]
-func (e *EventController) DeleteSeriesByEventID(c *fiber.Ctx) error {
-	if err := e.eventService.DeleteSeriesByEventID(c.Params("eventID")); err != nil {
-		return err.FiberError(c)
-	}
-
-	return c.SendStatus(fiber.StatusNoContent)
-}
-
-// DeleteEvent godoc
-//
-// @Summary		Delete an event
-// @Description	Deletes an event
-// @ID			delete-event
-// @Tags      	event
-// @Produce		json
-// @Param		eventID	path	string	true	"Event ID"
-// @Success		204	  {string}	    utilities.SuccessResponse
-// @Failure     400   {object}      errors.Error
-// @Failure     401   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
-// @Router		/events/{eventID}/  [delete]
 func (e *EventController) DeleteEvent(c *fiber.Ctx) error {
-	if err := e.eventService.DeleteEvent(c.Params("eventID")); err != nil {
-		return err.FiberError(c)
-	}
-
-	return c.SendStatus(fiber.StatusNoContent)
-}
-
-// GetHostsByEventID godoc
-//
-// @Summary		Retrieve all hosts by event
-// @Description	Retrieves all hosts associated with an event
-// @ID			get-hosts-by-event
-// @Tags      	event
-// @Produce		json
-// @Param		eventID	path	string	true	"Event ID"
-// @Success		200	  {object}	    []models.Club
-// @Failure     400   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
-// @Router		/events/{eventID}/hosts  [get]
-func (e *EventController) GetHostsByEventID(c *fiber.Ctx) error {
-	hosts, err := e.eventService.GetHostsByEventID(c.Params("eventID"))
+	err := e.eventService.DeleteEvent(c.Params("eventID"))
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.Status(fiber.StatusOK).JSON(hosts)
-}
-
-// GetTagsByEventID godoc
-//
-// @Summary		Retrieve all tags by event
-// @Description	Retrieves all tags associated with an event
-// @ID			get-tags-by-event
-// @Tags      	event
-// @Produce		json
-// @Param		eventID	path	string	true	"Event ID"
-// @Success		200	  {object}	    []models.Tag
-// @Failure     400   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
-// @Router		/events/{eventID}/tags  [get]
-func (e *EventController) GetTagsByEventID(c *fiber.Ctx) error {
-	tags, err := e.eventService.GetTagsByEventID(c.Params("eventID"))
-	if err != nil {
-		return err.FiberError(c)
-	}
-
-	return c.Status(fiber.StatusOK).JSON(tags)
+	return c.SendStatus(http.StatusNoContent)
 }

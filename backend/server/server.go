@@ -1,12 +1,14 @@
 package server
 
 import (
-	"encoding/json"
 	"fmt"
 
-	"github.com/GenerateNU/sac/backend/auth"
+	"github.com/garrettladley/fiberpaginate"
+	go_json "github.com/goccy/go-json"
+
+	authenticator "github.com/GenerateNU/sac/backend/auth"
 	"github.com/GenerateNU/sac/backend/config"
-	authBase "github.com/GenerateNU/sac/backend/entities/auth/base"
+	auth "github.com/GenerateNU/sac/backend/entities/auth/base"
 	categories "github.com/GenerateNU/sac/backend/entities/categories/base"
 	clubs "github.com/GenerateNU/sac/backend/entities/clubs/base"
 	contacts "github.com/GenerateNU/sac/backend/entities/contacts/base"
@@ -16,11 +18,14 @@ import (
 	tags "github.com/GenerateNU/sac/backend/entities/tags/base"
 	users "github.com/GenerateNU/sac/backend/entities/users/base"
 	"github.com/GenerateNU/sac/backend/integrations"
-	"github.com/GenerateNU/sac/backend/middleware"
+	authMiddleware "github.com/GenerateNU/sac/backend/middleware/auth"
+	utilityMiddleware "github.com/GenerateNU/sac/backend/middleware/utility"
 
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/gofiber/contrib/otelfiber"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
@@ -46,22 +51,25 @@ func Init(db *gorm.DB, integrations integrations.Integrations, settings config.S
 		panic(fmt.Sprintf("Error registering custom validators: %s", err))
 	}
 
-	jwt := auth.NewJWTClient(settings.Auth, jwt.SigningMethodHS256)
-	authMiddleware := middleware.NewAuthAuthMiddlewareService(db, validate, settings.Auth)
+	jwt := authenticator.NewJWTClient(settings.Auth, jwt.SigningMethodHS256)
+	authMiddleware := authMiddleware.New(db, validate, settings.Auth)
+	utilityMiddleware := utilityMiddleware.New(fiberpaginate.New())
 
 	apiv1 := app.Group("/api/v1")
 
-	routeParams := types.RouteParams{
-		Router:         apiv1,
-		AuthMiddleware: authMiddleware,
-		ServiceParams: types.ServiceParams{
-			DB:           db,
-			Validate:     validate,
-			AuthSettings: &settings.Auth,
-			JWT:          jwt,
-			Integrations: integrations,
-		},
-	}
+	routeParams := types.NewRouteParams(
+		apiv1,
+		authMiddleware,
+		utilityMiddleware,
+		types.NewServiceParams(
+			db,
+			validate,
+			&settings.Auth,
+			jwt,
+			&settings.Calendar,
+			integrations,
+		),
+	)
 
 	allRoutes(app, routeParams)
 
@@ -70,31 +78,43 @@ func Init(db *gorm.DB, integrations integrations.Integrations, settings config.S
 
 func allRoutes(app *fiber.App, routeParams types.RouteParams) {
 	Utility(app)
-	authBase.Auth(routeParams)
+	auth.Auth(routeParams)
 	users.UserRoutes(routeParams)
 	clubs.ClubRoutes(routeParams)
 	contacts.Contact(routeParams)
 	pocs.PointOfContact(routeParams)
 	tags.Tag(routeParams)
 	categories.CategoryRoutes(routeParams)
-	events.Event(routeParams)
+	events.EventRoutes(routeParams)
 	files.File(routeParams)
 }
 
 func newFiberApp(appSettings config.ApplicationSettings) *fiber.App {
 	app := fiber.New(fiber.Config{
-		JSONEncoder: json.Marshal,
-		JSONDecoder: json.Unmarshal,
+		JSONEncoder:  go_json.Marshal,
+		JSONDecoder:  go_json.Unmarshal,
+		ErrorHandler: utilities.ErrorHandler,
 	})
 
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     fmt.Sprintf("http://%s:%d", appSettings.Host, appSettings.Port),
 		AllowCredentials: true,
+		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
+		AllowMethods:     "GET, POST, PUT, DELETE, OPTIONS",
+		ExposeHeaders:    "Authorization, Content-Length, Content-Type",
 	}))
+
 	app.Use(requestid.New())
+
 	app.Use(logger.New(logger.Config{
 		Format: "[${time}] ${ip}:${port} ${pid} ${locals:requestid} ${status} - ${latency} ${method} ${path}\n",
 	}))
+
+	app.Use(compress.New(compress.Config{
+		Level: compress.LevelBestSpeed,
+	}))
+
+	app.Use(otelfiber.Middleware())
 
 	return app
 }

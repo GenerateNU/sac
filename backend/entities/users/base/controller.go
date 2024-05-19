@@ -1,11 +1,12 @@
 package base
 
 import (
+	"net/http"
+
 	"github.com/GenerateNU/sac/backend/auth"
-	"github.com/GenerateNU/sac/backend/constants"
-	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/errors"
+	authEntities "github.com/GenerateNU/sac/backend/entities/auth"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -18,42 +19,6 @@ func NewUserController(userService UserServiceInterface) *UserController {
 	return &UserController{userService: userService}
 }
 
-// CreateUser godoc
-//
-// @Summary		Create a user
-// @Description	Creates a user
-// @ID			create-user
-// @Tags      	user
-// @Accept		json
-// @Produce		json
-// @Param		userBody	body	models.CreateUserRequestBody	true	"User Body"
-// @Success		201	  {object}	  models.User
-// @Failure     400   {object}    errors.Error
-// @Failure     401   {object}    errors.Error
-// @Failure     404   {object}    errors.Error
-// @Failure     409   {object}    errors.Error
-// @Failure     500   {object}    errors.Error
-// @Router		/users/  [post]
-func (u *UserController) CreateUser(c *fiber.Ctx) error {
-	var userBody models.CreateUserRequestBody
-
-	if err := c.BodyParser(&userBody); err != nil {
-		return errors.FailedToParseRequestBody.FiberError(c)
-	}
-
-	user, tokens, err := u.userService.CreateUser(userBody)
-	if err != nil {
-		return err.FiberError(c)
-	}
-
-	err = auth.SetResponseTokens(c, tokens)
-	if err != nil {
-		return err.FiberError(c)
-	}
-
-	return c.Status(fiber.StatusCreated).JSON(user)
-}
-
 // GetUsers godoc
 //
 // @Summary		Retrieve all users
@@ -64,17 +29,22 @@ func (u *UserController) CreateUser(c *fiber.Ctx) error {
 // @Param		limit		query	int	    false	"Limit"
 // @Param		page		query	int	    false	"Page"
 // @Success		200	  {object}	    []models.User
-// @Failure     401   {object}      errors.Error
-// @Failure     400   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
+// @Failure     401   {object}      error
+// @Failure     400   {object}      error
+// @Failure     500   {object}      error
 // @Router		/users/  [get]
 func (u *UserController) GetUsers(c *fiber.Ctx) error {
-	users, err := u.userService.GetUsers(c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING))
-	if err != nil {
-		return err.FiberError(c)
+	pagination, ok := fiberpaginate.FromContext(c)
+	if !ok {
+		return utilities.ErrExpectedPagination
 	}
 
-	return c.Status(fiber.StatusOK).JSON(&users)
+	users, err := u.userService.GetUsers(*pagination)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(http.StatusOK).JSON(&users)
 }
 
 // Me godoc
@@ -87,23 +57,23 @@ func (u *UserController) GetUsers(c *fiber.Ctx) error {
 // @Produce		json
 // @Security   Bearer
 // @Success		200	  {object}	    models.User
-// @Failure     400   {object}      errors.Error
-// @Failure     401   {object}      errors.Error
-// @Failure     404   {object}		errors.Error
-// @Failure     500   {object}      errors.Error
+// @Failure     400   {object}      error
+// @Failure     401   {object}      error
+// @Failure     404   {object}		error
+// @Failure     500   {object}      error
 // @Router		/auth/me  [get]
 func (u *UserController) GetMe(c *fiber.Ctx) error {
 	claims, err := auth.From(c)
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
 	user, err := u.userService.GetMe(claims.Issuer)
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.Status(fiber.StatusOK).JSON(user)
+	return c.Status(http.StatusOK).JSON(user)
 }
 
 // GetUser godoc
@@ -115,18 +85,18 @@ func (u *UserController) GetMe(c *fiber.Ctx) error {
 // @Produce		json
 // @Param		userID	path	string	true	"User ID"
 // @Success		200	  {object}	    models.User
-// @Failure     400   {object}      errors.Error
-// @Failure     401   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
+// @Failure     400   {object}      error
+// @Failure     401   {object}      error
+// @Failure     404   {object}      error
+// @Failure     500   {object}      error
 // @Router		/users/{userID}/  [get]
 func (u *UserController) GetUser(c *fiber.Ctx) error {
 	user, err := u.userService.GetUser(c.Params("userID"))
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.Status(fiber.StatusOK).JSON(user)
+	return c.Status(http.StatusOK).JSON(user)
 }
 
 // UpdateUser godoc
@@ -138,26 +108,26 @@ func (u *UserController) GetUser(c *fiber.Ctx) error {
 // @Accept		json
 // @Produce		json
 // @Param		userID		path	string	true	"User ID"
-// @Param		userBody	body	models.UpdateUserRequestBody	true	"User Body"
+// @Param		userBody	body	UpdateUserRequestBody	true	"User Body"
 // @Success		200	  {object}	  models.User
-// @Failure     400   {object}    errors.Error
-// @Failure     401   {object}    errors.Error
-// @Failure     404   {object}    errors.Error
-// @Failure     500   {object}    errors.Error
+// @Failure     400   {object}    error
+// @Failure     401   {object}    error
+// @Failure     404   {object}    error
+// @Failure     500   {object}    error
 // @Router		/users/{userID}/  [patch]
 func (u *UserController) UpdateUser(c *fiber.Ctx) error {
-	var user models.UpdateUserRequestBody
+	var user UpdateUserRequestBody
 
 	if err := c.BodyParser(&user); err != nil {
-		return errors.FailedToParseRequestBody.FiberError(c)
+		return utilities.InvalidJSON()
 	}
 
 	updatedUser, err := u.userService.UpdateUser(c.Params("userID"), user)
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.Status(fiber.StatusOK).JSON(updatedUser)
+	return c.Status(http.StatusOK).JSON(updatedUser)
 }
 
 // UpdatePassword godoc
@@ -169,26 +139,26 @@ func (u *UserController) UpdateUser(c *fiber.Ctx) error {
 // @Accept		json
 // @Produce		json
 // @Param		userID		path	string	true	"User ID"
-// @Param		passwordBody	body	models.UpdatePasswordRequestBody	true	"Password Body"
+// @Param		passwordBody	body	authEntities.UpdatePasswordRequestBody	true	"Password Body"
 // @Success		200	  {string}	    utilities.SuccessResponse
-// @Failure     400   {object}      errors.Error
-// @Failure     401   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
+// @Failure     400   {object}      error
+// @Failure     401   {object}      error
+// @Failure     404   {object}      error
+// @Failure     500   {object}      error
 // @Router		/users/{userID}/password  [patch]
 func (u *UserController) UpdatePassword(c *fiber.Ctx) error {
-	var passwordBody models.UpdatePasswordRequestBody
+	var passwordBody authEntities.UpdatePasswordRequestBody
 
 	if err := c.BodyParser(&passwordBody); err != nil {
-		return errors.FailedToParseRequestBody.FiberError(c)
+		return utilities.InvalidJSON()
 	}
 
 	err := u.userService.UpdatePassword(c.Params("userID"), passwordBody)
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return utilities.FiberMessage(c, fiber.StatusOK, "success")
+	return utilities.FiberMessage(c, http.StatusOK, "success")
 }
 
 // DeleteUser godoc
@@ -200,16 +170,16 @@ func (u *UserController) UpdatePassword(c *fiber.Ctx) error {
 // @Produce		json
 // @Param		userID	path	string	true	"User ID"
 // @Success		204	  {string}	    utilities.SuccessResponse
-// @Failure     400   {object}      errors.Error
-// @Failure     401   {object}      errors.Error
-// @Failure     404   {object}      errors.Error
-// @Failure     500   {object}      errors.Error
+// @Failure     400   {object}      error
+// @Failure     401   {object}      error
+// @Failure     404   {object}      error
+// @Failure     500   {object}      error
 // @Router		/users/{userID}/  [delete]
 func (u *UserController) DeleteUser(c *fiber.Ctx) error {
 	err := u.userService.DeleteUser(c.Params("userID"))
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.SendStatus(fiber.StatusNoContent)
+	return c.SendStatus(http.StatusNoContent)
 }

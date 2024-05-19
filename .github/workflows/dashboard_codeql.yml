@@ -5,11 +5,6 @@ on:
     paths:
       - "frontend/dashboard/**"
       - ".github/workflows/dashboard_codeql.yml"
-  pull_request:
-    types: [opened]
-    paths:
-      - "frontend/dashboard/**"
-      - ".github/workflows/dashboard_codeql.yml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

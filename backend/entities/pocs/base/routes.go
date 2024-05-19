@@ -10,7 +10,7 @@ func PointOfContact(pointOfContactParams types.RouteParams) {
 	// api/v1/pocs/*
 	pointofContact := pointOfContactParams.Router.Group("/pocs")
 
-	pointofContact.Get("/", pointOfContactController.GetPointOfContacts)
+	pointofContact.Get("/", pointOfContactParams.UtilityMiddleware.Paginator, pointOfContactController.GetPointOfContacts)
 	pointofContact.Get("/:pocID", pointOfContactController.GetPointOfContact)
-	// pointOfContact.Get("/:pocID/file", pointOfContactController.GetPointOfContacFileInfo)
+	// pointOfContact.Get("/:pocID/file", pointOfContactController.GetPointOfContacFileInfo))
 }

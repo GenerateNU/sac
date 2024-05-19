@@ -1,24 +1,28 @@
-import React from 'react';
-import { SafeAreaView, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
-import { Button } from '@/components/button';
-import { useAuthStore } from '@/hooks/use-auth';
-
-const Profile = () => {
-    const { onLogout, user } = useAuthStore();
-
-    const handleSignOut = async () => {
-        onLogout();
-    };
-
+const ProfilePage = () => {
     return (
-        <SafeAreaView className="justify-center flex-1">
-            <View className="px-[8%] gap-5 flex-col items-center">
-                <Text className="text-lg">Welcome {user?.first_name}</Text>
-                <Button onPress={handleSignOut}>Sign Out</Button>
-            </View>
-        </SafeAreaView>
+        <View style={styles.container}>
+            <Text style={styles.title}>Profile</Text>
+        </View>
     );
 };
 
-export default Profile;
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    title: {
+        fontSize: 20,
+        fontWeight: 'bold'
+    },
+    separator: {
+        marginVertical: 30,
+        height: 1,
+        width: '80%'
+    }
+});
+
+export default ProfilePage;

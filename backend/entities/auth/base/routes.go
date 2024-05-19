@@ -10,6 +10,7 @@ func Auth(params types.RouteParams) {
 	// api/v1/auth/*
 	auth := params.Router.Group("/auth")
 
+	auth.Post("/register", authController.Register)
 	auth.Post("/logout", authController.Logout)
 	auth.Post("/login", authController.Login)
 	auth.Post("/refresh", authController.Refresh)

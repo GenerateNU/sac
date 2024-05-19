@@ -6,7 +6,8 @@ import (
 
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/constants"
-	"github.com/GenerateNU/sac/backend/errors"
+
+	"github.com/GenerateNU/sac/backend/utilities"
 	m "github.com/garrettladley/mattress"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
@@ -19,15 +20,15 @@ type CustomClaims struct {
 
 // From extracts the CustomClaims from the fiber context
 // Returns nil if the claims are not present
-func From(c *fiber.Ctx) (*CustomClaims, *errors.Error) {
+func From(c *fiber.Ctx) (*CustomClaims, error) {
 	rawClaims := c.Locals("claims")
 	if rawClaims == nil {
-		return nil, &errors.Forbidden
+		return nil, utilities.Forbidden()
 	}
 
 	claims, ok := rawClaims.(*CustomClaims)
 	if !ok {
-		return nil, &errors.FailedToCastToCustomClaims
+		return nil, fmt.Errorf("claims are not of type CustomClaims. got: %T", rawClaims)
 	}
 
 	return claims, nil
@@ -51,12 +52,12 @@ type Claims struct {
 }
 
 type JWTClientInterface interface {
-	GenerateTokenPair(accessClaims, refreshClaims Claims) (*Token, *errors.Error)
-	GenerateToken(claims Claims, tokenType JWTType) ([]byte, *errors.Error)
-	RefreshToken(token, refreshToken string, tokenType JWTType, newClaims jwt.MapClaims) ([]byte, *errors.Error)
-	ExtractClaims(tokenString string, tokenType JWTType) (jwt.MapClaims, *errors.Error)
-	ParseToken(tokenString string, tokenType JWTType) (*jwt.Token, *errors.Error)
-	IsTokenValid(tokenString string, tokenType JWTType) (bool, *errors.Error)
+	GenerateTokenPair(accessClaims, refreshClaims Claims) (*Token, error)
+	GenerateToken(claims Claims, tokenType JWTType) ([]byte, error)
+	RefreshToken(token, refreshToken string, tokenType JWTType, newClaims jwt.MapClaims) ([]byte, error)
+	ExtractClaims(tokenString string, tokenType JWTType) (jwt.MapClaims, error)
+	ParseToken(tokenString string, tokenType JWTType) (*jwt.Token, error)
+	IsTokenValid(tokenString string, tokenType JWTType) (bool, error)
 }
 
 type JWTClient struct {
@@ -77,7 +78,7 @@ func NewJWTClient(authSettings config.AuthSettings, signingMethod jwt.SigningMet
 	}
 }
 
-func (j *JWTClient) GenerateTokenPair(accessClaims, refreshClaims Claims) (*Token, *errors.Error) {
+func (j *JWTClient) GenerateTokenPair(accessClaims, refreshClaims Claims) (*Token, error) {
 	accessToken, err := j.GenerateToken(accessClaims, AccessToken)
 	if err != nil {
 		return nil, err
@@ -96,7 +97,7 @@ func (j *JWTClient) GenerateTokenPair(accessClaims, refreshClaims Claims) (*Toke
 
 // GenerateToken generates a token with the claims passed in.
 // It returns the token if successful, otherwise it returns an error.
-func (j *JWTClient) GenerateToken(claims Claims, tokenType JWTType) ([]byte, *errors.Error) {
+func (j *JWTClient) GenerateToken(claims Claims, tokenType JWTType) ([]byte, error) {
 	// create a new map to store the combined claims
 	combinedClaims := make(jwt.MapClaims)
 
@@ -126,9 +127,9 @@ func (j *JWTClient) GenerateToken(claims Claims, tokenType JWTType) ([]byte, *er
 
 	// create a new token with the combined claims
 	token := jwt.NewWithClaims(j.SigningMethod, combinedClaims)
-	signedToken, signErr := token.SignedString([]byte(secretKey))
-	if signErr != nil {
-		return nil, &errors.FailedToSignToken
+	signedToken, err := token.SignedString([]byte(secretKey))
+	if err != nil {
+		return nil, fmt.Errorf("failed to sign token: %w", err)
 	}
 
 	return []byte(signedToken), nil
@@ -136,7 +137,7 @@ func (j *JWTClient) GenerateToken(claims Claims, tokenType JWTType) ([]byte, *er
 
 // ParseToken parses the token string and returns the token if successful, otherwise it returns an error.
 // It uses the secret key for the token type to parse the token.
-func (j *JWTClient) ParseToken(tokenString string, tokenType JWTType) (*jwt.Token, *errors.Error) {
+func (j *JWTClient) ParseToken(tokenString string, tokenType JWTType) (*jwt.Token, error) {
 	secretKey, err := j.getSecretKey(tokenType)
 	if err != nil {
 		return nil, err
@@ -146,7 +147,7 @@ func (j *JWTClient) ParseToken(tokenString string, tokenType JWTType) (*jwt.Toke
 		return []byte(secretKey), nil
 	})
 	if parseErr != nil {
-		return nil, &errors.FailedToParseToken
+		return nil, fmt.Errorf("failed to parse token: %w", parseErr)
 	}
 
 	return token, nil
@@ -154,7 +155,7 @@ func (j *JWTClient) ParseToken(tokenString string, tokenType JWTType) (*jwt.Toke
 
 // ExtractClaims extracts the claims from the token.
 // It returns the claims if successful, otherwise it returns an error.
-func (j *JWTClient) ExtractClaims(tokenString string, tokenType JWTType) (jwt.MapClaims, *errors.Error) {
+func (j *JWTClient) ExtractClaims(tokenString string, tokenType JWTType) (jwt.MapClaims, error) {
 	token, err := j.ParseToken(tokenString, tokenType)
 	if err != nil {
 		return nil, err
@@ -162,7 +163,7 @@ func (j *JWTClient) ExtractClaims(tokenString string, tokenType JWTType) (jwt.Ma
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		return nil, err
+		return nil, fmt.Errorf("failed to extract claims from token. got: %T", token.Claims)
 	}
 
 	return claims, nil
@@ -170,7 +171,7 @@ func (j *JWTClient) ExtractClaims(tokenString string, tokenType JWTType) (jwt.Ma
 
 // IsTokenValid checks if the token is valid.
 // It returns true if the token is valid, otherwise it returns false.
-func (j *JWTClient) IsTokenValid(tokenString string, tokenType JWTType) (bool, *errors.Error) {
+func (j *JWTClient) IsTokenValid(tokenString string, tokenType JWTType) (bool, error) {
 	token, err := j.ParseToken(tokenString, tokenType)
 	if err != nil {
 		return false, err
@@ -183,7 +184,7 @@ func (j *JWTClient) IsTokenValid(tokenString string, tokenType JWTType) (bool, *
 // It checks if the refresh token is valid and extracts the claims from the access token.
 // It then updates the issued at and expires at claims and gives the new claims priority over the old claims.
 // It returns the new access token if successful, otherwise it returns an error.
-func (j *JWTClient) RefreshToken(token, refreshToken string, tokenType JWTType, newClaims jwt.MapClaims) ([]byte, *errors.Error) {
+func (j *JWTClient) RefreshToken(token, refreshToken string, tokenType JWTType, newClaims jwt.MapClaims) ([]byte, error) {
 	ok, err := j.IsTokenValid(refreshToken, RefreshToken)
 	if err != nil || !ok {
 		return nil, err
@@ -208,7 +209,7 @@ func (j *JWTClient) RefreshToken(token, refreshToken string, tokenType JWTType, 
 
 // getSecretKey returns the secret key for the token type.
 // If the token type is not present in the client, it returns an error.
-func (j *JWTClient) getSecretKey(tokenType JWTType) (string, *errors.Error) {
+func (j *JWTClient) getSecretKey(tokenType JWTType) (string, error) {
 	switch tokenType {
 	case AccessToken:
 		return j.AccessKey.Expose(), nil
@@ -216,7 +217,7 @@ func (j *JWTClient) getSecretKey(tokenType JWTType) (string, *errors.Error) {
 		return j.RefreshKey.Expose(), nil
 	}
 
-	return "", &errors.InvalidTokenType
+	return "", utilities.BadRequest(fmt.Errorf("invalid token type: %s", tokenType))
 }
 
 // getExpiry returns the expiry time for the token type.
@@ -300,7 +301,7 @@ func GenerateRefreshCookie(value string) *fiber.Cookie {
 	}
 }
 
-func SetResponseTokens(c *fiber.Ctx, tokens *Token) *errors.Error {
+func SetResponseTokens(c *fiber.Ctx, tokens *Token) error {
 	// Set the tokens in the response
 	// should also blacklist the old refresh and access tokens
 

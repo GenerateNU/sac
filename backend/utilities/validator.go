@@ -1,12 +1,11 @@
 package utilities
 
 import (
+	"fmt"
 	"reflect"
-	"strconv"
 	"strings"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/errors"
 
 	"github.com/google/uuid"
 	"github.com/mcnijman/go-emailaddress"
@@ -60,7 +59,10 @@ func validateS3URL(fl validator.FieldLevel) bool {
 }
 
 func validateContactPointer(validate *validator.Validate, fl validator.FieldLevel) bool {
-	contact, ok := fl.Parent().Interface().(models.PutContactRequestBody)
+	contact, ok := fl.Parent().Interface().(struct {
+		Type    models.ContactType
+		Content string
+	})
 	if !ok {
 		return false
 	}
@@ -93,21 +95,48 @@ func validateNotEqualIfNotEmpty(fl validator.FieldLevel) bool {
 	return field == "" || field != otherField
 }
 
-func ValidateID(id string) (*uuid.UUID, *errors.Error) {
+func ValidateID(id string) (*uuid.UUID, error) {
 	idAsUUID, err := uuid.Parse(id)
 	if err != nil {
-		return nil, &errors.FailedToValidateID
+		return nil, err
 	}
 
 	return &idAsUUID, nil
 }
 
-func ValidateNonNegative(value string) (*int, *errors.Error) {
-	valueAsInt, err := strconv.Atoi(value)
+func Validate(validate *validator.Validate, s any, maybeErrs ...MaybeError) error {
+	hasErrors := false
+	var maybeErrors map[string]string
 
-	if err != nil || valueAsInt < 0 {
-		return nil, &errors.FailedToValidateNonNegativeValue
+	for _, maybeErr := range maybeErrs {
+		if maybeErr.Err != nil {
+			if !hasErrors {
+				maybeErrors = make(map[string]string)
+				hasErrors = true
+			}
+			maybeErrors[ToSnakeCase(maybeErr.Name)] = maybeErr.Err.Error()
+		}
 	}
 
-	return &valueAsInt, nil
+	var validationErrors map[string]string
+	if err := validate.Struct(s); err != nil {
+		validationErrs, ok := err.(validator.ValidationErrors)
+		if ok {
+			if !hasErrors {
+				validationErrors = make(map[string]string)
+				hasErrors = true
+			}
+			for _, validationErr := range validationErrs {
+				validationErrors[ToSnakeCase(validationErr.Field())] = fmt.Sprintf("%s failed %s", validationErr.Field(), validationErr.Tag())
+			}
+		} else {
+			return fmt.Errorf("failed to validate struct: %w", err)
+		}
+	}
+
+	if hasErrors {
+		return InvalidRequestData(MergeMaps(maybeErrors, validationErrors))
+	}
+
+	return nil
 }

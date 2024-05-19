@@ -1,24 +1,31 @@
 package auth
 
 import (
+	"errors"
+	"fmt"
 	"regexp"
 	"strings"
 
 	"github.com/GenerateNU/sac/backend/constants"
-	"github.com/GenerateNU/sac/backend/errors"
 )
 
-func ValidatePassword(password string) *errors.Error {
+func ValidatePassword(password string) error {
+	var errs []string
+
 	if len(password) < 8 {
-		return &errors.InvalidPasswordNotLongEnough
+		errs = append(errs, "must be at least 8 characters long")
 	}
 
 	if !hasDigit(password) {
-		return &errors.InvalidPasswordNoDigit
+		errs = append(errs, "must contain at least one digit")
 	}
 
 	if !hasSpecialChar(password) {
-		return &errors.InvalidPasswordNoSpecialCharacter
+		errs = append(errs, fmt.Sprintf("must contain at least one special character from: [%v]", string(constants.SPECIAL_CHARACTERS)))
+	}
+
+	if len(errs) > 0 {
+		return errors.New(strings.Join(errs, ", "))
 	}
 
 	return nil

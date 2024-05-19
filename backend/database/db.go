@@ -1,7 +1,7 @@
 package database
 
 import (
-	stdliberrors "errors"
+	"errors"
 
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/constants"
@@ -37,6 +37,7 @@ func EstablishConn(dsn string, opts ...OptionalFunc) (*gorm.DB, error) {
 	rootConfig := gorm.Config{
 		SkipDefaultTransaction: true,
 		TranslateError:         true,
+		PrepareStmt:            true,
 	}
 
 	for _, opt := range opts {
@@ -67,7 +68,7 @@ func CreateSuperUserIfNotExists(settings config.Settings, db *gorm.DB) error {
 	var superUser models.User
 
 	if err := db.Where("role = ?", models.Super).First(&superUser).Error; err != nil {
-		if stdliberrors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			if err := createSuperUser(settings, db); err != nil {
 				return err
 			}
@@ -81,6 +82,11 @@ func CreateSuperUserIfNotExists(settings config.Settings, db *gorm.DB) error {
 
 func createSuperUser(settings config.Settings, db *gorm.DB) error {
 	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
 
 	if err := tx.Error; err != nil {
 		return err
@@ -143,5 +149,5 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 		return tx.Commit().Error
 	}
 
-	return nil
+	return tx.Commit().Error
 }

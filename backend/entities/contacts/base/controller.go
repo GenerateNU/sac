@@ -1,7 +1,10 @@
 package base
 
 import (
-	"github.com/GenerateNU/sac/backend/constants"
+	"net/http"
+
+	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -23,17 +26,17 @@ func NewContactController(contactService ContactServiceInterface) *ContactContro
 // @Produce		json
 // @Param		contactID	path	string	true	"Contact ID"
 // @Success		201	  {object}	  models.Contact
-// @Failure     400   {string}    errors.Error
-// @Failure     404   {string}    errors.Error
-// @Failure     500   {string}    errors.Error
+// @Failure     400   {string}    error
+// @Failure     404   {string}    error
+// @Failure     500   {string}    error
 // @Router		/contacts/{contactID}/  [get]
 func (co *ContactController) GetContact(c *fiber.Ctx) error {
 	contact, err := co.contactService.GetContact(c.Params("contactID"))
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.Status(fiber.StatusOK).JSON(contact)
+	return c.Status(http.StatusOK).JSON(contact)
 }
 
 // GetContacts godoc
@@ -46,17 +49,22 @@ func (co *ContactController) GetContact(c *fiber.Ctx) error {
 // @Param		limit		query	int	    false	"Limit"
 // @Param		page		query	int	    false	"Page"
 // @Success		200	  {object}	  []models.Contact
-// @Failure     400   {string}    errors.Error
-// @Failure     404   {string}    errors.Error
-// @Failure     500   {string}    errors.Error
+// @Failure     400   {string}    error
+// @Failure     404   {string}    error
+// @Failure     500   {string}    error
 // @Router		/contacts/  [get]
 func (co *ContactController) GetContacts(c *fiber.Ctx) error {
-	contacts, err := co.contactService.GetContacts(c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING))
-	if err != nil {
-		return err.FiberError(c)
+	pagination, ok := fiberpaginate.FromContext(c)
+	if !ok {
+		return utilities.ErrExpectedPagination
 	}
 
-	return c.Status(fiber.StatusOK).JSON(contacts)
+	contacts, err := co.contactService.GetContacts(*pagination)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(http.StatusOK).JSON(contacts)
 }
 
 // DeleteContact godoc
@@ -69,15 +77,15 @@ func (co *ContactController) GetContacts(c *fiber.Ctx) error {
 // @Produce		json
 // @Param		contactID	path	string	true	"Contact ID"
 // @Success		201	  {object}	  models.Contact
-// @Failure     400   {string}    errors.Error
-// @Failure     404   {string}    errors.Error
-// @Failure     500   {string}    errors.Error
+// @Failure     400   {string}    error
+// @Failure     404   {string}    error
+// @Failure     500   {string}    error
 // @Router		/contacts/{contactID}/  [delete]
 func (co *ContactController) DeleteContact(c *fiber.Ctx) error {
 	err := co.contactService.DeleteContact(c.Params("contactID"))
 	if err != nil {
-		return err.FiberError(c)
+		return err
 	}
 
-	return c.SendStatus(fiber.StatusNoContent)
+	return c.SendStatus(http.StatusNoContent)
 }
