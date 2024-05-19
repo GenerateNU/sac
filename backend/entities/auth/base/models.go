@@ -14,3 +14,7 @@ type VerifyPasswordResetTokenRequestBody struct {
 type EmailRequestBody struct {
 	Email string `json:"email" validate:"required,email"`
 }
+
+type RefreshTokenCookieBody struct {
+	RefreshToken string `cookie:"refresh_token" validate:"required"`
+}
