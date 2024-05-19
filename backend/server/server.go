@@ -99,6 +99,9 @@ func newFiberApp(appSettings config.ApplicationSettings) *fiber.App {
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     fmt.Sprintf("http://%s:%d", appSettings.Host, appSettings.Port),
 		AllowCredentials: true,
+		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
+		AllowMethods:     "GET, POST, PUT, DELETE, OPTIONS",
+		ExposeHeaders:    "Authorization, Content-Length, Content-Type",
 	}))
 
 	app.Use(requestid.New())
