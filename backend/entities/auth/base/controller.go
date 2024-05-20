@@ -103,7 +103,7 @@ func (a *AuthController) Refresh(c *fiber.Ctx) error {
 	var refreshBody RefreshTokenCookieBody
 
 	if err := c.CookieParser(&refreshBody); err != nil {
-		return utilities.InvalidJSON()
+		return utilities.InvalidCookies()
 	}
 
 	tokens, err := a.authService.Refresh(refreshBody.RefreshToken)
