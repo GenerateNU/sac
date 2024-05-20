@@ -8,14 +8,15 @@ import (
 )
 
 type Settings struct {
-	Application      ApplicationSettings
-	Database         DatabaseSettings
-	SuperUser        SuperUserSettings
-	Auth             AuthSettings
-	AWS              AWSSettings
-	PineconeSettings PineconeSettings
-	OpenAISettings   OpenAISettings
-	ResendSettings   ResendSettings
+	Application ApplicationSettings
+	Database    DatabaseSettings
+	SuperUser   SuperUserSettings
+	Auth        AuthSettings
+	AWS         AWSSettings
+	Pinecone    PineconeSettings
+	OpenAI      OpenAISettings
+	Resend      ResendSettings
+	Calendar    CalendarSettings
 	GoogleClientSettings     *OAuthConfig
 	OutlookClientSettings	 *OAuthConfig
 }
@@ -25,6 +26,7 @@ type intermediateSettings struct {
 	Database    intermediateDatabaseSettings  `yaml:"database"`
 	SuperUser   intermediateSuperUserSettings `yaml:"superuser"`
 	Auth        intermediateAuthSettings      `yaml:"authsecret"`
+	Calendar    intermediateCalendarSettings  `yaml:"calendar"`
 }
 
 func (int *intermediateSettings) into() (*Settings, error) {
@@ -43,11 +45,17 @@ func (int *intermediateSettings) into() (*Settings, error) {
 		return nil, err
 	}
 
+	calendarSettings, err := int.Calendar.into()
+	if err != nil {
+		return nil, err
+	}
+
 	return &Settings{
 		Application: int.Application,
 		Database:    *databaseSettings,
 		SuperUser:   *superUserSettings,
 		Auth:        *authSettings,
+		Calendar:    *calendarSettings,
 	}, nil
 }
 

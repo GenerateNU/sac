@@ -3,7 +3,6 @@ package utilities
 import (
 	"fmt"
 	"reflect"
-	"strconv"
 	"strings"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
@@ -60,7 +59,10 @@ func validateS3URL(fl validator.FieldLevel) bool {
 }
 
 func validateContactPointer(validate *validator.Validate, fl validator.FieldLevel) bool {
-	contact, ok := fl.Parent().Interface().(models.PutContactRequestBody)
+	contact, ok := fl.Parent().Interface().(struct {
+		Type    models.ContactType
+		Content string
+	})
 	if !ok {
 		return false
 	}
@@ -102,30 +104,38 @@ func ValidateID(id string) (*uuid.UUID, error) {
 	return &idAsUUID, nil
 }
 
-func ValidateNonNegative(value string) (*int, error) {
-	valueAsInt, err := strconv.Atoi(value)
+func Validate(validate *validator.Validate, s any, maybeErrs ...MaybeError) error {
+	hasErrors := false
+	var maybeErrors map[string]string
 
-	if err != nil || valueAsInt < 0 {
-		return nil, fmt.Errorf("value must be a non-negative integer. got %s", value)
+	for _, maybeErr := range maybeErrs {
+		if maybeErr.Err != nil {
+			if !hasErrors {
+				maybeErrors = make(map[string]string)
+				hasErrors = true
+			}
+			maybeErrors[ToSnakeCase(maybeErr.Name)] = maybeErr.Err.Error()
+		}
 	}
 
-	return &valueAsInt, nil
-}
-
-func Validate(validate *validator.Validate, s any) error {
+	var validationErrors map[string]string
 	if err := validate.Struct(s); err != nil {
 		validationErrs, ok := err.(validator.ValidationErrors)
 		if ok {
-			errors := make(map[string]string, len(validationErrs))
-
-			for _, validationErr := range validationErrs {
-				errors[validationErr.Field()] = fmt.Sprintf("%s failed %s", validationErr.Field(), validationErr.Tag())
+			if !hasErrors {
+				validationErrors = make(map[string]string)
+				hasErrors = true
 			}
-
-			return InvalidRequestData(errors)
+			for _, validationErr := range validationErrs {
+				validationErrors[ToSnakeCase(validationErr.Field())] = fmt.Sprintf("%s failed %s", validationErr.Field(), validationErr.Tag())
+			}
 		} else {
 			return fmt.Errorf("failed to validate struct: %w", err)
 		}
+	}
+
+	if hasErrors {
+		return InvalidRequestData(MergeMaps(maybeErrors, validationErrors))
 	}
 
 	return nil

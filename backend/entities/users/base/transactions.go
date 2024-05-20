@@ -10,18 +10,8 @@ import (
 	"github.com/google/uuid"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
-
-func CreateUser(db *gorm.DB, user *models.User) (*models.User, error) {
-	if err := db.Create(user).Error; err != nil {
-		if errors.Is(err, gorm.ErrDuplicatedKey) {
-			return nil, utilities.ErrDuplicate
-		}
-		return nil, err
-	}
-
-	return user, nil
-}
 
 func GetUsers(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.User, error) {
 	var users []models.User
@@ -55,7 +45,7 @@ func UpdateUser(db *gorm.DB, id uuid.UUID, user models.User) (*models.User, erro
 		return nil, err
 	}
 
-	if err := db.Model(&existingUser).Updates(&user).Error; err != nil {
+	if err := db.Model(&existingUser).Clauses(clause.Returning{}).Updates(&user).Error; err != nil {
 		return nil, err
 	}
 

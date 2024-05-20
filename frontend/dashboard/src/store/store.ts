@@ -18,6 +18,8 @@ import {
 const rootReducer = combineReducers({
   user: userReducer,
   [baseApi.reducerPath]: baseApi.reducer,
+  clubReducer: clubReducer,
+  recruitmentReducer: recruitmentReducer,
 });
 
 type RootReducer = ReturnType<typeof rootReducer>;
@@ -32,6 +34,8 @@ const persistedReducer = persistReducer<RootReducer>(
   persistanceConfig,
   rootReducer,
 );
+import { clubReducer } from '../app/state/club/clubSlice';
+import { recruitmentReducer } from '../app/state/recruitment/recruitmentSlice';
 
 export const makeStore = () => {
   return configureStore({
