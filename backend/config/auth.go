@@ -9,11 +9,13 @@ import (
 type AuthSettings struct {
 	AccessKey  *m.Secret[string]
 	RefreshKey *m.Secret[string]
+	CSRFKey    *m.Secret[string]
 }
 
 type intermediateAuthSettings struct {
 	AccessKey  string `yaml:"accesskey"`
 	RefreshKey string `yaml:"refreshkey"`
+	CSRFKey	   string `yaml:"csrfkey"`
 }
 
 func (int *intermediateAuthSettings) into() (*AuthSettings, error) {
@@ -27,8 +29,14 @@ func (int *intermediateAuthSettings) into() (*AuthSettings, error) {
 		return nil, errors.New("failed to create secret from refresh key")
 	}
 
+	csrfToken, err := m.NewSecret(int.CSRFKey)
+	if err != nil {
+		return nil, errors.New("failed to create secret from csrf key")
+	}
+
 	return &AuthSettings{
 		AccessKey:  accessToken,
 		RefreshKey: refreshToken,
+		CSRFKey:    csrfToken,
 	}, nil
 }

@@ -7,13 +7,13 @@ export const baseApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: API_BASE_URL,
     credentials: "include",
-    prepareHeaders: async (headers, { getState }) => {
-      const token = (getState() as { auth: { token: string } })?.auth.token;
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-      return headers;
-    },
+    // prepareHeaders: async (headers, { getState }) => {
+    //   const token = (getState() as { auth: { token: string } })?.auth.token;
+    //   if (token) {
+    //     headers.set("Authorization", `Bearer ${token}`);
+    //   }
+    //   return headers;
+    // },
   }),
   tagTypes: [
     "User",

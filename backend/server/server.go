@@ -16,6 +16,7 @@ import (
 	pocs "github.com/GenerateNU/sac/backend/entities/pocs/base"
 	tags "github.com/GenerateNU/sac/backend/entities/tags/base"
 	users "github.com/GenerateNU/sac/backend/entities/users/base"
+	oauth "github.com/GenerateNU/sac/backend/entities/oauth/base"
 	"github.com/GenerateNU/sac/backend/integrations"
 	"github.com/GenerateNU/sac/backend/middleware"
 
@@ -81,6 +82,7 @@ func allRoutes(app *fiber.App, routeParams types.RouteParams) {
 	categories.CategoryRoutes(routeParams)
 	events.Event(routeParams)
 	files.File(routeParams)
+	oauth.OAuth(routeParams)
 }
 
 func newFiberApp(appSettings config.ApplicationSettings) *fiber.App {

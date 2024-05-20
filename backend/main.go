@@ -11,9 +11,9 @@ import (
 	"github.com/GenerateNU/sac/backend/database"
 	_ "github.com/GenerateNU/sac/backend/docs"
 	"github.com/GenerateNU/sac/backend/integrations"
-	"github.com/GenerateNU/sac/backend/integrations/calendar"
 	"github.com/GenerateNU/sac/backend/integrations/email"
 	"github.com/GenerateNU/sac/backend/integrations/file"
+	"github.com/GenerateNU/sac/backend/integrations/oauth"
 	"github.com/GenerateNU/sac/backend/integrations/search"
 	"github.com/GenerateNU/sac/backend/server"
 	"github.com/GenerateNU/sac/backend/tests/api/mocks"
@@ -45,11 +45,9 @@ func configureIntegrations(config *config.Settings, connectToPinecone bool) inte
 	}
 
 	// Calendar integrations:
-	googleClient := calendar.GoogleClient{
-		OAuthClient: calendar.NewGoogleOAuthClient(config.GoogleClientSettings),
-	}
-	outlookClient := calendar.OutlookClient{Settings: config.OutlookClientSettings}
-	calendarClient := calendar.CalendarClient{
+	googleClient := oauth.GoogleOAuthClient{OAuthConfig: *config.GoogleClientSettings}
+	outlookClient := oauth.OutlookOAuthClient{OAuthConfig: *config.OutlookClientSettings}
+	oauthClient := oauth.ResourceClient{
 		Google: googleClient,
 		Outlook: outlookClient,
 	}
@@ -59,7 +57,7 @@ func configureIntegrations(config *config.Settings, connectToPinecone bool) inte
 		AI:     openAi,
 		Email:  email.NewResendClient(config.ResendSettings, true),
 		Search: pinecone,
-		Calendar: calendarClient,
+		OAuth2: oauthClient,
 	}
 	return integrations
 }

@@ -16,8 +16,8 @@ type Settings struct {
 	PineconeSettings PineconeSettings
 	OpenAISettings   OpenAISettings
 	ResendSettings   ResendSettings
-	GoogleClientSettings     *GoogleClientSettings
-	OutlookClientSettings	 *OutlookClientSettings
+	GoogleClientSettings     *OAuthConfig
+	OutlookClientSettings	 *OAuthConfig
 }
 
 type intermediateSettings struct {

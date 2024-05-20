@@ -7,33 +7,25 @@ import (
 	m "github.com/garrettladley/mattress"
 )
 
-type CalendarSettings struct {
-	GoogleClientSettings 	*GoogleClientSettings
-	OutlookClientSettings 	*OutlookClientSettings
-}
-
-type GoogleClientSettings struct {
-	ClientID				*m.Secret[string]
+type OAuthConfig struct {
+	BaseURL 				string
+	ClientID 				*m.Secret[string]
 	ClientSecret 			*m.Secret[string]
-	ResponseType 			string
-	Scopes 					[]string
-	RedirectURI 			string
-	IncludeGrantedScopes 	string
-	AccessType 				string
-	Prompt 					string
-}
-
-type OutlookClientSettings struct {
-	ClientID 				string
-	ResponseType 			string
 	Scopes 					string
 	RedirectURI 			string
-	Tenant 					string
-	ResponseMode 			string
+	ResponseType			string
+	ResponseMode    		string
+	AccessType 				string
+	IncludeGrantedScopes 	string
 	Prompt 					string
 }
 
-func readGoogleOAuthSettings() (*GoogleClientSettings, error) {
+type OAuthSettings struct {
+	GoogleOAuthSettings 	*OAuthConfig
+	OutlookOAuthSettings 	*OAuthConfig
+}
+
+func readGoogleOAuthSettings() (*OAuthConfig, error) {
 	clientID := os.Getenv("GOOGLE_OAUTH_CLIENT_ID")
 	if clientID == "" {
 		return nil, errors.New("GOOGLE_OAUTH_CLIENT_ID is not set")
@@ -54,23 +46,28 @@ func readGoogleOAuthSettings() (*GoogleClientSettings, error) {
 		return nil, errors.New("failed to create secret from client secret")
 	}
 
-	return &GoogleClientSettings{
+	return &OAuthConfig{
+		BaseURL: "https://accounts.google.com/o/oauth2/v2",
 		ClientID: secretClientID,
 		ClientSecret: secretClientSecret,
-		Scopes: []string{
-			"https://www.googleapis.com/auth/calendar.events",
-			"https://www.googleapis.com/auth/calendar.readonly",
-		},
+		Scopes: "https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.readonly",
+		ResponseType: "code",
 		RedirectURI: "http://localhost:3000",
 		IncludeGrantedScopes: "true",
 		AccessType: "offline",
+		Prompt: "consent",
 	}, nil
 }
 
-func readOutlookOAuthSettings() (*OutlookClientSettings, error) {
+func readOutlookOAuthSettings() (*OAuthConfig, error) {
 	clientID := os.Getenv("OUTLOOK_OAUTH_CLIENT_ID")
 	if clientID == "" {
 		return nil, errors.New("OUTLOOK_OAUTH_CLIENT_ID is not set")
+	}
+
+	secretClientID, err := m.NewSecret(clientID)
+	if err != nil {
+		return nil, errors.New("failed to create secret from client ID")
 	}
 
 	clientSecret := os.Getenv("OUTLOOK_OAUTH_CLIENT_SECRET")
@@ -78,12 +75,18 @@ func readOutlookOAuthSettings() (*OutlookClientSettings, error) {
 		return nil, errors.New("OUTLOOK_OAUTH_CLIENT_SECRET is not set")
 	}
 
-	return &OutlookClientSettings{
-		ClientID: clientID,
+	secretClientSecret, err := m.NewSecret(clientSecret)
+	if err != nil {
+		return nil, errors.New("failed to create secret from client secret")
+	}
+
+	return &OAuthConfig{
+		BaseURL: "https://login.microsoftonline.com/common/oauth2/v2.0",
+		ClientID: secretClientID,
+		ClientSecret: secretClientSecret,
+		Scopes: "offline_access user.read mail.read",
 		ResponseType: "code",
 		RedirectURI: "http://localhost:3000",
-		Scopes: "offline_access user.read mail.read",
-		Tenant: "common",
 		ResponseMode: "query",
 		Prompt: "consent",
 	}, nil

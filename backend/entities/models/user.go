@@ -158,6 +158,7 @@ type User struct {
 	GraduationCycle GraduationCycle `json:"graduation_cycle" validate:"required,max=255,oneof=december may"`
 	GraduationYear  int16           `json:"graduation_year" validate:"required"`
 	IsVerified      bool            `json:"is_verified"`
+	CalendarToken 	string          `json:"calendar_token" validate:"omitempty,max=255"`	
 
 	Tag               []Tag     `gorm:"many2many:user_tags;" json:"-" validate:"-"`
 	Admin             []Club    `gorm:"many2many:user_club_admins;" json:"-" validate:"-"`

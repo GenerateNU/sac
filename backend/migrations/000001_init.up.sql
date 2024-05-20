@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS users(
     graduation_cycle varchar(255),
     graduation_year smallint,
     is_verified boolean NOT NULL DEFAULT false,
+    calendar_token varchar(255),
     PRIMARY KEY(id)
 );
 
@@ -238,5 +239,12 @@ CREATE TABLE IF NOT EXISTS verifications(
     PRIMARY KEY(user_id,expires_at)
 );
 CREATE UNIQUE INDEX IF NOT EXISTS uni_verifications_token ON verifications USING btree ("token");
+
+CREATE TABLE IF NOT EXISTS user_calendar_token(
+    user_id uuid NOT NULL,
+    refresh_token varchar(255),
+    csrf_token varchar(255),
+    PRIMARY KEY(user_id)
+);
 
 COMMIT;

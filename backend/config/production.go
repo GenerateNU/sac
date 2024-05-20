@@ -77,6 +77,11 @@ func readProd(v *viper.Viper) (*Settings, error) {
 		return nil, errors.New("failed to create secret from refresh token")
 	}
 
+	authCSRFKey, err := m.NewSecret(os.Getenv(fmt.Sprintf("%sCSRF_TOKEN", authSecretPrefix)))
+	if err != nil {
+		return nil, errors.New("failed to create secret from csrf token")
+	}
+
 	pineconeSettings, err := readPineconeSettings()
 	if err != nil {
 		return nil, fmt.Errorf("failed to read Pinecone settings: %w", err)
@@ -127,6 +132,7 @@ func readProd(v *viper.Viper) (*Settings, error) {
 		Auth: AuthSettings{
 			AccessKey:  authAccessKey,
 			RefreshKey: authRefreshKey,
+			CSRFKey:    authCSRFKey,
 		},
 		PineconeSettings: 		*pineconeSettings,
 		OpenAISettings:   		*openAISettings,

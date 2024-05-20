@@ -91,6 +91,9 @@ func (m *AuthMiddlewareService) Authorize(requiredPermissions ...auth.Permission
 
 		userPermissions := auth.GetPermissions(models.UserRole(claims.Role))
 
+		fmt.Println(userPermissions)
+		fmt.Println(requiredPermissions)
+
 		for _, requiredPermission := range requiredPermissions {
 			if !slices.Contains(userPermissions, requiredPermission) {
 				return utilities.Forbidden()

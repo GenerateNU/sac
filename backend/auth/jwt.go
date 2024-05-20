@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -39,6 +40,7 @@ type JWTType string
 const (
 	AccessToken  JWTType = "access"
 	RefreshToken JWTType = "refresh"
+	CSRFToken	 JWTType = "csrf"
 )
 
 type Token struct {
@@ -63,8 +65,10 @@ type JWTClientInterface interface {
 type JWTClient struct {
 	RefreshExp    time.Duration
 	AccessExp     time.Duration
+	CSRFExp 	  time.Duration
 	RefreshKey    *m.Secret[string]
 	AccessKey     *m.Secret[string]
+	CSRFKey 	  *m.Secret[string]
 	SigningMethod jwt.SigningMethod
 }
 
@@ -74,19 +78,24 @@ func NewJWTClient(authSettings config.AuthSettings, signingMethod jwt.SigningMet
 		AccessExp:     constants.ACCESS_TOKEN_EXPIRY,
 		RefreshKey:    authSettings.RefreshKey,
 		AccessKey:     authSettings.AccessKey,
+		CSRFKey: 	   authSettings.CSRFKey,
 		SigningMethod: signingMethod,
 	}
 }
 
 func (j *JWTClient) GenerateTokenPair(accessClaims, refreshClaims Claims) (*Token, error) {
 	accessToken, err := j.GenerateToken(accessClaims, AccessToken)
-	if err != nil {
+	if err != nil{
 		return nil, err
 	}
 
 	refreshToken, err := j.GenerateToken(refreshClaims, RefreshToken)
 	if err != nil {
 		return nil, err
+	}
+
+	if accessToken == nil || refreshToken == nil {
+		return nil, errors.New("failed to generate token pair")
 	}
 
 	return &Token{
@@ -228,6 +237,8 @@ func (j *JWTClient) getExpiry(tokenType JWTType) time.Duration {
 		return j.AccessExp
 	case RefreshToken:
 		return j.RefreshExp
+	case CSRFToken:
+		return j.CSRFExp
 	}
 
 	return 0
@@ -302,10 +313,12 @@ func GenerateRefreshCookie(value string) *fiber.Cookie {
 }
 
 func SetResponseTokens(c *fiber.Ctx, tokens *Token) error {
+	if tokens == nil {
+		return errors.New("tokens are nil")
+	}
 	// Set the tokens in the response
 	// should also blacklist the old refresh and access tokens
-
-	c.Set("Authorization", fmt.Sprintf("Bearer %s", tokens.AccessToken))
+	c.Set("Authorization", fmt.Sprintf("Bearer %s", &tokens.AccessToken))
 	c.Cookie(&fiber.Cookie{
 		Name:     "refresh_token",
 		Value:    string(tokens.RefreshToken),

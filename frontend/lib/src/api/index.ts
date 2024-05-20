@@ -7,4 +7,5 @@ export * from "./categoryApi";
 export * from "./pointOfContactApi";
 export * from "./fileApi";
 export * from "./authApi";
+export * from "./calendarApi";
 export * from "./base";

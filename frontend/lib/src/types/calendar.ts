@@ -1,0 +1,1 @@
+export type CalendarType = 'google' | 'outlook';
