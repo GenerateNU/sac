@@ -111,7 +111,7 @@ func (a *AuthController) Refresh(c *fiber.Ctx) error {
 	var refreshBody RefreshTokenCookieBody
 
 	if err := c.CookieParser(&refreshBody); err != nil {
-		return utilities.InvalidJSON()
+		return utilities.InvalidCookies()
 	}
 
 	ctx, cancel := context.WithTimeout(c.Context(), constants.HANDLER_TIMEOUT)
