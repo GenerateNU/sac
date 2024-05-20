@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/GenerateNU/sac/backend/auth"
+	"github.com/GenerateNU/sac/backend/constants"
 	authEntities "github.com/GenerateNU/sac/backend/entities/auth"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/entities/users"
@@ -72,6 +73,10 @@ func (a *AuthService) Login(loginBody authEntities.LoginResponseBody) (*models.U
 		},
 	})
 	if err != nil {
+		return nil, nil, err
+	}
+
+	if err := a.ServiceParams.Integrations.ActiveToken.StoreRefreshToken(string(tokens.RefreshToken), user.ID.String(), constants.REFRESH_TOKEN_EXPIRY); err != nil {
 		return nil, nil, err
 	}
 

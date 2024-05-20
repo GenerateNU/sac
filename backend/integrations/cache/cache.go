@@ -1,96 +1,60 @@
 package cache
 
-// import (
-// 	"fmt"
-// 	"time"
+import (
+	"context"
+	"time"
 
-// 	"github.com/GenerateNU/sac/backend/auth"
-// 	"github.com/GenerateNU/sac/backend/errors"
-// 	"github.com/gofiber/fiber/v2"
-// 	goredis "github.com/redis/go-redis/v9"
-// )
+	"github.com/redis/go-redis/v9"
+)
 
-// type RedisClientInterface interface {
-// 	BlacklistToken(c *fiber.Ctx, tokenString string, tokenType auth.JWTType) *errors.Error
-// 	IsBlackListed(c *fiber.Ctx, tokenString string, tokenType auth.JWTType) (bool, *errors.Error)
-// }
+type CacheClientInterface interface {
+	Set(key string, value interface{}, expiration time.Duration) error
+	Get(key string) (string, error)
+	Del(key string) error
+	Exists(key string) (bool, error)
+	SAdd(key string, members ...interface{}) error
+	SIsMember(key string, member interface{}) (bool, error)
+}
 
-// type RedisClient struct {
-// 	r *goredis.Client
-// 	j auth.JWTClientInterface
-// }
+type RedisClient struct {
+	Client *redis.Client
+	Ctx    context.Context
+}
 
-// type RedisSettings struct {
-// 	Host     string
-// 	Port     uint
-// 	Password string
-// 	DB       int
-// }
+func NewRedisClient(addr, password string, db int) *RedisClient {
+	client := redis.NewClient(&redis.Options{
+		Addr:     addr,
+		Password: password,
+		DB:       db,
+	})
 
-// func NewRedisClient(rs RedisSettings, jwtClient auth.JWTClientInterface) *RedisClient {
-// 	redisClient := goredis.NewClient(&goredis.Options{
-// 		Addr:     fmt.Sprintf("%s:%d", rs.Host, rs.Port),
-// 		Password: rs.Password,
-// 		DB:       rs.DB,
-// 	})
+	return &RedisClient{
+		Client: client,
+		Ctx:    context.Background(),
+	}
+}
 
-// 	return &RedisClient{
-// 		r: redisClient,
-// 		j: jwtClient,
-// 	}
-// }
+func (r *RedisClient) Set(key string, value interface{}, expiration time.Duration) error {
+	return r.Client.Set(r.Ctx, key, value, expiration).Err()
+}
 
-// // checks if a token is blacklisted for a user
-// func (r *RedisClient) IsBlackListed(c *fiber.Ctx, tokenString string, tokenType auth.JWTType) (bool, *errors.Error) {
-// 	tokenIsValid, err := r.j.IsTokenValid(tokenString, tokenType)
+func (r *RedisClient) Get(key string) (string, error) {
+	return r.Client.Get(r.Ctx, key).Result()
+}
 
-// 	if !tokenIsValid {
-// 		return false, &errors.Error{Message: "Token is not valid", StatusCode: fiber.StatusUnauthorized}
-// 	}
+func (r *RedisClient) Del(key string) error {
+	return r.Client.Del(r.Ctx, key).Err()
+}
 
-// 	if err != nil {
-// 		return false, err
-// 	}
+func (r *RedisClient) Exists(key string) (bool, error) {
+	result, err := r.Client.Exists(r.Ctx, key).Result()
+	return result > 0, err
+}
 
-// 	// Check if this token is in the blacklist
-// 	exists, err1 := r.r.Exists(c.Context(), tokenString).Result()
+func (r *RedisClient) SAdd(key string, members ...interface{}) error {
+	return r.Client.SAdd(r.Ctx, key, members...).Err()
+}
 
-// 	if err1 != nil {
-// 		return false, &errors.Error{Message: err1.Error()}
-// 	}
-
-// 	return exists == 1, nil
-// }
-
-// // adds a token to the blacklist set for a user
-// func (r *RedisClient) BlacklistToken(c *fiber.Ctx, tokenString string, tokenType auth.JWTType) *errors.Error {
-// 	tokenIsValid, err := r.j.IsTokenValid(tokenString, tokenType)
-
-// 	if !tokenIsValid {
-// 		return &errors.InvalidToken
-// 	} else if err != nil {
-// 		return err
-// 	}
-
-// 	claims, err := r.j.ExtractClaims(tokenString, tokenType)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	expValue, ok := claims["exp"].(float64)
-
-// 	if !ok {
-// 		// return &errors.FailedToBlacklistToken
-// 	}
-
-// 	expTime := time.Unix(int64(expValue), 0)
-// 	duration := time.Until(expTime)
-
-// 	// set the token as a key in redis
-// 	err1 := r.r.SAdd(c.Context(), tokenString, "blacklisted", duration).Err()
-
-// 	if err1 != nil {
-// 		// return &errors.FailedToBlacklistToken
-// 	}
-// 	return nil
-// }
+func (r *RedisClient) SIsMember(key string, member interface{}) (bool, error) {
+	return r.Client.SIsMember(r.Ctx, key, member).Result()
+}

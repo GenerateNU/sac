@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  redis-active-tokens:
+    image: redis:latest
+    container_name: redis_active_tokens
+    ports:
+      - 6379:6379
+    volumes:
+      - redis-active-data:/data
+
+  redis-blacklist:
+    image: redis:latest
+    container_name: redis_blacklist
+    ports:
+      - 6380:6379
+    volumes:
+      - redis-blacklist-data:/data
+
+volumes:
+  redis-active-data:
+  redis-blacklist-data:
