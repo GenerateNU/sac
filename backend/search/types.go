@@ -3,6 +3,7 @@ package search
 
 import (
 	"strings"
+	"time"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
 )
@@ -14,11 +15,11 @@ type Json map[string]interface{}
 // specified; depending on what we are looking to search we'll need to add different clauses.
 type SearchEndpointRequest Json
 
-// Used in SearchEndpointRequest
-type TagFilterInSearchEndpointRequest struct {
-	Term struct {
-		Tag string `json:"tag"`
-	} `json:"term"`
+// Used for SearchEndpointRequests.
+type BooleanQuery struct {
+	Must   []Json `json:"must"`
+	Should []Json `json:"should"`
+	Filter []Json `json:"filter"`
 }
 
 // Used for responses from OpenSearch GET /<index>/_search requests.
@@ -66,12 +67,6 @@ type ClubSearchQuery struct {
 
 // To Query DSL JSON
 func (q *ClubSearchQuery) ToSearchEndpointRequest() SearchEndpointRequest {
-	type BooleanQuery struct {
-		Must   []Json `json:"must"`
-		Should []Json `json:"should"`
-		Filter []Json `json:"filter"`
-	}
-
 	query := BooleanQuery{}
 
 	if q.Search != "" {
@@ -120,6 +115,127 @@ func (q *ClubSearchQuery) ToSearchEndpointRequest() SearchEndpointRequest {
 // The (successful) response of an API GET /api/v1/search/clubs request.
 type ClubSearchResult struct {
 	Results []models.Club `json:"results"`
+}
+
+// How Events are represented in the OpenSearch index.
+type EventSearchDocument struct {
+	Name        string           `json:"name"`
+	Preview     string           `json:"preview"`
+	Description string           `json:"description"`
+	EventType   models.EventType `json:"event_type"`
+	StartTime   time.Time        `json:"start_time"`
+	EndTime     time.Time        `json:"end_time"`
+	Clubs       []string         `json:"clubs"`
+	Tags        []string         `json:"tags"`
+}
+
+func EventSearchDocumentFromEvent(c *models.Event) EventSearchDocument {
+	tagIds := make([]string, len(c.Tag))
+	for i, tag := range c.Tag {
+		tagIds[i] = tag.ID.String()
+	}
+
+	clubIds := make([]string, len(c.Clubs))
+	for i, club := range c.Clubs {
+		clubIds[i] = club.ID.String()
+	}
+
+	return EventSearchDocument{
+		Name:        c.Name,
+		Preview:     c.Preview,
+		Description: c.Description,
+		EventType:   c.EventType,
+		StartTime:   c.StartTime,
+		EndTime:     c.EndTime,
+		Tags:        tagIds,
+		Clubs:       clubIds,
+	}
+}
+
+// Query parameters for an API GET /api/v1/search/events request.
+type EventSearchQuery struct {
+	Search    string             `query:"search"`
+	StartTime time.Time          `query:"start_time"`
+	EndTime   time.Time          `query:"end_time"`
+	EventType []models.EventType `query:"event_type"`
+	Clubs     []string           `query:"clubs"`
+	Tags      []string           `query:"tags"`
+}
+
+// To Query DSL JSON
+func (q *EventSearchQuery) ToSearchEndpointRequest() SearchEndpointRequest {
+	query := BooleanQuery{}
+
+	if q.Search != "" {
+		query.Must = append(query.Must, Json{
+			"query_string": Json{
+				"query": q.Search,
+			},
+		})
+	}
+
+	if !q.StartTime.IsZero() {
+		query.Filter = append(query.Filter, Json{
+			"range": Json{
+				"start_time": Json{
+					"gte": q.StartTime,
+				},
+			},
+		})
+	}
+
+	if !q.EndTime.IsZero() {
+		query.Filter = append(query.Filter, Json{
+			"range": Json{
+				"end_time": Json{
+					"lte": q.EndTime,
+				},
+			},
+		})
+	}
+
+	if len(q.EventType) != 0 {
+		query.Filter = append(query.Filter, Json{
+			"terms": Json{
+				"event_type": q.EventType,
+			},
+		})
+	}
+
+	if len(q.Clubs) != 0 {
+		query.Filter = append(query.Filter, Json{
+			"match": Json{
+				"tags": Json{
+					"query":                strings.Join(q.Clubs, " "),
+					"operator":             "or",
+					"minimum_should_match": 1,
+				},
+			},
+		})
+	}
+
+	if len(q.Tags) != 0 {
+		query.Filter = append(query.Filter, Json{
+			"match": Json{
+				"tags": Json{
+					"query":                strings.Join(q.Tags, " "),
+					"operator":             "or",
+					"minimum_should_match": 1,
+				},
+			},
+		})
+	}
+
+	return SearchEndpointRequest{
+		"query": Json{
+			"bool": query,
+		},
+	}
+}
+
+// The (successful) response of an API GET /api/v1/search/events request.
+type EventSearchResult struct {
+	Results []models.Event `json:"results"`
 }
 
 // Used for making OpenSearch /_bulk requests.

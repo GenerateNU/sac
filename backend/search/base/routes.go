@@ -12,4 +12,5 @@ func Search(params types.RouteParams) {
 	search := params.Router.Group("/search")
 
 	search.Get("/clubs", searchController.SearchClubs)
+	search.Get("/events", searchController.SearchEvents)
 }

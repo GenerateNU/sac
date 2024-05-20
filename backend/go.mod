@@ -9,7 +9,6 @@ require (
 	github.com/garrettladley/fiberpaginate v1.0.1
 	github.com/garrettladley/mattress v0.4.0
 	github.com/go-playground/validator/v10 v10.20.0
-	github.com/go-resty/resty/v2 v2.13.1
 	github.com/goccy/go-json v0.10.2
 	github.com/gofiber/fiber/v2 v2.52.4
 	github.com/gofiber/swagger v1.0.0

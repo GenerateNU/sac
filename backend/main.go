@@ -76,6 +76,7 @@ func main() {
 
 	if *seedSearch {
 		search.SeedClubs(db)
+		search.SeedEvents(db)
 	}
 
 	app := server.Init(db, integrations, *config)

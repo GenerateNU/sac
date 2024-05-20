@@ -3,7 +3,6 @@ package base
 import (
 	"net/http"
 
-	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/garrettladley/fiberpaginate"
 	"github.com/gofiber/fiber/v2"

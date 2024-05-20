@@ -99,6 +99,27 @@ def tags_prompt(name: str, description: str) -> str:
     Your output should just be the JSON with the array, no other text. Thank you!
     """
 
+def events_prompt(name: str, description: str) -> str:
+    return f"""
+    I need your help writing event descriptions to create some mock data for an app I'm working on. The club's name is \"{name}\", and its description is \"{description}\".
+    Generate a one paragraph description of an event this club cluld have. Use a mix of friendly, welcoming, and informative language and content. Store in this a JSON field \"event\".
+    Your output should just be the JSON with the generated description, no other text. Thank you!
+    """
+
+def random_start_and_endtimes() -> tuple[datetime.datetime, datetime.datetime]:
+    year = random.randint(2024,2026)
+    month = random.randint(1,12)
+    day = random.randint(1,28)
+    hour = random.randint(12,23)
+    minute = random.choice([0,15,30])
+
+    extra_hours = time_to_add = datetime.timedelta(hours=random.randint(1,4))
+
+    start_time = datetime.datetime(year, month, day, hour, minute)
+    end_time = start_time + extra_hours
+
+    return (start_time, end_time)
+
 # STEP 1: Generate mock data.
 if not args.skip_generation:
     print("Skip generation is false, making mock data...")
@@ -109,6 +130,7 @@ if not args.skip_generation:
 
     clubs_json = json.loads(clubs_response.text)['value']
     clubs = []
+    events = []
 
     bar = Bar('Making club data', max=len(clubs_json), suffix="%(remaining)d Remaining, ETA: %(eta_td)s")
     bad_club_descriptions = 0
@@ -147,7 +169,7 @@ if not args.skip_generation:
 
         tags = json.loads(tags_response.choices[0].message.content)['tags']
         
-        clubs.append({
+        clubData = {
             "id": str(uuid4()),
             "name": name,
             "preview": preview,
@@ -157,9 +179,41 @@ if not args.skip_generation:
             "recruitment_cycle": random.choice(["fall", "spring", "fallSpring", "always"]),
             "recruitment_type": random.choice(["unrestricted", "application"]),
             "tags": tags
-        })
+        }
 
+        clubs.append(clubData)
+
+        iterations = random.randint(1,3)
+        for i in range(0,iterations):
+            event_response = openai_client.chat.completions.create(
+                model="gpt-3.5-turbo-0125",
+                response_format={ "type": "json_object" },
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant designed to output JSON."},
+                    {"role": "user", "content": events_prompt(name, description)}
+                ]
+            )
+
+            # Some descriptions will not be valid JSON
+            event_description = json.loads(event_response.choices[0].message.content)['event']
+            if not isinstance(event_description, str):
+                event_description = "Event description"
+
+            times = random_start_and_endtimes()
+
+            events.append({
+                "id": str(uuid4()),
+                "club_id": clubData["id"],
+                "name": f"Event for {clubData["name"]}",
+                "preview": "This club is holding an event.",
+                "description": event_description,
+                "event_type": random.choice(["hybrid", "in_person", "virtual"]),
+                "start_time": times[0].strftime("%Y-%m-%d %H:%M:%S"),
+                "end_time": times[1].strftime("%Y-%m-%d %H:%M:%S"),
+                "tags": random.sample(tags, random.randint(1,len(tags)))              
+            })
         bar.next()
+    
     bar.finish()
     print(f"Bad club descriptions (JSON not created properly): {bad_club_descriptions}")
 
@@ -185,7 +239,8 @@ if not args.skip_generation:
             "category_uuids": category_uuids,
             "tag_uuids": tag_uuids,
             "tags_to_categories": tags_to_categories,
-            "clubs": clubs
+            "clubs": clubs,
+            "events": events
         }
     ))
 
@@ -198,13 +253,16 @@ category_uuids = {}
 tag_uuids = {}
 tags_to_categories = {}
 clubs = []
+events = []
 
 with open('MOCK_DATA_OUTPUT.json', 'r', encoding='utf-8') as file:
     data = json.loads(file.read())
     clubs = data['clubs']
+    events = data['events']
     tags_to_categories = data['tags_to_categories']
     tag_uuids = data['tag_uuids']
     category_uuids = data['category_uuids']
+    
 
 
 # FIXME: should probably be in args or something but ughhhhh 
@@ -261,6 +319,28 @@ def fill_clubs():
         cur.execute(cmd, data)
 
 @transaction
+def fill_events():
+    print("Creating event data...")
+    cmd = """INSERT INTO "events" ("id", "host", "name", "preview", "description", "event_type", "start_time", "end_time", "is_public", "is_draft", "is_archived") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+
+    for event in events:
+        data = (
+            event['id'],
+            event['club_id'],
+            event['name'].replace("\'", "''"),
+            event['preview'].replace("\'", "''"),
+            event['description'].replace('\'', "''"),
+            event['event_type'],
+            event['start_time'],
+            event['end_time'],
+            True,
+            False,
+            False
+        )
+
+        cur.execute(cmd, data)
+
+@transaction
 def fill_tags_and_categories():
     print("Creating category and tag data...")
     cmd = """INSERT INTO "categories" ("id", "name") VALUES (%s, %s);"""
@@ -292,7 +372,41 @@ def connect_clubs_to_tags():
 
     print(f"{bad_tags}/{total_tags} marked for not existing in tag_uuids.")
 
+@transaction 
+def connect_events_to_tags():
+    print("Adding tags to events...")
+    cmd = """INSERT INTO "event_tags" ("tag_id", "event_id") VALUES (%s, %s);"""
+   
+    # FIXME (maybe)?: The ChatGPT tags prompt will return tags that aren't in the list, hence this if statement being here.
+    # Don't think its a huge issue because ~half of tags are good. 
+    # FIXME (maybe)?: The ChatGPT tags prompt will return duplicate tags. oml
+    bad_tags = 0
+    total_tags = 0 
+    for event in events:
+        eventTagsWithDuplicatesRemoved = list(set(event['tags']))
+        total_tags += len(eventTagsWithDuplicatesRemoved)
+        for tag in eventTagsWithDuplicatesRemoved:
+            if tag in tag_uuids:
+                cur.execute(cmd, (tag_uuids[tag], event['id']))
+            else:
+                bad_tags += 1
+
+    print(f"{bad_tags}/{total_tags} marked for not existing in tag_uuids.")
+
+@transaction
+def connect_clubs_to_events():
+    print("Connecting events to clubs...")
+    cmd = """INSERT INTO "club_events" ("club_id", "event_id") VALUES (%s, %s);"""
+
+    for event in events:
+        data = (event["club_id"], event["id"])
+
+        cur.execute(cmd, data)
+
 delete_existing()
 fill_clubs()
+fill_events()
 fill_tags_and_categories()
 connect_clubs_to_tags()
+connect_events_to_tags()
+connect_clubs_to_events()

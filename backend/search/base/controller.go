@@ -44,3 +44,32 @@ func (s *SearchController) SearchClubs(c *fiber.Ctx) error {
 
 	return c.Status(http.StatusOK).JSON(result)
 }
+
+// SearchEvents godoc
+//
+// @Summary		Searches through events
+// @Description	Searches through events
+// @ID			search-club
+// @Tags      	search
+// @Accept		json
+// @Produce		json
+// @Param		searchQuery	query	models.SearchQueryParams	true	"Search Body"
+// @Success		200	  {object}	    []models.EventsSearchResult
+// @Failure     404   {object}		error
+// @Failure     500   {object}      error
+// @Router		/search/events  [get]
+func (s *SearchController) SearchEvents(c *fiber.Ctx) error {
+	var searchQuery search.EventSearchQuery
+
+	if err := c.QueryParser(&searchQuery); err != nil {
+		return utilities.InvalidJSON()
+	}
+
+	result, err := s.searchService.SearchEvents(searchQuery)
+
+	if err != nil {
+		return err
+	}
+
+	return c.Status(http.StatusOK).JSON(result)
+}

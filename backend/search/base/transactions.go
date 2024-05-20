@@ -68,3 +68,25 @@ func SearchClubs(db *gorm.DB, query search.ClubSearchQuery) (*search.ClubSearchR
 		Results: clubs,
 	}, nil
 }
+
+func SearchEvents(db *gorm.DB, query search.EventSearchQuery) (*search.EventSearchResult, error) {
+	result, err := doSearchGetRequest[search.SearchEndpointRequest, search.SearchEndpointResponse]("/events/_search", query.ToSearchEndpointRequest())
+	if err != nil {
+		return nil, nil
+	}
+
+	ids := make([]string, len(result.Hits.Hits))
+	for i, result := range result.Hits.Hits {
+		ids[i] = result.Id
+	}
+
+	var events []models.Event
+
+	if err = db.Model(&models.Event{}).Preload("Tag").Where("id IN ?", ids).Find(&events).Error; err != nil {
+		return nil, nil
+	}
+
+	return &search.EventSearchResult{
+		Results: events,
+	}, nil
+}

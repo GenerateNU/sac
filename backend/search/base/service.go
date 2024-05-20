@@ -8,6 +8,7 @@ import (
 
 type SearchServiceInterface interface {
 	SearchClubs(query search.ClubSearchQuery) (*search.ClubSearchResult, error)
+	SearchEvents(query search.EventSearchQuery) (*search.EventSearchResult, error)
 }
 
 type SearchService struct {
@@ -20,4 +21,8 @@ func NewSearchService(serviceParams types.ServiceParams) SearchServiceInterface 
 
 func (s *SearchService) SearchClubs(query search.ClubSearchQuery) (*search.ClubSearchResult, error) {
 	return SearchClubs(s.DB, query)
+}
+
+func (s *SearchService) SearchEvents(query search.EventSearchQuery) (*search.EventSearchResult, error) {
+	return SearchEvents(s.DB, query)
 }
