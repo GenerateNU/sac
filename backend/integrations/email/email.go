@@ -15,11 +15,11 @@ import (
 	"github.com/resend/resend-go/v2"
 )
 
-type EmailClientInterface interface {
-	SendPasswordResetEmail(name string, email string, token string) error
-	SendEmailVerification(email string, code string) error
-	SendWelcomeEmail(name string, email string) error
-	SendPasswordChangedEmail(name string, email string) error
+type EmailClient interface {
+	SendPasswordResetEmail(ctx context.Context, name string, email string, token string) error
+	SendEmailVerification(ctx context.Context, email string, code string) error
+	SendWelcomeEmail(ctx context.Context, name string, email string) error
+	SendPasswordChangedEmail(ctx context.Context, name string, email string) error
 }
 
 type ResendClient struct {
@@ -27,7 +27,7 @@ type ResendClient struct {
 	Dev    bool
 }
 
-func NewResendClient(settings config.ResendSettings, dev bool) EmailClientInterface {
+func NewResendClient(settings config.ResendSettings, dev bool) EmailClient {
 	hystrix.ConfigureCommand("send-email", hystrix.CommandConfig{
 		Timeout:               5000,
 		MaxConcurrentRequests: 100,
@@ -40,7 +40,7 @@ func NewResendClient(settings config.ResendSettings, dev bool) EmailClientInterf
 	}
 }
 
-func send(fromEmail string, toEmail string, subject string, template templ.Component, client *resend.Client) error {
+func send(ctx context.Context, fromEmail string, toEmail string, subject string, template templ.Component, client *resend.Client) error {
 	buffer := new(bytes.Buffer)
 	err := template.Render(context.Background(), buffer)
 	if err != nil {
@@ -54,7 +54,7 @@ func send(fromEmail string, toEmail string, subject string, template templ.Compo
 		Html:    buffer.String(),
 	}
 
-	err = hystrix.Do("send-email", func() error {
+	err = hystrix.DoC(ctx, "send-email", func(context.Context) error {
 		_, err := client.Emails.Send(params)
 		return err
 	}, nil)
@@ -65,34 +65,34 @@ func send(fromEmail string, toEmail string, subject string, template templ.Compo
 	return nil
 }
 
-func (r *ResendClient) SendPasswordResetEmail(name string, email string, token string) error {
+func (r *ResendClient) SendPasswordResetEmail(ctx context.Context, name string, email string, token string) error {
 	if r.Dev {
 		return nil
 	}
 
-	return send(constants.DEFAULT_FROM_EMAIL, email, "Password Reset", emails.PasswordReset(name, fmt.Sprintf("https://hipponeu.com/reset/%s", token)), r.Client)
+	return send(ctx, constants.DEFAULT_FROM_EMAIL, email, "Password Reset", emails.PasswordReset(name, fmt.Sprintf("https://hipponeu.com/reset/%s", token)), r.Client)
 }
 
-func (r *ResendClient) SendEmailVerification(email string, code string) error {
+func (r *ResendClient) SendEmailVerification(ctx context.Context, email string, code string) error {
 	if r.Dev {
 		return nil
 	}
 
-	return send(constants.DEFAULT_FROM_EMAIL, email, "Email Verification", emails.Verification(code), r.Client)
+	return send(ctx, constants.DEFAULT_FROM_EMAIL, email, "Email Verification", emails.Verification(code), r.Client)
 }
 
-func (r *ResendClient) SendWelcomeEmail(name string, email string) error {
+func (r *ResendClient) SendWelcomeEmail(ctx context.Context, name string, email string) error {
 	if r.Dev {
 		return nil
 	}
 
-	return send(constants.ONBOARDING_EMAIL, email, "Welcome to Hippo", emails.Welcome(name), r.Client)
+	return send(ctx, constants.ONBOARDING_EMAIL, email, "Welcome to Hippo", emails.Welcome(name), r.Client)
 }
 
-func (r *ResendClient) SendPasswordChangedEmail(name string, email string) error {
+func (r *ResendClient) SendPasswordChangedEmail(ctx context.Context, name string, email string) error {
 	if r.Dev {
 		return nil
 	}
 
-	return send(constants.DEFAULT_FROM_EMAIL, email, "Password Changed", emails.PasswordChangeComplete(name), r.Client)
+	return send(ctx, constants.DEFAULT_FROM_EMAIL, email, "Password Changed", emails.PasswordChangeComplete(name), r.Client)
 }

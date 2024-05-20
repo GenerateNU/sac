@@ -1,9 +1,11 @@
 package base
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/GenerateNU/sac/backend/auth"
+	"github.com/GenerateNU/sac/backend/constants"
 	authEntities "github.com/GenerateNU/sac/backend/entities/auth"
 	users "github.com/GenerateNU/sac/backend/entities/users/base"
 	"github.com/GenerateNU/sac/backend/utilities"
@@ -11,10 +13,10 @@ import (
 )
 
 type AuthController struct {
-	authService AuthServiceInterface
+	authService AuthServicer
 }
 
-func NewAuthController(authService AuthServiceInterface) *AuthController {
+func NewAuthController(authService AuthServicer) *AuthController {
 	return &AuthController{authService: authService}
 }
 
@@ -39,7 +41,10 @@ func (a *AuthController) Login(c *fiber.Ctx) error {
 		return utilities.InvalidJSON()
 	}
 
-	user, tokens, err := a.authService.Login(userBody)
+	ctx, cancel := context.WithTimeout(c.Context(), constants.HANDLER_TIMEOUT)
+	defer cancel()
+
+	user, tokens, err := a.authService.Login(ctx, userBody)
 	if err != nil {
 		return err
 	}
@@ -73,7 +78,10 @@ func (a *AuthController) Register(c *fiber.Ctx) error {
 		return utilities.InvalidJSON()
 	}
 
-	user, tokens, err := a.authService.Register(userBody)
+	ctx, cancel := context.WithTimeout(c.Context(), constants.HANDLER_TIMEOUT)
+	defer cancel()
+
+	user, tokens, err := a.authService.Register(ctx, userBody)
 	if err != nil {
 		return err
 	}
@@ -106,7 +114,10 @@ func (a *AuthController) Refresh(c *fiber.Ctx) error {
 		return utilities.InvalidJSON()
 	}
 
-	tokens, err := a.authService.Refresh(refreshBody.RefreshToken)
+	ctx, cancel := context.WithTimeout(c.Context(), constants.HANDLER_TIMEOUT)
+	defer cancel()
+
+	tokens, err := a.authService.Refresh(ctx, refreshBody.RefreshToken)
 	if err != nil {
 		return err
 	}
@@ -130,7 +141,10 @@ func (a *AuthController) Refresh(c *fiber.Ctx) error {
 // @Success		200	  {object}	  utilities.SuccessResponse
 // @Router		/auth/logout  [post]
 func (a *AuthController) Logout(c *fiber.Ctx) error {
-	err := a.authService.Logout(c)
+	ctx, cancel := context.WithTimeout(c.Context(), constants.HANDLER_TIMEOUT)
+	defer cancel()
+
+	err := a.authService.Logout(ctx, c)
 	if err != nil {
 		return err
 	}
@@ -159,7 +173,10 @@ func (a *AuthController) ForgotPassword(c *fiber.Ctx) error {
 		return utilities.InvalidJSON()
 	}
 
-	if err := a.authService.ForgotPassword(emailBody.Email); err != nil {
+	ctx, cancel := context.WithTimeout(c.Context(), constants.HANDLER_TIMEOUT)
+	defer cancel()
+
+	if err := a.authService.ForgotPassword(ctx, emailBody.Email); err != nil {
 		return err
 	}
 
@@ -188,7 +205,10 @@ func (a *AuthController) VerifyPasswordResetToken(c *fiber.Ctx) error {
 		return utilities.InvalidJSON()
 	}
 
-	if err := a.authService.VerifyPasswordResetToken(tokenBody); err != nil {
+	ctx, cancel := context.WithTimeout(c.Context(), constants.HANDLER_TIMEOUT)
+	defer cancel()
+
+	if err := a.authService.VerifyPasswordResetToken(ctx, tokenBody); err != nil {
 		return err
 	}
 
@@ -216,7 +236,10 @@ func (a *AuthController) SendCode(c *fiber.Ctx) error {
 		return utilities.InvalidJSON()
 	}
 
-	if err := a.authService.SendCode(emailBody.Email); err != nil {
+	ctx, cancel := context.WithTimeout(c.Context(), constants.HANDLER_TIMEOUT)
+	defer cancel()
+
+	if err := a.authService.SendCode(ctx, emailBody.Email); err != nil {
 		return err
 	}
 
@@ -244,7 +267,10 @@ func (a *AuthController) VerifyEmail(c *fiber.Ctx) error {
 		return utilities.InvalidJSON()
 	}
 
-	if err := a.authService.VerifyEmail(tokenBody); err != nil {
+	ctx, cancel := context.WithTimeout(c.Context(), constants.HANDLER_TIMEOUT)
+	defer cancel()
+
+	if err := a.authService.VerifyEmail(ctx, tokenBody); err != nil {
 		return err
 	}
 

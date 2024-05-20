@@ -1,12 +1,14 @@
 package base
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log/slog"
 	"time"
 
 	"github.com/GenerateNU/sac/backend/auth"
+	"github.com/GenerateNU/sac/backend/constants"
 	authEntities "github.com/GenerateNU/sac/backend/entities/auth"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/entities/users"
@@ -20,29 +22,29 @@ import (
 	"gorm.io/gorm"
 )
 
-type AuthServiceInterface interface {
-	GetRole(id string) (*models.UserRole, error)
-	Register(userBody usersEntities.CreateUserRequestBody) (*models.User, *auth.Token, error)
-	Login(userBody authEntities.LoginResponseBody) (*models.User, *auth.Token, error)
-	Refresh(refreshToken string) (*auth.Token, error)
-	Logout(c *fiber.Ctx) error
+type AuthServicer interface {
+	GetRole(ctx context.Context, id string) (*models.UserRole, error)
+	Register(ctx context.Context, userBody usersEntities.CreateUserRequestBody) (*models.User, *auth.Token, error)
+	Login(ctx context.Context, userBody authEntities.LoginResponseBody) (*models.User, *auth.Token, error)
+	Refresh(ctx context.Context, refreshToken string) (*auth.Token, error)
+	Logout(ctx context.Context, c *fiber.Ctx) error
 
-	SendCode(email string) error
-	VerifyEmail(emailBody VerifyEmailRequestBody) error
+	SendCode(ctx context.Context, email string) error
+	VerifyEmail(ctx context.Context, emailBody VerifyEmailRequestBody) error
 
-	ForgotPassword(email string) error
-	VerifyPasswordResetToken(passwordBody VerifyPasswordResetTokenRequestBody) error
+	ForgotPassword(ctx context.Context, email string) error
+	VerifyPasswordResetToken(ctx context.Context, passwordBody VerifyPasswordResetTokenRequestBody) error
 }
 
 type AuthService struct {
 	types.ServiceParams
 }
 
-func NewAuthService(serviceParams types.ServiceParams) AuthServiceInterface {
+func NewAuthService(serviceParams types.ServiceParams) AuthServicer {
 	return &AuthService{serviceParams}
 }
 
-func (a *AuthService) Login(loginBody authEntities.LoginResponseBody) (*models.User, *auth.Token, error) {
+func (a *AuthService) Login(ctx context.Context, loginBody authEntities.LoginResponseBody) (*models.User, *auth.Token, error) {
 	if err := utilities.Validate(a.Validate, loginBody, *utilities.NewMaybeError("password", auth.ValidatePassword(loginBody.Password))); err != nil {
 		return nil, nil, err
 	}
@@ -78,7 +80,7 @@ func (a *AuthService) Login(loginBody authEntities.LoginResponseBody) (*models.U
 	return user, tokens, nil
 }
 
-func (a *AuthService) Register(userBody usersEntities.CreateUserRequestBody) (*models.User, *auth.Token, error) {
+func (a *AuthService) Register(ctx context.Context, userBody usersEntities.CreateUserRequestBody) (*models.User, *auth.Token, error) {
 	if err := utilities.Validate(a.Validate, userBody, *utilities.NewMaybeError("password", auth.ValidatePassword(userBody.Password))); err != nil {
 		return nil, nil, err
 	}
@@ -98,20 +100,32 @@ func (a *AuthService) Register(userBody usersEntities.CreateUserRequestBody) (*m
 	user.Email = utilities.NormalizeEmail(userBody.Email)
 	user.PasswordHash = *passwordHash
 
-	if err := a.Integrations.Email.SendWelcomeEmail(fmt.Sprintf("%s %s", user.FirstName, user.LastName), user.Email); err != nil {
+	sendWelcomeCtx, sendWelcomeCancel := context.WithTimeout(ctx, constants.THIRD_PARTY_TIMEOUT)
+	defer sendWelcomeCancel()
+
+	if err := a.Integrations.Email.SendWelcomeEmail(sendWelcomeCtx, fmt.Sprintf("%s %s", user.FirstName, user.LastName), user.Email); err != nil {
 		return nil, nil, fmt.Errorf("failed to send welcome email: %w", err)
 	}
 
-	user, err = CreateUser(a.DB, user)
+	createUserCtx, createUserCancel := context.WithTimeout(ctx, constants.QUERY_TIMEOUT)
+	defer createUserCancel()
+
+	user, err = CreateUser(createUserCtx, a.DB, user)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	if err := a.SendCode(user.Email); err != nil {
+	sendCodeCtx, sendCodeCancel := context.WithTimeout(ctx, constants.THIRD_PARTY_TIMEOUT)
+	defer sendCodeCancel()
+
+	if err := a.SendCode(sendCodeCtx, user.Email); err != nil {
 		return nil, nil, err
 	}
 
-	_, tokens, err := a.Login(authEntities.LoginResponseBody{Email: user.Email, Password: userBody.Password})
+	loginCtx, loginCancel := context.WithTimeout(ctx, constants.QUERY_TIMEOUT)
+	defer loginCancel()
+
+	_, tokens, err := a.Login(loginCtx, authEntities.LoginResponseBody{Email: user.Email, Password: userBody.Password})
 	if err != nil {
 		return nil, nil, err
 	}
@@ -119,13 +133,16 @@ func (a *AuthService) Register(userBody usersEntities.CreateUserRequestBody) (*m
 	return user, tokens, nil
 }
 
-func (a *AuthService) Refresh(refreshToken string) (*auth.Token, error) {
+func (a *AuthService) Refresh(ctx context.Context, refreshToken string) (*auth.Token, error) {
 	claims, err := a.JWT.ExtractClaims(refreshToken, auth.RefreshToken)
 	if err != nil {
 		return nil, err
 	}
 
-	role, err := a.GetRole(claims["iss"].(string))
+	getRoleCtx, getRoleCancel := context.WithTimeout(ctx, constants.QUERY_TIMEOUT)
+	defer getRoleCancel()
+
+	role, err := a.GetRole(getRoleCtx, claims["iss"].(string))
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +168,7 @@ func (a *AuthService) Refresh(refreshToken string) (*auth.Token, error) {
 	return tokens, nil
 }
 
-func (a *AuthService) GetRole(id string) (*models.UserRole, error) {
+func (a *AuthService) GetRole(ctx context.Context, id string) (*models.UserRole, error) {
 	idAsUUID, err := utilities.ValidateID(id)
 	if err != nil {
 		return nil, err
@@ -165,13 +182,16 @@ func (a *AuthService) GetRole(id string) (*models.UserRole, error) {
 	return &user.Role, nil
 }
 
-func (a *AuthService) ForgotPassword(email string) error {
+func (a *AuthService) ForgotPassword(ctx context.Context, email string) error {
 	user, err := users.GetUserByEmail(a.DB, email)
 	if err != nil {
 		return nil
 	}
 
-	activeToken, err := GetActiveTokenByUserID(a.DB, user.ID, models.PasswordResetType)
+	getActiveTokenCtx, getActiveTokenCancel := context.WithTimeout(ctx, constants.QUERY_TIMEOUT)
+	defer getActiveTokenCancel()
+
+	activeToken, err := GetActiveTokenByUserID(getActiveTokenCtx, a.DB, user.ID, models.PasswordResetType)
 	if err != nil {
 		if !utilities.IsNotFound(err) {
 			return err
@@ -179,7 +199,10 @@ func (a *AuthService) ForgotPassword(email string) error {
 	}
 
 	if activeToken != nil {
-		err := a.Integrations.Email.SendPasswordResetEmail(user.FirstName, user.Email, activeToken.Token)
+		sendEmailCtx, sendEmailCancel := context.WithTimeout(ctx, constants.THIRD_PARTY_TIMEOUT)
+		defer sendEmailCancel()
+
+		err := a.Integrations.Email.SendPasswordResetEmail(sendEmailCtx, user.FirstName, user.Email, activeToken.Token)
 		if err != nil {
 			return err
 		}
@@ -192,23 +215,32 @@ func (a *AuthService) ForgotPassword(email string) error {
 		return err
 	}
 
-	if err := SaveToken(a.DB, user.ID, *token, models.PasswordResetType, time.Now().Add(time.Hour*24).UTC()); err != nil {
+	saveTokenCtx, saveTokenCancel := context.WithTimeout(ctx, constants.QUERY_TIMEOUT)
+	defer saveTokenCancel()
+
+	if err := SaveToken(saveTokenCtx, a.DB, user.ID, *token, models.PasswordResetType, time.Now().Add(time.Hour*24).UTC()); err != nil {
 		return err
 	}
 
-	if err := a.Integrations.Email.SendPasswordResetEmail(user.FirstName, user.Email, *token); err != nil {
+	sendPasswordResetCtx, sendPasswordResetCancel := context.WithTimeout(ctx, constants.THIRD_PARTY_TIMEOUT)
+	defer sendPasswordResetCancel()
+
+	if err := a.Integrations.Email.SendPasswordResetEmail(sendPasswordResetCtx, user.FirstName, user.Email, *token); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (a *AuthService) VerifyPasswordResetToken(passwordBody VerifyPasswordResetTokenRequestBody) error {
+func (a *AuthService) VerifyPasswordResetToken(ctx context.Context, passwordBody VerifyPasswordResetTokenRequestBody) error {
 	if err := utilities.Validate(a.Validate, passwordBody); err != nil {
 		return err
 	}
 
-	token, err := GetToken(a.DB, passwordBody.Token, models.PasswordResetType)
+	getTokenCtx, getTokenCancel := context.WithTimeout(ctx, constants.QUERY_TIMEOUT)
+	defer getTokenCancel()
+
+	token, err := GetToken(getTokenCtx, a.DB, passwordBody.Token, models.PasswordResetType)
 	if err != nil {
 		return err
 	}
@@ -222,32 +254,13 @@ func (a *AuthService) VerifyPasswordResetToken(passwordBody VerifyPasswordResetT
 		return fmt.Errorf("failed to hash password: %w", err)
 	}
 
-	tx := a.DB.Begin()
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
+	passwordResetCtx, passwordResetCancel := context.WithTimeout(ctx, constants.QUERY_TIMEOUT)
+	defer passwordResetCancel()
 
-	if err := users.UpdatePassword(tx, token.UserID, *hash); err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	if err := DeleteToken(tx, passwordBody.Token, models.PasswordResetType); err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	if err := tx.Commit().Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	return nil
+	return PasswordReset(passwordResetCtx, a.DB, token.UserID, *hash, passwordBody.Token)
 }
 
-func (a *AuthService) SendCode(email string) error {
+func (a *AuthService) SendCode(ctx context.Context, email string) error {
 	user, err := users.GetUserByEmail(a.DB, email)
 	if err != nil {
 		return err
@@ -257,7 +270,10 @@ func (a *AuthService) SendCode(email string) error {
 		return fmt.Errorf("user is already verified")
 	}
 
-	activeOTP, err := GetActiveTokenByUserID(a.DB, user.ID, models.EmailVerificationType)
+	activeOTPCtx, activeOTPCancel := context.WithTimeout(ctx, constants.QUERY_TIMEOUT)
+	defer activeOTPCancel()
+
+	activeOTP, err := GetActiveTokenByUserID(activeOTPCtx, a.DB, user.ID, models.EmailVerificationType)
 	if err != nil {
 		if !utilities.IsNotFound(err) {
 			return err
@@ -265,7 +281,10 @@ func (a *AuthService) SendCode(email string) error {
 	}
 
 	if activeOTP != nil {
-		if err := a.Integrations.Email.SendEmailVerification(user.Email, activeOTP.Token); err != nil {
+		sendEmailCtx, sendEmailCancel := context.WithTimeout(ctx, constants.THIRD_PARTY_TIMEOUT)
+		defer sendEmailCancel()
+
+		if err := a.Integrations.Email.SendEmailVerification(sendEmailCtx, user.Email, activeOTP.Token); err != nil {
 			return err
 		}
 
@@ -277,23 +296,29 @@ func (a *AuthService) SendCode(email string) error {
 		return fmt.Errorf("failed to generate OTP: %w", err)
 	}
 
-	if err := SaveToken(a.DB, user.ID, *otp, models.EmailVerificationType, time.Now().Add(time.Minute*5).UTC()); err != nil {
+	saveTokenCtx, saveTokenCancel := context.WithTimeout(ctx, constants.QUERY_TIMEOUT)
+	defer saveTokenCancel()
+
+	if err := SaveToken(saveTokenCtx, a.DB, user.ID, *otp, models.EmailVerificationType, time.Now().Add(time.Minute*5).UTC()); err != nil {
 		return err
 	}
 
-	if err := a.Integrations.Email.SendEmailVerification(user.Email, *otp); err != nil {
+	sendEmailCtx, sendEmailCancel := context.WithTimeout(ctx, constants.THIRD_PARTY_TIMEOUT)
+	defer sendEmailCancel()
+
+	if err := a.Integrations.Email.SendEmailVerification(sendEmailCtx, user.Email, *otp); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func verifyEmailHelper(user *models.User, token string, db *gorm.DB) error {
+func verifyEmailHelper(ctx context.Context, user *models.User, token string, db *gorm.DB) error {
 	if user.IsVerified {
 		return fmt.Errorf("user is already verified")
 	}
 
-	otp, otpErr := GetToken(db, token, models.EmailVerificationType)
+	otp, otpErr := GetToken(ctx, db, token, models.EmailVerificationType)
 	if otpErr != nil {
 		return otpErr
 	}
@@ -310,7 +335,7 @@ func verifyEmailHelper(user *models.User, token string, db *gorm.DB) error {
 	return nil
 }
 
-func (a *AuthService) VerifyEmail(emailBody VerifyEmailRequestBody) error {
+func (a *AuthService) VerifyEmail(ctx context.Context, emailBody VerifyEmailRequestBody) error {
 	if err := utilities.Validate(a.Validate, emailBody); err != nil {
 		return err
 	}
@@ -320,36 +345,14 @@ func (a *AuthService) VerifyEmail(emailBody VerifyEmailRequestBody) error {
 		return err
 	}
 
-	if err := verifyEmailHelper(user, emailBody.Token, a.DB); err != nil {
+	if err := verifyEmailHelper(ctx, user, emailBody.Token, a.DB); err != nil {
 		return err
 	}
 
-	tx := a.DB.Begin()
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
-
-	if err := users.UpdateEmailVerification(tx, user.ID); err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	if err := DeleteToken(tx, emailBody.Token, models.EmailVerificationType); err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	if err := tx.Commit().Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	return nil
+	return VerifyEmail(ctx, a.DB, user.ID, emailBody.Token)
 }
 
-func (a *AuthService) Logout(c *fiber.Ctx) error {
+func (a *AuthService) Logout(ctx context.Context, c *fiber.Ctx) error {
 	c.Cookie(&fiber.Cookie{
 		Name:     "refresh_token",
 		Value:    "",

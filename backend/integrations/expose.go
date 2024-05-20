@@ -9,6 +9,6 @@ import (
 type Integrations struct {
 	Search search.SearchClientInterface
 	AI     search.AIClientInterface
-	Email  email.EmailClientInterface
+	Email  email.EmailClient
 	File   file.FileClientInterface
 }

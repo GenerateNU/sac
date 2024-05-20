@@ -1,6 +1,7 @@
 package users
 
 import (
+	"context"
 	"errors"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
@@ -42,8 +43,8 @@ func GetUserByEmail(db *gorm.DB, email string) (*models.User, error) {
 	return &user, nil
 }
 
-func UpdateEmailVerification(db *gorm.DB, id uuid.UUID) error {
-	result := db.Model(&models.User{}).Where("id = ?", id).Update("is_verified", true)
+func UpdateEmailVerification(ctx context.Context, db *gorm.DB, id uuid.UUID) error {
+	result := db.WithContext(ctx).Model(&models.User{}).Where("id = ?", id).Update("is_verified", true)
 	if result.RowsAffected == 0 {
 		if result.Error == nil {
 			return utilities.ErrNotFound
