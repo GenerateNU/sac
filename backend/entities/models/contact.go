@@ -43,13 +43,8 @@ func GetContentPrefix(contactType ContactType) string {
 type Contact struct {
 	Model
 
-	Type    ContactType `json:"type" validate:"required,max=255,oneof=facebook instagram x linkedin youtube github slack discord email customSite"`
-	Content string      `json:"content" validate:"required,max=255"`
+	Type    ContactType `json:"type"`
+	Content string      `json:"content"`
 
-	ClubID uuid.UUID `json:"-" validate:"uuid4"`
-}
-
-type PutContactRequestBody struct {
-	Type    ContactType `json:"type" validate:"required,max=255,oneof=facebook instagram x linkedin youtube github slack discord email customSite,contact_pointer"`
-	Content string      `json:"content" validate:"required,contact_pointer,max=255"`
+	ClubID uuid.UUID `json:"-"`
 }

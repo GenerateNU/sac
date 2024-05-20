@@ -42,14 +42,14 @@ func readLocal(v *viper.Viper, path string, useDevDotEnv bool) (*Settings, error
 		return nil, fmt.Errorf("failed to read Pinecone settings: %w", err)
 	}
 
-	settings.PineconeSettings = *pineconeSettings
+	settings.Pinecone = *pineconeSettings
 
 	openAISettings, err := readOpenAISettings()
 	if err != nil {
 		return nil, fmt.Errorf("failed to read OpenAI settings: %w", err)
 	}
 
-	settings.OpenAISettings = *openAISettings
+	settings.OpenAI = *openAISettings
 
 	awsSettings, err := readAWSSettings()
 	if err != nil {
@@ -63,7 +63,7 @@ func readLocal(v *viper.Viper, path string, useDevDotEnv bool) (*Settings, error
 		return nil, fmt.Errorf("failed to read Resend settings: %w", err)
 	}
 
-	settings.ResendSettings = *resendSettings
+	settings.Resend = *resendSettings
 
 	return settings, nil
 }
