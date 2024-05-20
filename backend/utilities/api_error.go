@@ -58,6 +58,10 @@ func InvalidJSON() APIError {
 	return NewAPIError(http.StatusBadRequest, fmt.Errorf("invalid JSON request data"))
 }
 
+func InvalidCookies() APIError {
+	return NewAPIError(http.StatusBadRequest, fmt.Errorf("invalid cookies"))
+}
+
 func Unauthorized() APIError {
 	return NewAPIError(http.StatusUnauthorized, fmt.Errorf("unauthorized"))
 }

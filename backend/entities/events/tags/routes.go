@@ -1,7 +1,7 @@
 package tags
 
 import (
-	"github.com/GenerateNU/sac/backend/middleware"
+	authMiddleware "github.com/GenerateNU/sac/backend/middleware/auth"
 	"github.com/GenerateNU/sac/backend/types"
 )
 
@@ -13,12 +13,12 @@ func EventTags(eventParams types.RouteParams) {
 	eventTags.Get("/", eventTagController.GetEventTags)
 	eventTags.Post(
 		"/",
-		middleware.AttachExtractor(eventParams.AuthMiddleware.EventAuthorizeById, middleware.ExtractFromParams("eventID")),
+		authMiddleware.AttachExtractor(eventParams.AuthMiddleware.EventAuthorizeById, authMiddleware.ExtractFromParams("eventID")),
 		eventTagController.CreateEventTags,
 	)
 	eventTags.Delete(
 		"/:tagID",
-		middleware.AttachExtractor(eventParams.AuthMiddleware.EventAuthorizeById, middleware.ExtractFromParams("eventID")),
+		authMiddleware.AttachExtractor(eventParams.AuthMiddleware.EventAuthorizeById, authMiddleware.ExtractFromParams("eventID")),
 		eventTagController.DeleteEventTag,
 	)
 }
