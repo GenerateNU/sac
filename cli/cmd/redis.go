@@ -17,14 +17,42 @@ var redisCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(redisCmd)
 	redisCmd.AddCommand(redisInitCmd)
+	redisCmd.AddCommand(redisDownCmd)
+	redisCmd.AddCommand(redisRestartCmd)
 }
 
 var redisInitCmd = &cobra.Command{
-	Use:   "init",
-	Short: "Initialize redis",
+	Use:   "up",
+	Short: "Start the Redis container(s)",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		err := helpers.InitRedis()
+		err := helpers.UpRedis()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	},
+}
+
+var redisDownCmd = &cobra.Command{
+	Use:   "down",
+	Short: "Stop the Redis container(s)",
+	Args:  cobra.NoArgs,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := helpers.DownRedis()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	},
+}
+
+var redisRestartCmd = &cobra.Command{
+	Use:   "restart",
+	Short: "Restart the Redis container(s)",
+	Args:  cobra.NoArgs,
+	Run: func(cmd *cobra.Command, args []string) {
+		err := helpers.RestartRedis()
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

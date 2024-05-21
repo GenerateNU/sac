@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"net/http"
 	"time"
 
 	"github.com/GenerateNU/sac/backend/auth"
@@ -76,7 +77,7 @@ func (a *AuthService) Login(loginBody authEntities.LoginResponseBody) (*models.U
 		return nil, nil, err
 	}
 
-	if err := a.ServiceParams.Integrations.ActiveToken.StoreRefreshToken(string(tokens.RefreshToken), user.ID.String(), constants.REFRESH_TOKEN_EXPIRY); err != nil {
+	if err := a.Stores.ActiveToken.StoreRefreshToken(string(tokens.RefreshToken), user.ID.String(), constants.REFRESH_TOKEN_EXPIRY); err != nil {
 		return nil, nil, err
 	}
 
@@ -125,6 +126,24 @@ func (a *AuthService) Register(userBody usersEntities.CreateUserRequestBody) (*m
 }
 
 func (a *AuthService) Refresh(refreshToken string) (*auth.Token, error) {
+	isActive, err := a.Stores.ActiveToken.IsActive(refreshToken)
+	if err != nil {
+		return nil, err
+	}
+
+	if !isActive {
+		return nil, utilities.Unauthorized()
+	}
+
+	isblacklisted, err := a.Stores.Blacklist.IsTokenBlacklisted(refreshToken)
+	if err != nil {
+		return nil, err
+	}
+
+	if isblacklisted {
+		return nil, fmt.Errorf("refresh token is blacklisted")
+	}
+
 	claims, err := a.JWT.ExtractClaims(refreshToken, auth.RefreshToken)
 	if err != nil {
 		return nil, err
@@ -150,6 +169,18 @@ func (a *AuthService) Refresh(refreshToken string) (*auth.Token, error) {
 		},
 	})
 	if err != nil {
+		return nil, err
+	}
+
+	if err := a.Stores.Blacklist.BlacklistToken(refreshToken, time.Until(time.Unix(int64(claims["exp"].(float64)), 0))); err != nil {
+		return nil, err
+	}
+
+	if err := a.Stores.ActiveToken.DeleteRefreshToken(refreshToken); err != nil {
+		return nil, err
+	}
+
+	if err := a.Stores.ActiveToken.StoreRefreshToken(string(tokens.RefreshToken), claims["iss"].(string), constants.REFRESH_TOKEN_EXPIRY); err != nil {
 		return nil, err
 	}
 
@@ -355,15 +386,51 @@ func (a *AuthService) VerifyEmail(emailBody VerifyEmailRequestBody) error {
 }
 
 func (a *AuthService) Logout(c *fiber.Ctx) error {
-	c.Cookie(&fiber.Cookie{
-		Name:     "refresh_token",
-		Value:    "",
-		Expires:  time.Now().Add(-time.Hour),
-		HTTPOnly: true,
-	})
-	c.Set("Authorization ", "")
+	accessToken := c.Get("Authorization")
+	if accessToken == "" {
+		return utilities.Unauthorized()
+	}
 
-	// TODO: blacklist the refresh token
+	token, err := utilities.SplitBearerToken(accessToken)
+	if err != nil {
+		return utilities.Unauthorized()
+	}
 
-	return nil
+	blacklist(a, token)
+
+	refreshToken := c.Cookies("refresh_token")
+	if refreshToken == "" {
+		return utilities.Unauthorized()
+	}
+
+	isActive, err := a.Stores.ActiveToken.IsActive(refreshToken)
+	if err != nil {
+		return err
+	}
+
+	if !isActive {
+		return utilities.Unauthorized()
+	}
+
+	blacklist(a, &refreshToken)
+
+	if err := a.Stores.ActiveToken.DeleteRefreshToken(refreshToken); err != nil {
+		slog.Error("Failed to delete refresh token", "error", err)
+	}
+
+	auth.ExpireResponseTokens(c)
+
+	return utilities.FiberMessage(c, http.StatusOK, "success")
+}
+
+func blacklist(a *AuthService, token *string) {
+	claims, err := a.JWT.ExtractClaims(*token, auth.AccessToken)
+	if err != nil {
+		slog.Warn("Invalid token", "error", err)
+	} else {
+		exp, ok := claims["exp"].(float64)
+		if ok {
+			_ = a.Stores.Blacklist.BlacklistToken(*token, time.Until(time.Unix(int64(exp), 0)))
+		}
+	}
 }

@@ -61,9 +61,14 @@ func (m *AuthMiddlewareService) Authenticate(c *fiber.Ctx) error {
 			return utilities.Unauthorized()
 		}
 
-		// if auth.IsBlacklisted(*accessToken) {
-		// 	return errors.Unauthorized.FiberError(c)
-		// }
+		isBlacklisted, err := m.Stores.Blacklist.IsTokenBlacklisted(*accessToken)
+		if err != nil {
+			return utilities.InternalServerError()
+		}
+
+		if isBlacklisted {
+			return utilities.Unauthorized()
+		}
 
 		c.Locals("claims", claims)
 

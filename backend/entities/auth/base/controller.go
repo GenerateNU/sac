@@ -44,10 +44,7 @@ func (a *AuthController) Login(c *fiber.Ctx) error {
 		return err
 	}
 
-	err = auth.SetResponseTokens(c, tokens)
-	if err != nil {
-		return err
-	}
+	auth.SetResponseTokens(c, tokens)
 
 	return c.Status(http.StatusOK).JSON(user)
 }
@@ -78,10 +75,7 @@ func (a *AuthController) Register(c *fiber.Ctx) error {
 		return err
 	}
 
-	err = auth.SetResponseTokens(c, tokens)
-	if err != nil {
-		return err
-	}
+	auth.SetResponseTokens(c, tokens)
 
 	return c.Status(http.StatusCreated).JSON(user)
 }
@@ -111,10 +105,7 @@ func (a *AuthController) Refresh(c *fiber.Ctx) error {
 		return err
 	}
 
-	err = auth.SetResponseTokens(c, tokens)
-	if err != nil {
-		return err
-	}
+	auth.SetResponseTokens(c, tokens)
 
 	return utilities.FiberMessage(c, http.StatusOK, "success")
 }
@@ -134,6 +125,8 @@ func (a *AuthController) Logout(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
+
+	auth.ExpireResponseTokens(c)
 
 	return utilities.FiberMessage(c, http.StatusOK, "success")
 }

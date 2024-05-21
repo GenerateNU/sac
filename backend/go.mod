@@ -5,7 +5,7 @@ go 1.22.2
 require (
 	github.com/a-h/templ v0.2.680
 	github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5
-	github.com/aws/aws-sdk-go v1.53.0
+	github.com/aws/aws-sdk-go v1.53.6
 	github.com/garrettladley/fiberpaginate v1.0.1
 	github.com/garrettladley/mattress v0.4.0
 	github.com/go-playground/validator/v10 v10.20.0
@@ -18,6 +18,7 @@ require (
 	github.com/huandu/go-assert v1.1.6
 	github.com/joho/godotenv v1.5.1
 	github.com/mcnijman/go-emailaddress v1.1.1
+	github.com/redis/go-redis/v9 v9.5.1
 	github.com/resend/resend-go/v2 v2.6.0
 	github.com/sahilm/fuzzy v0.1.1
 	github.com/spf13/viper v1.18.2
@@ -50,7 +51,6 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/redis/go-redis/v9 v9.5.1 // indirect
 	go.opentelemetry.io/contrib v1.17.0 // indirect
 	go.opentelemetry.io/otel/metric v1.26.0 // indirect
 	go.opentelemetry.io/otel/trace v1.26.0 // indirect

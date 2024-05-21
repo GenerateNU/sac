@@ -1,6 +1,8 @@
 package base
 
 import (
+	"time"
+
 	"github.com/GenerateNU/sac/backend/types"
 )
 
@@ -15,11 +17,9 @@ func Auth(params types.RouteParams) {
 	auth.Post("/login", authController.Login)
 	auth.Post("/refresh", authController.Refresh)
 
-	// TODO: rate limit
-	auth.Post("/send-code", authController.SendCode)
+	auth.Post("/send-code", params.UtilityMiddleware.Limiter(5, 5*time.Minute), authController.SendCode)
 	auth.Post("/verify-email", authController.VerifyEmail)
 
-	// TODO: rate limit
-	auth.Post("/forgot-password", authController.ForgotPassword)
+	auth.Post("/forgot-password", params.UtilityMiddleware.Limiter(5, 5*time.Minute), authController.ForgotPassword)
 	auth.Post("/verify-reset", authController.VerifyPasswordResetToken)
 }

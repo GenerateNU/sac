@@ -11,9 +11,9 @@ import (
 
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/database"
+	"github.com/GenerateNU/sac/backend/database/store"
 	_ "github.com/GenerateNU/sac/backend/docs"
 	"github.com/GenerateNU/sac/backend/integrations"
-	"github.com/GenerateNU/sac/backend/integrations/cache"
 	"github.com/GenerateNU/sac/backend/integrations/email"
 	"github.com/GenerateNU/sac/backend/integrations/file"
 	"github.com/GenerateNU/sac/backend/integrations/search"
@@ -69,6 +69,8 @@ func main() {
 		exit("Error with connection pooling: %s", err.Error())
 	}
 
+	stores := store.ConfigureRedis(*config)
+
 	integrations := configureIntegrations(config, *connectToPinecone)
 
 	tp := telemetry.InitTracer()
@@ -81,7 +83,7 @@ func main() {
 		}
 	}()
 
-	app := server.Init(db, integrations, *config)
+	app := server.Init(db, stores, integrations, *config)
 
 	err = app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
 	if err != nil {
@@ -105,9 +107,6 @@ func exit(format string, a ...interface{}) {
 }
 
 func configureIntegrations(config *config.Settings, connectToPinecone bool) integrations.Integrations {
-	activeTokensClient := cache.NewRedisClient("localhost:6379", "", 0)
-	blacklistClient := cache.NewRedisClient("localhost:6380", "", 0)
-
 	openAi := search.NewOpenAIClient(config.OpenAI)
 	var pinecone search.SearchClientInterface
 
@@ -118,12 +117,10 @@ func configureIntegrations(config *config.Settings, connectToPinecone bool) inte
 	}
 
 	integrations := integrations.Integrations{
-		File:        file.NewAWSProvider(config.AWS),
-		AI:          openAi,
-		Email:       email.NewResendClient(config.Resend, true),
-		Search:      pinecone,
-		Blacklist:   cache.NewBlacklist(blacklistClient),
-		ActiveToken: cache.NewActiveToken(activeTokensClient),
+		File:   file.NewAWSProvider(config.AWS),
+		AI:     openAi,
+		Email:  email.NewResendClient(config.Resend, true),
+		Search: pinecone,
 	}
 
 	return integrations
