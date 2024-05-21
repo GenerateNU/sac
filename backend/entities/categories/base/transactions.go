@@ -4,11 +4,13 @@ import (
 	"errors"
 
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 	"github.com/google/uuid"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func CreateCategory(db *gorm.DB, category models.Category) (*models.Category, error) {
@@ -22,12 +24,10 @@ func CreateCategory(db *gorm.DB, category models.Category) (*models.Category, er
 	return &category, nil
 }
 
-func GetCategories(db *gorm.DB, limit int, page int) ([]models.Category, error) {
+func GetCategories(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Category, error) {
 	var categories []models.Category
 
-	offset := (page - 1) * limit
-
-	if err := db.Limit(limit).Offset(offset).Find(&categories).Error; err != nil {
+	if err := db.Scopes(utilities.IntoScope(pageInfo, db)).Find(&categories).Error; err != nil {
 		return nil, err
 	}
 
@@ -48,14 +48,15 @@ func GetCategory(db *gorm.DB, id uuid.UUID) (*models.Category, error) {
 }
 
 func UpdateCategory(db *gorm.DB, id uuid.UUID, category models.Category) (*models.Category, error) {
-	if err := db.Model(&models.Category{}).Where("id = ?", id).Updates(category).First(&category, id).Error; err != nil {
+	var resultingCategory models.Category
+	if err := db.Model(&resultingCategory).Clauses(clause.Returning{}).Where("id = ?", id).Updates(category).First(&category, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, utilities.ErrNotFound
 		}
 		return nil, err
 	}
 
-	return &category, nil
+	return &resultingCategory, nil
 }
 
 func DeleteCategory(db *gorm.DB, id uuid.UUID) error {

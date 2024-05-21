@@ -7,8 +7,10 @@ import (
 	"time"
 
 	"github.com/GenerateNU/sac/backend/auth"
+	authEntities "github.com/GenerateNU/sac/backend/entities/auth"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/entities/users"
+	usersEntities "github.com/GenerateNU/sac/backend/entities/users/base"
 
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
@@ -20,15 +22,16 @@ import (
 
 type AuthServiceInterface interface {
 	GetRole(id string) (*models.UserRole, error)
-	Login(userBody models.LoginUserResponseBody) (*models.User, *auth.Token, error)
+	Register(userBody usersEntities.CreateUserRequestBody) (*models.User, *auth.Token, error)
+	Login(userBody authEntities.LoginResponseBody) (*models.User, *auth.Token, error)
 	Refresh(refreshToken string) (*auth.Token, error)
 	Logout(c *fiber.Ctx) error
 
 	SendCode(email string) error
-	VerifyEmail(emailBody models.VerifyEmailRequestBody) error
+	VerifyEmail(emailBody VerifyEmailRequestBody) error
 
 	ForgotPassword(email string) error
-	VerifyPasswordResetToken(passwordBody models.VerifyPasswordResetTokenRequestBody) error
+	VerifyPasswordResetToken(passwordBody VerifyPasswordResetTokenRequestBody) error
 }
 
 type AuthService struct {
@@ -39,12 +42,8 @@ func NewAuthService(serviceParams types.ServiceParams) AuthServiceInterface {
 	return &AuthService{serviceParams}
 }
 
-func (a *AuthService) Login(loginBody models.LoginUserResponseBody) (*models.User, *auth.Token, error) {
-	if err := utilities.Validate(a.Validate, loginBody); err != nil {
-		return nil, nil, err
-	}
-
-	if err := auth.ValidatePassword(loginBody.Password); err != nil {
+func (a *AuthService) Login(loginBody authEntities.LoginResponseBody) (*models.User, *auth.Token, error) {
+	if err := utilities.Validate(a.Validate, loginBody, *utilities.NewMaybeError("password", auth.ValidatePassword(loginBody.Password))); err != nil {
 		return nil, nil, err
 	}
 
@@ -72,6 +71,47 @@ func (a *AuthService) Login(loginBody models.LoginUserResponseBody) (*models.Use
 			Issuer:   user.ID.String(),
 		},
 	})
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return user, tokens, nil
+}
+
+func (a *AuthService) Register(userBody usersEntities.CreateUserRequestBody) (*models.User, *auth.Token, error) {
+	if err := utilities.Validate(a.Validate, userBody, *utilities.NewMaybeError("password", auth.ValidatePassword(userBody.Password))); err != nil {
+		return nil, nil, err
+	}
+
+	user, err := utilities.MapJsonTags(userBody, &models.User{})
+	if err != nil {
+		return nil, nil, err
+	}
+
+	user.Role = models.Student
+
+	passwordHash, err := auth.ComputeHash(userBody.Password)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	user.Email = utilities.NormalizeEmail(userBody.Email)
+	user.PasswordHash = *passwordHash
+
+	if err := a.Integrations.Email.SendWelcomeEmail(fmt.Sprintf("%s %s", user.FirstName, user.LastName), user.Email); err != nil {
+		return nil, nil, fmt.Errorf("failed to send welcome email: %w", err)
+	}
+
+	user, err = CreateUser(a.DB, user)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if err := a.SendCode(user.Email); err != nil {
+		return nil, nil, err
+	}
+
+	_, tokens, err := a.Login(authEntities.LoginResponseBody{Email: user.Email, Password: userBody.Password})
 	if err != nil {
 		return nil, nil, err
 	}
@@ -163,7 +203,7 @@ func (a *AuthService) ForgotPassword(email string) error {
 	return nil
 }
 
-func (a *AuthService) VerifyPasswordResetToken(passwordBody models.VerifyPasswordResetTokenRequestBody) error {
+func (a *AuthService) VerifyPasswordResetToken(passwordBody VerifyPasswordResetTokenRequestBody) error {
 	if err := utilities.Validate(a.Validate, passwordBody); err != nil {
 		return err
 	}
@@ -270,7 +310,7 @@ func verifyEmailHelper(user *models.User, token string, db *gorm.DB) error {
 	return nil
 }
 
-func (a *AuthService) VerifyEmail(emailBody models.VerifyEmailRequestBody) error {
+func (a *AuthService) VerifyEmail(emailBody VerifyEmailRequestBody) error {
 	if err := utilities.Validate(a.Validate, emailBody); err != nil {
 		return err
 	}

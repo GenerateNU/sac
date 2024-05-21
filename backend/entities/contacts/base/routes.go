@@ -11,7 +11,7 @@ func Contact(contactParams types.RouteParams) {
 	// api/v1/contacts/*
 	contacts := contactParams.Router.Group("/contacts")
 
-	contacts.Get("/", contactController.GetContacts)
+	contacts.Get("/", contactParams.UtilityMiddleware.Paginator, contactController.GetContacts)
 	contacts.Get("/:contactID", contactController.GetContact)
 	contacts.Delete("/:contactID", contactParams.AuthMiddleware.Authorize(auth.DeleteAll), contactController.DeleteContact)
 }
