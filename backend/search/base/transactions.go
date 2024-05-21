@@ -94,7 +94,7 @@ func SearchEvents(db *gorm.DB, query search.EventSearchRequest) (*search.EventSe
 func UpsertClubToIndex(db *gorm.DB, clubUuid string) error {
 	var club models.Club
 
-	if err := db.Where("id = ?", clubUuid).Find(&club).Error; err != nil {
+	if err := db.Preload("Tag").Where("id = ?", clubUuid).Find(&club).Error; err != nil {
 		return err
 	}
 
@@ -156,7 +156,7 @@ func DeleteClubFromIndex(db *gorm.DB, clubUuid string) error {
 func UpsertEventToIndex(db *gorm.DB, eventUuid string) error {
 	var event models.Event
 
-	if err := db.Where("id = ?", eventUuid).Find(&event).Error; err != nil {
+	if err := db.Preload("Clubs").Preload("Tag").Where("id = ?", eventUuid).Find(&event).Error; err != nil {
 		return err
 	}
 
