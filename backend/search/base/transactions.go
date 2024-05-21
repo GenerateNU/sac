@@ -90,3 +90,127 @@ func SearchEvents(db *gorm.DB, query search.EventSearchRequest) (*search.EventSe
 		Results: events,
 	}, nil
 }
+
+func UpsertClubToIndex(db *gorm.DB, clubUuid string) error {
+	var club models.Club
+
+	if err := db.Where("id = ?", clubUuid).Find(&club).Error; err != nil {
+		return err
+	}
+
+	doc := search.ClubSearchDocumentFromClub(&club)
+	requestBody := search.Json{
+		"doc":           doc,
+		"doc_as_upsert": true,
+	}
+	payload, err := json.Marshal(requestBody)
+
+	print(string(payload))
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/%s/_update/%s", constants.SEARCH_URL, "clubs", club.ID), bytes.NewBuffer(payload))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	responseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	print(string(responseBody))
+
+	return nil
+}
+
+func DeleteClubFromIndex(db *gorm.DB, clubUuid string) error {
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/%s/_doc/%s", constants.SEARCH_URL, "clubs", clubUuid), nil)
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	responseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	print(string(responseBody))
+
+	return nil
+}
+
+func UpsertEventToIndex(db *gorm.DB, eventUuid string) error {
+	var event models.Event
+
+	if err := db.Where("id = ?", eventUuid).Find(&event).Error; err != nil {
+		return err
+	}
+
+	doc := search.EventSearchDocumentFromEvent(&event)
+	requestBody := search.Json{
+		"doc":           doc,
+		"doc_as_upsert": true,
+	}
+	payload, err := json.Marshal(requestBody)
+
+	print(string(payload))
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/%s/_update/%s", constants.SEARCH_URL, "events", event.ID), bytes.NewBuffer(payload))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	responseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	print(string(responseBody))
+
+	return nil
+}
+
+func DeleteEventFromIndex(db *gorm.DB, eventUuid string) error {
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/%s/_doc/%s", constants.SEARCH_URL, "events", eventUuid), nil)
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	responseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	print(string(responseBody))
+
+	return nil
+}

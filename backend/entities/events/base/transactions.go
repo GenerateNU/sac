@@ -8,6 +8,7 @@ import (
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/garrettladley/fiberpaginate"
 
+	search "github.com/GenerateNU/sac/backend/search/base"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/google/uuid"
 
@@ -29,6 +30,8 @@ func CreateEvent(db *gorm.DB, event models.Event) (*models.Event, error) {
 		return nil, err
 	}
 
+	search.UpsertEventToIndex(db, event.ID.String())
+
 	return &event, nil
 }
 
@@ -48,6 +51,8 @@ func updateEvent(db *gorm.DB, id uuid.UUID, event models.Event) ([]models.Event,
 		}
 		return nil, result.Error
 	}
+
+	search.UpsertEventToIndex(db, event.ID.String())
 
 	return []models.Event{resultingEvent}, nil
 }
@@ -81,6 +86,8 @@ func DeleteEvent(db *gorm.DB, id uuid.UUID) error {
 		}
 		return result.Error
 	}
+
+	search.DeleteEventFromIndex(db, id.String())
 
 	return nil
 }

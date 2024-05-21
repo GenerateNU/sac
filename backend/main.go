@@ -16,6 +16,7 @@ import (
 	"github.com/GenerateNU/sac/backend/integrations/email"
 	"github.com/GenerateNU/sac/backend/integrations/file"
 	"github.com/GenerateNU/sac/backend/search"
+	search_test "github.com/GenerateNU/sac/backend/search/base"
 	"github.com/GenerateNU/sac/backend/server"
 	"github.com/GenerateNU/sac/backend/telemetry"
 	"go.opentelemetry.io/otel"
@@ -53,6 +54,12 @@ func main() {
 	if *seedSearch {
 		search.SeedClubs(db)
 		search.SeedEvents(db)
+
+		search_test.UpsertClubToIndex(db, "f15c4bb5-77a7-4efe-a47c-10f5e6a46b50")
+		search_test.DeleteClubFromIndex(db, "f15c4bb5-77a7-4efe-a47c-10f5e6a46b50")
+
+		search_test.UpsertEventToIndex(db, "be83bd22-638a-4000-aaee-9d2d2115fbd2")
+		search_test.DeleteEventFromIndex(db, "be83bd22-638a-4000-aaee-9d2d2115fbd2")
 	}
 
 	err = database.ConnPooling(db)

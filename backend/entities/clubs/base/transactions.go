@@ -8,7 +8,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/entities/users"
-
+	search "github.com/GenerateNU/sac/backend/search/base"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -70,6 +70,8 @@ func CreateClub(db *gorm.DB, userId uuid.UUID, club models.Club) (*models.Club, 
 		return nil, err
 	}
 
+	search.UpsertClubToIndex(db, club.ID.String())
+
 	return &club, nil
 }
 
@@ -101,6 +103,8 @@ func UpdateClub(db *gorm.DB, id uuid.UUID, club models.Club) (*models.Club, erro
 		return nil, err
 	}
 
+	search.UpsertClubToIndex(db, club.ID.String())
+
 	return &existingClub, tx.Commit().Error
 }
 
@@ -129,6 +133,8 @@ func DeleteClub(db *gorm.DB, id uuid.UUID) error {
 		}
 		return result.Error
 	}
+
+	search.DeleteClubFromIndex(db, id.String())
 
 	return tx.Commit().Error
 }
