@@ -2,11 +2,10 @@ package base
 
 import (
 	p "github.com/GenerateNU/sac/backend/auth"
-	"github.com/GenerateNU/sac/backend/entities/users/follower"
-	"github.com/GenerateNU/sac/backend/entities/users/member"
-	"github.com/GenerateNU/sac/backend/entities/users/tag"
+	"github.com/GenerateNU/sac/backend/entities/users/followers"
+	"github.com/GenerateNU/sac/backend/entities/users/members"
+	"github.com/GenerateNU/sac/backend/entities/users/tags"
 	"github.com/GenerateNU/sac/backend/types"
-	"github.com/garrettladley/fiberpaginate"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -16,9 +15,9 @@ func UserRoutes(userParams types.RouteParams) {
 
 	userParams.Router = usersRouter
 
-	tag.UserTag(userParams)
-	follower.UserFollower(userParams)
-	member.UserMember(userParams)
+	tags.UserTag(userParams)
+	followers.UserFollower(userParams)
+	members.UserMember(userParams)
 }
 
 func UsersRouter(userParams types.RouteParams) fiber.Router {
@@ -27,7 +26,7 @@ func UsersRouter(userParams types.RouteParams) fiber.Router {
 	// api/v1/users/*
 	users := userParams.Router.Group("/users")
 
-	users.Get("/", userParams.AuthMiddleware.Authorize(p.ReadAll), fiberpaginate.New(), userController.GetUsers)
+	users.Get("/", userParams.AuthMiddleware.Authorize(p.ReadAll), userParams.UtilityMiddleware.Paginator, userController.GetUsers)
 	users.Get("/me", userParams.AuthMiddleware.Authorize(p.UserRead), userController.GetMe)
 
 	// api/v1/users/:userID/*

@@ -7,8 +7,10 @@ import (
 	"time"
 
 	"github.com/GenerateNU/sac/backend/auth"
+	authEntities "github.com/GenerateNU/sac/backend/entities/auth"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/entities/users"
+	usersEntities "github.com/GenerateNU/sac/backend/entities/users/base"
 
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
@@ -20,16 +22,16 @@ import (
 
 type AuthServiceInterface interface {
 	GetRole(id string) (*models.UserRole, error)
-	Register(userBody models.CreateUserRequestBody) (*models.User, *auth.Token, error)
-	Login(userBody models.LoginUserResponseBody) (*models.User, *auth.Token, error)
+	Register(userBody usersEntities.CreateUserRequestBody) (*models.User, *auth.Token, error)
+	Login(userBody authEntities.LoginResponseBody) (*models.User, *auth.Token, error)
 	Refresh(refreshToken string) (*auth.Token, error)
 	Logout(c *fiber.Ctx) error
 
 	SendCode(email string) error
-	VerifyEmail(emailBody models.VerifyEmailRequestBody) error
+	VerifyEmail(emailBody VerifyEmailRequestBody) error
 
 	ForgotPassword(email string) error
-	VerifyPasswordResetToken(passwordBody models.VerifyPasswordResetTokenRequestBody) error
+	VerifyPasswordResetToken(passwordBody VerifyPasswordResetTokenRequestBody) error
 }
 
 type AuthService struct {
@@ -40,12 +42,8 @@ func NewAuthService(serviceParams types.ServiceParams) AuthServiceInterface {
 	return &AuthService{serviceParams}
 }
 
-func (a *AuthService) Login(loginBody models.LoginUserResponseBody) (*models.User, *auth.Token, error) {
-	if err := utilities.Validate(a.Validate, loginBody); err != nil {
-		return nil, nil, err
-	}
-
-	if err := auth.ValidatePassword(loginBody.Password); err != nil {
+func (a *AuthService) Login(loginBody authEntities.LoginResponseBody) (*models.User, *auth.Token, error) {
+	if err := utilities.Validate(a.Validate, loginBody, *utilities.NewMaybeError("password", auth.ValidatePassword(loginBody.Password))); err != nil {
 		return nil, nil, err
 	}
 
@@ -80,12 +78,8 @@ func (a *AuthService) Login(loginBody models.LoginUserResponseBody) (*models.Use
 	return user, tokens, nil
 }
 
-func (a *AuthService) Register(userBody models.CreateUserRequestBody) (*models.User, *auth.Token, error) {
-	if err := utilities.Validate(a.Validate, userBody); err != nil {
-		return nil, nil, err
-	}
-
-	if err := auth.ValidatePassword(userBody.Password); err != nil {
+func (a *AuthService) Register(userBody usersEntities.CreateUserRequestBody) (*models.User, *auth.Token, error) {
+	if err := utilities.Validate(a.Validate, userBody, *utilities.NewMaybeError("password", auth.ValidatePassword(userBody.Password))); err != nil {
 		return nil, nil, err
 	}
 
@@ -93,6 +87,8 @@ func (a *AuthService) Register(userBody models.CreateUserRequestBody) (*models.U
 	if err != nil {
 		return nil, nil, err
 	}
+
+	user.Role = models.Student
 
 	passwordHash, err := auth.ComputeHash(userBody.Password)
 	if err != nil {
@@ -115,7 +111,7 @@ func (a *AuthService) Register(userBody models.CreateUserRequestBody) (*models.U
 		return nil, nil, err
 	}
 
-	_, tokens, err := a.Login(models.LoginUserResponseBody{Email: user.Email, Password: userBody.Password})
+	_, tokens, err := a.Login(authEntities.LoginResponseBody{Email: user.Email, Password: userBody.Password})
 	if err != nil {
 		return nil, nil, err
 	}
@@ -207,7 +203,7 @@ func (a *AuthService) ForgotPassword(email string) error {
 	return nil
 }
 
-func (a *AuthService) VerifyPasswordResetToken(passwordBody models.VerifyPasswordResetTokenRequestBody) error {
+func (a *AuthService) VerifyPasswordResetToken(passwordBody VerifyPasswordResetTokenRequestBody) error {
 	if err := utilities.Validate(a.Validate, passwordBody); err != nil {
 		return err
 	}
@@ -314,7 +310,7 @@ func verifyEmailHelper(user *models.User, token string, db *gorm.DB) error {
 	return nil
 }
 
-func (a *AuthService) VerifyEmail(emailBody models.VerifyEmailRequestBody) error {
+func (a *AuthService) VerifyEmail(emailBody VerifyEmailRequestBody) error {
 	if err := utilities.Validate(a.Validate, emailBody); err != nil {
 		return err
 	}

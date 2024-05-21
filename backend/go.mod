@@ -22,6 +22,7 @@ require (
 	github.com/sahilm/fuzzy v0.1.1
 	github.com/spf13/viper v1.18.2
 	github.com/swaggo/swag v1.16.3
+	go.opentelemetry.io/otel/sdk v1.26.0
 	golang.org/x/crypto v0.23.0
 	golang.org/x/text v0.15.0
 	gorm.io/driver/postgres v1.5.7
@@ -40,11 +41,16 @@ require (
 )
 
 require (
+	github.com/go-logr/logr v1.4.1 // indirect
+	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
+	go.opentelemetry.io/contrib v1.17.0 // indirect
+	go.opentelemetry.io/otel/metric v1.26.0 // indirect
+	go.opentelemetry.io/otel/trace v1.26.0 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 )
 
@@ -61,6 +67,7 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-viper/mapstructure/v2 v2.0.0-alpha.1
+	github.com/gofiber/contrib/otelfiber v1.0.10
 	github.com/golang-migrate/migrate/v4 v4.17.1
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
@@ -91,6 +98,8 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.52.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
+	go.opentelemetry.io/otel v1.26.0
+	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.26.0
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/exp v0.0.0-20240404231335-c0f41cb1a7a0 // indirect
 	golang.org/x/net v0.24.0 // indirect
