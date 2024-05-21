@@ -3,9 +3,9 @@ package base
 import (
 	"net/http"
 
-	"github.com/GenerateNU/sac/backend/constants"
-	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/entities/categories"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -26,7 +26,7 @@ func NewCategoryController(categoryService CategoryServiceInterface) *CategoryCo
 // @Tags      	category
 // @Accept		json
 // @Produce		json
-// @Param		categoryBody	body	models.CategoryRequestBody	true	"Category Body"
+// @Param		categoryBody	body	categories.CategoryRequestBody	true	"Category Body"
 // @Success		201	  {object}	  models.Category
 // @Failure     400   {string}    error
 // @Failure     401   {string}    error
@@ -35,7 +35,7 @@ func NewCategoryController(categoryService CategoryServiceInterface) *CategoryCo
 // @Failure     500   {string}    error
 // @Router		/categories/  [post]
 func (cat *CategoryController) CreateCategory(c *fiber.Ctx) error {
-	var categoryBody models.CategoryRequestBody
+	var categoryBody categories.CategoryRequestBody
 
 	if err := c.BodyParser(&categoryBody); err != nil {
 		return utilities.InvalidJSON()
@@ -64,7 +64,12 @@ func (cat *CategoryController) CreateCategory(c *fiber.Ctx) error {
 // @Failure     500   {string}      error
 // @Router		/categories/  [get]
 func (cat *CategoryController) GetCategories(c *fiber.Ctx) error {
-	categories, err := cat.categoryService.GetCategories(c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING))
+	pagination, ok := fiberpaginate.FromContext(c)
+	if !ok {
+		return utilities.ErrExpectedPagination
+	}
+
+	categories, err := cat.categoryService.GetCategories(*pagination)
 	if err != nil {
 		return err
 	}
@@ -125,7 +130,7 @@ func (cat *CategoryController) DeleteCategory(c *fiber.Ctx) error {
 // @Accept		json
 // @Produce		json
 // @Param		categoryID	path	string	true	"Category ID"
-// @Param		categoryBody	body	models.CategoryRequestBody	true	"Category Body"
+// @Param		categoryBody	body	categories.CategoryRequestBody	true	"Category Body"
 // @Success		200	  {object}	    models.Category
 // @Failure     400   {string}      error
 // @Failure     401   {string}      error
@@ -133,7 +138,7 @@ func (cat *CategoryController) DeleteCategory(c *fiber.Ctx) error {
 // @Failure     500   {string}      error
 // @Router		/categories/{categoryID}/  [patch]
 func (cat *CategoryController) UpdateCategory(c *fiber.Ctx) error {
-	var category models.CategoryRequestBody
+	var category categories.CategoryRequestBody
 	if err := c.BodyParser(&category); err != nil {
 		return utilities.InvalidJSON()
 	}

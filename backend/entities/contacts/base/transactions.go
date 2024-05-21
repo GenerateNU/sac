@@ -5,16 +5,14 @@ import (
 
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
-func GetContacts(db *gorm.DB, limit int, page int) ([]models.Contact, error) {
+func GetContacts(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Contact, error) {
 	var contacts []models.Contact
-
-	offset := (page - 1) * limit
-
-	if err := db.Limit(limit).Offset(offset).Find(&contacts).Error; err != nil {
+	if err := db.Scopes(utilities.IntoScope(pageInfo, db)).Find(&contacts).Error; err != nil {
 		return nil, err
 	}
 

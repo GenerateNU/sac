@@ -3,9 +3,9 @@ package base
 import (
 	"net/http"
 
-	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -32,15 +32,16 @@ func NewClubController(clubService ClubServiceInterface) *ClubController {
 // @Router		/clubs/  [get]
 func (cl *ClubController) GetClubs(c *fiber.Ctx) error {
 	var queryParams models.ClubQueryParams
-
-	queryParams.Limit = constants.DEFAULT_LIMIT
-	queryParams.Page = constants.DEFAULT_PAGE
-
 	if err := c.QueryParser(&queryParams); err != nil {
 		return err
 	}
 
-	clubs, err := cl.clubService.GetClubs(&queryParams)
+	pagination, ok := fiberpaginate.FromContext(c)
+	if !ok {
+		return utilities.ErrExpectedPagination
+	}
+
+	clubs, err := cl.clubService.GetClubs(&queryParams, *pagination)
 	if err != nil {
 		return err
 	}
@@ -56,7 +57,7 @@ func (cl *ClubController) GetClubs(c *fiber.Ctx) error {
 // @Tags      	club
 // @Accept		json
 // @Produce		json
-// @Param		club	body	models.CreateClubRequestBody	true	"Club"
+// @Param		club	body	CreateClubRequestBody	true	"Club"
 // @Success		201	  {object}	  models.Club
 // @Failure     400   {object}    error
 // @Failure     401   {object}    error
@@ -64,7 +65,7 @@ func (cl *ClubController) GetClubs(c *fiber.Ctx) error {
 // @Failure     500   {object}    error
 // @Router		/clubs/  [post]
 func (cl *ClubController) CreateClub(c *fiber.Ctx) error {
-	var clubBody models.CreateClubRequestBody
+	var clubBody CreateClubRequestBody
 
 	if err := c.BodyParser(&clubBody); err != nil {
 		return utilities.InvalidJSON()
@@ -109,7 +110,7 @@ func (cl *ClubController) GetClub(c *fiber.Ctx) error {
 // @Accept		json
 // @Produce		json
 // @Param		clubID	path	string	true	"Club ID"
-// @Param		club	body	models.UpdateClubRequestBody	true	"Club"
+// @Param		club	body	UpdateClubRequestBody	true	"Club"
 // @Success		200	  {object}	  models.Club
 // @Failure     400   {object}    error
 // @Failure     401   {object}    error
@@ -117,7 +118,7 @@ func (cl *ClubController) GetClub(c *fiber.Ctx) error {
 // @Failure     500   {object}    error
 // @Router		/clubs/{clubID}/  [patch]
 func (cl *ClubController) UpdateClub(c *fiber.Ctx) error {
-	var clubBody models.UpdateClubRequestBody
+	var clubBody UpdateClubRequestBody
 
 	if err := c.BodyParser(&clubBody); err != nil {
 		return utilities.InvalidJSON()

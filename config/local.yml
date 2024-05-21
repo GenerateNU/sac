@@ -14,3 +14,5 @@ superuser:
 auth:
   accesskey: g(r|##*?>\Qp}h37e+,T2
   refreshkey: amk*2!gG}1i"8D9RwJS$p
+calendar:
+  maxterminationdate: 12-31-2024

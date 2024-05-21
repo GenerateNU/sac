@@ -3,9 +3,8 @@ package base
 import (
 	"net/http"
 
-	"github.com/GenerateNU/sac/backend/constants"
-	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -33,7 +32,12 @@ func NewFileController(fileService FileServiceInterface) *FileController {
 // @Failure     500   {object}    error
 // @Router		/files/  [get]
 func (f *FileController) GetFiles(c *fiber.Ctx) error {
-	files, err := f.fileService.GetFiles(c.Query("limit", constants.DEFAULT_LIMIT_STRING), c.Query("page", constants.DEFAULT_PAGE_STRING))
+	pagination, ok := fiberpaginate.FromContext(c)
+	if !ok {
+		return utilities.ErrExpectedPagination
+	}
+
+	files, err := f.fileService.GetFiles(*pagination)
 	if err != nil {
 		return err
 	}
@@ -74,7 +78,7 @@ func (f *FileController) GetFile(c *fiber.Ctx) error {
 // @Tags      	file
 // @Accept		multipart/form-data
 // @Produce		json
-// @Param		file	body	models.CreateFileRequestBody	true	"File"
+// @Param		file	body	CreateFileRequestBody	true	"File"
 // @Success		201	  {object}	  models.File
 // @Failure     400   {object}    error
 // @Failure     401   {object}    error
@@ -82,7 +86,7 @@ func (f *FileController) GetFile(c *fiber.Ctx) error {
 // @Failure     500   {object}    error
 // @Router		/files/  [post]
 func (f *FileController) CreateFile(c *fiber.Ctx) error {
-	var fileBody models.CreateFileRequestBody
+	var fileBody CreateFileRequestBody
 
 	if err := c.BodyParser(&fileBody); err != nil {
 		return utilities.InvalidJSON()
