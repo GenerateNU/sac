@@ -57,16 +57,16 @@ func ClubSearchDocumentFromClub(c *models.Club) ClubSearchDocument {
 	}
 }
 
-// Query parameters for an API GET /api/v1/search/clubs request.
-type ClubSearchQuery struct {
-	Search     string   `query:"search"`
-	MinMembers int      `query:"min_members"`
-	MaxMembers int      `query:"max_members"`
-	Tags       []string `query:"tags"`
+// JSON parameters for an API GET /api/v1/search/clubs request.
+type ClubSearchRequest struct {
+	Search     string   `json:"search"`
+	MinMembers int      `json:"min_members"`
+	MaxMembers int      `json:"max_members"`
+	Tags       []string `json:"tags"`
 }
 
 // To Query DSL JSON
-func (q *ClubSearchQuery) ToSearchEndpointRequest() SearchEndpointRequest {
+func (q *ClubSearchRequest) ToSearchEndpointRequest() SearchEndpointRequest {
 	query := BooleanQuery{}
 
 	if q.Search != "" {
@@ -152,18 +152,18 @@ func EventSearchDocumentFromEvent(c *models.Event) EventSearchDocument {
 	}
 }
 
-// Query parameters for an API GET /api/v1/search/events request.
-type EventSearchQuery struct {
-	Search    string             `query:"search"`
-	StartTime time.Time          `query:"start_time"`
-	EndTime   time.Time          `query:"end_time"`
-	EventType []models.EventType `query:"event_type"`
-	Clubs     []string           `query:"clubs"`
-	Tags      []string           `query:"tags"`
+// JSON parameters for an API GET /api/v1/search/events request.
+type EventSearchRequest struct {
+	Search    string             `json:"search"`
+	StartTime time.Time          `json:"start_time"`
+	EndTime   time.Time          `json:"end_time"`
+	EventType []models.EventType `json:"event_type"`
+	Clubs     []string           `json:"clubs"`
+	Tags      []string           `json:"tags"`
 }
 
 // To Query DSL JSON
-func (q *EventSearchQuery) ToSearchEndpointRequest() SearchEndpointRequest {
+func (q *EventSearchRequest) ToSearchEndpointRequest() SearchEndpointRequest {
 	query := BooleanQuery{}
 
 	if q.Search != "" {

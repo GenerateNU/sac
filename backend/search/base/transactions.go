@@ -47,7 +47,7 @@ func doSearchGetRequest[T, V any](url string, requestBody T) (*V, error) {
 	return &responseData, nil
 }
 
-func SearchClubs(db *gorm.DB, query search.ClubSearchQuery) (*search.ClubSearchResult, error) {
+func SearchClubs(db *gorm.DB, query search.ClubSearchRequest) (*search.ClubSearchResult, error) {
 	result, err := doSearchGetRequest[search.SearchEndpointRequest, search.SearchEndpointResponse]("/clubs/_search", query.ToSearchEndpointRequest())
 	if err != nil {
 		return nil, nil
@@ -69,7 +69,7 @@ func SearchClubs(db *gorm.DB, query search.ClubSearchQuery) (*search.ClubSearchR
 	}, nil
 }
 
-func SearchEvents(db *gorm.DB, query search.EventSearchQuery) (*search.EventSearchResult, error) {
+func SearchEvents(db *gorm.DB, query search.EventSearchRequest) (*search.EventSearchResult, error) {
 	result, err := doSearchGetRequest[search.SearchEndpointRequest, search.SearchEndpointResponse]("/events/_search", query.ToSearchEndpointRequest())
 	if err != nil {
 		return nil, nil

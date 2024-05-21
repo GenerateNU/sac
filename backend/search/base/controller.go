@@ -30,9 +30,9 @@ func NewSearchController(searchService SearchServiceInterface) *SearchController
 // @Failure     500   {object}      error
 // @Router		/search/clubs  [get]
 func (s *SearchController) SearchClubs(c *fiber.Ctx) error {
-	var searchQuery search.ClubSearchQuery
+	var searchQuery search.ClubSearchRequest
 
-	if err := c.QueryParser(&searchQuery); err != nil {
+	if err := c.BodyParser(&searchQuery); err != nil {
 		return utilities.InvalidJSON()
 	}
 
@@ -59,9 +59,9 @@ func (s *SearchController) SearchClubs(c *fiber.Ctx) error {
 // @Failure     500   {object}      error
 // @Router		/search/events  [get]
 func (s *SearchController) SearchEvents(c *fiber.Ctx) error {
-	var searchQuery search.EventSearchQuery
+	var searchQuery search.EventSearchRequest
 
-	if err := c.QueryParser(&searchQuery); err != nil {
+	if err := c.BodyParser(&searchQuery); err != nil {
 		return utilities.InvalidJSON()
 	}
 
