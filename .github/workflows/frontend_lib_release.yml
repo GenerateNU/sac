@@ -1,6 +1,9 @@
 name: Frontend Lib Release
 
 on:
+  pull_request:
+    branches-ignore:
+      - dependabot/**
   push:
     branches:
       - main
@@ -12,7 +15,6 @@ permissions:
 
 jobs:
   build:
-    if: github.actor != 'dependabot[bot]' && github.actor != 'dependabot-preview[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
