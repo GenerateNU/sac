@@ -18,7 +18,7 @@
         "@expo/vector-icons": "^14.0.2",
         "@generatesac/lib": "^0.0.1",
         "@react-navigation/native": "^6.0.2",
-        "@reduxjs/toolkit": "^2.2.4",
+        "@reduxjs/toolkit": "^2.2.5",
         "@shopify/restyle": "^2.4.4",
         "expo": "~51.0.2",
         "expo-font": "~12.0.4",
