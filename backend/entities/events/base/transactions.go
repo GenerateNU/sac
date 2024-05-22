@@ -30,7 +30,7 @@ func CreateEvent(db *gorm.DB, event models.Event) (*models.Event, error) {
 		return nil, err
 	}
 
-	err := search.UpsertEventToIndex(db, event.ID.String())
+	err := search.Upsert[models.Event](db, "events", event.ID.String(), &event)
 	if err != nil {
 		return nil, err
 	}
@@ -55,9 +55,9 @@ func updateEvent(db *gorm.DB, id uuid.UUID, event models.Event) ([]models.Event,
 		return nil, result.Error
 	}
 
-	err := search.UpsertEventToIndex(db, id.String())
+	err := search.Upsert[models.Event](db, "events", id.String(), &event)
 	if err != nil {
-		return []models.Event{resultingEvent}, err
+		return nil, err
 	}
 
 	return []models.Event{resultingEvent}, nil
@@ -93,7 +93,7 @@ func DeleteEvent(db *gorm.DB, id uuid.UUID) error {
 		return result.Error
 	}
 
-	err := search.DeleteEventFromIndex(db, id.String())
+	err := search.Delete(db, "events", id.String())
 	if err != nil {
 		return err
 	}

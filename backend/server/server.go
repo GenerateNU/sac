@@ -88,7 +88,7 @@ func allRoutes(app *fiber.App, routeParams types.RouteParams) {
 	categories.CategoryRoutes(routeParams)
 	events.EventRoutes(routeParams)
 	files.File(routeParams)
-	search.Search(routeParams)
+	search.SearchRoutes(routeParams)
 }
 
 func newFiberApp(appSettings config.ApplicationSettings) *fiber.App {

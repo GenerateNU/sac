@@ -3,7 +3,7 @@ package base
 import (
 	"net/http"
 
-	"github.com/GenerateNU/sac/backend/search"
+	search_types "github.com/GenerateNU/sac/backend/search/types"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/fiber/v2"
 )
@@ -30,7 +30,7 @@ func NewSearchController(searchService SearchServiceInterface) *SearchController
 // @Failure     500   {object}      error
 // @Router		/search/clubs  [get]
 func (s *SearchController) SearchClubs(c *fiber.Ctx) error {
-	var searchQuery search.ClubSearchRequest
+	var searchQuery search_types.ClubSearchRequest
 
 	if err := c.BodyParser(&searchQuery); err != nil {
 		return utilities.InvalidJSON()
@@ -59,7 +59,7 @@ func (s *SearchController) SearchClubs(c *fiber.Ctx) error {
 // @Failure     500   {object}      error
 // @Router		/search/events  [get]
 func (s *SearchController) SearchEvents(c *fiber.Ctx) error {
-	var searchQuery search.EventSearchRequest
+	var searchQuery search_types.EventSearchRequest
 
 	if err := c.BodyParser(&searchQuery); err != nil {
 		return utilities.InvalidJSON()

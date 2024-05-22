@@ -70,7 +70,7 @@ func CreateClub(db *gorm.DB, userId uuid.UUID, club models.Club) (*models.Club, 
 		return nil, err
 	}
 
-	err = search.UpsertClubToIndex(db, club.ID.String())
+	err = search.Upsert[models.Club](db, "clubs", club.ID.String(), &club)
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +106,7 @@ func UpdateClub(db *gorm.DB, id uuid.UUID, club models.Club) (*models.Club, erro
 		return nil, err
 	}
 
-	err = search.UpsertClubToIndex(db, club.ID.String())
+	err = search.Upsert[models.Club](db, "clubs", club.ID.String(), &club)
 	if err != nil {
 		return nil, err
 	}
@@ -140,7 +140,7 @@ func DeleteClub(db *gorm.DB, id uuid.UUID) error {
 		return result.Error
 	}
 
-	err = search.DeleteClubFromIndex(db, id.String())
+	err = search.Delete(db, "clubs", id.String())
 	if err != nil {
 		return err
 	}

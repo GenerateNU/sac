@@ -10,6 +10,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/entities/models"
+	search_types "github.com/GenerateNU/sac/backend/search/types"
 	"github.com/GenerateNU/sac/backend/transactions"
 	"gorm.io/gorm"
 )
@@ -35,7 +36,7 @@ func SeedClubs(db *gorm.DB) error {
 	var requestBodyBuilder strings.Builder
 
 	for _, club := range clubs {
-		indexData := BulkRequestCreate{}
+		indexData := search_types.BulkRequestCreate{}
 		indexData.Create.Index = "clubs"
 		indexData.Create.Id = club.ID.String()
 		indexJson, err := json.Marshal(indexData)
@@ -43,7 +44,7 @@ func SeedClubs(db *gorm.DB) error {
 			return err
 		}
 
-		clubData := ClubSearchDocumentFromClub(&club)
+		clubData := club.ToSearchDocument()
 		clubJson, err := json.Marshal(clubData)
 		if err != nil {
 			return err
@@ -92,7 +93,7 @@ func SeedEvents(db *gorm.DB) error {
 	var requestBodyBuilder strings.Builder
 
 	for _, event := range events {
-		indexData := BulkRequestCreate{}
+		indexData := search_types.BulkRequestCreate{}
 		indexData.Create.Index = "events"
 		indexData.Create.Id = event.ID.String()
 		indexJson, err := json.Marshal(indexData)
@@ -100,7 +101,7 @@ func SeedEvents(db *gorm.DB) error {
 			return err
 		}
 
-		eventData := EventSearchDocumentFromEvent(&event)
+		eventData := event.ToSearchDocument()
 		eventJson, err := json.Marshal(eventData)
 		if err != nil {
 			return err

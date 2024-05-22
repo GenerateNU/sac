@@ -4,7 +4,7 @@ import (
 	"github.com/GenerateNU/sac/backend/types"
 )
 
-func Search(params types.RouteParams) {
+func SearchRoutes(params types.RouteParams) {
 	searchService := NewSearchService(params.ServiceParams)
 	searchController := NewSearchController(searchService)
 
