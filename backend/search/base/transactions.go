@@ -47,7 +47,7 @@ func doSearchGetRequest[T, V any](url string, requestBody T) (*V, error) {
 }
 
 func Search[T types.Searchable](db *gorm.DB, query types.SearchRequest) (*types.SearchResult[T], error) {
-	result, err := doSearchGetRequest[types.SearchEndpointRequest, types.SearchEndpointResponse](fmt.Sprintf("%s/_search", query.Index()), query.ToSearchEndpointRequest())
+	result, err := doSearchGetRequest[types.SearchEndpointRequest, types.SearchEndpointResponse](fmt.Sprintf("/%s/_search", query.Index()), query.ToSearchEndpointRequest())
 	if err != nil {
 		return nil, nil
 	}
@@ -59,7 +59,7 @@ func Search[T types.Searchable](db *gorm.DB, query types.SearchRequest) (*types.
 
 	var results []T
 
-	if err = db.Model(query.Model()).Preload("Tag").Preload("Clubs").Where("id IN ?", ids).Find(&results).Error; err != nil {
+	if err = query.Preload(db).Where("id IN ?", ids).Find(&results).Error; err != nil {
 		return nil, nil
 	}
 
