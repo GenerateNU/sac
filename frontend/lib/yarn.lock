@@ -2,6 +2,60 @@
 # yarn lockfile v1
 
 
+"@ast-grep/napi-darwin-arm64@0.22.3":
+  version "0.22.3"
+  resolved "https://registry.yarnpkg.com/@ast-grep/napi-darwin-arm64/-/napi-darwin-arm64-0.22.3.tgz#805d78107f3b258994da8badabd8106b5092c2ff"
+  integrity sha512-BD2uyj9UVii04G6YivQArwoeUvOhMFU+MHw5kbLdc0IBncAru65qOg/I6D/ggEAZIgfyw8e2b6ch4ywbIhMnZw==
+
+"@ast-grep/napi-darwin-x64@0.22.3":
+  version "0.22.3"
+  resolved "https://registry.yarnpkg.com/@ast-grep/napi-darwin-x64/-/napi-darwin-x64-0.22.3.tgz#151a104127690328ee835024c2d0da07be51ebdc"
+  integrity sha512-w0kw+YYAjDW6Q5EB4I+hSU4Ax9FVxVDlPeZi3h94pRIgNjRMD8SjG/aglNImzPOACDp3bZg8m26iMc9RbZaduQ==
+
+"@ast-grep/napi-linux-arm64-gnu@0.22.3":
+  version "0.22.3"
+  resolved "https://registry.yarnpkg.com/@ast-grep/napi-linux-arm64-gnu/-/napi-linux-arm64-gnu-0.22.3.tgz#9b8475212573428bb1f510dd9858286607a91b90"
+  integrity sha512-859+EcrYLhmCCsBcQZtP3frNXgdxjyAT2zSJ0/QWVweJ//ArlW+lUf+smmp/4KZeWSZglFNRj5EYvcwUPJj6JA==
+
+"@ast-grep/napi-linux-x64-gnu@0.22.3":
+  version "0.22.3"
+  resolved "https://registry.yarnpkg.com/@ast-grep/napi-linux-x64-gnu/-/napi-linux-x64-gnu-0.22.3.tgz#ecf9fdf1a827de39fbf84b0af255e34e7f35af14"
+  integrity sha512-amc+61OeDXguX7ZV5V4JCmtPw4Thcr8zIvmnUozP3vFhO/QCql3t8rjxt2kifqPgoGbYIwW7sTIhtpA4CBxUbw==
+
+"@ast-grep/napi-linux-x64-musl@0.22.3":
+  version "0.22.3"
+  resolved "https://registry.yarnpkg.com/@ast-grep/napi-linux-x64-musl/-/napi-linux-x64-musl-0.22.3.tgz#d63968c2c6d4e01ef751f2d53ccd16710173dd08"
+  integrity sha512-GmG4D7HTg5gPD0LT27WsOIIsOHZazcZ8nIlylVVN27WrxhVchLU+3fnybchgANbx7ojnMce/xWhKgP29vrseIA==
+
+"@ast-grep/napi-win32-arm64-msvc@0.22.3":
+  version "0.22.3"
+  resolved "https://registry.yarnpkg.com/@ast-grep/napi-win32-arm64-msvc/-/napi-win32-arm64-msvc-0.22.3.tgz#4478af4589438ba41f7fe03f6ab2eddd6bcc1fe9"
+  integrity sha512-mJAZdQwFwLtNON6pUbwTfrw6+iKelvBCZGd38TAPC0b3zapwdY7z7oVp8KfENy32eHh4OsBiGeN3CpsKaTeT5Q==
+
+"@ast-grep/napi-win32-ia32-msvc@0.22.3":
+  version "0.22.3"
+  resolved "https://registry.yarnpkg.com/@ast-grep/napi-win32-ia32-msvc/-/napi-win32-ia32-msvc-0.22.3.tgz#3625c755f79ca277aefdfc6e97e93fd982a4f430"
+  integrity sha512-hJLvg9gSYh+GjNIol8ukgOWYnfpo4sIT+D0ExOZU/KgFDwhrTXZK/gBOKyO1IefzBl9GOjrjvaKxp8TItewM7Q==
+
+"@ast-grep/napi-win32-x64-msvc@0.22.3":
+  version "0.22.3"
+  resolved "https://registry.yarnpkg.com/@ast-grep/napi-win32-x64-msvc/-/napi-win32-x64-msvc-0.22.3.tgz#ef9f4c0cb30b2846ea50e1a2695f5184b16b8961"
+  integrity sha512-JnJctkkGmX6MX/aI6fJ2wK4fnPSftiqZ1fUsiPLWaBnnjvJe+ibvIByUp3sigZiStDEsjUdQ5KUDF2n9CVShyw==
+
+"@ast-grep/napi@^0.22.3":
+  version "0.22.3"
+  resolved "https://registry.yarnpkg.com/@ast-grep/napi/-/napi-0.22.3.tgz#59c37d84ed513c6a07dde08a96bbb31a473e1c1b"
+  integrity sha512-Viv/PQo4H6heDt0lQ6R0S8INpHhvmhm3MAXCBhMNZbsrrW8hdd9zxJ0rfSgv7jUFqRqRLCxA0crO2ObeMlySjQ==
+  optionalDependencies:
+    "@ast-grep/napi-darwin-arm64" "0.22.3"
+    "@ast-grep/napi-darwin-x64" "0.22.3"
+    "@ast-grep/napi-linux-arm64-gnu" "0.22.3"
+    "@ast-grep/napi-linux-x64-gnu" "0.22.3"
+    "@ast-grep/napi-linux-x64-musl" "0.22.3"
+    "@ast-grep/napi-win32-arm64-msvc" "0.22.3"
+    "@ast-grep/napi-win32-ia32-msvc" "0.22.3"
+    "@ast-grep/napi-win32-x64-msvc" "0.22.3"
+
 "@babel/code-frame@^7.22.13", "@babel/code-frame@^7.23.5":
   version "7.24.2"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.24.2.tgz#718b4b19841809a58b29b68cde80bc5e1aa6d9ae"
@@ -1604,7 +1658,7 @@ lru-cache@^6.0.0:
   dependencies:
     yallist "^4.0.0"
 
-magic-string@^0.30.8:
+magic-string@^0.30.10, magic-string@^0.30.8:
   version "0.30.10"
   resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.30.10.tgz#123d9c41a0cb5640c892b041d4cfb3bd0aa4b39e"
   integrity sha512-iIRwTIf0QKV3UAnYK4PU8uiEc4SRh5jX0mwpIwETPpHdhVM4f53RSwS/vXvN1JhGX+Cs7B8qIq3d6AH49O5fAQ==
@@ -2126,11 +2180,12 @@ vite-plugin-dts@^3.9.1:
     vue-tsc "^1.8.27"
 
 vite-plugin-lib-inject-css@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/vite-plugin-lib-inject-css/-/vite-plugin-lib-inject-css-2.0.1.tgz#3243c1b87feb106f942a1bb205ca8cd8a424e72b"
-  integrity sha512-86VU8m4t3TNPk9xfdnNDqn1OHkgrPHpP7B5wkVys4tWSLwMMIucCgJdc5wenGntLNMWKChJV0Ut3qGH6iGojMg==
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/vite-plugin-lib-inject-css/-/vite-plugin-lib-inject-css-2.1.1.tgz#39c5bb30dbb40c70e0d41a334097ce9b77e8e740"
+  integrity sha512-RIMeVnqBK/8I0E9nnQWzws6pdj5ilRMPJSnXYb6nWxNR4EmDPnksnb/ACoR5Fy7QfzULqS4gtQMrjwnNCC9zoA==
   dependencies:
-    magic-string "^0.30.8"
+    "@ast-grep/napi" "^0.22.3"
+    magic-string "^0.30.10"
     picocolors "^1.0.0"
 
 vite@^5.2.0:
