@@ -11,14 +11,12 @@ import (
 
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/database"
-	_ "github.com/GenerateNU/sac/backend/docs"
 	"github.com/GenerateNU/sac/backend/integrations"
 	"github.com/GenerateNU/sac/backend/integrations/email"
 	"github.com/GenerateNU/sac/backend/integrations/file"
 	"github.com/GenerateNU/sac/backend/integrations/search"
 	"github.com/GenerateNU/sac/backend/server"
 	"github.com/GenerateNU/sac/backend/telemetry"
-	"github.com/GenerateNU/sac/backend/tests/api/mocks"
 	"go.opentelemetry.io/otel"
 )
 
@@ -109,8 +107,6 @@ func configureIntegrations(config *config.Settings, connectToPinecone bool) inte
 
 	if connectToPinecone {
 		pinecone = search.NewPineconeClient(openAi, config.Pinecone)
-	} else {
-		pinecone = mocks.NewPineconeMockClient()
 	}
 
 	integrations := integrations.Integrations{

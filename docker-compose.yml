@@ -1,0 +1,61 @@
+services:
+  redis-active-tokens:
+    image: redis/redis-stack-server:latest
+    container_name: redis_active_tokens
+    ports:
+      - 6379:6379
+    environment:
+      - REDIS_PASSWORD=redispassword!#1
+    volumes:
+      - redis-active-data:/data
+
+  redis-blacklist:
+    image: redis/redis-stack-server:latest
+    container_name: redis_blacklist
+    ports:
+      - 6380:6379
+    environment:
+      - REDIS_PASSWORD=redispassword!#2
+    volumes:
+      - redis-blacklist-data:/data
+
+  redis-limiter:
+    image: redis/redis-stack-server:latest
+    container_name: redis_limiter
+    ports:
+      - 6381:6379
+    environment:
+      - REDIS_PASSWORD=redispassword!#3
+    volumes:
+      - redis-limiter-data:/data
+  
+  # caddy: 
+  #   image: caddy:latest
+  #   restart: unless-stopped
+  #   cap_add:
+  #     - NET_ADMIN
+  #   ports:
+  #     - 80:80
+  #     - 443:443
+  #     - 443:443/udp
+  #     - 8443:8443
+  #     - 8443:8443/udp
+  #   volumes:
+  #     - $PWD/Caddyfile:/etc/caddy/Caddyfile
+  #     - caddy_data:/data
+  #     - caddy_config:/config
+  
+  api:
+    container_name: sac_api
+    build:
+      context: backend
+    env_file:
+      - config/.env.dev
+
+volumes:
+  redis-active-data:
+  redis-blacklist-data:
+  redis-limiter-data:
+  # caddy_data:
+  #   external: true
+  # caddy_config:
