@@ -4874,10 +4874,10 @@ expo-modules-core@1.12.10:
   dependencies:
     invariant "^2.2.4"
 
-expo-router@~3.5.11:
-  version "3.5.11"
-  resolved "https://registry.yarnpkg.com/expo-router/-/expo-router-3.5.11.tgz#5e66aaea954f6e5e4e23b5047138f424d9a2d0ca"
-  integrity sha512-6N6G4w+xsI3jVn4RoNDHyLmbEfoXvXKGzPOhuBicoblU8Utoa5hFI/tnEjxXfhlqz+zjAs6lCv3Ff0wzv/KYoQ==
+expo-router@~3.5.14:
+  version "3.5.14"
+  resolved "https://registry.yarnpkg.com/expo-router/-/expo-router-3.5.14.tgz#5ca0e861271fa716b94a6149d696f7ac1258aad4"
+  integrity sha512-RVsyJLosZSq89ebA5qfPToRcFZJoTTb+6nwPHk6iESD6KON/Q7ZODt5fvCwXkY86tLNEMGo160QvBPfBZmglaA==
   dependencies:
     "@expo/metro-runtime" "3.2.1"
     "@expo/server" "^0.4.0"
