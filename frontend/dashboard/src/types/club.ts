@@ -12,6 +12,18 @@ export type Club = {
     logo: string;
 }
 
+export enum collegeEnum {
+    CAMD = "CAMD",
+	DMSB = "DMSB",
+	KCCS = "KCCS",
+	CE   = "CE",
+	BCHS = "BCHS",
+	SL   = "SL",
+	CPS  = "CPS",
+	CS   = "CS",
+	CSSH = "CSSH",
+}
+
 export interface CreateClubRequestBody {
     userId: string;
     name: string;
