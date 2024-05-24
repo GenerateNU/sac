@@ -1,6 +1,22 @@
 package utilities
 
-import "net/http"
+import (
+	"io"
+	"net/http"
+
+	"github.com/valyala/fasthttp"
+)
+
+func Request(method string, url string, body io.Reader, modifiers ...RequestModifier) (*http.Response, error) {
+	req, err := http.NewRequest(method, url, body)
+	if err != nil {
+		return nil, err
+	}
+	req = ApplyModifiers(req, modifiers...)
+	client := fasthttp.Client{}
+
+	return client.Do(req)
+}
 
 type RequestModifier interface {
 	Modify(req *http.Request) *http.Request
@@ -34,6 +50,13 @@ func JSON() RequestModifier {
 	return HeaderKVModifier{
 		Key:   "Content-Type",
 		Value: "application/json",
+	}
+}
+
+func FormURLEncoded() RequestModifier {
+	return HeaderKVModifier{
+		Key:   "Content-Type",
+		Value: "application/x-www-form-urlencoded",
 	}
 }
 
