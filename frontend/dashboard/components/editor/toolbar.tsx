@@ -13,11 +13,11 @@ interface ToolbarProps {
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
+    const [json, setJSON] = useState("")
+    
     if (!editor) {
         return null
     }
-
-    const [json, setJSON] = useState("")
 
     return (
         <div className="flex flex-row bg-slate-200 p-2 rounded-md items-center mb-2 justify-between flex-wrap">

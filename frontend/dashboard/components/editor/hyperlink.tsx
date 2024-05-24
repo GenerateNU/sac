@@ -1,13 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Editor } from "@tiptap/react";
 import { Link } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { z } from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,10 +20,6 @@ const linkSchema = z.object({
 type LinkData = z.infer<typeof linkSchema>;
 
 export const HyperlinkButton: React.FC<HyperLinkProps> = ({ editor, disabled }) => {
-  if (!editor) {
-    return null;
-  }
-
   const {
     control,
     handleSubmit,
@@ -36,35 +28,32 @@ export const HyperlinkButton: React.FC<HyperLinkProps> = ({ editor, disabled }) 
   } = useForm<LinkData>({
     resolver: zodResolver(linkSchema),
     defaultValues: {
-      link: editor.getAttributes("link").href,
+      link: editor?.getAttributes("link").href || "", // Use optional chaining here
     },
   });
 
-  // set hyperlink
-  const setLinkInEditor = (data: LinkData) => {
-    const url = data.link;
-    if (!url) {
-      editor.chain().focus().unsetLink().run();
-      return;
-    }
-    editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
-  };
-
-  // update the link input when users unlink or link
   useEffect(() => {
+    if (!editor) return;
+
     const updateLink = () => {
       const currentLink = editor.getAttributes("link").href;
-      if (currentLink) {
-        setValue("link", currentLink);
-      } else {
-        setValue("link", "");
-      }
+      setValue("link", currentLink || "");
     };
+
     editor.on("transaction", updateLink);
     return () => {
       editor.off("transaction", updateLink);
     };
   }, [editor, setValue]);
+
+  const setLinkInEditor = (data: LinkData) => {
+    const url = data.link;
+    if (!url) {
+      editor?.chain().focus().unsetLink().run();
+      return;
+    }
+    editor?.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
+  };
 
   const onSubmit = handleSubmit((data) => {
     setLinkInEditor(data);
@@ -75,7 +64,7 @@ export const HyperlinkButton: React.FC<HyperLinkProps> = ({ editor, disabled }) 
       <PopoverTrigger asChild>
         <Button
           variant="link"
-          className={editor.isActive("link") && editor.isEditable ? "bg-slate-300 rounded-md p-1.5" : "p-1.5"}
+          className={editor?.isActive("link") && editor?.isEditable ? "bg-slate-300 rounded-md p-1.5" : "p-1.5"}
           size="link"
           disabled={disabled}
         >
