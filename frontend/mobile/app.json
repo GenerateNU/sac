@@ -25,7 +25,8 @@
                 "foregroundImage": "./assets/images/adaptive-icon.png",
                 "backgroundColor": "#ffffff"
             },
-            "package": "com.generatesac.studentactivitycalendar"
+            "package": "com.generatesac.studentactivitycalendar",
+            "softwareKeyboardLayoutMode": "pan"
         },
         "web": {
             "bundler": "metro",

@@ -1,10 +1,13 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
+import React from "react";
+import {Editor} from "../../components/editor";
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const HomePage = () => {
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Home</Text>
-        </View>
+        <SafeAreaView style={styles.container}>
+            <Editor />
+        </SafeAreaView>
     );
 };
 
@@ -12,7 +15,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     title: {
         fontSize: 20,
