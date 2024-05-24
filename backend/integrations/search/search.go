@@ -132,7 +132,7 @@ func (c *PineconeClient) Upsert(items []Searchable) error {
 
 	req = pineconeRequest(c.PineconeSettings, req)
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := utilities.HttpClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("failed to upsert to pinecone: %w", err)
 	}
@@ -189,7 +189,7 @@ func (c *PineconeClient) Delete(items []Searchable) error {
 
 	req = pineconeRequest(c.PineconeSettings, req)
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := utilities.HttpClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("failed to delete from pinecone: %w", err)
 	}
@@ -260,7 +260,7 @@ func (c *PineconeClient) Search(item Searchable) ([]string, error) {
 
 	req = pineconeRequest(c.PineconeSettings, req)
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := utilities.HttpClient.Do(req)
 	if err != nil {
 		return []string{}, fmt.Errorf("failed to search to pinecone: %w", err)
 	}

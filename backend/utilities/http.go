@@ -1,6 +1,14 @@
 package utilities
 
-import "net/http"
+import (
+	"net/http"
+)
+
+var HttpClient *http.Client
+
+func init() {
+	HttpClient = http.DefaultClient
+}
 
 type RequestModifier interface {
 	Modify(req *http.Request) *http.Request
