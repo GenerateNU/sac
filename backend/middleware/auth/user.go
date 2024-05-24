@@ -38,3 +38,24 @@ func (m *AuthMiddlewareService) UserAuthorizeById(c *fiber.Ctx) error {
 		return utilities.Forbidden()
 	}(c)
 }
+
+func (m *AuthMiddlewareService) UserAuthorizeAndExtractID(c *fiber.Ctx) error {
+	return func (c *fiber.Ctx) error {
+		if err := m.Authenticate(c); err != nil {
+			return utilities.Unauthorized()
+		}
+	
+		claims, err := auth.From(c)
+		if err != nil {
+			return err
+		}
+	
+		issuerIDAsUUID, err := utilities.ValidateID(claims.Issuer)
+		if err != nil {
+			return err
+		}
+	
+		c.Locals("userID", issuerIDAsUUID.String())
+		return c.Next()
+	}(c)
+}

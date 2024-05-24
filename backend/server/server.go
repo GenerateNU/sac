@@ -13,6 +13,7 @@ import (
 	clubs "github.com/GenerateNU/sac/backend/entities/clubs/base"
 	contacts "github.com/GenerateNU/sac/backend/entities/contacts/base"
 	events "github.com/GenerateNU/sac/backend/entities/events/base"
+	oauth "github.com/GenerateNU/sac/backend/entities/oauth/base"
 	files "github.com/GenerateNU/sac/backend/entities/files/base"
 	pocs "github.com/GenerateNU/sac/backend/entities/pocs/base"
 	tags "github.com/GenerateNU/sac/backend/entities/tags/base"
@@ -87,6 +88,7 @@ func allRoutes(app *fiber.App, routeParams types.RouteParams) {
 	categories.CategoryRoutes(routeParams)
 	events.EventRoutes(routeParams)
 	files.File(routeParams)
+	oauth.OAuth(routeParams)
 }
 
 func newFiberApp(appSettings config.ApplicationSettings) *fiber.App {

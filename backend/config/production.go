@@ -98,6 +98,16 @@ func readProd(v *viper.Viper) (*Settings, error) {
 		return nil, fmt.Errorf("failed to read Resend settings: %w", err)
 	}
 
+	googleSettings, err := readGoogleOAuthSettings()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read Google OAuth settings: %w", err)
+	}
+
+	outlookSettings, err := readOutlookOAuthSettings()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read Outlook OAuth settings: %w", err)
+	}
+
 	return &Settings{
 		Application: ApplicationSettings{
 			Port:    uint16(portInt),
@@ -124,5 +134,7 @@ func readProd(v *viper.Viper) (*Settings, error) {
 		AWS:      *awsSettings,
 		Resend:   *resendSettings,
 		Calendar: prodSettings.Calendar,
+		GoogleSettings: *googleSettings,
+		OutlookSettings: *outlookSettings,
 	}, nil
 }
