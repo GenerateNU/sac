@@ -67,7 +67,7 @@ func (c *OpenAIClient) CreateEmbedding(items []Searchable) ([]Embedding, error) 
 		utilities.JSON(),
 	)
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := utilities.HttpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create embedding: %w", err)
 	}
@@ -127,7 +127,7 @@ func (c *OpenAIClient) CreateModeration(items []Searchable) ([]ModerationResult,
 		utilities.JSON(),
 	)
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := utilities.HttpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create moderation: %w", err)
 	}

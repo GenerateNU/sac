@@ -6,6 +6,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"go.opentelemetry.io/otel/sdk/resource"
+	"go.opentelemetry.io/otel/trace"
 
 	"go.opentelemetry.io/otel"
 	stdout "go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
@@ -17,6 +18,12 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 )
+
+var Tracer trace.Tracer
+
+func init() {
+	Tracer = otel.Tracer("sac")
+}
 
 func InitTracer() *sdktrace.TracerProvider {
 	exporter, err := stdout.New(stdout.WithPrettyPrint())
