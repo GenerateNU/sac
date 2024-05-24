@@ -8,9 +8,12 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { ThemeProvider } from '@shopify/restyle';
 
 import { store } from '@/store/store';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+import { theme } from './(design-system)';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -52,8 +55,10 @@ const RootLayout = () => {
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <Provider store={store}>
-                <StatusBar style="light" />
-                <InitalLayout />
+                <ThemeProvider theme={theme}>
+                    <StatusBar style="light" />
+                    <InitalLayout />
+                </ThemeProvider>
             </Provider>
         </GestureHandlerRootView>
     );

@@ -13,8 +13,10 @@
   "dependencies": {
     "@generatesac/lib": "^0.0.1",
     "@hookform/resolvers": "^3.4.2",
+    "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-popover": "^1.0.7",
+    "@radix-ui/react-select": "^2.0.0",
     "@radix-ui/react-slot": "^1.0.2",
     "@tiptap/extension-bubble-menu": "^2.4.0",
     "@tiptap/extension-bullet-list": "^2.4.0",

@@ -88,8 +88,8 @@ func (a *AuthController) Register(c *fiber.Ctx) error {
 
 // Refresh godoc
 //
-// @Summary		Refreshes a user's access token
-// @Description	Refreshes a user's access token
+// @Summary		Refreshes a user's access token and returns a new pair of tokens
+// @Description	Refreshes a user's access token and returns a new pair of tokens
 // @ID			refresh-user
 // @Tags      	auth
 // @Accept		json
@@ -100,10 +100,10 @@ func (a *AuthController) Register(c *fiber.Ctx) error {
 // @Failure     500   {object}    error
 // @Router		/auth/refresh  [post]
 func (a *AuthController) Refresh(c *fiber.Ctx) error {
-	var refreshBody authEntities.RefreshTokenRequestBody
+	var refreshBody RefreshTokenCookieBody
 
-	if err := c.BodyParser(&refreshBody); err != nil {
-		return utilities.InvalidJSON()
+	if err := c.CookieParser(&refreshBody); err != nil {
+		return utilities.InvalidCookies()
 	}
 
 	tokens, err := a.authService.Refresh(refreshBody.RefreshToken)

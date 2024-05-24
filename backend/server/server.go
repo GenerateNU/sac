@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 
+	"github.com/garrettladley/fiberpaginate"
 	go_json "github.com/goccy/go-json"
 
 	authenticator "github.com/GenerateNU/sac/backend/auth"
@@ -17,10 +18,12 @@ import (
 	tags "github.com/GenerateNU/sac/backend/entities/tags/base"
 	users "github.com/GenerateNU/sac/backend/entities/users/base"
 	"github.com/GenerateNU/sac/backend/integrations"
-	"github.com/GenerateNU/sac/backend/middleware"
+	authMiddleware "github.com/GenerateNU/sac/backend/middleware/auth"
+	utilityMiddleware "github.com/GenerateNU/sac/backend/middleware/utility"
 
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/gofiber/contrib/otelfiber"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -49,22 +52,24 @@ func Init(db *gorm.DB, integrations integrations.Integrations, settings config.S
 	}
 
 	jwt := authenticator.NewJWTClient(settings.Auth, jwt.SigningMethodHS256)
-	authMiddleware := middleware.NewAuthMiddlewareService(db, validate, settings.Auth)
+	authMiddleware := authMiddleware.New(db, validate, settings.Auth)
+	utilityMiddleware := utilityMiddleware.New(fiberpaginate.New())
 
 	apiv1 := app.Group("/api/v1")
 
-	routeParams := types.RouteParams{
-		Router:         apiv1,
-		AuthMiddleware: authMiddleware,
-		ServiceParams: types.ServiceParams{
-			DB:           db,
-			Validate:     validate,
-			Auth:         &settings.Auth,
-			JWT:          jwt,
-			Integrations: integrations,
-			Calendar:     &settings.Calendar,
-		},
-	}
+	routeParams := types.NewRouteParams(
+		apiv1,
+		authMiddleware,
+		utilityMiddleware,
+		types.NewServiceParams(
+			db,
+			validate,
+			&settings.Auth,
+			jwt,
+			&settings.Calendar,
+			integrations,
+		),
+	)
 
 	allRoutes(app, routeParams)
 
@@ -94,14 +99,22 @@ func newFiberApp(appSettings config.ApplicationSettings) *fiber.App {
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     fmt.Sprintf("http://%s:%d", appSettings.Host, appSettings.Port),
 		AllowCredentials: true,
+		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
+		AllowMethods:     "GET, POST, PUT, DELETE, OPTIONS",
+		ExposeHeaders:    "Authorization, Content-Length, Content-Type",
 	}))
+
 	app.Use(requestid.New())
+
 	app.Use(logger.New(logger.Config{
 		Format: "[${time}] ${ip}:${port} ${pid} ${locals:requestid} ${status} - ${latency} ${method} ${path}\n",
 	}))
+
 	app.Use(compress.New(compress.Config{
 		Level: compress.LevelBestSpeed,
 	}))
+
+	app.Use(otelfiber.Middleware())
 
 	return app
 }
