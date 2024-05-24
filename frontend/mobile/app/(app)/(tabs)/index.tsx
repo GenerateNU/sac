@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
 import React from "react";
-import {Editor} from "../../components/editor";
+import {Editor} from "../../components/editor/editor";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const HomePage = () => {

@@ -1,0 +1,20 @@
+.tiptap {
+    > * + * {
+      margin-top: 0.75em;
+    }
+  
+    a {
+      color: revert;
+      text-decoration: revert;
+    }
+
+    ul, ol {
+      list-style: revert;
+      padding-left: revert;
+    }
+
+    h1, h2 {
+      font-size: revert;
+      font-weight: revert;
+    }
+}

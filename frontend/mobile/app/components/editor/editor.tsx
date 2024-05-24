@@ -8,14 +8,18 @@ import { WebView } from "react-native-webview";
 import { CUSTOM_TOOLBAR } from "./tools";
 import { Toolbar } from "./toolbar";
 import {Dimensions} from 'react-native';
+import {JsonContent,parseJsonToHtml } from "../../utils/jsonToHTML";
+
+const json: JsonContent[] = [{"type":"doc","content":[{"type":"heading","attrs":{"level":1},"content":[{"type":"text","text":"Hello World"}]},{"type":"heading","attrs":{"level":2},"content":[{"type":"text","marks":[{"type":"bold"},{"type":"italic"},{"type":"strike"},{"type":"underline"}],"text":"This is generate"}]},{"type":"bulletList","content":[{"type":"listItem","content":[{"type":"paragraph","content":[{"type":"text","text":"Task 1"}]}]},{"type":"listItem","content":[{"type":"paragraph","content":[{"type":"text","text":"Task 2"}]}]}]},{"type":"paragraph"},{"type":"orderedList","attrs":{"start":1},"content":[{"type":"listItem","content":[{"type":"paragraph","content":[{"type":"text","text":"Task 3"}]}]},{"type":"listItem","content":[{"type":"paragraph","content":[{"type":"text","text":"Task 4"}]}]}]},{"type":"paragraph","content":[{"type":"text","marks":[{"type":"link","attrs":{"href":"https://generatenu.com","target":"_blank","rel":"noopener noreferrer nofollow","class":null}}],"text":"link"}]}]}]
+const initialContent = parseJsonToHtml(json);
 
 const windowHeight = Dimensions.get('window').height;
 const customFont = `${Inter}
   * {
       font-family: 'Inter';
   }`;
-const initialContent = `<h1>Hello World</h1>`;
-const offset = () => {
+
+  const offset = () => {
   return windowHeight > 700 ? 60 : 40;
 }
 
@@ -29,7 +33,7 @@ export const Editor = () => {
         CoreBridge.configureCSS(customFont),
       ],
     });
-    const content = useEditorContent(editor, { type: 'html' });
+    const content = useEditorContent(editor, { type: 'json' });
     const [editable, setEditable] = useState(true);
 
     return (
@@ -42,7 +46,7 @@ export const Editor = () => {
                               ${customFont}
                             </style>
                             <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, minimum-scale=1.0, user-scalable=yes">
-                            ${content}`}}>
+                            ${JSON.stringify(content)}`}}>
                           </WebView>)
             : <>
                 <RichText style={{width: 360}} editor={editor}/>

@@ -7,22 +7,23 @@ import {
 } from "@/components/ui/popover";
 import { Editor } from "@tiptap/react";
 import { Link } from "lucide-react";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { z } from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 interface HyperLinkProps {
   editor: Editor | null;
+  disabled: boolean;
 }
 
 const linkSchema = z.object({
-  link: z.string().url("Invalid URL"),
+  link: z.string().url("Invalid URL").optional(),
 });
 
 type LinkData = z.infer<typeof linkSchema>;
 
-export const HyperlinkButton: React.FC<HyperLinkProps> = ({ editor }) => {
+export const HyperlinkButton: React.FC<HyperLinkProps> = ({ editor, disabled }) => {
   if (!editor) {
     return null;
   }
@@ -30,25 +31,40 @@ export const HyperlinkButton: React.FC<HyperLinkProps> = ({ editor }) => {
   const {
     control,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<LinkData>({
     resolver: zodResolver(linkSchema),
     defaultValues: {
-      link: editor.getAttributes("link").href || "",
+      link: editor.getAttributes("link").href,
     },
   });
 
-  const setLinkInEditor = useCallback(
-    (data: LinkData) => {
-      const url = data.link;
-      if (!url) {
-        editor.chain().focus().extendMarkRange("link").unsetLink().run();
-        return;
+  // set hyperlink
+  const setLinkInEditor = (data: LinkData) => {
+    const url = data.link;
+    if (!url) {
+      editor.chain().focus().unsetLink().run();
+      return;
+    }
+    editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
+  };
+
+  // update the link input when users unlink or link
+  useEffect(() => {
+    const updateLink = () => {
+      const currentLink = editor.getAttributes("link").href;
+      if (currentLink) {
+        setValue("link", currentLink);
+      } else {
+        setValue("link", "");
       }
-      editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
-    },
-    [editor]
-  );
+    };
+    editor.on("transaction", updateLink);
+    return () => {
+      editor.off("transaction", updateLink);
+    };
+  }, [editor, setValue]);
 
   const onSubmit = handleSubmit((data) => {
     setLinkInEditor(data);
@@ -59,10 +75,11 @@ export const HyperlinkButton: React.FC<HyperLinkProps> = ({ editor }) => {
       <PopoverTrigger asChild>
         <Button
           variant="link"
-          className={editor.isActive("link") ? "bg-slate-400 rounded-md p-1.5" : "p-1.5"}
+          className={editor.isActive("link") && editor.isEditable ? "bg-slate-300 rounded-md p-1.5" : "p-1.5"}
           size="link"
+          disabled={disabled}
         >
-          <Link size={20} />
+          <Link />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-76">
@@ -90,9 +107,9 @@ export const HyperlinkButton: React.FC<HyperLinkProps> = ({ editor }) => {
               )}
             </div>
             <Button type="submit">Submit</Button>
-              </div>
-            </form>
+          </div>
+        </form>
       </PopoverContent>
     </Popover>
-  )
-}
+  );
+};

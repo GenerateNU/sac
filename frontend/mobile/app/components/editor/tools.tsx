@@ -3,7 +3,7 @@ import { Images } from '@10play/tentap-editor';
 import { EditorActionType } from '@10play/tentap-editor';
 import type { EditorBridge } from '@10play/tentap-editor';
 import type { BridgeState } from '@10play/tentap-editor';
-import { ToolbarContext } from '../../node_modules/@10play/tentap-editor/src/RichText/Toolbar/Toolbar';
+import { ToolbarContext } from '@10play/tentap-editor/src/RichText/Toolbar/Toolbar';
 
 export const ToolbarItems = {
   ...EditorActionType,
@@ -47,34 +47,6 @@ export const CUSTOM_TOOLBAR: ToolbarItem[] = [
   },
   {
     onPress:
-      ({ setToolbarContext, editorState, editor }) =>
-      () => {
-        if (Platform.OS === 'android') {
-          setTimeout(() => {
-            editor.setSelection(
-              editorState.selection.from,
-              editorState.selection.to
-            );
-          });
-        }
-        setToolbarContext(ToolbarContext.Link);
-      },
-    active: ({ editorState }) => editorState.isLinkActive,
-    disabled: ({ editorState }) =>
-      !editorState.isLinkActive && !editorState.canSetLink,
-    image: () => Images.link,
-  },
-  {
-    onPress:
-      ({ setToolbarContext }) =>
-      () =>
-        setToolbarContext(ToolbarContext.Heading),
-    active: () => false,
-    disabled: ({ editorState }) => !editorState.canToggleHeading,
-    image: () => Images.Aa,
-  },
-  {
-    onPress:
       ({ editor }) =>
       () =>
         editor.toggleUnderline(),
@@ -93,12 +65,30 @@ export const CUSTOM_TOOLBAR: ToolbarItem[] = [
   },
   {
     onPress:
+      ({ setToolbarContext }) =>
+      () =>
+        setToolbarContext(ToolbarContext.Heading),
+    active: () => false,
+    disabled: ({ editorState }) => !editorState.canToggleHeading,
+    image: () => Images.Aa,
+  },
+  {
+    onPress:
       ({ editor }) =>
       () =>
         editor.toggleOrderedList(),
     active: ({ editorState }) => editorState.isOrderedListActive,
     disabled: ({ editorState }) => !editorState.canToggleOrderedList,
     image: () => Images.orderedList,
+  },
+  {
+    onPress:
+      ({ editor }) =>
+      () =>
+        editor.toggleBulletList(),
+    active: ({ editorState }) => editorState.isBulletListActive,
+    disabled: ({ editorState }) => !editorState.canToggleBulletList,
+    image: () => Images.bulletList,
   },
   {
     onPress:
@@ -118,15 +108,6 @@ export const CUSTOM_TOOLBAR: ToolbarItem[] = [
     disabled: ({ editorState }) =>
       !editorState.isLinkActive && !editorState.canSetLink,
     image: () => Images.link,
-  },
-  {
-    onPress:
-      ({ editor }) =>
-      () =>
-        editor.toggleBulletList(),
-    active: ({ editorState }) => editorState.isBulletListActive,
-    disabled: ({ editorState }) => !editorState.canToggleBulletList,
-    image: () => Images.bulletList,
   },
   {
     onPress:

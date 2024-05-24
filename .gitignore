@@ -19,7 +19,7 @@ node_modules
 backend/tests/api/__debug_*
 .env.prod
 
-frontend/mobile/ios/
+# frontend/mobile/ios/
 frontend/mobile/android/
 tmp/
 ios
