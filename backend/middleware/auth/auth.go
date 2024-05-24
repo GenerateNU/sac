@@ -65,7 +65,7 @@ func (m *AuthMiddlewareService) Authenticate(c *fiber.Ctx) error {
 		// 	return errors.Unauthorized.FiberError(c)
 		// }
 
-		c.Locals("claims", claims)
+		auth.SetClaims(c, claims)
 
 		return nil
 	}(c)
