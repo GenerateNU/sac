@@ -18,10 +18,14 @@ type CustomClaims struct {
 	Role string `json:"role"`
 }
 
+type localsKey byte
+
+const claimsKey localsKey = 0
+
 // From extracts the CustomClaims from the fiber context
 // Returns nil if the claims are not present
 func From(c *fiber.Ctx) (*CustomClaims, error) {
-	rawClaims := c.Locals("claims")
+	rawClaims := c.Locals(claimsKey)
 	if rawClaims == nil {
 		return nil, utilities.Forbidden()
 	}
@@ -32,6 +36,10 @@ func From(c *fiber.Ctx) (*CustomClaims, error) {
 	}
 
 	return claims, nil
+}
+
+func SetClaims(c *fiber.Ctx, claims *CustomClaims) {
+	c.Locals(claimsKey, claims)
 }
 
 type JWTType string
