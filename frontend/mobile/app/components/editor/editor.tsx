@@ -33,20 +33,22 @@ export const Editor = () => {
         CoreBridge.configureCSS(customFont),
       ],
     });
-    const content = useEditorContent(editor, { type: 'json' });
+    
+    const jsonOutput = useEditorContent(editor, { type: 'json' });
     const [editable, setEditable] = useState(true);
-
+    const htmlOutput = useEditorContent(editor, { type: 'html' });
+    
     return (
         <View style={{flex: 1, alignItems: 'center', width: '100%', backgroundColor: 'white'}}>
           <View style={{paddingBottom: 20}}></View>
           <View style={{flexDirection: 'column', width: 380, alignItems: 'flex-end'}}><Button onPress={() => setEditable(!editable)} title={editable ? "Edit" : "Save"}/></View>
           {editable 
-            ? (content && <WebView style={{width: 380}} scrollEnabled={false} source={{html: `
+            ? (jsonOutput && <WebView style={{width: 380}} scrollEnabled={false} source={{html: `
                             <style>
                               ${customFont}
                             </style>
                             <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, minimum-scale=1.0, user-scalable=yes">
-                            ${JSON.stringify(content)}`}}>
+                            ${htmlOutput}`}}>
                           </WebView>)
             : <>
                 <RichText style={{width: 360}} editor={editor}/>
