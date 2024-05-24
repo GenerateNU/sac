@@ -2,20 +2,12 @@ package utilities
 
 import (
 	"net/http"
-	"time"
 )
 
 var HttpClient *http.Client
 
 func init() {
-	HttpClient = &http.Client{
-		Timeout: time.Second * 10,
-		Transport: &http.Transport{
-			MaxIdleConns:        100,
-			IdleConnTimeout:     90 * time.Second,
-			TLSHandshakeTimeout: 10 * time.Second,
-		},
-	}
+	HttpClient = http.DefaultClient
 }
 
 type RequestModifier interface {
