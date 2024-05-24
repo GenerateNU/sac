@@ -1,32 +1,40 @@
 package utilities
 
 import (
-	"io"
-	"net/http"
+	"fmt"
 
 	"github.com/valyala/fasthttp"
 )
 
-func Request(method string, url string, body io.Reader, modifiers ...RequestModifier) (*http.Response, error) {
-	req, err := http.NewRequest(method, url, body)
+var httpClient *fasthttp.Client
+
+func init() {
+	httpClient = &fasthttp.Client{}
+}
+
+func Request(method string, url string, body []byte, modifiers ...RequestModifier) (*fasthttp.Response, error) {
+	req := fasthttp.AcquireRequest()
+	defer fasthttp.ReleaseRequest(req)
+
+	resp := fasthttp.AcquireResponse()
+	defer fasthttp.ReleaseResponse(resp)
+
+	req.Header.SetMethod(method)
+	req.SetRequestURI(url)
+	req.SetBody(body)
+
+	req = ApplyModifiers(req, modifiers...)
+
+	err := httpClient.Do(req, resp)
 	if err != nil {
 		return nil, err
 	}
-	req = ApplyModifiers(req, modifiers...)
-	client := fasthttp.Client{}
 
-	return client.Do(req)
-	"net/http"
-)
-
-var HttpClient *http.Client
-
-func init() {
-	HttpClient = http.DefaultClient
+	return resp, nil
 }
 
 type RequestModifier interface {
-	Modify(req *http.Request) *http.Request
+	Modify(req *fasthttp.Request) *fasthttp.Request
 }
 
 type HeaderKVModifier struct {
@@ -34,7 +42,7 @@ type HeaderKVModifier struct {
 	Value string
 }
 
-func (h HeaderKVModifier) Modify(req *http.Request) *http.Request {
+func (h HeaderKVModifier) Modify(req *fasthttp.Request) *fasthttp.Request {
 	req.Header.Set(h.Key, h.Value)
 	return req
 }
@@ -49,7 +57,7 @@ func HeaderKV(key, value string) RequestModifier {
 func Authorization(apiKey string) RequestModifier {
 	return HeaderKVModifier{
 		Key:   "Authorization",
-		Value: "Bearer " + apiKey,
+		Value: fmt.Sprintf("Bearer %s", apiKey),
 	}
 }
 
@@ -74,7 +82,7 @@ func AcceptJSON() RequestModifier {
 	}
 }
 
-func ApplyModifiers(req *http.Request, modifiers ...RequestModifier) *http.Request {
+func ApplyModifiers(req *fasthttp.Request, modifiers ...RequestModifier) *fasthttp.Request {
 	for _, modifier := range modifiers {
 		req = modifier.Modify(req)
 	}
