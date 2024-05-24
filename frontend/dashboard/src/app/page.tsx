@@ -1,7 +1,11 @@
 "use client";
 
+import Tiptap from "../components/editor";
+
 export default function Home() {
   return (
-    <p>Hello World</p>
+    <div className="p-20">
+      <Tiptap />
+    </div>
   );
 }
