@@ -16,6 +16,13 @@ func Request(method string, url string, body io.Reader, modifiers ...RequestModi
 	client := fasthttp.Client{}
 
 	return client.Do(req)
+	"net/http"
+)
+
+var HttpClient *http.Client
+
+func init() {
+	HttpClient = http.DefaultClient
 }
 
 type RequestModifier interface {
