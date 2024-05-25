@@ -8,6 +8,7 @@ import {
     createVariant
 } from '@shopify/restyle';
 
+import { Text } from '../Text/Text';
 import { Theme } from '../theme';
 
 const Box = createBox<Theme>();
@@ -26,7 +27,11 @@ const TagBase = createRestyleComponent<TagProps, Theme>([tagVariant], Box);
 export const Tag: React.FC<TagProps> = ({ variant, children, ...rest }) => {
     return (
         <TagBase variant={variant} {...rest}>
-            {children}
+            {typeof children === 'string' ? (
+                <Text variant="body-1">{children}</Text>
+            ) : (
+                children
+            )}
         </TagBase>
     );
 };
