@@ -6,7 +6,6 @@ import (
 
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/constants"
-	"github.com/google/uuid"
 
 	"github.com/GenerateNU/sac/backend/utilities"
 	m "github.com/garrettladley/mattress"
@@ -17,51 +16,6 @@ import (
 type CustomClaims struct {
 	jwt.StandardClaims
 	Role string `json:"role"`
-}
-
-type localsKey byte
-
-const (
-	claimsKey localsKey = 0
-	userIDKey localsKey = 1
-)
-
-// CustomClaimsFrom extracts the CustomClaims from the fiber context
-// Returns nil if the claims are not present
-func CustomClaimsFrom(c *fiber.Ctx) (*CustomClaims, error) {
-	rawClaims := c.Locals(claimsKey)
-	if rawClaims == nil {
-		return nil, utilities.Forbidden()
-	}
-
-	claims, ok := rawClaims.(*CustomClaims)
-	if !ok {
-		return nil, fmt.Errorf("claims are not of type CustomClaims. got: %T", rawClaims)
-	}
-
-	return claims, nil
-}
-
-func SetClaims(c *fiber.Ctx, claims *CustomClaims) {
-	c.Locals(claimsKey, claims)
-}
-
-func UserIDFrom(c *fiber.Ctx) (*uuid.UUID, error) {
-	userID := c.Locals(userIDKey)
-	if userID == nil {
-		return nil, utilities.Forbidden()
-	}
-
-	id, ok := userID.(*uuid.UUID)
-	if !ok {
-		return nil, fmt.Errorf("userID is not of type uuid.UUID. got: %T", userID)
-	}
-
-	return id, nil
-}
-
-func SetUserID(c *fiber.Ctx, id *uuid.UUID) {
-	c.Locals(userIDKey, id)
 }
 
 type JWTType string
