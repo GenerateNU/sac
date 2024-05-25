@@ -63,12 +63,12 @@ func (u *UserController) GetUsers(c *fiber.Ctx) error {
 // @Failure     500   {object}      error
 // @Router		/auth/me  [get]
 func (u *UserController) GetMe(c *fiber.Ctx) error {
-	claims, err := auth.From(c)
+	userID, err := auth.UserIDFrom(c)
 	if err != nil {
 		return err
 	}
 
-	user, err := u.userService.GetMe(claims.Issuer)
+	user, err := u.userService.GetMe(*userID)
 	if err != nil {
 		return err
 	}

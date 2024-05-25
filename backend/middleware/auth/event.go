@@ -25,12 +25,7 @@ func (m *AuthMiddlewareService) EventAuthorizeById(c *fiber.Ctx, extractor Extra
 			return err
 		}
 
-		claims, err := auth.From(c)
-		if err != nil {
-			return err
-		}
-
-		issuerUUID, err := utilities.ValidateID(claims.Issuer)
+		userID, err := auth.UserIDFrom(c)
 		if err != nil {
 			return err
 		}
@@ -40,7 +35,7 @@ func (m *AuthMiddlewareService) EventAuthorizeById(c *fiber.Ctx, extractor Extra
 			return err
 		}
 
-		if slices.Contains(eventHostAdmin, *issuerUUID) {
+		if slices.Contains(eventHostAdmin, *userID) {
 			return c.Next()
 		}
 
