@@ -4,8 +4,9 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/GenerateNU/sac/backend/auth"
 	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/locals"
+
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -25,7 +26,7 @@ func (oc *OAuthController) Authorize(c *fiber.Ctx) error {
 	}
 
 	// Extract the user making the call:
-	userID, err := auth.UserIDFrom(c)
+	userID, err := locals.UserIDFrom(c)
 	if err != nil {
 		return err
 	}
@@ -53,7 +54,7 @@ func (oc *OAuthController) Token(c *fiber.Ctx) error {
 	}
 
 	// Extract the user making the call:
-	userID, err := auth.UserIDFrom(c)
+	userID, err := locals.UserIDFrom(c)
 	if err != nil {
 		return err
 	}
@@ -75,7 +76,7 @@ func (oc *OAuthController) Revoke(c *fiber.Ctx) error {
 	}
 
 	// Extract the user making the call:
-	userID, err := auth.UserIDFrom(c)
+	userID, err := locals.UserIDFrom(c)
 	if err != nil {
 		return err
 	}

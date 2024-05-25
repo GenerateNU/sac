@@ -3,8 +3,8 @@ package base
 import (
 	"net/http"
 
-	"github.com/GenerateNU/sac/backend/auth"
 	authEntities "github.com/GenerateNU/sac/backend/entities/auth"
+	"github.com/GenerateNU/sac/backend/locals"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/garrettladley/fiberpaginate"
 
@@ -63,7 +63,7 @@ func (u *UserController) GetUsers(c *fiber.Ctx) error {
 // @Failure     500   {object}      error
 // @Router		/auth/me  [get]
 func (u *UserController) GetMe(c *fiber.Ctx) error {
-	userID, err := auth.UserIDFrom(c)
+	userID, err := locals.UserIDFrom(c)
 	if err != nil {
 		return err
 	}

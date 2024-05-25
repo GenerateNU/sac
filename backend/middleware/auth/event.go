@@ -3,8 +3,8 @@ package auth
 import (
 	"slices"
 
-	"github.com/GenerateNU/sac/backend/auth"
 	"github.com/GenerateNU/sac/backend/entities/events"
+	"github.com/GenerateNU/sac/backend/locals"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/fiber/v2"
 )
@@ -25,7 +25,7 @@ func (m *AuthMiddlewareService) EventAuthorizeById(c *fiber.Ctx, extractor Extra
 			return err
 		}
 
-		userID, err := auth.UserIDFrom(c)
+		userID, err := locals.UserIDFrom(c)
 		if err != nil {
 			return err
 		}
