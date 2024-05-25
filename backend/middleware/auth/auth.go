@@ -78,14 +78,6 @@ func (m *AuthMiddlewareService) Authenticate(c *fiber.Ctx) error {
 
 		locals.SetUserID(c, &userID)
 
-		rawUserID := claims.Issuer
-		userID, err := uuid.Parse(rawUserID)
-		if err != nil {
-			return fmt.Errorf("invalid user id: %s", rawUserID)
-		}
-
-		auth.SetUserID(c, &userID)
-
 		return nil
 	}(c)
 }
