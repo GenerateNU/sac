@@ -3,7 +3,7 @@ package models
 type RecruitmentType string
 
 const (
-	Unrestricted RecruitmentType = "unrestricted"
-	Tryout       RecruitmentType = "tryout"
-	Application  RecruitmentType = "application"
+	RecruitmentTypeUnrestricted RecruitmentType = "unrestricted"
+	RecruitmentTypeTryout       RecruitmentType = "tryout"
+	RecruitmentTypeApplication  RecruitmentType = "application"
 )

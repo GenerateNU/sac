@@ -1,7 +1,7 @@
 package base
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/GenerateNU/sac/backend/entities/clubs"
 	"github.com/GenerateNU/sac/backend/entities/models"
@@ -59,7 +59,7 @@ func (c *ClubService) UpdateClub(id string, clubBody UpdateClubRequestBody) (*mo
 	}
 
 	if utilities.AtLeastOne(clubBody, UpdateClubRequestBody{}) {
-		return nil, fmt.Errorf("at least one field must be present")
+		return nil, errors.New("at least one field must be present")
 	}
 
 	if err := utilities.Validate(c.Validate, clubBody); err != nil {

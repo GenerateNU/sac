@@ -8,15 +8,15 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type PointOfContactController struct {
-	pointOfContactService PointOfContactServiceInterface
+type LeaderController struct {
+	leaderService LeaderServiceInterface
 }
 
-func NewPointOfContactController(pointOfContactService PointOfContactServiceInterface) *PointOfContactController {
-	return &PointOfContactController{pointOfContactService: pointOfContactService}
+func NewLeaderController(LeaderService LeaderServiceInterface) *LeaderController {
+	return &LeaderController{leaderService: LeaderService}
 }
 
-// GetPointOfContacts godoc
+// GetLeaders godoc
 //
 // @Summary		Retrieve all point of contacts
 // @Description	Retrieves all point of contacts
@@ -25,43 +25,43 @@ func NewPointOfContactController(pointOfContactService PointOfContactServiceInte
 // @Produce		json
 // @Param		limit		query	int	    false	"Limit"
 // @Param		page		query	int	    false	"Page"
-// @Success		200	  {object}	  []models.PointOfContact
+// @Success		200	  {object}	  []models.Leader
 // @Failure     400   {string}    error
 // @Failure     404   {string}    error
 // @Failure     500   {string}    error
-// @Router		/pocs/  [get]
-func (poc *PointOfContactController) GetPointOfContacts(c *fiber.Ctx) error {
+// @Router		/leader/  [get]
+func (l *LeaderController) GetLeadership(c *fiber.Ctx) error {
 	pagination, ok := fiberpaginate.FromContext(c)
 	if !ok {
 		return utilities.ErrExpectedPagination
 	}
 
-	pointOfContacts, err := poc.pointOfContactService.GetPointOfContacts(*pagination)
+	Leaders, err := l.leaderService.GetLeaders(*pagination)
 	if err != nil {
 		return err
 	}
 
-	return c.Status(http.StatusOK).JSON(pointOfContacts)
+	return c.Status(http.StatusOK).JSON(Leaders)
 }
 
-// GetPointOfContact godoc
+// GetLeader godoc
 //
 // @Summary		Retrieves a point of contact
 // @Description	Retrieves a point of contact by id
 // @ID			get-point-of-contact
 // @Tags      	point of contact
 // @Produce		json
-// @Param		pocID	path	string	true	"Point of Contact ID"
-// @Success		200	  {object}	  models.PointOfContact
+// @Param		leaderID	path	string	true	"Point of Contact ID"
+// @Success		200	  {object}	  models.Leader
 // @Failure     400   {string}    error
 // @Failure     404   {string}    error
 // @Failure     500   {string}    error
-// @Router		/pocs/{pocID}/  [get]
-func (poc *PointOfContactController) GetPointOfContact(c *fiber.Ctx) error {
-	pointOfContact, err := poc.pointOfContactService.GetPointOfContact(c.Params("pocID"))
+// @Router		/leader/{leaderID}/  [get]
+func (l *LeaderController) GetLeader(c *fiber.Ctx) error {
+	Leader, err := l.leaderService.GetLeader(c.Params("leaderID"))
 	if err != nil {
 		return err
 	}
 
-	return c.Status(http.StatusOK).JSON(pointOfContact)
+	return c.Status(http.StatusOK).JSON(Leader)
 }

@@ -13,28 +13,27 @@ type Club struct {
 
 	SoftDeletedAt gorm.DeletedAt `json:"-"`
 
-	Name                 string           `json:"name"`
-	Preview              string           `json:"preview"`
-	Description          string           `json:"description"`
-	NumMembers           int              `json:"num_members"`
-	IsRecruiting         bool             `json:"is_recruiting"`
-	RecruitmentCycle     RecruitmentCycle `json:"recruitment_cycle"`
-	RecruitmentType      RecruitmentType  `json:"recruitment_type"`
-	WeeklyTimeCommitment int              `json:"weekly_time_commitment"`
-	OneWordToDescribeUs  string           `json:"one_word_to_describe_us"`
-	ApplicationLink      string           `json:"application_link"`
-	Logo                 string           `json:"logo"`
+	Name        string `json:"name"`
+	Preview     string `json:"preview"`
+	Description string `json:"description"`
+	NumMembers  int    `json:"num_members"`
 
-	Parent            *uuid.UUID       `gorm:"foreignKey:Parent;" json:"-"`
-	Tag               []Tag            `gorm:"many2many:club_tags;" json:"-"`
-	Member            []User           `gorm:"many2many:user_club_members;" json:"-"`
-	Follower          []User           `gorm:"many2many:user_club_followers;" json:"-"`
-	IntendedApplicant []User           `gorm:"many2many:user_club_intended_applicants;" json:"-"`
-	Comment           []Comment        `json:"-"`
-	PointOfContact    []PointOfContact `json:"-"`
-	Contact           []Contact        `json:"-"`
+	WeeklyTimeCommitment int    `json:"weekly_time_commitment"`
+	OneWordToDescribeUs  string `json:"one_word_to_describe_us"`
 
-	// Event
+	Recruitment Recruitment `json:"recruitment"`
+
+	Logo string `json:"logo"`
+
+	Parent            *uuid.UUID `gorm:"foreignKey:Parent;" json:"-"`
+	Tag               []Tag      `gorm:"many2many:club_tags;" json:"-"`
+	Member            []User     `gorm:"many2many:user_club_members;" json:"-"`
+	Follower          []User     `gorm:"many2many:user_club_followers;" json:"-"`
+	IntendedApplicant []User     `gorm:"many2many:user_club_intended_applicants;" json:"-"`
+	Comment           []Comment  `json:"-"`
+	Leadership        []Leader   `json:"-"`
+	Social            []Social   `json:"-"`
+
 	HostEvent   []Event        `gorm:"foreignKey:Host;" json:"-"`
 	Event       []Event        `gorm:"many2many:club_events;" json:"-"`
 	Notifcation []Notification `gorm:"polymorphic:Reference;" json:"-"`

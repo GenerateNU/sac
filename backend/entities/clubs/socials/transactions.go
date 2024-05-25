@@ -1,8 +1,7 @@
-package contacts
+package socials
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
 
@@ -12,33 +11,29 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-func PutClubContact(db *gorm.DB, contact models.Contact) (*models.Contact, error) {
+func PutClubSocial(db *gorm.DB, social models.Social) (*models.Social, error) {
 	err := db.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "club_id"}, {Name: "type"}},
 		DoUpdates: clause.AssignmentColumns([]string{"content"}),
-	}).Create(&contact).Error
+	}).Create(&social).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) || errors.Is(err, gorm.ErrForeignKeyViolated) {
 			return nil, utilities.ErrNotFound
 		}
 		return nil, err
 	}
-	return &contact, nil
+	return &social, nil
 }
 
-func GetClubContacts(db *gorm.DB, clubID uuid.UUID) ([]models.Contact, error) {
+func GetClubSocials(db *gorm.DB, clubID uuid.UUID) ([]models.Social, error) {
 	var club models.Club
 
-	if err := db.Preload("Contact").First(&club, clubID).Error; err != nil {
+	if err := db.Preload("Social").First(&club, clubID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, utilities.ErrNotFound
 		}
 		return nil, err
 	}
 
-	if club.Contact == nil {
-		return nil, fmt.Errorf("club with ID %s has no contacts", clubID)
-	}
-
-	return club.Contact, nil
+	return club.Social, nil
 }

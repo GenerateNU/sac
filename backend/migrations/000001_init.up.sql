@@ -23,6 +23,23 @@ CREATE TABLE IF NOT EXISTS users(
 
 CREATE UNIQUE INDEX IF NOT EXISTS uni_users_email ON users USING btree ("email");
 
+CREATE TYPE event_type AS ENUM ('meeting', 'workshop', 'social', 'other');
+
+CREATE TYPE application AS (
+    title varchar(255),
+    link varchar(255),
+);
+
+CREATE TYPE recruitment_cycle AS ENUM ('fall', 'spring', 'fallSpring', 'always');
+CREATE TYPE recruitment_type AS ENUM ('unrestricted', 'tryout', 'application');
+
+CREATE TYPE recruitment AS (
+    cycle recruitment_cycle,
+    _type recruitment_type,
+    is_recruiting boolean,
+    applications application[],
+);
+
 CREATE TABLE IF NOT EXISTS clubs(
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
     created_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -32,14 +49,11 @@ CREATE TABLE IF NOT EXISTS clubs(
     preview varchar(255) NOT NULL,
     description text NOT NULL,
     num_members bigint NOT NULL,
-    is_recruiting boolean NOT NULL DEFAULT false,
-    recruitment_cycle varchar(255) NOT NULL DEFAULT 'always'::character varying,
-    recruitment_type varchar(255) NOT NULL DEFAULT 'unrestricted'::character varying,
     weekly_time_commitment bigint,
     one_word_to_describe_us varchar(255) DEFAULT NULL::character varying,
-    application_link varchar(255) DEFAULT NULL::character varying,
+    recruitment recruitment,
     logo varchar(255) DEFAULT NULL::character varying,
-    parent text,
+    parent uuid,
     PRIMARY KEY(id)
 );
 
@@ -168,7 +182,7 @@ CREATE INDEX IF NOT EXISTS idx_files_owner_id ON files USING btree ("owner_id");
 --     PRIMARY KEY(id)
 -- );
 
-CREATE TABLE IF NOT EXISTS point_of_contacts(
+CREATE TABLE IF NOT EXISTS leadership(
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
     created_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -180,9 +194,9 @@ CREATE TABLE IF NOT EXISTS point_of_contacts(
     CONSTRAINT fk_clubs_point_of_contact FOREIGN key(club_id) REFERENCES clubs(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS compositeindex ON point_of_contacts USING btree ("email","club_id");
-CREATE INDEX IF NOT EXISTS idx_point_of_contacts_club_id ON point_of_contacts USING btree ("club_id");
-CREATE INDEX IF NOT EXISTS idx_point_of_contacts_email ON point_of_contacts USING btree ("email");
+CREATE UNIQUE INDEX IF NOT EXISTS compositeindex ON leadership USING btree ("email","club_id");
+CREATE INDEX IF NOT EXISTS idx_leadership_club_id ON leadership USING btree ("club_id");
+CREATE INDEX IF NOT EXISTS idx_leadership_email ON leadership USING btree ("email");
 
 
 CREATE TABLE IF NOT EXISTS user_club_followers(
