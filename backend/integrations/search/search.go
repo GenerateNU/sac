@@ -1,7 +1,6 @@
 package search
 
 import (
-	"bytes"
 	"fmt"
 	"net/http"
 
@@ -9,7 +8,6 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/goccy/go-json"
-	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
 
 	"github.com/GenerateNU/sac/backend/config"
@@ -77,12 +75,12 @@ func (c *PineconeClient) Seed(db *gorm.DB) error {
 	return nil
 }
 
-func pineconeRequest(settings config.PineconeSettings, req *http.Request) *http.Request {
-	return utilities.ApplyModifiers(req,
+func pineconeModifiers(settings config.PineconeSettings) []utilities.RequestModifier {
+	return []utilities.RequestModifier{
 		utilities.HeaderKV("Api-Key", settings.APIKey.Expose()),
 		utilities.AcceptJSON(),
 		utilities.JSON(),
-	)
+	}
 }
 
 type Vector struct {
@@ -123,20 +121,10 @@ func (c *PineconeClient) Upsert(items []Searchable) error {
 		return fmt.Errorf("failed to marshal upsert body: %w", err)
 	}
 
-	req, err := http.NewRequest(fiber.MethodPost,
-		fmt.Sprintf("%s/vectors/upsert", c.PineconeSettings.IndexHost.Expose()),
-		bytes.NewBuffer(upsertBody))
+	resp, err := utilities.Request(http.MethodPost, fmt.Sprintf("%s/vectors/upsert", c.PineconeSettings.IndexHost.Expose()), upsertBody, pineconeModifiers(c.PineconeSettings)...)
 	if err != nil {
-		return fmt.Errorf("failed to create upsert request: %w", err)
+		return fmt.Errorf("upsert request failed: %w", err)
 	}
-
-	req = pineconeRequest(c.PineconeSettings, req)
-
-	resp, err := utilities.HttpClient.Do(req)
-	if err != nil {
-		return fmt.Errorf("failed to upsert to pinecone: %w", err)
-	}
-	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("failed to upsert to pinecone: %s", resp.Status)
@@ -180,20 +168,10 @@ func (c *PineconeClient) Delete(items []Searchable) error {
 		return fmt.Errorf("failed to marshal delete body: %w", err)
 	}
 
-	req, err := http.NewRequest(fiber.MethodPost,
-		fmt.Sprintf("%s/vectors/delete", c.PineconeSettings.IndexHost.Expose()),
-		bytes.NewBuffer(deleteBody))
+	resp, err := utilities.Request(http.MethodPost, fmt.Sprintf("%s/vectors/delete", c.PineconeSettings.IndexHost.Expose()), deleteBody, pineconeModifiers(c.PineconeSettings)...)
 	if err != nil {
-		return fmt.Errorf("failed to create delete request: %w", err)
+		return fmt.Errorf("delete request failed: %w", err)
 	}
-
-	req = pineconeRequest(c.PineconeSettings, req)
-
-	resp, err := utilities.HttpClient.Do(req)
-	if err != nil {
-		return fmt.Errorf("failed to delete from pinecone: %w", err)
-	}
-	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("failed to delete from pinecone: %s", resp.Status)
@@ -251,20 +229,10 @@ func (c *PineconeClient) Search(item Searchable) ([]string, error) {
 		return []string{}, fmt.Errorf("failed to marshal search body: %w", err)
 	}
 
-	req, err := http.NewRequest(fiber.MethodPost,
-		fmt.Sprintf("%s/query", c.PineconeSettings.IndexHost.Expose()),
-		bytes.NewBuffer(searchBody))
+	resp, err := utilities.Request(http.MethodPost, fmt.Sprintf("%s/query", c.PineconeSettings.IndexHost.Expose()), searchBody, pineconeModifiers(c.PineconeSettings)...)
 	if err != nil {
-		return []string{}, fmt.Errorf("failed to create search request: %w", err)
+		return []string{}, fmt.Errorf("search request failed: %w", err)
 	}
-
-	req = pineconeRequest(c.PineconeSettings, req)
-
-	resp, err := utilities.HttpClient.Do(req)
-	if err != nil {
-		return []string{}, fmt.Errorf("failed to search to pinecone: %w", err)
-	}
-	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		return []string{}, fmt.Errorf("failed to search to pinecone: %w", err)

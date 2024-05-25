@@ -1,7 +1,6 @@
 package search
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"net/http"
@@ -11,7 +10,6 @@ import (
 	"github.com/GenerateNU/sac/backend/config"
 
 	"github.com/GenerateNU/sac/backend/utilities"
-	"github.com/gofiber/fiber/v2"
 )
 
 type AIClientInterface interface {
@@ -55,23 +53,10 @@ func (c *OpenAIClient) CreateEmbedding(items []Searchable) ([]Embedding, error) 
 		return nil, fmt.Errorf("failed to create embedding request body: %w", err)
 	}
 
-	req, err := http.NewRequest(fiber.MethodPost,
-		"https://api.openai.com/v1/embeddings",
-		bytes.NewBuffer(embeddingBody))
+	resp, err := utilities.Request(http.MethodPost, "https://api.openai.com/v1/embeddings", embeddingBody, openAIModifiers(c.Settings)...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create embedding: %w", err)
 	}
-
-	req = utilities.ApplyModifiers(req,
-		utilities.Authorization(c.Settings.APIKey.Expose()),
-		utilities.JSON(),
-	)
-
-	resp, err := utilities.HttpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create embedding: %w", err)
-	}
-	defer resp.Body.Close()
 
 	var embeddingResultBody CreateEmbeddingResponseBody
 
@@ -115,23 +100,10 @@ func (c *OpenAIClient) CreateModeration(items []Searchable) ([]ModerationResult,
 		return nil, fmt.Errorf("failed to create moderation request body: %w", err)
 	}
 
-	req, err := http.NewRequest(fiber.MethodPost,
-		"https://api.openai.com/v1/moderations",
-		bytes.NewBuffer(moderationBody))
+	resp, err := utilities.Request(http.MethodPost, "https://api.openai.com/v1/moderations", moderationBody, openAIModifiers(c.Settings)...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create moderation: %w", err)
 	}
-
-	req = utilities.ApplyModifiers(req,
-		utilities.Authorization(c.Settings.APIKey.Expose()),
-		utilities.JSON(),
-	)
-
-	resp, err := utilities.HttpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create moderation: %w", err)
-	}
-	defer resp.Body.Close()
 
 	var moderationResultBody CreateModerationResponseBody
 
@@ -145,4 +117,11 @@ func (c *OpenAIClient) CreateModeration(items []Searchable) ([]ModerationResult,
 	}
 
 	return moderationResultBody.Results, nil
+}
+
+func openAIModifiers(settings config.OpenAISettings) []utilities.RequestModifier {
+	return []utilities.RequestModifier{
+		utilities.Authorization(settings.APIKey.Expose()),
+		utilities.JSON(),
+	}
 }
