@@ -27,7 +27,7 @@ CREATE TYPE event_type AS ENUM ('meeting', 'workshop', 'social', 'other');
 
 CREATE TYPE application AS (
     title varchar(255),
-    link varchar(255),
+    link varchar(255)
 );
 
 CREATE TYPE recruitment_cycle AS ENUM ('fall', 'spring', 'fallSpring', 'always');
@@ -37,7 +37,7 @@ CREATE TYPE recruitment AS (
     cycle recruitment_cycle,
     _type recruitment_type,
     is_recruiting boolean,
-    applications application[],
+    applications application[]
 );
 
 CREATE TABLE IF NOT EXISTS clubs(

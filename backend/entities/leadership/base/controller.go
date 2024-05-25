@@ -12,8 +12,8 @@ type LeaderController struct {
 	leaderService LeaderServiceInterface
 }
 
-func NewLeaderController(LeaderService LeaderServiceInterface) *LeaderController {
-	return &LeaderController{leaderService: LeaderService}
+func NewLeaderController(leaderService LeaderServiceInterface) *LeaderController {
+	return &LeaderController{leaderService: leaderService}
 }
 
 // GetLeaders godoc
