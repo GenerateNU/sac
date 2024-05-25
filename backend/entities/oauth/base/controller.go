@@ -26,7 +26,7 @@ func (oc *OAuthController) Authorize(c *fiber.Ctx) error {
 	}
 
 	// Extract the user making the call:
-	userID, err := locals.UserIDFrom(c)
+	userID, err := locals.UserID(c)
 	if err != nil {
 		return err
 	}
@@ -54,7 +54,7 @@ func (oc *OAuthController) Token(c *fiber.Ctx) error {
 	}
 
 	// Extract the user making the call:
-	userID, err := locals.UserIDFrom(c)
+	userID, err := locals.UserID(c)
 	if err != nil {
 		return err
 	}
@@ -76,7 +76,7 @@ func (oc *OAuthController) Revoke(c *fiber.Ctx) error {
 	}
 
 	// Extract the user making the call:
-	userID, err := locals.UserIDFrom(c)
+	userID, err := locals.UserID(c)
 	if err != nil {
 		return err
 	}

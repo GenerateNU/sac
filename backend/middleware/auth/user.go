@@ -21,7 +21,7 @@ func (m *AuthMiddlewareService) UserAuthorizeById(c *fiber.Ctx) error {
 			return err
 		}
 
-		userID, err := locals.UserIDFrom(c)
+		userID, err := locals.UserID(c)
 		if err != nil {
 			return err
 		}

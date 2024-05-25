@@ -16,7 +16,7 @@ const (
 	userIDKey localsKey = 1
 )
 
-func CustomClaimsFrom(c *fiber.Ctx) (*auth.CustomClaims, error) {
+func CustomClaims(c *fiber.Ctx) (*auth.CustomClaims, error) {
 	rawClaims := c.Locals(claimsKey)
 	if rawClaims == nil {
 		return nil, utilities.Forbidden()
@@ -34,7 +34,7 @@ func SetCustomClaims(c *fiber.Ctx, claims *auth.CustomClaims) {
 	c.Locals(claimsKey, claims)
 }
 
-func UserIDFrom(c *fiber.Ctx) (*uuid.UUID, error) {
+func UserID(c *fiber.Ctx) (*uuid.UUID, error) {
 	userID := c.Locals(userIDKey)
 	if userID == nil {
 		return nil, utilities.Forbidden()
