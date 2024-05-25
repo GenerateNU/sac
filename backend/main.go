@@ -120,7 +120,7 @@ func configureIntegrations(config *config.Settings, connectToPinecone bool) inte
 	}
 
 	oauthResources := oauth.OAuthResources{
-		Google: googleClient,
+		Google:  googleClient,
 		Outlook: outlookClient,
 	}
 
@@ -129,7 +129,7 @@ func configureIntegrations(config *config.Settings, connectToPinecone bool) inte
 		AI:     openAi,
 		Email:  email.NewResendClient(config.Resend, true),
 		Search: pinecone,
-		OAuth: 	oauthResources,
+		OAuth:  oauthResources,
 	}
 	return integrations
 }

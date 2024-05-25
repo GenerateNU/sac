@@ -20,7 +20,7 @@ import (
 
 type OAuthServiceInterface interface {
 	Authorize(userID uuid.UUID, resource models.OAuthResource) (*string, error)
-	Token(userID uuid.UUID, tokenBody models.OAuthTokenRequestBody, resource models.OAuthResource) error
+	Token(userID uuid.UUID, tokenBody OAuthTokenRequestBody, resource models.OAuthResource) error
 	Revoke(userID uuid.UUID, resource models.OAuthResource) error
 }
 
@@ -63,7 +63,7 @@ func (e *OAuthService) Authorize(userID uuid.UUID, resource models.OAuthResource
 	return &authorizeURL, nil
 }
 
-func (e *OAuthService) Token(userID uuid.UUID, tokenBody models.OAuthTokenRequestBody, resource models.OAuthResource) error {
+func (e *OAuthService) Token(userID uuid.UUID, tokenBody OAuthTokenRequestBody, resource models.OAuthResource) error {
 	// Parse the resource client:
 	client, err := e.parseResourceClient(resource)
 	if err != nil {

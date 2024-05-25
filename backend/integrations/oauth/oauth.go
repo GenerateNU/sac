@@ -9,10 +9,10 @@ type OAuthResourceClientInterface interface {
 }
 
 type OAuthClient struct {
-	ResourceClient 	OAuthResourceClientInterface
+	ResourceClient OAuthResourceClientInterface
 }
 
 type OAuthResources struct {
-	Outlook 	OutlookOAuthClient
-	Google 		GoogleOAuthClient
+	Outlook OutlookOAuthClient
+	Google  GoogleOAuthClient
 }

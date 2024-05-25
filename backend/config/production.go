@@ -129,12 +129,12 @@ func readProd(v *viper.Viper) (*Settings, error) {
 			AccessKey:  authAccessKey,
 			RefreshKey: authRefreshKey,
 		},
-		Pinecone: *pineconeSettings,
-		OpenAI:   *openAISettings,
-		AWS:      *awsSettings,
-		Resend:   *resendSettings,
-		Calendar: prodSettings.Calendar,
-		GoogleSettings: *googleSettings,
+		Pinecone:        *pineconeSettings,
+		OpenAI:          *openAISettings,
+		AWS:             *awsSettings,
+		Resend:          *resendSettings,
+		Calendar:        prodSettings.Calendar,
+		GoogleSettings:  *googleSettings,
 		OutlookSettings: *outlookSettings,
 	}, nil
 }

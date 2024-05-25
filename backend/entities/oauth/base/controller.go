@@ -6,7 +6,6 @@ import (
 
 	"github.com/GenerateNU/sac/backend/auth"
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -48,20 +47,19 @@ func (oc *OAuthController) Token(c *fiber.Ctx) error {
 	}
 
 	// Parse the body of the request:
-	var tokenBody models.OAuthTokenRequestBody
+	var tokenBody OAuthTokenRequestBody
 	if err := c.BodyParser(&tokenBody); err != nil {
 		return err
 	}
 
 	// Extract the user making the call:
-	userID := c.Locals("userID").(string)
-	idAsUUID, err := utilities.ValidateID(userID)
+	userID, err := auth.UserIDFrom(c)
 	if err != nil {
 		return err
 	}
 
 	// Call the respective token method:
-	err = oc.OAuthService.Token(*idAsUUID, tokenBody, resourceType)
+	err = oc.OAuthService.Token(*userID, tokenBody, resourceType)
 	if err != nil {
 		return err
 	}
@@ -77,13 +75,12 @@ func (oc *OAuthController) Revoke(c *fiber.Ctx) error {
 	}
 
 	// Extract the user making the call:
-	userID := c.Locals("userID").(string)
-	idAsUUID, err := utilities.ValidateID(userID)
+	userID, err := auth.UserIDFrom(c)
 	if err != nil {
 		return err
 	}
 
-	err = oc.OAuthService.Revoke(*idAsUUID, resourceType)
+	err = oc.OAuthService.Revoke(*userID, resourceType)
 	if err != nil {
 		return err
 	}
