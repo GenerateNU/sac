@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/GenerateNU/sac/backend/auth"
+	"github.com/GenerateNU/sac/backend/locals"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/google/uuid"
 
@@ -17,7 +18,7 @@ import (
 )
 
 func (m *AuthMiddlewareService) IsSuper(c *fiber.Ctx) bool {
-	claims, err := auth.CustomClaimsFrom(c)
+	claims, err := locals.CustomClaims(c)
 	if err != nil {
 		_ = err
 		return false
@@ -67,7 +68,7 @@ func (m *AuthMiddlewareService) Authenticate(c *fiber.Ctx) error {
 		// 	return errors.Unauthorized.FiberError(c)
 		// }
 
-		auth.SetClaims(c, claims)
+		locals.SetCustomClaims(c, claims)
 
 		rawUserID := claims.Issuer
 		userID, err := uuid.Parse(rawUserID)
@@ -75,7 +76,7 @@ func (m *AuthMiddlewareService) Authenticate(c *fiber.Ctx) error {
 			return fmt.Errorf("invalid user id: %s", rawUserID)
 		}
 
-		auth.SetUserID(c, &userID)
+		locals.SetUserID(c, &userID)
 
 		return nil
 	}(c)
@@ -88,7 +89,7 @@ func (m *AuthMiddlewareService) Authorize(requiredPermissions ...auth.Permission
 			return utilities.Unauthorized()
 		}
 
-		claims, err := auth.CustomClaimsFrom(c)
+		claims, err := locals.CustomClaims(c)
 		if err != nil {
 			return err
 		}
