@@ -7,8 +7,8 @@ type VerifyEmailRequestBody struct {
 
 type VerifyPasswordResetTokenRequestBody struct {
 	Token             string `json:"token" validate:"required"`
-	NewPassword       string `json:"new_password" validate:"required,min=8,password"`
-	VerifyNewPassword string `json:"verify_new_password" validate:"required,min=8,password,eqfield=NewPassword"`
+	NewPassword       string `json:"new_password" validate:"required"`                            // MARK: must be validated manually
+	VerifyNewPassword string `json:"verify_new_password" validate:"required,eqfield=NewPassword"` // MARK: must be validated manually
 }
 
 type EmailRequestBody struct {
