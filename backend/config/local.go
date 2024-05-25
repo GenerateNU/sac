@@ -65,5 +65,19 @@ func readLocal(v *viper.Viper, path string, useDevDotEnv bool) (*Settings, error
 
 	settings.Resend = *resendSettings
 
+	googleSettings, err := readGoogleOAuthSettings()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read Google OAuth settings: %w", err)
+	}
+
+	settings.GoogleSettings = *googleSettings
+
+	outlookSettings, err := readOutlookOAuthSettings()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read Outlook OAuth settings: %w", err)
+	}
+
+	settings.OutlookSettings = *outlookSettings
+
 	return settings, nil
 }

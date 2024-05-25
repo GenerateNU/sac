@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/GenerateNU/sac/backend/config"
@@ -181,7 +182,7 @@ func TestPineconeSearchWorks(t *testing.T) {
 
 	gock.New("https://api.openai.com").
 		Post("/v1/embeddings").
-		MatchHeader("Authorization", "Bearer "+mockConfig.OpenAI.APIKey.Expose()).
+		MatchHeader("Authorization", fmt.Sprintf("Bearer %s", mockConfig.OpenAI.APIKey.Expose())).
 		MatchHeader("content-type", "application/json").
 		MatchType("json").
 		JSON(search.CreateEmbeddingRequestBody{
@@ -199,7 +200,7 @@ func TestPineconeSearchWorks(t *testing.T) {
 
 	gock.New("https://api.openai.com").
 		Post("/v1/moderations").
-		MatchHeader("Authorization", "Bearer "+mockConfig.OpenAI.APIKey.Expose()).
+		MatchHeader("Authorization", fmt.Sprintf("Bearer %s", mockConfig.OpenAI.APIKey.Expose())).
 		MatchHeader("Content-Type", "application/json").
 		MatchType("json").
 		JSON(search.CreateModerationRequestBody{
@@ -235,7 +236,7 @@ func TestOpenAIEmbeddingWorks(t *testing.T) {
 
 	gock.New("https://api.openai.com").
 		Post("/v1/embeddings").
-		MatchHeader("Authorization", "Bearer "+mockConfig.OpenAI.APIKey.Expose()).
+		MatchHeader("Authorization", fmt.Sprintf("Bearer %s", mockConfig.OpenAI.APIKey.Expose())).
 		MatchHeader("content-type", "application/json").
 		MatchType("json").
 		JSON(search.CreateEmbeddingRequestBody{
