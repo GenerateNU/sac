@@ -1,7 +1,6 @@
 package search
 
 import (
-	"bytes"
 	"fmt"
 	"net/http"
 
@@ -127,8 +126,8 @@ func (c *PineconeClient) Upsert(items []Searchable) error {
 		return fmt.Errorf("upsert request failed: %w", err)
 	}
 
-	if resp.StatusCode() != http.StatusOK {
-		return fmt.Errorf("failed to upsert to pinecone: %d", resp.StatusCode())
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("failed to upsert to pinecone: %s", resp.Status)
 	}
 
 	return nil
@@ -174,8 +173,8 @@ func (c *PineconeClient) Delete(items []Searchable) error {
 		return fmt.Errorf("delete request failed: %w", err)
 	}
 
-	if resp.StatusCode() != http.StatusOK {
-		return fmt.Errorf("failed to delete from pinecone: %d", resp.StatusCode())
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("failed to delete from pinecone: %s", resp.Status)
 	}
 
 	return nil
@@ -235,12 +234,12 @@ func (c *PineconeClient) Search(item Searchable) ([]string, error) {
 		return []string{}, fmt.Errorf("search request failed: %w", err)
 	}
 
-	if resp.StatusCode() != http.StatusOK {
+	if resp.StatusCode != http.StatusOK {
 		return []string{}, fmt.Errorf("failed to search to pinecone: %w", err)
 	}
 
 	var results PineconeSearchResponseBody
-	err = json.NewDecoder(bytes.NewReader(resp.Body())).Decode(&results)
+	err = json.NewDecoder(resp.Body).Decode(&results)
 	if err != nil {
 		return []string{}, fmt.Errorf("failed to decode search response: %w", err)
 	}

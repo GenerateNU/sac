@@ -1,40 +1,29 @@
 package utilities
 
 import (
-	"fmt"
-
-	"github.com/valyala/fasthttp"
+	"bytes"
+	"net/http"
 )
 
-var httpClient *fasthttp.Client
+var httpClient *http.Client
 
 func init() {
-	httpClient = &fasthttp.Client{}
+	httpClient = &http.Client{}
 }
 
-func Request(method string, url string, body []byte, modifiers ...RequestModifier) (*fasthttp.Response, error) {
-	req := fasthttp.AcquireRequest()
-	defer fasthttp.ReleaseRequest(req)
-
-	resp := fasthttp.AcquireResponse()
-	defer fasthttp.ReleaseResponse(resp)
-
-	req.Header.SetMethod(method)
-	req.SetRequestURI(url)
-	req.SetBody(body)
-
-	req = ApplyModifiers(req, modifiers...)
-
-	err := httpClient.Do(req, resp)
+func Request(method string, url string, body []byte, modifiers ...RequestModifier) (*http.Response, error) {
+	req, err := http.NewRequest(method, url, bytes.NewReader(body))
 	if err != nil {
 		return nil, err
 	}
 
-	return resp, nil
+	req = ApplyModifiers(req, modifiers...)
+
+	return httpClient.Do(req)
 }
 
 type RequestModifier interface {
-	Modify(req *fasthttp.Request) *fasthttp.Request
+	Modify(req *http.Request) *http.Request
 }
 
 type HeaderKVModifier struct {
@@ -42,7 +31,7 @@ type HeaderKVModifier struct {
 	Value string
 }
 
-func (h HeaderKVModifier) Modify(req *fasthttp.Request) *fasthttp.Request {
+func (h HeaderKVModifier) Modify(req *http.Request) *http.Request {
 	req.Header.Set(h.Key, h.Value)
 	return req
 }
@@ -57,7 +46,7 @@ func HeaderKV(key, value string) RequestModifier {
 func Authorization(apiKey string) RequestModifier {
 	return HeaderKVModifier{
 		Key:   "Authorization",
-		Value: fmt.Sprintf("Bearer %s", apiKey),
+		Value: "Bearer " + apiKey,
 	}
 }
 
@@ -82,7 +71,7 @@ func AcceptJSON() RequestModifier {
 	}
 }
 
-func ApplyModifiers(req *fasthttp.Request, modifiers ...RequestModifier) *fasthttp.Request {
+func ApplyModifiers(req *http.Request, modifiers ...RequestModifier) *http.Request {
 	for _, modifier := range modifiers {
 		req = modifier.Modify(req)
 	}

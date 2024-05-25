@@ -1,7 +1,6 @@
 package search
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"net/http"
@@ -61,7 +60,7 @@ func (c *OpenAIClient) CreateEmbedding(items []Searchable) ([]Embedding, error) 
 
 	var embeddingResultBody CreateEmbeddingResponseBody
 
-	err = json.NewDecoder(bytes.NewReader(resp.Body())).Decode(&embeddingResultBody)
+	err = json.NewDecoder(resp.Body).Decode(&embeddingResultBody)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create embedding: %w", err)
 	}
@@ -108,7 +107,7 @@ func (c *OpenAIClient) CreateModeration(items []Searchable) ([]ModerationResult,
 
 	var moderationResultBody CreateModerationResponseBody
 
-	err = json.NewDecoder(bytes.NewReader(resp.Body())).Decode(&moderationResultBody)
+	err = json.NewDecoder(resp.Body).Decode(&moderationResultBody)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create moderation: %w", err)
 	}
