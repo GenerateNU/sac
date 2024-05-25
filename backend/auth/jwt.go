@@ -18,22 +18,6 @@ type CustomClaims struct {
 	Role string `json:"role"`
 }
 
-// From extracts the CustomClaims from the fiber context
-// Returns nil if the claims are not present
-func From(c *fiber.Ctx) (*CustomClaims, error) {
-	rawClaims := c.Locals("claims")
-	if rawClaims == nil {
-		return nil, utilities.Forbidden()
-	}
-
-	claims, ok := rawClaims.(*CustomClaims)
-	if !ok {
-		return nil, fmt.Errorf("claims are not of type CustomClaims. got: %T", rawClaims)
-	}
-
-	return claims, nil
-}
-
 type JWTType string
 
 const (

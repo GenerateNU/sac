@@ -5,11 +5,11 @@ go 1.22.2
 require (
 	github.com/a-h/templ v0.2.697
 	github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5
-	github.com/aws/aws-sdk-go v1.53.5
+	github.com/aws/aws-sdk-go v1.53.8
 	github.com/garrettladley/fiberpaginate v1.0.5
 	github.com/garrettladley/mattress v0.4.0
 	github.com/go-playground/validator/v10 v10.20.0
-	github.com/goccy/go-json v0.10.2
+	github.com/goccy/go-json v0.10.3
 	github.com/gofiber/fiber/v2 v2.52.4
 	github.com/gofiber/swagger v1.0.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
@@ -22,7 +22,7 @@ require (
 	github.com/sahilm/fuzzy v0.1.1
 	github.com/spf13/viper v1.18.2
 	github.com/swaggo/swag v1.16.3
-	go.opentelemetry.io/otel/sdk v1.26.0
+	go.opentelemetry.io/otel/sdk v1.27.0
 	golang.org/x/crypto v0.23.0
 	golang.org/x/text v0.15.0
 	gorm.io/driver/postgres v1.5.7
@@ -49,8 +49,8 @@ require (
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	go.opentelemetry.io/contrib v1.17.0 // indirect
-	go.opentelemetry.io/otel/metric v1.26.0 // indirect
-	go.opentelemetry.io/otel/trace v1.26.0 // indirect
+	go.opentelemetry.io/otel/metric v1.27.0 // indirect
+	go.opentelemetry.io/otel/trace v1.27.0 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 )
 
@@ -98,8 +98,8 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.52.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
-	go.opentelemetry.io/otel v1.26.0
-	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.26.0
+	go.opentelemetry.io/otel v1.27.0
+	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.27.0
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/exp v0.0.0-20240404231335-c0f41cb1a7a0 // indirect
 	golang.org/x/net v0.24.0 // indirect
