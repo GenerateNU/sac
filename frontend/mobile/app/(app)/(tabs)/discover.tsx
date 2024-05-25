@@ -1,4 +1,4 @@
-import { Box, Tag, Text } from '@/app/(design-system)';
+import { Box, Tag } from '@/app/(design-system)';
 
 const DiscoverPage = () => {
     return (
