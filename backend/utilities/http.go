@@ -1,6 +1,31 @@
 package utilities
 
-import "net/http"
+import (
+	"bytes"
+	"fmt"
+	"net/http"
+)
+
+var httpClient *http.Client
+
+func init() {
+	httpClient = &http.Client{}
+}
+
+func Request(method string, url string, body []byte, modifiers ...RequestModifier) (*http.Response, error) {
+	req, err := http.NewRequest(method, url, bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+
+	req = ApplyModifiers(req, modifiers...)
+
+	return httpClient.Do(req)
+}
+
+func IsOk(statusCode int) bool {
+	return statusCode >= 200 && statusCode < 300
+}
 
 type RequestModifier interface {
 	Modify(req *http.Request) *http.Request
@@ -26,7 +51,7 @@ func HeaderKV(key, value string) RequestModifier {
 func Authorization(apiKey string) RequestModifier {
 	return HeaderKVModifier{
 		Key:   "Authorization",
-		Value: "Bearer " + apiKey,
+		Value: fmt.Sprintf("Bearer %s", apiKey),
 	}
 }
 
@@ -34,6 +59,13 @@ func JSON() RequestModifier {
 	return HeaderKVModifier{
 		Key:   "Content-Type",
 		Value: "application/json",
+	}
+}
+
+func FormURLEncoded() RequestModifier {
+	return HeaderKVModifier{
+		Key:   "Content-Type",
+		Value: "application/x-www-form-urlencoded",
 	}
 }
 
