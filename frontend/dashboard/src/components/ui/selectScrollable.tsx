@@ -1,4 +1,4 @@
-import { Option } from "@/types/option";
+import { Option } from "@/src/types/option";
 import { Label } from "./label";
 
 import {
@@ -8,7 +8,7 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-  } from "@/components/ui/select";
+  } from "@/src/components/ui/select";
   
 interface ScrollableProps {
     data: Option[];
