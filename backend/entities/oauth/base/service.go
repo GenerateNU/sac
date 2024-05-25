@@ -1,18 +1,20 @@
 package base
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
-	"strings"
+
+	go_json "github.com/goccy/go-json"
 
 	"github.com/GenerateNU/sac/backend/auth"
+	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/integrations/oauth"
 	"github.com/GenerateNU/sac/backend/types"
+	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/google/uuid"
 )
 
@@ -40,19 +42,24 @@ func (e *OAuthService) Authorize(userID uuid.UUID, resource models.OAuthResource
 	}
 
 	// Create a CSRF Token:
-	csrfToken, err := auth.GenerateURLSafeToken(32)
+	csrfToken, err := auth.GenerateURLSafeToken(constants.CSRF_TOKEN_LENGTH)
 	if err != nil {
 		return nil, err
 	}
 
 	// Save the CSRF Token to the database:
-	if err := CreateOAuthToken(e.ServiceParams.DB, userID, *csrfToken, resource); err != nil {
+	if err := CreateOAuthToken(e.ServiceParams.DB,
+		models.UserOAuthTokens{
+			UserID:       userID,
+			CSRFToken:    *csrfToken,
+			ResourceType: resource,
+		}); err != nil {
 		return nil, err
 	}
 
 	// Retrieve the authorize URL:
 	authorizeURL := client.ResourceClient.AuthorizeURL(*csrfToken)
-	
+
 	return &authorizeURL, nil
 }
 
@@ -100,6 +107,7 @@ func (e *OAuthService) Revoke(userID uuid.UUID, resource models.OAuthResource) e
 	if err != nil {
 		return err
 	}
+
 	if oauthToken.AccessToken == "" {
 		return errors.New("user does not have an access token")
 	}
@@ -120,12 +128,12 @@ func (e *OAuthService) Revoke(userID uuid.UUID, resource models.OAuthResource) e
 func (e *OAuthService) parseResourceClient(resourceType models.OAuthResource) (*oauth.OAuthClient, error) {
 	var resourceClient oauth.OAuthResourceClientInterface
 	switch resourceType {
-		case "google":
-			resourceClient = &e.ServiceParams.Integrations.OAuth.Google
-		case "outlook":
-			resourceClient = &e.ServiceParams.Integrations.OAuth.Outlook
-		default:
-			return nil, errors.New("invalid resource type")
+	case "google":
+		resourceClient = &e.ServiceParams.Integrations.OAuth.Google
+	case "outlook":
+		resourceClient = &e.ServiceParams.Integrations.OAuth.Outlook
+	default:
+		return nil, errors.New("invalid resource type")
 	}
 
 	return &oauth.OAuthClient{
@@ -138,36 +146,26 @@ func (e *OAuthService) tokenExchange(client *oauth.OAuthClient, code string) (*m
 	config := client.ResourceClient.GetConfig()
 	tokenUrl := fmt.Sprintf("%s/token", config.TokenURL)
 
-	fmt.Println(tokenUrl)
-
 	// Create the form data:
 	formData := url.Values{
-		"client_id": {config.ClientID.Expose()},
+		"client_id":     {config.ClientID.Expose()},
 		"client_secret": {config.ClientSecret.Expose()},
-		"code": {code},
-		"redirect_uri": {config.RedirectURI},
-		"grant_type": {"authorization_code"},
+		"code":          {code},
+		"redirect_uri":  {config.RedirectURI},
+		"grant_type":    {"authorization_code"},
 	}
 
-	encodedData := formData.Encode();
+	encodedData := formData.Encode()
 
-	// Create a new outgoing request:
-	req, err := http.NewRequest("POST", tokenUrl, strings.NewReader(encodedData))
+	resp, err := utilities.Request(http.MethodPost, tokenUrl, []byte(encodedData), utilities.FormURLEncoded())
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	// Initiate the request:
-	httpClient := http.Client{}
-	resp, err := httpClient.Do(req)
-	if err != nil {
-        return nil, err
-    }
-	if resp.StatusCode > 299 {
+	if !utilities.IsOk(resp.StatusCode) {
 		return nil, errors.New("failed to exchange code for token")
 	}
-    defer resp.Body.Close()
+	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -176,8 +174,20 @@ func (e *OAuthService) tokenExchange(client *oauth.OAuthClient, code string) (*m
 
 	// Parse the data:
 	var oauthToken models.OAuthToken
-	if err = json.Unmarshal(body, &oauthToken); err != nil {
+	if err = go_json.Unmarshal(body, &oauthToken); err != nil {
 		return nil, err
+	}
+
+	if err := utilities.Validate(e.ServiceParams.Validate, oauthToken); err != nil {
+		return nil, err
+	}
+
+	if oauthToken.AccessToken == "" {
+		return nil, errors.New("access token is empty")
+	}
+
+	if oauthToken.RefreshToken == "" {
+		return nil, errors.New("refresh token is empty")
 	}
 
 	return &oauthToken, nil

@@ -21,41 +21,15 @@ func (m *AuthMiddlewareService) UserAuthorizeById(c *fiber.Ctx) error {
 			return err
 		}
 
-		claims, err := auth.From(c)
+		userID, err := auth.UserIDFrom(c)
 		if err != nil {
 			return err
 		}
 
-		issuerIDAsUUID, err := utilities.ValidateID(claims.Issuer)
-		if err != nil {
-			return err
-		}
-
-		if issuerIDAsUUID.String() == idAsUUID.String() {
+		if idAsUUID == userID {
 			return c.Next()
 		}
 
 		return utilities.Forbidden()
-	}(c)
-}
-
-func (m *AuthMiddlewareService) UserAuthorizeAndExtractID(c *fiber.Ctx) error {
-	return func (c *fiber.Ctx) error {
-		if err := m.Authenticate(c); err != nil {
-			return utilities.Unauthorized()
-		}
-	
-		claims, err := auth.From(c)
-		if err != nil {
-			return err
-		}
-	
-		issuerIDAsUUID, err := utilities.ValidateID(claims.Issuer)
-		if err != nil {
-			return err
-		}
-	
-		c.Locals("userID", issuerIDAsUUID.String())
-		return c.Next()
 	}(c)
 }
