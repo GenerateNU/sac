@@ -15,6 +15,7 @@ import (
 	"github.com/GenerateNU/sac/backend/integrations"
 	"github.com/GenerateNU/sac/backend/integrations/email"
 	"github.com/GenerateNU/sac/backend/integrations/file"
+	"github.com/GenerateNU/sac/backend/integrations/oauth"
 	"github.com/GenerateNU/sac/backend/integrations/search"
 	"github.com/GenerateNU/sac/backend/server"
 	"github.com/GenerateNU/sac/backend/telemetry"
@@ -110,11 +111,25 @@ func configureIntegrations(config *config.Settings, connectToPinecone bool) inte
 		pinecone = mocks.NewPineconeMockClient()
 	}
 
+	// OAuth Integrations:
+	googleClient := oauth.GoogleOAuthClient{
+		OAuthConfig: config.GoogleSettings,
+	}
+	outlookClient := oauth.OutlookOAuthClient{
+		OAuthConfig: config.OutlookSettings,
+	}
+
+	oauthResources := oauth.OAuthResources{
+		Google:  googleClient,
+		Outlook: outlookClient,
+	}
+
 	integrations := integrations.Integrations{
 		File:   file.NewAWSProvider(config.AWS),
 		AI:     openAi,
 		Email:  email.NewResendClient(config.Resend, true),
 		Search: pinecone,
+		OAuth:  oauthResources,
 	}
 	return integrations
 }

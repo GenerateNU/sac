@@ -1,11 +1,13 @@
 package auth
 
 import (
+	"fmt"
 	"slices"
 	"strings"
 
 	"github.com/GenerateNU/sac/backend/auth"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/google/uuid"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
 
@@ -15,7 +17,7 @@ import (
 )
 
 func (m *AuthMiddlewareService) IsSuper(c *fiber.Ctx) bool {
-	claims, err := auth.From(c)
+	claims, err := auth.CustomClaimsFrom(c)
 	if err != nil {
 		_ = err
 		return false
@@ -26,7 +28,7 @@ func (m *AuthMiddlewareService) IsSuper(c *fiber.Ctx) bool {
 	return claims.Role == string(models.Super)
 }
 
-func GetAuthroizationToken(c *fiber.Ctx) *string {
+func GetAuthorizationToken(c *fiber.Ctx) *string {
 	accessToken := c.Get("Authorization")
 	if accessToken == "" {
 		return nil
@@ -42,7 +44,7 @@ func GetAuthroizationToken(c *fiber.Ctx) *string {
 
 func (m *AuthMiddlewareService) Authenticate(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
-		accessToken := GetAuthroizationToken(c)
+		accessToken := GetAuthorizationToken(c)
 		if accessToken == nil {
 			return utilities.Unauthorized()
 		}
@@ -67,6 +69,14 @@ func (m *AuthMiddlewareService) Authenticate(c *fiber.Ctx) error {
 
 		auth.SetClaims(c, claims)
 
+		rawUserID := claims.Issuer
+		userID, err := uuid.Parse(rawUserID)
+		if err != nil {
+			return fmt.Errorf("invalid user id: %s", rawUserID)
+		}
+
+		auth.SetUserID(c, &userID)
+
 		return nil
 	}(c)
 }
@@ -78,7 +88,7 @@ func (m *AuthMiddlewareService) Authorize(requiredPermissions ...auth.Permission
 			return utilities.Unauthorized()
 		}
 
-		claims, err := auth.From(c)
+		claims, err := auth.CustomClaimsFrom(c)
 		if err != nil {
 			return err
 		}

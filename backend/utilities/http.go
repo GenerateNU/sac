@@ -23,6 +23,10 @@ func Request(method string, url string, body []byte, modifiers ...RequestModifie
 	return httpClient.Do(req)
 }
 
+func IsOk(statusCode int) bool {
+	return statusCode >= 200 && statusCode < 300
+}
+
 type RequestModifier interface {
 	Modify(req *http.Request) *http.Request
 }

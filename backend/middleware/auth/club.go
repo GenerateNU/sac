@@ -25,12 +25,7 @@ func (m *AuthMiddlewareService) ClubAuthorizeById(c *fiber.Ctx, extractor Extrac
 			return err
 		}
 
-		claims, err := auth.From(c)
-		if err != nil {
-			return err
-		}
-
-		issuerUUID, err := utilities.ValidateID(claims.Issuer)
+		userID, err := auth.UserIDFrom(c)
 		if err != nil {
 			return err
 		}
@@ -40,7 +35,7 @@ func (m *AuthMiddlewareService) ClubAuthorizeById(c *fiber.Ctx, extractor Extrac
 			return err
 		}
 
-		if slices.Contains(clubAdmin, *issuerUUID) {
+		if slices.Contains(clubAdmin, *userID) {
 			return c.Next()
 		}
 

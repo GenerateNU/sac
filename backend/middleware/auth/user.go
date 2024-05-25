@@ -21,17 +21,12 @@ func (m *AuthMiddlewareService) UserAuthorizeById(c *fiber.Ctx) error {
 			return err
 		}
 
-		claims, err := auth.From(c)
+		userID, err := auth.UserIDFrom(c)
 		if err != nil {
 			return err
 		}
 
-		issuerIDAsUUID, err := utilities.ValidateID(claims.Issuer)
-		if err != nil {
-			return err
-		}
-
-		if issuerIDAsUUID.String() == idAsUUID.String() {
+		if idAsUUID == userID {
 			return c.Next()
 		}
 
