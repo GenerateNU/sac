@@ -2,6 +2,7 @@ package utilities
 
 import (
 	"bytes"
+	"fmt"
 	"net/http"
 )
 
@@ -46,7 +47,7 @@ func HeaderKV(key, value string) RequestModifier {
 func Authorization(apiKey string) RequestModifier {
 	return HeaderKVModifier{
 		Key:   "Authorization",
-		Value: "Bearer " + apiKey,
+		Value: fmt.Sprintf("Bearer %s", apiKey),
 	}
 }
 
