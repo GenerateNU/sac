@@ -19,7 +19,7 @@ updates:
   - package-ecosystem: npm
     directory: ./frontend/mobile/
     schedule:
-      interval: weekly
+      interval: monthly
     groups:
       mobile:
         patterns:
@@ -27,7 +27,7 @@ updates:
   - package-ecosystem: npm
     directory: ./frontend/web/
     schedule:
-      interval: weekly
+      interval: monthly
     groups:
       web:
         patterns:
@@ -35,7 +35,7 @@ updates:
   - package-ecosystem: npm
     directory: ./frontend/dashboard/
     schedule:
-      interval: weekly
+      interval: monthly
     groups:
       dashboard:
         patterns:
@@ -43,7 +43,7 @@ updates:
   - package-ecosystem: npm
     directory: ./frontend/lib/
     schedule:
-      interval: weekly
+      interval: monthly
     groups:
       lib:
         patterns:
