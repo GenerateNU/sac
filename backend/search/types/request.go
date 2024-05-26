@@ -5,12 +5,13 @@ import (
 	"time"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
+	"gorm.io/gorm"
 )
 
 type SearchRequest interface {
 	ToSearchEndpointRequest() SearchEndpointRequest
 	Index() string
-	Model() interface{}
+	Preload(db *gorm.DB) *gorm.DB
 }
 
 // Used for making OpenSearch GET /<index>/_search requests.
@@ -84,8 +85,8 @@ func (q *ClubSearchRequest) ToSearchEndpointRequest() SearchEndpointRequest {
 	}
 }
 
-func (q *ClubSearchRequest) Model() interface{} {
-	return models.Club{}
+func (q *ClubSearchRequest) Preload(db *gorm.DB) *gorm.DB {
+	return db.Model(&models.Club{}).Preload("Tag")
 }
 
 func (q *ClubSearchRequest) Index() string {
@@ -173,8 +174,8 @@ func (q *EventSearchRequest) ToSearchEndpointRequest() SearchEndpointRequest {
 	}
 }
 
-func (q *EventSearchRequest) Model() interface{} {
-	return models.Event{}
+func (q *EventSearchRequest) Preload(db *gorm.DB) *gorm.DB {
+	return db.Model(&models.Event{}).Preload("Tag").Preload("Clubs")
 }
 
 func (q *EventSearchRequest) Index() string {

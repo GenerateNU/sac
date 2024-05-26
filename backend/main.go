@@ -15,7 +15,6 @@ import (
 	"github.com/GenerateNU/sac/backend/integrations"
 	"github.com/GenerateNU/sac/backend/integrations/email"
 	"github.com/GenerateNU/sac/backend/integrations/file"
-	"github.com/GenerateNU/sac/backend/search"
 	"github.com/GenerateNU/sac/backend/server"
 	"github.com/GenerateNU/sac/backend/telemetry"
 	"go.opentelemetry.io/otel"
@@ -51,13 +50,13 @@ func main() {
 	}
 
 	if *seedSearch {
-		if err := search.SeedClubs(db); err != nil {
+		/**if err := search.SeedClubs(db); err != nil {
 			return
 		}
 
 		if err := search.SeedEvents(db); err != nil {
 			return
-		}
+		}**/
 	}
 
 	err = database.ConnPooling(db)
