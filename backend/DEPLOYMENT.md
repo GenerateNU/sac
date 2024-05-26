@@ -1,6 +1,6 @@
 # Configuration
 
-SAC uses environment variables to configure integrations and resources.
+SAC uses environment variables for configuration.
 
 | Name | Group | Description
 | SAC_APPLICATION_PORT | app | port to run the server on.

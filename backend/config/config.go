@@ -1,85 +1,125 @@
 package config
 
 import (
-	"fmt"
 	"os"
+	"strconv"
+	"time"
 
-	"github.com/spf13/viper"
+	"github.com/garrettladley/mattress"
+	"github.com/joho/godotenv"
 )
 
-type Settings struct {
-	Application ApplicationSettings
-	Database    DatabaseSettings
-	SuperUser   SuperUserSettings
-	Auth        AuthSettings
-	AWS         AWSSettings
-	Resend      ResendSettings
-	Calendar    CalendarSettings
-}
-
-type intermediateSettings struct {
-	Application ApplicationSettings           `yaml:"application"`
-	Database    intermediateDatabaseSettings  `yaml:"database"`
-	SuperUser   intermediateSuperUserSettings `yaml:"superuser"`
-	Auth        intermediateAuthSettings      `yaml:"authsecret"`
-	Calendar    intermediateCalendarSettings  `yaml:"calendar"`
-}
-
-func (int *intermediateSettings) into() (*Settings, error) {
-	databaseSettings, err := int.Database.into()
+func GetConfiguration(path string) (*Settings, error) {
+	err := godotenv.Load(path)
 	if err != nil {
 		return nil, err
 	}
 
-	superUserSettings, err := int.SuperUser.into()
+	applicationPort, err := strconv.Atoi(os.Getenv("SAC_APPLICATION_PORT"))
 	if err != nil {
 		return nil, err
 	}
 
-	authSettings, err := int.Auth.into()
+	applicationHost := os.Getenv("SAC_APPLICATION_HOST")
+
+	applicationBaseUrl := os.Getenv("SAC_APPLICATION_BASE_URL")
+
+	databaseUsername := os.Getenv("SAC_DB_USERNAME")
+
+	databasePassword, err := mattress.NewSecret(os.Getenv("SAC_DB_PASSWORD"))
 	if err != nil {
 		return nil, err
 	}
 
-	calendarSettings, err := int.Calendar.into()
+	databasePort, err := strconv.Atoi(os.Getenv("SAC_DB_PORT"))
+	if err != nil {
+		return nil, err
+	}
+
+	databaseHost := os.Getenv("SAC_DB_HOST")
+	databaseName := os.Getenv("SAC_DB_NAME")
+
+	databaseRequireSsl, err := strconv.ParseBool(os.Getenv("SAC_DB_REQUIRE_SSL"))
+	if err != nil {
+		return nil, err
+	}
+
+	superuserPassword, err := mattress.NewSecret(os.Getenv("SAC_SUDO_PASSWORD"))
+	if err != nil {
+		return nil, err
+	}
+
+	authAccessKey, err := mattress.NewSecret(os.Getenv("SAC_AUTH_ACCESS_KEY"))
+	if err != nil {
+		return nil, err
+	}
+
+	authRefreshKey, err := mattress.NewSecret(os.Getenv("SAC_AUTH_REFRESH_KEY"))
+	if err != nil {
+		return nil, err
+	}
+
+	awsBucketName, err := mattress.NewSecret(os.Getenv("SAC_AWS_BUCKET_NAME"))
+	if err != nil {
+		return nil, err
+	}
+	awsId, err := mattress.NewSecret(os.Getenv("SAC_AWS_ID"))
+	if err != nil {
+		return nil, err
+	}
+
+	awsSecret, err := mattress.NewSecret(os.Getenv("SAC_AWS_SECRET"))
+	if err != nil {
+		return nil, err
+	}
+
+	awsRegion, err := mattress.NewSecret(os.Getenv("SAC_AWS_REGION"))
+	if err != nil {
+		return nil, err
+	}
+
+	resendApiKey, err := mattress.NewSecret(os.Getenv("SAC_RESEND_API_KEY"))
+	if err != nil {
+		return nil, err
+	}
+
+	calendarMaxTerminationDate, err := time.Parse("01-02-2006", os.Getenv("SAC_CALENDAR_MAX_TERMINATION_DATE"))
 	if err != nil {
 		return nil, err
 	}
 
 	return &Settings{
-		Application: int.Application,
-		Database:    *databaseSettings,
-		SuperUser:   *superUserSettings,
-		Auth:        *authSettings,
-		Calendar:    *calendarSettings,
+		Application: ApplicationSettings{
+			Port:    uint16(applicationPort),
+			Host:    applicationHost,
+			BaseUrl: applicationBaseUrl,
+		},
+		Database: DatabaseSettings{
+			Username:     databaseUsername,
+			Password:     databasePassword,
+			Port:         uint(databasePort),
+			Host:         databaseHost,
+			DatabaseName: databaseName,
+			RequireSSL:   databaseRequireSsl,
+		},
+		SuperUser: SuperUserSettings{
+			Password: superuserPassword,
+		},
+		Auth: AuthSettings{
+			AccessKey:  authAccessKey,
+			RefreshKey: authRefreshKey,
+		},
+		AWS: AWSSettings{
+			BucketName: awsBucketName,
+			Id:         awsId,
+			Secret:     awsSecret,
+			Region:     awsRegion,
+		},
+		Resend: ResendSettings{
+			APIKey: resendApiKey,
+		},
+		Calendar: CalendarSettings{
+			MaxTerminationDate: calendarMaxTerminationDate,
+		},
 	}, nil
-}
-
-type Environment string
-
-const (
-	EnvironmentLocal      Environment = "local"
-	EnvironmentProduction Environment = "production"
-)
-
-func GetConfiguration(path string, useDevDotEnv bool) (*Settings, error) {
-	var environment Environment
-	if env := os.Getenv("APP_ENVIRONMENT"); env != "" {
-		environment = Environment(env)
-	} else {
-		environment = "local"
-	}
-
-	v := viper.New()
-	v.SetConfigType("yaml")
-	v.AddConfigPath(path)
-
-	switch environment {
-	case EnvironmentLocal:
-		return readLocal(v, path, useDevDotEnv)
-	case EnvironmentProduction:
-		return readProd(v)
-	default:
-		return nil, fmt.Errorf("unknown environment: %s", environment)
-	}
 }

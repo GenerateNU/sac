@@ -1,11 +1,27 @@
 package config
 
 import (
-	"errors"
 	"fmt"
+	"time"
 
 	m "github.com/garrettladley/mattress"
 )
+
+type Settings struct {
+	Application ApplicationSettings
+	Database    DatabaseSettings
+	SuperUser   SuperUserSettings
+	Auth        AuthSettings
+	AWS         AWSSettings
+	Resend      ResendSettings
+	Calendar    CalendarSettings
+}
+
+type ApplicationSettings struct {
+	Port    uint16
+	Host    string
+	BaseUrl string
+}
 
 type DatabaseSettings struct {
 	Username     string
@@ -14,31 +30,6 @@ type DatabaseSettings struct {
 	Host         string
 	DatabaseName string
 	RequireSSL   bool
-}
-
-func (int *intermediateDatabaseSettings) into() (*DatabaseSettings, error) {
-	password, err := m.NewSecret(int.Password)
-	if err != nil {
-		return nil, errors.New("failed to create secret from password")
-	}
-
-	return &DatabaseSettings{
-		Username:     int.Username,
-		Password:     password,
-		Port:         int.Port,
-		Host:         int.Host,
-		DatabaseName: int.DatabaseName,
-		RequireSSL:   int.RequireSSL,
-	}, nil
-}
-
-type intermediateDatabaseSettings struct {
-	Username     string `yaml:"username"`
-	Password     string `yaml:"password"`
-	Port         uint   `yaml:"port"`
-	Host         string `yaml:"host"`
-	DatabaseName string `yaml:"databasename"`
-	RequireSSL   bool   `yaml:"requiressl"`
 }
 
 func (s *DatabaseSettings) WithoutDb() string {
@@ -66,4 +57,28 @@ func (s *DatabaseSettings) PostgresConn() string {
 	}
 
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=%s", s.Username, s.Password.Expose(), s.Host, s.Port, s.DatabaseName, sslMode)
+}
+
+type SuperUserSettings struct {
+	Password *m.Secret[string]
+}
+
+type AuthSettings struct {
+	AccessKey  *m.Secret[string]
+	RefreshKey *m.Secret[string]
+}
+
+type AWSSettings struct {
+	BucketName *m.Secret[string]
+	Id         *m.Secret[string]
+	Secret     *m.Secret[string]
+	Region     *m.Secret[string]
+}
+
+type ResendSettings struct {
+	APIKey *m.Secret[string]
+}
+
+type CalendarSettings struct {
+	MaxTerminationDate time.Time
 }
