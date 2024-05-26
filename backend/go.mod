@@ -38,6 +38,7 @@ require (
 )
 
 require (
+	github.com/caarlos0/env/v11 v11.0.1 // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
