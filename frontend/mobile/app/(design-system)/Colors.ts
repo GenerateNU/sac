@@ -12,3 +12,5 @@ export const Colors = {
     black: '#000000',
     gray: '#C3C9D0',
 };
+
+export type ColorName = keyof typeof Colors;

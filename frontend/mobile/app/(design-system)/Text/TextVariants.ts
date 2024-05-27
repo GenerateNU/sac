@@ -12,7 +12,6 @@ const Texts = {
         fontStyle: 'normal',
         fontWeight: '500',
         lineHeight: 'normal',
-        color: '#000'
     },
     'body-1': {
         fontFamily: 'DMSans-Regular',
@@ -34,7 +33,7 @@ const Texts = {
         fontStyle: 'normal',
         fontWeight: '400',
         lineHeight: 'normal'
-    }
+    },
 } as const;
 
 export const TextVariants = {

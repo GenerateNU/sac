@@ -2,11 +2,8 @@ import React from 'react';
 import { Tabs } from 'expo-router';
 import { Text } from '@/app/(design-system)';
 import Home from '@/assets/svg/home.svg';
-import HomeSelected from '@/assets/svg/home-selected.svg';
 import Profile from '@/assets/svg/profile.svg';
-import ProfileSelected from '@/assets/svg/profile-selected.svg';
 import Calendar from '@/assets/svg/calendar.svg';
-import CalendarSelected from '@/assets/svg/calendar-selected.svg';
 import { Box } from '@/app/(design-system)';
 
 const Layout = () => {
@@ -29,16 +26,11 @@ const Layout = () => {
                             Home
                         </Text>
                     ),
-                    tabBarIcon: ({ focused }) =>
-                        focused ? (
-                            <Box paddingTop="m">
-                                <HomeSelected />
-                            </Box>
-                        ) : (
-                            <Box paddingTop="m">
-                                <Home />
-                            </Box>
-                        )
+                    tabBarIcon: ({ focused }) => (
+                        <Box paddingTop="m">
+                            <Home fill={focused? 'black' : 'gray'}/>
+                        </Box>
+                    )
                 }}
             />
             <Tabs.Screen
@@ -51,16 +43,11 @@ const Layout = () => {
                             Calendar
                         </Text>
                     ),
-                    tabBarIcon: ({ focused }) =>
-                        focused ? (
-                            <Box paddingTop="m">
-                                <CalendarSelected />
-                            </Box>
-                        ) : (
-                            <Box paddingTop="m">
-                                <Calendar />
-                            </Box>
-                        )
+                    tabBarIcon: ({ focused }) => (
+                        <Box paddingTop="m">
+                            <Calendar fill={focused? 'black' : 'gray'}/>
+                        </Box>
+                    )
                 }}
             />
             <Tabs.Screen
@@ -73,16 +60,11 @@ const Layout = () => {
                             Profile
                         </Text>
                     ),
-                    tabBarIcon: ({ focused }) =>
-                        focused ? (
-                            <Box paddingTop="m">
-                                <ProfileSelected />
-                            </Box>
-                        ) : (
-                            <Box paddingTop="m">
-                                <Profile />
-                            </Box>
-                        )
+                    tabBarIcon: ({ focused }) => (
+                        <Box paddingTop="m">
+                            <Profile fill={focused? 'black' : 'gray'}/>
+                        </Box>
+                    )
                 }}
             />
         </Tabs>
