@@ -30,7 +30,7 @@ export const RecruitmentInfo = ({color, recruitmentCycle, recruitingType, isRecr
             <Box alignItems="center" borderWidth={1} borderColor={color} borderRadius={8} width={'30%'}>
                 <Box paddingTop="l" paddingBottom="l" gap="xs" flexDirection="column" alignItems="center">
                     {icon}
-                    <Text style={{textAlign: 'center', fontWeight: '600'}}>{capitalize(title)}</Text>
+                    <Text style={{textAlign: 'center', fontWeight: '600', fontSize: 14 }}>{capitalize(title)}</Text>
                     {text && <Text variant="caption-1" style={{textAlign: 'center'}}>{capitalize(text)}</Text>}
                 </Box>
             </Box>
