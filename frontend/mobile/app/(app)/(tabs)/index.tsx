@@ -6,7 +6,11 @@ const HomePage = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Home</Text>
-            <RecruitmentInfo recruitingType="unrestricted" isRecruiting={true} recruitmentCycle="fall" color="green" />
+            <RecruitmentInfo recruitmentText="Fill out our application"
+                            recruitingType="unrestricted"
+                            isRecruiting={true}
+                            recruitmentCycle="always"
+                            color="aqua" />
         </View>
     );
 };

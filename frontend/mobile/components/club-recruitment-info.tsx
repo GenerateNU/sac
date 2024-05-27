@@ -1,4 +1,4 @@
-import { Box, Text, ColorName} from "@/app/(design-system)"
+import { Box, Text, ColorName, Colors} from "@/app/(design-system)"
 import RecruitmentCycleIcon from '@/assets/svg/recruitment-cycle.svg';
 import RecruitmentStatusIcon from '@/assets/svg/recruiting-status.svg';
 import ApplicationTypeIcon from '@/assets/svg/application-type.svg';
@@ -10,7 +10,8 @@ interface RecruitmentInfoProps {
     color: ColorName,
     recruitmentCycle: RecruitmentCycle,
     recruitingType: RecruitmentType,
-    isRecruiting: boolean,
+    isRecruiting?: boolean,
+    recruitmentText: string,
 }
 
 interface RecruitmentItemProps {
@@ -24,7 +25,7 @@ const capitalize = (str: string) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export const RecruitmentInfo = ({color, recruitmentCycle, recruitingType, isRecruiting}: RecruitmentInfoProps) => {
+export const RecruitmentInfo = ({recruitmentText, color, recruitmentCycle, recruitingType, isRecruiting = false}: RecruitmentInfoProps) => {
     const RecruitmentItem = ({icon, title, text}: RecruitmentItemProps) => {
         return (
             <Box alignItems="center" borderWidth={1} borderColor={color} borderRadius={8} width={'30%'}>
@@ -39,9 +40,9 @@ export const RecruitmentInfo = ({color, recruitmentCycle, recruitingType, isRecr
 
     return (
         <Box padding="l" flexDirection="row" gap="m" alignItems="stretch" justifyContent="space-evenly">
-            <RecruitmentItem icon={<RecruitmentCycleIcon fill={color}/>} title="Recruitment Cycle" text={recruitmentCycle}/>
-            <RecruitmentItem icon={<RecruitmentStatusIcon fill={color}/>} title={isRecruiting ? "Currently Recruiting" : "Currently Not Recruiting"} text={"Fill out our application"}/>
-            <RecruitmentItem icon={<ApplicationTypeIcon fill={color}/>} title="Application Type" text={recruitingType}/>
+            <RecruitmentItem icon={<RecruitmentCycleIcon fill={Colors[color]}/>} title="Recruitment Cycle" text={recruitmentCycle}/>
+            <RecruitmentItem icon={<RecruitmentStatusIcon fill={Colors[color]}/>} title={isRecruiting ? "Currently Recruiting" : "Currently Not Recruiting"} text={recruitmentText}/>
+            <RecruitmentItem icon={<ApplicationTypeIcon fill={Colors[color]}/>} title="Application Type" text={recruitingType}/>
         </Box>
     )
 }
