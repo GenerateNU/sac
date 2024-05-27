@@ -1,5 +1,5 @@
 import React, { PropsWithChildren } from 'react';
-import { ViewProps } from 'react-native-svg/lib/typescript/fabric/utils';
+import { ViewProps } from 'react-native';
 
 import { BoxProps, createBox } from '@shopify/restyle';
 

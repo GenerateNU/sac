@@ -25,14 +25,14 @@ const Texts = {
         fontFamily: 'DMSans-Regular',
         fontSize: 12,
         fontStyle: 'normal',
-        fontWeight: '400',
+        fontWeight: '200',
         lineHeight: 'normal'
     },
     'caption-2': {
         fontFamily: 'DMSans-Regular',
         fontSize: 10,
         fontStyle: 'normal',
-        fontWeight: '400',
+        fontWeight: '200',
         lineHeight: 'normal'
     }
 } as const;
