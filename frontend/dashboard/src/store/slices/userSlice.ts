@@ -6,7 +6,7 @@ export type UserState = {
     clubId: string;
     clubName: string;
     clubLogo: string;
-    accessToken: string;
+    accessToken?: string;
 }
 
 const initialState: UserState = {
@@ -15,10 +15,9 @@ const initialState: UserState = {
     clubId: "",
     clubName: "",
     clubLogo: "",
-    accessToken: "",
 };
 
-const userSlice = createSlice({
+export const userSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
@@ -28,13 +27,14 @@ const userSlice = createSlice({
             state.clubId = action.payload.clubId;
             state.clubName = action.payload.clubName;
             state.clubLogo = action.payload.clubLogo;
+            state.accessToken = action.payload.accessToken;
         },
         resetUser: () => initialState,
         setAccessToken: (state, action) => {
             state.accessToken = action.payload;
         },
         resetAccessToken: state => {
-            state.accessToken = "";
+            state.accessToken = undefined;
         }
     }
 })
