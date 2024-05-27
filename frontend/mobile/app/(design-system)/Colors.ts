@@ -8,5 +8,7 @@ export const Colors = {
     purple: '#9226FF',
     red: '#EC2215',
     orange: '#FF7426',
-    yellow: '#FFB626'
+    yellow: '#FFB626',
+    black: '#000000',
+    gray: '#C3C9D0',
 };

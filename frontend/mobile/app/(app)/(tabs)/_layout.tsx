@@ -1,13 +1,13 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import HomeIcon from '@/assets/svg/home-icon.svg';
-import HomeSelectedIcon from '@/assets/svg/calendar-icon.svg';
-import ProfileIcon from '@/assets/svg/calendar-icon.svg';
-import ProfileSelectedIcon from '@/assets/svg/calendar-icon.svg';
-import CalendarIcon from '@/assets/svg/calendar-icon.svg';
-import CalendarSelectedIcon from '@/assets/svg/calendar-selected-icon.svg';
-import { View } from 'react-native';
 import { Text } from '@/app/(design-system)';
+import Home from '@/assets/svg/home.svg';
+import HomeSelected from '@/assets/svg/home-selected.svg';
+import Profile from '@/assets/svg/profile.svg';
+import ProfileSelected from '@/assets/svg/profile-selected.svg';
+import Calendar from '@/assets/svg/calendar.svg';
+import CalendarSelected from '@/assets/svg/calendar-selected.svg';
+import { Box } from '@/app/(design-system)';
 
 const Layout = () => {
     return (
@@ -16,6 +16,7 @@ const Layout = () => {
             tabBarStyle: {
                 borderTopWidth: 1,
                 borderTopColor: '#00000066',
+                height: 85,
             },
         }}>
             <Tabs.Screen
@@ -24,20 +25,20 @@ const Layout = () => {
                     title: 'Home',
                     headerShown: false,
                     tabBarLabel: ({ focused }) => (
-                        <Text style={{ fontSize: 12, color: focused ? 'black' : '#C3C9D0' }}>
+                        <Text variant="caption-1" color={focused ? 'black' : 'gray'}>
                             Home
                         </Text>
                     ),
-                    // tabBarIcon: ({ focused }) =>
-                    //     focused ? (
-                    //         <View>
-                    //             <HomeSelectedIcon />
-                    //         </View>
-                    //     ) : (
-                    //         <View>
-                    //             <HomeIcon />
-                    //         </View>
-                    //     )
+                    tabBarIcon: ({ focused }) =>
+                        focused ? (
+                            <Box paddingTop="m">
+                                <HomeSelected />
+                            </Box>
+                        ) : (
+                            <Box paddingTop="m">
+                                <Home />
+                            </Box>
+                        )
                 }}
             />
             <Tabs.Screen
@@ -46,20 +47,20 @@ const Layout = () => {
                     title: 'Calendar',
                     headerShown: false,
                     tabBarLabel: ({ focused }) => (
-                        <Text style={{ fontSize: 12, color: focused ? 'black' : '#C3C9D0' }}>
+                        <Text variant="caption-1" color={focused ? 'black' : 'gray'}>
                             Calendar
                         </Text>
                     ),
-                    // tabBarIcon: ({ focused }) =>
-                    //     focused ? (
-                    //         <View>
-                    //             <CalendarSelectedIcon />
-                    //         </View>
-                    //     ) : (
-                    //         <View>
-                    //             <CalendarIcon />
-                    //         </View>
-                    //     )
+                    tabBarIcon: ({ focused }) =>
+                        focused ? (
+                            <Box paddingTop="m">
+                                <CalendarSelected />
+                            </Box>
+                        ) : (
+                            <Box paddingTop="m">
+                                <Calendar />
+                            </Box>
+                        )
                 }}
             />
             <Tabs.Screen
@@ -68,20 +69,20 @@ const Layout = () => {
                     title: 'Profile',
                     headerShown: false,
                     tabBarLabel: ({ focused }) => (
-                        <Text style={{ fontSize: 12, color: focused ? 'black' : '#C3C9D0' }}>
+                        <Text variant="caption-1" color={focused ? 'black' : 'gray'}>
                             Profile
                         </Text>
                     ),
-                    // tabBarIcon: ({ focused }) =>
-                    //     focused ? (
-                    //         <View>
-                    //             <ProfileSelectedIcon />
-                    //         </View>
-                    //     ) : (
-                    //         <View>
-                    //             <ProfileIcon />
-                    //         </View>
-                    //     )
+                    tabBarIcon: ({ focused }) =>
+                        focused ? (
+                            <Box paddingTop="m">
+                                <ProfileSelected />
+                            </Box>
+                        ) : (
+                            <Box paddingTop="m">
+                                <Profile />
+                            </Box>
+                        )
                 }}
             />
         </Tabs>
