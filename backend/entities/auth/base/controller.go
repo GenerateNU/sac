@@ -107,7 +107,7 @@ func (a *AuthController) Refresh(c *fiber.Ctx) error {
 
 	auth.SetResponseTokens(c, tokens)
 
-	return utilities.FiberMessage(c, http.StatusOK, "success")
+	return c.SendStatus(http.StatusOK)
 }
 
 // Logout godoc
@@ -128,7 +128,7 @@ func (a *AuthController) Logout(c *fiber.Ctx) error {
 
 	auth.ExpireResponseTokens(c)
 
-	return utilities.FiberMessage(c, http.StatusOK, "success")
+	return c.SendStatus(http.StatusOK)
 }
 
 // ForgotPassword godoc
@@ -156,7 +156,7 @@ func (a *AuthController) ForgotPassword(c *fiber.Ctx) error {
 		return err
 	}
 
-	return utilities.FiberMessage(c, http.StatusOK, "success")
+	return c.SendStatus(http.StatusOK)
 }
 
 // VerifyPasswordResetToken godoc
@@ -185,7 +185,7 @@ func (a *AuthController) VerifyPasswordResetToken(c *fiber.Ctx) error {
 		return err
 	}
 
-	return utilities.FiberMessage(c, http.StatusOK, "success")
+	return c.SendStatus(http.StatusOK)
 }
 
 // SendCode godoc
@@ -213,7 +213,7 @@ func (a *AuthController) SendCode(c *fiber.Ctx) error {
 		return err
 	}
 
-	return utilities.FiberMessage(c, http.StatusOK, "success")
+	return c.SendStatus(http.StatusOK)
 }
 
 // VerifyEmail godoc
@@ -241,5 +241,5 @@ func (a *AuthController) VerifyEmail(c *fiber.Ctx) error {
 		return err
 	}
 
-	return utilities.FiberMessage(c, http.StatusOK, "success")
+	return c.SendStatus(http.StatusOK)
 }

@@ -141,7 +141,7 @@ func (a *AuthService) Refresh(refreshToken string) (*auth.Token, error) {
 	}
 
 	if isblacklisted {
-		return nil, fmt.Errorf("refresh token is blacklisted")
+		return nil, utilities.Unauthorized()
 	}
 
 	claims, err := a.JWT.ExtractClaims(refreshToken, auth.RefreshToken)
@@ -308,12 +308,12 @@ func (a *AuthService) SendCode(email string) error {
 		return nil
 	}
 
-	otp, err := auth.GenerateOTP(6)
+	otp, err := auth.GenerateOTP(constants.OTP_LENGTH)
 	if err != nil {
 		return fmt.Errorf("failed to generate OTP: %w", err)
 	}
 
-	if err := SaveToken(a.DB, user.ID, *otp, models.EmailVerificationType, time.Now().Add(time.Minute*5).UTC()); err != nil {
+	if err := SaveToken(a.DB, user.ID, *otp, models.EmailVerificationType, time.Now().Add(constants.OTP_EXPIRY).UTC()); err != nil {
 		return err
 	}
 
@@ -385,6 +385,7 @@ func (a *AuthService) VerifyEmail(emailBody VerifyEmailRequestBody) error {
 	return nil
 }
 
+// TODO: review
 func (a *AuthService) Logout(c *fiber.Ctx) error {
 	accessToken := c.Get("Authorization")
 	if accessToken == "" {
@@ -396,7 +397,9 @@ func (a *AuthService) Logout(c *fiber.Ctx) error {
 		return utilities.Unauthorized()
 	}
 
-	blacklist(a, token)
+	if err = blacklist(a, token); err != nil {
+		return utilities.Unauthorized()
+	}
 
 	refreshToken := c.Cookies("refresh_token")
 	if refreshToken == "" {
@@ -405,17 +408,19 @@ func (a *AuthService) Logout(c *fiber.Ctx) error {
 
 	isActive, err := a.Stores.ActiveToken.IsActive(refreshToken)
 	if err != nil {
-		return err
+		return utilities.Unauthorized()
 	}
 
 	if !isActive {
 		return utilities.Unauthorized()
 	}
 
-	blacklist(a, &refreshToken)
+	if err := blacklist(a, &refreshToken); err != nil {
+		return utilities.Unauthorized()
+	}
 
 	if err := a.Stores.ActiveToken.DeleteRefreshToken(refreshToken); err != nil {
-		slog.Error("Failed to delete refresh token", "error", err)
+		slog.Error("failed to delete refresh token", "error", err)
 	}
 
 	auth.ExpireResponseTokens(c)
@@ -423,14 +428,16 @@ func (a *AuthService) Logout(c *fiber.Ctx) error {
 	return utilities.FiberMessage(c, http.StatusOK, "success")
 }
 
-func blacklist(a *AuthService, token *string) {
+func blacklist(a *AuthService, token *string) error {
 	claims, err := a.JWT.ExtractClaims(*token, auth.AccessToken)
 	if err != nil {
-		slog.Warn("Invalid token", "error", err)
+		return err
 	} else {
 		exp, ok := claims["exp"].(float64)
 		if ok {
 			_ = a.Stores.Blacklist.BlacklistToken(*token, time.Until(time.Unix(int64(exp), 0)))
 		}
 	}
+
+	return nil
 }

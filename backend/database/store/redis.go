@@ -2,12 +2,13 @@ package store
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"log/slog"
 	"os/exec"
-	"strings"
 
 	"github.com/GenerateNU/sac/backend/config"
+	"github.com/GenerateNU/sac/backend/utilities"
 )
 
 type Stores struct {
@@ -33,53 +34,55 @@ func ConfigureRedis(settings config.Settings) *Stores {
 		client := NewRedisClient(service.Username, service.Host, service.Port, service.Password, service.DB)
 		switch service.Username {
 		case "redis_active_tokens":
-			activeTokens = NewActiveToken(client)
+			activeTokens = NewActiveToken(client, context.Background())
 		case "redis_blacklist":
-			blacklist = NewBlacklist(client)
+			blacklist = NewBlacklist(client, context.Background())
 		case "redis_limiter":
-			limiter = NewLimiter(client)
+			limiter = NewLimiter(client, context.Background())
 		default:
-			slog.Error(fmt.Sprintf("unknown redis service: %s", service.Username))
+			slog.Error("unknown redis service", service.Username, "skipping...")
 		}
 	}
 
 	stores := NewStores(limiter, blacklist, activeTokens)
 
-	EstablishConn(settings)
+	MustEstablishConn()
 
 	return stores
 }
 
-func EstablishConn(settings config.Settings) {
-	services := settings.Redis
-
-	for _, service := range services {
-		if !isContainerRunning(service.Username) {
-			restartServices()
-		}
+// TODO: this will be a part of a larger function that will check all services
+func MustEstablishConn() {
+	if !isDockerComposeRunning() {
+		restartServices()
 	}
 }
 
-func isContainerRunning(name string) bool {
-	sanitizedName := strings.ReplaceAll(name, " ", "")
-	cmd := exec.Command("docker", "ps", "-f", fmt.Sprintf("name=%s", sanitizedName), "-q") //nolint:gosec
+func isDockerComposeRunning() bool {
+	cmd := exec.Command("docker-compose", "ps", "-q")
+
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	err := cmd.Run()
 	if err != nil {
-		slog.Error(fmt.Sprintf("error checking if service %s is running: %v\noutput: %s\n", name, err, out.String()))
-		return false
+		utilities.Exit(fmt.Sprintf("Error checking if Docker Compose is running: %s", err.Error()))
 	}
+
 	return out.Len() > 0
 }
 
 func restartServices() {
 	cmd := exec.Command("docker-compose", "up", "-d")
+
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	cmd.Stderr = &out
+
 	err := cmd.Run()
 	if err != nil {
-		slog.Error(fmt.Sprintf("error restarting services: %v\noutput: %s\n", err, out.String()))
+		slog.Error("error restarting services: ", err.Error(), "output: ", out.String(), "exiting...")
+		return
 	}
+
+	slog.Info("Services restarted successfully.")
 }

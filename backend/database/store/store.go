@@ -12,19 +12,18 @@ import (
 )
 
 type StoreClientInterface interface {
-	Set(key string, value interface{}, expiration time.Duration) error
-	Get(key string) (string, error)
-	Del(key string) error
-	Exists(key string) (bool, error)
-	SAdd(key string, members ...interface{}) error
-	SIsMember(key string, member interface{}) (bool, error)
-	FlushAll() error
+	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error
+	Get(ctx context.Context, key string) (string, error)
+	Del(ctx context.Context, key string) error
+	Exists(ctx context.Context, key string) (bool, error)
+	SAdd(ctx context.Context, key string, members ...interface{}) error
+	SIsMember(ctx context.Context, key string, member interface{}) (bool, error)
+	FlushAll(ctx context.Context) error
 	Close() error
 }
 
 type RedisClient struct {
 	Client *redis.Client
-	Ctx    context.Context
 }
 
 func NewRedisClient(username, host string, port uint, password *m.Secret[string], db int) *RedisClient {
@@ -40,37 +39,36 @@ func NewRedisClient(username, host string, port uint, password *m.Secret[string]
 
 	return &RedisClient{
 		Client: client,
-		Ctx:    context.Background(),
 	}
 }
 
-func (r *RedisClient) Set(key string, value interface{}, expiration time.Duration) error {
-	return r.Client.Set(r.Ctx, key, value, expiration).Err()
+func (r *RedisClient) Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error {
+	return r.Client.Set(ctx, key, value, expiration).Err()
 }
 
-func (r *RedisClient) Get(key string) (string, error) {
-	return r.Client.Get(r.Ctx, key).Result()
+func (r *RedisClient) Get(ctx context.Context, key string) (string, error) {
+	return r.Client.Get(ctx, key).Result()
 }
 
-func (r *RedisClient) Del(key string) error {
-	return r.Client.Del(r.Ctx, key).Err()
+func (r *RedisClient) Del(ctx context.Context, key string) error {
+	return r.Client.Del(ctx, key).Err()
 }
 
-func (r *RedisClient) Exists(key string) (bool, error) {
-	result, err := r.Client.Exists(r.Ctx, key).Result()
+func (r *RedisClient) Exists(ctx context.Context, key string) (bool, error) {
+	result, err := r.Client.Exists(ctx, key).Result()
 	return result > 0, err
 }
 
-func (r *RedisClient) SAdd(key string, members ...interface{}) error {
-	return r.Client.SAdd(r.Ctx, key, members...).Err()
+func (r *RedisClient) SAdd(ctx context.Context, key string, members ...interface{}) error {
+	return r.Client.SAdd(ctx, key, members...).Err()
 }
 
-func (r *RedisClient) SIsMember(key string, member interface{}) (bool, error) {
-	return r.Client.SIsMember(r.Ctx, key, member).Result()
+func (r *RedisClient) SIsMember(ctx context.Context, key string, member interface{}) (bool, error) {
+	return r.Client.SIsMember(ctx, key, member).Result()
 }
 
-func (r *RedisClient) FlushAll() error {
-	return r.Client.FlushAll(r.Ctx).Err()
+func (r *RedisClient) FlushAll(ctx context.Context) error {
+	return r.Client.FlushAll(ctx).Err()
 }
 
 func (r *RedisClient) Close() error {

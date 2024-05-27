@@ -1,6 +1,9 @@
 package store
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 // LimiterInterface is an implementation of https://github.com/gofiber/storage
 type LimiterInterface interface {
@@ -13,16 +16,18 @@ type LimiterInterface interface {
 
 type Limiter struct {
 	StoreClient StoreClientInterface
+	ctx         context.Context
 }
 
-func NewLimiter(storeCleint StoreClientInterface) *Limiter {
+func NewLimiter(storeClient StoreClientInterface, ctx context.Context) *Limiter {
 	return &Limiter{
-		StoreClient: storeCleint,
+		StoreClient: storeClient,
+		ctx:         ctx,
 	}
 }
 
 func (l *Limiter) Get(key string) ([]byte, error) {
-	value, err := l.StoreClient.Get(key)
+	value, err := l.StoreClient.Get(l.ctx, key)
 	if err != nil {
 		return nil, err
 	}
@@ -31,15 +36,15 @@ func (l *Limiter) Get(key string) ([]byte, error) {
 }
 
 func (l *Limiter) Set(key string, val []byte, exp time.Duration) error {
-	return l.StoreClient.Set(key, val, exp)
+	return l.StoreClient.Set(l.ctx, key, string(val), exp)
 }
 
 func (l *Limiter) Delete(key string) error {
-	return l.StoreClient.Del(key)
+	return l.StoreClient.Del(l.ctx, key)
 }
 
 func (l *Limiter) Reset() error {
-	return l.StoreClient.FlushAll()
+	return l.StoreClient.FlushAll(l.ctx)
 }
 
 func (l *Limiter) Close() error {

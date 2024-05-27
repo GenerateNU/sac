@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log/slog"
 	"net"
-	"os"
 	"path/filepath"
 
 	"github.com/GenerateNU/sac/backend/config"
@@ -20,6 +19,7 @@ import (
 	"github.com/GenerateNU/sac/backend/server"
 	"github.com/GenerateNU/sac/backend/telemetry"
 	"github.com/GenerateNU/sac/backend/tests/api/mocks"
+	"github.com/GenerateNU/sac/backend/utilities"
 	"go.opentelemetry.io/otel"
 )
 
@@ -36,17 +36,17 @@ func main() {
 
 	config, err := config.GetConfiguration(*configPath, *useDevDotEnv)
 	if err != nil {
-		exit("Error getting configuration: %s", err.Error())
+		utilities.Exit("Error getting configuration: %s", err.Error())
 	}
 
 	err = checkServerRunning(config.Application.Host, config.Application.Port)
 	if err == nil {
-		exit("A server is already running on %s:%d.\n", config.Application.Host, config.Application.Port)
+		utilities.Exit("A server is already running on %s:%d.\n", config.Application.Host, config.Application.Port)
 	}
 
 	db, err := database.ConfigureDB(*config)
 	if err != nil {
-		exit("Error migrating database: %s", err.Error())
+		utilities.Exit("Error migrating database: %s", err.Error())
 	}
 
 	if *onlyMigrate {
@@ -59,14 +59,14 @@ func main() {
 
 		err := pinecone.Seed(db)
 		if err != nil {
-			exit("Error seeding PineconeDB: %s\n", err.Error())
+			utilities.Exit("Error seeding PineconeDB: %s\n", err.Error())
 		}
 		return
 	}
 
 	err = database.ConnPooling(db)
 	if err != nil {
-		exit("Error with connection pooling: %s", err.Error())
+		utilities.Exit("Error with connection pooling: %s", err.Error())
 	}
 
 	stores := store.ConfigureRedis(*config)
@@ -87,7 +87,7 @@ func main() {
 
 	err = app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
 	if err != nil {
-		exit("Error starting server: %s", err.Error())
+		utilities.Exit("Error starting server: %s", err.Error())
 	}
 }
 
@@ -99,11 +99,6 @@ func checkServerRunning(host string, port uint16) error {
 	}
 	defer conn.Close()
 	return nil
-}
-
-func exit(format string, a ...interface{}) {
-	fmt.Fprintf(os.Stderr, format, a...)
-	os.Exit(0)
 }
 
 func configureIntegrations(config *config.Settings, connectToPinecone bool) integrations.Integrations {
