@@ -29,7 +29,7 @@ func (i *GoogleOAuthSettings) into() (*OAuthSettings, error) {
 		ClientSecret:         secretClientSecret,
 		Scopes:               "https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.readonly",
 		ResponseType:         "code",
-		RedirectURI:          "http://localhost:3000",
+		RedirectURI:          "http://127.0.0.1:3000",
 		IncludeGrantedScopes: "true",
 		AccessType:           "offline",
 		Prompt:               "consent",

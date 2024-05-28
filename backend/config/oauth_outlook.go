@@ -29,7 +29,7 @@ func (i *OutlookOAuthSettings) into() (*OAuthSettings, error) {
 		ClientSecret: secretClientSecret,
 		Scopes:       "offline_access user.read calendars.readwrite",
 		ResponseType: "code",
-		RedirectURI:  "http://localhost:3000",
+		RedirectURI:  "http://127.0.0.1:3000",
 		ResponseMode: "query",
 		Prompt:       "consent",
 	}, nil
