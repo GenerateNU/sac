@@ -27,7 +27,6 @@ func main() {
 	configPath := flag.String("config", filepath.Join("..", "config", ".env.dev"), "Specify the path to the config file (.env)")
 
 	flag.Parse()
-
 	config, err := config.GetConfiguration(*configPath)
 	if err != nil {
 		utilities.Exit("Error getting configuration: %s", err.Error())
