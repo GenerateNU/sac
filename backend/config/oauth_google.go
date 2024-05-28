@@ -6,13 +6,14 @@ import (
 	m "github.com/garrettladley/mattress"
 )
 
-type GoogleOAuthSettings struct {
-	ClientId     string `env:"GOOGLE_OAUTH_CLIENT_ID"`
-	ClientSecret string `env:"GOOGLE_OAUTH_CLIENT_SECRET"`
+type intermediateGoogleOAuthSettings struct {
+	ClientID     string `env:"CLIENT_ID"`
+	ClientSecret string `env:"CLIENT_SECRET"`
+	RedirectURI  string `env:"REDIRECT_URI"`
 }
 
-func (i *GoogleOAuthSettings) into() (*OAuthSettings, error) {
-	secretClientID, err := m.NewSecret(i.ClientId)
+func (i *intermediateGoogleOAuthSettings) into() (*OAuthSettings, error) {
+	secretClientID, err := m.NewSecret(i.ClientID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create secret from client ID: %s", err.Error())
 	}
@@ -29,7 +30,7 @@ func (i *GoogleOAuthSettings) into() (*OAuthSettings, error) {
 		ClientSecret:         secretClientSecret,
 		Scopes:               "https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.readonly",
 		ResponseType:         "code",
-		RedirectURI:          "http://localhost:3000",
+		RedirectURI:          i.RedirectURI,
 		IncludeGrantedScopes: "true",
 		AccessType:           "offline",
 		Prompt:               "consent",

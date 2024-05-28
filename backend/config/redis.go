@@ -16,26 +16,26 @@ type RedisSettings struct {
 }
 
 type intermediateRedisSettings struct {
-	Username string `env:"USERNAME"`
-	Password string `env:"PASSWORD"`
-	Host     string `env:"HOST"`
-	Port     uint   `env:"PORT"`
-	DB       int    `env:"DB"`
+	username string `env:"USERNAME"`
+	password string `env:"PASSWORD"`
+	host     string `env:"HOST"`
+	port     uint   `env:"PORT"`
+	db       int    `env:"DB"`
 	// TLSConfig *intermediateTLSConfig `env:"TLS_CONFIG"`
 }
 
 func (i *intermediateRedisSettings) into() (*RedisSettings, error) {
-	password, err := m.NewSecret(i.Password)
+	password, err := m.NewSecret(i.password)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create secret from password: %s", err.Error())
 	}
 
 	return &RedisSettings{
-		Username: i.Username,
+		Username: i.username,
 		Password: password,
-		Host:     i.Host,
-		Port:     i.Port,
-		DB:       i.DB,
+		Host:     i.host,
+		Port:     i.port,
+		DB:       i.db,
 		// TLSConfig: i.TLSConfig.into(),
 	}, nil
 }

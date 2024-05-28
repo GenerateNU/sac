@@ -20,78 +20,78 @@ type Integrations struct {
 }
 
 type intermediateSettings struct {
-	Application       ApplicationSettings           `envPrefix:"SAC_APPLICATION_"`
-	Database          intermediateDatabaseSettings  `envPrefix:"SAC_DB_"`
-	RedisActiveTokens intermediateRedisSettings     `envPrefix:"SAC_REDIS_ACTIVE_TOKENS_"`
-	RedisBlacklist    intermediateRedisSettings     `envPrefix:"SAC_REDIS_BLACKLIST_"`
-	RedisLimiter      intermediateRedisSettings     `envPrefix:"SAC_REDIS_LIMITER_"`
-	SuperUser         intermediateSuperUserSettings `envPrefix:"SAC_SUDO_"`
-	Auth              intermediateAuthSettings      `envPrefix:"SAC_AUTH_"`
-	AWS               intermediateAWSSettings       `envPrefix:"SAC_AWS_"`
-	Resend            intermediateResendSettings    `envPrefix:"SAC_RESEND_"`
-	Calendar          intermediateCalendarSettings  `envPrefix:"SAC_CALENDAR_"`
-	GoogleSettings    GoogleOAuthSettings           `envPrefix:"SAC_GOOGLE_OAUTH"`
-	OutlookSettings   OutlookOAuthSettings          `envPrefix:"SAC_OUTLOOK_OAUTH"`
+	application       ApplicationSettings              `envPrefix:"SAC_APPLICATION_"`
+	database          intermediateDatabaseSettings     `envPrefix:"SAC_DB_"`
+	redisActiveTokens intermediateRedisSettings        `envPrefix:"SAC_REDIS_ACTIVE_TOKENS_"`
+	redisBlacklist    intermediateRedisSettings        `envPrefix:"SAC_REDIS_BLACKLIST_"`
+	redisLimiter      intermediateRedisSettings        `envPrefix:"SAC_REDIS_LIMITER_"`
+	superUser         intermediateSuperUserSettings    `envPrefix:"SAC_SUDO_"`
+	auth              intermediateAuthSettings         `envPrefix:"SAC_AUTH_"`
+	aws               intermediateAWSSettings          `envPrefix:"SAC_AWS_"`
+	resend            intermediateResendSettings       `envPrefix:"SAC_RESEND_"`
+	calendar          intermediateCalendarSettings     `envPrefix:"SAC_CALENDAR_"`
+	googleSettings    intermediateGoogleOAuthSettings  `envPrefix:"SAC_GOOGLE_OAUTH"`
+	outlookSettings   intermdeiateOutlookOAuthSettings `envPrefix:"SAC_OUTLOOK_OAUTH"`
 }
 
 func (i *intermediateSettings) into() (*Settings, error) {
-	database, err := i.Database.into()
+	database, err := i.database.into()
 	if err != nil {
 		return nil, err
 	}
 
-	redisActiveTokens, err := i.RedisActiveTokens.into()
+	redisActiveTokens, err := i.redisActiveTokens.into()
 	if err != nil {
 		return nil, err
 	}
 
-	redisBlacklist, err := i.RedisBlacklist.into()
+	redisBlacklist, err := i.redisBlacklist.into()
 	if err != nil {
 		return nil, err
 	}
 
-	redisLimiter, err := i.RedisLimiter.into()
+	redisLimiter, err := i.redisLimiter.into()
 	if err != nil {
 		return nil, err
 	}
 
-	superUser, err := i.SuperUser.into()
+	superUser, err := i.superUser.into()
 	if err != nil {
 		return nil, err
 	}
 
-	auth, err := i.Auth.into()
+	auth, err := i.auth.into()
 	if err != nil {
 		return nil, err
 	}
 
-	aws, err := i.AWS.into()
+	aws, err := i.aws.into()
 	if err != nil {
 		return nil, err
 	}
 
-	resend, err := i.Resend.into()
+	resend, err := i.resend.into()
 	if err != nil {
 		return nil, err
 	}
 
-	calendar, err := i.Calendar.into()
+	calendar, err := i.calendar.into()
 	if err != nil {
 		return nil, err
 	}
 
-	google, err := i.GoogleSettings.into()
+	google, err := i.googleSettings.into()
 	if err != nil {
 		return nil, err
 	}
 
-	outlook, err := i.OutlookSettings.into()
+	outlook, err := i.outlookSettings.into()
 	if err != nil {
 		return nil, err
 	}
 
 	return &Settings{
-		Application:       i.Application,
+		Application:       i.application,
 		Database:          *database,
 		RedisActiveTokens: *redisActiveTokens,
 		RedisBlacklist:    *redisBlacklist,
