@@ -1,6 +1,10 @@
 package config
 
-import m "github.com/garrettladley/mattress"
+import (
+	"fmt"
+
+	m "github.com/garrettladley/mattress"
+)
 
 type AuthSettings struct {
 	AccessKey  *m.Secret[string]
@@ -15,12 +19,12 @@ type intermediateAuthSettings struct {
 func (i *intermediateAuthSettings) into() (*AuthSettings, error) {
 	accessKey, err := m.NewSecret(i.AccessKey)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create secret from access key: %s", err.Error())
 	}
 
 	refreshKey, err := m.NewSecret(i.RefreshKey)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create secret from refresh key: %s", err.Error())
 	}
 
 	return &AuthSettings{

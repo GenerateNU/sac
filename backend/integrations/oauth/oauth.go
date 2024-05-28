@@ -12,7 +12,7 @@ type OAuthClient struct {
 	ResourceClient OAuthResourceClientInterface
 }
 
-type OAuthResources struct {
+type OauthProviderSettings struct {
 	Outlook OutlookOAuthClient
 	Google  GoogleOAuthClient
 }

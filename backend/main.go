@@ -102,7 +102,7 @@ func configureIntegrations(config *config.Settings) integrations.Integrations {
 		OAuthConfig: config.Outlook,
 	}
 
-	oauthResources := oauth.OAuthResources{
+	oauthResources := oauth.OauthProviderSettings{
 		Google:  googleClient,
 		Outlook: outlookClient,
 	}

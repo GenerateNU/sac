@@ -54,7 +54,7 @@ type intermediateDatabaseSettings struct {
 func (i *intermediateDatabaseSettings) into() (*DatabaseSettings, error) {
 	password, err := m.NewSecret(i.Password)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create secret from password: %s", err.Error())
 	}
 
 	return &DatabaseSettings{
