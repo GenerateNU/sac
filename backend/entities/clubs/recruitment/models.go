@@ -15,10 +15,9 @@ type CreateApplicationRequestBody struct {
 }
 
 type UpdateClubRecruitmentRequestBody struct {
-	Cycle        models.RecruitmentCycle        `json:"cycle" validate:"omitempty,oneof=fall spring fallSpring always"`
-	Type         models.RecruitmentType         `json:"type" validate:"omitempty,oneof=unrestricted tryout application"`
-	IsRecruiting *bool                          `json:"is_recruiting" validate:"omitempty"`
-	Applications []UpdateApplicationRequestBody `json:"applications"`
+	Cycle        models.RecruitmentCycle `json:"cycle" validate:"omitempty,oneof=fall spring fallSpring always"`
+	Type         models.RecruitmentType  `json:"type" validate:"omitempty,oneof=unrestricted tryout application"`
+	IsRecruiting *bool                   `json:"is_recruiting" validate:"omitempty"`
 }
 
 type UpdateApplicationRequestBody struct {

@@ -23,21 +23,26 @@ CREATE TABLE IF NOT EXISTS users(
 
 CREATE UNIQUE INDEX IF NOT EXISTS uni_users_email ON users USING btree ("email");
 
-CREATE TYPE event_type AS ENUM ('meeting', 'workshop', 'social', 'other');
-
-CREATE TYPE application AS (
-    title varchar(255),
-    link varchar(255)
-);
-
 CREATE TYPE recruitment_cycle AS ENUM ('fall', 'spring', 'fallSpring', 'always');
 CREATE TYPE recruitment_type AS ENUM ('unrestricted', 'tryout', 'application');
 
-CREATE TYPE recruitment AS (
+CREATE TABLE IF NOT EXISTS recruitment (
+    id uuid NOT NULL DEFAULT uuid_generate_v4(),
+    created_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     cycle recruitment_cycle,
     _type recruitment_type,
     is_recruiting boolean,
-    applications application[]
+);
+
+CREATE TABLE IF NOT EXISTS applications (
+    id uuid NOT NULL DEFAULT uuid_generate_v4(),
+    created_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    recruitment_id uuid NOT NULL,
+    title varchar(255) NOT NULL,
+    link varchar(255) NOT NULL,
+    CONSTRAINT fk_recruitment_application FOREIGN key(recruitment_id) REFERENCES recruitment(id) ON UPDATE CASCADE ON DELETE CASCADE,
 );
 
 CREATE TABLE IF NOT EXISTS clubs(
@@ -51,10 +56,11 @@ CREATE TABLE IF NOT EXISTS clubs(
     num_members bigint NOT NULL,
     weekly_time_commitment bigint,
     one_word_to_describe_us varchar(255) DEFAULT NULL::character varying,
-    recruitment recruitment,
+    recruitment_id uuid,
     logo varchar(255) DEFAULT NULL::character varying,
     parent uuid,
     PRIMARY KEY(id)
+    CONSTRAINT fk_clubs_recruitment FOREIGN key(recruitment_id) REFERENCES recruitment(id) ON UPDATE CASCADE ON DELETE CASCADE,
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS uni_clubs_name ON clubs USING btree ("name");
@@ -68,6 +74,8 @@ CREATE TABLE IF NOT EXISTS series(
     PRIMARY KEY(id)
 );
 
+CREATE TYPE event_type AS ENUM ('hybrid', 'in_person', 'virtual');
+
 CREATE TABLE IF NOT EXISTS events(
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
     created_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -75,7 +83,7 @@ CREATE TABLE IF NOT EXISTS events(
     name varchar(255) NOT NULL,
     preview varchar(255) NOT NULL,
     description text NOT NULL,
-    event_type varchar(255) NOT NULL,
+    event_type event_type NOT NULL,
     location varchar(255),
     link varchar(255),
     is_public boolean NOT NULL,

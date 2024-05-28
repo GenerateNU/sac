@@ -1,17 +1,28 @@
 package recruitment
 
 import (
+	"context"
 	"errors"
 
+	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/errs"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 )
 
 type ClubRecruitmentServicer interface {
-	CreateClubRecruitment(clubID string, body CreateClubRecruitmentRequestBody) (*models.Club, error)
-	UpdateClubRecruitment(clubID string, body UpdateClubRecruitmentRequestBody) (*models.Club, error)
-	DeleteClubRecruitment(clubID string) error
+	CreateClubRecruitment(ctx context.Context, clubID string, body CreateClubRecruitmentRequestBody) (*models.Club, error)
+	UpdateClubRecruitment(ctx context.Context, clubID string, body UpdateClubRecruitmentRequestBody) (*models.Club, error)
+	DeleteClubRecruitment(ctx context.Context, clubID string) error
+
+	GetClubRecruitmentApplications(ctx context.Context, clubID string, recruitmentID string, pageInfo fiberpaginate.PageInfo) ([]models.Application, error)
+	CreateApplicationRequestBody(ctx context.Context, clubID string, recruitmentID string, body CreateApplicationRequestBody) (*models.Application, error)
+
+	GetClubRecruitmentApplication(ctx context.Context, clubID string, recruitmentID string, applicationID string) (*models.Application, error)
+	UpdateClubRecruitmentApplication(ctx context.Context, clubID string, recruitmentID string, applicationID string, body UpdateApplicationRequestBody) (*models.Application, error)
+	DeleteClubRecruitmentApplication(ctx context.Context, clubID string, recruitmentID string, applicationID string) error
 }
 
 type ClubRecruitmentService struct {
@@ -22,7 +33,7 @@ func NewClubRecruitmentService(params types.ServiceParams) ClubRecruitmentServic
 	return &ClubRecruitmentService{params}
 }
 
-func (s *ClubRecruitmentService) CreateClubRecruitment(clubID string, body CreateClubRecruitmentRequestBody) (*models.Club, error) {
+func (s *ClubRecruitmentService) CreateClubRecruitment(ctx context.Context, clubID string, body CreateClubRecruitmentRequestBody) (*models.Club, error) {
 	idAsUUID, err := utilities.ValidateID(clubID)
 	if err != nil {
 		return nil, err
@@ -37,10 +48,13 @@ func (s *ClubRecruitmentService) CreateClubRecruitment(clubID string, body Creat
 		return nil, err
 	}
 
-	return CreateClubRecruitment(s.DB, idAsUUID, recruitment)
+	createClubRecruitmentCtx, createClubRecruitmentCancel := context.WithTimeoutCause(ctx, constants.DB_TIMEOUT, errs.ErrDatabaseTimeout)
+	defer createClubRecruitmentCancel()
+
+	return CreateClubRecruitment(createClubRecruitmentCtx, s.DB, idAsUUID, recruitment)
 }
 
-func (s *ClubRecruitmentService) UpdateClubRecruitment(clubID string, body UpdateClubRecruitmentRequestBody) (*models.Club, error) {
+func (s *ClubRecruitmentService) UpdateClubRecruitment(ctx context.Context, clubID string, body UpdateClubRecruitmentRequestBody) (*models.Club, error) {
 	idAsUUID, err := utilities.ValidateID(clubID)
 	if err != nil {
 		return nil, err
@@ -59,14 +73,40 @@ func (s *ClubRecruitmentService) UpdateClubRecruitment(clubID string, body Updat
 		return nil, err
 	}
 
-	return UpdateClubRecruitment(s.DB, idAsUUID, recruitment)
+	updateClubRecruitmentCtx, updateClubRecruitmentCancel := context.WithTimeoutCause(ctx, constants.DB_TIMEOUT, errs.ErrDatabaseTimeout)
+	defer updateClubRecruitmentCancel()
+
+	return UpdateClubRecruitment(updateClubRecruitmentCtx, s.DB, idAsUUID, recruitment)
 }
 
-func (s *ClubRecruitmentService) DeleteClubRecruitment(clubID string) error {
+func (s *ClubRecruitmentService) DeleteClubRecruitment(ctx context.Context, clubID string) error {
 	idAsUUID, err := utilities.ValidateID(clubID)
 	if err != nil {
 		return err
 	}
 
-	return DeleteClubRecruitment(s.DB, idAsUUID)
+	deleteClubRecruitmentCtx, deleteClubRecruitmentCancel := context.WithTimeoutCause(ctx, constants.DB_TIMEOUT, errs.ErrDatabaseTimeout)
+	defer deleteClubRecruitmentCancel()
+
+	return DeleteClubRecruitment(deleteClubRecruitmentCtx, s.DB, idAsUUID)
+}
+
+func (s *ClubRecruitmentService) GetClubRecruitmentApplications(ctx context.Context, clubID string, recruitmentID string, pageInfo fiberpaginate.PageInfo) ([]models.Application, error) {
+	return nil, nil
+}
+
+func (s *ClubRecruitmentService) CreateApplicationRequestBody(ctx context.Context, clubID string, recruitmentID string, body CreateApplicationRequestBody) (*models.Application, error) {
+	return nil, nil
+}
+
+func (s *ClubRecruitmentService) GetClubRecruitmentApplication(ctx context.Context, clubID string, recruitmentID string, applicationID string) (*models.Application, error) {
+	return nil, nil
+}
+
+func (s *ClubRecruitmentService) UpdateClubRecruitmentApplication(ctx context.Context, clubID string, recruitmentID string, applicationID string, body UpdateApplicationRequestBody) (*models.Application, error) {
+	return nil, nil
+}
+
+func (s *ClubRecruitmentService) DeleteClubRecruitmentApplication(ctx context.Context, clubID string, recruitmentID string, applicationID string) error {
+	return nil
 }

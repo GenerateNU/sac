@@ -1,7 +1,7 @@
 package recruitment
 
 import (
-	"errors"
+	"context"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/utilities"
@@ -9,23 +9,20 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateClubRecruitment(db *gorm.DB, clubID *uuid.UUID, recruitment *models.Recruitment) (*models.Club, error) {
-	return UpdateClubRecruitment(db, clubID, recruitment)
+func CreateClubRecruitment(ctx context.Context, db *gorm.DB, clubID *uuid.UUID, recruitment *models.Recruitment) (*models.Club, error) {
+	return utilities.ExecuteWithTimeoutResult(ctx, func() (*models.Club, error) {
+		return nil, nil
+	})
 }
 
-func UpdateClubRecruitment(db *gorm.DB, clubID *uuid.UUID, recruitment *models.Recruitment) (*models.Club, error) {
-	var club models.Club
-	if err := db.Model(&club).Where("id = ?", clubID).Update("recruitment", recruitment).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, utilities.ErrNotFound
-		}
-		return nil, err
-	}
-
-	return &club, nil
+func UpdateClubRecruitment(ctx context.Context, db *gorm.DB, clubID *uuid.UUID, recruitment *models.Recruitment) (*models.Club, error) {
+	return utilities.ExecuteWithTimeoutResult(ctx, func() (*models.Club, error) {
+		return nil, nil
+	})
 }
 
-func DeleteClubRecruitment(db *gorm.DB, clubID *uuid.UUID) error {
-	_, err := UpdateClubRecruitment(db, clubID, nil)
-	return err
+func DeleteClubRecruitment(ctx context.Context, db *gorm.DB, clubID *uuid.UUID) error {
+	return utilities.ExecuteWithTimeout(context.Background(), func() error {
+		return nil
+	})
 }

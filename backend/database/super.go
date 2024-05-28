@@ -40,7 +40,7 @@ func SuperClub() models.Club {
 			Cycle:        models.Always,
 			Type:         models.RecruitmentTypeApplication,
 			IsRecruiting: true,
-			Applications: []models.Application{
+			Application: []models.Application{
 				{
 					Title: "General Applications",
 					Link:  "generatenu.com/apply",
