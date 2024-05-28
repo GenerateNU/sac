@@ -8,31 +8,29 @@ import (
 )
 
 type BlacklistInterface interface {
-	BlacklistToken(token string, expiry time.Duration) error
-	IsTokenBlacklisted(token string) (bool, error)
+	BlacklistToken(ctx context.Context, token string, expiry time.Duration) error
+	IsTokenBlacklisted(ctx context.Context, token string) (bool, error)
 }
 
 type Blacklist struct {
-	StoreClient StoreClientInterface
-	ctx         context.Context
+	storeClient StoreClientInterface
 }
 
-func NewBlacklist(storeClient StoreClientInterface, ctx context.Context) *Blacklist {
+func NewBlacklist(storeClient StoreClientInterface) *Blacklist {
 	return &Blacklist{
-		StoreClient: storeClient,
-		ctx:         ctx,
+		storeClient: storeClient,
 	}
 }
 
-func (b *Blacklist) BlacklistToken(token string, expiry time.Duration) error {
-	err := b.StoreClient.SAdd(b.ctx, constants.TOKEN_BLACKLIST_SKEY, token)
+func (b *Blacklist) BlacklistToken(ctx context.Context, token string, expiry time.Duration) error {
+	err := b.storeClient.SetAdd(ctx, constants.TOKEN_BLACKLIST_SKEY, token)
 	if err != nil {
 		return err
 	}
 
-	return b.StoreClient.Set(b.ctx, token, constants.TOKEN_BLACKLIST_KEY, expiry)
+	return b.storeClient.Set(ctx, token, constants.TOKEN_BLACKLIST_KEY, expiry)
 }
 
-func (b *Blacklist) IsTokenBlacklisted(token string) (bool, error) {
-	return b.StoreClient.SIsMember(b.ctx, constants.TOKEN_BLACKLIST_SKEY, token)
+func (b *Blacklist) IsTokenBlacklisted(ctx context.Context, token string) (bool, error) {
+	return b.storeClient.SetIsMember(ctx, constants.TOKEN_BLACKLIST_SKEY, token)
 }

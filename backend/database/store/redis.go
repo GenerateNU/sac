@@ -2,13 +2,11 @@ package store
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"log/slog"
 	"os/exec"
 
 	"github.com/GenerateNU/sac/backend/config"
-	"github.com/GenerateNU/sac/backend/utilities"
 )
 
 type Stores struct {
@@ -34,11 +32,11 @@ func ConfigureRedis(settings config.Settings) *Stores {
 		client := NewRedisClient(service.Username, service.Host, service.Port, service.Password, service.DB)
 		switch service.Username {
 		case "redis_active_tokens":
-			activeTokens = NewActiveToken(client, context.Background())
+			activeTokens = NewActiveToken(client)
 		case "redis_blacklist":
-			blacklist = NewBlacklist(client, context.Background())
+			blacklist = NewBlacklist(client)
 		case "redis_limiter":
-			limiter = NewLimiter(client, context.Background())
+			limiter = NewLimiter(client)
 		default:
 			slog.Error("unknown redis service", service.Username, "skipping...")
 		}
@@ -53,25 +51,33 @@ func ConfigureRedis(settings config.Settings) *Stores {
 
 // TODO: this will be a part of a larger function that will check all services
 func MustEstablishConn() {
-	if !isDockerComposeRunning() {
-		restartServices()
+	isRunning, err := isDockerComposeRunning()
+	if err != nil {
+		panic(err)
+	}
+
+	if !*isRunning {
+		if err := restartServices(); err != nil {
+			panic(err)
+		}
 	}
 }
 
-func isDockerComposeRunning() bool {
+func isDockerComposeRunning() (*bool, error) {
 	cmd := exec.Command("docker-compose", "ps", "-q")
 
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	err := cmd.Run()
 	if err != nil {
-		utilities.Exit(fmt.Sprintf("Error checking if Docker Compose is running: %s", err.Error()))
+		return nil, fmt.Errorf("error checking if docker-compose is running: %s", err.Error())
 	}
 
-	return out.Len() > 0
+	result := out.Len() > 0
+	return &result, nil
 }
 
-func restartServices() {
+func restartServices() error {
 	cmd := exec.Command("docker-compose", "up", "-d")
 
 	var out bytes.Buffer
@@ -80,9 +86,9 @@ func restartServices() {
 
 	err := cmd.Run()
 	if err != nil {
-		slog.Error("error restarting services: ", err.Error(), "output: ", out.String(), "exiting...")
-		return
+		return fmt.Errorf("error restarting services: %s \nconsole output: %s", err.Error(), out.String())
 	}
 
 	slog.Info("Services restarted successfully.")
+	return nil
 }

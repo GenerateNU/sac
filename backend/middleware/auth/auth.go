@@ -1,10 +1,13 @@
 package auth
 
 import (
+	"context"
 	"slices"
 	"strings"
 
 	"github.com/GenerateNU/sac/backend/auth"
+	"github.com/GenerateNU/sac/backend/constants"
+	"github.com/GenerateNU/sac/backend/errs"
 	"github.com/GenerateNU/sac/backend/utilities"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
@@ -61,7 +64,9 @@ func (m *AuthMiddlewareService) Authenticate(c *fiber.Ctx) error {
 			return utilities.Unauthorized()
 		}
 
-		isBlacklisted, err := m.Stores.Blacklist.IsTokenBlacklisted(*accessToken)
+		blacklistCtx, blacklistCancel := context.WithTimeoutCause(c.UserContext(), constants.REDIS_TIMEOUT, errs.ErrRedisTimeout)
+		defer blacklistCancel()
+		isBlacklisted, err := m.Stores.Blacklist.IsTokenBlacklisted(blacklistCtx, *accessToken)
 		if err != nil {
 			return utilities.InternalServerError()
 		}

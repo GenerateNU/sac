@@ -9,4 +9,5 @@ const (
 	TOKEN_BLACKLIST_KEY        string        = "blacklisted"
 	RATE_LIMIT_DURATION        time.Duration = 5 * time.Minute
 	RATE_LIMIT_MAX_REQUESTS    int           = 5
+	REDIS_TIMEOUT              time.Duration = 200 * time.Millisecond
 )

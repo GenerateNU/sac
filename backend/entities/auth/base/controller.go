@@ -39,7 +39,7 @@ func (a *AuthController) Login(c *fiber.Ctx) error {
 		return utilities.InvalidJSON()
 	}
 
-	user, tokens, err := a.authService.Login(userBody)
+	user, tokens, err := a.authService.Login(c.UserContext(), userBody)
 	if err != nil {
 		return err
 	}
@@ -70,7 +70,7 @@ func (a *AuthController) Register(c *fiber.Ctx) error {
 		return utilities.InvalidJSON()
 	}
 
-	user, tokens, err := a.authService.Register(userBody)
+	user, tokens, err := a.authService.Register(c.UserContext(), userBody)
 	if err != nil {
 		return err
 	}
@@ -100,7 +100,7 @@ func (a *AuthController) Refresh(c *fiber.Ctx) error {
 		return utilities.InvalidCookies()
 	}
 
-	tokens, err := a.authService.Refresh(refreshBody.RefreshToken)
+	tokens, err := a.authService.Refresh(c.UserContext(), refreshBody.RefreshToken)
 	if err != nil {
 		return err
 	}
@@ -121,8 +121,7 @@ func (a *AuthController) Refresh(c *fiber.Ctx) error {
 // @Success		200	  {object}	  utilities.SuccessResponse
 // @Router		/auth/logout  [post]
 func (a *AuthController) Logout(c *fiber.Ctx) error {
-	err := a.authService.Logout(c)
-	if err != nil {
+	if err := a.authService.Logout(c.UserContext(), c.Get("Authorization"), c.Cookies("refresh_token")); err != nil {
 		return err
 	}
 

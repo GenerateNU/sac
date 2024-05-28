@@ -1,6 +1,7 @@
 package mocks
 
 import (
+	"context"
 	"time"
 
 	"github.com/GenerateNU/sac/backend/database/store"
@@ -13,35 +14,35 @@ func NewRedisMockClient() *RedisMockClient {
 	return &RedisMockClient{}
 }
 
-func (r *RedisMockClient) Set(key string, value interface{}, expiration time.Duration) error {
+func (r *RedisMockClient) Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error {
 	return nil
 }
 
-func (r *RedisMockClient) Get(key string) (string, error) {
+func (r *RedisMockClient) Get(ctx context.Context, key string) (string, error) {
 	return "", nil
 }
 
-func (r *RedisMockClient) Del(key string) error {
+func (r *RedisMockClient) Del(ctx context.Context, key string) error {
 	return nil
 }
 
-func (r *RedisMockClient) Exists(key string) (bool, error) {
+func (r *RedisMockClient) Exists(ctx context.Context, key string) (bool, error) {
 	return false, nil
 }
 
-func (r *RedisMockClient) SAdd(key string, members ...interface{}) error {
+func (r *RedisMockClient) SetAdd(ctx context.Context, key string, members ...interface{}) error {
 	return nil
 }
 
-func (r *RedisMockClient) SIsMember(key string, member interface{}) (bool, error) {
+func (r *RedisMockClient) SetIsMember(ctx context.Context, key string, member interface{}) (bool, error) {
 	return false, nil
 }
 
-func (r *RedisMockClient) FlushAll() error {
+func (r *RedisMockClient) FlushAll(ctx context.Context) error {
 	return nil
 }
 
-func (r *RedisMockClient) Close() error {
+func (r *RedisMockClient) Close(ctx context.Context) error {
 	return nil
 }
 
@@ -56,19 +57,19 @@ func NewActiveTokenMock(storeClient store.StoreClientInterface) *ActiveTokenMock
 	}
 }
 
-func (a *ActiveTokenMock) StoreRefreshToken(token string, userID string, expiry time.Duration) error {
+func (a *ActiveTokenMock) StoreRefreshToken(ctx context.Context, token string, userID string, expiry time.Duration) error {
 	return nil
 }
 
-func (a *ActiveTokenMock) GetRefreshToken(token string) (string, error) {
+func (a *ActiveTokenMock) GetRefreshToken(ctx context.Context, token string) (string, error) {
 	return "", nil
 }
 
-func (a *ActiveTokenMock) IsActive(token string) (bool, error) {
+func (a *ActiveTokenMock) IsActive(ctx context.Context, token string) (bool, error) {
 	return false, nil
 }
 
-func (a *ActiveTokenMock) DeleteRefreshToken(token string) error {
+func (a *ActiveTokenMock) DeleteRefreshToken(ctx context.Context, token string) error {
 	return nil
 }
 
@@ -83,11 +84,11 @@ func NewBlacklistMock(storeClient store.StoreClientInterface) *BlacklistMock {
 	}
 }
 
-func (b *BlacklistMock) BlacklistToken(token string, expiry time.Duration) error {
+func (b *BlacklistMock) BlacklistToken(ctx context.Context, token string, expiry time.Duration) error {
 	return nil
 }
 
-func (b *BlacklistMock) IsTokenBlacklisted(token string) (bool, error) {
+func (b *BlacklistMock) IsTokenBlacklisted(ctx context.Context, token string) (bool, error) {
 	return false, nil
 }
 
