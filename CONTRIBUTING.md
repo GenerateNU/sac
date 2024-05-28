@@ -16,6 +16,9 @@
 - [PostgreSQL](https://www.postgresql.org/)
   - Install through brew: `brew install postgresql@15`
   - It requires you to add all the exports to path so read the end of the installation carefully!
+- [Redis](https://redis.io/docs/latest/operate/oss_and_stack/install/install-stack/)
+  - Install through brew: `brew tap redis-stack/redis-stack`
+   - Then install: `brew install redis-stack`
 - [Trunk](https://marketplace.visualstudio.com/items?itemName=Trunk.io) (Recommended!)
   - Visual Studio Code extension for linting/formatting
 - [migrate](https://github.com/golang-migrate/migrate)

@@ -11,7 +11,7 @@ import (
 )
 
 type ClubServiceInterface interface {
-	GetClubs(queryParams *models.ClubQueryParams, pageInfo fiberpaginate.PageInfo) ([]models.Club, error)
+	GetClubs(pageInfo fiberpaginate.PageInfo) ([]models.Club, error)
 	GetClub(id string) (*models.Club, error)
 	CreateClub(clubBody CreateClubRequestBody) (*models.Club, error)
 	UpdateClub(id string, clubBody UpdateClubRequestBody) (*models.Club, error)
@@ -26,8 +26,8 @@ func NewClubService(serviceParams types.ServiceParams) ClubServiceInterface {
 	return &ClubService{serviceParams}
 }
 
-func (c *ClubService) GetClubs(queryParams *models.ClubQueryParams, pageInfo fiberpaginate.PageInfo) ([]models.Club, error) {
-	return GetClubs(c.DB, c.Integrations.Search, queryParams, pageInfo)
+func (c *ClubService) GetClubs(pagination fiberpaginate.PageInfo) ([]models.Club, error) {
+	return GetClubs(c.DB, pagination)
 }
 
 func (c *ClubService) CreateClub(clubBody CreateClubRequestBody) (*models.Club, error) {
@@ -40,7 +40,7 @@ func (c *ClubService) CreateClub(clubBody CreateClubRequestBody) (*models.Club, 
 		return nil, err
 	}
 
-	return CreateClub(c.DB, c.Integrations.Search, clubBody.UserID, *club)
+	return CreateClub(c.DB, clubBody.UserID, *club)
 }
 
 func (c *ClubService) GetClub(id string) (*models.Club, error) {
@@ -71,7 +71,7 @@ func (c *ClubService) UpdateClub(id string, clubBody UpdateClubRequestBody) (*mo
 		return nil, err
 	}
 
-	return UpdateClub(c.DB, c.Integrations.Search, *idAsUUID, *club)
+	return UpdateClub(c.DB, *idAsUUID, *club)
 }
 
 func (c *ClubService) DeleteClub(id string) error {
@@ -80,5 +80,5 @@ func (c *ClubService) DeleteClub(id string) error {
 		return err
 	}
 
-	return DeleteClub(c.DB, c.Integrations.Search, *idAsUUID)
+	return DeleteClub(c.DB, *idAsUUID)
 }

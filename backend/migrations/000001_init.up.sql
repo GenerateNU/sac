@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS events(
     updated_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     name varchar(255) NOT NULL,
     preview varchar(255) NOT NULL,
-    description varchar(255) NOT NULL,
+    description text NOT NULL,
     event_type varchar(255) NOT NULL,
     location varchar(255),
     link varchar(255),

@@ -34,3 +34,12 @@ func MapJsonTags[From any, Into any](from From, intoType *Into) (*Into, error) {
 func NormalizeEmail(email string) string {
 	return strings.ToLower(email)
 }
+
+func SplitBearerToken(accessToken string) (*string, error) {
+	token := strings.Split(accessToken, "Bearer ")
+	if len(token) != 2 {
+		return nil, fmt.Errorf("invalid token")
+	}
+
+	return &token[1], nil
+}
