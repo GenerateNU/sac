@@ -3,8 +3,8 @@ package config
 import m "github.com/garrettladley/mattress"
 
 type AuthSettings struct {
-	AccessKey  *m.Secret[string]
-	RefreshKey *m.Secret[string]
+	AccessKey  *m.Secret[string] `env:"ACCESS_KEY"`
+	RefreshKey *m.Secret[string] `env:"REFRESH_KEY"`
 }
 
 type IntermediateAuthSettings struct {

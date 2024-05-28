@@ -15,6 +15,7 @@ import (
 	"github.com/GenerateNU/sac/backend/integrations"
 	"github.com/GenerateNU/sac/backend/integrations/email"
 	"github.com/GenerateNU/sac/backend/integrations/file"
+	"github.com/GenerateNU/sac/backend/integrations/oauth"
 	"github.com/GenerateNU/sac/backend/server"
 	"github.com/GenerateNU/sac/backend/telemetry"
 )
@@ -100,9 +101,22 @@ func exit(format string, a ...interface{}) {
 }
 
 func configureIntegrations(config *config.Settings) integrations.Integrations {
+	googleClient := oauth.GoogleOAuthClient{
+		OAuthConfig: config.Google,
+	}
+	outlookClient := oauth.OutlookOAuthClient{
+		OAuthConfig: config.Outlook,
+	}
+
+	oauthResources := oauth.OAuthResources{
+		Google:  googleClient,
+		Outlook: outlookClient,
+	}
+
 	integrations := integrations.Integrations{
 		File:  file.NewAWSProvider(config.AWS),
 		Email: email.NewResendClient(config.Resend, true),
+		OAuth: oauthResources,
 	}
 	return integrations
 }

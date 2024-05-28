@@ -8,16 +8,20 @@ type Settings struct {
 	AWS         AWSSettings
 	Resend      ResendSettings
 	Calendar    CalendarSettings
+	Google      OAuthSettings
+	Outlook     OAuthSettings
 }
 
 type IntermediateSettings struct {
-	Application ApplicationSettings           `envPrefix:"SAC_APPLICATION_"`
-	Database    IntermediateDatabaseSettings  `envPrefix:"SAC_DB_"`
-	SuperUser   IntermediateSuperUserSettings `envPrefix:"SAC_SUDO_"`
-	Auth        IntermediateAuthSettings      `envPrefix:"SAC_AUTH_"`
-	AWS         IntermediateAWSSettings       `envPrefix:"SAC_AWS_"`
-	Resend      IntermediateResendSettings    `envPrefix:"SAC_RESEND_"`
-	Calendar    IntermediateCalendarSettings  `envPrefix:"SAC_CALENDAR_"`
+	Application     ApplicationSettings           `envPrefix:"SAC_APPLICATION_"`
+	Database        IntermediateDatabaseSettings  `envPrefix:"SAC_DB_"`
+	SuperUser       IntermediateSuperUserSettings `envPrefix:"SAC_SUDO_"`
+	Auth            IntermediateAuthSettings      `envPrefix:"SAC_AUTH_"`
+	AWS             IntermediateAWSSettings       `envPrefix:"SAC_AWS_"`
+	Resend          IntermediateResendSettings    `envPrefix:"SAC_RESEND_"`
+	Calendar        IntermediateCalendarSettings  `envPrefix:"SAC_CALENDAR_"`
+	GoogleSettings  GoogleOAuthSettings           `envPrefix:"SAC_GOOGLE_OAUTH"`
+	OutlookSettings OutlookOAuthSettings          `envPrefix:"SAC_OUTLOOK_OAUTH"`
 }
 
 func (i *IntermediateSettings) Into() (*Settings, error) {
@@ -51,6 +55,16 @@ func (i *IntermediateSettings) Into() (*Settings, error) {
 		return nil, nil
 	}
 
+	google, err := i.GoogleSettings.Into()
+	if err != nil {
+		return nil, nil
+	}
+
+	outlook, err := i.OutlookSettings.Into()
+	if err != nil {
+		return nil, nil
+	}
+
 	return &Settings{
 		Application: i.Application,
 		Database:    *database,
@@ -59,5 +73,7 @@ func (i *IntermediateSettings) Into() (*Settings, error) {
 		AWS:         *aws,
 		Resend:      *resend,
 		Calendar:    *calendar,
+		Google:      *google,
+		Outlook:     *outlook,
 	}, nil
 }
