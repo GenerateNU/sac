@@ -6,22 +6,25 @@ import (
 	"fmt"
 	"log/slog"
 	"net"
-	"os"
 	"path/filepath"
 
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/database"
+	"github.com/GenerateNU/sac/backend/database/store"
 	_ "github.com/GenerateNU/sac/backend/docs"
 	"github.com/GenerateNU/sac/backend/integrations"
 	"github.com/GenerateNU/sac/backend/integrations/email"
 	"github.com/GenerateNU/sac/backend/integrations/file"
+	"github.com/GenerateNU/sac/backend/integrations/oauth"
+	"github.com/GenerateNU/sac/backend/search"
 	"github.com/GenerateNU/sac/backend/server"
 	"github.com/GenerateNU/sac/backend/telemetry"
+	"github.com/GenerateNU/sac/backend/utilities"
 )
 
 func main() {
 	onlyMigrate := flag.Bool("only-migrate", false, "Specify if you want to only perform the database migration")
-	seedSearch := flag.Bool("seed-search", true, "Specify if you want to seed the opensearch nodes.")
+	seedSearch := flag.Bool("seed-search", false, "Specify if you want to seed the opensearch nodes.")
 	configPath := flag.String("config", filepath.Join("..", "config"), "Specify the path to the config directory")
 	useDevDotEnv := flag.Bool("use-dev-dot-env", true, "Specify if you want to use the .env.dev file")
 
@@ -29,17 +32,17 @@ func main() {
 
 	config, err := config.GetConfiguration(*configPath, *useDevDotEnv)
 	if err != nil {
-		exit("Error getting configuration: %s", err.Error())
+		utilities.Exit("Error getting configuration: %s", err.Error())
 	}
 
 	err = checkServerRunning(config.Application.Host, config.Application.Port)
 	if err == nil {
-		exit("A server is already running on %s:%d.\n", config.Application.Host, config.Application.Port)
+		utilities.Exit("A server is already running on %s:%d.\n", config.Application.Host, config.Application.Port)
 	}
 
 	db, err := database.ConfigureDB(*config)
 	if err != nil {
-		exit("Error migrating database: %s", err.Error())
+		utilities.Exit("Error migrating database: %s", err.Error())
 	}
 
 	if *onlyMigrate {
@@ -47,19 +50,21 @@ func main() {
 	}
 
 	if *seedSearch {
-		/**if err := search.SeedClubs(db); err != nil {
+		if err := search.SeedClubs(db); err != nil {
 			return
 		}
 
 		if err := search.SeedEvents(db); err != nil {
 			return
-		}**/
+		}
 	}
 
 	err = database.ConnPooling(db)
 	if err != nil {
-		exit("Error with connection pooling: %s", err.Error())
+		utilities.Exit("Error with connection pooling: %s", err.Error())
 	}
+
+	stores := store.ConfigureRedis(*config)
 
 	integrations := configureIntegrations(config)
 
@@ -73,11 +78,11 @@ func main() {
 		}
 	}()
 
-	app := server.Init(db, integrations, *config)
+	app := server.Init(db, stores, integrations, *config)
 
 	err = app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
 	if err != nil {
-		exit("Error starting server: %s", err.Error())
+		utilities.Exit("Error starting server: %s", err.Error())
 	}
 }
 
@@ -91,15 +96,24 @@ func checkServerRunning(host string, port uint16) error {
 	return nil
 }
 
-func exit(format string, a ...interface{}) {
-	fmt.Fprintf(os.Stderr, format, a...)
-	os.Exit(0)
-}
-
 func configureIntegrations(config *config.Settings) integrations.Integrations {
+	googleClient := oauth.GoogleOAuthClient{
+		OAuthConfig: config.GoogleSettings,
+	}
+	outlookClient := oauth.OutlookOAuthClient{
+		OAuthConfig: config.OutlookSettings,
+	}
+
+	oauthResources := oauth.OAuthResources{
+		Google:  googleClient,
+		Outlook: outlookClient,
+	}
+
 	integrations := integrations.Integrations{
 		File:  file.NewAWSProvider(config.AWS),
 		Email: email.NewResendClient(config.Resend, true),
+		OAuth: oauthResources,
 	}
+
 	return integrations
 }

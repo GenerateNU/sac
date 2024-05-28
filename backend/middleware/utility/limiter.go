@@ -21,5 +21,6 @@ func (u *UtilityMiddlewareService) Limiter(rate int, expiration time.Duration) f
 		LimitReached: func(c *fiber.Ctx) error {
 			return utilities.NewAPIError(http.StatusTooManyRequests, errors.New("too many requests"))
 		},
+		Storage: u.Stores.Limiter,
 	})
 }
