@@ -1,8 +1,9 @@
 package constants
 
 const (
-	SEARCH_URL                       = "http://127.0.0.1:9200"
-	CLUBS_INDEX                      = "clubs"
-	EVENTS_INDEX                     = "events"
-	SEARCH_QUERY_DEFAULT_MAX_MEMBERS = 16384
+	CLUBS_INDEX                      string = "clubs"
+	EVENTS_INDEX                     string = "events"
+	SEARCH_QUERY_DEFAULT_MAX_MEMBERS int    = 16384
 )
+
+var SEARCH_URI string

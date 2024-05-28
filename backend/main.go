@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/GenerateNU/sac/backend/config"
+	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/database"
 	"github.com/GenerateNU/sac/backend/database/store"
 	_ "github.com/GenerateNU/sac/backend/docs"
@@ -31,6 +32,8 @@ func main() {
 	if err != nil {
 		utilities.Exit("Error getting configuration: %s", err.Error())
 	}
+
+	constants.SEARCH_URI = config.Search.URI
 
 	err = checkServerRunning(config.Application.Host, config.Application.Port)
 	if err == nil {
