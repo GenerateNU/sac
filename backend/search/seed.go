@@ -22,7 +22,7 @@ func SeedClubs(db *gorm.DB) error {
 	stdout := os.Stdout
 
 	stdout.WriteString("Deleting existing club index...\n")
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/clubs", constants.SEARCH_URL), nil)
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/clubs", constants.SEARCH_URI), nil)
 	if err != nil {
 		return err
 	}
@@ -58,7 +58,7 @@ func SeedClubs(db *gorm.DB) error {
 		requestBodyBuilder.WriteString(fmt.Sprintf("%s\n%s\n", indexJson, clubJson))
 	}
 
-	resp, err := utilities.Request(http.MethodPost, fmt.Sprintf("%s/_bulk", constants.SEARCH_URL), []byte(requestBodyBuilder.String()), utilities.JSON())
+	resp, err := utilities.Request(http.MethodPost, fmt.Sprintf("%s/_bulk", constants.SEARCH_URI), []byte(requestBodyBuilder.String()), utilities.JSON())
 	if err != nil {
 		stdout.WriteString(fmt.Sprintf("Error making _bulk request for club seeding: %s\n", err.Error()))
 	}
@@ -78,7 +78,7 @@ func SeedEvents(db *gorm.DB) error {
 	stdout := os.Stdout
 
 	stdout.WriteString("Deleting existing event index...\n")
-	resp, err := utilities.Request(http.MethodDelete, fmt.Sprintf("%s/events", constants.SEARCH_URL), nil, utilities.JSON())
+	resp, err := utilities.Request(http.MethodDelete, fmt.Sprintf("%s/events", constants.SEARCH_URI), nil, utilities.JSON())
 	if err != nil {
 		return err
 	}
@@ -109,7 +109,7 @@ func SeedEvents(db *gorm.DB) error {
 		requestBodyBuilder.WriteString(fmt.Sprintf("%s\n%s\n", indexJson, eventJson))
 	}
 
-	resp, err = utilities.Request(http.MethodPost, fmt.Sprintf("%s/_bulk", constants.SEARCH_URL), []byte(requestBodyBuilder.String()), utilities.JSON())
+	resp, err = utilities.Request(http.MethodPost, fmt.Sprintf("%s/_bulk", constants.SEARCH_URI), []byte(requestBodyBuilder.String()), utilities.JSON())
 	if err != nil {
 		stdout.WriteString(fmt.Sprintf("Error making _bulk request for event seeding: %s\n", err.Error()))
 	}

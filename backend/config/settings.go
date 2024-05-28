@@ -17,6 +17,7 @@ type Integrations struct {
 	OutlookOauth OAuthSettings
 	AWS          AWSSettings
 	Resend       ResendSettings
+	Search       SearchSettings
 }
 
 type intermediateSettings struct {
@@ -27,11 +28,12 @@ type intermediateSettings struct {
 	RedisLimiter      intermediateRedisSettings     `envPrefix:"SAC_REDIS_LIMITER_"`
 	SuperUser         intermediateSuperUserSettings `envPrefix:"SAC_SUDO_"`
 	Auth              intermediateAuthSettings      `envPrefix:"SAC_AUTH_"`
-	AWS               intermediateAWSSettings       `envPrefix:"SAC_AWS_"`
-	Resend            intermediateResendSettings    `envPrefix:"SAC_RESEND_"`
 	Calendar          intermediateCalendarSettings  `envPrefix:"SAC_CALENDAR_"`
 	GoogleSettings    GoogleOAuthSettings           `envPrefix:"SAC_GOOGLE_OAUTH"`
 	OutlookSettings   OutlookOAuthSettings          `envPrefix:"SAC_OUTLOOK_OAUTH"`
+	AWS               intermediateAWSSettings       `envPrefix:"SAC_AWS_"`
+	Resend            intermediateResendSettings    `envPrefix:"SAC_RESEND_"`
+	Search            SearchSettings                `env:"SAC_SEARCH"`
 }
 
 func (i *intermediateSettings) into() (*Settings, error) {
