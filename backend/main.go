@@ -15,11 +15,8 @@ import (
 	"github.com/GenerateNU/sac/backend/integrations"
 	"github.com/GenerateNU/sac/backend/integrations/email"
 	"github.com/GenerateNU/sac/backend/integrations/file"
-	"github.com/GenerateNU/sac/backend/integrations/oauth"
-	"github.com/GenerateNU/sac/backend/integrations/search"
 	"github.com/GenerateNU/sac/backend/server"
 	"github.com/GenerateNU/sac/backend/telemetry"
-	"github.com/GenerateNU/sac/backend/tests/api/mocks"
 )
 
 func main() {

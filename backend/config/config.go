@@ -13,8 +13,6 @@ type Settings struct {
 	SuperUser       SuperUserSettings
 	Auth            AuthSettings
 	AWS             AWSSettings
-	Pinecone        PineconeSettings
-	OpenAI          OpenAISettings
 	Resend          ResendSettings
 	Calendar        CalendarSettings
 	GoogleSettings  OAuthSettings
