@@ -64,7 +64,7 @@ func main() {
 
 	stores := store.ConfigureRedis(*config)
 
-	integrations := configureIntegrations(config)
+	integrations := configureIntegrations(&config.Integrations)
 
 	tp := telemetry.InitTracer()
 
@@ -76,7 +76,7 @@ func main() {
 		}
 	}()
 
-	app := server.Init(db, stores, integrations, *config)
+	app := server.Init(db, stores, *integrations, *config)
 
 	err = app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
 	if err != nil {
@@ -94,23 +94,17 @@ func checkServerRunning(host string, port uint16) error {
 	return nil
 }
 
-func configureIntegrations(config *config.Settings) integrations.Integrations {
-	googleClient := oauth.GoogleOAuthClient{
-		OAuthConfig: config.Google,
-	}
-	outlookClient := oauth.OutlookOAuthClient{
-		OAuthConfig: config.Outlook,
-	}
-
-	oauthResources := oauth.OauthProviderSettings{
-		Google:  googleClient,
-		Outlook: outlookClient,
-	}
-
-	integrations := integrations.Integrations{
+func configureIntegrations(config *config.Integrations) *integrations.Integrations {
+	return &integrations.Integrations{
 		File:  file.NewAWSProvider(config.AWS),
 		Email: email.NewResendClient(config.Resend, true),
-		OAuth: oauthResources,
+		OAuth: oauth.OauthProviderSettings{
+			Google: oauth.GoogleOAuthClient{
+				OAuthConfig: config.GoogleOauth,
+			},
+			Outlook: oauth.OutlookOAuthClient{
+				OAuthConfig: config.OutlookOauth,
+			},
+		},
 	}
-	return integrations
 }
