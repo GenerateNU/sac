@@ -4,6 +4,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"gorm.io/gorm"
 )
@@ -54,8 +55,9 @@ func (q *ClubSearchRequest) ToSearchEndpointRequest() SearchEndpointRequest {
 	if q.MaxMembers != 0 {
 		maxMembers = q.MaxMembers
 	} else {
-		maxMembers = 16384 // FIXME: may break in the future (will a club ever have more than 16384 members?)
+		maxMembers = constants.SEARCH_QUERY_DEFAULT_MAX_MEMBERS // FIXME: may break in the future (will a club ever have more than 16384 members?)
 	}
+
 	query.Filter = append(query.Filter, Json{
 		"range": Json{
 			"num_members": Json{

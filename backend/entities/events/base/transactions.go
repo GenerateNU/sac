@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log/slog"
 
+	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/entities/events"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/garrettladley/fiberpaginate"
@@ -30,7 +31,7 @@ func CreateEvent(db *gorm.DB, event models.Event) (*models.Event, error) {
 		return nil, err
 	}
 
-	err := search.Upsert[models.Event](db, "events", event.ID.String(), &event)
+	err := search.Upsert[models.Event](db, constants.EVENTS_INDEX, event.ID.String(), &event)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +56,7 @@ func updateEvent(db *gorm.DB, id uuid.UUID, event models.Event) ([]models.Event,
 		return nil, result.Error
 	}
 
-	err := search.Upsert[models.Event](db, "events", id.String(), &event)
+	err := search.Upsert[models.Event](db, constants.EVENTS_INDEX, id.String(), &event)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +94,7 @@ func DeleteEvent(db *gorm.DB, id uuid.UUID) error {
 		return result.Error
 	}
 
-	err := search.Delete(db, "events", id.String())
+	err := search.Delete(db, constants.EVENTS_INDEX, id.String())
 	if err != nil {
 		return err
 	}

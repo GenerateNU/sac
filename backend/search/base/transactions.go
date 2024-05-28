@@ -2,10 +2,11 @@ package base
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+
+	json "github.com/goccy/go-json"
 
 	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/search/types"
@@ -15,7 +16,6 @@ import (
 // Do a GET request to the OpenSearch instance.
 func doSearchGetRequest[T, V any](url string, requestBody T) (*V, error) {
 	payload, err := json.Marshal(requestBody)
-	print(string(payload))
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +82,6 @@ func Upsert[T types.Searchable](db *gorm.DB, index string, uuid string, model ty
 	}
 	payload, err := json.Marshal(requestBody)
 
-	print(string(payload))
 	if err != nil {
 		return err
 	}
@@ -98,12 +97,6 @@ func Upsert[T types.Searchable](db *gorm.DB, index string, uuid string, model ty
 		return err
 	}
 	defer resp.Body.Close()
-
-	responseBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-	print(string(responseBody))
 
 	return nil
 }
