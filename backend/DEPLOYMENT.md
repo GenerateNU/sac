@@ -1,6 +1,6 @@
 # Configuration
 
-SAC uses environment variables for configuration.
+SAC uses environment variables for configuration. SAC will, by default, pull the envvars from the process in which it was launched, but you can also pass in a .env file (using the --config flag) and use the values defined in there. See .env.template for an example .env file.
 
 | Name | Group | Description
 | SAC_APPLICATION_PORT | app | port to run the server on.

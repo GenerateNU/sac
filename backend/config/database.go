@@ -6,15 +6,13 @@ import (
 	m "github.com/garrettladley/mattress"
 )
 
-// This is defined seperately from the other types because it is the only one that has
-// member functions
 type DatabaseSettings struct {
-	Username     string            `env:"USERNAME" envDefault:"postgres"`
-	Password     *m.Secret[string] `env:"PASSWORD" envDefault:"password"`
-	Port         uint              `env:"PORT" envDefault:"5432"`
-	Host         string            `env:"HOST" envDefault:"127.0.0.1"`
-	DatabaseName string            `env:"NAME" envDefault:"sac"`
-	RequireSSL   bool              `env:"REQUIRE_SSL" envDefault:"false"`
+	Username     string
+	Password     *m.Secret[string]
+	Port         uint
+	Host         string
+	DatabaseName string
+	RequireSSL   bool
 }
 
 func (s *DatabaseSettings) WithoutDb() string {
@@ -42,4 +40,29 @@ func (s *DatabaseSettings) PostgresConn() string {
 	}
 
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=%s", s.Username, (*s.Password).Expose(), s.Host, s.Port, s.DatabaseName, sslMode)
+}
+
+type IntermediateDatabaseSettings struct {
+	Username     string `env:"USERNAME"`
+	Password     string `env:"PASSWORD"`
+	Port         uint   `env:"PORT"`
+	Host         string `env:"HOST"`
+	DatabaseName string `env:"NAME"`
+	RequireSSL   bool   `env:"REQUIRE_SSL"`
+}
+
+func (i *IntermediateDatabaseSettings) Into() (*DatabaseSettings, error) {
+	password, err := m.NewSecret(i.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	return &DatabaseSettings{
+		Username:     i.Username,
+		Password:     password,
+		Port:         i.Port,
+		Host:         i.Host,
+		DatabaseName: i.DatabaseName,
+		RequireSSL:   i.RequireSSL,
+	}, nil
 }

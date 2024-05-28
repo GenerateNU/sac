@@ -25,12 +25,15 @@ var tracer = otel.Tracer("sac")
 func main() {
 	onlyMigrate := flag.Bool("only-migrate", false, "Specify if you want to only perform the database migration")
 	seedSearch := flag.Bool("seed-search", true, "Specify if you want to seed the opensearch nodes.")
-	configPath := flag.String("config", filepath.Join("..", "config"), "Specify the path to the config directory")
-	useDevDotEnv := flag.Bool("use-dev-dot-env", true, "Specify if you want to use the .env.dev file")
+	configPath := flag.String("config", filepath.Join("..", "config", ".env.dev"), "Specify the path to the config file (.env)")
 
 	flag.Parse()
 
-	config, err := config.GetConfiguration(*configPath, *useDevDotEnv)
+	config, err := config.GetConfiguration(*configPath)
+
+	X := config.Database.Password.Expose()
+	print(X)
+
 	if err != nil {
 		exit("Error getting configuration: %s", err.Error())
 	}
