@@ -15,12 +15,12 @@ import (
 	"github.com/GenerateNU/sac/backend/integrations"
 	"github.com/GenerateNU/sac/backend/integrations/email"
 	"github.com/GenerateNU/sac/backend/integrations/file"
+	"github.com/GenerateNU/sac/backend/integrations/oauth"
+	"github.com/GenerateNU/sac/backend/integrations/search"
 	"github.com/GenerateNU/sac/backend/server"
 	"github.com/GenerateNU/sac/backend/telemetry"
-	"go.opentelemetry.io/otel"
+	"github.com/GenerateNU/sac/backend/tests/api/mocks"
 )
-
-var tracer = otel.Tracer("sac")
 
 func main() {
 	onlyMigrate := flag.Bool("only-migrate", false, "Specify if you want to only perform the database migration")
@@ -68,7 +68,7 @@ func main() {
 
 	tp := telemetry.InitTracer()
 
-	slog.Info("appease linter since we aren't tracing anything yet", "tracer", tracer)
+	slog.Info("appease linter since we aren't tracing anything yet", "tracer", telemetry.Tracer)
 
 	defer func() {
 		if err := tp.Shutdown(context.Background()); err != nil {
