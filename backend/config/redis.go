@@ -8,9 +8,9 @@ import (
 
 type RedisSettings struct {
 	Username string
+	Password *m.Secret[string]
 	Host     string
 	Port     uint
-	Password *m.Secret[string]
 	DB       int
 	// TLSConfig *TLSConfig
 }
@@ -23,9 +23,9 @@ func (int *intermediateRedisSettings) into() (*RedisSettings, error) {
 
 	return &RedisSettings{
 		Username: int.Username,
+		Password: password,
 		Host:     int.Host,
 		Port:     int.Port,
-		Password: password,
 		DB:       int.DB,
 		// TLSConfig: int.TLSConfig.into(),
 	}, nil
@@ -33,9 +33,9 @@ func (int *intermediateRedisSettings) into() (*RedisSettings, error) {
 
 type intermediateRedisSettings struct {
 	Username string `env:"USERNAME"`
+	Password string `env:"PASSWORD"`
 	Host     string `env:"HOST"`
 	Port     uint   `env:"PORT"`
-	Password string `env:"PASSWORD"`
 	DB       int    `env:"DB"`
 	// TLSConfig *intermediateTLSConfig `env:"TLS_CONFIG"`
 }
