@@ -17,7 +17,7 @@ func ConfigureDB(settings config.Settings) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	if err := CreateSuperUserIfNotExists(settings, db); err != nil {
+	if err := CreateSuperUserIfNotExists(settings.SuperUser, db); err != nil {
 		return nil, err
 	}
 
@@ -64,7 +64,7 @@ func ConnPooling(db *gorm.DB) error {
 	return nil
 }
 
-func CreateSuperUserIfNotExists(settings config.Settings, db *gorm.DB) error {
+func CreateSuperUserIfNotExists(settings config.SuperUserSettings, db *gorm.DB) error {
 	var superUser models.User
 
 	if err := db.Where("role = ?", models.Super).First(&superUser).Error; err != nil {
@@ -80,7 +80,7 @@ func CreateSuperUserIfNotExists(settings config.Settings, db *gorm.DB) error {
 	return nil
 }
 
-func createSuperUser(settings config.Settings, db *gorm.DB) error {
+func createSuperUser(settings config.SuperUserSettings, db *gorm.DB) error {
 	tx := db.Begin()
 	defer func() {
 		if r := recover(); r != nil {
@@ -92,7 +92,7 @@ func createSuperUser(settings config.Settings, db *gorm.DB) error {
 		return err
 	}
 
-	superUser, err := SuperUser(settings.SuperUser)
+	superUser, err := SuperUser(settings)
 	if err != nil {
 		tx.Rollback()
 		return err

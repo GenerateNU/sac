@@ -8,11 +8,15 @@ type Settings struct {
 	RedisLimiter      RedisSettings
 	SuperUser         SuperUserSettings
 	Auth              AuthSettings
-	AWS               AWSSettings
-	Resend            ResendSettings
 	Calendar          CalendarSettings
-	Google            OAuthSettings
-	Outlook           OAuthSettings
+	Integrations
+}
+
+type Integrations struct {
+	GoogleOauth  OAuthSettings
+	OutlookOauth OAuthSettings
+	AWS          AWSSettings
+	Resend       ResendSettings
 }
 
 type intermediateSettings struct {
@@ -94,10 +98,12 @@ func (i *intermediateSettings) into() (*Settings, error) {
 		RedisLimiter:      *redisLimiter,
 		SuperUser:         *superUser,
 		Auth:              *auth,
-		AWS:               *aws,
-		Resend:            *resend,
 		Calendar:          *calendar,
-		Google:            *google,
-		Outlook:           *outlook,
+		Integrations: Integrations{
+			GoogleOauth:  *google,
+			OutlookOauth: *outlook,
+			AWS:          *aws,
+			Resend:       *resend,
+		},
 	}, nil
 }

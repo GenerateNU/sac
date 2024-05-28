@@ -29,15 +29,15 @@ func RootConn(dbSettings config.DatabaseSettings) {
 	})
 }
 
-func configureDatabase(settings config.Settings) (*gorm.DB, error) {
-	RootConn(settings.Database)
+func configureDatabase(databaseSettings config.DatabaseSettings, superUserSettings config.SuperUserSettings) (*gorm.DB, error) {
+	RootConn(databaseSettings)
 
-	err := rootConn.Exec(fmt.Sprintf("CREATE DATABASE %s", settings.Database.DatabaseName)).Error
+	err := rootConn.Exec(fmt.Sprintf("CREATE DATABASE %s", databaseSettings.DatabaseName)).Error
 	if err != nil {
 		return nil, err
 	}
 
-	dbWithDB, err := database.EstablishConn(settings.Database.WithDb())
+	dbWithDB, err := database.EstablishConn(databaseSettings.WithDb())
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func configureDatabase(settings config.Settings) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	err = database.CreateSuperUserIfNotExists(settings, dbWithDB)
+	err = database.CreateSuperUserIfNotExists(superUserSettings, dbWithDB)
 	if err != nil {
 		return nil, err
 	}
