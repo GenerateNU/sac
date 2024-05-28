@@ -1,11 +1,12 @@
 package search
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 	"strings"
+
+	go_json "github.com/goccy/go-json"
 
 	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/entities/models"
@@ -43,13 +44,13 @@ func SeedClubs(db *gorm.DB) error {
 		indexData := search_types.BulkRequestCreate{}
 		indexData.Create.Index = "clubs"
 		indexData.Create.Id = club.ID.String()
-		indexJson, err := json.Marshal(indexData)
+		indexJson, err := go_json.Marshal(indexData)
 		if err != nil {
 			return err
 		}
 
 		clubData := club.ToSearchDocument()
-		clubJson, err := json.Marshal(clubData)
+		clubJson, err := go_json.Marshal(clubData)
 		if err != nil {
 			return err
 		}
@@ -82,7 +83,6 @@ func SeedEvents(db *gorm.DB) error {
 		return err
 	}
 	defer resp.Body.Close()
-
 	var events []models.Event
 
 	if err := db.Preload("Tag").Preload("Clubs").Not("is_draft = ?", true).Not("is_archived = ?", true).Find(&events).Error; err != nil {
@@ -95,13 +95,13 @@ func SeedEvents(db *gorm.DB) error {
 		indexData := search_types.BulkRequestCreate{}
 		indexData.Create.Index = "events"
 		indexData.Create.Id = event.ID.String()
-		indexJson, err := json.Marshal(indexData)
+		indexJson, err := go_json.Marshal(indexData)
 		if err != nil {
 			return err
 		}
 
 		eventData := event.ToSearchDocument()
-		eventJson, err := json.Marshal(eventData)
+		eventJson, err := go_json.Marshal(eventData)
 		if err != nil {
 			return err
 		}

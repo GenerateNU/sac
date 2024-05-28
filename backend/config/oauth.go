@@ -2,7 +2,6 @@ package config
 
 import (
 	"errors"
-	"os"
 
 	m "github.com/garrettladley/mattress"
 )
@@ -26,26 +25,18 @@ type OAuthResources struct {
 	OutlookOAuthSettings *OAuthSettings
 }
 
-/**
- * GOOGLE
-**/
-func readGoogleOAuthSettings() (*OAuthSettings, error) {
-	clientID := os.Getenv("GOOGLE_OAUTH_CLIENT_ID")
-	if clientID == "" {
-		return nil, errors.New("GOOGLE_OAUTH_CLIENT_ID is not set")
-	}
+type GoogleOAuthSettings struct {
+	ClientId     string `env:"GOOGLE_OAUTH_CLIENT_ID"`
+	ClientSecret string `env:"GOOGLE_OAUTH_CLIENT_SECRET"`
+}
 
-	secretClientID, err := m.NewSecret(clientID)
+func (i *GoogleOAuthSettings) into() (*OAuthSettings, error) {
+	secretClientID, err := m.NewSecret(i.ClientId)
 	if err != nil {
 		return nil, errors.New("failed to create secret from client ID")
 	}
 
-	clientSecret := os.Getenv("GOOGLE_OAUTH_CLIENT_SECRET")
-	if clientSecret == "" {
-		return nil, errors.New("GOOGLE_OAUTH_CLIENT_SECRET is not set")
-	}
-
-	secretClientSecret, err := m.NewSecret(clientSecret)
+	secretClientSecret, err := m.NewSecret(i.ClientSecret)
 	if err != nil {
 		return nil, errors.New("failed to create secret from client secret")
 	}
@@ -64,26 +55,18 @@ func readGoogleOAuthSettings() (*OAuthSettings, error) {
 	}, nil
 }
 
-/**
- * OUTLOOK
-**/
-func readOutlookOAuthSettings() (*OAuthSettings, error) {
-	clientID := os.Getenv("OUTLOOK_OAUTH_CLIENT_ID")
-	if clientID == "" {
-		return nil, errors.New("OUTLOOK_OAUTH_CLIENT_ID is not set")
-	}
+type OutlookOAuthSettings struct {
+	ClientId     string `env:"OUTLOOK_OAUTH_CLIENT_ID"`
+	ClientSecret string `env:"OUTLOOK_OAUTH_CLIENT_SECRET"`
+}
 
-	secretClientID, err := m.NewSecret(clientID)
+func (i *OutlookOAuthSettings) into() (*OAuthSettings, error) {
+	secretClientID, err := m.NewSecret(i.ClientId)
 	if err != nil {
 		return nil, errors.New("failed to create secret from client ID")
 	}
 
-	clientSecret := os.Getenv("OUTLOOK_OAUTH_CLIENT_SECRET")
-	if clientSecret == "" {
-		return nil, errors.New("OUTLOOK_OAUTH_CLIENT_SECRET is not set")
-	}
-
-	secretClientSecret, err := m.NewSecret(clientSecret)
+	secretClientSecret, err := m.NewSecret(i.ClientSecret)
 	if err != nil {
 		return nil, errors.New("failed to create secret from client secret")
 	}

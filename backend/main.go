@@ -16,7 +16,6 @@ import (
 	"github.com/GenerateNU/sac/backend/integrations/email"
 	"github.com/GenerateNU/sac/backend/integrations/file"
 	"github.com/GenerateNU/sac/backend/integrations/oauth"
-	"github.com/GenerateNU/sac/backend/search"
 	"github.com/GenerateNU/sac/backend/server"
 	"github.com/GenerateNU/sac/backend/telemetry"
 	"github.com/GenerateNU/sac/backend/utilities"
@@ -24,13 +23,11 @@ import (
 
 func main() {
 	onlyMigrate := flag.Bool("only-migrate", false, "Specify if you want to only perform the database migration")
-	seedSearch := flag.Bool("seed-search", false, "Specify if you want to seed the opensearch nodes.")
-	configPath := flag.String("config", filepath.Join("..", "config"), "Specify the path to the config directory")
-	useDevDotEnv := flag.Bool("use-dev-dot-env", true, "Specify if you want to use the .env.dev file")
+	seedSearch := flag.Bool("seed-search", true, "Specify if you want to seed the opensearch nodes.")
+	configPath := flag.String("config", filepath.Join("..", "config", ".env.dev"), "Specify the path to the config file (.env)")
 
 	flag.Parse()
-
-	config, err := config.GetConfiguration(*configPath, *useDevDotEnv)
+	config, err := config.GetConfiguration(*configPath)
 	if err != nil {
 		utilities.Exit("Error getting configuration: %s", err.Error())
 	}
@@ -50,13 +47,14 @@ func main() {
 	}
 
 	if *seedSearch {
-		if err := search.SeedClubs(db); err != nil {
-			return
-		}
+		slog.Info("to appease linter", "seedSearch", *seedSearch)
+		// if err := search.SeedClubs(db); err != nil {
+		// 	return
+		// }
 
-		if err := search.SeedEvents(db); err != nil {
-			return
-		}
+		// if err := search.SeedEvents(db); err != nil {
+		// 	return
+		// }
 	}
 
 	err = database.ConnPooling(db)
@@ -98,10 +96,10 @@ func checkServerRunning(host string, port uint16) error {
 
 func configureIntegrations(config *config.Settings) integrations.Integrations {
 	googleClient := oauth.GoogleOAuthClient{
-		OAuthConfig: config.GoogleSettings,
+		OAuthConfig: config.Google,
 	}
 	outlookClient := oauth.OutlookOAuthClient{
-		OAuthConfig: config.OutlookSettings,
+		OAuthConfig: config.Outlook,
 	}
 
 	oauthResources := oauth.OAuthResources{
@@ -114,6 +112,5 @@ func configureIntegrations(config *config.Settings) integrations.Integrations {
 		Email: email.NewResendClient(config.Resend, true),
 		OAuth: oauthResources,
 	}
-
 	return integrations
 }

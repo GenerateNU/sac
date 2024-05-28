@@ -1,9 +1,9 @@
 package utilities
 
-import "encoding/json"
+import go_json "github.com/goccy/go-json"
 
 func ToJsonString(p interface{}) (string, error) {
-	jsonData, err := json.Marshal(p)
+	jsonData, err := go_json.Marshal(p)
 	if err != nil {
 		return "", err
 	}

@@ -1,19 +1,17 @@
 package config
 
-import (
-	"time"
-)
+import "time"
 
 type CalendarSettings struct {
 	MaxTerminationDate time.Time
 }
 
 type intermediateCalendarSettings struct {
-	MaxTerminationDate string `yaml:"maxterminationdate"`
+	MaxTerminationDate string `env:"MAX_TERMINATION_DATE"`
 }
 
-func (int *intermediateCalendarSettings) into() (*CalendarSettings, error) {
-	t, err := time.Parse("01-02-2006", int.MaxTerminationDate)
+func (i *intermediateCalendarSettings) into() (*CalendarSettings, error) {
+	t, err := time.Parse("01-02-2006", i.MaxTerminationDate)
 	if err != nil {
 		return nil, err
 	}

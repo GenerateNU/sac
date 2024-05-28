@@ -44,8 +44,8 @@ type AWSClient struct {
 
 func NewAWSProvider(settings config.AWSSettings) FileClientInterface {
 	sess, err := session.NewSession(&aws.Config{
-		Region:      aws.String(settings.REGION.Expose()),
-		Credentials: credentials.NewStaticCredentials(settings.ID.Expose(), settings.SECRET.Expose(), ""),
+		Region:      aws.String(settings.Region.Expose()),
+		Credentials: credentials.NewStaticCredentials(settings.Id.Expose(), settings.Secret.Expose(), ""),
 	})
 	if err != nil {
 		return nil
@@ -55,7 +55,7 @@ func NewAWSProvider(settings config.AWSSettings) FileClientInterface {
 }
 
 func (aw *AWSClient) GetFileURL(fileURL string) *string {
-	fileURL = fmt.Sprintf("https://s3.amazonaws.com/%s/%s", aw.Settings.BUCKET_NAME.Expose(), fileURL)
+	fileURL = fmt.Sprintf("https://s3.amazonaws.com/%s/%s", aw.Settings.BucketName.Expose(), fileURL)
 	return &fileURL
 }
 
@@ -119,7 +119,7 @@ func (aw *AWSClient) UploadFile(folder string, fileHeader *multipart.FileHeader,
 
 	svc := s3.New(aw.session)
 
-	bucket := aw.Settings.BUCKET_NAME.Expose()
+	bucket := aw.Settings.BucketName.Expose()
 	key := fmt.Sprintf("%s/%s", folder, *fileName)
 
 	_, err = svc.PutObject(&s3.PutObjectInput{
@@ -143,7 +143,7 @@ func (aw *AWSClient) UploadFile(folder string, fileHeader *multipart.FileHeader,
 func (aw *AWSClient) DeleteFile(fileURL string) error {
 	svc := s3.New(aw.session)
 
-	bucket := aw.Settings.BUCKET_NAME.Expose()
+	bucket := aw.Settings.BucketName.Expose()
 	key := fileURL[len(fmt.Sprintf("https://s3.amazonaws.com/%s/", bucket)):]
 
 	_, err := svc.DeleteObject(&s3.DeleteObjectInput{

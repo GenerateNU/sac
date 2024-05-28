@@ -1,8 +1,7 @@
 package config
 
 import (
-	"errors"
-	"os"
+	"fmt"
 
 	m "github.com/garrettladley/mattress"
 )
@@ -11,18 +10,17 @@ type ResendSettings struct {
 	APIKey *m.Secret[string]
 }
 
-func readResendSettings() (*ResendSettings, error) {
-	apiKey := os.Getenv("SAC_RESEND_API_KEY")
-	if apiKey == "" {
-		return nil, errors.New("SAC_RESEND_API_KEY is not set")
-	}
+type intermediateResendSettings struct {
+	APIKey string `env:"API_KEY"`
+}
 
-	secretAPIKey, err := m.NewSecret(apiKey)
+func (i *intermediateResendSettings) into() (*ResendSettings, error) {
+	apiKey, err := m.NewSecret(i.APIKey)
 	if err != nil {
-		return nil, errors.New("failed to create secret from api key")
+		return nil, fmt.Errorf("failed to create secret from API key: %s", err.Error())
 	}
 
 	return &ResendSettings{
-		APIKey: secretAPIKey,
+		APIKey: apiKey,
 	}, nil
 }
