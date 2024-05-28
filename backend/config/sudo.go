@@ -1,19 +1,22 @@
 package config
 
-import m "github.com/garrettladley/mattress"
+import (
+	"fmt"
 
-type IntermediateSuperUserSettings struct {
+	m "github.com/garrettladley/mattress"
+)
+
+type SuperUserSettings struct {
+	Password *m.Secret[string]
+}
+type intermediateSuperUserSettings struct {
 	Password string `env:"PASSWORD"`
 }
 
-type SuperUserSettings struct {
-	Password *m.Secret[string] `env:"PASSWORD"`
-}
-
-func (i *IntermediateSuperUserSettings) Into() (*SuperUserSettings, error) {
+func (i *intermediateSuperUserSettings) into() (*SuperUserSettings, error) {
 	password, err := m.NewSecret(i.Password)
 	if err != nil {
-		return nil, nil
+		return nil, fmt.Errorf("failed to create secret from password: %s", err.Error())
 	}
 
 	return &SuperUserSettings{

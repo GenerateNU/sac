@@ -7,12 +7,12 @@ import (
 )
 
 type RedisSettings struct {
-	Username string            `yaml:"username"`
-	Host     string            `yaml:"host"`
-	Port     uint              `yaml:"port"`
-	Password *m.Secret[string] `yaml:"password"`
-	DB       int               `yaml:"db"`
-	// TLSConfig *TLSConfig       `yaml:"tlsconfig"`
+	Username string
+	Host     string
+	Port     uint
+	Password *m.Secret[string]
+	DB       int
+	// TLSConfig *TLSConfig
 }
 
 func (int *intermediateRedisSettings) into() (*RedisSettings, error) {
@@ -32,10 +32,10 @@ func (int *intermediateRedisSettings) into() (*RedisSettings, error) {
 }
 
 type intermediateRedisSettings struct {
-	Username string `yaml:"username"`
-	Host     string `yaml:"host"`
-	Port     uint   `yaml:"port"`
-	Password string `yaml:"password"`
-	DB       int    `yaml:"db"`
-	// TLSConfig *intermediateTLSConfig `yaml:"tlsconfig"`
+	Username string `env:"USERNAME"`
+	Host     string `env:"HOST"`
+	Port     uint   `env:"PORT"`
+	Password string `env:"PASSWORD"`
+	DB       int    `env:"DB"`
+	// TLSConfig *intermediateTLSConfig `env:"TLS_CONFIG"`
 }

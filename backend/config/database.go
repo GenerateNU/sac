@@ -42,7 +42,7 @@ func (s *DatabaseSettings) PostgresConn() string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=%s", s.Username, (*s.Password).Expose(), s.Host, s.Port, s.DatabaseName, sslMode)
 }
 
-type IntermediateDatabaseSettings struct {
+type intermediateDatabaseSettings struct {
 	Username     string `env:"USERNAME"`
 	Password     string `env:"PASSWORD"`
 	Port         uint   `env:"PORT"`
@@ -51,7 +51,7 @@ type IntermediateDatabaseSettings struct {
 	RequireSSL   bool   `env:"REQUIRE_SSL"`
 }
 
-func (i *IntermediateDatabaseSettings) Into() (*DatabaseSettings, error) {
+func (i *intermediateDatabaseSettings) into() (*DatabaseSettings, error) {
 	password, err := m.NewSecret(i.Password)
 	if err != nil {
 		return nil, err

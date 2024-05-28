@@ -3,16 +3,16 @@ package config
 import m "github.com/garrettladley/mattress"
 
 type AuthSettings struct {
-	AccessKey  *m.Secret[string] `env:"ACCESS_KEY"`
-	RefreshKey *m.Secret[string] `env:"REFRESH_KEY"`
+	AccessKey  *m.Secret[string]
+	RefreshKey *m.Secret[string]
 }
 
-type IntermediateAuthSettings struct {
+type intermediateAuthSettings struct {
 	AccessKey  string `env:"ACCESS_KEY"`
 	RefreshKey string `env:"REFRESH_KEY"`
 }
 
-func (i *IntermediateAuthSettings) Into() (*AuthSettings, error) {
+func (i *intermediateAuthSettings) into() (*AuthSettings, error) {
 	accessKey, err := m.NewSecret(i.AccessKey)
 	if err != nil {
 		return nil, err

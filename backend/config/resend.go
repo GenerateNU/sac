@@ -1,19 +1,23 @@
 package config
 
-import m "github.com/garrettladley/mattress"
+import (
+	"fmt"
+
+	m "github.com/garrettladley/mattress"
+)
 
 type ResendSettings struct {
-	APIKey *m.Secret[string] `env:"API_KEY"`
+	APIKey *m.Secret[string]
 }
 
-type IntermediateResendSettings struct {
+type intermediateResendSettings struct {
 	APIKey string `env:"API_KEY"`
 }
 
-func (i *IntermediateResendSettings) Into() (*ResendSettings, error) {
+func (i *intermediateResendSettings) into() (*ResendSettings, error) {
 	apiKey, err := m.NewSecret(i.APIKey)
 	if err != nil {
-		return nil, nil
+		return nil, fmt.Errorf("failed to create secret from API key: %s", err.Error())
 	}
 
 	return &ResendSettings{

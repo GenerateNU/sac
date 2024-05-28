@@ -9,14 +9,14 @@ type AWSSettings struct {
 	Region     *m.Secret[string]
 }
 
-type IntermediateAWSSettings struct {
+type intermediateAWSSettings struct {
 	BucketName string `env:"BUCKET_NAME"`
 	Id         string `env:"ID"`
 	Secret     string `env:"SECRET"`
 	Region     string `env:"REGION"`
 }
 
-func (i *IntermediateAWSSettings) Into() (*AWSSettings, error) {
+func (i *intermediateAWSSettings) into() (*AWSSettings, error) {
 	bucketName, err := m.NewSecret(i.BucketName)
 	if err != nil {
 		return nil, err

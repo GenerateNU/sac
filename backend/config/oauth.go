@@ -30,7 +30,7 @@ type GoogleOAuthSettings struct {
 	ClientSecret string `env:"GOOGLE_OAUTH_CLIENT_SECRET"`
 }
 
-func (i *GoogleOAuthSettings) Into() (*OAuthSettings, error) {
+func (i *GoogleOAuthSettings) into() (*OAuthSettings, error) {
 	secretClientID, err := m.NewSecret(i.ClientId)
 	if err != nil {
 		return nil, errors.New("failed to create secret from client ID")
@@ -60,7 +60,7 @@ type OutlookOAuthSettings struct {
 	ClientSecret string `env:"OUTLOOK_OAUTH_CLIENT_SECRET"`
 }
 
-func (i *OutlookOAuthSettings) Into() (*OAuthSettings, error) {
+func (i *OutlookOAuthSettings) into() (*OAuthSettings, error) {
 	secretClientID, err := m.NewSecret(i.ClientId)
 	if err != nil {
 		return nil, errors.New("failed to create secret from client ID")
