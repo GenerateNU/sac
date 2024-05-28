@@ -1,0 +1,35 @@
+services:
+  redis-active-tokens:
+    image: redis/redis-stack-server:latest
+    container_name: redis_active_tokens
+    ports:
+      - 6379:6379
+    environment:
+      - REDIS_PASSWORD=redispassword!#1
+    volumes:
+      - redis-active-data:/data
+
+  redis-blacklist:
+    image: redis/redis-stack-server:latest
+    container_name: redis_blacklist
+    ports:
+      - 6380:6379
+    environment:
+      - REDIS_PASSWORD=redispassword!#2
+    volumes:
+      - redis-blacklist-data:/data
+
+  redis-limiter:
+    image: redis/redis-stack-server:latest
+    container_name: redis_limiter
+    ports:
+      - 6381:6379
+    environment:
+      - REDIS_PASSWORD=redispassword!#3
+    volumes:
+      - redis-limiter-data:/data
+
+volumes:
+  redis-active-data:
+  redis-blacklist-data:
+  redis-limiter-data:

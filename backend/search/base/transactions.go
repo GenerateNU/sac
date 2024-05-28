@@ -1,15 +1,16 @@
 package base
 
 import (
-	"bytes"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 
 	json "github.com/goccy/go-json"
 
 	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/search/types"
+	"github.com/GenerateNU/sac/backend/utilities"
 	"gorm.io/gorm"
 )
 
@@ -20,13 +21,7 @@ func doSearchGetRequest[T, V any](url string, requestBody T) (*V, error) {
 		return nil, err
 	}
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s%s", constants.SEARCH_URL, url), bytes.NewBuffer(payload))
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := utilities.Request(http.MethodGet, fmt.Sprintf("%s%s", constants.SEARCH_URL, url), payload, utilities.JSON())
 	if err != nil {
 		return nil, err
 	}
@@ -81,18 +76,11 @@ func Upsert[T types.Searchable](db *gorm.DB, index string, uuid string, model ty
 		"doc_as_upsert": true,
 	}
 	payload, err := json.Marshal(requestBody)
-
 	if err != nil {
 		return err
 	}
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/%s/_update/%s", constants.SEARCH_URL, index, uuid), bytes.NewBuffer(payload))
-	if err != nil {
-		return err
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := utilities.Request(http.MethodPost, fmt.Sprintf("%s/%s/_update/%s", constants.SEARCH_URL, index, uuid), payload, utilities.JSON())
 	if err != nil {
 		return err
 	}
@@ -102,13 +90,7 @@ func Upsert[T types.Searchable](db *gorm.DB, index string, uuid string, model ty
 }
 
 func Delete(db *gorm.DB, index string, uuid string) error {
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/%s/_doc/%s", constants.SEARCH_URL, index, uuid), nil)
-	if err != nil {
-		return err
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := utilities.Request(http.MethodDelete, fmt.Sprintf("%s/%s/_doc/%s", constants.SEARCH_URL, index, uuid), nil, utilities.JSON())
 	if err != nil {
 		return err
 	}
@@ -118,7 +100,8 @@ func Delete(db *gorm.DB, index string, uuid string) error {
 	if err != nil {
 		return err
 	}
-	print(string(responseBody))
+
+	slog.Info("delete successful", "response", string(responseBody), "index", index, "uuid", uuid)
 
 	return nil
 }

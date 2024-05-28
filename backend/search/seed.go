@@ -1,7 +1,6 @@
 package search
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -12,6 +11,7 @@ import (
 	"github.com/GenerateNU/sac/backend/entities/models"
 	search_types "github.com/GenerateNU/sac/backend/search/types"
 	"github.com/GenerateNU/sac/backend/transactions"
+	"github.com/GenerateNU/sac/backend/utilities"
 	"gorm.io/gorm"
 )
 
@@ -25,7 +25,8 @@ func SeedClubs(db *gorm.DB) error {
 	if err != nil {
 		return err
 	}
-	resp, err := http.DefaultClient.Do(req)
+
+	_, err = http.DefaultClient.Do(req)
 	if err != nil {
 		return err
 	}
@@ -56,18 +57,13 @@ func SeedClubs(db *gorm.DB) error {
 		requestBodyBuilder.WriteString(fmt.Sprintf("%s\n%s\n", indexJson, clubJson))
 	}
 
-	req, err = http.NewRequest("POST", fmt.Sprintf("%s/_bulk", constants.SEARCH_URL), bytes.NewBufferString(requestBodyBuilder.String()))
-	if err != nil {
-		return err
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, err = http.DefaultClient.Do(req)
+	resp, err := utilities.Request(http.MethodPost, fmt.Sprintf("%s/_bulk", constants.SEARCH_URL), []byte(requestBodyBuilder.String()), utilities.JSON())
 	if err != nil {
 		stdout.WriteString(fmt.Sprintf("Error making _bulk request for club seeding: %s\n", err.Error()))
 	}
+	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
+	if !utilities.IsOk(resp.StatusCode) {
 		stdout.WriteString(fmt.Sprintf("Error making _bulk request for club seeding: response returned %d code\n", resp.StatusCode))
 	}
 
@@ -81,15 +77,11 @@ func SeedEvents(db *gorm.DB) error {
 	stdout := os.Stdout
 
 	stdout.WriteString("Deleting existing event index...\n")
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/events", constants.SEARCH_URL), nil)
+	resp, err := utilities.Request(http.MethodDelete, fmt.Sprintf("%s/events", constants.SEARCH_URL), nil, utilities.JSON())
 	if err != nil {
 		return err
 	}
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return err
-	}
+	defer resp.Body.Close()
 	var events []models.Event
 
 	if err := db.Preload("Tag").Preload("Clubs").Not("is_draft = ?", true).Not("is_archived = ?", true).Find(&events).Error; err != nil {
@@ -116,18 +108,13 @@ func SeedEvents(db *gorm.DB) error {
 		requestBodyBuilder.WriteString(fmt.Sprintf("%s\n%s\n", indexJson, eventJson))
 	}
 
-	req, err = http.NewRequest("POST", fmt.Sprintf("%s/_bulk", constants.SEARCH_URL), bytes.NewBufferString(requestBodyBuilder.String()))
-	if err != nil {
-		return err
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, err = http.DefaultClient.Do(req)
+	resp, err = utilities.Request(http.MethodPost, fmt.Sprintf("%s/_bulk", constants.SEARCH_URL), []byte(requestBodyBuilder.String()), utilities.JSON())
 	if err != nil {
 		stdout.WriteString(fmt.Sprintf("Error making _bulk request for event seeding: %s\n", err.Error()))
 	}
+	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
+	if !utilities.IsOk(resp.StatusCode) {
 		stdout.WriteString(fmt.Sprintf("Error making _bulk request for event seeding: response returned %d code\n", resp.StatusCode))
 	}
 

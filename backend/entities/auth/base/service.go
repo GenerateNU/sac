@@ -1,31 +1,34 @@
 package base
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log/slog"
 	"time"
 
 	"github.com/GenerateNU/sac/backend/auth"
+	"github.com/GenerateNU/sac/backend/constants"
 	authEntities "github.com/GenerateNU/sac/backend/entities/auth"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/entities/users"
 	usersEntities "github.com/GenerateNU/sac/backend/entities/users/base"
 
+	"github.com/GenerateNU/sac/backend/errs"
 	"github.com/GenerateNU/sac/backend/types"
+
 	"github.com/GenerateNU/sac/backend/utilities"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
 	"gorm.io/gorm"
 )
 
 type AuthServiceInterface interface {
 	GetRole(id string) (*models.UserRole, error)
-	Register(userBody usersEntities.CreateUserRequestBody) (*models.User, *auth.Token, error)
-	Login(userBody authEntities.LoginResponseBody) (*models.User, *auth.Token, error)
-	Refresh(refreshToken string) (*auth.Token, error)
-	Logout(c *fiber.Ctx) error
+	Register(ctx context.Context, userBody usersEntities.CreateUserRequestBody) (*models.User, *auth.Token, error)
+	Login(ctx context.Context, userBody authEntities.LoginResponseBody) (*models.User, *auth.Token, error)
+	Refresh(ctx context.Context, refreshToken string) (*auth.Token, error)
+	Logout(ctx context.Context, accessToken string, refreshToken string) error
 
 	SendCode(email string) error
 	VerifyEmail(emailBody VerifyEmailRequestBody) error
@@ -42,7 +45,7 @@ func NewAuthService(serviceParams types.ServiceParams) AuthServiceInterface {
 	return &AuthService{serviceParams}
 }
 
-func (a *AuthService) Login(loginBody authEntities.LoginResponseBody) (*models.User, *auth.Token, error) {
+func (a *AuthService) Login(ctx context.Context, loginBody authEntities.LoginResponseBody) (*models.User, *auth.Token, error) {
 	if err := utilities.Validate(a.Validate, loginBody, *utilities.NewMaybeError("password", auth.ValidatePassword(loginBody.Password))); err != nil {
 		return nil, nil, err
 	}
@@ -75,10 +78,16 @@ func (a *AuthService) Login(loginBody authEntities.LoginResponseBody) (*models.U
 		return nil, nil, err
 	}
 
+	storeRefreshTokenCtx, storeRefreshTokenCancel := context.WithTimeoutCause(ctx, constants.REDIS_TIMEOUT, errs.ErrRedisTimeout)
+	defer storeRefreshTokenCancel()
+	if err := a.Stores.ActiveToken.StoreRefreshToken(storeRefreshTokenCtx, string(tokens.RefreshToken), user.ID.String(), constants.REFRESH_TOKEN_EXPIRY); err != nil {
+		return nil, nil, err
+	}
+
 	return user, tokens, nil
 }
 
-func (a *AuthService) Register(userBody usersEntities.CreateUserRequestBody) (*models.User, *auth.Token, error) {
+func (a *AuthService) Register(ctx context.Context, userBody usersEntities.CreateUserRequestBody) (*models.User, *auth.Token, error) {
 	if err := utilities.Validate(a.Validate, userBody, *utilities.NewMaybeError("password", auth.ValidatePassword(userBody.Password))); err != nil {
 		return nil, nil, err
 	}
@@ -111,7 +120,9 @@ func (a *AuthService) Register(userBody usersEntities.CreateUserRequestBody) (*m
 		return nil, nil, err
 	}
 
-	_, tokens, err := a.Login(authEntities.LoginResponseBody{Email: user.Email, Password: userBody.Password})
+	loginCtx, loginCancel := context.WithTimeoutCause(ctx, constants.REDIS_TIMEOUT, errs.ErrRedisTimeout)
+	defer loginCancel()
+	_, tokens, err := a.Login(loginCtx, authEntities.LoginResponseBody{Email: user.Email, Password: userBody.Password})
 	if err != nil {
 		return nil, nil, err
 	}
@@ -119,7 +130,29 @@ func (a *AuthService) Register(userBody usersEntities.CreateUserRequestBody) (*m
 	return user, tokens, nil
 }
 
-func (a *AuthService) Refresh(refreshToken string) (*auth.Token, error) {
+func (a *AuthService) Refresh(ctx context.Context, refreshToken string) (*auth.Token, error) {
+	isActiveCtx, isActiveCancel := context.WithTimeoutCause(ctx, constants.REDIS_TIMEOUT, errs.ErrRedisTimeout)
+	defer isActiveCancel()
+	isActive, err := a.Stores.ActiveToken.IsActive(isActiveCtx, refreshToken)
+	if err != nil {
+		return nil, err
+	}
+
+	if !isActive {
+		return nil, utilities.Unauthorized()
+	}
+
+	isBlacklistedCtx, isBlacklistedCancel := context.WithTimeoutCause(ctx, constants.REDIS_TIMEOUT, errs.ErrRedisTimeout)
+	defer isBlacklistedCancel()
+	isblacklisted, err := a.Stores.Blacklist.IsTokenBlacklisted(isBlacklistedCtx, refreshToken)
+	if err != nil {
+		return nil, err
+	}
+
+	if isblacklisted {
+		return nil, utilities.Unauthorized()
+	}
+
 	claims, err := a.JWT.ExtractClaims(refreshToken, auth.RefreshToken)
 	if err != nil {
 		return nil, err
@@ -145,6 +178,24 @@ func (a *AuthService) Refresh(refreshToken string) (*auth.Token, error) {
 		},
 	})
 	if err != nil {
+		return nil, err
+	}
+
+	blackListCtx, blackListCancel := context.WithTimeoutCause(ctx, constants.REDIS_TIMEOUT, errs.ErrRedisTimeout)
+	defer blackListCancel()
+	if err := a.Stores.Blacklist.BlacklistToken(blackListCtx, refreshToken, time.Until(time.Unix(int64(claims["exp"].(float64)), 0))); err != nil {
+		return nil, err
+	}
+
+	deleteRefreshTokenCtx, deleteRefreshTokenCancel := context.WithTimeoutCause(ctx, constants.REDIS_TIMEOUT, errs.ErrRedisTimeout)
+	defer deleteRefreshTokenCancel()
+	if err := a.Stores.ActiveToken.DeleteRefreshToken(deleteRefreshTokenCtx, refreshToken); err != nil {
+		return nil, err
+	}
+
+	storeRefreshTokenCtx, storeRefreshTokenCancel := context.WithTimeoutCause(ctx, constants.REDIS_TIMEOUT, errs.ErrRedisTimeout)
+	defer storeRefreshTokenCancel()
+	if err := a.Stores.ActiveToken.StoreRefreshToken(storeRefreshTokenCtx, string(tokens.RefreshToken), claims["iss"].(string), constants.REFRESH_TOKEN_EXPIRY); err != nil {
 		return nil, err
 	}
 
@@ -272,12 +323,12 @@ func (a *AuthService) SendCode(email string) error {
 		return nil
 	}
 
-	otp, err := auth.GenerateOTP(6)
+	otp, err := auth.GenerateOTP(constants.OTP_LENGTH)
 	if err != nil {
 		return fmt.Errorf("failed to generate OTP: %w", err)
 	}
 
-	if err := SaveToken(a.DB, user.ID, *otp, models.EmailVerificationType, time.Now().Add(time.Minute*5).UTC()); err != nil {
+	if err := SaveToken(a.DB, user.ID, *otp, models.EmailVerificationType, time.Now().Add(constants.OTP_EXPIRY).UTC()); err != nil {
 		return err
 	}
 
@@ -349,16 +400,62 @@ func (a *AuthService) VerifyEmail(emailBody VerifyEmailRequestBody) error {
 	return nil
 }
 
-func (a *AuthService) Logout(c *fiber.Ctx) error {
-	c.Cookie(&fiber.Cookie{
-		Name:     "refresh_token",
-		Value:    "",
-		Expires:  time.Now().Add(-time.Hour),
-		HTTPOnly: true,
-	})
-	c.Set("Authorization ", "")
+func (a *AuthService) Logout(ctx context.Context, accessToken string, refreshToken string) error {
+	if accessToken == "" {
+		return utilities.Unauthorized()
+	}
 
-	// TODO: blacklist the refresh token
+	token, err := utilities.SplitBearerToken(accessToken)
+	if err != nil {
+		return utilities.Unauthorized()
+	}
+
+	blacklistAccessTokenCtx, blacklistAccessTokenCancel := context.WithTimeoutCause(ctx, constants.REDIS_TIMEOUT, errs.ErrRedisTimeout)
+	defer blacklistAccessTokenCancel()
+	if err = blacklist(blacklistAccessTokenCtx, a, token); err != nil {
+		return utilities.Unauthorized()
+	}
+
+	if refreshToken == "" {
+		return utilities.Unauthorized()
+	}
+
+	isActiveCtx, isActiveCancel := context.WithTimeoutCause(ctx, constants.REDIS_TIMEOUT, errs.ErrRedisTimeout)
+	defer isActiveCancel()
+	isActive, err := a.Stores.ActiveToken.IsActive(isActiveCtx, refreshToken)
+	if err != nil {
+		return utilities.Unauthorized()
+	}
+
+	if !isActive {
+		return utilities.Unauthorized()
+	}
+
+	blacklistRefreshTokenCtx, blacklistRefreshTokenCancel := context.WithTimeoutCause(ctx, constants.REDIS_TIMEOUT, errs.ErrRedisTimeout)
+	defer blacklistRefreshTokenCancel()
+	if err := blacklist(blacklistRefreshTokenCtx, a, &refreshToken); err != nil {
+		return utilities.Unauthorized()
+	}
+
+	deleteRefreshTokenCtx, deleteRefreshTokenCancel := context.WithTimeoutCause(ctx, constants.REDIS_TIMEOUT, errs.ErrRedisTimeout)
+	defer deleteRefreshTokenCancel()
+	if err := a.Stores.ActiveToken.DeleteRefreshToken(deleteRefreshTokenCtx, refreshToken); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func blacklist(ctx context.Context, a *AuthService, token *string) error {
+	claims, err := a.JWT.ExtractClaims(*token, auth.AccessToken)
+	if err != nil {
+		return err
+	} else {
+		exp, ok := claims["exp"].(float64)
+		if ok {
+			_ = a.Stores.Blacklist.BlacklistToken(ctx, *token, time.Until(time.Unix(int64(exp), 0)))
+		}
+	}
 
 	return nil
 }

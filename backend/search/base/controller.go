@@ -37,7 +37,6 @@ func (s *SearchController) SearchClubs(c *fiber.Ctx) error {
 	}
 
 	result, err := s.searchService.SearchClubs(searchQuery)
-
 	if err != nil {
 		return err
 	}
@@ -66,7 +65,6 @@ func (s *SearchController) SearchEvents(c *fiber.Ctx) error {
 	}
 
 	result, err := s.searchService.SearchEvents(searchQuery)
-
 	if err != nil {
 		return err
 	}
