@@ -1,12 +1,15 @@
 import React from 'react';
+
 import { Tabs } from 'expo-router';
+
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { faCalendarDays } from '@fortawesome/free-solid-svg-icons/faCalendarDays';
+import { faHouse } from '@fortawesome/free-solid-svg-icons/faHouse';
+import { faUser } from '@fortawesome/free-solid-svg-icons/faUser';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+
 import { Text } from '@/app/(design-system)';
 import { Box, Colors } from '@/app/(design-system)';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faHouse } from '@fortawesome/free-solid-svg-icons/faHouse';
-import { faCalendarDays } from '@fortawesome/free-solid-svg-icons/faCalendarDays';
-import { faUser } from '@fortawesome/free-solid-svg-icons/faUser';
-import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 
 interface TabBarLabelProps {
     focused: boolean;
@@ -26,27 +29,37 @@ interface TabBarIconProps {
 
 const TabBarIcon: React.FC<TabBarIconProps> = ({ focused, icon }) => (
     <Box paddingTop="m">
-        <FontAwesomeIcon size={20} color={focused? 'black' : `${Colors.gray}`} icon={icon} />
+        <FontAwesomeIcon
+            size={20}
+            color={focused ? 'black' : `${Colors.gray}`}
+            icon={icon}
+        />
     </Box>
 );
 
 const Layout = () => {
     return (
-        <Tabs screenOptions={{
-            tabBarShowLabel: true,
-            tabBarStyle: {
-                borderTopWidth: 1,
-                borderTopColor: '#00000066',
-                height: 85,
-            },
-        }}>
+        <Tabs
+            screenOptions={{
+                tabBarShowLabel: true,
+                tabBarStyle: {
+                    borderTopWidth: 1,
+                    borderTopColor: '#00000066',
+                    height: 85
+                }
+            }}
+        >
             <Tabs.Screen
                 name="index"
                 options={{
                     title: 'Home',
                     headerShown: false,
-                    tabBarLabel: ({ focused }) => <TabBarLabel focused={focused} title="Home" />,
-                    tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} icon={faHouse} />,
+                    tabBarLabel: ({ focused }) => (
+                        <TabBarLabel focused={focused} title="Home" />
+                    ),
+                    tabBarIcon: ({ focused }) => (
+                        <TabBarIcon focused={focused} icon={faHouse} />
+                    )
                 }}
             />
             <Tabs.Screen
@@ -54,8 +67,12 @@ const Layout = () => {
                 options={{
                     title: 'Calendar',
                     headerShown: false,
-                    tabBarLabel: ({ focused }) => <TabBarLabel focused={focused} title="Calendar" />,
-                    tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} icon={faCalendarDays} />,
+                    tabBarLabel: ({ focused }) => (
+                        <TabBarLabel focused={focused} title="Calendar" />
+                    ),
+                    tabBarIcon: ({ focused }) => (
+                        <TabBarIcon focused={focused} icon={faCalendarDays} />
+                    )
                 }}
             />
             <Tabs.Screen
@@ -63,8 +80,12 @@ const Layout = () => {
                 options={{
                     title: 'Profile',
                     headerShown: false,
-                    tabBarLabel: ({ focused }) => <TabBarLabel focused={focused} title="Profile" />,
-                    tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} icon={faUser} />,
+                    tabBarLabel: ({ focused }) => (
+                        <TabBarLabel focused={focused} title="Profile" />
+                    ),
+                    tabBarIcon: ({ focused }) => (
+                        <TabBarIcon focused={focused} icon={faUser} />
+                    )
                 }}
             />
         </Tabs>

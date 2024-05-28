@@ -1,7 +1,8 @@
-import { Box, ColorName, Colors, Text } from "@/app/(design-system)";
-import { firstLetterUppercase } from "@/utils/string";
-import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+
+import { Box, ColorName, Colors, Text } from '@/app/(design-system)';
+import { firstLetterUppercase } from '@/utils/string';
 
 interface RecruitmentItemProps {
     icon: IconDefinition;
@@ -9,8 +10,13 @@ interface RecruitmentItemProps {
     text: string;
     color: ColorName;
 }
-  
-export const RecruitmentItem = ({ icon, title, text, color }: RecruitmentItemProps) => {
+
+export const RecruitmentItem = ({
+    icon,
+    title,
+    text,
+    color
+}: RecruitmentItemProps) => {
     return (
         <Box
             alignItems="center"
@@ -20,18 +26,18 @@ export const RecruitmentItem = ({ icon, title, text, color }: RecruitmentItemPro
             width={'30%'}
         >
             <Box
-            paddingTop="l"
-            paddingBottom="l"
-            gap="xs"
-            flexDirection="column"
-            alignItems="center"
+                paddingTop="l"
+                paddingBottom="l"
+                gap="xs"
+                flexDirection="column"
+                alignItems="center"
             >
                 <FontAwesomeIcon size={30} color={Colors[color]} icon={icon} />
                 <Text
                     style={{
-                    textAlign: 'center',
-                    fontWeight: '600',
-                    fontSize: 14,
+                        textAlign: 'center',
+                        fontWeight: '600',
+                        fontSize: 14
                     }}
                 >
                     {firstLetterUppercase(title)}
@@ -42,5 +48,4 @@ export const RecruitmentItem = ({ icon, title, text, color }: RecruitmentItemPro
             </Box>
         </Box>
     );
-  };
-  
+};
