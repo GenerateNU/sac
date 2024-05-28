@@ -27,7 +27,7 @@ func NewClubLeaderController(clubLeaderService ClubLeaderServiceInterface) *Club
 // @Failure     400   {object}      error
 // @Failure     404   {object}      error
 // @Failure     500   {object}      error
-// @Router		/clubs/{clubID}/pocs/  [get]
+// @Router		/clubs/{clubID}/leadership/  [get]
 func (l *ClubLeaderController) GetClubLeadership(c *fiber.Ctx) error {
 	leadership, err := l.clubLeaderService.GetClubLeadership(c.Params("clubID"))
 	if err != nil {
@@ -45,14 +45,14 @@ func (l *ClubLeaderController) GetClubLeadership(c *fiber.Ctx) error {
 // @Tags      	club-leader
 // @Produce		json
 // @Param		clubID	path	string	true	"Club ID"
-// @Param		pocID	path	string	true	"leader ID"
+// @Param		leaderID	path	string	true	"leader ID"
 // @Success		200	  {object}	    models.Leader
 // @Failure     400   {object}      error
 // @Failure     404   {object}      error
 // @Failure     500   {object}      error
-// @Router		/clubs/{clubID}/pocs/{pocID}  [get]
+// @Router		/clubs/{clubID}/leadership/{leaderID}  [get]
 func (l *ClubLeaderController) GetClubLeader(c *fiber.Ctx) error {
-	leader, err := l.clubLeaderService.GetClubLeader(c.Params("clubID"), c.Params("pocID"))
+	leader, err := l.clubLeaderService.GetClubLeader(c.Params("clubID"), c.Params("leaderID"))
 	if err != nil {
 		return err
 	}
@@ -69,20 +69,20 @@ func (l *ClubLeaderController) GetClubLeader(c *fiber.Ctx) error {
 // @Accept		multipart/form-data
 // @Produce		json
 // @Param		clubID	path	string	true	"Club ID"
-// @Param		pocID	path	string	true	"leader ID"
+// @Param		leaderID	path	string	true	"leader ID"
 // @Success		200	  {object}	    models.Leader
 // @Failure     400   {object}      error
 // @Failure     401   {object}      error
 // @Failure     404   {object}      error
 // @Failure     500   {object}      error
-// @Router		/clubs/{clubID}/poc/{pocID}  [patch]
+// @Router		/clubs/{clubID}/leadership/{leaderID}  [patch]
 func (l *ClubLeaderController) UpdateClubLeaderPhoto(c *fiber.Ctx) error {
 	formFile, err := c.FormFile("file")
 	if err != nil {
 		return err
 	}
 
-	leader, err := l.clubLeaderService.UpdateClubLeaderPhoto(c.Params("clubID"), c.Params("pocID"), formFile)
+	leader, err := l.clubLeaderService.UpdateClubLeaderPhoto(c.Params("clubID"), c.Params("leaderID"), formFile)
 	if err != nil {
 		return err
 	}
@@ -99,13 +99,13 @@ func (l *ClubLeaderController) UpdateClubLeaderPhoto(c *fiber.Ctx) error {
 // @Accept      json
 // @Produce		json
 // @Param		clubID	path	string	true	"Club ID"
-// @Param		pocID	path	string	true	"leader ID"
+// @Param		leaderID	path	string	true	"leader ID"
 // @Success		200	  {object}	    models.Leader
 // @Failure     400   {object}      error
 // @Failure     401   {object}      error
 // @Failure     404   {object}      error
 // @Failure     500   {object}      error
-// @Router		/clubs/{clubID}/poc/{pocID}  [put]
+// @Router		/clubs/{clubID}/leadership/{leaderID}  [put]
 func (l *ClubLeaderController) UpdateClubLeader(c *fiber.Ctx) error {
 	var leaderBody UpdateLeaderBody
 
@@ -113,7 +113,7 @@ func (l *ClubLeaderController) UpdateClubLeader(c *fiber.Ctx) error {
 		return utilities.InvalidJSON()
 	}
 
-	leader, err := l.clubLeaderService.UpdateClubLeader(c.Params("clubID"), c.Params("pocID"), leaderBody)
+	leader, err := l.clubLeaderService.UpdateClubLeader(c.Params("clubID"), c.Params("leaderID"), leaderBody)
 	if err != nil {
 		return err
 	}
@@ -135,7 +135,7 @@ func (l *ClubLeaderController) UpdateClubLeader(c *fiber.Ctx) error {
 // @Failure     401   {object}      error
 // @Failure     404   {object}      error
 // @Failure     500   {object}      error
-// @Router		/clubs/{clubID}/poc/  [post]
+// @Router		/clubs/{clubID}/leadership/  [post]
 func (l *ClubLeaderController) CreateClubLeader(c *fiber.Ctx) error {
 	var leaderBody CreateLeaderBody
 
@@ -164,14 +164,14 @@ func (l *ClubLeaderController) CreateClubLeader(c *fiber.Ctx) error {
 // @Tags      	club-leader
 // @Produce		json
 // @Param		clubID	path	string	true	"Club ID"
-// @Param		pocID	path	string	true	"leader ID"
+// @Param		leaderID	path	string	true	"leader ID"
 // @Success		204	  {object}	    nil
 // @Failure     400   {object}      error
 // @Failure     404   {object}      error
 // @Failure     500   {object}      error
-// @Router		/clubs/{clubID}/poc/{pocID}  [delete]
+// @Router		/clubs/{clubID}/leadership/{leaderID}  [delete]
 func (l *ClubLeaderController) DeleteClubLeader(c *fiber.Ctx) error {
-	err := l.clubLeaderService.DeleteClubLeader(c.Params("clubID"), c.Params("pocID"))
+	err := l.clubLeaderService.DeleteClubLeader(c.Params("clubID"), c.Params("leaderID"))
 	if err != nil {
 		return err
 	}

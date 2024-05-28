@@ -12,24 +12,24 @@ func ClubLeader(leaderParams types.RouteParams) {
 
 	// api/v1/clubs/:clubID/leadership/*
 	clubLeaders.Get("/", clubLeaderController.GetClubLeadership)
-	clubLeaders.Get("/:pocID", clubLeaderController.GetClubLeader)
+	clubLeaders.Get("/:leaderID", clubLeaderController.GetClubLeader)
 	clubLeaders.Post(
 		"/",
 		authMiddleware.AttachExtractor(leaderParams.AuthMiddleware.ClubAuthorizeById, authMiddleware.ExtractFromParams("clubID")),
 		clubLeaderController.CreateClubLeader,
 	)
 	clubLeaders.Patch(
-		"/:pocID",
+		"/:leaderID",
 		authMiddleware.AttachExtractor(leaderParams.AuthMiddleware.ClubAuthorizeById, authMiddleware.ExtractFromParams("clubID")),
 		clubLeaderController.UpdateClubLeader,
 	)
 	clubLeaders.Patch(
-		"/:pocID/photo",
+		"/:leaderID/photo",
 		authMiddleware.AttachExtractor(leaderParams.AuthMiddleware.ClubAuthorizeById, authMiddleware.ExtractFromParams("clubID")),
 		clubLeaderController.UpdateClubLeaderPhoto,
 	)
 	clubLeaders.Delete(
-		"/:pocID",
+		"/:leaderID",
 		authMiddleware.AttachExtractor(leaderParams.AuthMiddleware.ClubAuthorizeById, authMiddleware.ExtractFromParams("clubID")),
 		clubLeaderController.DeleteClubLeader,
 	)

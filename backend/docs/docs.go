@@ -180,7 +180,7 @@ const docTemplate = `{
         },
         "/auth/refresh": {
             "post": {
-                "description": "Refreshes a user's access token",
+                "description": "Refreshes a user's access token and returns a new pair of tokens",
                 "consumes": [
                     "application/json"
                 ],
@@ -190,7 +190,7 @@ const docTemplate = `{
                 "tags": [
                     "auth"
                 ],
-                "summary": "Refreshes a user's access token",
+                "summary": "Refreshes a user's access token and returns a new pair of tokens",
                 "operationId": "refresh-user",
                 "responses": {
                     "200": {
@@ -1033,107 +1033,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/clubs/{clubID}/contacts/": {
-            "get": {
-                "description": "Retrieves all contacts associated with a club",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "club-contact"
-                ],
-                "summary": "Retrieve all contacts for a club",
-                "operationId": "get-contacts-by-club",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Club ID",
-                        "name": "clubID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Contact"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {}
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {}
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {}
-                    }
-                }
-            },
-            "put": {
-                "description": "Creates a contact",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "club-contact"
-                ],
-                "summary": "Creates a contact",
-                "operationId": "put-contact",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Club ID",
-                        "name": "clubID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Contact Body",
-                        "name": "contactBody",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/contacts.PutContactRequestBody"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/models.Contact"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {}
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {}
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {}
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {}
-                    }
-                }
-            }
-        },
         "/clubs/{clubID}/events/": {
             "get": {
                 "description": "Retrieves all events associated with a club",
@@ -1235,6 +1134,299 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/clubs/{clubID}/leadership/": {
+            "get": {
+                "description": "Retrieves all leadership associated with a club",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "club-leader"
+                ],
+                "summary": "Retrieve all leadership for a club",
+                "operationId": "get-leadership-by-club",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Club ID",
+                        "name": "clubID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Leader"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a leader associated with a club",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "club-leader"
+                ],
+                "summary": "Create a leader for a club",
+                "operationId": "create-leader-by-club",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Club ID",
+                        "name": "clubID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Leader"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/clubs/{clubID}/leadership/{leaderID}": {
+            "get": {
+                "description": "Retrieves a leader associated with a club",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "club-leader"
+                ],
+                "summary": "Retrieve a leader for a club",
+                "operationId": "get-leader-by-club",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Club ID",
+                        "name": "clubID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "leader ID",
+                        "name": "leaderID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Leader"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates a leader associated with a club",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "club-leader"
+                ],
+                "summary": "Update a leader for a club",
+                "operationId": "update-leader-by-club",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Club ID",
+                        "name": "clubID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "leader ID",
+                        "name": "leaderID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Leader"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a leader associated with a club",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "club-leader"
+                ],
+                "summary": "Delete a leader for a club",
+                "operationId": "delete-leader-by-club",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Club ID",
+                        "name": "clubID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "leader ID",
+                        "name": "leaderID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            },
+            "patch": {
+                "description": "Updates a leader photo associated with a club",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "club-leader"
+                ],
+                "summary": "Update a leader photo for a club",
+                "operationId": "update-leader-photo-by-club",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Club ID",
+                        "name": "clubID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "leader ID",
+                        "name": "leaderID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Leader"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {}
                     },
                     "404": {
@@ -1414,220 +1606,17 @@ const docTemplate = `{
                 }
             }
         },
-        "/clubs/{clubID}/poc/": {
-            "post": {
-                "description": "Creates a point of contact associated with a club",
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "club-point-of-contact"
-                ],
-                "summary": "Create a point of contact for a club",
-                "operationId": "create-point-of-contact-by-club",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Club ID",
-                        "name": "clubID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/models.PointOfContact"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {}
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {}
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {}
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {}
-                    }
-                }
-            }
-        },
-        "/clubs/{clubID}/poc/{pocID}": {
-            "put": {
-                "description": "Updates a point of contact associated with a club",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "club-point-of-contact"
-                ],
-                "summary": "Update a point of contact for a club",
-                "operationId": "update-point-of-contact-by-club",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Club ID",
-                        "name": "clubID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Point of Contact ID",
-                        "name": "pocID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.PointOfContact"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {}
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {}
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {}
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {}
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete a point of contact associated with a club",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "club-point-of-contact"
-                ],
-                "summary": "Delete a point of contact for a club",
-                "operationId": "delete-point-of-contact-by-club",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Club ID",
-                        "name": "clubID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Point of Contact ID",
-                        "name": "pocID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {}
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {}
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {}
-                    }
-                }
-            },
-            "patch": {
-                "description": "Updates a point of contact photo associated with a club",
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "club-point-of-contact"
-                ],
-                "summary": "Update a point of contact photo for a club",
-                "operationId": "update-point-of-contact-photo-by-club",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Club ID",
-                        "name": "clubID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Point of Contact ID",
-                        "name": "pocID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.PointOfContact"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {}
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {}
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {}
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {}
-                    }
-                }
-            }
-        },
-        "/clubs/{clubID}/pocs/": {
+        "/clubs/{clubID}/socials/": {
             "get": {
-                "description": "Retrieves all point of contacts associated with a club",
+                "description": "Retrieves all socials associated with a club",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "club-point-of-contact"
+                    "club-social"
                 ],
-                "summary": "Retrieve all point of contacts for a club",
-                "operationId": "get-point-of-contacts-by-club",
+                "summary": "Retrieve all socials for a club",
+                "operationId": "get-socials-by-club",
                 "parameters": [
                     {
                         "type": "string",
@@ -1643,7 +1632,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.PointOfContact"
+                                "$ref": "#/definitions/models.Social"
                             }
                         }
                     },
@@ -1660,19 +1649,20 @@ const docTemplate = `{
                         "schema": {}
                     }
                 }
-            }
-        },
-        "/clubs/{clubID}/pocs/{pocID}": {
-            "get": {
-                "description": "Retrieves a point of contact associated with a club",
+            },
+            "put": {
+                "description": "Creates a social",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "club-point-of-contact"
+                    "club-social"
                 ],
-                "summary": "Retrieve a point of contact for a club",
-                "operationId": "get-point-of-contact-by-club",
+                "summary": "Creates a social",
+                "operationId": "put-social",
                 "parameters": [
                     {
                         "type": "string",
@@ -1682,22 +1672,28 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "Point of Contact ID",
-                        "name": "pocID",
-                        "in": "path",
-                        "required": true
+                        "description": "Social Body",
+                        "name": "socialBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/socials.PutSocialRequestBody"
+                        }
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/models.PointOfContact"
+                            "$ref": "#/definitions/models.Social"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {}
                     },
                     "404": {
@@ -1864,162 +1860,6 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {}
-                    }
-                }
-            }
-        },
-        "/contacts/": {
-            "get": {
-                "description": "Retrieves all contacts",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "contact"
-                ],
-                "summary": "Retrieve all contacts",
-                "operationId": "get-contacts",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Limit",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Page",
-                        "name": "page",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Contact"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/contacts/{contactID}/": {
-            "get": {
-                "description": "Retrieves a contact by id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "contact"
-                ],
-                "summary": "Retrieves a contact",
-                "operationId": "get-contact",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Contact ID",
-                        "name": "contactID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/models.Contact"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Deletes a contact",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "contact"
-                ],
-                "summary": "Deletes a contact",
-                "operationId": "delete-contact",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Contact ID",
-                        "name": "contactID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/models.Contact"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "string"
-                        }
                     }
                 }
             }
@@ -2309,7 +2149,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/pocs/": {
+        "/leader/": {
             "get": {
                 "description": "Retrieves all point of contacts",
                 "produces": [
@@ -2340,7 +2180,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.PointOfContact"
+                                "$ref": "#/definitions/models.Leader"
                             }
                         }
                     },
@@ -2365,7 +2205,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/pocs/{pocID}/": {
+        "/leader/{leaderID}/": {
             "get": {
                 "description": "Retrieves a point of contact by id",
                 "produces": [
@@ -2380,7 +2220,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Point of Contact ID",
-                        "name": "pocID",
+                        "name": "leaderID",
                         "in": "path",
                         "required": true
                     }
@@ -2389,7 +2229,308 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.PointOfContact"
+                            "$ref": "#/definitions/models.Leader"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/search/clubs": {
+            "get": {
+                "description": "Searches through clubs",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "search"
+                ],
+                "summary": "Searches through clubs",
+                "operationId": "search-clubs",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "name": "max_members",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "min_members",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "tags",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/types.SearchResult-models_Club"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/search/events": {
+            "get": {
+                "description": "Searches through events",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "search"
+                ],
+                "summary": "Searches through events",
+                "operationId": "search-event",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "clubs",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "end_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "enum": [
+                                "hybrid",
+                                "in_person",
+                                "virtual"
+                            ],
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "event_type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "start_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "tags",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/types.SearchResult-models_Event"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/socials/": {
+            "get": {
+                "description": "Retrieves all socials",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "social"
+                ],
+                "summary": "Retrieve all socials",
+                "operationId": "get-socials",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Social"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/socials/{socialID}/": {
+            "get": {
+                "description": "Retrieves a social by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "social"
+                ],
+                "summary": "Retrieves a social",
+                "operationId": "get-social",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Social ID",
+                        "name": "socialID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Social"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes a social",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "social"
+                ],
+                "summary": "Deletes a social",
+                "operationId": "delete-social",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Social ID",
+                        "name": "socialID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Social"
                         }
                     },
                     "400": {
@@ -3276,8 +3417,7 @@ const docTemplate = `{
                 },
                 "password": {
                     "description": "MARK: must be validated manually",
-                    "type": "string",
-                    "maxLength": 255
+                    "type": "string"
                 }
             }
         },
@@ -3290,13 +3430,11 @@ const docTemplate = `{
             "properties": {
                 "new_password": {
                     "description": "MARK: must be validated manually",
-                    "type": "string",
-                    "maxLength": 255
+                    "type": "string"
                 },
                 "old_password": {
                     "description": "MARK: must be validated manually",
-                    "type": "string",
-                    "maxLength": 255
+                    "type": "string"
                 }
             }
         },
@@ -4280,15 +4418,15 @@ const docTemplate = `{
             ],
             "properties": {
                 "new_password": {
-                    "type": "string",
-                    "minLength": 8
+                    "description": "MARK: must be validated manually",
+                    "type": "string"
                 },
                 "token": {
                     "type": "string"
                 },
                 "verify_new_password": {
-                    "type": "string",
-                    "minLength": 8
+                    "description": "MARK: must be validated manually",
+                    "type": "string"
                 }
             }
         },
@@ -4304,36 +4442,14 @@ const docTemplate = `{
                 }
             }
         },
-        "contacts.PutContactRequestBody": {
+        "models.Application": {
             "type": "object",
-            "required": [
-                "content",
-                "type"
-            ],
             "properties": {
-                "content": {
-                    "type": "string",
-                    "maxLength": 255
+                "description": {
+                    "type": "string"
                 },
-                "type": {
-                    "maxLength": 255,
-                    "enum": [
-                        "facebook",
-                        "instagram",
-                        "x",
-                        "linkedin",
-                        "youtube",
-                        "github",
-                        "slack",
-                        "discord",
-                        "email",
-                        "customSite"
-                    ],
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.ContactType"
-                        }
-                    ]
+                "title": {
+                    "type": "string"
                 }
             }
         },
@@ -4360,9 +4476,6 @@ const docTemplate = `{
         "models.Club": {
             "type": "object",
             "properties": {
-                "application_link": {
-                    "type": "string"
-                },
                 "created_at": {
                     "type": "string",
                     "example": "2023-09-20T16:34:50Z"
@@ -4373,9 +4486,6 @@ const docTemplate = `{
                 "id": {
                     "type": "string",
                     "example": "123e4567-e89b-12d3-a456-426614174000"
-                },
-                "is_recruiting": {
-                    "type": "boolean"
                 },
                 "logo": {
                     "type": "string"
@@ -4392,11 +4502,8 @@ const docTemplate = `{
                 "preview": {
                     "type": "string"
                 },
-                "recruitment_cycle": {
-                    "$ref": "#/definitions/models.RecruitmentCycle"
-                },
-                "recruitment_type": {
-                    "$ref": "#/definitions/models.RecruitmentType"
+                "recruitment": {
+                    "$ref": "#/definitions/models.Recruitment"
                 },
                 "updated_at": {
                     "type": "string",
@@ -4441,56 +4548,6 @@ const docTemplate = `{
                 "CPS",
                 "CS",
                 "CSSH"
-            ]
-        },
-        "models.Contact": {
-            "type": "object",
-            "properties": {
-                "content": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                },
-                "id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
-                },
-                "type": {
-                    "$ref": "#/definitions/models.ContactType"
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
-                }
-            }
-        },
-        "models.ContactType": {
-            "type": "string",
-            "enum": [
-                "facebook",
-                "instagram",
-                "x",
-                "linkedin",
-                "youtube",
-                "github",
-                "slack",
-                "discord",
-                "email",
-                "customSite"
-            ],
-            "x-enum-varnames": [
-                "Facebook",
-                "Instagram",
-                "X",
-                "LinkedIn",
-                "YouTube",
-                "GitHub",
-                "Slack",
-                "Discord",
-                "Email",
-                "CustomSite"
             ]
         },
         "models.Event": {
@@ -4609,6 +4666,35 @@ const docTemplate = `{
                 "December",
                 "May"
             ]
+        },
+        "models.Leader": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2023-09-20T16:34:50Z"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "photo_file": {
+                    "$ref": "#/definitions/models.File"
+                },
+                "position": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2023-09-20T16:34:50Z"
+                }
+            }
         },
         "models.Major": {
             "type": "string",
@@ -4817,32 +4903,23 @@ const docTemplate = `{
                 "Theatre"
             ]
         },
-        "models.PointOfContact": {
+        "models.Recruitment": {
             "type": "object",
             "properties": {
-                "created_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
+                "applications": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Application"
+                    }
                 },
-                "email": {
-                    "type": "string"
+                "cycle": {
+                    "$ref": "#/definitions/models.RecruitmentCycle"
                 },
-                "id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                "is_recruiting": {
+                    "type": "boolean"
                 },
-                "name": {
-                    "type": "string"
-                },
-                "photo_file": {
-                    "$ref": "#/definitions/models.File"
-                },
-                "position": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2023-09-20T16:34:50Z"
+                "type": {
+                    "$ref": "#/definitions/models.RecruitmentType"
                 }
             }
         },
@@ -4869,9 +4946,59 @@ const docTemplate = `{
                 "application"
             ],
             "x-enum-varnames": [
-                "Unrestricted",
-                "Tryout",
-                "Application"
+                "RecruitmentTypeUnrestricted",
+                "RecruitmentTypeTryout",
+                "RecruitmentTypeApplication"
+            ]
+        },
+        "models.Social": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2023-09-20T16:34:50Z"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "type": {
+                    "$ref": "#/definitions/models.SocialType"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2023-09-20T16:34:50Z"
+                }
+            }
+        },
+        "models.SocialType": {
+            "type": "string",
+            "enum": [
+                "facebook",
+                "instagram",
+                "x",
+                "linkedin",
+                "youtube",
+                "github",
+                "slack",
+                "discord",
+                "email",
+                "customSite"
+            ],
+            "x-enum-varnames": [
+                "Facebook",
+                "Instagram",
+                "X",
+                "LinkedIn",
+                "YouTube",
+                "GitHub",
+                "Slack",
+                "Discord",
+                "Email",
+                "CustomSite"
             ]
         },
         "models.Tag": {
@@ -4947,6 +5074,39 @@ const docTemplate = `{
                 }
             }
         },
+        "socials.PutSocialRequestBody": {
+            "type": "object",
+            "required": [
+                "content",
+                "type"
+            ],
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "type": {
+                    "maxLength": 255,
+                    "enum": [
+                        "facebook",
+                        "instagram",
+                        "x",
+                        "linkedin",
+                        "youtube",
+                        "github",
+                        "slack",
+                        "discord",
+                        "email",
+                        "customSite"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.SocialType"
+                        }
+                    ]
+                }
+            }
+        },
         "tags.CreateClubTagsRequestBody": {
             "type": "object",
             "required": [
@@ -4971,6 +5131,28 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "type": "string"
+                    }
+                }
+            }
+        },
+        "types.SearchResult-models_Club": {
+            "type": "object",
+            "properties": {
+                "results": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Club"
+                    }
+                }
+            }
+        },
+        "types.SearchResult-models_Event": {
+            "type": "object",
+            "properties": {
+                "results": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Event"
                     }
                 }
             }
