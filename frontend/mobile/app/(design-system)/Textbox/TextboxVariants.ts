@@ -1,10 +1,10 @@
-import { TextVariants } from "../Text/TextVariants";
+import { TextVariants } from '../Text/TextVariants';
 
 export const TextBoxColorVariants = {
     error: {
-        borderColor: 'darkRed',
-    },
-}
+        borderColor: 'darkRed'
+    }
+};
 
 export const TextBoxVariants = {
     defaults: {
@@ -15,8 +15,8 @@ export const TextBoxVariants = {
         padding: 'm',
         marginBottom: 'xs',
         marginTop: 'xs',
-        ...TextVariants["body-1"],
-        minWidth: '100%',
+        ...TextVariants['body-1'],
+        minWidth: '100%'
     },
     ...TextBoxColorVariants
-}
+};

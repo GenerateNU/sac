@@ -1,12 +1,9 @@
-import { TextBox } from '@/app/(design-system)/Textbox/Textbox';
 import { StyleSheet, Text, View } from 'react-native';
 
 const HomePage = () => {
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>
-                Hello
-            </Text>
+            <Text style={styles.title}>Hello</Text>
         </View>
     );
 };

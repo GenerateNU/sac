@@ -11,7 +11,7 @@ export const theme = createTheme({
     spacing: Spacing,
     textVariants: TextVariants,
     tagVariants: TagVariants,
-    textBoxVariants: TextBoxVariants,
+    textBoxVariants: TextBoxVariants
 });
 
 export type Theme = typeof theme;
