@@ -1,7 +1,7 @@
 package config
 
 import (
-	"errors"
+	"fmt"
 
 	m "github.com/garrettladley/mattress"
 )
@@ -15,22 +15,6 @@ type RedisSettings struct {
 	// TLSConfig *TLSConfig
 }
 
-func (int *intermediateRedisSettings) into() (*RedisSettings, error) {
-	password, err := m.NewSecret(int.Password)
-	if err != nil {
-		return nil, errors.New("failed to create secret from password")
-	}
-
-	return &RedisSettings{
-		Username: int.Username,
-		Password: password,
-		Host:     int.Host,
-		Port:     int.Port,
-		DB:       int.DB,
-		// TLSConfig: int.TLSConfig.into(),
-	}, nil
-}
-
 type intermediateRedisSettings struct {
 	Username string `env:"USERNAME"`
 	Password string `env:"PASSWORD"`
@@ -38,4 +22,20 @@ type intermediateRedisSettings struct {
 	Port     uint   `env:"PORT"`
 	DB       int    `env:"DB"`
 	// TLSConfig *intermediateTLSConfig `env:"TLS_CONFIG"`
+}
+
+func (i *intermediateRedisSettings) into() (*RedisSettings, error) {
+	password, err := m.NewSecret(i.Password)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create secret from password: %s", err.Error())
+	}
+
+	return &RedisSettings{
+		Username: i.Username,
+		Password: password,
+		Host:     i.Host,
+		Port:     i.Port,
+		DB:       i.DB,
+		// TLSConfig: i.TLSConfig.into(),
+	}, nil
 }

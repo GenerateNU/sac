@@ -9,5 +9,5 @@ import (
 type Integrations struct {
 	Email email.EmailClientInterface
 	File  file.FileClientInterface
-	OAuth oauth.OAuthResources
+	OAuth oauth.OauthProviderSettings
 }
