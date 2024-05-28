@@ -15,6 +15,7 @@ import (
 	"github.com/GenerateNU/sac/backend/integrations"
 	"github.com/GenerateNU/sac/backend/integrations/email"
 	"github.com/GenerateNU/sac/backend/integrations/file"
+	"github.com/GenerateNU/sac/backend/integrations/oauth"
 	"github.com/GenerateNU/sac/backend/integrations/search"
 	"github.com/GenerateNU/sac/backend/server"
 	"github.com/GenerateNU/sac/backend/telemetry"
@@ -22,8 +23,6 @@ import (
 	"github.com/GenerateNU/sac/backend/utilities"
 	"go.opentelemetry.io/otel"
 )
-
-var tracer = otel.Tracer("sac")
 
 func main() {
 	onlyMigrate := flag.Bool("only-migrate", false, "Specify if you want to only perform the database migration")
@@ -75,7 +74,7 @@ func main() {
 
 	tp := telemetry.InitTracer()
 
-	slog.Info("appease linter since we aren't tracing anything yet", "tracer", tracer)
+	slog.Info("appease linter since we aren't tracing anything yet", "tracer", telemetry.Tracer)
 
 	defer func() {
 		if err := tp.Shutdown(context.Background()); err != nil {
@@ -111,11 +110,25 @@ func configureIntegrations(config *config.Settings, connectToPinecone bool) inte
 		pinecone = mocks.NewPineconeMockClient()
 	}
 
+	// OAuth Integrations:
+	googleClient := oauth.GoogleOAuthClient{
+		OAuthConfig: config.GoogleSettings,
+	}
+	outlookClient := oauth.OutlookOAuthClient{
+		OAuthConfig: config.OutlookSettings,
+	}
+
+	oauthResources := oauth.OAuthResources{
+		Google:  googleClient,
+		Outlook: outlookClient,
+	}
+
 	integrations := integrations.Integrations{
 		File:   file.NewAWSProvider(config.AWS),
 		AI:     openAi,
 		Email:  email.NewResendClient(config.Resend, true),
 		Search: pinecone,
+		OAuth:  oauthResources,
 	}
 
 	return integrations

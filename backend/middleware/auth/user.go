@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"github.com/GenerateNU/sac/backend/auth"
+	"github.com/GenerateNU/sac/backend/locals"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/fiber/v2"
 )
@@ -21,17 +21,12 @@ func (m *AuthMiddlewareService) UserAuthorizeById(c *fiber.Ctx) error {
 			return err
 		}
 
-		claims, err := auth.From(c)
+		userID, err := locals.UserID(c)
 		if err != nil {
 			return err
 		}
 
-		issuerIDAsUUID, err := utilities.ValidateID(claims.Issuer)
-		if err != nil {
-			return err
-		}
-
-		if issuerIDAsUUID.String() == idAsUUID.String() {
+		if idAsUUID == userID {
 			return c.Next()
 		}
 

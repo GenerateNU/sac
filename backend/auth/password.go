@@ -16,6 +16,10 @@ func ValidatePassword(password string) error {
 		errs = append(errs, "must be at least 8 characters long")
 	}
 
+	if len(password) > 128 { // see https://github.com/OWASP/ASVS/issues/756
+		errs = append(errs, "must be at most 128 characters long")
+	}
+
 	if !hasDigit(password) {
 		errs = append(errs, "must contain at least one digit")
 	}
