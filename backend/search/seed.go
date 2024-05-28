@@ -86,7 +86,7 @@ func SeedEvents(db *gorm.DB) error {
 		return err
 	}
 
-	resp, err := http.DefaultClient.Do(req)
+	_, err = http.DefaultClient.Do(req)
 	if err != nil {
 		return err
 	}
@@ -123,7 +123,7 @@ func SeedEvents(db *gorm.DB) error {
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err = http.DefaultClient.Do(req)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		stdout.WriteString(fmt.Sprintf("Error making _bulk request for event seeding: %s\n", err.Error()))
 	}
