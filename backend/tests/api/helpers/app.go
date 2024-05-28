@@ -38,8 +38,10 @@ func spawnApp() (*TestApp, error) {
 		return nil, err
 	}
 
+	stores := ConfigureRedisMock()
+
 	return &TestApp{
-		App:      server.Init(connectionWithDB, *NewMockDependencies(), *configuration),
+		App:      server.Init(connectionWithDB, stores, *NewMockDependencies(), *configuration),
 		Address:  fmt.Sprintf("http://%s", listener.Addr().String()),
 		Conn:     connectionWithDB,
 		Settings: *configuration,

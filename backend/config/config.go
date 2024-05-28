@@ -10,6 +10,7 @@ import (
 type Settings struct {
 	Application     ApplicationSettings
 	Database        DatabaseSettings
+	Redis           []RedisSettings
 	SuperUser       SuperUserSettings
 	Auth            AuthSettings
 	AWS             AWSSettings
@@ -24,6 +25,7 @@ type Settings struct {
 type intermediateSettings struct {
 	Application ApplicationSettings           `yaml:"application"`
 	Database    intermediateDatabaseSettings  `yaml:"database"`
+	Redis       []intermediateRedisSettings   `yaml:"redis"`
 	SuperUser   intermediateSuperUserSettings `yaml:"superuser"`
 	Auth        intermediateAuthSettings      `yaml:"authsecret"`
 	Calendar    intermediateCalendarSettings  `yaml:"calendar"`
@@ -33,6 +35,16 @@ func (int *intermediateSettings) into() (*Settings, error) {
 	databaseSettings, err := int.Database.into()
 	if err != nil {
 		return nil, err
+	}
+
+	redisSettings := make([]RedisSettings, len(int.Redis))
+	for i, r := range int.Redis {
+		redisInstance, err := r.into()
+		if err != nil {
+			return nil, err
+		}
+
+		redisSettings[i] = *redisInstance
 	}
 
 	superUserSettings, err := int.SuperUser.into()
@@ -53,6 +65,7 @@ func (int *intermediateSettings) into() (*Settings, error) {
 	return &Settings{
 		Application: int.Application,
 		Database:    *databaseSettings,
+		Redis:       redisSettings,
 		SuperUser:   *superUserSettings,
 		Auth:        *authSettings,
 		Calendar:    *calendarSettings,
