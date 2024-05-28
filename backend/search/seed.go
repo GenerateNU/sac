@@ -25,7 +25,10 @@ func SeedClubs(db *gorm.DB) error {
 	if err != nil {
 		return err
 	}
-	http.DefaultClient.Do(req)
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
 
 	var clubs []models.Club
 
@@ -59,7 +62,7 @@ func SeedClubs(db *gorm.DB) error {
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err = http.DefaultClient.Do(req)
 	if err != nil {
 		stdout.WriteString(fmt.Sprintf("Error making _bulk request for club seeding: %s\n", err.Error()))
 	}

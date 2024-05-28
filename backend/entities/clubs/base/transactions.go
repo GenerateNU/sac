@@ -3,6 +3,7 @@ package base
 import (
 	"errors"
 
+	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/garrettladley/fiberpaginate"
 
@@ -70,7 +71,7 @@ func CreateClub(db *gorm.DB, userId uuid.UUID, club models.Club) (*models.Club, 
 		return nil, err
 	}
 
-	err = search.Upsert[models.Club](db, "clubs", club.ID.String(), &club)
+	err = search.Upsert[models.Club](db, constants.CLUBS_INDEX, club.ID.String(), &club)
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +107,7 @@ func UpdateClub(db *gorm.DB, id uuid.UUID, club models.Club) (*models.Club, erro
 		return nil, err
 	}
 
-	err = search.Upsert[models.Club](db, "clubs", club.ID.String(), &club)
+	err = search.Upsert[models.Club](db, constants.CLUBS_INDEX, club.ID.String(), &club)
 	if err != nil {
 		return nil, err
 	}
@@ -140,7 +141,7 @@ func DeleteClub(db *gorm.DB, id uuid.UUID) error {
 		return result.Error
 	}
 
-	err = search.Delete(db, "clubs", id.String())
+	err = search.Delete(db, constants.CLUBS_INDEX, id.String())
 	if err != nil {
 		return err
 	}

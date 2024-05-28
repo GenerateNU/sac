@@ -43,9 +43,9 @@ CREATE TABLE IF NOT EXISTS clubs(
     PRIMARY KEY(id)
 );
 
---CREATE UNIQUE INDEX IF NOT EXISTS uni_clubs_name ON clubs USING btree ("name");
---CREATE INDEX IF NOT EXISTS idx_clubs_num_members ON clubs USING btree ("num_members");
---CREATE INDEX IF NOT EXISTS idx_clubs_one_word_to_describe_us ON clubs USING btree ("one_word_to_describe_us");
+CREATE UNIQUE INDEX IF NOT EXISTS uni_clubs_name ON clubs USING btree ("name");
+CREATE INDEX IF NOT EXISTS idx_clubs_num_members ON clubs USING btree ("num_members");
+CREATE INDEX IF NOT EXISTS idx_clubs_one_word_to_describe_us ON clubs USING btree ("one_word_to_describe_us");
 
 CREATE TABLE IF NOT EXISTS series(
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
