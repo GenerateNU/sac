@@ -10,7 +10,7 @@ import (
 type Settings struct {
 	Application     ApplicationSettings
 	Database        DatabaseSettings
-	Redis       []RedisSettings
+	Redis           []RedisSettings
 	SuperUser       SuperUserSettings
 	Auth            AuthSettings
 	AWS             AWSSettings

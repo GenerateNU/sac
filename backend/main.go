@@ -21,7 +21,6 @@ import (
 	"github.com/GenerateNU/sac/backend/telemetry"
 	"github.com/GenerateNU/sac/backend/tests/api/mocks"
 	"github.com/GenerateNU/sac/backend/utilities"
-	"go.opentelemetry.io/otel"
 )
 
 func main() {

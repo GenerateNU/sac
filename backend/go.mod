@@ -24,6 +24,7 @@ require (
 	github.com/spf13/viper v1.18.2
 	github.com/swaggo/swag v1.16.3
 	go.opentelemetry.io/otel/sdk v1.27.0
+	go.opentelemetry.io/otel/trace v1.27.0
 	golang.org/x/crypto v0.23.0
 	golang.org/x/text v0.15.0
 	gorm.io/driver/postgres v1.5.7
@@ -53,7 +54,6 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	go.opentelemetry.io/contrib v1.17.0 // indirect
 	go.opentelemetry.io/otel/metric v1.27.0 // indirect
-	go.opentelemetry.io/otel/trace v1.27.0 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 )
 
