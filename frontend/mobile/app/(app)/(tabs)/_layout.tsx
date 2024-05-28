@@ -1,10 +1,34 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { Text } from '@/app/(design-system)';
-import Home from '@/assets/svg/home.svg';
-import Profile from '@/assets/svg/profile.svg';
-import Calendar from '@/assets/svg/calendar.svg';
-import { Box } from '@/app/(design-system)';
+import { Box, Colors } from '@/app/(design-system)';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faHouse } from '@fortawesome/free-solid-svg-icons/faHouse';
+import { faCalendarDays } from '@fortawesome/free-solid-svg-icons/faCalendarDays';
+import { faUser } from '@fortawesome/free-solid-svg-icons/faUser';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+
+interface TabBarLabelProps {
+    focused: boolean;
+    title: string;
+}
+
+const TabBarLabel: React.FC<TabBarLabelProps> = ({ focused, title }) => (
+    <Text variant="caption-1" color={focused ? 'black' : 'gray'}>
+        {title}
+    </Text>
+);
+
+interface TabBarIconProps {
+    focused: boolean;
+    icon: IconDefinition;
+}
+
+const TabBarIcon: React.FC<TabBarIconProps> = ({ focused, icon }) => (
+    <Box paddingTop="m">
+        <FontAwesomeIcon size={20} color={focused? 'black' : `${Colors.gray}`} icon={icon} />
+    </Box>
+);
 
 const Layout = () => {
     return (
@@ -21,16 +45,8 @@ const Layout = () => {
                 options={{
                     title: 'Home',
                     headerShown: false,
-                    tabBarLabel: ({ focused }) => (
-                        <Text variant="caption-1" color={focused ? 'black' : 'gray'}>
-                            Home
-                        </Text>
-                    ),
-                    tabBarIcon: ({ focused }) => (
-                        <Box paddingTop="m">
-                            <Home fill={focused? 'black' : 'gray'}/>
-                        </Box>
-                    )
+                    tabBarLabel: ({ focused }) => <TabBarLabel focused={focused} title="Home" />,
+                    tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} icon={faHouse} />,
                 }}
             />
             <Tabs.Screen
@@ -38,16 +54,8 @@ const Layout = () => {
                 options={{
                     title: 'Calendar',
                     headerShown: false,
-                    tabBarLabel: ({ focused }) => (
-                        <Text variant="caption-1" color={focused ? 'black' : 'gray'}>
-                            Calendar
-                        </Text>
-                    ),
-                    tabBarIcon: ({ focused }) => (
-                        <Box paddingTop="m">
-                            <Calendar fill={focused? 'black' : 'gray'}/>
-                        </Box>
-                    )
+                    tabBarLabel: ({ focused }) => <TabBarLabel focused={focused} title="Calendar" />,
+                    tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} icon={faCalendarDays} />,
                 }}
             />
             <Tabs.Screen
@@ -55,16 +63,8 @@ const Layout = () => {
                 options={{
                     title: 'Profile',
                     headerShown: false,
-                    tabBarLabel: ({ focused }) => (
-                        <Text variant="caption-1" color={focused ? 'black' : 'gray'}>
-                            Profile
-                        </Text>
-                    ),
-                    tabBarIcon: ({ focused }) => (
-                        <Box paddingTop="m">
-                            <Profile fill={focused? 'black' : 'gray'}/>
-                        </Box>
-                    )
+                    tabBarLabel: ({ focused }) => <TabBarLabel focused={focused} title="Profile" />,
+                    tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} icon={faUser} />,
                 }}
             />
         </Tabs>

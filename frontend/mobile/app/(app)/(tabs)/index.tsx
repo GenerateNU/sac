@@ -1,16 +1,19 @@
-import { Text } from '@/app/(design-system)';
 import { StyleSheet, View } from 'react-native';
+
+import { Text } from '@/app/(design-system)';
 import { RecruitmentInfo } from '@/components/club-recruitment-info';
 
 const HomePage = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Home</Text>
-            <RecruitmentInfo recruitmentText="Fill out our application"
-                            recruitingType="unrestricted"
-                            isRecruiting={true}
-                            recruitmentCycle="always"
-                            color="aqua" />
+            <RecruitmentInfo
+                recruitmentText="Fill out our application"
+                recruitingType="unrestricted"
+                isRecruiting={true}
+                recruitmentCycle="always"
+                color="aqua"
+            />
         </View>
     );
 };

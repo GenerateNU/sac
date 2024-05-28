@@ -11,7 +11,7 @@ const Texts = {
         fontSize: 24,
         fontStyle: 'normal',
         fontWeight: '500',
-        lineHeight: 'normal',
+        lineHeight: 'normal'
     },
     'body-1': {
         fontFamily: 'DMSans-Regular',
@@ -33,7 +33,7 @@ const Texts = {
         fontStyle: 'normal',
         fontWeight: '400',
         lineHeight: 'normal'
-    },
+    }
 } as const;
 
 export const TextVariants = {
