@@ -5,12 +5,8 @@ const HomePage = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>
-                Hellklklo
+                Hello
             </Text>
-            <TextBox
-                placeholder='hello'
-                helperText='this is helper text'
-            />
         </View>
     );
 };

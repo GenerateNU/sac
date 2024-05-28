@@ -44,7 +44,7 @@ export const TextBox : React.FC<TextBoxVariantProps> = ({
     secureTextEntry = false,
 }) => {
     return (
-        <>
+        <Box>
             <Text color="black" variant="body-1">
                 {title}
             </Text>
@@ -66,6 +66,6 @@ export const TextBox : React.FC<TextBoxVariantProps> = ({
                     {error ?? helperText}
                 </Text>
             </Box>
-        </>
+        </Box>
     )
 }
