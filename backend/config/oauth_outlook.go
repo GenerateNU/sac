@@ -6,13 +6,14 @@ import (
 	m "github.com/garrettladley/mattress"
 )
 
-type OutlookOAuthSettings struct {
-	ClientId     string `env:"OUTLOOK_OAUTH_CLIENT_ID"`
-	ClientSecret string `env:"OUTLOOK_OAUTH_CLIENT_SECRET"`
+type intermdeiateOutlookOAuthSettings struct {
+	ClientID     string `env:"CLIENT_ID"`
+	ClientSecret string `env:"CLIENT_SECRET"`
+	RedirectURI  string `env:"REDIRECT_URI"`
 }
 
-func (i *OutlookOAuthSettings) into() (*OAuthSettings, error) {
-	secretClientID, err := m.NewSecret(i.ClientId)
+func (i *intermdeiateOutlookOAuthSettings) into() (*OAuthSettings, error) {
+	secretClientID, err := m.NewSecret(i.ClientID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create secret from client ID: %s", err.Error())
 	}
@@ -29,7 +30,7 @@ func (i *OutlookOAuthSettings) into() (*OAuthSettings, error) {
 		ClientSecret: secretClientSecret,
 		Scopes:       "offline_access user.read calendars.readwrite",
 		ResponseType: "code",
-		RedirectURI:  "http://localhost:3000",
+		RedirectURI:  i.RedirectURI,
 		ResponseMode: "query",
 		Prompt:       "consent",
 	}, nil
