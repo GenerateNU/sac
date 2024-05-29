@@ -1,4 +1,4 @@
-import { BackgroundColorVariants, defaultColor } from "../Colors";
+import { BackgroundColorVariants, defaultColor } from '../Colors';
 
 export const TagVariants = {
     defaults: {

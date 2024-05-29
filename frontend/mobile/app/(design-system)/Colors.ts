@@ -1,5 +1,3 @@
-import { backgroundColor } from "@shopify/restyle";
-
 // TODO: We will have to change these
 export const Colors = {
     darkBlue: '#0C3354',
@@ -11,49 +9,51 @@ export const Colors = {
     red: '#EC2215',
     orange: '#FF7426',
     yellow: '#FFB626',
-    white: "#FFFFFF",
-    black: "#000000",
-    disabled: "#BDBDBD",
+    white: '#FFFFFF',
+    black: '#000000',
+    disabled: '#BDBDBD'
 };
+
+export type SACColors = keyof typeof Colors;
 
 export const defaultColor: keyof typeof Colors = 'black';
 
 export const BackgroundColorVariants = {
     darkBlue: {
-        backgroundColor: 'darkBlue',
+        backgroundColor: 'darkBlue'
     },
     darkRed: {
-        backgroundColor: 'darkRed',
+        backgroundColor: 'darkRed'
     },
     green: {
-        backgroundColor: 'green',
+        backgroundColor: 'green'
     },
     blue: {
-        backgroundColor: 'blue',
+        backgroundColor: 'blue'
     },
     aqua: {
-        backgroundColor: 'aqua',
+        backgroundColor: 'aqua'
     },
     purple: {
-        backgroundColor: 'purple',
+        backgroundColor: 'purple'
     },
     red: {
-        backgroundColor: 'red',
+        backgroundColor: 'red'
     },
     orange: {
-        backgroundColor: 'orange',
+        backgroundColor: 'orange'
     },
     yellow: {
-        backgroundColor: 'yellow',
+        backgroundColor: 'yellow'
     },
     white: {
-        backgroundColor: 'white',
+        backgroundColor: 'white'
     },
     black: {
-        backgroundColor: 'black',
+        backgroundColor: 'black'
     },
     disabled: {
-        backgroundColor: 'disabled',
+        backgroundColor: 'disabled'
     }
 } as const;
 
@@ -69,5 +69,5 @@ export const textColorVariants = {
     yellow: 'white',
     white: 'black',
     black: 'white',
-    disabled: 'white',
+    disabled: 'white'
 } as const;
