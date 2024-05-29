@@ -68,7 +68,7 @@ const HomePage = () => {
                 />
                 <EventCard
                     event="Spring Showcase"
-                    variant="horizontal"
+                    variant="club"
                     tags={tags}
                     club="Sandbox"
                     startTime={new Date()}

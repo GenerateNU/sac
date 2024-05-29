@@ -1,5 +1,7 @@
 import { FormattedTime } from '@/types/time';
 
+import { Options } from './timeOptions';
+
 // calculate duration of event
 export const calculateDuration = (startTime: Date, endTime: Date) => {
     const difference = endTime.getTime() - startTime.getTime();
@@ -8,7 +10,7 @@ export const calculateDuration = (startTime: Date, endTime: Date) => {
     return `${hours}h ${minutes}m`;
 };
 
-// format time returning a
+// format time from Date type
 export const formatTime = (time: Date): FormattedTime => {
     const daysOfWeek = [
         'Sunday',
@@ -58,20 +60,13 @@ export const formatTime = (time: Date): FormattedTime => {
     };
 };
 
-// check if an event is happening now
+// return true if an event is happening now
 export const happeningNow = (start: Date, end: Date) => {
     const currentTime = new Date();
     return currentTime >= start && currentTime <= end;
 };
 
-type Options = {
-    dayOfWeek?: true;
-    monthAndDate?: true;
-    year?: true;
-    start?: true;
-    end?: true;
-};
-
+// select what to display on event time
 export const createOptions = <T extends keyof Options>(
     ...keys: T[]
 ): Partial<Record<T, true>> => {
@@ -84,6 +79,8 @@ export const createOptions = <T extends keyof Options>(
     );
 };
 
+// select options to display on event time: day of the week, month and date, year, startTime, endTime
+// e.g. eventTime(startTime, endTime, createOptions('dayOfWeek', 'monthAndDate'))
 export const eventTime = (
     startTime: Date,
     endTime: Date,

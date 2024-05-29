@@ -21,7 +21,7 @@ interface EventCardProps {
     tags?: Tag[];
     image?: string;
     logo?: string;
-    variant: 'big' | 'small' | 'horizontal' | 'calendar';
+    variant: 'big' | 'small' | 'club' | 'calendar';
 }
 
 export const EventCard = ({
@@ -252,7 +252,7 @@ export const EventCard = ({
                 return bigVariant();
             case 'small':
                 return smallVariant();
-            case 'horizontal':
+            case 'club':
                 return horizontalVariant();
             case 'calendar':
                 return calendarVariant();
