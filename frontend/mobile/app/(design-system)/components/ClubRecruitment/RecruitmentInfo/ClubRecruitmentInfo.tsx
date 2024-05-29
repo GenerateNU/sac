@@ -5,12 +5,12 @@ import { faComments } from '@fortawesome/free-solid-svg-icons/faComments';
 import { faPenToSquare } from '@fortawesome/free-solid-svg-icons/faPenToSquare';
 import { RecruitmentCycle, RecruitmentType } from '@generatesac/lib';
 
-import { Box, ColorName } from '@/app/(design-system)';
+import { Box, SACColors, createStyles } from '@/app/(design-system)';
 
-import { RecruitmentItem } from './club-recruitment-item';
+import { RecruitmentItem } from '../RecruitmentItem/ClubRecruitmentItem';
 
 interface RecruitmentInfoProps {
-    color: ColorName;
+    color: SACColors;
     recruitmentCycle: RecruitmentCycle;
     recruitingType: RecruitmentType;
     isRecruiting?: boolean;
@@ -25,13 +25,7 @@ export const RecruitmentInfo = ({
     isRecruiting = false
 }: RecruitmentInfoProps) => {
     return (
-        <Box
-            padding="l"
-            flexDirection="row"
-            gap="m"
-            alignItems="stretch"
-            justifyContent="space-evenly"
-        >
+        <Box {...styles.recruitmentInfo}>
             <RecruitmentItem
                 icon={faCalendar}
                 title="Recruitment Cycle"
@@ -57,3 +51,13 @@ export const RecruitmentInfo = ({
         </Box>
     );
 };
+
+const styles = createStyles({
+    recruitmentInfo: {
+        padding: 'l',
+        flexDirection: 'row',
+        gap: 'm',
+        alignItems: 'stretch',
+        justifyContent: 'space-evenly'
+    }
+});

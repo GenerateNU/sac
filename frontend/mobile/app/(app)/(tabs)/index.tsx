@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 
 import { Text } from '@/app/(design-system)';
-import { RecruitmentInfo } from '@/components/club-recruitment-info';
+import { RecruitmentInfo } from '@/app/(design-system)/components/ClubRecruitment/RecruitmentInfo/ClubRecruitmentInfo';
 
 const HomePage = () => {
     return (

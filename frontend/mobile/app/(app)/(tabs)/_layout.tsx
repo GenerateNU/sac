@@ -54,12 +54,10 @@ const Layout = () => {
                 options={{
                     title: 'Home',
                     headerShown: false,
-                    tabBarLabel: ({ focused }) => (
-                        <TabBarLabel focused={focused} title="Home" />
-                    ),
-                    tabBarIcon: ({ focused }) => (
-                        <TabBarIcon focused={focused} icon={faHouse} />
-                    )
+                    tabBarLabel: ({ focused }) =>
+                        TabBarLabel({ focused, title: 'Home' }),
+                    tabBarIcon: ({ focused }) =>
+                        TabBarIcon({ focused, icon: faHouse })
                 }}
             />
             <Tabs.Screen
@@ -67,12 +65,10 @@ const Layout = () => {
                 options={{
                     title: 'Calendar',
                     headerShown: false,
-                    tabBarLabel: ({ focused }) => (
-                        <TabBarLabel focused={focused} title="Calendar" />
-                    ),
-                    tabBarIcon: ({ focused }) => (
-                        <TabBarIcon focused={focused} icon={faCalendarDays} />
-                    )
+                    tabBarLabel: ({ focused }) =>
+                        TabBarLabel({ focused, title: 'Calendar' }),
+                    tabBarIcon: ({ focused }) =>
+                        TabBarIcon({ focused, icon: faCalendarDays })
                 }}
             />
             <Tabs.Screen
@@ -80,12 +76,10 @@ const Layout = () => {
                 options={{
                     title: 'Profile',
                     headerShown: false,
-                    tabBarLabel: ({ focused }) => (
-                        <TabBarLabel focused={focused} title="Profile" />
-                    ),
-                    tabBarIcon: ({ focused }) => (
-                        <TabBarIcon focused={focused} icon={faUser} />
-                    )
+                    tabBarLabel: ({ focused }) =>
+                        TabBarLabel({ focused, title: 'Profile' }),
+                    tabBarIcon: ({ focused }) =>
+                        TabBarIcon({ focused, icon: faUser })
                 }}
             />
         </Tabs>
