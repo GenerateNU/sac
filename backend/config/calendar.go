@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -9,16 +10,16 @@ type CalendarSettings struct {
 }
 
 type intermediateCalendarSettings struct {
-	MaxTerminationDate string `yaml:"maxterminationdate"`
+	maxTerminationDate string `env:"MAX_TERMINATION_DATE"`
 }
 
-func (int *intermediateCalendarSettings) into() (*CalendarSettings, error) {
-	t, err := time.Parse("01-02-2006", int.MaxTerminationDate)
+func (i *intermediateCalendarSettings) into() (*CalendarSettings, error) {
+	maxTerminationDate, err := time.Parse("01-02-2006", i.maxTerminationDate)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to parse max termination date: %s", err.Error())
 	}
 
 	return &CalendarSettings{
-		MaxTerminationDate: t,
+		MaxTerminationDate: maxTerminationDate,
 	}, nil
 }

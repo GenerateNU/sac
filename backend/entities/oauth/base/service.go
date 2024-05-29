@@ -161,11 +161,11 @@ func (e *OAuthService) tokenExchange(client *oauth.OAuthClient, code string) (*m
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 
 	if !utilities.IsOk(resp.StatusCode) {
 		return nil, errors.New("failed to exchange code for token")
 	}
-	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {

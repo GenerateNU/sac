@@ -16,3 +16,19 @@ auth:
   refreshkey: amk*2!gG}1i"8D9RwJS$p
 calendar:
   maxterminationdate: 12-31-2024
+redis:
+  - username: redis_active_tokens
+    host: 127.0.0.1
+    port: 6379
+    password: redis_active_token!#1
+    db: 0
+  - username: redis_blacklist
+    host: 127.0.0.1
+    port: 6380
+    password: redis_blacklist!#2
+    db: 0
+  - username: redis_limiter
+    host: 127.0.0.1
+    port: 6381
+    password: redis_limiter!#3
+    db: 0

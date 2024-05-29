@@ -26,20 +26,22 @@ func spawnApp() (*TestApp, error) {
 		return nil, err
 	}
 
-	configuration, err := config.GetConfiguration(filepath.Join("..", "..", "..", "config"), false)
+	configuration, err := config.GetConfiguration(filepath.Join("..", "..", "..", "config"))
 	if err != nil {
 		return nil, err
 	}
 
 	configuration.Database.DatabaseName = generateRandomDBName()
 
-	connectionWithDB, err := configureDatabase(*configuration)
+	connectionWithDB, err := configureDatabase(configuration.Database, configuration.SuperUser)
 	if err != nil {
 		return nil, err
 	}
 
+	stores := ConfigureRedisMock()
+
 	return &TestApp{
-		App:      server.Init(connectionWithDB, *NewMockDependencies(), *configuration),
+		App:      server.Init(connectionWithDB, stores, *NewMockDependencies(), *configuration),
 		Address:  fmt.Sprintf("http://%s", listener.Addr().String()),
 		Conn:     connectionWithDB,
 		Settings: *configuration,

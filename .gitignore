@@ -24,3 +24,4 @@ frontend/mobile/android/
 tmp/
 ios
 android
+.idea/modules.xml
