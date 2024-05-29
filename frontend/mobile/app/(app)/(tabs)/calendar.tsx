@@ -1,11 +1,11 @@
 import { Box, Tag } from '@/app/(design-system)';
 
-const DiscoverPage = () => {
+const CalendarPage = () => {
     return (
         <Box flex={1} alignItems="center" justifyContent="center" padding="m">
-            <Tag>Tag</Tag>
+            <Tag variant="darkRed">Calendar</Tag>
         </Box>
     );
 };
 
-export default DiscoverPage;
+export default CalendarPage;

@@ -53,6 +53,9 @@
                 "projectId": "9cfc60bc-2788-4837-9895-3fe0afdc13c5"
             }
         },
-        "owner": "generatesac"
+        "owner": "generatesac",
+        "packagerOpts": {
+            "config": "metro.config.js"
+        }
     }
 }

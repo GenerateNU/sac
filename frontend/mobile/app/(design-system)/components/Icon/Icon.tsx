@@ -1,7 +1,7 @@
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 
-import { SACColors } from '../../shared/colors';
+import { Colors, SACColors, defaultColor } from '../../shared/colors';
 import { ComponentSizes } from '../../shared/types';
 import { createStyles } from '../../theme';
 
@@ -11,12 +11,16 @@ type IconProps = {
     color?: SACColors;
 };
 
-export const Icon: React.FC<IconProps> = ({ icon, size = 'medium', color }) => {
+export const Icon: React.FC<IconProps> = ({
+    icon,
+    size = 'medium',
+    color = defaultColor
+}) => {
     return (
         <FontAwesomeIcon
             icon={icon}
             size={styles[size].fontSize}
-            color={color}
+            color={Colors[color]}
         />
     );
 };
