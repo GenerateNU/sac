@@ -20,12 +20,12 @@ func (cr *ClubRecruitmentController) CreateClubRecruitment(c *fiber.Ctx) error {
 		return err
 	}
 
-	club, err := cr.clubRecruitmentService.CreateClubRecruitment(c.UserContext(), c.Params("clubID"), body)
+	recruitment, err := cr.clubRecruitmentService.CreateClubRecruitment(c.UserContext(), c.Params("clubID"), body)
 	if err != nil {
 		return err
 	}
 
-	return c.Status(http.StatusCreated).JSON(club)
+	return c.Status(http.StatusCreated).JSON(recruitment)
 }
 
 func (cr *ClubRecruitmentController) UpdateClubRecruitment(c *fiber.Ctx) error {
@@ -34,12 +34,12 @@ func (cr *ClubRecruitmentController) UpdateClubRecruitment(c *fiber.Ctx) error {
 		return err
 	}
 
-	club, err := cr.clubRecruitmentService.UpdateClubRecruitment(c.UserContext(), c.Params("clubID"), body)
+	recruitment, err := cr.clubRecruitmentService.UpdateClubRecruitment(c.UserContext(), c.Params("clubID"), body)
 	if err != nil {
 		return err
 	}
 
-	return c.Status(http.StatusOK).JSON(club)
+	return c.Status(http.StatusOK).JSON(recruitment)
 }
 
 func (cr *ClubRecruitmentController) DeleteClubRecruitment(c *fiber.Ctx) error {
@@ -50,11 +50,21 @@ func (cr *ClubRecruitmentController) DeleteClubRecruitment(c *fiber.Ctx) error {
 	return c.SendStatus(http.StatusNoContent)
 }
 
-func (cr *ClubRecruitmentController) GetClubRecruitmentApplications(c *fiber.Ctx) error {
-	return nil
+func (cr *ClubRecruitmentController) CreateClubRecruitmentApplication(c *fiber.Ctx) error {
+	var body CreateApplicationRequestBody
+	if err := c.BodyParser(&body); err != nil {
+		return err
+	}
+
+	application, err := cr.clubRecruitmentService.CreateApplicationRequestBody(c.UserContext(), c.Params("clubID"), c.Params("recruitmentID"), body)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(http.StatusCreated).JSON(application)
 }
 
-func (cr *ClubRecruitmentController) CreateClubRecruitmentApplication(c *fiber.Ctx) error {
+func (cr *ClubRecruitmentController) GetClubRecruitmentApplications(c *fiber.Ctx) error {
 	return nil
 }
 

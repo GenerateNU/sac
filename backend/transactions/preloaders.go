@@ -27,3 +27,9 @@ func PreloadEvent() OptionalQuery {
 		return db.Preload("Event")
 	}
 }
+
+func PreloadRecruitment() OptionalQuery {
+	return func(db *gorm.DB) *gorm.DB {
+		return db.Preload("Recruitment")
+	}
+}
