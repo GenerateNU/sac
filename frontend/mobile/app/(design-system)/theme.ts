@@ -1,16 +1,16 @@
-import { createTheme } from '@shopify/restyle';
+import { AllProps, createTheme } from '@shopify/restyle';
 
-import { Colors } from './Colors';
-import { Spacing } from './Spacing';
-import { TagVariants } from './Tag/TagVariants';
-import { TextVariants } from './Text/TextVariants';
+import { TextVariants } from './components/Text/TextVariants';
+import { Border } from './shared/border';
+import { Colors } from './shared/colors';
+import { Spacing } from './shared/spacing';
 import { TextBoxVariants } from './Textbox/TextboxVariants';
 
 export const theme = createTheme({
     colors: Colors,
     spacing: Spacing,
+    borderRadii: Border,
     textVariants: TextVariants,
-    tagVariants: TagVariants,
     textBoxVariants: TextBoxVariants
 });
 
