@@ -2,18 +2,18 @@ import React from 'react';
 import { GestureResponderEvent, TouchableOpacity } from 'react-native';
 
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { createBox } from '@shopify/restyle';
+import { BoxProps, createBox } from '@shopify/restyle';
 
+import { Text } from '@/app/(design-system)/components/Text/Text';
 import {
     SACColors,
     defaultColor,
     textColorVariants
-} from '@/app/(design-system)/Colors';
-import { Text } from '@/app/(design-system)/Text/Text';
+} from '@/app/(design-system)/shared/colors';
 import { Theme, createStyles } from '@/app/(design-system)/theme';
 
+import { ComponentSizes } from '../../shared/types';
 import { Icon } from '../Icon/Icon';
-import { ComponentSizes } from '../shared/types';
 
 interface BaseButtonProps {
     onPress?: (event: GestureResponderEvent) => void;
@@ -31,64 +31,69 @@ interface IconButtonProps {
     variant: 'iconButton';
     icon: IconDefinition;
     iconColor?: SACColors;
-    position?: 'left' | 'right';
+    iconPosition?: 'left' | 'right';
     justify?: 'center' | 'space-between' | 'flex-end' | 'flex-start';
     size?: ComponentSizes;
 }
 
 type VariantButtonProps = StandardButtonProps | IconButtonProps;
-type ButtonProps = BaseButtonProps & VariantButtonProps;
+type ButtonProps = BaseButtonProps & VariantButtonProps & BoxProps<Theme>;
 
 const BaseButton = createBox<Theme, ButtonProps>(TouchableOpacity);
 
-const StandardButton: React.FC<BaseButtonProps & StandardButtonProps> = ({
+const StandardButton: React.FC<
+    BaseButtonProps & StandardButtonProps & BoxProps<Theme>
+> = ({
     children,
     onPress,
     disabled = false,
     color = defaultColor,
-    size = 'full'
+    size = 'full',
+    ...rest
 }) => {
     return (
         <BaseButton
-            variant="standardButton"
-            {...styles.baseButton}
-            {...buttonSizeStyles[size]}
             backgroundColor={disabled ? 'disabled' : color}
             disabled={disabled}
             onPress={disabled ? undefined : onPress}
+            {...styles.standardButton}
+            {...buttonSizeStyles[size]}
+            {...rest}
         >
             <Text color={textColorVariants[color]}>{children}</Text>
         </BaseButton>
     );
 };
 
-const IconButton: React.FC<BaseButtonProps & IconButtonProps> = ({
+const IconButton: React.FC<
+    BaseButtonProps & IconButtonProps & BoxProps<Theme>
+> = ({
     children,
     onPress,
     disabled = false,
     color,
     icon,
     iconColor = 'white',
-    position = 'left',
+    iconPosition = 'left',
     justify = 'center',
-    size = 'full'
+    size = 'full',
+    ...rest
 }) => {
     const buttonIcon = <Icon size={size} icon={icon} color={iconColor} />;
 
     return (
         <BaseButton
-            variant="iconButton"
-            {...styles.baseButton}
-            {...styles.iconButton}
-            {...buttonSizeStyles[size]}
             backgroundColor={disabled ? 'disabled' : color}
             justifyContent={justify}
             disabled={disabled}
             onPress={disabled ? undefined : onPress}
+            {...styles.iconButton}
+            {...buttonSizeStyles[size]}
+            {...rest}
         >
-            {position === 'left' && buttonIcon}
+            {iconPosition === 'left' && buttonIcon}
             <Text color={textColorVariants[color ?? 'black']}>{children}</Text>
-            {position === 'right' && buttonIcon}
+            {iconPosition === 'right' && buttonIcon}
         </BaseButton>
     );
 };
@@ -104,14 +109,19 @@ export const Button: React.FC<ButtonProps> = (props) => {
 };
 
 const styles = createStyles({
-    baseButton: {
+    standardButton: {
         alignItems: 'center',
         justifyContent: 'center',
         paddingHorizontal: 'l',
         paddingVertical: 'm',
-        borderRadius: 8
+        borderRadius: 'base'
     },
     iconButton: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 'l',
+        paddingVertical: 'm',
+        borderRadius: 'base',
         flexDirection: 'row',
         gap: 's'
     }
@@ -120,7 +130,7 @@ const styles = createStyles({
 const buttonSizeStyles = createStyles({
     small: {
         minWidth: 80,
-        paddingVertical: 's',
+        paddingVertical: 'xs',
         paddingHorizontal: 'm'
     },
     medium: {

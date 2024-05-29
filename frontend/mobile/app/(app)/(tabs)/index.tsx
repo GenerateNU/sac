@@ -1,19 +1,9 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { faChevronUp } from '@fortawesome/free-solid-svg-icons';
-
-import { Button } from '@/app/(design-system)/Button/Button';
-
 const HomePage = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Home Page</Text>
-            <Button
-                variant="iconButton"
-                icon={faChevronUp}
-                iconColor={'black'}
-                size={'small'}
-            />
         </View>
     );
 };

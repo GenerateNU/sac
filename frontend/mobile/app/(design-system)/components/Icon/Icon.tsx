@@ -1,9 +1,9 @@
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 
-import { SACColors } from '../Colors';
-import { ComponentSizes } from '../shared/types';
-import { createStyles } from '../theme';
+import { SACColors } from '../../shared/colors';
+import { ComponentSizes } from '../../shared/types';
+import { createStyles } from '../../theme';
 
 type IconProps = {
     icon: IconDefinition;

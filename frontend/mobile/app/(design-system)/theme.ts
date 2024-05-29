@@ -1,15 +1,15 @@
 import { AllProps, createTheme } from '@shopify/restyle';
 
-import { Colors } from './Colors';
-import { Spacing } from './Spacing';
-import { TagVariants } from './Tag/TagVariants';
-import { TextVariants } from './Text/TextVariants';
+import { TextVariants } from './components/Text/TextVariants';
+import { Border } from './shared/border';
+import { Colors } from './shared/colors';
+import { Spacing } from './shared/spacing';
 
 export const theme = createTheme({
     colors: Colors,
     spacing: Spacing,
-    textVariants: TextVariants,
-    tagVariants: TagVariants
+    borderRadii: Border,
+    textVariants: TextVariants
 });
 
 export const createStyles = <Keys extends string>(
