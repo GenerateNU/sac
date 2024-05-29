@@ -11,8 +11,14 @@ const Texts = {
         fontSize: 24,
         fontStyle: 'normal',
         fontWeight: '500',
-        lineHeight: 'normal',
-        color: '#000'
+        lineHeight: 'normal'
+    },
+    'subheader-2': {
+        fontFamily: 'DMSans-Medium',
+        fontSize: 20,
+        fontStyle: 'normal',
+        fontWeight: '500',
+        lineHeight: 'normal'
     },
     'body-1': {
         fontFamily: 'DMSans-Regular',

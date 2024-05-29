@@ -38,5 +38,16 @@ export const TagVariants = {
         backgroundColor: 'aqua',
         borderRadius: 105
     },
+    eventCard: {
+        flex: '1',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 's',
+        paddingVertical: 'xxs',
+        borderColor: 'darkGray',
+        borderWidth: 0.3,
+        borderRadius: 10,
+        backgroundColor: 'white'
+    },
     ...TagColorVariants
 };
