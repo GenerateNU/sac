@@ -21,14 +21,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <StoreProvider>
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
           fontSans.variable
         )}
-      >{children}</body>
-      </StoreProvider>
+      >
+        <StoreProvider>
+          {children}
+        </StoreProvider>
+      </body>
     </html>
+
   );
 }
