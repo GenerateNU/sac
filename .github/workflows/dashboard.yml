@@ -59,13 +59,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
-          cache: yarn
-          cache-dependency-path: frontend/dashboard/yarn.lock
+          # cache: yarn
+          # cache-dependency-path: frontend/dashboard/yarn.lock
       - name: Install dependencies
         run: |
           cd frontend/dashboard
-          yarn install
+          npm install
       - name: Test
         run: |
           cd frontend/dashboard
-          yarn test
+          npm test
