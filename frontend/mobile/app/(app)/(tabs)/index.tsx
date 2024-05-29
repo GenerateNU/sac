@@ -6,7 +6,7 @@ import { RecruitmentInfo } from '@/components/club-recruitment-info';
 const HomePage = () => {
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Home</Text>
+            <Text style={styles.title}>Hello</Text>
             <RecruitmentInfo
                 recruitmentText="Fill out our application"
                 recruitingType="unrestricted"

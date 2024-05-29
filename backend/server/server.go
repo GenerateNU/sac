@@ -23,6 +23,7 @@ import (
 	"github.com/GenerateNU/sac/backend/integrations"
 	authMiddleware "github.com/GenerateNU/sac/backend/middleware/auth"
 	utilityMiddleware "github.com/GenerateNU/sac/backend/middleware/utility"
+	search "github.com/GenerateNU/sac/backend/search/base"
 
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
@@ -91,6 +92,7 @@ func allRoutes(app *fiber.App, routeParams types.RouteParams) {
 	categories.CategoryRoutes(routeParams)
 	events.EventRoutes(routeParams)
 	files.File(routeParams)
+	search.SearchRoutes(routeParams)
 	oauth.OAuth(routeParams)
 }
 

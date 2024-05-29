@@ -1,41 +1,41 @@
 package config
 
 import (
-	"errors"
+	"fmt"
 
 	m "github.com/garrettladley/mattress"
 )
 
 type RedisSettings struct {
-	Username string            `yaml:"username"`
-	Host     string            `yaml:"host"`
-	Port     uint              `yaml:"port"`
-	Password *m.Secret[string] `yaml:"password"`
-	DB       int               `yaml:"db"`
-	// TLSConfig *TLSConfig       `yaml:"tlsconfig"`
-}
-
-func (int *intermediateRedisSettings) into() (*RedisSettings, error) {
-	password, err := m.NewSecret(int.Password)
-	if err != nil {
-		return nil, errors.New("failed to create secret from password")
-	}
-
-	return &RedisSettings{
-		Username: int.Username,
-		Host:     int.Host,
-		Port:     int.Port,
-		Password: password,
-		DB:       int.DB,
-		// TLSConfig: int.TLSConfig.into(),
-	}, nil
+	Username string
+	Password *m.Secret[string]
+	Host     string
+	Port     uint
+	DB       int
+	// TLSConfig *TLSConfig
 }
 
 type intermediateRedisSettings struct {
-	Username string `yaml:"username"`
-	Host     string `yaml:"host"`
-	Port     uint   `yaml:"port"`
-	Password string `yaml:"password"`
-	DB       int    `yaml:"db"`
-	// TLSConfig *intermediateTLSConfig `yaml:"tlsconfig"`
+	username string `env:"USERNAME"`
+	password string `env:"PASSWORD"`
+	host     string `env:"HOST"`
+	port     uint   `env:"PORT"`
+	db       int    `env:"DB"`
+	// TLSConfig *intermediateTLSConfig `env:"TLS_CONFIG"`
+}
+
+func (i *intermediateRedisSettings) into() (*RedisSettings, error) {
+	password, err := m.NewSecret(i.password)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create secret from password: %s", err.Error())
+	}
+
+	return &RedisSettings{
+		Username: i.username,
+		Password: password,
+		Host:     i.host,
+		Port:     i.port,
+		DB:       i.db,
+		// TLSConfig: i.TLSConfig.into(),
+	}, nil
 }

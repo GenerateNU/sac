@@ -24,25 +24,11 @@ func NewStores(limiter LimiterInterface, blacklist BlacklistInterface, activeTok
 }
 
 func ConfigureRedis(settings config.Settings) *Stores {
-	var activeTokens *ActiveToken
-	var blacklist *Blacklist
-	var limiter *Limiter
-
-	for _, service := range settings.Redis {
-		client := NewRedisClient(service.Username, service.Host, service.Port, service.Password, service.DB)
-		switch service.Username {
-		case "redis_active_tokens":
-			activeTokens = NewActiveToken(client)
-		case "redis_blacklist":
-			blacklist = NewBlacklist(client)
-		case "redis_limiter":
-			limiter = NewLimiter(client)
-		default:
-			slog.Error("unknown redis service", service.Username, "skipping...")
-		}
-	}
-
-	stores := NewStores(limiter, blacklist, activeTokens)
+	stores := NewStores(
+		NewLimiter(NewRedisClient(settings.RedisLimiter.Username, settings.RedisLimiter.Host, settings.RedisLimiter.Port, settings.RedisLimiter.Password, settings.RedisLimiter.DB)),
+		NewBlacklist(NewRedisClient(settings.RedisBlacklist.Username, settings.RedisBlacklist.Host, settings.RedisBlacklist.Port, settings.RedisBlacklist.Password, settings.RedisBlacklist.DB)),
+		NewActiveToken(NewRedisClient(settings.RedisActiveTokens.Username, settings.RedisActiveTokens.Host, settings.RedisActiveTokens.Port, settings.RedisActiveTokens.Password, settings.RedisActiveTokens.DB)),
+	)
 
 	MustEstablishConn()
 
@@ -86,7 +72,7 @@ func restartServices() error {
 
 	err := cmd.Run()
 	if err != nil {
-		return fmt.Errorf("error restarting services: %s \nconsole output: %s", err.Error(), out.String())
+		return fmt.Errorf("error restarting services: %s\nconsole output: %s", err.Error(), out.String())
 	}
 
 	slog.Info("Services restarted successfully.")

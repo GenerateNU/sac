@@ -47,3 +47,38 @@ type Event struct {
 	Tag          []Tag          `gorm:"many2many:event_tags;" json:"-"`
 	Notification []Notification `gorm:"polymorphic:Reference;" json:"-"`
 }
+
+// How Events are represented in the OpenSearch index.
+type EventSearchDocument struct {
+	Name        string    `json:"name"`
+	Preview     string    `json:"preview"`
+	Description string    `json:"description"`
+	EventType   EventType `json:"event_type"`
+	StartTime   time.Time `json:"start_time"`
+	EndTime     time.Time `json:"end_time"`
+	Clubs       []string  `json:"clubs"`
+	Tags        []string  `json:"tags"`
+}
+
+func (c *Event) ToSearchDocument() interface{} {
+	tagIds := make([]string, len(c.Tag))
+	for i, tag := range c.Tag {
+		tagIds[i] = tag.ID.String()
+	}
+
+	clubIds := make([]string, len(c.Clubs))
+	for i, club := range c.Clubs {
+		clubIds[i] = club.ID.String()
+	}
+
+	return EventSearchDocument{
+		Name:        c.Name,
+		Preview:     c.Preview,
+		Description: c.Description,
+		EventType:   c.EventType,
+		StartTime:   c.StartTime,
+		EndTime:     c.EndTime,
+		Tags:        tagIds,
+		Clubs:       clubIds,
+	}
+}

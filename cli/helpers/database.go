@@ -22,7 +22,7 @@ func InitDB() error {
 }
 
 func DownDB() error {
-	config, err := config.GetConfiguration(CONFIG, false)
+	config, err := config.GetConfiguration(CONFIG)
 	if err != nil {
 		return err
 	}
@@ -42,7 +42,7 @@ func DownDB() error {
 }
 
 func CleanTestDBs() error {
-	config, err := config.GetConfiguration(CONFIG, false)
+	config, err := config.GetConfiguration(CONFIG)
 	if err != nil {
 		return err
 	}
@@ -102,7 +102,7 @@ func CleanTestDBs() error {
 }
 
 func InsertDB() error {
-	config, err := config.GetConfiguration(CONFIG, false)
+	config, err := config.GetConfiguration(CONFIG)
 	if err != nil {
 		return err
 	}

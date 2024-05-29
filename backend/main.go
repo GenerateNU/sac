@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/GenerateNU/sac/backend/config"
+	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/database"
 	"github.com/GenerateNU/sac/backend/database/store"
 	_ "github.com/GenerateNU/sac/backend/docs"
@@ -16,26 +17,23 @@ import (
 	"github.com/GenerateNU/sac/backend/integrations/email"
 	"github.com/GenerateNU/sac/backend/integrations/file"
 	"github.com/GenerateNU/sac/backend/integrations/oauth"
-	"github.com/GenerateNU/sac/backend/integrations/search"
 	"github.com/GenerateNU/sac/backend/server"
 	"github.com/GenerateNU/sac/backend/telemetry"
-	"github.com/GenerateNU/sac/backend/tests/api/mocks"
 	"github.com/GenerateNU/sac/backend/utilities"
 )
 
 func main() {
 	onlyMigrate := flag.Bool("only-migrate", false, "Specify if you want to only perform the database migration")
-	onlySeedPinecone := flag.Bool("seed-pinecone", false, "Specify if want to only perform the pinecone database seeding")
-	connectToPinecone := flag.Bool("connect-to-pinecone", false, "Connect to a real Pinecone instance instead of mock")
-	configPath := flag.String("config", filepath.Join("..", "config"), "Specify the path to the config directory")
-	useDevDotEnv := flag.Bool("use-dev-dot-env", true, "Specify if you want to use the .env.dev file")
+	seedSearch := flag.Bool("seed-search", true, "Specify if you want to seed the opensearch nodes.")
+	configPath := flag.String("config", filepath.Join("..", "config", ".env.dev"), "Specify the path to the config file (.env)")
 
 	flag.Parse()
-
-	config, err := config.GetConfiguration(*configPath, *useDevDotEnv)
+	config, err := config.GetConfiguration(*configPath)
 	if err != nil {
 		utilities.Exit("Error getting configuration: %s", err.Error())
 	}
+
+	constants.SEARCH_URI = config.Search.URI
 
 	err = checkServerRunning(config.Application.Host, config.Application.Port)
 	if err == nil {
@@ -51,15 +49,15 @@ func main() {
 		return
 	}
 
-	if *onlySeedPinecone {
-		openAi := search.NewOpenAIClient(config.OpenAI)
-		pinecone := search.NewPineconeClient(openAi, config.Pinecone)
+	if *seedSearch {
+		slog.Info("to appease linter", "seedSearch", *seedSearch)
+		// if err := search.SeedClubs(db); err != nil {
+		// 	return
+		// }
 
-		err := pinecone.Seed(db)
-		if err != nil {
-			utilities.Exit("Error seeding PineconeDB: %s\n", err.Error())
-		}
-		return
+		// if err := search.SeedEvents(db); err != nil {
+		// 	return
+		// }
 	}
 
 	err = database.ConnPooling(db)
@@ -69,7 +67,7 @@ func main() {
 
 	stores := store.ConfigureRedis(*config)
 
-	integrations := configureIntegrations(config, *connectToPinecone)
+	integrations := configureIntegrations(&config.Integrations)
 
 	tp := telemetry.InitTracer()
 
@@ -81,7 +79,7 @@ func main() {
 		}
 	}()
 
-	app := server.Init(db, stores, integrations, *config)
+	app := server.Init(db, stores, *integrations, *config)
 
 	err = app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
 	if err != nil {
@@ -99,36 +97,17 @@ func checkServerRunning(host string, port uint16) error {
 	return nil
 }
 
-func configureIntegrations(config *config.Settings, connectToPinecone bool) integrations.Integrations {
-	openAi := search.NewOpenAIClient(config.OpenAI)
-	var pinecone search.SearchClientInterface
-
-	if connectToPinecone {
-		pinecone = search.NewPineconeClient(openAi, config.Pinecone)
-	} else {
-		pinecone = mocks.NewPineconeMockClient()
+func configureIntegrations(config *config.Integrations) *integrations.Integrations {
+	return &integrations.Integrations{
+		File:  file.NewAWSProvider(config.AWS),
+		Email: email.NewResendClient(config.Resend, true),
+		OAuth: oauth.OauthProviderSettings{
+			Google: oauth.GoogleOAuthClient{
+				OAuthConfig: config.GoogleOauth,
+			},
+			Outlook: oauth.OutlookOAuthClient{
+				OAuthConfig: config.OutlookOauth,
+			},
+		},
 	}
-
-	// OAuth Integrations:
-	googleClient := oauth.GoogleOAuthClient{
-		OAuthConfig: config.GoogleSettings,
-	}
-	outlookClient := oauth.OutlookOAuthClient{
-		OAuthConfig: config.OutlookSettings,
-	}
-
-	oauthResources := oauth.OAuthResources{
-		Google:  googleClient,
-		Outlook: outlookClient,
-	}
-
-	integrations := integrations.Integrations{
-		File:   file.NewAWSProvider(config.AWS),
-		AI:     openAi,
-		Email:  email.NewResendClient(config.Resend, true),
-		Search: pinecone,
-		OAuth:  oauthResources,
-	}
-
-	return integrations
 }

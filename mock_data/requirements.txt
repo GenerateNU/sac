@@ -1,3 +1,4 @@
 openai==1.24.0
 progress==1.6
 Requests==2.31.0
+psycopg2==2.9.9

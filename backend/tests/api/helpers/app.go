@@ -26,14 +26,14 @@ func spawnApp() (*TestApp, error) {
 		return nil, err
 	}
 
-	configuration, err := config.GetConfiguration(filepath.Join("..", "..", "..", "config"), false)
+	configuration, err := config.GetConfiguration(filepath.Join("..", "..", "..", "config"))
 	if err != nil {
 		return nil, err
 	}
 
 	configuration.Database.DatabaseName = generateRandomDBName()
 
-	connectionWithDB, err := configureDatabase(*configuration)
+	connectionWithDB, err := configureDatabase(configuration.Database, configuration.SuperUser)
 	if err != nil {
 		return nil, err
 	}
