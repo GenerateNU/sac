@@ -45,7 +45,7 @@ type AWSClient struct {
 func NewAWSProvider(settings config.AWSSettings) FileClientInterface {
 	sess, err := session.NewSession(&aws.Config{
 		Region:      aws.String(settings.Region.Expose()),
-		Credentials: credentials.NewStaticCredentials(settings.Id.Expose(), settings.Secret.Expose(), ""),
+		Credentials: credentials.NewStaticCredentials(settings.ID.Expose(), settings.Secret.Expose(), ""),
 	})
 	if err != nil {
 		return nil

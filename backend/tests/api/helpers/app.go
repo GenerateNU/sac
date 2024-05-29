@@ -33,7 +33,7 @@ func spawnApp() (*TestApp, error) {
 
 	configuration.Database.DatabaseName = generateRandomDBName()
 
-	connectionWithDB, err := configureDatabase(*configuration)
+	connectionWithDB, err := configureDatabase(configuration.Database, configuration.SuperUser)
 	if err != nil {
 		return nil, err
 	}

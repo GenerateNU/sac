@@ -4,7 +4,8 @@ module.exports = {
     plugins: ['prettier', 'jest'],
     rules: {
         'prettier/prettier': 'error',
-        'react/react-in-jsx-scope': 'off'
+        'react/react-in-jsx-scope': 'off',
+        'react-native/no-inline-styles': 'off',
     },
     env: {
         'jest/globals': true

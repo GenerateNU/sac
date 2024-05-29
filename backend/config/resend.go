@@ -11,11 +11,11 @@ type ResendSettings struct {
 }
 
 type intermediateResendSettings struct {
-	APIKey string `env:"API_KEY"`
+	apiKey string `env:"API_KEY"`
 }
 
 func (i *intermediateResendSettings) into() (*ResendSettings, error) {
-	apiKey, err := m.NewSecret(i.APIKey)
+	apiKey, err := m.NewSecret(i.apiKey)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create secret from API key: %s", err.Error())
 	}

@@ -1,45 +1,49 @@
 package config
 
-import m "github.com/garrettladley/mattress"
+import (
+	"fmt"
+
+	m "github.com/garrettladley/mattress"
+)
 
 type AWSSettings struct {
 	BucketName *m.Secret[string]
-	Id         *m.Secret[string]
+	ID         *m.Secret[string]
 	Secret     *m.Secret[string]
 	Region     *m.Secret[string]
 }
 
 type intermediateAWSSettings struct {
-	BucketName string `env:"BUCKET_NAME"`
-	Id         string `env:"ID"`
-	Secret     string `env:"SECRET"`
-	Region     string `env:"REGION"`
+	bucketName string `env:"BUCKET_NAME"`
+	id         string `env:"ID"`
+	secret     string `env:"SECRET"`
+	region     string `env:"REGION"`
 }
 
 func (i *intermediateAWSSettings) into() (*AWSSettings, error) {
-	bucketName, err := m.NewSecret(i.BucketName)
+	bucketName, err := m.NewSecret(i.bucketName)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create secret from bucket name: %s", err.Error())
 	}
 
-	id, err := m.NewSecret(i.Id)
+	id, err := m.NewSecret(i.id)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create secret from ID: %s", err.Error())
 	}
 
-	secret, err := m.NewSecret(i.Secret)
+	secret, err := m.NewSecret(i.secret)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create secret from secret: %s", err.Error())
 	}
 
-	region, err := m.NewSecret(i.Region)
+	region, err := m.NewSecret(i.region)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create secret from region: %s", err.Error())
 	}
 
 	return &AWSSettings{
 		BucketName: bucketName,
-		Id:         id,
+		ID:         id,
 		Secret:     secret,
 		Region:     region,
 	}, nil

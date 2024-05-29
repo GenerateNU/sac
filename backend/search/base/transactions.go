@@ -21,7 +21,7 @@ func doSearchGetRequest[T, V any](url string, requestBody T) (*V, error) {
 		return nil, err
 	}
 
-	resp, err := utilities.Request(http.MethodGet, fmt.Sprintf("%s%s", constants.SEARCH_URL, url), payload, utilities.JSON())
+	resp, err := utilities.Request(http.MethodGet, fmt.Sprintf("%s%s", constants.SEARCH_URI, url), payload, utilities.JSON())
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func Upsert[T types.Searchable](db *gorm.DB, index string, uuid string, model ty
 		return err
 	}
 
-	resp, err := utilities.Request(http.MethodPost, fmt.Sprintf("%s/%s/_update/%s", constants.SEARCH_URL, index, uuid), payload, utilities.JSON())
+	resp, err := utilities.Request(http.MethodPost, fmt.Sprintf("%s/%s/_update/%s", constants.SEARCH_URI, index, uuid), payload, utilities.JSON())
 	if err != nil {
 		return err
 	}
@@ -90,7 +90,7 @@ func Upsert[T types.Searchable](db *gorm.DB, index string, uuid string, model ty
 }
 
 func Delete(db *gorm.DB, index string, uuid string) error {
-	resp, err := utilities.Request(http.MethodDelete, fmt.Sprintf("%s/%s/_doc/%s", constants.SEARCH_URL, index, uuid), nil, utilities.JSON())
+	resp, err := utilities.Request(http.MethodDelete, fmt.Sprintf("%s/%s/_doc/%s", constants.SEARCH_URI, index, uuid), nil, utilities.JSON())
 	if err != nil {
 		return err
 	}

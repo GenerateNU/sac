@@ -1,24 +1,60 @@
-import { baseApi } from '@generatesac/lib';
-import { configureStore } from '@reduxjs/toolkit'
-import { useDispatch, useSelector, useStore } from 'react-redux';
-import { clubReducer } from '../app/state/club/clubSlice';
-import { recruitmentReducer } from '../app/state/recruitment/recruitmentSlice';
+import { baseApi } from "@generatesac/lib";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import { useDispatch, useSelector, useStore } from "react-redux";
+import userReducer from "@/src/store/slices/userSlice";
+import storage from "redux-persist/lib/storage";
+import persistReducer from "redux-persist/es/persistReducer";
+import { thunk } from "redux-thunk";
+import {
+  FLUSH,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+  REHYDRATE,
+  persistStore,
+} from "redux-persist";
+import autoMergeLevel2 from "redux-persist/es/stateReconciler/autoMergeLevel2";
 
-export const makeStore = () => {
-  return configureStore({
-    reducer: {
-      [baseApi.reducerPath]: baseApi.reducer,
-      clubReducer: clubReducer,
-      recruitmentReducer: recruitmentReducer,
-    },
-    middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware()
-      .concat(baseApi.middleware)
-  })
+const rootReducer = combineReducers({
+  user: userReducer,
+  [baseApi.reducerPath]: baseApi.reducer,
+});
+
+type RootReducer = ReturnType<typeof rootReducer>;
+
+const persistanceConfig = {
+  key: "root",
+  storage,
+  stateReconciler: autoMergeLevel2,
+  blacklist: [baseApi.reducerPath],
+  whitelist: ["user"],
 };
 
+const persistedReducer = persistReducer<RootReducer>(
+  persistanceConfig,
+  rootReducer,
+);
+
+export const store = 
+  configureStore({
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: {
+          ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+        }
+      })
+      .concat(baseApi.middleware)
+      .concat(thunk),
+    
+    reducer: persistedReducer,
+    devTools: process.env.NODE_ENV !== "production",
+  });
+
+export const persistor = persistStore(store);
+
 // Redux types:
-export type AppStore = ReturnType<typeof makeStore>
+export type AppStore = typeof store
 export type RootState = ReturnType<AppStore['getState']>
 export type AppDispatch = AppStore['dispatch']
 
