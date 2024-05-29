@@ -1,16 +1,13 @@
 import React from 'react';
 import { TextInput } from 'react-native';
 
-import {
-    VariantProps,
-    createRestyleComponent,
-    createVariant
-} from '@shopify/restyle';
+import { BoxProps, createBox } from '@shopify/restyle';
 
-import { Box } from '@/app/(design-system)/Box';
-import { Text } from '@/app/(design-system)/Text/Text';
 import ErrorIcon from '@/app/(design-system)/assets/svg/Error.svg';
-import { Theme } from '@/app/(design-system)/theme';
+import { Box } from '@/app/(design-system)/components/Box/Box';
+import { Text } from '@/app/(design-system)/components/Text/Text';
+import { TextVariants } from '@/app/(design-system)/components/Text/TextVariants';
+import { Theme, createStyles } from '@/app/(design-system)/theme';
 
 type TextboxProps = {
     title?: string;
@@ -24,23 +21,12 @@ type TextboxProps = {
     value?: string;
     maxLength?: number;
     secureTextEntry?: boolean;
-};
+    children?: React.ReactNode;
+} & BoxProps<Theme>;
 
-const textBoxVariant = createVariant<Theme, 'textBoxVariants'>({
-    themeKey: 'textBoxVariants'
-});
+const BaseTextInput = createBox<Theme, TextboxProps>(TextInput);
 
-type TextBoxVariantProps = VariantProps<Theme, 'textBoxVariants'> &
-    TextboxProps & {
-        children?: React.ReactNode;
-    };
-
-const TextInputBase = createRestyleComponent<TextBoxVariantProps, Theme>(
-    [textBoxVariant],
-    TextInput
-);
-
-export const TextBox: React.FC<TextBoxVariantProps> = ({
+export const TextBox: React.FC<TextboxProps> = ({
     title,
     placeholder,
     helperText = ' ',
@@ -58,8 +44,7 @@ export const TextBox: React.FC<TextBoxVariantProps> = ({
             <Text color="black" variant="body-1">
                 {title}
             </Text>
-            <TextInputBase
-                variant={error ? 'error' : undefined}
+            <BaseTextInput
                 placeholder={placeholder}
                 autoFocus={autoFocus}
                 readOnly={readOnly}
@@ -68,6 +53,8 @@ export const TextBox: React.FC<TextBoxVariantProps> = ({
                 value={value}
                 maxLength={maxLength}
                 secureTextEntry={secureTextEntry}
+                {...styles.textInput}
+                borderColor={error ? 'darkRed' : 'gray'}
             />
             <Box gap="xxs" flexDirection="row" alignItems="center">
                 {error && <ErrorIcon />}
@@ -78,3 +65,16 @@ export const TextBox: React.FC<TextBoxVariantProps> = ({
         </Box>
     );
 };
+
+const styles = createStyles({
+    textInput: {
+        borderWidth: 1,
+        borderRadius: 'base',
+        backgroundColor: 'white',
+        padding: 'm',
+        marginBottom: 'xs',
+        marginTop: 'xs',
+        minWidth: '100%',
+        ...TextVariants['body-1']
+    }
+});

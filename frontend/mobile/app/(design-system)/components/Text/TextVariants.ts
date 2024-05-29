@@ -10,30 +10,25 @@ const Texts = {
         fontFamily: 'DMSans-Medium',
         fontSize: 24,
         fontStyle: 'normal',
-        fontWeight: '500',
-        lineHeight: 'normal',
-        color: '#000'
+        fontWeight: '500'
     },
     'body-1': {
         fontFamily: 'DMSans-Regular',
         fontSize: 16,
         fontStyle: 'normal',
-        fontWeight: '400',
-        lineHeight: 'normal'
+        fontWeight: '400'
     },
     'caption-1': {
         fontFamily: 'DMSans-Regular',
         fontSize: 12,
         fontStyle: 'normal',
-        fontWeight: '200',
-        lineHeight: 'normal'
+        fontWeight: '200'
     },
     'caption-2': {
         fontFamily: 'DMSans-Regular',
         fontSize: 10,
         fontStyle: 'normal',
-        fontWeight: '200',
-        lineHeight: 'normal'
+        fontWeight: '200'
     }
 } as const;
 

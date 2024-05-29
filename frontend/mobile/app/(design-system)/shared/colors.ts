@@ -11,7 +11,7 @@ export const Colors = {
     yellow: '#FFB626',
     white: '#FFFFFF',
     black: '#000000',
-    disabled: '#BDBDBD'
+    gray: '#C3C9D0'
 };
 
 export type SACColors = keyof typeof Colors;
@@ -69,5 +69,5 @@ export const textColorVariants = {
     yellow: 'white',
     white: 'black',
     black: 'white',
-    disabled: 'white'
+    gray: 'white'
 } as const;

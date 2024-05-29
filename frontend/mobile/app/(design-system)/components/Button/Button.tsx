@@ -53,7 +53,7 @@ const StandardButton: React.FC<
 }) => {
     return (
         <BaseButton
-            backgroundColor={disabled ? 'disabled' : color}
+            backgroundColor={disabled ? 'gray' : color}
             disabled={disabled}
             onPress={disabled ? undefined : onPress}
             {...styles.standardButton}
@@ -83,7 +83,7 @@ const IconButton: React.FC<
 
     return (
         <BaseButton
-            backgroundColor={disabled ? 'disabled' : color}
+            backgroundColor={disabled ? 'gray' : color}
             justifyContent={justify}
             disabled={disabled}
             onPress={disabled ? undefined : onPress}
