@@ -9,7 +9,3 @@ type UpdatePasswordRequestBody struct {
 	OldPassword string `json:"old_password" validate:"required"`                                    // MARK: must be validated manually
 	NewPassword string `json:"new_password" validate:"required,not_equal_if_not_empty=OldPassword"` // MARK: must be validated manually
 }
-
-type RefreshTokenRequestBody struct {
-	RefreshToken string `json:"refresh_token" validate:"required"`
-}

@@ -1,7 +1,7 @@
 package config
 
 import (
-	"errors"
+	"fmt"
 
 	m "github.com/garrettladley/mattress"
 )
@@ -9,15 +9,14 @@ import (
 type SuperUserSettings struct {
 	Password *m.Secret[string]
 }
-
 type intermediateSuperUserSettings struct {
-	Password string `yaml:"password"`
+	password string `env:"PASSWORD"`
 }
 
-func (int *intermediateSuperUserSettings) into() (*SuperUserSettings, error) {
-	password, err := m.NewSecret(int.Password)
+func (i *intermediateSuperUserSettings) into() (*SuperUserSettings, error) {
+	password, err := m.NewSecret(i.password)
 	if err != nil {
-		return nil, errors.New("failed to create secret from password")
+		return nil, fmt.Errorf("failed to create secret from password: %s", err.Error())
 	}
 
 	return &SuperUserSettings{

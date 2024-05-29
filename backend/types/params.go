@@ -3,6 +3,7 @@ package types
 import (
 	"github.com/GenerateNU/sac/backend/auth"
 	"github.com/GenerateNU/sac/backend/config"
+	"github.com/GenerateNU/sac/backend/database/store"
 	"github.com/GenerateNU/sac/backend/integrations"
 	authMiddleware "github.com/GenerateNU/sac/backend/middleware/auth"
 	utilityMiddleware "github.com/GenerateNU/sac/backend/middleware/utility"
@@ -33,16 +34,18 @@ type ServiceParams struct {
 	Auth         *config.AuthSettings
 	JWT          auth.JWTClientInterface
 	Calendar     *config.CalendarSettings
+	Stores       *store.Stores
 	Integrations integrations.Integrations
 }
 
-func NewServiceParams(db *gorm.DB, validate *validator.Validate, auth *config.AuthSettings, jwt auth.JWTClientInterface, calendar *config.CalendarSettings, integrations integrations.Integrations) ServiceParams {
+func NewServiceParams(db *gorm.DB, validate *validator.Validate, auth *config.AuthSettings, jwt auth.JWTClientInterface, calendar *config.CalendarSettings, stores *store.Stores, integrations integrations.Integrations) ServiceParams {
 	return ServiceParams{
 		DB:           db,
 		Validate:     validate,
 		Auth:         auth,
 		JWT:          jwt,
 		Calendar:     calendar,
+		Stores:       stores,
 		Integrations: integrations,
 	}
 }

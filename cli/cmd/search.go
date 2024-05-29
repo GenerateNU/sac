@@ -9,11 +9,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var seedPineconeCmd = &cobra.Command{
-	Use:   "seed-pinecone",
-	Short: "Seed Pinecone",
+var seedSearchCmd = &cobra.Command{
+	Use:   "seed-search",
+	Short: "Seed Search",
 	Run: func(cmd *cobra.Command, args []string) {
-		err := helpers.Execute(exec.Command("go", "run", "main.go", "seed-pinecone"), helpers.BACKEND_DIR)
+		err := helpers.Execute(exec.Command("go", "run", "main.go", "seed-search"), helpers.BACKEND_DIR)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
@@ -22,5 +22,5 @@ var seedPineconeCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(seedPineconeCmd)
+	rootCmd.AddCommand(seedSearchCmd)
 }
