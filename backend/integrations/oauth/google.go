@@ -37,6 +37,7 @@ func (client *GoogleOAuthClient) Revoke(token string) error {
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	if !utilities.IsOk(resp.StatusCode) {
 		return errors.New("failed to revoke token")

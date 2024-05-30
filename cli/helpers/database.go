@@ -22,12 +22,12 @@ func InitDB() error {
 }
 
 func DownDB() error {
-	config, err := config.GetConfiguration(CONFIG, false)
+	config, err := config.GetConfiguration(CONFIG)
 	if err != nil {
 		return err
 	}
 
-	// #nosec G204 -- MIGRATIONS is a constant file path configured in cli/commands/config.go and config.Database.PostgresConn() is configured by the config/local.yml
+	// #nosec G204 -- MIGRATIONS is a constant file path configured in cli/commands/config.go and config.Database.PostgresConn() is configured in config/
 	cmd := exec.Command("migrate", "-path", MIGRATIONS, "-database", config.Database.PostgresConn(), "-verbose", "down", "-all")
 
 	cmd.Dir = ROOT_DIR
@@ -42,7 +42,7 @@ func DownDB() error {
 }
 
 func CleanTestDBs() error {
-	config, err := config.GetConfiguration(CONFIG, false)
+	config, err := config.GetConfiguration(CONFIG)
 	if err != nil {
 		return err
 	}
@@ -102,7 +102,7 @@ func CleanTestDBs() error {
 }
 
 func InsertDB() error {
-	config, err := config.GetConfiguration(CONFIG, false)
+	config, err := config.GetConfiguration(CONFIG)
 	if err != nil {
 		return err
 	}
