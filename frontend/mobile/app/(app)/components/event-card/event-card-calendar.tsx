@@ -33,7 +33,7 @@ export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
     return (
         <Box margin="xl">
             <TouchableOpacity>
-                {!isHappening && (
+                {isHappening && (
                     <Box
                         zIndex={1}
                         position="absolute"
