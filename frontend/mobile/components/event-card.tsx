@@ -1,7 +1,10 @@
 import { Dimensions } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { Tag } from '@generatesac/lib';
+import { Image } from '@rneui/base';
+import { Avatar } from '@rneui/base';
 
 import { Box, Text } from '@/app/(design-system)';
 import {
@@ -19,8 +22,8 @@ interface EventCardProps {
     startTime: Date;
     endTime: Date;
     tags?: Tag[];
-    image?: string;
-    logo?: string;
+    image: string;
+    logo: string;
     variant: 'big' | 'small' | 'club' | 'calendar';
 }
 
@@ -29,6 +32,8 @@ export const EventCard = ({
     club,
     startTime,
     endTime,
+    image,
+    logo,
     tags,
     variant
 }: EventCardProps) => {
@@ -40,11 +45,9 @@ export const EventCard = ({
         <Box margin="xl">
             <TouchableOpacity>
                 <Box gap="xs">
-                    <Box
-                        aspectRatio={1}
-                        width={'100%'}
-                        borderRadius={15}
-                        backgroundColor="darkGray"
+                    <Image
+                        containerStyle={styles.image}
+                        source={{ uri: image }}
                     />
                     <Box
                         flexDirection="row"
@@ -81,10 +84,9 @@ export const EventCard = ({
         <Box width={boxWidth}>
             <TouchableOpacity>
                 <Box flexDirection="column" gap="xs">
-                    <Box
-                        aspectRatio={1}
-                        borderRadius={15}
-                        backgroundColor="darkGray"
+                    <Image
+                        containerStyle={styles.image}
+                        source={{ uri: image }}
                     />
                     <Text fontWeight="500">{event}</Text>
                     <Text variant="caption-1" color="darkGray">
@@ -102,7 +104,7 @@ export const EventCard = ({
         </Box>
     );
 
-    const horizontalVariant = () => (
+    const clubVariant = () => (
         <Box margin="xl">
             <TouchableOpacity>
                 <Box
@@ -120,11 +122,9 @@ export const EventCard = ({
                         justifyContent="space-between"
                         gap="s"
                     >
-                        <Box
-                            flex={1.15}
-                            borderRadius={8}
-                            aspectRatio={1}
-                            backgroundColor="darkGray"
+                        <Image
+                            containerStyle={styles.clubImage}
+                            source={{ uri: image }}
                         />
                         <Box flex={3} flexDirection="column" gap="xxs">
                             <Text color="darkGray" variant="caption-1">
@@ -148,11 +148,10 @@ export const EventCard = ({
                                 <Text color="darkGray" variant="caption-1">
                                     Hosted by {club}
                                 </Text>
-                                <Box
-                                    width={14}
-                                    aspectRatio={1}
-                                    backgroundColor="darkGray"
-                                    borderRadius={50}
+                                <Avatar
+                                    size={15}
+                                    rounded
+                                    source={{ uri: logo }}
                                 />
                             </Box>
                             {tags && (
@@ -212,10 +211,9 @@ export const EventCard = ({
                         justifyContent="space-between"
                         gap="s"
                     >
-                        <Box
-                            flex={1}
-                            borderRadius={12}
-                            backgroundColor="darkGray"
+                        <Image
+                            containerStyle={styles.calendarImage}
+                            source={{ uri: image }}
                         />
                         <Box flex={2.5} flexDirection="column" gap="xxs">
                             <Text variant="body-1">{event}</Text>
@@ -223,20 +221,26 @@ export const EventCard = ({
                                 flexDirection="row"
                                 alignItems="center"
                                 gap="xxs"
+                                flexWrap="wrap"
                             >
                                 <Text
                                     variant="caption-1"
                                     color="darkGray"
                                 >{`${eventTime(startTime, endTime, createOptions('start', 'end'))} •`}</Text>
                                 <Box
-                                    width={14}
-                                    aspectRatio={1}
-                                    backgroundColor="darkGray"
-                                    borderRadius={50}
-                                />
-                                <Text color="darkGray" variant="caption-1">
-                                    {club}
-                                </Text>
+                                    flexDirection="row"
+                                    alignItems="center"
+                                    gap="xxs"
+                                >
+                                    <Avatar
+                                        size={15}
+                                        rounded
+                                        source={{ uri: logo }}
+                                    />
+                                    <Text color="darkGray" variant="caption-1">
+                                        {club}
+                                    </Text>
+                                </Box>
                             </Box>
                             {tags && <EventTags tags={tags} variant="plus" />}
                         </Box>
@@ -253,7 +257,7 @@ export const EventCard = ({
             case 'small':
                 return smallVariant();
             case 'club':
-                return horizontalVariant();
+                return clubVariant();
             case 'calendar':
                 return calendarVariant();
             default:
@@ -263,3 +267,20 @@ export const EventCard = ({
 
     return renderVariant();
 };
+
+const styles = StyleSheet.create({
+    image: {
+        aspectRatio: 1,
+        width: '100%',
+        borderRadius: 15
+    },
+    clubImage: {
+        flex: 1.15,
+        borderRadius: 8,
+        aspectRatio: 1
+    },
+    calendarImage: {
+        flex: 1,
+        borderRadius: 12
+    }
+});

@@ -48,39 +48,47 @@ const HomePage = () => {
         <SafeAreaView style={styles.container}>
             <Text style={styles.title}>Home</Text>
             <ScrollView showsVerticalScrollIndicator={false}>
-                <Box margin="xl">
+                <Box marginLeft="xl">
                     <EventCard
                         event="Spring Showcase"
                         variant="small"
                         tags={tags}
-                        club="Sandbox"
+                        club="Generate Product Development Studio"
                         startTime={new Date()}
                         endTime={new Date()}
+                        logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT800M6T7YVq_f6W49g_UNL29US7gC63nTitg&s"
+                        image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfT6p6kCen0-GphSDogJRd2KoYjg0-QQWuAw9e5JBIBEVTc3Hxho_UwRsZ0IrEi6Ap5oo&usqp=CAU"
                     />
                 </Box>
                 <EventCard
                     event="Spring Showcase"
                     variant="big"
                     tags={tags}
-                    club="Sandbox"
+                    club="Generate Product Development Studio"
                     startTime={new Date()}
                     endTime={new Date()}
+                    logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT800M6T7YVq_f6W49g_UNL29US7gC63nTitg&s"
+                    image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfT6p6kCen0-GphSDogJRd2KoYjg0-QQWuAw9e5JBIBEVTc3Hxho_UwRsZ0IrEi6Ap5oo&usqp=CAU"
                 />
                 <EventCard
                     event="Spring Showcase"
                     variant="club"
                     tags={tags}
-                    club="Sandbox"
+                    club="Generate"
                     startTime={new Date()}
                     endTime={new Date()}
+                    logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT800M6T7YVq_f6W49g_UNL29US7gC63nTitg&s"
+                    image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfT6p6kCen0-GphSDogJRd2KoYjg0-QQWuAw9e5JBIBEVTc3Hxho_UwRsZ0IrEi6Ap5oo&usqp=CAU"
                 />
                 <EventCard
                     event="Spring Showcase"
                     variant="calendar"
                     tags={tags}
-                    club="Sandbox"
+                    club="Generate"
                     startTime={new Date()}
                     endTime={new Date()}
+                    logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT800M6T7YVq_f6W49g_UNL29US7gC63nTitg&s"
+                    image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfT6p6kCen0-GphSDogJRd2KoYjg0-QQWuAw9e5JBIBEVTc3Hxho_UwRsZ0IrEi6Ap5oo&usqp=CAU"
                 />
             </ScrollView>
         </SafeAreaView>
