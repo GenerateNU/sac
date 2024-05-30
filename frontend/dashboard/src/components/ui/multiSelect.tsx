@@ -5,11 +5,11 @@ import { forwardRef, useEffect } from 'react';
 import { Command as CommandPrimitive, useCommandState } from 'cmdk';
 import { X } from 'lucide-react';
 import { Label } from "./label";
-import { Option } from "@/types/option";
+import { Option } from "@/src/types/option";
 
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
-import { Command, CommandGroup, CommandItem, CommandList } from '@/components/ui/command';
+import { Badge } from '@/src/components/ui/badge';
+import { Command, CommandGroup, CommandItem, CommandList } from '@/src/components/ui/command';
 
 interface GroupOption {
   [key: string]: Option[];
