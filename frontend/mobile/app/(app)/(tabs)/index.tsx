@@ -3,7 +3,8 @@ import { SafeAreaView, ScrollView, StyleSheet, Text } from 'react-native';
 import { Tag } from '@generatesac/lib';
 
 import { Box } from '@/app/(design-system)';
-import { EventCard } from '@/components/event-card';
+
+import { EventCard } from '../components/event-card';
 
 const tags: Tag[] = [
     {
