@@ -33,12 +33,12 @@ func NewClubMemberController(clubMemberService ClubMemberServiceInterface) *Club
 // @Failure     500   {object}      error
 // @Router		/clubs/{clubID}/members/  [get]
 func (cm *ClubMemberController) GetClubMembers(c *fiber.Ctx) error {
-	pagination, ok := fiberpaginate.FromContext(c)
+	pageInfo, ok := fiberpaginate.FromContext(c)
 	if !ok {
-		return utilities.ErrExpectedPagination
+		return utilities.ErrExpectedPageInfo
 	}
 
-	followers, err := cm.clubMemberService.GetClubMembers(c.Params("clubID"), *pagination)
+	followers, err := cm.clubMemberService.GetClubMembers(c.Params("clubID"), *pageInfo)
 	if err != nil {
 		return err
 	}

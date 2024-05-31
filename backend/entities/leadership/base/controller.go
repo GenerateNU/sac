@@ -31,12 +31,12 @@ func NewLeaderController(leaderService LeaderServiceInterface) *LeaderController
 // @Failure     500   {string}    error
 // @Router		/leader/  [get]
 func (l *LeaderController) GetLeadership(c *fiber.Ctx) error {
-	pagination, ok := fiberpaginate.FromContext(c)
+	pageInfo, ok := fiberpaginate.FromContext(c)
 	if !ok {
-		return utilities.ErrExpectedPagination
+		return utilities.ErrExpectedPageInfo
 	}
 
-	Leaders, err := l.leaderService.GetLeaders(*pagination)
+	Leaders, err := l.leaderService.GetLeaders(*pageInfo)
 	if err != nil {
 		return err
 	}

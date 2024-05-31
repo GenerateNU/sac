@@ -3,6 +3,8 @@ package recruitment
 import (
 	"net/http"
 
+	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -65,17 +67,46 @@ func (cr *ClubRecruitmentController) CreateClubRecruitmentApplication(c *fiber.C
 }
 
 func (cr *ClubRecruitmentController) GetClubRecruitmentApplications(c *fiber.Ctx) error {
-	return nil
+	pageInfo, ok := fiberpaginate.FromContext(c)
+	if !ok {
+		return utilities.ErrExpectedPageInfo
+	}
+
+	applications, err := cr.clubRecruitmentService.GetClubRecruitmentApplications(c.UserContext(), c.Params("clubID"), c.Params("recruitmentID"), *pageInfo)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(http.StatusOK).JSON(applications)
 }
 
 func (cr *ClubRecruitmentController) GetClubRecruitmentApplication(c *fiber.Ctx) error {
-	return nil
+	application, err := cr.clubRecruitmentService.GetClubRecruitmentApplication(c.UserContext(), c.Params("clubID"), c.Params("recruitmentID"), c.Params("applicationID"))
+	if err != nil {
+		return err
+	}
+
+	return c.Status(http.StatusOK).JSON(application)
 }
 
 func (cr *ClubRecruitmentController) UpdateClubRecruitmentApplication(c *fiber.Ctx) error {
-	return nil
+	var body UpdateApplicationRequestBody
+	if err := c.BodyParser(&body); err != nil {
+		return err
+	}
+
+	application, err := cr.clubRecruitmentService.UpdateClubRecruitmentApplication(c.UserContext(), c.Params("clubID"), c.Params("recruitmentID"), c.Params("applicationID"), body)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(http.StatusOK).JSON(application)
 }
 
 func (cr *ClubRecruitmentController) DeleteClubRecruitmentApplication(c *fiber.Ctx) error {
-	return nil
+	if err := cr.clubRecruitmentService.DeleteClubRecruitmentApplication(c.UserContext(), c.Params("clubID"), c.Params("recruitmentID"), c.Params("applicationID")); err != nil {
+		return err
+	}
+
+	return c.SendStatus(http.StatusNoContent)
 }

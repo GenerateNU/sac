@@ -54,12 +54,12 @@ func (co *SocialController) GetSocial(c *fiber.Ctx) error {
 // @Failure     500   {string}    error
 // @Router		/socials/  [get]
 func (co *SocialController) GetSocials(c *fiber.Ctx) error {
-	pagination, ok := fiberpaginate.FromContext(c)
+	pageInfo, ok := fiberpaginate.FromContext(c)
 	if !ok {
-		return utilities.ErrExpectedPagination
+		return utilities.ErrExpectedPageInfo
 	}
 
-	socials, err := co.socialService.GetSocials(*pagination)
+	socials, err := co.socialService.GetSocials(*pageInfo)
 	if err != nil {
 		return err
 	}
