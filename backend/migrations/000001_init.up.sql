@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS recruitment (
     cycle recruitment_cycle,
     _type recruitment_type,
     is_recruiting boolean,
+    PRIMARY KEY(id)
 );
 
 CREATE TABLE IF NOT EXISTS applications (
@@ -42,7 +43,8 @@ CREATE TABLE IF NOT EXISTS applications (
     recruitment_id uuid NOT NULL,
     title varchar(255) NOT NULL,
     link varchar(255) NOT NULL,
-    CONSTRAINT fk_recruitment_application FOREIGN key(recruitment_id) REFERENCES recruitment(id) ON UPDATE CASCADE ON DELETE CASCADE,
+    PRIMARY KEY(id),
+    CONSTRAINT fk_recruitment_application FOREIGN key(recruitment_id) REFERENCES recruitment(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS clubs(
@@ -59,8 +61,8 @@ CREATE TABLE IF NOT EXISTS clubs(
     recruitment_id uuid,
     logo varchar(255) DEFAULT NULL::character varying,
     parent uuid,
-    PRIMARY KEY(id)
-    CONSTRAINT fk_clubs_recruitment FOREIGN key(recruitment_id) REFERENCES recruitment(id) ON UPDATE CASCADE ON DELETE CASCADE,
+    PRIMARY KEY(id),
+    CONSTRAINT fk_clubs_recruitment FOREIGN key(recruitment_id) REFERENCES recruitment(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS uni_clubs_name ON clubs USING btree ("name");
