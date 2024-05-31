@@ -13,7 +13,7 @@ export const EventTags = ({ tags, variant }: EventTagProps) => {
     const renderTags = () => {
         if (displayLimitedTags) {
             const shouldDisplayOnlyFirstTag =
-                tags.length > 0 &&
+                tags.length >= 2 &&
                 tags[0].name.length + (tags[1]?.name?.length || 0) > 30;
             return shouldDisplayOnlyFirstTag ? [tags[0]] : tags.slice(0, 2);
         } else {
