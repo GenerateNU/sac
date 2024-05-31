@@ -1,7 +1,7 @@
 package config
 
 import (
-	"errors"
+	"fmt"
 
 	m "github.com/garrettladley/mattress"
 )
@@ -12,23 +12,23 @@ type AuthSettings struct {
 }
 
 type intermediateAuthSettings struct {
-	AccessKey  string `yaml:"accesskey"`
-	RefreshKey string `yaml:"refreshkey"`
+	accessKey  string `env:"ACCESS_KEY"`
+	refreshKey string `env:"REFRESH_KEY"`
 }
 
-func (int *intermediateAuthSettings) into() (*AuthSettings, error) {
-	accessToken, err := m.NewSecret(int.AccessKey)
+func (i *intermediateAuthSettings) into() (*AuthSettings, error) {
+	accessKey, err := m.NewSecret(i.accessKey)
 	if err != nil {
-		return nil, errors.New("failed to create secret from access key")
+		return nil, fmt.Errorf("failed to create secret from access key: %s", err.Error())
 	}
 
-	refreshToken, err := m.NewSecret(int.RefreshKey)
+	refreshKey, err := m.NewSecret(i.refreshKey)
 	if err != nil {
-		return nil, errors.New("failed to create secret from refresh key")
+		return nil, fmt.Errorf("failed to create secret from refresh key: %s", err.Error())
 	}
 
 	return &AuthSettings{
-		AccessKey:  accessToken,
-		RefreshKey: refreshToken,
+		AccessKey:  accessKey,
+		RefreshKey: refreshKey,
 	}, nil
 }
