@@ -11,7 +11,8 @@ export const Colors = {
     yellow: '#FFB626',
     white: '#FFFFFF',
     black: '#000000',
-    gray: '#C3C9D0'
+    gray: '#C3C9D0',
+    darkGray: '#7A7A7A'
 };
 
 export type SACColors = keyof typeof Colors;

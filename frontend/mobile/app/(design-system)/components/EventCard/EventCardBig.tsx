@@ -5,8 +5,10 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { Image } from '@rneui/base';
 
-import { Box, Text } from '@/app/(design-system)';
 import { calculateDuration, createOptions, eventTime } from '@/utils/time';
+
+import { Box } from '../Box/Box';
+import { Text } from '../Text/Text';
 
 interface EventCardBigProps {
     event: string;

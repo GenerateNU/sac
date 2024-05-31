@@ -1,6 +1,6 @@
 import { Tag } from '@generatesac/lib';
 
-import { Box, Tag as TagComponent, Text } from '@/app/(design-system)';
+import { Box, Text } from '@/app/(design-system)';
 
 interface EventTagProps {
     tags: Tag[];
@@ -25,9 +25,15 @@ export const EventTags = ({ tags, variant }: EventTagProps) => {
         const remainingTagsCount = tags.length - 1;
         return (
             remainingTagsCount > 0 && (
-                <TagComponent variant="eventCard">
+                <Box
+                    borderWidth={1}
+                    borderColor="gray"
+                    borderRadius="medium"
+                    paddingHorizontal="xs"
+                    paddingVertical="xxs"
+                >
                     <Text variant="caption-1">{`+${remainingTagsCount}`}</Text>
-                </TagComponent>
+                </Box>
             )
         );
     };
@@ -35,9 +41,16 @@ export const EventTags = ({ tags, variant }: EventTagProps) => {
     return (
         <Box flexDirection="row" paddingTop="xxs" gap="xxs">
             {renderTags().map((tag, index) => (
-                <TagComponent key={index} variant="eventCard">
+                <Box
+                    borderWidth={1}
+                    borderColor="gray"
+                    borderRadius="medium"
+                    key={index}
+                    paddingHorizontal="xs"
+                    paddingVertical="xxs"
+                >
                     <Text variant="caption-1">{tag.name}</Text>
-                </TagComponent>
+                </Box>
             ))}
             {variant === 'plus' && renderPlusTag()}
         </Box>

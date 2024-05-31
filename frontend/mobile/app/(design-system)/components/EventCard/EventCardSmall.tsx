@@ -35,14 +35,14 @@ export const EventCardSmall: React.FC<EventCardSmallProps> = ({
                         source={{ uri: image }}
                     />
                     <Text fontWeight="500">{event}</Text>
-                    <Text variant="caption-1" color="darkGray">
+                    <Text variant="caption-3" color="darkGray">
                         {eventTime(
                             startTime,
                             endTime,
                             createOptions('dayOfWeek', 'monthAndDate')
                         )}
                     </Text>
-                    <Text variant="caption-1" color="darkGray">
+                    <Text variant="caption-3" color="darkGray">
                         {club}
                     </Text>
                 </Box>

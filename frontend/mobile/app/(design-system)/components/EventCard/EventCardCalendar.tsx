@@ -4,10 +4,11 @@ import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Tag } from '@generatesac/lib';
 import { Avatar, Image } from '@rneui/base';
 
-import { Box, Text } from '@/app/(design-system)';
 import { createOptions, eventTime, happeningNow } from '@/utils/time';
 
-import { EventTags } from './event-tag';
+import { Box } from '../Box/Box';
+import { Text } from '../Text/Text';
+import { EventTags } from './EventTag';
 
 interface EventCardCalendarProps {
     event: string;
@@ -50,7 +51,7 @@ export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
                             flexDirection="column"
                             justifyContent="center"
                             alignItems="center"
-                            borderRadius={4}
+                            borderRadius="small"
                             backgroundColor="darkRed"
                             shadowColor="black"
                             shadowOffset={{ width: 0, height: 1 }}
@@ -69,10 +70,10 @@ export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
                     shadowOpacity={0.1}
                     shadowRadius={2}
                 >
-                    <Box width="100%" borderRadius={12} />
+                    <Box width="100%" borderRadius="medium" />
                     <Box
                         width="100%"
-                        borderRadius={12}
+                        borderRadius="medium"
                         padding="m"
                         backgroundColor="white"
                         flexDirection="row"
@@ -92,7 +93,7 @@ export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
                                 flexWrap="wrap"
                             >
                                 <Text
-                                    variant="caption-1"
+                                    variant="caption-3"
                                     color="darkGray"
                                 >{`${eventTime(
                                     startTime,
@@ -109,7 +110,7 @@ export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
                                         rounded
                                         source={{ uri: logo }}
                                     />
-                                    <Text color="darkGray" variant="caption-1">
+                                    <Text color="darkGray" variant="caption-3">
                                         {club}
                                     </Text>
                                 </Box>

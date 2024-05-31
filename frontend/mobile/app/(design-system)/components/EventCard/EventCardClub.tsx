@@ -4,10 +4,11 @@ import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Tag } from '@generatesac/lib';
 import { Avatar, Image } from '@rneui/base';
 
-import { Box, Text } from '@/app/(design-system)';
 import { createOptions, eventTime } from '@/utils/time';
 
-import { EventTags } from './event-tag';
+import { Box } from '../Box/Box';
+import { Text } from '../Text/Text';
+import { EventTags } from './EventTag';
 
 interface EventCardClubProps {
     event: string;
@@ -39,7 +40,7 @@ export const EventCardClub: React.FC<EventCardClubProps> = ({
                 >
                     <Box
                         width="100%"
-                        borderRadius={8}
+                        borderRadius="base"
                         padding="m"
                         backgroundColor="white"
                         flexDirection="row"
@@ -51,7 +52,7 @@ export const EventCardClub: React.FC<EventCardClubProps> = ({
                             source={{ uri: image }}
                         />
                         <Box flex={3} flexDirection="column" gap="xxs">
-                            <Text color="darkGray" variant="caption-1">
+                            <Text color="darkGray" variant="caption-3">
                                 {eventTime(
                                     startTime,
                                     endTime,
@@ -69,7 +70,7 @@ export const EventCardClub: React.FC<EventCardClubProps> = ({
                                 alignItems="center"
                                 gap="xxs"
                             >
-                                <Text color="darkGray" variant="caption-1">
+                                <Text color="darkGray" variant="caption-3">
                                     Hosted by {club}
                                 </Text>
                                 <Avatar
