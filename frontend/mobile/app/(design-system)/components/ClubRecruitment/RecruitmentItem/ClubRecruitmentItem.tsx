@@ -19,7 +19,7 @@ export const RecruitmentItem = ({
     color
 }: RecruitmentItemProps) => {
     return (
-        <Box {...styles.recruitmentItem}>
+        <Box borderColor={color} {...styles.recruitmentItem}>
             <Box {...styles.recruitmentItemContent}>
                 <Icon size={'medium'} color={color} icon={icon} />
                 <Text variant="body-1" {...styles.recruitmentItemTitle}>
@@ -38,12 +38,11 @@ const styles = createStyles({
         alignItems: 'center',
         borderWidth: 1,
         borderRadius: 'base',
-        borderColor: 'gray',
         width: '33%'
     },
     recruitmentItemContent: {
-        paddingTop: 'm',
-        paddingBottom: 'm',
+        paddingVertical: 'l',
+        paddingHorizontal: 'xxs',
         gap: 'xs',
         flexDirection: 'column',
         alignItems: 'center'
