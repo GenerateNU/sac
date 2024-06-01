@@ -31,9 +31,9 @@ type intermediateSettings struct {
 	aws               intermediateAWSSettings          `envPrefix:"SAC_AWS_"`
 	resend            intermediateResendSettings       `envPrefix:"SAC_RESEND_"`
 	calendar          intermediateCalendarSettings     `envPrefix:"SAC_CALENDAR_"`
-	googleSettings    intermediateGoogleOAuthSettings  `envPrefix:"SAC_GOOGLE_OAUTH"`
-	outlookSettings   intermdeiateOutlookOAuthSettings `envPrefix:"SAC_OUTLOOK_OAUTH"`
-	search            SearchSettings                   `env:"SAC_SEARCH"`
+	googleSettings    intermediateGoogleOAuthSettings  `envPrefix:"SAC_GOOGLE_OAUTH_"`
+	outlookSettings   intermdeiateOutlookOAuthSettings `envPrefix:"SAC_OUTLOOK_OAUTH_"`
+	search            SearchSettings                   `envPrefix:"SAC_SEARCH_"`
 }
 
 func (i *intermediateSettings) into() (*Settings, error) {
