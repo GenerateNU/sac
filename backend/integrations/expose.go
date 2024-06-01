@@ -3,12 +3,11 @@ package integrations
 import (
 	"github.com/GenerateNU/sac/backend/integrations/email"
 	"github.com/GenerateNU/sac/backend/integrations/file"
-	"github.com/GenerateNU/sac/backend/integrations/search"
+	"github.com/GenerateNU/sac/backend/integrations/oauth"
 )
 
 type Integrations struct {
-	Search search.SearchClientInterface
-	AI     search.AIClientInterface
-	Email  email.EmailClientInterface
-	File   file.FileClientInterface
+	Email email.EmailClientInterface
+	File  file.FileClientInterface
+	OAuth oauth.OauthProviderSettings
 }

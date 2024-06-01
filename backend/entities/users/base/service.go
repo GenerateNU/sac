@@ -7,6 +7,7 @@ import (
 	authEntities "github.com/GenerateNU/sac/backend/entities/auth"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/garrettladley/fiberpaginate"
+	"github.com/google/uuid"
 
 	"github.com/GenerateNU/sac/backend/entities/users"
 	"github.com/GenerateNU/sac/backend/types"
@@ -15,7 +16,7 @@ import (
 
 type UserServiceInterface interface {
 	GetUsers(pageInfo fiberpaginate.PageInfo) ([]models.User, error)
-	GetMe(id string) (*models.User, error)
+	GetMe(id uuid.UUID) (*models.User, error)
 	GetUser(id string) (*models.User, error)
 	UpdateUser(id string, userBody UpdateUserRequestBody) (*models.User, error)
 	UpdatePassword(id string, passwordBody authEntities.UpdatePasswordRequestBody) error
@@ -34,18 +35,8 @@ func (u *UserService) GetUsers(pageInfo fiberpaginate.PageInfo) ([]models.User, 
 	return GetUsers(u.DB, pageInfo)
 }
 
-func (u *UserService) GetMe(id string) (*models.User, error) {
-	idAsUUID, err := utilities.ValidateID(id)
-	if err != nil {
-		return nil, err
-	}
-
-	user, err := users.GetUser(u.DB, *idAsUUID)
-	if err != nil {
-		return nil, err
-	}
-
-	return user, nil
+func (u *UserService) GetMe(id uuid.UUID) (*models.User, error) {
+	return users.GetUser(u.DB, id)
 }
 
 func (u *UserService) GetUser(id string) (*models.User, error) {

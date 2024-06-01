@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS events(
     updated_at timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     name varchar(255) NOT NULL,
     preview varchar(255) NOT NULL,
-    description varchar(255) NOT NULL,
+    description text NOT NULL,
     event_type varchar(255) NOT NULL,
     location varchar(255),
     link varchar(255),
@@ -245,5 +245,17 @@ CREATE TABLE IF NOT EXISTS verifications(
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS uni_verifications_token ON verifications USING btree ("token");
+
+CREATE TYPE OAuthResourceType AS ENUM ('google', 'outlook');
+
+CREATE TABLE IF NOT EXISTS user_oauth_tokens(
+    user_id uuid NOT NULL,
+    refresh_token varchar,
+    access_token varchar,
+    csrf_token varchar(255),
+    resource_type OAuthResourceType,
+    expires_at timestamp with time zone NOT NULL,
+    PRIMARY KEY(user_id,resource_type)
+);
 
 COMMIT;

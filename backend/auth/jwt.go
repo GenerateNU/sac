@@ -18,22 +18,6 @@ type CustomClaims struct {
 	Role string `json:"role"`
 }
 
-// From extracts the CustomClaims from the fiber context
-// Returns nil if the claims are not present
-func From(c *fiber.Ctx) (*CustomClaims, error) {
-	rawClaims := c.Locals("claims")
-	if rawClaims == nil {
-		return nil, utilities.Forbidden()
-	}
-
-	claims, ok := rawClaims.(*CustomClaims)
-	if !ok {
-		return nil, fmt.Errorf("claims are not of type CustomClaims. got: %T", rawClaims)
-	}
-
-	return claims, nil
-}
-
 type JWTType string
 
 const (
@@ -292,19 +276,7 @@ func copyCustomClaims(claims *jwt.MapClaims, customClaims map[string]interface{}
 	}
 }
 
-func GenerateRefreshCookie(value string) *fiber.Cookie {
-	return &fiber.Cookie{
-		Name:     "refresh_token",
-		Value:    value,
-		Expires:  time.Now().Add(constants.REFRESH_TOKEN_EXPIRY),
-		HTTPOnly: true,
-	}
-}
-
-func SetResponseTokens(c *fiber.Ctx, tokens *Token) error {
-	// Set the tokens in the response
-	// should also blacklist the old refresh and access tokens
-
+func SetResponseTokens(c *fiber.Ctx, tokens *Token) {
 	c.Set("Authorization", fmt.Sprintf("Bearer %s", tokens.AccessToken))
 	c.Cookie(&fiber.Cookie{
 		Name:     "refresh_token",
@@ -312,15 +284,14 @@ func SetResponseTokens(c *fiber.Ctx, tokens *Token) error {
 		Expires:  time.Now().Add(constants.REFRESH_TOKEN_EXPIRY),
 		HTTPOnly: true,
 	})
-
-	return nil
 }
 
-// func ExpireCookie(name string) *fiber.Cookie {
-// 	return &fiber.Cookie{
-// 		Name:     name,
-// 		Value:    "",
-// 		Expires:  time.Now().Add(-time.Hour),
-// 		HTTPOnly: true,
-// 	}
-// }
+func ExpireResponseTokens(c *fiber.Ctx) {
+	c.Set("Authorization", "")
+	c.Cookie(&fiber.Cookie{
+		Name:     "refresh_token",
+		Value:    "",
+		Expires:  time.Now().Add(-time.Hour),
+		HTTPOnly: true,
+	})
+}

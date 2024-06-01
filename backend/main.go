@@ -6,73 +6,72 @@ import (
 	"fmt"
 	"log/slog"
 	"net"
-	"os"
 	"path/filepath"
 
 	"github.com/GenerateNU/sac/backend/config"
+	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/database"
+	"github.com/GenerateNU/sac/backend/database/store"
 	_ "github.com/GenerateNU/sac/backend/docs"
 	"github.com/GenerateNU/sac/backend/integrations"
 	"github.com/GenerateNU/sac/backend/integrations/email"
 	"github.com/GenerateNU/sac/backend/integrations/file"
-	"github.com/GenerateNU/sac/backend/integrations/search"
+	"github.com/GenerateNU/sac/backend/integrations/oauth"
 	"github.com/GenerateNU/sac/backend/server"
 	"github.com/GenerateNU/sac/backend/telemetry"
-	"github.com/GenerateNU/sac/backend/tests/api/mocks"
-	"go.opentelemetry.io/otel"
+	"github.com/GenerateNU/sac/backend/utilities"
 )
-
-var tracer = otel.Tracer("sac")
 
 func main() {
 	onlyMigrate := flag.Bool("only-migrate", false, "Specify if you want to only perform the database migration")
-	onlySeedPinecone := flag.Bool("seed-pinecone", false, "Specify if want to only perform the pinecone database seeding")
-	connectToPinecone := flag.Bool("connect-to-pinecone", false, "Connect to a real Pinecone instance instead of mock")
-	configPath := flag.String("config", filepath.Join("..", "config"), "Specify the path to the config directory")
-	useDevDotEnv := flag.Bool("use-dev-dot-env", true, "Specify if you want to use the .env.dev file")
+	seedSearch := flag.Bool("seed-search", true, "Specify if you want to seed the opensearch nodes.")
+	configPath := flag.String("config", filepath.Join("..", "config", ".env.dev"), "Specify the path to the config file (.env)")
 
 	flag.Parse()
-
-	config, err := config.GetConfiguration(*configPath, *useDevDotEnv)
+	config, err := config.GetConfiguration(*configPath)
 	if err != nil {
-		exit("Error getting configuration: %s", err.Error())
+		utilities.Exit("Error getting configuration: %s", err.Error())
 	}
+
+	constants.SEARCH_URI = config.Search.URI
 
 	err = checkServerRunning(config.Application.Host, config.Application.Port)
 	if err == nil {
-		exit("A server is already running on %s:%d.\n", config.Application.Host, config.Application.Port)
+		utilities.Exit("A server is already running on %s:%d.\n", config.Application.Host, config.Application.Port)
 	}
 
 	db, err := database.ConfigureDB(*config)
 	if err != nil {
-		exit("Error migrating database: %s", err.Error())
+		utilities.Exit("Error migrating database: %s", err.Error())
 	}
 
 	if *onlyMigrate {
 		return
 	}
 
-	if *onlySeedPinecone {
-		openAi := search.NewOpenAIClient(config.OpenAI)
-		pinecone := search.NewPineconeClient(openAi, config.Pinecone)
+	if *seedSearch {
+		slog.Info("to appease linter", "seedSearch", *seedSearch)
+		// if err := search.SeedClubs(db); err != nil {
+		// 	return
+		// }
 
-		err := pinecone.Seed(db)
-		if err != nil {
-			exit("Error seeding PineconeDB: %s\n", err.Error())
-		}
-		return
+		// if err := search.SeedEvents(db); err != nil {
+		// 	return
+		// }
 	}
 
 	err = database.ConnPooling(db)
 	if err != nil {
-		exit("Error with connection pooling: %s", err.Error())
+		utilities.Exit("Error with connection pooling: %s", err.Error())
 	}
 
-	integrations := configureIntegrations(config, *connectToPinecone)
+	stores := store.ConfigureRedis(*config)
+
+	integrations := configureIntegrations(&config.Integrations)
 
 	tp := telemetry.InitTracer()
 
-	slog.Info("appease linter since we aren't tracing anything yet", "tracer", tracer)
+	slog.Info("appease linter since we aren't tracing anything yet", "tracer", telemetry.Tracer)
 
 	defer func() {
 		if err := tp.Shutdown(context.Background()); err != nil {
@@ -80,11 +79,11 @@ func main() {
 		}
 	}()
 
-	app := server.Init(db, integrations, *config)
+	app := server.Init(db, stores, *integrations, *config)
 
 	err = app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
 	if err != nil {
-		exit("Error starting server: %s", err.Error())
+		utilities.Exit("Error starting server: %s", err.Error())
 	}
 }
 
@@ -98,26 +97,17 @@ func checkServerRunning(host string, port uint16) error {
 	return nil
 }
 
-func exit(format string, a ...interface{}) {
-	fmt.Fprintf(os.Stderr, format, a...)
-	os.Exit(0)
-}
-
-func configureIntegrations(config *config.Settings, connectToPinecone bool) integrations.Integrations {
-	openAi := search.NewOpenAIClient(config.OpenAI)
-	var pinecone search.SearchClientInterface
-
-	if connectToPinecone {
-		pinecone = search.NewPineconeClient(openAi, config.Pinecone)
-	} else {
-		pinecone = mocks.NewPineconeMockClient()
+func configureIntegrations(config *config.Integrations) *integrations.Integrations {
+	return &integrations.Integrations{
+		File:  file.NewAWSProvider(config.AWS),
+		Email: email.NewResendClient(config.Resend, true),
+		OAuth: oauth.OauthProviderSettings{
+			Google: oauth.GoogleOAuthClient{
+				OAuthConfig: config.GoogleOauth,
+			},
+			Outlook: oauth.OutlookOAuthClient{
+				OAuthConfig: config.OutlookOauth,
+			},
+		},
 	}
-
-	integrations := integrations.Integrations{
-		File:   file.NewAWSProvider(config.AWS),
-		AI:     openAi,
-		Email:  email.NewResendClient(config.Resend, true),
-		Search: pinecone,
-	}
-	return integrations
 }

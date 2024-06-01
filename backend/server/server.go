@@ -8,18 +8,22 @@ import (
 
 	authenticator "github.com/GenerateNU/sac/backend/auth"
 	"github.com/GenerateNU/sac/backend/config"
+	"github.com/GenerateNU/sac/backend/database/store"
+
 	auth "github.com/GenerateNU/sac/backend/entities/auth/base"
 	categories "github.com/GenerateNU/sac/backend/entities/categories/base"
 	clubs "github.com/GenerateNU/sac/backend/entities/clubs/base"
 	contacts "github.com/GenerateNU/sac/backend/entities/contacts/base"
 	events "github.com/GenerateNU/sac/backend/entities/events/base"
 	files "github.com/GenerateNU/sac/backend/entities/files/base"
+	oauth "github.com/GenerateNU/sac/backend/entities/oauth/base"
 	pocs "github.com/GenerateNU/sac/backend/entities/pocs/base"
 	tags "github.com/GenerateNU/sac/backend/entities/tags/base"
 	users "github.com/GenerateNU/sac/backend/entities/users/base"
 	"github.com/GenerateNU/sac/backend/integrations"
 	authMiddleware "github.com/GenerateNU/sac/backend/middleware/auth"
 	utilityMiddleware "github.com/GenerateNU/sac/backend/middleware/utility"
+	search "github.com/GenerateNU/sac/backend/search/base"
 
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
@@ -43,7 +47,7 @@ import (
 // @host 127.0.0.1:8080
 // @BasePath /
 // @schemes http
-func Init(db *gorm.DB, integrations integrations.Integrations, settings config.Settings) *fiber.App {
+func Init(db *gorm.DB, stores *store.Stores, integrations integrations.Integrations, settings config.Settings) *fiber.App {
 	app := newFiberApp(settings.Application)
 
 	validate, err := utilities.RegisterCustomValidators()
@@ -52,8 +56,8 @@ func Init(db *gorm.DB, integrations integrations.Integrations, settings config.S
 	}
 
 	jwt := authenticator.NewJWTClient(settings.Auth, jwt.SigningMethodHS256)
-	authMiddleware := authMiddleware.New(db, validate, settings.Auth)
-	utilityMiddleware := utilityMiddleware.New(fiberpaginate.New())
+	authMiddleware := authMiddleware.New(db, validate, settings.Auth, stores)
+	utilityMiddleware := utilityMiddleware.New(fiberpaginate.New(), stores)
 
 	apiv1 := app.Group("/api/v1")
 
@@ -67,6 +71,7 @@ func Init(db *gorm.DB, integrations integrations.Integrations, settings config.S
 			&settings.Auth,
 			jwt,
 			&settings.Calendar,
+			stores,
 			integrations,
 		),
 	)
@@ -87,6 +92,8 @@ func allRoutes(app *fiber.App, routeParams types.RouteParams) {
 	categories.CategoryRoutes(routeParams)
 	events.EventRoutes(routeParams)
 	files.File(routeParams)
+	search.SearchRoutes(routeParams)
+	oauth.OAuth(routeParams)
 }
 
 func newFiberApp(appSettings config.ApplicationSettings) *fiber.App {

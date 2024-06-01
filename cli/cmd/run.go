@@ -20,8 +20,7 @@ func init() {
 	runCmd.AddCommand(runFeCmd)
 	runCmd.AddCommand(runBeCmd)
 	runBeCmd.Flags().BoolP("migrate", "m", false, "Specify if you want to only perform the database migration")
-	runBeCmd.Flags().BoolP("seed-pinecone", "s", false, "Specify if you want to only perform the pinecone database seeding")
-	runBeCmd.Flags().BoolP("connect-to-pinecone", "c", false, "Connect to a real Pinecone instance instead of mock")
+	runBeCmd.Flags().BoolP("seed-search", "s", false, "Specify if you want to perform the search seeding")
 
 	runFeCmd.AddCommand(runWebCmd)
 	runFeCmd.AddCommand(runMobileCmd)
@@ -38,8 +37,7 @@ var runBeCmd = &cobra.Command{
 	Args:    cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		migrate, _ := cmd.Flags().GetBool("migrate")
-		seedPinecone, _ := cmd.Flags().GetBool("seed-pinecone")
-		connectToPinecone, _ := cmd.Flags().GetBool("connect-to-pinecone")
+		seedSearch, _ := cmd.Flags().GetBool("seed-search")
 
 		if migrate {
 			err := helpers.Execute(exec.Command("go", "run", "main.go", "--only-migrate"), helpers.BACKEND_DIR)
@@ -49,24 +47,8 @@ var runBeCmd = &cobra.Command{
 			}
 		}
 
-		if seedPinecone {
-			err := helpers.Execute(exec.Command("go", "run", "main.go", "--seed-pinecone"), helpers.BACKEND_DIR)
-			if err != nil {
-				fmt.Println(err)
-				os.Exit(1)
-			}
-		}
-
-		if connectToPinecone {
-			err := helpers.Execute(exec.Command("go", "run", "main.go", "--connect-to-pinecone"), helpers.BACKEND_DIR)
-			if err != nil {
-				fmt.Println(err)
-				os.Exit(1)
-			}
-		}
-
-		if !migrate && !seedPinecone && !connectToPinecone {
-			err := helpers.Execute(exec.Command("go", "run", "main.go"), helpers.BACKEND_DIR)
+		if seedSearch {
+			err := helpers.Execute(exec.Command("go", "run", "main.go", "--seed-search"), helpers.BACKEND_DIR)
 			if err != nil {
 				fmt.Println(err)
 				os.Exit(1)
