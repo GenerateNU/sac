@@ -16,5 +16,5 @@ if [ $(echo ${REDIS_DISABLE_DEFAULT_USER}) == "true" ]; then
     echo "user default off nopass nocommands" >> /usr/local/etc/redis/custom_aclfile.acl
 fi
 
-# call the original Docker entrypoint script with redis-server and the path to the custom redis configuration
+# call the original docker entrypoint script with redis-server and the path to the custom redis configuration
 exec docker-entrypoint.sh redis-server /usr/local/etc/redis/redis.conf
