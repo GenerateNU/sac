@@ -78,11 +78,11 @@ func (a *AuthService) Login(ctx context.Context, loginBody authEntities.LoginRes
 		return nil, nil, err
 	}
 
-	// storeRefreshTokenCtx, storeRefreshTokenCancel := context.WithTimeoutCause(ctx, constants.REDIS_TIMEOUT, errs.ErrRedisTimeout)
-	// defer storeRefreshTokenCancel()
-	// if err := a.Stores.ActiveToken.StoreRefreshToken(storeRefreshTokenCtx, string(tokens.RefreshToken), user.ID.String(), constants.REFRESH_TOKEN_EXPIRY); err != nil {
-	// 	return nil, nil, err
-	// }
+	storeRefreshTokenCtx, storeRefreshTokenCancel := context.WithTimeoutCause(ctx, constants.REDIS_TIMEOUT, errs.ErrRedisTimeout)
+	defer storeRefreshTokenCancel()
+	if err := a.Stores.ActiveToken.StoreRefreshToken(storeRefreshTokenCtx, string(tokens.RefreshToken), user.ID.String(), constants.REFRESH_TOKEN_EXPIRY); err != nil {
+		return nil, nil, err
+	}
 
 	return user, tokens, nil
 }

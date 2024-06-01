@@ -1,11 +1,14 @@
 package auth
 
 import (
+	"context"
 	"fmt"
 	"slices"
 	"strings"
 
 	"github.com/GenerateNU/sac/backend/auth"
+	"github.com/GenerateNU/sac/backend/constants"
+	"github.com/GenerateNU/sac/backend/errs"
 	"github.com/GenerateNU/sac/backend/locals"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/google/uuid"
@@ -63,16 +66,16 @@ func (m *AuthMiddlewareService) Authenticate(c *fiber.Ctx) error {
 			return utilities.Unauthorized()
 		}
 
-		// blacklistCtx, blacklistCancel := context.WithTimeoutCause(c.UserContext(), constants.REDIS_TIMEOUT, errs.ErrRedisTimeout)
-		// defer blacklistCancel()
-		// isBlacklisted, err := m.Stores.Blacklist.IsTokenBlacklisted(blacklistCtx, *accessToken)
-		// if err != nil {
-		// 	return utilities.InternalServerError()
-		// }
+		blacklistCtx, blacklistCancel := context.WithTimeoutCause(c.UserContext(), constants.REDIS_TIMEOUT, errs.ErrRedisTimeout)
+		defer blacklistCancel()
+		isBlacklisted, err := m.Stores.Blacklist.IsTokenBlacklisted(blacklistCtx, *accessToken)
+		if err != nil {
+			return utilities.InternalServerError()
+		}
 
-		// if isBlacklisted {
-		// 	return utilities.Unauthorized()
-		// }
+		if isBlacklisted {
+			return utilities.Unauthorized()
+		}
 
 		locals.SetCustomClaims(c, claims)
 

@@ -1,31 +1,40 @@
 services:
   redis-active-tokens:
-    image: redis/redis-stack-server:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.redis
     container_name: redis_active_tokens
     ports:
       - 6379:6379
     environment:
-      - REDIS_PASSWORD=redispassword!#1
+      - REDIS_USERNAME=redis_active_tokens
+      - REDIS_PASSWORD=redis_active_tokens!#1
     volumes:
       - redis-active-data:/data
 
   redis-blacklist:
-    image: redis/redis-stack-server:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.redis
     container_name: redis_blacklist
     ports:
       - 6380:6379
     environment:
-      - REDIS_PASSWORD=redispassword!#2
+      - REDIS_USERNAME=redis_blacklist
+      - REDIS_PASSWORD=redis_blacklist!#2
     volumes:
       - redis-blacklist-data:/data
 
   redis-limiter:
-    image: redis/redis-stack-server:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.redis
     container_name: redis_limiter
     ports:
       - 6381:6379
     environment:
-      - REDIS_PASSWORD=redispassword!#3
+      - REDIS_USERNAME=redis_limiter
+      - REDIS_PASSWORD=redis_limiter!#3
     volumes:
       - redis-limiter-data:/data
 
