@@ -39,6 +39,7 @@ func (c *ClubService) CreateClub(clubBody CreateClubRequestBody) (*models.Club, 
 		return nil, err
 	}
 
+
 	return CreateClub(c.DB, clubBody.UserID, *club)
 }
 

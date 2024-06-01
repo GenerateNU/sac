@@ -2,6 +2,7 @@ package recruitment
 
 import (
 	"context"
+	"time"
 
 	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/entities/models"
@@ -20,9 +21,9 @@ type ClubRecruitmentServicer interface {
 	CreateApplicationRequestBody(ctx context.Context, clubID string, recruitmentID string, body CreateApplicationRequestBody) (*models.Application, error)
 	GetClubRecruitmentApplications(ctx context.Context, clubID string, recruitmentID string, pageInfo fiberpaginate.PageInfo) ([]models.Application, error)
 
-	GetClubRecruitmentApplication(ctx context.Context, clubID string, recruitmentID string, applicationID string) (*models.Application, error)
-	UpdateClubRecruitmentApplication(ctx context.Context, clubID string, recruitmentID string, applicationID string, body UpdateApplicationRequestBody) (*models.Application, error)
-	DeleteClubRecruitmentApplication(ctx context.Context, clubID string, recruitmentID string, applicationID string) error
+	GetClubRecruitmentApplication(ctx context.Context, clubID string, applicationID string) (*models.Application, error)
+	UpdateClubRecruitmentApplication(ctx context.Context, clubID string, applicationID string, body UpdateApplicationRequestBody) (*models.Application, error)
+	DeleteClubRecruitmentApplication(ctx context.Context, clubID string, applicationID string) error
 }
 
 type ClubRecruitmentService struct {
@@ -48,9 +49,8 @@ func (s *ClubRecruitmentService) CreateClubRecruitment(ctx context.Context, club
 		return nil, err
 	}
 
-	createClubRecruitmentCtx, createClubRecruitmentCancel := context.WithTimeoutCause(ctx, constants.DB_TIMEOUT, errs.ErrDatabaseTimeout)
+	createClubRecruitmentCtx, createClubRecruitmentCancel := context.WithTimeoutCause(ctx, constants.DB_TIMEOUT+1*time.Second, errs.ErrDatabaseTimeout)
 	defer createClubRecruitmentCancel()
-
 	return CreateClubRecruitment(createClubRecruitmentCtx, s.DB, idAsUUID, recruitment)
 }
 
@@ -146,13 +146,8 @@ func (s *ClubRecruitmentService) GetClubRecruitmentApplications(ctx context.Cont
 	return GetClubRecruitmentApplications(getClubRecruitmentApplicationsCtx, s.DB, clubIDAsUUID, recruitmentIDAsUUID, pageInfo)
 }
 
-func (s *ClubRecruitmentService) GetClubRecruitmentApplication(ctx context.Context, clubID string, recruitmentID string, applicationID string) (*models.Application, error) {
+func (s *ClubRecruitmentService) GetClubRecruitmentApplication(ctx context.Context, clubID string, applicationID string) (*models.Application, error) {
 	clubIDAsUUID, err := utilities.ValidateID(clubID)
-	if err != nil {
-		return nil, err
-	}
-
-	recruitmentIDAsUUID, err := utilities.ValidateID(recruitmentID)
 	if err != nil {
 		return nil, err
 	}
@@ -165,16 +160,11 @@ func (s *ClubRecruitmentService) GetClubRecruitmentApplication(ctx context.Conte
 	getClubRecruitmentApplicationCtx, getClubRecruitmentApplicationCancel := context.WithTimeoutCause(ctx, constants.DB_TIMEOUT, errs.ErrDatabaseTimeout)
 	defer getClubRecruitmentApplicationCancel()
 
-	return GetClubRecruitmentApplication(getClubRecruitmentApplicationCtx, s.DB, clubIDAsUUID, recruitmentIDAsUUID, applicationIDAsUUID)
+	return GetClubRecruitmentApplication(getClubRecruitmentApplicationCtx, s.DB, clubIDAsUUID, applicationIDAsUUID)
 }
 
-func (s *ClubRecruitmentService) UpdateClubRecruitmentApplication(ctx context.Context, clubID string, recruitmentID string, applicationID string, body UpdateApplicationRequestBody) (*models.Application, error) {
+func (s *ClubRecruitmentService) UpdateClubRecruitmentApplication(ctx context.Context, clubID string, applicationID string, body UpdateApplicationRequestBody) (*models.Application, error) {
 	clubIDAsUUID, err := utilities.ValidateID(clubID)
-	if err != nil {
-		return nil, err
-	}
-
-	recruitmentIDAsUUID, err := utilities.ValidateID(recruitmentID)
 	if err != nil {
 		return nil, err
 	}
@@ -200,16 +190,11 @@ func (s *ClubRecruitmentService) UpdateClubRecruitmentApplication(ctx context.Co
 	updateClubRecruitmentApplicationCtx, updateClubRecruitmentApplicationCancel := context.WithTimeoutCause(ctx, constants.DB_TIMEOUT, errs.ErrDatabaseTimeout)
 	defer updateClubRecruitmentApplicationCancel()
 
-	return UpdateClubRecruitmentApplication(updateClubRecruitmentApplicationCtx, s.DB, clubIDAsUUID, recruitmentIDAsUUID, applicationIDAsUUID, application)
+	return UpdateClubRecruitmentApplication(updateClubRecruitmentApplicationCtx, s.DB, clubIDAsUUID, applicationIDAsUUID, application)
 }
 
-func (s *ClubRecruitmentService) DeleteClubRecruitmentApplication(ctx context.Context, clubID string, recruitmentID string, applicationID string) error {
+func (s *ClubRecruitmentService) DeleteClubRecruitmentApplication(ctx context.Context, clubID string, applicationID string) error {
 	clubIDAsUUID, err := utilities.ValidateID(clubID)
-	if err != nil {
-		return err
-	}
-
-	recruitmentIDAsUUID, err := utilities.ValidateID(recruitmentID)
 	if err != nil {
 		return err
 	}
@@ -222,5 +207,5 @@ func (s *ClubRecruitmentService) DeleteClubRecruitmentApplication(ctx context.Co
 	deleteClubRecruitmentApplicationCtx, deleteClubRecruitmentApplicationCancel := context.WithTimeoutCause(ctx, constants.DB_TIMEOUT, errs.ErrDatabaseTimeout)
 	defer deleteClubRecruitmentApplicationCancel()
 
-	return DeleteClubRecruitmentApplication(deleteClubRecruitmentApplicationCtx, s.DB, clubIDAsUUID, recruitmentIDAsUUID, applicationIDAsUUID)
+	return DeleteClubRecruitmentApplication(deleteClubRecruitmentApplicationCtx, s.DB, clubIDAsUUID, applicationIDAsUUID)
 }

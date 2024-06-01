@@ -1,24 +1,131 @@
 BEGIN;
 
-DROP TABLE IF EXISTS clubs CASCADE;
+ALTER TABLE
+    "users"
+ALTER COLUMN
+    id DROP DEFAULT;
 
-DROP TABLE IF EXISTS recruitment CASCADE;
+ALTER TABLE
+    recruitment
+ALTER COLUMN
+    id DROP DEFAULT;
 
-DROP TYPE IF EXISTS recruitment_cycle CASCADE;
+ALTER TABLE
+    applications
+ALTER COLUMN
+    id DROP DEFAULT;
 
-DROP TYPE IF EXISTS recruitment_type CASCADE;
+ALTER TABLE
+    clubs
+ALTER COLUMN
+    id DROP DEFAULT;
 
-DROP TABLE IF EXISTS applications CASCADE;
+ALTER TABLE
+    series
+ALTER COLUMN
+    id DROP DEFAULT;
 
-DROP TYPE IF EXISTS event_type CASCADE;
+ALTER TABLE
+    EVENTS
+ALTER COLUMN
+    id DROP DEFAULT;
 
-DROP TABLE IF EXISTS EVENTS CASCADE;
+ALTER TABLE
+    categories
+ALTER COLUMN
+    id DROP DEFAULT;
 
-DROP TABLE IF EXISTS users CASCADE;
+ALTER TABLE
+    tags
+ALTER COLUMN
+    id DROP DEFAULT;
 
-DROP TABLE IF EXISTS categories CASCADE;
+ALTER TABLE
+    club_events
+ALTER COLUMN
+    club_id DROP DEFAULT,
+ALTER COLUMN
+    event_id DROP DEFAULT;
 
-DROP TABLE IF EXISTS tags CASCADE;
+ALTER TABLE
+    club_tags
+ALTER COLUMN
+    tag_id DROP DEFAULT,
+ALTER COLUMN
+    club_id DROP DEFAULT;
+
+ALTER TABLE
+    contacts
+ALTER COLUMN
+    id DROP DEFAULT;
+
+ALTER TABLE
+    event_tags
+ALTER COLUMN
+    tag_id DROP DEFAULT,
+ALTER COLUMN
+    event_id DROP DEFAULT;
+
+ALTER TABLE
+    files
+ALTER COLUMN
+    id DROP DEFAULT;
+
+-- ALTER TABLE notifications ALTER COLUMN id DROP DEFAULT; -- Uncomment if notifications table is created
+ALTER TABLE
+    leadership
+ALTER COLUMN
+    id DROP DEFAULT;
+
+ALTER TABLE
+    user_club_followers
+ALTER COLUMN
+    user_id DROP DEFAULT,
+ALTER COLUMN
+    club_id DROP DEFAULT;
+
+ALTER TABLE
+    user_club_intended_applicants
+ALTER COLUMN
+    user_id DROP DEFAULT,
+ALTER COLUMN
+    club_id DROP DEFAULT;
+
+ALTER TABLE
+    user_club_members
+ALTER COLUMN
+    user_id DROP DEFAULT;
+
+ALTER TABLE
+    user_event_rsvps
+ALTER COLUMN
+    user_id DROP DEFAULT,
+ALTER COLUMN
+    event_id DROP DEFAULT;
+
+ALTER TABLE
+    user_event_waitlists
+ALTER COLUMN
+    user_id DROP DEFAULT,
+ALTER COLUMN
+    event_id DROP DEFAULT;
+
+ALTER TABLE
+    user_tags
+ALTER COLUMN
+    user_id DROP DEFAULT,
+ALTER COLUMN
+    tag_id DROP DEFAULT;
+
+ALTER TABLE
+    verifications
+ALTER COLUMN
+    user_id DROP DEFAULT;
+
+ALTER TABLE
+    user_oauth_tokens
+ALTER COLUMN
+    user_id DROP DEFAULT;
 
 DROP TABLE IF EXISTS club_events CASCADE;
 
@@ -26,15 +133,12 @@ DROP TABLE IF EXISTS club_tags CASCADE;
 
 DROP TABLE IF EXISTS contacts CASCADE;
 
-DROP TABLE IF EXISTS series CASCADE;
-
 DROP TABLE IF EXISTS event_tags CASCADE;
 
 DROP TABLE IF EXISTS files CASCADE;
 
-DROP TABLE IF EXISTS notifications CASCADE;
-
-DROP TABLE IF EXISTS point_of_contacts CASCADE;
+-- DROP TABLE IF EXISTS notifications CASCADE; -- Uncomment if notifications table is created
+DROP TABLE IF EXISTS leadership CASCADE;
 
 DROP TABLE IF EXISTS user_club_followers CASCADE;
 
@@ -50,9 +154,31 @@ DROP TABLE IF EXISTS user_tags CASCADE;
 
 DROP TABLE IF EXISTS verifications CASCADE;
 
-DROP TYPE IF EXISTS OAuthResourceType CASCADE;
-
 DROP TABLE IF EXISTS user_oauth_tokens CASCADE;
+
+DROP TABLE IF EXISTS EVENTS CASCADE;
+
+DROP TABLE IF EXISTS series CASCADE;
+
+DROP TABLE IF EXISTS categories CASCADE;
+
+DROP TABLE IF EXISTS tags CASCADE;
+
+DROP TABLE IF EXISTS clubs CASCADE;
+
+DROP TABLE IF EXISTS applications CASCADE;
+
+DROP TABLE IF EXISTS recruitment CASCADE;
+
+DROP TABLE IF EXISTS "users" CASCADE;
+
+DROP TYPE IF EXISTS recruitment_cycle CASCADE;
+
+DROP TYPE IF EXISTS recruitment_type CASCADE;
+
+DROP TYPE IF EXISTS event_type CASCADE;
+
+DROP TYPE IF EXISTS OAuthResourceType CASCADE;
 
 DROP EXTENSION IF EXISTS "uuid-ossp";
 

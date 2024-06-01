@@ -1,6 +1,9 @@
 package types
 
-import "github.com/GenerateNU/sac/backend/entities/models"
+import (
+	"github.com/GenerateNU/sac/backend/entities/models"
+	"gorm.io/gorm"
+)
 
 type Json map[string]interface{}
 
@@ -21,4 +24,5 @@ type BulkRequestCreate struct {
 
 type Searchable interface {
 	models.Club | models.Event
+	Preload(db *gorm.DB) *gorm.DB
 }

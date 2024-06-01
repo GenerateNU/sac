@@ -43,8 +43,8 @@ func ClubRecruitment(clubParams types.RouteParams) {
 		clubRecruitmentController.CreateClubRecruitmentApplication,
 	)
 
-	// api/v1/clubs/:clubID/recruitment/:recruitmentID/applications/:applicationID/*
-	clubRecruitmentIDApplicationsID := clubRecruitmentIDApplications.Group("/:applicationID")
+	// api/v1/clubs/:clubID/recruitment/applications/:applicationID/*
+	clubRecruitmentIDApplicationsID := clubRecruitment.Group("/applications/:applicationID")
 
 	clubRecruitmentIDApplicationsID.Get(
 		"/",

@@ -36,17 +36,6 @@ func SuperClub() models.Club {
 		Preview:     "SAC",
 		Description: "SAC",
 		NumMembers:  0,
-		Recruitment: models.Recruitment{
-			Cycle:        models.Always,
-			Type:         models.RecruitmentTypeApplication,
-			IsRecruiting: true,
-			Application: []models.Application{
-				{
-					Title: "General Applications",
-					Link:  "generatenu.com/apply",
-				},
-			},
-		},
-		Logo: "https://aws.amazon.com/s3",
+		Logo:        "https://aws.amazon.com/s3",
 	}
 }

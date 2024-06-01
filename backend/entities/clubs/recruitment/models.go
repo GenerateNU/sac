@@ -3,10 +3,8 @@ package recruitment
 import "github.com/GenerateNU/sac/backend/entities/models"
 
 type CreateClubRecruitmentRequestBody struct {
-	Cycle        models.RecruitmentCycle        `json:"cycle" validate:"required,oneof=fall spring fallSpring always"`
-	Type         models.RecruitmentType         `json:"type" validate:"required,oneof=unrestricted tryout application"`
-	IsRecruiting *bool                          `json:"is_recruiting" validate:"required"`
-	Applications []CreateApplicationRequestBody `json:"applications"`
+	Cycle models.RecruitmentCycle `json:"cycle" validate:"required,oneof=fall spring fallSpring always"`
+	Type  models.RecruitmentType  `json:"type" validate:"required,oneof=unrestricted tryout application"`
 }
 
 type CreateApplicationRequestBody struct {

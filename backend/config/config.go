@@ -12,10 +12,10 @@ func GetConfiguration(path string) (*Settings, error) {
 		return nil, fmt.Errorf("failed to load environment variables: %s", err.Error())
 	}
 
-	var intermediateSettings intermediateSettings
-	if err := env.Parse(&intermediateSettings); err != nil {
+	intSettings, err := env.ParseAs[intermediateSettings]()
+	if err != nil {
 		return nil, fmt.Errorf("failed to parse environment variables: %s", err.Error())
 	}
 
-	return intermediateSettings.into()
+	return intSettings.into()
 }

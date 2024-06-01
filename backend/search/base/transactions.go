@@ -66,7 +66,11 @@ func Search[T types.Searchable](db *gorm.DB, query types.SearchRequest) (*types.
 func Upsert[T types.Searchable](db *gorm.DB, index string, uuid string, model types.ToSearchDocument) error {
 	var elem T
 
-	if err := db.Model(&model).Preload("Tag").Where("Clubs").Where("id = ?", uuid).Find(&elem).Error; err != nil {
+	query := db.Model(&elem)
+
+	query = elem.Preload(query)
+
+	if err := query.Where("id = ?", uuid).Find(&elem).Error; err != nil {
 		return err
 	}
 

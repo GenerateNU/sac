@@ -18,7 +18,7 @@ type Club struct {
 	WeeklyTimeCommitment int    `json:"weekly_time_commitment"`
 	OneWordToDescribeUs  string `json:"one_word_to_describe_us"`
 
-	Recruitment Recruitment `json:"recruitment"`
+	Recruitment Recruitment `json:"-"`
 
 	Logo string `json:"logo"`
 
@@ -31,9 +31,9 @@ type Club struct {
 	Leadership        []Leader   `json:"-"`
 	Social            []Social   `json:"-"`
 
-	HostEvent   []Event        `gorm:"foreignKey:Host;" json:"-"`
-	Event       []Event        `gorm:"many2many:club_events;" json:"-"`
-	Notifcation []Notification `gorm:"polymorphic:Reference;" json:"-"`
+	HostEvent    []Event        `gorm:"foreignKey:Host;" json:"-"`
+	Event        []Event        `gorm:"many2many:club_events;" json:"-"`
+	Notification []Notification `gorm:"polymorphic:Reference;" json:"-"`
 }
 
 type ClubSearchDocument struct {
@@ -57,4 +57,8 @@ func (c *Club) ToSearchDocument() interface{} {
 		NumMembers:  c.NumMembers,
 		Tags:        tagIds,
 	}
+}
+
+func (c Club) Preload(db *gorm.DB) *gorm.DB {
+	return db.Preload("Tag")
 }

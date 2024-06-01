@@ -15,7 +15,7 @@ var (
 	WEB_DIR       = filepath.Join(FRONTEND_DIR, "/web")
 	BACKEND_DIR   = filepath.Join(ROOT_DIR, "/backend")
 	CLI_DIR       = filepath.Join(ROOT_DIR, "/cli")
-	CONFIG        = filepath.Join(ROOT_DIR, "/config")
+	CONFIG_FILE   = filepath.Join(ROOT_DIR, "/config/.env.template")
 	MIGRATIONS    = filepath.Join(BACKEND_DIR, "/migrations")
 	MOCK_FILE     = filepath.Join(BACKEND_DIR, "/mock/data.sql")
 )
