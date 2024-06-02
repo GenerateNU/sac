@@ -36,7 +36,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
     title,
     onChange,
     limit = 10,
-    error = false,
+    error = false
 }) => {
     const [selectedItems, setSelectedItems] = useState<Item[]>([]);
     const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -125,7 +125,12 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
             onPress={handleComponentPress}
         >
             <Text style={styles.title}>{title}</Text>
-            <Box style={[styles.box, { borderColor: error ? Colors.red : Colors.gray }]}>
+            <Box
+                style={[
+                    styles.box,
+                    { borderColor: error ? Colors.red : Colors.gray }
+                ]}
+            >
                 <Box style={styles.contentContainer}>
                     <Box
                         width={selectedItems.length === 0 ? '0%' : '80%'}

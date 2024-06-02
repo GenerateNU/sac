@@ -25,7 +25,7 @@ export const SelectOne: React.FC<SelectOneProps> = ({
     placeholder,
     title,
     onChange,
-    error = false,
+    error = false
 }) => {
     const [selectedItem, setSelectedItem] = useState<Item | null>(null);
     const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -60,7 +60,10 @@ export const SelectOne: React.FC<SelectOneProps> = ({
         <Box style={styles.container}>
             {title && <Text paddingBottom="xs">{title}</Text>}
             <TouchableOpacity
-                style={[styles.box, { borderColor: error ? Colors.red : Colors.gray }]}
+                style={[
+                    styles.box,
+                    { borderColor: error ? Colors.red : Colors.gray }
+                ]}
                 onPress={() => setDropdownVisible(!dropdownVisible)}
             >
                 <Box style={styles.contentContainer}>
