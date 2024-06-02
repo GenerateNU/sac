@@ -6,7 +6,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 
 import { Item } from '@/types/item';
 
+import { Border } from '../../shared/border';
 import { Colors } from '../../shared/colors';
+import { Spacing } from '../../shared/spacing';
 import { Box } from '../Box/Box';
 import { Text } from '../Text/Text';
 
@@ -47,9 +49,9 @@ export const SelectOne: React.FC<SelectOneProps> = ({
         );
     };
 
-    let dropdownHeight = data.length * 50.5;
+    let dropdownHeight = data.length * 53;
     if (data.length >= 5) {
-        dropdownHeight = 252.5;
+        dropdownHeight = 265;
     }
 
     return (
@@ -88,7 +90,7 @@ export const SelectOne: React.FC<SelectOneProps> = ({
 const styles = StyleSheet.create({
     container: {
         width: '100%',
-        borderRadius: 12
+        borderRadius: Border.medium
     },
     box: {
         backgroundColor: 'white',
@@ -96,26 +98,26 @@ const styles = StyleSheet.create({
         borderColor: Colors.gray,
         borderWidth: 1,
         justifyContent: 'center',
-        paddingHorizontal: 10,
-        borderRadius: 10,
+        paddingHorizontal: Spacing.s,
+        borderRadius: Border.base,
         height: 52
     },
     contentContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: 5
+        paddingHorizontal: Spacing.xxs
     },
     dropdown: {
         backgroundColor: 'white',
         borderColor: Colors.gray,
         borderWidth: 1,
         width: '100%',
-        borderRadius: 10,
-        marginTop: 7
+        borderRadius: Border.base,
+        marginTop: Spacing.xs
     },
     item: {
-        padding: 15
+        padding: Spacing.m
     },
     divider: {
         height: 1,

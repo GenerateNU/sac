@@ -15,18 +15,16 @@ interface UpcomingEventsProps {
 export const UpcomingEvent: React.FC<UpcomingEventsProps> = ({ events }) => {
     const renderEventCard = ({ item }: { item: Event }) => {
         return (
-            <Box paddingRight="m">
-                <Pressable onPress={() => router.push(`/event/${item.id}`)}>
-                    <EventCard
-                        variant="small"
-                        event={item.name}
-                        club={item.host}
-                        startTime={item.start_time}
-                        endTime={item.end_time}
-                        image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLF3ord7lnV_5Je-pC2AUgUiesHNPcZlpI7A&s"
-                    />
-                </Pressable>
-            </Box>
+            <Pressable onPress={() => router.push(`/event/${item.id}`)}>
+                <EventCard
+                    variant="small"
+                    event={item.name}
+                    club={item.host}
+                    startTime={item.start_time}
+                    endTime={item.end_time}
+                    image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLF3ord7lnV_5Je-pC2AUgUiesHNPcZlpI7A&s"
+                />
+            </Pressable>
         );
     };
     return (
@@ -37,7 +35,11 @@ export const UpcomingEvent: React.FC<UpcomingEventsProps> = ({ events }) => {
             <FlatList
                 showsHorizontalScrollIndicator={false}
                 horizontal
-                contentContainerStyle={{ paddingLeft: 32, paddingBottom: 40 }}
+                contentContainerStyle={{
+                    gap: 15,
+                    paddingHorizontal: 32,
+                    paddingBottom: 40
+                }}
                 data={events}
                 renderItem={renderEventCard}
                 keyExtractor={(item) => item.id}

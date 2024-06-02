@@ -10,11 +10,11 @@ import { Item } from '@/types/item';
 import { Divider } from './divider';
 
 type Ref = BottomSheet;
+
 const SaveEventText = `By saving this event, you are automatically signed up for notifications and this event will be added to your calendar.`;
 
 interface RegisterSheetProps {
     eventType: 'hybrid' | 'in-person' | 'virtual';
-    // eventId: string,
 }
 
 const RegisterBottomSheet = forwardRef<Ref, RegisterSheetProps>(
@@ -37,12 +37,10 @@ const RegisterBottomSheet = forwardRef<Ref, RegisterSheetProps>(
         const handleRegisterPress = () => {
             if (attending?.key === 'maybe') {
                 setSheet('save');
+            } else if (eventType === 'hybrid') {
+                setSheet('attend');
             } else {
-                if (eventType === 'hybrid') {
-                    setSheet('attend');
-                } else {
-                    setSheet('save');
-                }
+                setSheet('save');
             }
         };
 
@@ -51,7 +49,7 @@ const RegisterBottomSheet = forwardRef<Ref, RegisterSheetProps>(
                 ref={ref}
                 index={-1}
                 snapPoints={sheet === 'save' ? ['40%'] : ['50%']}
-                enablePanDownToClose={true}
+                enablePanDownToClose
                 backgroundStyle={{ backgroundColor: 'white' }}
                 backdropComponent={renderBackdrop}
             >
@@ -81,60 +79,52 @@ interface RegisterProps {
     value: Item | undefined;
 }
 
-const Register: React.FC<RegisterProps> = ({ onPress, onChange, value }) => {
-    return (
-        <Box marginHorizontal="xl" flexDirection="column" gap="s">
-            <Text
-                paddingTop="s"
-                textAlign="center"
-                variant="subheader-2"
-                fontWeight="500"
-            >
-                Register
-            </Text>
-            <Divider />
-            <Box paddingTop="m" height={250}>
-                <SelectOne
-                    data={[
-                        { key: 'yes', value: 'Yes' },
-                        { key: 'maybe', value: 'Maybe' }
-                    ]}
-                    onChange={onChange}
-                    placeholder="Please select an option"
-                    title="Will you be joining us?"
-                />
-            </Box>
-            <Button
-                onPress={onPress}
-                disabled={!value}
-                variant="standardButton"
-            >
-                Continue
-            </Button>
+const Register: React.FC<RegisterProps> = ({ onPress, onChange, value }) => (
+    <Box marginHorizontal="xl" flexDirection="column" gap="s">
+        <Text
+            paddingTop="s"
+            textAlign="center"
+            variant="subheader-2"
+            fontWeight="500"
+        >
+            Register
+        </Text>
+        <Divider />
+        <Box paddingTop="m" height={250}>
+            <SelectOne
+                data={[
+                    { key: 'yes', value: 'Yes' },
+                    { key: 'maybe', value: 'Maybe' }
+                ]}
+                onChange={onChange}
+                placeholder="Please select an option"
+                title="Will you be joining us?"
+            />
         </Box>
-    );
-};
+        <Button onPress={onPress} disabled={!value} variant="standardButton">
+            Continue
+        </Button>
+    </Box>
+);
 
-const SaveEvent = () => {
-    return (
-        <Box marginHorizontal="xl" flexDirection="column" gap="s">
-            <Text
-                paddingTop="s"
-                textAlign="center"
-                variant="subheader-2"
-                fontWeight="500"
-            >
-                Save Event
-            </Text>
-            <Divider />
-            <Text paddingTop="s">{SaveEventText}</Text>
-            <Box marginTop="s" flexDirection="column" gap="s">
-                <Button variant="standardButton">Add to Google Calendar</Button>
-                <Button variant="standardButton">Add to Apple Calendar</Button>
-            </Box>
+const SaveEvent: React.FC = () => (
+    <Box marginHorizontal="xl" flexDirection="column" gap="s">
+        <Text
+            paddingTop="s"
+            textAlign="center"
+            variant="subheader-2"
+            fontWeight="500"
+        >
+            Save Event
+        </Text>
+        <Divider />
+        <Text paddingTop="s">{SaveEventText}</Text>
+        <Box marginTop="s" flexDirection="column" gap="s">
+            <Button variant="standardButton">Add to Google Calendar</Button>
+            <Button variant="standardButton">Add to Apple Calendar</Button>
         </Box>
-    );
-};
+    </Box>
+);
 
 interface AttendanceTypeProps {
     onPress: () => void;
@@ -146,41 +136,35 @@ const AttendanceType: React.FC<AttendanceTypeProps> = ({
     onPress,
     onChange,
     value
-}) => {
-    return (
-        <Box marginHorizontal="xl" flexDirection="column" gap="s">
-            <Text
-                paddingTop="s"
-                textAlign="center"
-                variant="subheader-2"
-                fontWeight="500"
-            >
-                Register
-            </Text>
-            <Divider />
-            <Text paddingTop="s">
-                This event is available for both in-person and virtual
-                attendance. Please choose your preferred option.
-            </Text>
-            <Box height={170}>
-                <SelectOne
-                    data={[
-                        { key: 'in-person', value: 'In-person' },
-                        { key: 'virtual', value: 'Virtual' }
-                    ]}
-                    onChange={onChange}
-                    placeholder="Will you join in-person or virtually?"
-                />
-            </Box>
-            <Button
-                onPress={onPress}
-                disabled={!value}
-                variant="standardButton"
-            >
-                Continue
-            </Button>
+}) => (
+    <Box marginHorizontal="xl" flexDirection="column" gap="s">
+        <Text
+            paddingTop="s"
+            textAlign="center"
+            variant="subheader-2"
+            fontWeight="500"
+        >
+            Register
+        </Text>
+        <Divider />
+        <Text paddingTop="s">
+            This event is available for both in-person and virtual attendance.
+            Please choose your preferred option.
+        </Text>
+        <Box height={170}>
+            <SelectOne
+                data={[
+                    { key: 'in-person', value: 'In-person' },
+                    { key: 'virtual', value: 'Virtual' }
+                ]}
+                onChange={onChange}
+                placeholder="Will you join in-person or virtually?"
+            />
         </Box>
-    );
-};
+        <Button onPress={onPress} disabled={!value} variant="standardButton">
+            Continue
+        </Button>
+    </Box>
+);
 
 export { RegisterBottomSheet };

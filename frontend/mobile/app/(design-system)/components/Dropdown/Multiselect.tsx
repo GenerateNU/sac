@@ -15,7 +15,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 
 import { Item } from '@/types/item';
 
+import { Border } from '../../shared/border';
 import { Colors } from '../../shared/colors';
+import { Spacing } from '../../shared/spacing';
 import { Box } from '../Box/Box';
 import { Text } from '../Text/Text';
 
@@ -37,6 +39,28 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
     const [selectedItems, setSelectedItems] = useState<Item[]>([]);
     const [dropdownVisible, setDropdownVisible] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [dropdownHeight, setDropdownHeight] = useState<number>(
+        (data.length + 1) * 51.5
+    );
+
+    const calculateDropdownHeight = (itemsCount: number) => {
+        let height = (itemsCount + 1) * 52;
+        if (itemsCount >= 5) {
+            height = 255;
+        }
+        return height;
+    };
+
+    const handleSearch = (text: string) => {
+        const filteredData = text
+            ? data.filter((item) =>
+                  item.value.toLowerCase().includes(text.toLowerCase())
+              )
+            : data;
+        const newDropdownHeight = calculateDropdownHeight(filteredData.length);
+        setDropdownHeight(newDropdownHeight);
+        setSearchTerm(text);
+    };
 
     const toggleItem = (item: Item) => {
         const index = selectedItems.findIndex(
@@ -92,7 +116,10 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
 
     return (
         <TouchableOpacity
-            style={styles.container}
+            style={[
+                styles.container,
+                { height: dropdownVisible ? dropdownHeight : undefined }
+            ]}
             onPress={handleComponentPress}
         >
             <Text style={styles.title}>{title}</Text>
@@ -141,7 +168,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
                         placeholder="Search..."
                         style={styles.searchInput}
                         value={searchTerm}
-                        onChangeText={setSearchTerm}
+                        onChangeText={handleSearch}
                     />
                     <FlatList
                         data={filteredData}
@@ -157,7 +184,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
 const styles = StyleSheet.create({
     container: {
         width: '100%',
-        borderRadius: 12
+        borderRadius: Border.base
     },
     box: {
         backgroundColor: 'white',
@@ -165,8 +192,8 @@ const styles = StyleSheet.create({
         borderColor: Colors.gray,
         borderWidth: 1,
         justifyContent: 'center',
-        paddingHorizontal: 10,
-        borderRadius: 10
+        paddingHorizontal: Spacing.xs,
+        borderRadius: Spacing.xs
     },
     contentContainer: {
         flexDirection: 'row',
@@ -177,32 +204,31 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderColor: Colors.gray,
         borderWidth: 1,
-        width: '100%',
-        borderRadius: 10,
-        marginTop: 5
+        borderRadius: Border.base,
+        marginTop: Spacing.xxs
     },
     title: {
         fontSize: 18,
-        marginBottom: 10
+        marginBottom: Spacing.xs
     },
     item: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 10,
-        paddingVertical: 15
+        paddingHorizontal: Spacing.s,
+        paddingVertical: Spacing.m
     },
     selectedItem: {
         backgroundColor: Colors.gray
     },
     itemText: {
         flex: 1,
-        marginLeft: 5
+        marginLeft: Spacing.xxs
     },
     input: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 15,
-        paddingHorizontal: 5,
+        paddingVertical: Spacing.m,
+        paddingHorizontal: Spacing.xxs,
         justifyContent: 'space-around'
     },
     placeholder: {
@@ -211,11 +237,11 @@ const styles = StyleSheet.create({
     },
     tag: {
         backgroundColor: Colors.gray,
-        borderRadius: 8,
-        paddingVertical: 5,
-        paddingHorizontal: 10,
-        marginRight: 5,
-        marginBottom: 5,
+        borderRadius: Border.base,
+        paddingVertical: Spacing.xxs,
+        paddingHorizontal: Spacing.xs,
+        marginRight: Spacing.xxs,
+        marginBottom: Spacing.xxs,
         flexDirection: 'row',
         alignItems: 'center',
         gap: 2
@@ -227,9 +253,9 @@ const styles = StyleSheet.create({
         height: 40,
         borderColor: Colors.gray,
         borderWidth: 1,
-        borderRadius: 10,
-        paddingHorizontal: 10,
-        margin: 5
+        borderRadius: Border.base,
+        paddingHorizontal: Spacing.s,
+        margin: Spacing.xxs
     },
     selectButtonText: {
         color: 'white'
@@ -239,3 +265,5 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.gray
     }
 });
+
+export default MultiSelect;

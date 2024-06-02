@@ -1,6 +1,9 @@
 import React, { forwardRef, useCallback, useState } from 'react';
+import { Clipboard } from 'react-native';
 
-// import Clipboard from '@react-native-clipboard/clipboard';
+// TODO: Clipboard from react-native deprecated but still work, need to switch
+// to react-native-community dependency but it's not working
+// import Clipboard from '@react-native-community/clipboard';
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 
 import { Box, Text } from '@/app/(design-system)';
@@ -16,60 +19,62 @@ interface ShareEventProps {
 
 type Ref = BottomSheet;
 
-const ShareEventBottomSheet = forwardRef<Ref, ShareEventProps>((_, ref) => {
-    const snapPoints = ['40%'];
-    const [isCopied, setIsCopied] = useState(false);
+const ShareEventBottomSheet = forwardRef<Ref, ShareEventProps>(
+    ({ link }, ref) => {
+        const snapPoints = ['40%'];
+        const [isCopied, setIsCopied] = useState(false);
 
-    const renderBackdrop = useCallback(
-        (props: any) => (
-            <BottomSheetBackdrop
-                appearsOnIndex={0}
-                disappearsOnIndex={-1}
-                {...props}
-            />
-        ),
-        []
-    );
+        const renderBackdrop = useCallback(
+            (props: any) => (
+                <BottomSheetBackdrop
+                    appearsOnIndex={0}
+                    disappearsOnIndex={-1}
+                    {...props}
+                />
+            ),
+            []
+        );
 
-    const handleCopyPress = () => {
-        // Clipboard.setString(link);
-        setIsCopied(true);
-    };
+        const handleCopyPress = () => {
+            Clipboard.setString(link);
+            setIsCopied(true);
+        };
 
-    return (
-        <BottomSheet
-            ref={ref}
-            index={-1}
-            snapPoints={snapPoints}
-            enablePanDownToClose={true}
-            backgroundStyle={{ backgroundColor: 'white' }}
-            backdropComponent={renderBackdrop}
-        >
-            <Box marginHorizontal="xl" flexDirection="column" gap="s">
-                <Text
-                    paddingTop="s"
-                    textAlign="center"
-                    variant="subheader-2"
-                    fontWeight="500"
-                >
-                    Share Event
-                </Text>
-                <Divider />
-                <Text marginVertical="s" variant="body-1">
-                    {ShareEventText}
-                </Text>
-                <Button
-                    marginBottom="xxl"
-                    variant="standardButton"
-                    onPress={handleCopyPress}
-                >
-                    <Text fontWeight="500">
-                        {isCopied ? 'Copied!' : 'Click to copy link'}
+        return (
+            <BottomSheet
+                ref={ref}
+                index={-1}
+                snapPoints={snapPoints}
+                enablePanDownToClose={true}
+                backgroundStyle={{ backgroundColor: 'white' }}
+                backdropComponent={renderBackdrop}
+            >
+                <Box marginHorizontal="xl" flexDirection="column" gap="s">
+                    <Text
+                        paddingTop="s"
+                        textAlign="center"
+                        variant="subheader-2"
+                        fontWeight="500"
+                    >
+                        Share Event
                     </Text>
-                </Button>
-            </Box>
-        </BottomSheet>
-    );
-});
+                    <Divider />
+                    <Text marginVertical="s" variant="body-1">
+                        {ShareEventText}
+                    </Text>
+                    <Button
+                        marginBottom="xxl"
+                        variant="standardButton"
+                        onPress={handleCopyPress}
+                    >
+                        <Text fontWeight="500">
+                            {isCopied ? 'Copied!' : 'Click to copy link'}
+                        </Text>
+                    </Button>
+                </Box>
+            </BottomSheet>
+        );
+    }
+);
 
 export { ShareEventBottomSheet };

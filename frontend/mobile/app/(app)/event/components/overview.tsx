@@ -52,7 +52,7 @@ export const Overview: React.FC<OverviewProps> = ({
                     <Avatar rounded source={{ uri: logo }} size={20} />
                 </Box>
             </Box>
-            <Box flexDirection="column" gap="xs">
+            <Box flexDirection="column" gap="xs" width="90%">
                 <Box flexDirection="row" gap="s" alignItems="center">
                     <FontAwesomeIcon
                         size={23}
