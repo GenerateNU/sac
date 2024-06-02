@@ -17,13 +17,15 @@ interface SelectOneProps {
     placeholder: string;
     title?: string;
     onChange: (value: Item) => void;
+    error?: boolean;
 }
 
 export const SelectOne: React.FC<SelectOneProps> = ({
     data,
     placeholder,
     title,
-    onChange
+    onChange,
+    error = false,
 }) => {
     const [selectedItem, setSelectedItem] = useState<Item | null>(null);
     const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -58,7 +60,7 @@ export const SelectOne: React.FC<SelectOneProps> = ({
         <Box style={styles.container}>
             {title && <Text paddingBottom="xs">{title}</Text>}
             <TouchableOpacity
-                style={styles.box}
+                style={[styles.box, { borderColor: error ? Colors.red : Colors.gray }]}
                 onPress={() => setDropdownVisible(!dropdownVisible)}
             >
                 <Box style={styles.contentContainer}>
@@ -95,7 +97,6 @@ const styles = StyleSheet.create({
     box: {
         backgroundColor: 'white',
         width: '100%',
-        borderColor: Colors.gray,
         borderWidth: 1,
         justifyContent: 'center',
         paddingHorizontal: Spacing.s,
