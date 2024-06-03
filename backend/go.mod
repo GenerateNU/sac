@@ -5,10 +5,10 @@ go 1.22.2
 require (
 	github.com/a-h/templ v0.2.707
 	github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5
-	github.com/aws/aws-sdk-go v1.53.10
+	github.com/aws/aws-sdk-go v1.53.14
 	github.com/garrettladley/fiberpaginate v1.0.5
 	github.com/garrettladley/mattress v0.4.0
-	github.com/go-playground/validator/v10 v10.20.0
+	github.com/go-playground/validator/v10 v10.21.0
 	github.com/goccy/go-json v0.10.3
 	github.com/gofiber/fiber/v2 v2.52.4
 	github.com/gofiber/swagger v1.0.0
@@ -17,7 +17,7 @@ require (
 	github.com/huandu/go-assert v1.1.6
 	github.com/joho/godotenv v1.5.1
 	github.com/mcnijman/go-emailaddress v1.1.1
-	github.com/redis/go-redis/v9 v9.5.1
+	github.com/redis/go-redis/v9 v9.5.2
 	github.com/resend/resend-go/v2 v2.6.0
 	github.com/swaggo/swag v1.16.3
 	go.opentelemetry.io/otel/sdk v1.27.0
@@ -65,7 +65,7 @@ require (
 	github.com/go-openapi/swag v0.23.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-viper/mapstructure/v2 v2.0.0-alpha.1
+	github.com/go-viper/mapstructure/v2 v2.0.0
 	github.com/gofiber/contrib/otelfiber v1.0.10
 	github.com/golang-migrate/migrate/v4 v4.17.1
 	github.com/jackc/pgpassfile v1.0.0 // indirect
