@@ -31,7 +31,11 @@ export const EventCardSmall: React.FC<EventCardSmallProps> = ({
             <TouchableOpacity>
                 <Box flexDirection="column" gap="xs">
                     <Image
-                        containerStyle={styles.image}
+                        containerStyle={{
+                            aspectRatio: 1,
+                            width: '100%',
+                            borderRadius: 15
+                        }}
                         source={{ uri: image }}
                     />
                     <Text fontWeight="500">{event}</Text>
@@ -50,11 +54,3 @@ export const EventCardSmall: React.FC<EventCardSmallProps> = ({
         </Box>
     );
 };
-
-const styles = StyleSheet.create({
-    image: {
-        aspectRatio: 1,
-        width: '100%',
-        borderRadius: 15
-    }
-});

@@ -6,10 +6,10 @@ import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faCalendarDays } from '@fortawesome/free-solid-svg-icons/faCalendarDays';
 import { faHouse } from '@fortawesome/free-solid-svg-icons/faHouse';
 import { faUser } from '@fortawesome/free-solid-svg-icons/faUser';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 
 import { Text } from '@/app/(design-system)';
-import { Box, Colors } from '@/app/(design-system)';
+import { Box } from '@/app/(design-system)';
+import { Icon } from '@/app/(design-system)/components/Icon/Icon';
 
 interface TabBarLabelProps {
     focused: boolean;
@@ -29,9 +29,9 @@ interface TabBarIconProps {
 
 const TabBarIcon: React.FC<TabBarIconProps> = ({ focused, icon }) => (
     <Box paddingTop="m">
-        <FontAwesomeIcon
-            size={20}
-            color={focused ? 'black' : `${Colors.gray}`}
+        <Icon 
+            size='md'
+            color={focused ? 'black' : `gray`}
             icon={icon}
         />
     </Box>
@@ -41,12 +41,15 @@ const Layout = () => {
     return (
         <Tabs
             screenOptions={{
-                tabBarShowLabel: true,
+                tabBarShowLabel: false,
                 tabBarStyle: {
                     borderTopWidth: 1,
-                    borderTopColor: '#00000066',
-                    height: 85
+                    borderTopColor: 'gray',
+                    height: 85,
                 }
+            }}
+            sceneContainerStyle={{
+                backgroundColor: 'white'
             }}
         >
             <Tabs.Screen

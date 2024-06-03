@@ -1,9 +1,10 @@
 import { Tag } from '@generatesac/lib';
 
-import { EventCardBig } from './event-card-big';
-import { EventCardCalendar } from './event-card-calendar';
-import { EventCardClub } from './event-card-club';
-import { EventCardSmall } from './event-card-small';
+import { EventCardBig } from './EventCardVariants/EventCardBig';
+import { EventCardCalendar } from './EventCardVariants/EventCardCalendar';
+import { EventCardClub } from './EventCardVariants/EventCardClub';
+import { EventCardSmall } from './EventCardVariants/EventCardSmall';
+import { Box } from '../Box/Box';
 
 interface EventCardProps {
     event: string;
@@ -29,6 +30,7 @@ export const EventCard = ({
     switch (variant) {
         case 'big':
             return (
+                <Box marginVertical={'m'}>
                 <EventCardBig
                     event={event}
                     club={club}
@@ -36,9 +38,11 @@ export const EventCard = ({
                     endTime={endTime}
                     image={image}
                 />
+                </Box>
             );
         case 'small':
             return (
+                <Box marginVertical={'m'}>
                 <EventCardSmall
                     event={event}
                     club={club}
@@ -46,9 +50,11 @@ export const EventCard = ({
                     endTime={endTime}
                     image={image}
                 />
+                </Box>
             );
         case 'club':
             return (
+                <Box marginVertical={'m'}>
                 <EventCardClub
                     event={event}
                     club={club}
@@ -58,6 +64,7 @@ export const EventCard = ({
                     logo={logo}
                     tags={tags ? tags : []}
                 />
+                </Box>
             );
         case 'calendar':
             return (

@@ -2,16 +2,15 @@ import { SafeAreaView, ScrollView, StyleSheet, Text } from 'react-native';
 
 import { Tag } from '@generatesac/lib';
 
-import { Box } from '@/app/(design-system)';
-
-import { EventCard } from '../components/event-card';
+import { EventCard } from '@/app/(design-system)/components/EventCard/EventCard';
+import { GlobalLayout } from '@/app/(design-system)/components/GlobalLayout/GlobalLayout';
 
 const tags: Tag[] = [
     {
         id: '1',
         created_at: new Date(),
         updated_at: new Date(),
-        name: 'Software Development',
+        name: 'Software',
         category_id: '1'
     },
     {
@@ -44,12 +43,15 @@ const tags: Tag[] = [
     }
 ];
 
+const date = new Date();
+date.setHours(date.getHours() + 1);
+
 const HomePage = () => {
     return (
-        <SafeAreaView style={styles.container}>
-            <Text style={styles.title}>Home</Text>
-            <ScrollView showsVerticalScrollIndicator={false}>
-                <Box marginLeft="xl">
+        <GlobalLayout>
+            <SafeAreaView style={styles.container}>
+                <Text style={styles.title}>Home</Text>
+                <ScrollView showsVerticalScrollIndicator={false}>
                     <EventCard
                         event="Spring Showcase"
                         variant="small"
@@ -60,39 +62,39 @@ const HomePage = () => {
                         logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT800M6T7YVq_f6W49g_UNL29US7gC63nTitg&s"
                         image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfT6p6kCen0-GphSDogJRd2KoYjg0-QQWuAw9e5JBIBEVTc3Hxho_UwRsZ0IrEi6Ap5oo&usqp=CAU"
                     />
-                </Box>
-                <EventCard
-                    event="Spring Showcase"
-                    variant="big"
-                    tags={tags}
-                    club="Generate Product Development Studio"
-                    startTime={new Date()}
-                    endTime={new Date()}
-                    logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT800M6T7YVq_f6W49g_UNL29US7gC63nTitg&s"
-                    image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfT6p6kCen0-GphSDogJRd2KoYjg0-QQWuAw9e5JBIBEVTc3Hxho_UwRsZ0IrEi6Ap5oo&usqp=CAU"
-                />
-                <EventCard
-                    event="Spring Showcase"
-                    variant="club"
-                    tags={tags}
-                    club="Generate"
-                    startTime={new Date()}
-                    endTime={new Date()}
-                    logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT800M6T7YVq_f6W49g_UNL29US7gC63nTitg&s"
-                    image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfT6p6kCen0-GphSDogJRd2KoYjg0-QQWuAw9e5JBIBEVTc3Hxho_UwRsZ0IrEi6Ap5oo&usqp=CAU"
-                />
-                <EventCard
-                    event="Spring Showcase"
-                    variant="calendar"
-                    tags={tags}
-                    club="Generate"
-                    startTime={new Date()}
-                    endTime={new Date()}
-                    logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT800M6T7YVq_f6W49g_UNL29US7gC63nTitg&s"
-                    image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfT6p6kCen0-GphSDogJRd2KoYjg0-QQWuAw9e5JBIBEVTc3Hxho_UwRsZ0IrEi6Ap5oo&usqp=CAU"
-                />
-            </ScrollView>
-        </SafeAreaView>
+                    <EventCard
+                        event="Spring Showcase"
+                        variant="big"
+                        tags={tags}
+                        club="Generate Product Development Studio"
+                        startTime={new Date()}
+                        endTime={new Date()}
+                        logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT800M6T7YVq_f6W49g_UNL29US7gC63nTitg&s"
+                        image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfT6p6kCen0-GphSDogJRd2KoYjg0-QQWuAw9e5JBIBEVTc3Hxho_UwRsZ0IrEi6Ap5oo&usqp=CAU"
+                    />
+                    <EventCard
+                        event="Spring Showcase"
+                        variant="club"
+                        tags={tags}
+                        club="Generate"
+                        startTime={new Date()}
+                        endTime={new Date()}
+                        logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT800M6T7YVq_f6W49g_UNL29US7gC63nTitg&s"
+                        image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfT6p6kCen0-GphSDogJRd2KoYjg0-QQWuAw9e5JBIBEVTc3Hxho_UwRsZ0IrEi6Ap5oo&usqp=CAU"
+                    />
+                    <EventCard
+                        event="Spring Showcase"
+                        variant="calendar"
+                        tags={tags}
+                        club="Generate"
+                        startTime={new Date()}
+                        endTime={date}
+                        logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT800M6T7YVq_f6W49g_UNL29US7gC63nTitg&s"
+                        image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfT6p6kCen0-GphSDogJRd2KoYjg0-QQWuAw9e5JBIBEVTc3Hxho_UwRsZ0IrEi6Ap5oo&usqp=CAU"
+                    />
+                </ScrollView>
+            </SafeAreaView>
+        </GlobalLayout>
     );
 };
 

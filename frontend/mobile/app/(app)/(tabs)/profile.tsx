@@ -1,10 +1,13 @@
+import { GlobalLayout } from '@/app/(design-system)/components/GlobalLayout/GlobalLayout';
 import { StyleSheet, Text, View } from 'react-native';
 
 const ProfilePage = () => {
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Profile</Text>
-        </View>
+        <GlobalLayout>
+            <View style={styles.container}>
+                <Text style={styles.title}>Profile</Text>
+            </View>
+        </GlobalLayout>
     );
 };
 

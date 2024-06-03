@@ -5,7 +5,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { Image } from '@rneui/base';
 
-import { Box, Text } from '@/app/(design-system)';
+import { Box, Text, createStyles } from '@/app/(design-system)';
 import { calculateDuration, createOptions, eventTime } from '@/utils/time';
 
 interface EventCardBigProps {
@@ -24,11 +24,15 @@ export const EventCardBig: React.FC<EventCardBigProps> = ({
     image
 }) => {
     return (
-        <Box margin="xl">
+        <Box>
             <TouchableOpacity>
                 <Box gap="xs">
                     <Image
-                        containerStyle={styles.image}
+                        containerStyle={{
+                            aspectRatio: 1,
+                            width: '100%',
+                            borderRadius: 15
+                        }}
                         source={{ uri: image }}
                     />
                     <Box
@@ -62,11 +66,3 @@ export const EventCardBig: React.FC<EventCardBigProps> = ({
         </Box>
     );
 };
-
-const styles = StyleSheet.create({
-    image: {
-        aspectRatio: 1,
-        width: '100%',
-        borderRadius: 15
-    }
-});

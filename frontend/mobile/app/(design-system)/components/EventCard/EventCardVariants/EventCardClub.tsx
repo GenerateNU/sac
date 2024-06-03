@@ -4,10 +4,11 @@ import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Tag } from '@generatesac/lib';
 import { Avatar, Image } from '@rneui/base';
 
-import { Box, Text } from '@/app/(design-system)';
+import { Box, Text, createStyles } from '@/app/(design-system)';
 import { createOptions, eventTime } from '@/utils/time';
 
-import { EventTags } from './event-tag';
+import { EventTags } from '../EventCardTags/EventCardTags';
+import { sharedStyles } from '../shared/styles';
 
 interface EventCardClubProps {
     event: string;
@@ -29,25 +30,16 @@ export const EventCardClub: React.FC<EventCardClubProps> = ({
     tags
 }) => {
     return (
-        <Box margin="xl">
+        <Box>
             <TouchableOpacity>
-                <Box
-                    shadowColor="black"
-                    shadowOffset={{ width: 0, height: 1 }}
-                    shadowOpacity={0.1}
-                    shadowRadius={2}
-                >
-                    <Box
-                        width="100%"
-                        borderRadius={8}
-                        padding="m"
-                        backgroundColor="white"
-                        flexDirection="row"
-                        justifyContent="space-between"
-                        gap="s"
-                    >
+                <Box {...styles.cardContainer}>
+                    <Box {...styles.cardSubContainer}>
                         <Image
-                            containerStyle={styles.clubImage}
+                            containerStyle={{
+                                flexGrow: 0,
+                                borderRadius: 8,
+                                aspectRatio: 1
+                            }}
                             source={{ uri: image }}
                         />
                         <Box flex={3} flexDirection="column" gap="xxs">
@@ -64,22 +56,14 @@ export const EventCardClub: React.FC<EventCardClubProps> = ({
                                 )}
                             </Text>
                             <Text variant="body-1">{event}</Text>
-                            <Box
-                                flexDirection="row"
-                                alignItems="center"
-                                gap="xxs"
-                            >
+                            <Box {...sharedStyles.clubInfoContainer}>
                                 <Text color="darkGray" variant="caption-1">
                                     Hosted by {club}
                                 </Text>
-                                <Avatar
-                                    size={15}
-                                    rounded
-                                    source={{ uri: logo }}
-                                />
+                                <Avatar size={15} rounded source={{ uri: logo }}/>
                             </Box>
                             {tags && (
-                                <EventTags tags={tags} variant="limited" />
+                                <EventTags tags={tags} />
                             )}
                         </Box>
                     </Box>
@@ -89,10 +73,22 @@ export const EventCardClub: React.FC<EventCardClubProps> = ({
     );
 };
 
-const styles = StyleSheet.create({
-    clubImage: {
-        flex: 1.15,
-        borderRadius: 8,
-        aspectRatio: 1
+const styles = createStyles({
+    cardContainer: {
+        shadowColor: "black",
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        backgroundColor: 'white',
+        borderRadius: 'md',
+    },
+    cardSubContainer: {
+        width: "100%",
+        borderRadius: "md",
+        padding: "m",
+        backgroundColor: "white",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        gap: "s"
     }
-});
+})
