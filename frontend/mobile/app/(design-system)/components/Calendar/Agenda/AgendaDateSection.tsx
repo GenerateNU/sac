@@ -27,7 +27,7 @@ export const AgendaDateSection = forwardRef(function AgendaDateSection({ section
             <Text 
                 variant="body-1"
                 fontWeight={'bold'}
-                marginVertical='s'
+                marginTop='l'
                 ref={ref}
             >
                 {formatSectionHeader(section.date)}
@@ -42,6 +42,10 @@ export const AgendaDateSection = forwardRef(function AgendaDateSection({ section
                     )
                 })
             }
+            {keys.length === 0 && 
+                <Text textAlign="center" marginVertical="s">
+                    No Events Today
+                </Text>}
         </Box>
     )
 });

@@ -1,9 +1,9 @@
 import { Tag } from '@generatesac/lib';
 
-import { EventCardBig } from './EventCardVariants/EventCardBig';
-import { EventCardCalendar } from './EventCardVariants/EventCardCalendar';
-import { EventCardClub } from './EventCardVariants/EventCardClub';
-import { EventCardSmall } from './EventCardVariants/EventCardSmall';
+import { EventCardBig } from './Variants/EventCardBig';
+import { EventCardCalendar } from './Variants/EventCardCalendar';
+import { EventCardClub } from './Variants/EventCardClub';
+import { EventCardSmall } from './Variants/EventCardSmall';
 import { Box } from '../Box/Box';
 
 interface EventCardProps {
@@ -31,39 +31,39 @@ export const EventCard = ({
         case 'big':
             return (
                 <Box marginVertical={'m'}>
-                <EventCardBig
-                    event={event}
-                    club={club}
-                    startTime={startTime}
-                    endTime={endTime}
-                    image={image}
-                />
+                    <EventCardBig
+                        event={event}
+                        club={club}
+                        startTime={startTime}
+                        endTime={endTime}
+                        image={image}
+                    />
                 </Box>
             );
         case 'small':
             return (
                 <Box marginVertical={'m'}>
-                <EventCardSmall
-                    event={event}
-                    club={club}
-                    startTime={startTime}
-                    endTime={endTime}
-                    image={image}
-                />
+                    <EventCardSmall
+                        event={event}
+                        club={club}
+                        startTime={startTime}
+                        endTime={endTime}
+                        image={image}
+                    />
                 </Box>
             );
         case 'club':
             return (
                 <Box marginVertical={'m'}>
-                <EventCardClub
-                    event={event}
-                    club={club}
-                    startTime={startTime}
-                    endTime={endTime}
-                    image={image}
-                    logo={logo}
-                    tags={tags ? tags : []}
-                />
+                    <EventCardClub
+                        event={event}
+                        club={club}
+                        startTime={startTime}
+                        endTime={endTime}
+                        image={image}
+                        logo={logo}
+                        tags={tags ? tags : []}
+                    />
                 </Box>
             );
         case 'calendar':

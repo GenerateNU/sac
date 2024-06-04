@@ -108,8 +108,8 @@ const styles = createStyles({
         borderRadius: 'md',
         shadowColor:"black",
         shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
+        shadowOpacity: 0.2,
+        shadowRadius: 8,
         backgroundColor: 'white',
     },
     cardSubContainer: {

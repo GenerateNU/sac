@@ -9208,10 +9208,10 @@ react-native-bidirectional-infinite-scroll@^0.3.3:
   resolved "https://registry.yarnpkg.com/react-native-bidirectional-infinite-scroll/-/react-native-bidirectional-infinite-scroll-0.3.3.tgz#31e83e30514be2eaaa889b97d01149c8a08576ec"
   integrity sha512-zxYJDjrxTkGqg83WH3fSdufg79XZ7xDDn9HdHlKo9avAcz92Rf28/ivDeUM2aOUmmboqJK8BqtVByT6cF/taYg==
 
-react-native-calendars-sac@^1.22.1:
-  version "1.22.1"
-  resolved "https://registry.yarnpkg.com/react-native-calendars-sac/-/react-native-calendars-sac-1.22.1.tgz#1c8dcf23b8bc42b453e69f20aab7b9f92718f296"
-  integrity sha512-gDEbDbpJOqfY7saLve4CLUdTH0OnxxgLVE78VN9c1fapxzZMoU8fMmlMla8KM3K3jtWRGcojoepZEVsgsivZZg==
+react-native-calendars-sac@^1.22.25:
+  version "1.22.25"
+  resolved "https://registry.yarnpkg.com/react-native-calendars-sac/-/react-native-calendars-sac-1.22.25.tgz#a0d124ceefc4a1e90232cbeb41de4f298401531a"
+  integrity sha512-4v0y+akbFIAQ+CDddiEuGLgml8JeS0lZJWra5MVF7RcG4Ps4ix1BO4yFlKJRZjQolD9JFI32Vqmr/yJA2gmScg==
   dependencies:
     hoist-non-react-statics "^3.3.1"
     lodash "^4.17.15"

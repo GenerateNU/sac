@@ -10,7 +10,7 @@ const ViewBase = createBox(View);
 
 export const GlobalLayout = ({ children }: GlobalLayoutProps) => {
     return (
-        <ViewBase flex={1} paddingHorizontal={'m'}>
+        <ViewBase flex={1} marginHorizontal={'s'}>
             {children}
         </ViewBase>
     )

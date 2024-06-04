@@ -53,17 +53,17 @@ export default function AgendaTimeSection({ time, data }: AgendaTimeSectionProps
             <Box flex={1}>
                 <TimeHeader time={time} />
             </Box>
-            <Box flex={1} alignItems="center">
+            <Box flex={1} alignItems="center" flexDirection="column" gap="s">
                 {data.events.map((event, index) => {
                     return (
-                        <Box marginVertical="xxs" key={`${event.title}${index}`}>
+                        <Box marginVertical="xxs" marginHorizontal="s" key={`${event.title}${index}`}>
                             <EventCard
                                 event={event.title}
                                 variant="calendar"
-                                tags={[]}
+                                tags={event.tags}
                                 club={event.host}
                                 startTime={new Date()}
-                                endTime={new Date()}
+                                endTime={new Date(new Date().getTime() + 1000000)}
                                 logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT800M6T7YVq_f6W49g_UNL29US7gC63nTitg&s"
                                 image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfT6p6kCen0-GphSDogJRd2KoYjg0-QQWuAw9e5JBIBEVTc3Hxho_UwRsZ0IrEi6Ap5oo&usqp=CAU"
                             />
@@ -74,7 +74,7 @@ export default function AgendaTimeSection({ time, data }: AgendaTimeSectionProps
                     <Button 
                         variant='standardButton'
                         color='white'
-                        size='md'
+                        size='sm'
                         onPress={() => {}} // TODO: LINK TO EVENT LIST PAGE
                     >
                         See More
