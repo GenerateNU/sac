@@ -1,0 +1,6 @@
+FROM redis:latest
+
+COPY redis_entrypoint.sh /usr/local/bin/redis_entrypoint.sh
+RUN chmod +x /usr/local/bin/redis_entrypoint.sh
+
+ENTRYPOINT ["redis_entrypoint.sh"]
