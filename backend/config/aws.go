@@ -14,29 +14,29 @@ type AWSSettings struct {
 }
 
 type intermediateAWSSettings struct {
-	bucketName string `env:"BUCKET_NAME"`
-	id         string `env:"ID"`
-	secret     string `env:"SECRET"`
-	region     string `env:"REGION"`
+	BucketName string `env:"BUCKET_NAME"`
+	ID         string `env:"ID"`
+	Secret     string `env:"SECRET"`
+	Region     string `env:"REGION"`
 }
 
 func (i *intermediateAWSSettings) into() (*AWSSettings, error) {
-	bucketName, err := m.NewSecret(i.bucketName)
+	bucketName, err := m.NewSecret(i.BucketName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create secret from bucket name: %s", err.Error())
 	}
 
-	id, err := m.NewSecret(i.id)
+	id, err := m.NewSecret(i.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create secret from ID: %s", err.Error())
 	}
 
-	secret, err := m.NewSecret(i.secret)
+	secret, err := m.NewSecret(i.Secret)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create secret from secret: %s", err.Error())
 	}
 
-	region, err := m.NewSecret(i.region)
+	region, err := m.NewSecret(i.Region)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create secret from region: %s", err.Error())
 	}
