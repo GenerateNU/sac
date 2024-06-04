@@ -1,3 +1,3 @@
-type ComponentSizes = 'small' | 'medium' | 'full';
+type ComponentSizes = 'xs' | 'sm' | 'md' | 'lg' | 'full';
 
 export { ComponentSizes };

@@ -18,7 +18,8 @@
                 "usesNonExemptEncryption": false
             },
             "supportsTablet": true,
-            "bundleIdentifier": "com.generatesac.studentactivitycalendar"
+            "bundleIdentifier": "com.generatesac.studentactivitycalendar",
+            "backgroundColor": "#ffffff"
         },
         "android": {
             "adaptiveIcon": {

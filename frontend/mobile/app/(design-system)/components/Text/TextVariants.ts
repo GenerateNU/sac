@@ -12,6 +12,13 @@ const Texts = {
         fontStyle: 'normal',
         fontWeight: '500'
     },
+    'subheader-2': {
+        fontFamily: 'DMSans-Medium',
+        fontSize: 20,
+        fontStyle: 'normal',
+        fontWeight: '500',
+        lineHeight: 'normal'
+    },
     'body-1': {
         fontFamily: 'DMSans-Regular',
         fontSize: 16,
@@ -29,6 +36,12 @@ const Texts = {
         fontSize: 10,
         fontStyle: 'normal',
         fontWeight: '200'
+    },
+    'caption-3': {
+        fontFamily: 'DMSans-Regular',
+        fontSize: 12,
+        fontStyle: 'normal',
+        fontWeight: '400'
     }
 } as const;
 
