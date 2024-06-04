@@ -73,7 +73,7 @@ export default function AgendaTimeSection({ time, data }: AgendaTimeSectionProps
                 {data.overflow && (
                     <Button 
                         variant='standardButton'
-                        color='white'
+                        color='transparent'
                         size='sm'
                         onPress={() => {}} // TODO: LINK TO EVENT LIST PAGE
                     >
