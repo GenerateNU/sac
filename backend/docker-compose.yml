@@ -1,35 +1,88 @@
 services:
   redis-active-tokens:
-    image: redis/redis-stack-server:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.redis
     container_name: redis_active_tokens
     ports:
       - 6379:6379
     environment:
-      - REDIS_PASSWORD=redispassword!#1
+      - REDIS_USERNAME=redis_active_tokens
+      - REDIS_PASSWORD=redis_active_tokens!#1
+      - REDIS_DISABLE_DEFAULT_USER="true"
     volumes:
       - redis-active-data:/data
 
   redis-blacklist:
-    image: redis/redis-stack-server:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.redis
     container_name: redis_blacklist
     ports:
       - 6380:6379
     environment:
-      - REDIS_PASSWORD=redispassword!#2
+      - REDIS_USERNAME=redis_blacklist
+      - REDIS_PASSWORD=redis_blacklist!#2
+      - REDIS_DISABLE_DEFAULT_USER="true"
     volumes:
       - redis-blacklist-data:/data
 
   redis-limiter:
-    image: redis/redis-stack-server:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.redis
     container_name: redis_limiter
     ports:
       - 6381:6379
     environment:
-      - REDIS_PASSWORD=redispassword!#3
+      - REDIS_USERNAME=redis_limiter
+      - REDIS_PASSWORD=redis_limiter!#3
+      - REDIS_DISABLE_DEFAULT_USER="true"
     volumes:
       - redis-limiter-data:/data
+
+  opensearch-node1:
+    image: opensearchproject/opensearch:latest
+    container_name: opensearch-node1
+    environment:
+      - cluster.name=opensearch-cluster
+      - node.name=opensearch-node1
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true # along with the memlock settings below, disables swapping
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m" # minimum and maximum Java heap size, recommend setting both to 50% of system RAM
+      - DISABLE_SECURITY_PLUGIN=true #
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536 # maximum number of open files for the OpenSearch user, set to at least 65536 on modern systems
+        hard: 65536
+    volumes:
+      - opensearch-data1:/usr/share/opensearch/data
+    ports:
+      - 9200:9200
+      - 9600:9600 # required for Performance Analyzer
+    networks:
+      - opensearch-net
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards:latest
+    container_name: opensearch-dashboards
+    ports:
+      - 5601:5601
+    expose:
+      - "5601"
+    environment:
+      OPENSEARCH_HOSTS: '["http://opensearch-node1:9200"]'
+      DISABLE_SECURITY_DASHBOARDS_PLUGIN: true
+    networks:
+      - opensearch-net
 
 volumes:
   redis-active-data:
   redis-blacklist-data:
   redis-limiter-data:
+  opensearch-data1:
+
+networks:
+  opensearch-net:
