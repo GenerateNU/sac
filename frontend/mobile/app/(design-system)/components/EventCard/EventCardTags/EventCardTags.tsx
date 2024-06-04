@@ -26,7 +26,7 @@ export const EventTags = ({ tags }: EventTagProps) => {
     };
 
     const renderedTags = renderTags();
-    const remainingTagCount = tags.length - renderedTags.length; 
+    const remainingTagCount = tags.length - renderedTags.length;
 
     return (
         <Box flexDirection="row" paddingTop="xxs" gap="xxs">

@@ -1,10 +1,10 @@
-import { createBox } from "@shopify/restyle";
-import { createStyles } from "../../theme";
-import { View } from "react-native";
+import { View } from 'react-native';
+
+import { createBox } from '@shopify/restyle';
 
 type GlobalLayoutProps = {
     children: React.ReactNode;
-}
+};
 
 const ViewBase = createBox(View);
 
@@ -13,5 +13,5 @@ export const GlobalLayout = ({ children }: GlobalLayoutProps) => {
         <ViewBase flex={1} marginHorizontal={'s'}>
             {children}
         </ViewBase>
-    )
-}
+    );
+};

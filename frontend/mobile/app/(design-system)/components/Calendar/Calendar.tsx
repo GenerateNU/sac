@@ -1,12 +1,17 @@
-import { CalendarProvider, ExpandableCalendar, WeekCalendar } from "react-native-calendars-sac";
-import { GlobalLayout } from "../GlobalLayout/GlobalLayout";
-import { Theme } from "react-native-calendars-sac/src/types";
-import React, { useEffect, useState } from "react";
-import { getMarkedDates } from "@/utils/mock";
-import { EventSection, fetchEvents } from "./mockData";
-import AgendaList from "./Agenda/AgendaList";
-import { Box } from "../Box/Box";
-import { createStyles } from "../../theme";
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+    CalendarProvider,
+    ExpandableCalendar
+} from 'react-native-calendars-sac';
+import { Theme } from 'react-native-calendars-sac/src/types';
+
+import { getMarkedDates } from '@/utils/mock';
+
+import { createStyles } from '../../theme';
+import { Box } from '../Box/Box';
+import { GlobalLayout } from '../GlobalLayout/GlobalLayout';
+import AgendaList from './Agenda/AgendaList';
+import { EventSection, fetchEvents } from './mockData';
 
 const FETCH_RANGE = 1000 * 60 * 60 * 24 * 13;
 const NEXT_DAY = 1000 * 60 * 60 * 24;
@@ -15,41 +20,44 @@ const calendarTheme: Theme = {
     selectedDayBackgroundColor: 'black',
     todayTextColor: 'black',
     arrowColor: 'black',
-    textMonthFontWeight: 'bold',
+    textMonthFontWeight: 'bold'
 };
 
 export default function Calendar() {
     const [isLoading, setIsLoading] = useState(true);
     const [events, setEvents] = useState<EventSection[]>([]);
-    const [autoScroll, setAutoScroll] = useState<boolean>(false);   
-    const [minDate, setMinDate] = useState(new Date().getTime());
+    const [autoScroll, setAutoScroll] = useState<boolean>(false);
+    const [minDate, _] = useState(new Date().getTime());
     const [maxDate, setMaxDate] = useState(new Date().getTime());
 
-    const fetchData = async (direction = 'up') => {
-        setIsLoading(true);
-        setTimeout(() => {
-            const time = direction === 'up' ? minDate - FETCH_RANGE : maxDate;
-            fetchEvents(time, FETCH_RANGE)
-            .then((events) => {
-                setEvents((oldData) => [...oldData, ...events]);
-                setIsLoading(false);
-                setMaxDate((oldDate => oldDate + FETCH_RANGE + NEXT_DAY));
-            })
-        }, 1000)
-    };
+    const fetchData = useCallback(
+        async (direction = 'up') => {
+            setIsLoading(true);
+            setTimeout(() => {
+                const time =
+                    direction === 'up' ? minDate - FETCH_RANGE : maxDate;
+                fetchEvents(time, FETCH_RANGE).then((data) => {
+                    setEvents((oldData) => [...oldData, ...data]);
+                    setIsLoading(false);
+                    setMaxDate((oldDate) => oldDate + FETCH_RANGE + NEXT_DAY);
+                });
+            }, 1000);
+        },
+        [minDate, maxDate]
+    );
 
     const fetchNextPage = async () => {
         if (isLoading) return;
         fetchData('down');
-    }
+    };
 
     useEffect(() => {
         fetchData('down');
-    }, [])
+    }, [fetchData]);
 
     return (
-        <CalendarProvider 
-            date={new Date().toISOString().split("T")[0]}
+        <CalendarProvider
+            date={new Date().toISOString().split('T')[0]}
             theme={calendarTheme}
             disabledOpacity={0.5}
         >
@@ -68,7 +76,7 @@ export default function Calendar() {
                 </Box>
             </Box>
             <GlobalLayout>
-                <AgendaList 
+                <AgendaList
                     sections={events}
                     fetchData={fetchNextPage}
                     isLoading={isLoading}
@@ -82,17 +90,17 @@ export default function Calendar() {
 
 const styles = createStyles({
     expandableCalendarContainer: {
-        backgroundColor: "white",
-        borderBottomStartRadius: "lg",
-        borderBottomEndRadius: "lg",
-        shadowColor: "black",
+        backgroundColor: 'white',
+        borderBottomStartRadius: 'lg',
+        borderBottomEndRadius: 'lg',
+        shadowColor: 'black',
         shadowOffset: { width: 0, height: 5 },
-        shadowOpacity: 0.2,
+        shadowOpacity: 0.2
     },
     expandableCalendarSubContainer: {
-        borderBottomStartRadius: "lg",
-        borderBottomEndRadius: "lg",
-        backgroundColor: "white",
-        overflow: 'hidden',
+        borderBottomStartRadius: 'lg',
+        borderBottomEndRadius: 'lg',
+        backgroundColor: 'white',
+        overflow: 'hidden'
     }
-})
+});

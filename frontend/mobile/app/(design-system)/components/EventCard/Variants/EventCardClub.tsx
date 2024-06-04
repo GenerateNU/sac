@@ -60,11 +60,13 @@ export const EventCardClub: React.FC<EventCardClubProps> = ({
                                 <Text color="darkGray" variant="caption-1">
                                     Hosted by {club}
                                 </Text>
-                                <Avatar size={15} rounded source={{ uri: logo }}/>
+                                <Avatar
+                                    size={15}
+                                    rounded
+                                    source={{ uri: logo }}
+                                />
                             </Box>
-                            {tags && (
-                                <EventTags tags={tags} />
-                            )}
+                            {tags && <EventTags tags={tags} />}
                         </Box>
                     </Box>
                 </Box>
@@ -75,20 +77,20 @@ export const EventCardClub: React.FC<EventCardClubProps> = ({
 
 const styles = createStyles({
     cardContainer: {
-        shadowColor: "black",
+        shadowColor: 'black',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.1,
         shadowRadius: 2,
         backgroundColor: 'white',
-        borderRadius: 'md',
+        borderRadius: 'md'
     },
     cardSubContainer: {
-        width: "100%",
-        borderRadius: "md",
-        padding: "m",
-        backgroundColor: "white",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        gap: "s"
+        width: '100%',
+        borderRadius: 'md',
+        padding: 'm',
+        backgroundColor: 'white',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        gap: 's'
     }
-})
+});

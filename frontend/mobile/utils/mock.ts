@@ -345,7 +345,7 @@ export const agendaItems = [
                 location: 'Marino Center'
             }
         ]
-    },
+    }
 ];
 
 export function getMarkedDates() {

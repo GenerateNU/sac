@@ -1,5 +1,6 @@
-import { GlobalLayout } from '@/app/(design-system)/components/GlobalLayout/GlobalLayout';
 import { StyleSheet, Text, View } from 'react-native';
+
+import { GlobalLayout } from '@/app/(design-system)/components/GlobalLayout/GlobalLayout';
 
 const ProfilePage = () => {
     return (

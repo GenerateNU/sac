@@ -8,39 +8,39 @@ export const EventCardCalendarSkeleton = () => {
     return (
         <Box {...styles.cardContainer}>
             <Box {...styles.cardSubContainer}>
-                <Box borderRadius='sm' aspectRatio={1}>
-                    <Skeleton 
+                <Box borderRadius="sm" aspectRatio={1}>
+                    <Skeleton
                         width={'auto'}
                         height={'auto'}
-                        skeletonStyle={{ backgroundColor: '#FAFAFA' }} 
+                        skeletonStyle={{ backgroundColor: '#FAFAFA' }}
                     />
                 </Box>
                 <Box flex={1} gap={'xxs'}>
-                    <Skeleton 
+                    <Skeleton
                         width={'50%'}
                         height={20}
-                        skeletonStyle={{ backgroundColor: '#FAFAFA' }} 
+                        skeletonStyle={{ backgroundColor: '#FAFAFA' }}
                     />
-                    <Skeleton 
-                            width={'75%'} 
-                            height={15} 
-                            skeletonStyle={{ backgroundColor: '#FAFAFA' }} 
+                    <Skeleton
+                        width={'75%'}
+                        height={15}
+                        skeletonStyle={{ backgroundColor: '#FAFAFA' }}
+                    />
+                    <Box flexDirection="row" gap="xxs">
+                        <Skeleton
+                            width={'20%'}
+                            height={20}
+                            skeletonStyle={{ backgroundColor: '#FAFAFA' }}
                         />
-                    <Box flexDirection='row' gap='xxs'>
-                        <Skeleton 
-                            width={'20%'} 
-                            height={20} 
-                            skeletonStyle={{ backgroundColor: '#FAFAFA' }} 
+                        <Skeleton
+                            width={'20%'}
+                            height={20}
+                            skeletonStyle={{ backgroundColor: '#FAFAFA' }}
                         />
-                        <Skeleton 
-                            width={'20%'} 
-                            height={20} 
-                            skeletonStyle={{ backgroundColor: '#FAFAFA' }} 
-                        />
-                        <Skeleton 
-                            width={'20%'} 
-                            height={20} 
-                            skeletonStyle={{ backgroundColor: '#FAFAFA' }} 
+                        <Skeleton
+                            width={'20%'}
+                            height={20}
+                            skeletonStyle={{ backgroundColor: '#FAFAFA' }}
                         />
                     </Box>
                 </Box>
@@ -52,7 +52,7 @@ export const EventCardCalendarSkeleton = () => {
 const styles = createStyles({
     calendarImage: {
         flex: 1,
-        borderRadius: 'sm',
+        borderRadius: 'sm'
     },
     isHappeningContainer: {
         zIndex: 1,
@@ -78,25 +78,25 @@ const styles = createStyles({
     },
     cardContainer: {
         borderRadius: 'md',
-        shadowColor:"black",
+        shadowColor: 'black',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.1,
         shadowRadius: 2,
-        backgroundColor: 'white',
+        backgroundColor: 'white'
     },
     cardSubContainer: {
-        width:"100%",
+        width: '100%',
         borderRadius: 'md',
-        padding: "m",
-        backgroundColor: "white",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        gap: "s"
+        padding: 'm',
+        backgroundColor: 'white',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        gap: 's'
     },
     cardContentContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: "xxs",
-        flexWrap: "wrap",
-    },
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 'xxs',
+        flexWrap: 'wrap'
+    }
 });

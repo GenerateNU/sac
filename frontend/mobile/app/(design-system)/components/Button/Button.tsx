@@ -2,7 +2,7 @@ import React from 'react';
 import { GestureResponderEvent, TouchableOpacity } from 'react-native';
 
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { BoxProps, backgroundColor, createBox } from '@shopify/restyle';
+import { BoxProps, createBox } from '@shopify/restyle';
 
 import { Text } from '@/app/(design-system)/components/Text/Text';
 import {
@@ -53,7 +53,7 @@ const StandardButton: React.FC<
     outline = false,
     ...rest
 }) => {
-    const localStyles = computeButtonStyles({ disabled, color, size, outline })
+    const localStyles = computeButtonStyles({ disabled, color, size, outline });
 
     return (
         <BaseButton
@@ -83,7 +83,7 @@ const IconButton: React.FC<
     ...rest
 }) => {
     const buttonIcon = <Icon size={size} icon={icon} color={iconColor} />;
-    const localStyles = computeButtonStyles({ disabled, color, size, outline })
+    const localStyles = computeButtonStyles({ disabled, color, size, outline });
 
     return (
         <BaseButton
@@ -112,9 +112,9 @@ export const Button: React.FC<ButtonProps> = (props) => {
 
 const computeButtonStyles = (props: Partial<ButtonProps>) => {
     let buttonStyles = {
-        ...styles.base, 
+        ...styles.base,
         ...buttonSizeStyles[props.size ?? 'full'],
-        backgroundColor: props.disabled ? 'gray' : props.color,
+        backgroundColor: props.disabled ? 'gray' : props.color
     };
     if (props.outline) {
         buttonStyles = { ...buttonStyles, ...styles.buttonOutline };
@@ -122,9 +122,9 @@ const computeButtonStyles = (props: Partial<ButtonProps>) => {
     if (props.variant === 'iconButton') {
         buttonStyles = { ...buttonStyles, ...styles.iconButton };
     }
-    
-    return buttonStyles
-}
+
+    return buttonStyles;
+};
 
 const styles = createStyles({
     base: {
@@ -140,14 +140,14 @@ const styles = createStyles({
     },
     buttonOutline: {
         borderColor: 'darkGray',
-        borderWidth: 0.3,
+        borderWidth: 0.3
     }
 });
 
 const buttonSizeStyles = createStyles({
     xs: {
         paddingHorizontal: 's',
-        paddingVertical: 'xxs',
+        paddingVertical: 'xxs'
     },
     sm: {
         minWidth: 80,
@@ -158,7 +158,7 @@ const buttonSizeStyles = createStyles({
         minWidth: 115
     },
     lg: {
-        minWidth: 150,
+        minWidth: 150
     },
     full: {
         minWidth: '100%'

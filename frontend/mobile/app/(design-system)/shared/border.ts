@@ -1,4 +1,4 @@
-import { ComponentSizes } from "./types";
+import { ComponentSizes } from './types';
 
 export const Border: Record<ComponentSizes, number> = {
     xs: 4,

@@ -2,8 +2,7 @@
  * TODO:
  * - Change the background color the app to white
  */
-
-import { Tag } from "@generatesac/lib";
+import { Tag } from '@generatesac/lib';
 
 const tags: Tag[] = [
     {
@@ -46,16 +45,16 @@ const tags: Tag[] = [
 export type EventSection = {
     date: string;
     data: EventSectionTimes;
-}
+};
 
 export type EventSectionTimes = {
-    [key: string]: EventSectionData
-}
+    [key: string]: EventSectionData;
+};
 
 export type EventSectionData = {
-    overflow: boolean
+    overflow: boolean;
     events: EventPreview[];
-}
+};
 
 export type EventPreview = {
     title: string;
@@ -63,11 +62,7 @@ export type EventPreview = {
     endTime: string;
     host: string;
     tags: Tag[];
-}
-
-export async function fetchDateRange(start: string, end: string) {
-
-}
+};
 
 async function generateEvents(startTime: number, dateSpan: number) {
     let time = startTime;
@@ -81,23 +76,31 @@ async function generateEvents(startTime: number, dateSpan: number) {
             data: {
                 2000: {
                     overflow: true,
-                    events: [{
-                        title: 'Gym Workout',
-                        startTime: date,
-                        endTime: new Date(new Date(date).getTime() + (1000 * 60 * 60)).toISOString(),
-                        host: 'Generate',
-                        tags: tags
-                    }]
+                    events: [
+                        {
+                            title: 'Gym Workout',
+                            startTime: date,
+                            endTime: new Date(
+                                new Date(date).getTime() + 1000 * 60 * 60
+                            ).toISOString(),
+                            host: 'Generate',
+                            tags: tags
+                        }
+                    ]
                 },
                 2015: {
                     overflow: false,
-                    events: [{
-                        title: 'Gym Workout',
-                        startTime: date,
-                        endTime: new Date(new Date(date).getTime() + (1000 * 60 * 60)).toISOString(),
-                        host: 'Generate',
-                        tags: tags
-                    }]
+                    events: [
+                        {
+                            title: 'Gym Workout',
+                            startTime: date,
+                            endTime: new Date(
+                                new Date(date).getTime() + 1000 * 60 * 60
+                            ).toISOString(),
+                            host: 'Generate',
+                            tags: tags
+                        }
+                    ]
                 }
             }
         });
@@ -129,13 +132,13 @@ async function generateEvents(startTime: number, dateSpan: number) {
 //             }
 //         })
 //     }
-    
+
 //     return { events, startTime };
 // }
 
 export async function fetchEvents(startTime: number, dateSpan: number) {
     const events = await generateEvents(startTime, dateSpan);
-    return events
+    return events;
 }
 
 export const mockEvents: EventSection[] = [
@@ -154,23 +157,23 @@ export const mockEvents: EventSection[] = [
                         startTime: '12am',
                         endTime: '1am',
                         host: 'Generate',
-                        tags: tags,
+                        tags: tags
                     },
                     {
                         title: 'Gym Workout',
                         startTime: '12am',
                         endTime: '1am',
                         host: 'Generate',
-                        tags: tags,
+                        tags: tags
                     },
                     {
                         title: 'Gym Workout',
                         startTime: '12am',
                         endTime: '1am',
                         host: 'Generate',
-                        tags: tags,
-                    },
-                ],
+                        tags: tags
+                    }
+                ]
             },
             2015: {
                 overflow: true,
@@ -180,16 +183,16 @@ export const mockEvents: EventSection[] = [
                         startTime: '12am',
                         endTime: '1am',
                         host: 'Generate',
-                        tags: tags,
+                        tags: tags
                     },
                     {
                         title: 'Gym Workout',
                         startTime: '12am',
                         endTime: '1am',
                         host: 'Generate',
-                        tags: tags,
-                    },
-                ],
+                        tags: tags
+                    }
+                ]
             },
             2100: {
                 overflow: true,
@@ -199,10 +202,10 @@ export const mockEvents: EventSection[] = [
                         startTime: '12am',
                         endTime: '1am',
                         host: 'Generate',
-                        tags: tags,
+                        tags: tags
                     }
-                ],
-            },
+                ]
+            }
         }
     },
     {
@@ -216,23 +219,23 @@ export const mockEvents: EventSection[] = [
                         startTime: '12am',
                         endTime: '1am',
                         host: 'Generate',
-                        tags: tags,
+                        tags: tags
                     },
                     {
                         title: 'Gym Workout',
                         startTime: '12am',
                         endTime: '1am',
                         host: 'Generate',
-                        tags: tags,
+                        tags: tags
                     },
                     {
                         title: 'Gym Workout',
                         startTime: '12am',
                         endTime: '1am',
                         host: 'Generate',
-                        tags: tags,
-                    },
-                ],
+                        tags: tags
+                    }
+                ]
             },
             1800: {
                 overflow: false,
@@ -242,16 +245,16 @@ export const mockEvents: EventSection[] = [
                         startTime: '12am',
                         endTime: '1am',
                         host: 'Generate',
-                        tags: tags,
+                        tags: tags
                     },
                     {
                         title: 'Gym Workout',
                         startTime: '12am',
                         endTime: '1am',
                         host: 'Generate',
-                        tags: tags,
+                        tags: tags
                     }
-                ],
+                ]
             },
             2100: {
                 overflow: false,
@@ -261,17 +264,17 @@ export const mockEvents: EventSection[] = [
                         startTime: '12am',
                         endTime: '1am',
                         host: 'Generate',
-                        tags: tags,
+                        tags: tags
                     },
                     {
                         title: 'Gym Workout',
                         startTime: '12am',
                         endTime: '1am',
                         host: 'Generate',
-                        tags: tags,
+                        tags: tags
                     }
-                ],
-            },
+                ]
+            }
         }
     },
     {
@@ -285,16 +288,16 @@ export const mockEvents: EventSection[] = [
                         startTime: '12am',
                         endTime: '1am',
                         host: 'Generate',
-                        tags: tags,
+                        tags: tags
                     },
                     {
                         title: 'Gym Workout',
                         startTime: '12am',
                         endTime: '1am',
                         host: 'Generate',
-                        tags: tags,
+                        tags: tags
                     }
-                ],
+                ]
             },
             2015: {
                 overflow: true,
@@ -304,16 +307,16 @@ export const mockEvents: EventSection[] = [
                         startTime: '12am',
                         endTime: '1am',
                         host: 'Generate',
-                        tags: tags,
+                        tags: tags
                     },
                     {
                         title: 'Gym Workout',
                         startTime: '12am',
                         endTime: '1am',
                         host: 'Generate',
-                        tags: tags,
+                        tags: tags
                     }
-                ],
+                ]
             },
             2100: {
                 overflow: true,
@@ -323,17 +326,17 @@ export const mockEvents: EventSection[] = [
                         startTime: '12am',
                         endTime: '1am',
                         host: 'Generate',
-                        tags: tags,
+                        tags: tags
                     },
                     {
                         title: 'Gym Workout',
                         startTime: '12am',
                         endTime: '1am',
                         host: 'Generate',
-                        tags: tags,
+                        tags: tags
                     }
-                ],
-            },
+                ]
+            }
         }
     }
-]
+];

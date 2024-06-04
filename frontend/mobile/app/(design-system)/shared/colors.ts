@@ -13,7 +13,7 @@ export const Colors = {
     black: '#000000',
     gray: '#C3C9D0',
     darkGray: '#7A7A7A',
-    transparent: '',
+    transparent: ''
 };
 
 export type SACColors = keyof typeof Colors;
@@ -34,5 +34,5 @@ export const textColorVariants = {
     black: 'white',
     gray: 'white',
     darkGray: 'white',
-    transparent: 'black',
+    transparent: 'black'
 } as const;

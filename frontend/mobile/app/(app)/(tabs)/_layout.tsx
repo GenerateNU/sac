@@ -29,11 +29,7 @@ interface TabBarIconProps {
 
 const TabBarIcon: React.FC<TabBarIconProps> = ({ focused, icon }) => (
     <Box paddingTop="m">
-        <Icon 
-            size='md'
-            color={focused ? 'black' : `gray`}
-            icon={icon}
-        />
+        <Icon size="md" color={focused ? 'black' : `gray`} icon={icon} />
     </Box>
 );
 
@@ -45,7 +41,7 @@ const Layout = () => {
                 tabBarStyle: {
                     borderTopWidth: 1,
                     borderTopColor: 'gray',
-                    height: 85,
+                    height: 85
                 }
             }}
             sceneContainerStyle={{

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 
 import { Tag } from '@generatesac/lib';
 import { Avatar, Image } from '@rneui/base';
@@ -45,24 +45,30 @@ export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
                 )}
                 <Box {...styles.cardContainer}>
                     <Box {...styles.cardSubContainer}>
-                        <Image containerStyle={{ flexGrow: 0, borderRadius: 4, aspectRatio: 1, }} source={{ uri: image }}/>
+                        <Image
+                            containerStyle={{
+                                flexGrow: 0,
+                                borderRadius: 4,
+                                aspectRatio: 1
+                            }}
+                            source={{ uri: image }}
+                        />
                         <Box flex={2.5} flexDirection="column" gap="xxs">
-                            <Text variant="body-1">
-                                {event}
-                            </Text>
-                            <Box {...styles.cardContentContainer}
-                            >
-                                <Text variant="caption-1"  color="darkGray">
-                                    {
-                                        `${eventTime(
-                                            startTime,
-                                            endTime,
-                                            createOptions('start', 'end')
-                                        )} •`
-                                    }
+                            <Text variant="body-1">{event}</Text>
+                            <Box {...styles.cardContentContainer}>
+                                <Text variant="caption-1" color="darkGray">
+                                    {`${eventTime(
+                                        startTime,
+                                        endTime,
+                                        createOptions('start', 'end')
+                                    )} •`}
                                 </Text>
                                 <Box {...sharedStyles.clubInfoContainer}>
-                                    <Avatar size={15} rounded source={{ uri: logo }} />
+                                    <Avatar
+                                        size={15}
+                                        rounded
+                                        source={{ uri: logo }}
+                                    />
                                     <Text color="darkGray" variant="caption-1">
                                         {club}
                                     </Text>
@@ -80,7 +86,7 @@ export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
 const styles = createStyles({
     calendarImage: {
         flex: 1,
-        borderRadius: 'sm',
+        borderRadius: 'sm'
     },
     isHappeningContainer: {
         zIndex: 1,
@@ -106,25 +112,25 @@ const styles = createStyles({
     },
     cardContainer: {
         borderRadius: 'md',
-        shadowColor:"black",
+        shadowColor: 'black',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.2,
         shadowRadius: 8,
-        backgroundColor: 'white',
+        backgroundColor: 'white'
     },
     cardSubContainer: {
-        width:"100%",
+        width: '100%',
         borderRadius: 'md',
-        padding: "m",
-        backgroundColor: "white",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        gap: "s"
+        padding: 'm',
+        backgroundColor: 'white',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        gap: 's'
     },
     cardContentContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: "xxs",
-        flexWrap: "wrap",
-    },
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 'xxs',
+        flexWrap: 'wrap'
+    }
 });
