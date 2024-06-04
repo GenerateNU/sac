@@ -4,7 +4,6 @@ import { EventCardBig } from './Variants/EventCardBig';
 import { EventCardCalendar } from './Variants/EventCardCalendar';
 import { EventCardClub } from './Variants/EventCardClub';
 import { EventCardSmall } from './Variants/EventCardSmall';
-import { Box } from '../Box/Box';
 
 interface EventCardProps {
     event: string;
@@ -30,41 +29,35 @@ export const EventCard = ({
     switch (variant) {
         case 'big':
             return (
-                <Box marginVertical={'m'}>
-                    <EventCardBig
-                        event={event}
-                        club={club}
-                        startTime={startTime}
-                        endTime={endTime}
-                        image={image}
-                    />
-                </Box>
+                <EventCardBig
+                    event={event}
+                    club={club}
+                    startTime={startTime}
+                    endTime={endTime}
+                    image={image}
+                />
             );
         case 'small':
             return (
-                <Box marginVertical={'m'}>
-                    <EventCardSmall
-                        event={event}
-                        club={club}
-                        startTime={startTime}
-                        endTime={endTime}
-                        image={image}
-                    />
-                </Box>
+                <EventCardSmall
+                    event={event}
+                    club={club}
+                    startTime={startTime}
+                    endTime={endTime}
+                    image={image}
+                />
             );
         case 'club':
             return (
-                <Box marginVertical={'m'}>
-                    <EventCardClub
-                        event={event}
-                        club={club}
-                        startTime={startTime}
-                        endTime={endTime}
-                        image={image}
-                        logo={logo}
-                        tags={tags ? tags : []}
-                    />
-                </Box>
+                <EventCardClub
+                    event={event}
+                    club={club}
+                    startTime={startTime}
+                    endTime={endTime}
+                    image={image}
+                    logo={logo}
+                    tags={tags ? tags : []}
+                />
             );
         case 'calendar':
             return (

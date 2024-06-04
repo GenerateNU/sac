@@ -1,5 +1,3 @@
-import { backgroundColor } from "@shopify/restyle";
-
 // TODO: We will have to change these
 export const Colors = {
     darkBlue: '#0C3354',
@@ -21,6 +19,45 @@ export type SACColors = keyof typeof Colors;
 
 export const defaultColor: keyof typeof Colors = 'black';
 
+export const BackgroundColorVariants = {
+    darkBlue: {
+        backgroundColor: 'darkBlue'
+    },
+    darkRed: {
+        backgroundColor: 'darkRed'
+    },
+    green: {
+        backgroundColor: 'green'
+    },
+    blue: {
+        backgroundColor: 'blue'
+    },
+    aqua: {
+        backgroundColor: 'aqua'
+    },
+    purple: {
+        backgroundColor: 'purple'
+    },
+    red: {
+        backgroundColor: 'red'
+    },
+    orange: {
+        backgroundColor: 'orange'
+    },
+    yellow: {
+        backgroundColor: 'yellow'
+    },
+    white: {
+        backgroundColor: 'white'
+    },
+    black: {
+        backgroundColor: 'black'
+    },
+    disabled: {
+        backgroundColor: 'disabled'
+    }
+} as const;
+
 export const textColorVariants = {
     darkBlue: 'white',
     darkRed: 'white',
@@ -33,6 +70,5 @@ export const textColorVariants = {
     yellow: 'white',
     white: 'black',
     black: 'white',
-    gray: 'white',
-    darkGray: 'white',
+    gray: 'white'
 } as const;

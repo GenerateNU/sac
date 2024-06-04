@@ -1,11 +1,10 @@
 // EventCardBig.tsx
 import React from 'react';
-import { StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { Image } from '@rneui/base';
 
-import { Box, Text, createStyles } from '@/app/(design-system)';
+import { Box, Text } from '@/app/(design-system)';
 import { calculateDuration, createOptions, eventTime } from '@/utils/time';
 
 interface EventCardBigProps {

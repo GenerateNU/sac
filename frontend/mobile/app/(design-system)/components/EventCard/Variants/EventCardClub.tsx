@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 
 import { Tag } from '@generatesac/lib';
 import { Avatar, Image } from '@rneui/base';
