@@ -10,11 +10,11 @@ type SuperUserSettings struct {
 	Password *m.Secret[string]
 }
 type intermediateSuperUserSettings struct {
-	password string `env:"PASSWORD"`
+	Password string `env:"PASSWORD"`
 }
 
 func (i *intermediateSuperUserSettings) into() (*SuperUserSettings, error) {
-	password, err := m.NewSecret(i.password)
+	password, err := m.NewSecret(i.Password)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create secret from password: %s", err.Error())
 	}

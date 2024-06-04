@@ -43,26 +43,26 @@ func (s *DatabaseSettings) PostgresConn() string {
 }
 
 type intermediateDatabaseSettings struct {
-	username     string `env:"USERNAME"`
-	password     string `env:"PASSWORD"`
-	port         uint   `env:"PORT"`
-	host         string `env:"HOST"`
-	databaseName string `env:"NAME"`
-	requireSSL   bool   `env:"REQUIRE_SSL"`
+	Username     string `env:"USERNAME"`
+	Password     string `env:"PASSWORD"`
+	Port         uint   `env:"PORT"`
+	Host         string `env:"HOST"`
+	DatabaseName string `env:"NAME"`
+	RequireSSL   bool   `env:"REQUIRE_SSL"`
 }
 
 func (i *intermediateDatabaseSettings) into() (*DatabaseSettings, error) {
-	password, err := m.NewSecret(i.password)
+	password, err := m.NewSecret(i.Password)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create secret from password: %s", err.Error())
 	}
 
 	return &DatabaseSettings{
-		Username:     i.username,
+		Username:     i.Username,
 		Password:     password,
-		Port:         i.port,
-		Host:         i.host,
-		DatabaseName: i.databaseName,
-		RequireSSL:   i.requireSSL,
+		Port:         i.Port,
+		Host:         i.Host,
+		DatabaseName: i.DatabaseName,
+		RequireSSL:   i.RequireSSL,
 	}, nil
 }
