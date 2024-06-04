@@ -20,6 +20,7 @@ interface BaseButtonProps {
     disabled?: boolean;
     children?: React.ReactNode;
     color?: SACColors;
+    outline?: boolean;
 }
 
 interface StandardButtonProps {
@@ -49,15 +50,16 @@ const StandardButton: React.FC<
     disabled = false,
     color = defaultColor,
     size = 'full',
+    outline = false,
     ...rest
 }) => {
+    const localStyles = computeButtonStyles({ disabled, color, size, outline });
+
     return (
         <BaseButton
-            backgroundColor={disabled ? 'gray' : color}
-            disabled={disabled}
+            disabled={disabled || !onPress}
             onPress={disabled ? undefined : onPress}
-            {...styles.standardButton}
-            {...buttonSizeStyles[size]}
+            {...localStyles}
             {...rest}
         >
             <Text color={textColorVariants[color]}>{children}</Text>
@@ -77,18 +79,18 @@ const IconButton: React.FC<
     iconPosition = 'left',
     justify = 'center',
     size = 'full',
+    outline = false,
     ...rest
 }) => {
     const buttonIcon = <Icon size={size} icon={icon} color={iconColor} />;
+    const localStyles = computeButtonStyles({ disabled, color, size, outline });
 
     return (
         <BaseButton
-            backgroundColor={disabled ? 'gray' : color}
             justifyContent={justify}
-            disabled={disabled}
+            disabled={disabled || !onPress}
             onPress={disabled ? undefined : onPress}
-            {...styles.iconButton}
-            {...buttonSizeStyles[size]}
+            {...localStyles}
             {...rest}
         >
             {iconPosition === 'left' && buttonIcon}
@@ -108,33 +110,55 @@ export const Button: React.FC<ButtonProps> = (props) => {
     return null;
 };
 
+const computeButtonStyles = (props: Partial<ButtonProps>) => {
+    let buttonStyles = {
+        ...styles.base,
+        ...buttonSizeStyles[props.size ?? 'full'],
+        backgroundColor: props.disabled ? 'gray' : props.color
+    };
+    if (props.outline) {
+        buttonStyles = { ...buttonStyles, ...styles.buttonOutline };
+    }
+    if (props.variant === 'iconButton') {
+        buttonStyles = { ...buttonStyles, ...styles.iconButton };
+    }
+
+    return buttonStyles;
+};
+
 const styles = createStyles({
-    standardButton: {
+    base: {
         alignItems: 'center',
         justifyContent: 'center',
         paddingHorizontal: 'l',
         paddingVertical: 'm',
-        borderRadius: 'base'
+        borderRadius: 'md'
     },
     iconButton: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingHorizontal: 'l',
-        paddingVertical: 'm',
-        borderRadius: 'base',
         flexDirection: 'row',
         gap: 's'
+    },
+    buttonOutline: {
+        borderColor: 'darkGray',
+        borderWidth: 0.3
     }
 });
 
 const buttonSizeStyles = createStyles({
-    small: {
+    xs: {
+        paddingHorizontal: 's',
+        paddingVertical: 'xxs'
+    },
+    sm: {
         minWidth: 80,
         paddingVertical: 'xs',
         paddingHorizontal: 'm'
     },
-    medium: {
+    md: {
         minWidth: 115
+    },
+    lg: {
+        minWidth: 150
     },
     full: {
         minWidth: '100%'
