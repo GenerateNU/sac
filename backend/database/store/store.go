@@ -26,15 +26,16 @@ type RedisClient struct {
 	client *redis.Client
 }
 
-func NewRedisClient(username, host string, port uint, password *m.Secret[string], db int) *RedisClient {
+func NewRedisClient(username string, password *m.Secret[string], host string, port uint, db int) *RedisClient {
 	client := redis.NewClient(&redis.Options{
-		Username:       username,
-		Addr:           fmt.Sprintf("%s:%d", host, port),
-		Password:       password.Expose(),
-		DB:             db,
-		PoolSize:       10 * runtime.GOMAXPROCS(0),
-		MaxActiveConns: constants.REDIS_MAX_OPEN_CONNECTIONS,
-		MaxIdleConns:   constants.REDIS_MAX_IDLE_CONNECTIONS,
+		Username:              username,
+		Password:              password.Expose(),
+		Addr:                  fmt.Sprintf("%s:%d", host, port),
+		DB:                    db,
+		PoolSize:              10 * runtime.GOMAXPROCS(0),
+		MaxActiveConns:        constants.REDIS_MAX_OPEN_CONNECTIONS,
+		MaxIdleConns:          constants.REDIS_MAX_IDLE_CONNECTIONS,
+		ContextTimeoutEnabled: true,
 	})
 
 	return &RedisClient{
