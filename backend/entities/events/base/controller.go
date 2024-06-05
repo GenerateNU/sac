@@ -37,6 +37,11 @@ func (e *EventController) GetAllEvents(c *fiber.Ctx) error {
 		return utilities.ErrExpectedPageInfo
 	}
 
+	usePagination := c.QueryBool("pagination", true)
+	if !usePagination {
+		pageInfo = nil
+	}
+
 	start := c.Query("start")
 	end := c.Query("end")
 

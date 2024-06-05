@@ -26,12 +26,12 @@ func GetEventsPreview(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]EventPrev
 	return getEvents[EventPreview](db, &pageInfo, nil, nil)
 }
 
-func GetEventsByTime(db *gorm.DB, startTime time.Time, endTime time.Time) ([]models.Event, error) {
-	return getEvents[models.Event](db, nil, &startTime, &endTime)
+func GetEventsByTime(db *gorm.DB, pageInfo fiberpaginate.PageInfo, startTime time.Time, endTime time.Time) ([]models.Event, error) {
+	return getEvents[models.Event](db, &pageInfo, &startTime, &endTime)
 }
 
-func GetEventsPreviewByTime(db *gorm.DB, startTime time.Time, endTime time.Time) ([]EventPreview, error) {
-	return getEvents[EventPreview](db, nil, &startTime, &endTime)
+func GetEventsPreviewByTime(db *gorm.DB, pageInfo fiberpaginate.PageInfo, startTime time.Time, endTime time.Time) ([]EventPreview, error) {
+	return getEvents[EventPreview](db, &pageInfo, &startTime, &endTime)
 }
 
 func CreateEvent(db *gorm.DB, event models.Event) (*models.Event, error) {
@@ -110,7 +110,7 @@ func DeleteEvent(db *gorm.DB, id uuid.UUID) error {
 	return nil
 }
 
-func getEvents[T any](db *gorm.DB, pageInfo *fiberpaginate.PageInfo, startTime, endTime *time.Time) ([]T, error) {
+func getEvents[T any](db *gorm.DB, pageInfo *fiberpaginate.PageInfo, startTime *time.Time, endTime *time.Time) ([]T, error) {
 	var events []T
 	query := db.Model(&events)
 

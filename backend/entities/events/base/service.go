@@ -49,7 +49,7 @@ func (e *EventService) GetEvents(pageInfo fiberpaginate.PageInfo, start string, 
 		return nil, utilities.BadRequest(errors.New("start time must be before end time"))
 	}
 
-	return GetEventsByTime(e.DB, startTime, endTime)
+	return GetEventsByTime(e.DB, pageInfo, startTime, endTime)
 }
 
 func (e *EventService) GetEventsPreview(pageInfo fiberpaginate.PageInfo, start string, end string) ([]EventPreview, error) {
@@ -71,7 +71,7 @@ func (e *EventService) GetEventsPreview(pageInfo fiberpaginate.PageInfo, start s
 		return nil, utilities.BadRequest(errors.New("start time must be before end time"))
 	}
 
-	return GetEventsPreviewByTime(e.DB, startTime, endTime)
+	return GetEventsPreviewByTime(e.DB, pageInfo, startTime, endTime)
 }
 
 func (e *EventService) GetEvent(eventID string) (*models.Event, error) {
