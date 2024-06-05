@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     CalendarProvider,
     ExpandableCalendar
@@ -12,6 +12,8 @@ import { Box } from '../Box/Box';
 import { GlobalLayout } from '../GlobalLayout/GlobalLayout';
 import AgendaList from './Agenda/AgendaList';
 import { EventSection, fetchEvents } from './mockData';
+import { Dimensions } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 
 const FETCH_RANGE = 1000 * 60 * 60 * 24 * 13;
 const NEXT_DAY = 1000 * 60 * 60 * 24;
@@ -29,31 +31,51 @@ export default function Calendar() {
     const [autoScroll, setAutoScroll] = useState<boolean>(false);
     const [minDate, _] = useState(new Date().getTime());
     const [maxDate, setMaxDate] = useState(new Date().getTime());
+    const [currentIndex, setCurrentIndex] = useState<number | null>(null);
+    const eventList = useRef<FlatList<EventSection> | null>(null);
 
     const fetchData = useCallback(
         async (direction = 'up') => {
+            console.log('fetching data!')
             setIsLoading(true);
             setTimeout(() => {
                 const time =
                     direction === 'up' ? minDate - FETCH_RANGE : maxDate;
                 fetchEvents(time, FETCH_RANGE).then((data) => {
-                    setEvents((oldData) => [...oldData, ...data]);
+                    if (direction === 'down') {
+                        console.log('setting date end')
+                        setEvents((oldData) => [...oldData, ...data]);
+                    } else {
+                        console.log('setting date beginning')
+                        prependData(data)
+                    }
                     setIsLoading(false);
                     setMaxDate((oldDate) => oldDate + FETCH_RANGE + NEXT_DAY);
                 });
-            }, 1000);
+            }, 0);
         },
         [minDate, maxDate]
     );
 
-    const fetchNextPage = async () => {
+    const fetchNextPage = async (direction: 'up' | 'down') => {
         if (isLoading) return;
-        fetchData('down');
+        fetchData(direction);
     };
 
     useEffect(() => {
         fetchData('down');
-    }, [fetchData]);
+    }, []);
+
+    const prependData = (newSections: EventSection[]) => {
+        console.log(currentIndex);
+        if (currentIndex !== null) {
+            const newScrollOffset = (currentIndex + newSections.length) * Dimensions.get('window').width;
+            console.log(newScrollOffset);
+            setEvents((prevSections) => [...newSections, ...prevSections]);
+            console.log("scrolling");
+            eventList.current?.scrollToOffset({ offset: newScrollOffset, animated: false });
+        }
+    };
 
     return (
         <CalendarProvider
@@ -71,7 +93,7 @@ export default function Calendar() {
                         markedDates={getMarkedDates()} // TODO: Add marked dates
                         onDayPress={() => setAutoScroll(true)}
                         closeOnDayPress={false}
-                        disableWeekScroll
+                        disableWeekScroll={true}
                     />
                 </Box>
             </Box>
@@ -82,6 +104,8 @@ export default function Calendar() {
                     isLoading={isLoading}
                     autoScroll={autoScroll}
                     setAutoScroll={setAutoScroll}
+                    setCurrentIndex={setCurrentIndex}
+                    ref={eventList}
                 />
             </GlobalLayout>
         </CalendarProvider>

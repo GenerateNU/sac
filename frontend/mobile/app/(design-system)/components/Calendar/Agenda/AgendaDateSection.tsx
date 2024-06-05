@@ -30,7 +30,7 @@ export const AgendaDateSection = forwardRef(function AgendaDateSection(
     const keys = Object.keys(section.data).sort();
 
     return (
-        <Box flex={1}>
+        <Box>
             <Text variant="body-1" fontWeight={'bold'} marginTop="l" ref={ref}>
                 {formatSectionHeader(section.date)}
             </Text>

@@ -1,57 +1,62 @@
-import { SafeAreaView, ScrollView, StyleSheet, Text } from 'react-native';
+import { SafeAreaView, StyleSheet, Text } from 'react-native';
 
-import { Tag } from '@generatesac/lib';
-
-import { EventCard } from '@/app/(design-system)/components/EventCard/EventCard';
 import { GlobalLayout } from '@/app/(design-system)/components/GlobalLayout/GlobalLayout';
+import TestComponent from '@/app/(design-system)/components/TestComponent/TestComponent';
+import { getEvents } from '@/app/(design-system)/components/TestComponent/mock/mockData';
+import { EventSection } from '@/app/(design-system)/components/Calendar/mockData';
+import { useCallback, useEffect, useState } from 'react';
 
-const tags: Tag[] = [
-    {
-        id: '1',
-        created_at: new Date(),
-        updated_at: new Date(),
-        name: 'Software',
-        category_id: '1'
-    },
-    {
-        id: '2',
-        created_at: new Date(),
-        updated_at: new Date(),
-        name: 'Free Food',
-        category_id: '2'
-    },
-    {
-        id: '3',
-        created_at: new Date(),
-        updated_at: new Date(),
-        name: 'Panel Discussion',
-        category_id: '3'
-    },
-    {
-        id: '4',
-        created_at: new Date(),
-        updated_at: new Date(),
-        name: 'Seminar',
-        category_id: '4'
-    },
-    {
-        id: '5',
-        created_at: new Date(),
-        updated_at: new Date(),
-        name: 'Hackathon',
-        category_id: '5'
-    }
-];
-
-const date = new Date();
-date.setHours(date.getHours() + 1);
+const TODAY = new Date(); 
+const DAY_EPOCH_TIME = 1000 * 60 * 60 * 24;
 
 const HomePage = () => {
+    const [loadedEvents, setLoadedEvents] = useState<EventSection[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [minDate, setMinDate] = useState(TODAY.getTime() - DAY_EPOCH_TIME * 7);
+    const [maxDate, setMaxDate] = useState(TODAY.getTime() + DAY_EPOCH_TIME * 7);
+
+    useEffect(() => {
+        setTimeout(() => {
+            fetchEvents(minDate, maxDate)
+                .then((events) => {
+                    setLoadedEvents(events);
+                    setIsLoading(false);
+                });
+        }, 2000)
+    }, []);
+
+    const fetchEvents = async (startTime: number, endTime: number) => {
+        const events = getEvents(startTime, endTime);
+        console.log('new events fetched!')
+        return events;
+    };
+
+    const fetchNewEvents = useCallback(async (direction: 'start' | 'end') => {
+        if (direction === 'start') {
+            console.log('fetching new events start!')
+            const newEvents = await fetchEvents(minDate - DAY_EPOCH_TIME * 7, minDate);
+            setMinDate(minDate - DAY_EPOCH_TIME * 7);
+            setLoadedEvents((oldEvents) => [...newEvents, ...oldEvents]);
+        } else {
+            console.log('fetching new events end!')
+            const newEvents = await fetchEvents(maxDate + DAY_EPOCH_TIME, maxDate + DAY_EPOCH_TIME * 8);
+            setMaxDate(maxDate + DAY_EPOCH_TIME * 8);
+            setLoadedEvents((oldEvents) => [...oldEvents, ...newEvents]);
+        }
+    }, [minDate, maxDate, loadedEvents]);
+
     return (
         <GlobalLayout>
             <SafeAreaView style={styles.container}>
                 <Text style={styles.title}>Home</Text>
-                <ScrollView showsVerticalScrollIndicator={false}>
+                <TestComponent
+                    loadedEvents={loadedEvents}
+                    loadBatchSize={15}
+                    isLoading={isLoading}
+                    refreshThreshhold={0.25}
+                    onRefreshThreasholdReach={fetchNewEvents}
+                />
+                {/* <ScrollView showsVerticalScrollIndicator={false}>
                     <EventCard
                         event="Spring Showcase"
                         variant="small"
@@ -92,7 +97,7 @@ const HomePage = () => {
                         logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT800M6T7YVq_f6W49g_UNL29US7gC63nTitg&s"
                         image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfT6p6kCen0-GphSDogJRd2KoYjg0-QQWuAw9e5JBIBEVTc3Hxho_UwRsZ0IrEi6Ap5oo&usqp=CAU"
                     />
-                </ScrollView>
+                </ScrollView> */}
             </SafeAreaView>
         </GlobalLayout>
     );

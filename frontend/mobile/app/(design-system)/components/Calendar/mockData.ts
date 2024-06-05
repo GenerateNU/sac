@@ -1,8 +1,9 @@
 /**
  * TODO:
  * - Change the background color the app to white
- */
-import { Tag } from '@generatesac/lib';
+*/
+
+import { Tag } from "@generatesac/lib";
 
 const tags: Tag[] = [
     {

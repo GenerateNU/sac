@@ -43,7 +43,7 @@ function TimeHeader({ time }: { time: number }) {
                 {hour}
                 {minute ? `:${minute}` : ''} {meridiem}
             </Text>
-            <Box borderBottomColor="gray" borderBottomWidth={1} flex={1} />
+            <Box borderBottomColor="gray" borderBottomWidth={1}/>
         </Box>
     );
 }
@@ -53,11 +53,11 @@ export default function AgendaTimeSection({
     data
 }: AgendaTimeSectionProps) {
     return (
-        <Box flex={1}>
-            <Box flex={1}>
+        <Box>
+            <Box>
                 <TimeHeader time={time} />
             </Box>
-            <Box flex={1} alignItems="center" flexDirection="column" gap="s">
+            <Box alignItems="center" flexDirection="column" gap="s">
                 {data.events.map((event, index) => {
                     return (
                         <Box
