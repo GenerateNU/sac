@@ -30,6 +30,15 @@ func (cr *ClubRecruitmentController) CreateClubRecruitment(c *fiber.Ctx) error {
 	return c.Status(http.StatusCreated).JSON(recruitment)
 }
 
+func (cr *ClubRecruitmentController) GetClubRecruitment(c *fiber.Ctx) error {
+	recruitment, err := cr.clubRecruitmentService.GetClubRecruitment(c.UserContext(), c.Params("clubID"))
+	if err != nil {
+		return err
+	}
+
+	return c.Status(http.StatusOK).JSON(recruitment)
+}
+
 func (cr *ClubRecruitmentController) UpdateClubRecruitment(c *fiber.Ctx) error {
 	var body UpdateClubRecruitmentRequestBody
 	if err := c.BodyParser(&body); err != nil {
@@ -46,7 +55,7 @@ func (cr *ClubRecruitmentController) UpdateClubRecruitment(c *fiber.Ctx) error {
 
 func (cr *ClubRecruitmentController) DeleteClubRecruitment(c *fiber.Ctx) error {
 	if err := cr.clubRecruitmentService.DeleteClubRecruitment(c.UserContext(), c.Params("clubID")); err != nil {
-		return utilities.InvalidJSON()
+		return err
 	}
 
 	return c.SendStatus(http.StatusNoContent)
@@ -58,7 +67,7 @@ func (cr *ClubRecruitmentController) CreateClubRecruitmentApplication(c *fiber.C
 		return utilities.InvalidJSON()
 	}
 
-	application, err := cr.clubRecruitmentService.CreateApplicationRequestBody(c.UserContext(), c.Params("clubID"), c.Params("recruitmentID"), body)
+	application, err := cr.clubRecruitmentService.CreateClubRecruitmentApplication(c.UserContext(), c.Params("clubID"), body)
 	if err != nil {
 		return err
 	}
@@ -72,7 +81,7 @@ func (cr *ClubRecruitmentController) GetClubRecruitmentApplications(c *fiber.Ctx
 		return utilities.ErrExpectedPageInfo
 	}
 
-	applications, err := cr.clubRecruitmentService.GetClubRecruitmentApplications(c.UserContext(), c.Params("clubID"), c.Params("recruitmentID"), *pageInfo)
+	applications, err := cr.clubRecruitmentService.GetClubRecruitmentApplications(c.UserContext(), c.Params("clubID"), *pageInfo)
 	if err != nil {
 		return err
 	}

@@ -11,6 +11,11 @@ func ClubRecruitment(clubParams types.RouteParams) {
 	// api/v1/clubs/:clubID/recruitment/*
 	clubRecruitment := clubParams.Router.Group("/recruitment")
 
+	clubRecruitment.Get(
+		"/",
+		authMiddleware.AttachExtractor(clubParams.AuthMiddleware.ClubAuthorizeById, authMiddleware.ExtractFromParams("clubID")),
+		clubRecruitmentController.GetClubRecruitment,
+	)
 	clubRecruitment.Post(
 		"/",
 		authMiddleware.AttachExtractor(clubParams.AuthMiddleware.ClubAuthorizeById, authMiddleware.ExtractFromParams("clubID")),
@@ -28,36 +33,36 @@ func ClubRecruitment(clubParams types.RouteParams) {
 		clubRecruitmentController.DeleteClubRecruitment,
 	)
 
-	// api/v1/clubs/:clubID/recruitment/:recruitmentID/applications/*
-	clubRecruitmentIDApplications := clubRecruitment.Group("/:recruitmentID/applications")
+	// api/v1/clubs/:clubID/recruitment/applications/*
+	clubRecruitmentApplications := clubRecruitment.Group("/applications")
 
-	clubRecruitmentIDApplications.Get(
+	clubRecruitmentApplications.Get(
 		"/",
 		clubParams.UtilityMiddleware.Paginator,
 		authMiddleware.AttachExtractor(clubParams.AuthMiddleware.ClubAuthorizeById, authMiddleware.ExtractFromParams("clubID")),
 		clubRecruitmentController.GetClubRecruitmentApplications,
 	)
-	clubRecruitmentIDApplications.Post(
+	clubRecruitmentApplications.Post(
 		"/",
 		authMiddleware.AttachExtractor(clubParams.AuthMiddleware.ClubAuthorizeById, authMiddleware.ExtractFromParams("clubID")),
 		clubRecruitmentController.CreateClubRecruitmentApplication,
 	)
 
 	// api/v1/clubs/:clubID/recruitment/applications/:applicationID/*
-	clubRecruitmentIDApplicationsID := clubRecruitment.Group("/applications/:applicationID")
+	clubRecruitmentApplicationsID := clubRecruitmentApplications.Group("/:applicationID")
 
-	clubRecruitmentIDApplicationsID.Get(
+	clubRecruitmentApplicationsID.Get(
 		"/",
 		authMiddleware.AttachExtractor(clubParams.AuthMiddleware.ClubAuthorizeById, authMiddleware.ExtractFromParams("clubID")),
 		clubRecruitmentController.GetClubRecruitmentApplication,
 	)
-	clubRecruitmentIDApplications.Patch(
-		"/:applicationID",
+	clubRecruitmentApplicationsID.Patch(
+		"/",
 		authMiddleware.AttachExtractor(clubParams.AuthMiddleware.ClubAuthorizeById, authMiddleware.ExtractFromParams("clubID")),
 		clubRecruitmentController.UpdateClubRecruitmentApplication,
 	)
-	clubRecruitmentIDApplications.Delete(
-		"/:applicationID",
+	clubRecruitmentApplicationsID.Delete(
+		"/",
 		authMiddleware.AttachExtractor(clubParams.AuthMiddleware.ClubAuthorizeById, authMiddleware.ExtractFromParams("clubID")),
 		clubRecruitmentController.DeleteClubRecruitmentApplication,
 	)

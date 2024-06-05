@@ -18,8 +18,8 @@ type ClubRecruitmentServicer interface {
 	UpdateClubRecruitment(ctx context.Context, clubID string, body UpdateClubRecruitmentRequestBody) (*models.Recruitment, error)
 	DeleteClubRecruitment(ctx context.Context, clubID string) error
 
-	CreateApplicationRequestBody(ctx context.Context, clubID string, recruitmentID string, body CreateApplicationRequestBody) (*models.Application, error)
-	GetClubRecruitmentApplications(ctx context.Context, clubID string, recruitmentID string, pageInfo fiberpaginate.PageInfo) ([]models.Application, error)
+	CreateClubRecruitmentApplication(ctx context.Context, clubID string, body CreateApplicationRequestBody) (*models.Application, error)
+	GetClubRecruitmentApplications(ctx context.Context, clubID string, pageInfo fiberpaginate.PageInfo) ([]models.Application, error)
 
 	GetClubRecruitmentApplication(ctx context.Context, clubID string, applicationID string) (*models.Application, error)
 	UpdateClubRecruitmentApplication(ctx context.Context, clubID string, applicationID string, body UpdateApplicationRequestBody) (*models.Application, error)
@@ -103,13 +103,8 @@ func (s *ClubRecruitmentService) DeleteClubRecruitment(ctx context.Context, club
 	return DeleteClubRecruitment(deleteClubRecruitmentCtx, s.DB, idAsUUID)
 }
 
-func (s *ClubRecruitmentService) CreateApplicationRequestBody(ctx context.Context, clubID string, recruitmentID string, body CreateApplicationRequestBody) (*models.Application, error) {
+func (s *ClubRecruitmentService) CreateClubRecruitmentApplication(ctx context.Context, clubID string, body CreateApplicationRequestBody) (*models.Application, error) {
 	clubIDAsUUID, err := utilities.ValidateID(clubID)
-	if err != nil {
-		return nil, err
-	}
-
-	recruitmentIDAsUUID, err := utilities.ValidateID(recruitmentID)
 	if err != nil {
 		return nil, err
 	}
@@ -126,16 +121,11 @@ func (s *ClubRecruitmentService) CreateApplicationRequestBody(ctx context.Contex
 	createApplicationCtx, createApplicationCancel := context.WithTimeoutCause(ctx, constants.DB_TIMEOUT, errs.ErrDatabaseTimeout)
 	defer createApplicationCancel()
 
-	return CreateApplication(createApplicationCtx, s.DB, clubIDAsUUID, recruitmentIDAsUUID, application)
+	return CreateApplication(createApplicationCtx, s.DB, clubIDAsUUID, application)
 }
 
-func (s *ClubRecruitmentService) GetClubRecruitmentApplications(ctx context.Context, clubID string, recruitmentID string, pageInfo fiberpaginate.PageInfo) ([]models.Application, error) {
+func (s *ClubRecruitmentService) GetClubRecruitmentApplications(ctx context.Context, clubID string, pageInfo fiberpaginate.PageInfo) ([]models.Application, error) {
 	clubIDAsUUID, err := utilities.ValidateID(clubID)
-	if err != nil {
-		return nil, err
-	}
-
-	recruitmentIDAsUUID, err := utilities.ValidateID(recruitmentID)
 	if err != nil {
 		return nil, err
 	}
@@ -143,7 +133,7 @@ func (s *ClubRecruitmentService) GetClubRecruitmentApplications(ctx context.Cont
 	getClubRecruitmentApplicationsCtx, getClubRecruitmentApplicationsCancel := context.WithTimeoutCause(ctx, constants.DB_TIMEOUT, errs.ErrDatabaseTimeout)
 	defer getClubRecruitmentApplicationsCancel()
 
-	return GetClubRecruitmentApplications(getClubRecruitmentApplicationsCtx, s.DB, clubIDAsUUID, recruitmentIDAsUUID, pageInfo)
+	return GetClubRecruitmentApplications(getClubRecruitmentApplicationsCtx, s.DB, clubIDAsUUID, pageInfo)
 }
 
 func (s *ClubRecruitmentService) GetClubRecruitmentApplication(ctx context.Context, clubID string, applicationID string) (*models.Application, error) {

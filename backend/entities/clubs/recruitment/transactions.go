@@ -14,12 +14,14 @@ import (
 )
 
 func CreateClubRecruitment(ctx context.Context, db *gorm.DB, clubID *uuid.UUID, recruitment *models.Recruitment) (*models.Recruitment, error) {
-	club, err := clubs.GetClub(db, *clubID, transactions.PreloadRecruitment())
+	_, err := clubs.GetClub(db, *clubID)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := db.WithContext(ctx).Model(&club).Association("Recruitment").Replace(recruitment); err != nil {
+	recruitment.ClubID = *clubID
+
+	if err := db.WithContext(ctx).Save(recruitment).Error; err != nil {
 		return nil, err
 	}
 
@@ -45,16 +47,16 @@ func GetClubRecruitment(ctx context.Context, db *gorm.DB, clubID *uuid.UUID) (*m
 }
 
 func UpdateClubRecruitment(ctx context.Context, db *gorm.DB, clubID *uuid.UUID, recruitment *models.Recruitment) (*models.Recruitment, error) {
-	club, err := clubs.GetClub(db, *clubID, transactions.PreloadRecruitment())
+	existingRecruitment, err := GetClubRecruitment(ctx, db, clubID)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := db.WithContext(ctx).Model(&club).Association("Recruitment").Replace(utilities.Merge(&club.Recruitment, recruitment)); err != nil {
+	if err := db.WithContext(ctx).Model(existingRecruitment).Updates(recruitment).Error; err != nil {
 		return nil, err
 	}
 
-	return recruitment, nil
+	return existingRecruitment, nil
 }
 
 func DeleteClubRecruitment(ctx context.Context, db *gorm.DB, clubID *uuid.UUID) error {
@@ -63,14 +65,14 @@ func DeleteClubRecruitment(ctx context.Context, db *gorm.DB, clubID *uuid.UUID) 
 		return err
 	}
 
-	if err := db.WithContext(ctx).Model(&club).Association("Recruitment").Clear(); err != nil {
+	if err := db.WithContext(ctx).Model(&club).Association("Recruitment").Delete(); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func CreateApplication(ctx context.Context, db *gorm.DB, clubID *uuid.UUID, recruitmentID *uuid.UUID, application *models.Application) (*models.Application, error) {
+func CreateApplication(ctx context.Context, db *gorm.DB, clubID *uuid.UUID, application *models.Application) (*models.Application, error) {
 	recruitment, err := GetClubRecruitment(ctx, db, clubID)
 	if err != nil {
 		return nil, err
@@ -83,7 +85,7 @@ func CreateApplication(ctx context.Context, db *gorm.DB, clubID *uuid.UUID, recr
 	return application, nil
 }
 
-func GetClubRecruitmentApplications(ctx context.Context, db *gorm.DB, clubID *uuid.UUID, recruitmentID *uuid.UUID, pageInfo fiberpaginate.PageInfo) ([]models.Application, error) {
+func GetClubRecruitmentApplications(ctx context.Context, db *gorm.DB, clubID *uuid.UUID, pageInfo fiberpaginate.PageInfo) ([]models.Application, error) {
 	recruitment, err := GetClubRecruitment(ctx, db, clubID)
 	if err != nil {
 		return nil, err
@@ -98,13 +100,13 @@ func GetClubRecruitmentApplications(ctx context.Context, db *gorm.DB, clubID *uu
 }
 
 func GetClubRecruitmentApplication(ctx context.Context, db *gorm.DB, clubID *uuid.UUID, applicationID *uuid.UUID) (*models.Application, error) {
-	club, err := clubs.GetClub(db, *clubID, transactions.PreloadRecruitment())
+	recruitment, err := GetClubRecruitment(ctx, db, clubID)
 	if err != nil {
 		return nil, err
 	}
 
 	var application models.Application
-	if err := db.WithContext(ctx).Model(&club.Recruitment).Association("Application").Find(&application, applicationID); err != nil {
+	if err := db.WithContext(ctx).Model(&recruitment).Association("Application").Find(&application, applicationID); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, utilities.ErrNotFound
 		}
@@ -125,7 +127,7 @@ func UpdateClubRecruitmentApplication(ctx context.Context, db *gorm.DB, clubID *
 		return nil, err
 	}
 
-	return application, nil
+	return existingApplication, nil
 }
 
 func DeleteClubRecruitmentApplication(ctx context.Context, db *gorm.DB, clubID *uuid.UUID, applicationID *uuid.UUID) error {
