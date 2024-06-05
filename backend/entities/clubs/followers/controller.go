@@ -44,3 +44,19 @@ func (cf *ClubFollowerController) GetClubFollowers(c *fiber.Ctx) error {
 
 	return c.Status(http.StatusOK).JSON(followers)
 }
+
+func (cf *ClubFollowerController) CreateClubFollowing(c *fiber.Ctx) error {
+	if err := cf.clubFollowerService.CreateClubFollower(c.Params("clubID"), c.Params("userID")); err != nil {
+		return err
+	}
+
+	return c.SendStatus(http.StatusCreated)
+}
+
+func (cf *ClubFollowerController) DeleteClubFollowing(c *fiber.Ctx) error {
+	if err := cf.clubFollowerService.DeleteClubFollower(c.Params("clubID"), c.Params("userID")); err != nil {
+		return err
+	}
+
+	return c.SendStatus(http.StatusNoContent)
+}
