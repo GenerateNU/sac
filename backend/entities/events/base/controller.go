@@ -37,12 +37,22 @@ func (e *EventController) GetAllEvents(c *fiber.Ctx) error {
 		return utilities.ErrExpectedPageInfo
 	}
 
-	events, err := e.eventService.GetEvents(*pageInfo)
-	if err != nil {
-		return err
-	}
+	start := c.Query("start")
+	end := c.Query("end")
 
-	return c.Status(http.StatusOK).JSON(events)
+	if c.QueryBool("preview", false) {
+		events, err := e.eventService.GetEventsPreview(*pageInfo, start, end)
+		if err != nil {
+			return err
+		}
+		return c.Status(http.StatusOK).JSON(events)
+	} else {
+		events, err := e.eventService.GetEvents(*pageInfo, start, end)
+		if err != nil {
+			return err
+		}
+		return c.Status(http.StatusOK).JSON(events)
+	}
 }
 
 // GetEvent godoc

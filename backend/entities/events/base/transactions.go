@@ -3,6 +3,7 @@ package base
 import (
 	"errors"
 	"log/slog"
+	"time"
 
 	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/entities/events"
@@ -18,12 +19,19 @@ import (
 )
 
 func GetEvents(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Event, error) {
-	var events []models.Event
-	if err := db.Scopes(utilities.IntoScope(pageInfo, db)).Find(&events).Error; err != nil {
-		return nil, err
-	}
+	return getEvents[models.Event](db, &pageInfo, nil, nil)
+}
 
-	return events, nil
+func GetEventsPreview(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]EventPreview, error) {
+	return getEvents[EventPreview](db, &pageInfo, nil, nil)
+}
+
+func GetEventsByTime(db *gorm.DB, startTime time.Time, endTime time.Time) ([]models.Event, error) {
+	return getEvents[models.Event](db, nil, &startTime, &endTime)
+}
+
+func GetEventsPreviewByTime(db *gorm.DB, startTime time.Time, endTime time.Time) ([]EventPreview, error) {
+	return getEvents[EventPreview](db, nil, &startTime, &endTime)
 }
 
 func CreateEvent(db *gorm.DB, event models.Event) (*models.Event, error) {
@@ -100,4 +108,23 @@ func DeleteEvent(db *gorm.DB, id uuid.UUID) error {
 	}
 
 	return nil
+}
+
+func getEvents[T any](db *gorm.DB, pageInfo *fiberpaginate.PageInfo, startTime, endTime *time.Time) ([]T, error) {
+	var events []T
+	query := db.Model(&events)
+
+	if startTime != nil && endTime != nil {
+		query = query.Where("start_time >= ? AND end_time <= ?", *startTime, *endTime)
+	}
+
+	if pageInfo != nil {
+		query = query.Scopes(utilities.IntoScope(*pageInfo, db))
+	}
+
+	if err := query.Find(&events).Error; err != nil {
+		return nil, err
+	}
+
+	return events, nil
 }
