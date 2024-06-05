@@ -2,11 +2,9 @@ package base
 
 import (
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/google/uuid"
 )
 
 type CreateClubRequestBody struct {
-	UserID               uuid.UUID               `json:"user_id" validate:"required,uuid4"`
 	Name                 string                  `json:"name" validate:"required,max=255"`
 	Preview              string                  `json:"preview" validate:"required,max=255"`
 	Description          string                  `json:"description" validate:"required,http_url,s3_url,max=255"`

@@ -3,6 +3,7 @@ package followers
 import (
 	"github.com/GenerateNU/sac/backend/entities/clubs"
 	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/entities/users"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/garrettladley/fiberpaginate"
 	"github.com/google/uuid"
@@ -21,4 +22,40 @@ func GetClubFollowers(db *gorm.DB, clubID uuid.UUID, pageInfo fiberpaginate.Page
 	}
 
 	return users, nil
+}
+
+func CreateClubFollower(db *gorm.DB, clubID uuid.UUID, userID uuid.UUID) error {
+	user, err := users.GetUser(db, userID)
+	if err != nil {
+		return err
+	}
+
+	club, err := clubs.GetClub(db, clubID)
+	if err != nil {
+		return err
+	}
+
+	if err := db.Model(&user).Association("Follower").Append(club); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func DeleteClubFollower(db *gorm.DB, clubID uuid.UUID, userID uuid.UUID) error {
+	user, err := users.GetUser(db, userID)
+	if err != nil {
+		return err
+	}
+
+	club, err := clubs.GetClub(db, clubID)
+	if err != nil {
+		return err
+	}
+
+	if err := db.Model(&user).Association("Follower").Delete(club); err != nil {
+		return err
+	}
+
+	return nil
 }
