@@ -5,7 +5,7 @@ module.exports = {
     rules: {
         'prettier/prettier': 'error',
         'react/react-in-jsx-scope': 'off',
-        'react-native/no-inline-styles': 'off',
+        'react-native/no-inline-styles': 'off'
     },
     env: {
         'jest/globals': true

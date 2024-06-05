@@ -9,29 +9,30 @@ type TagProps = {
     children: React.ReactNode;
     onPress?: () => void;
     color?: SACColors;
-    state?: 'selected' | 'unselected' | 'remove';
+    variant?: 'selected' | 'unselected' | 'remove' | 'eventCard';
 };
 
 export const Tag: React.FC<TagProps> = ({
     children,
     color = defaultColor,
-    state = 'selected',
+    variant = 'selected',
     onPress
 }) => {
-    if (state === 'selected' || state === 'unselected') {
+    if (variant === 'selected' || variant === 'unselected') {
         return (
             <Button
                 variant="standardButton"
-                color={state === 'selected' ? color : 'white'}
-                size={'small'}
+                color={variant === 'selected' ? color : 'white'}
+                size={'sm'}
                 borderRadius={'full'}
                 onPress={onPress}
+                outline={variant === 'unselected' ? true : false}
             >
                 {children}
             </Button>
         );
     }
-    if (state === 'remove') {
+    if (variant === 'remove') {
         return (
             <Button
                 variant="iconButton"
@@ -39,9 +40,22 @@ export const Tag: React.FC<TagProps> = ({
                 icon={faXmark}
                 iconColor={'white'}
                 iconPosition={'right'}
-                size={'small'}
+                size={'sm'}
                 borderRadius={'full'}
                 onPress={onPress}
+            >
+                {children}
+            </Button>
+        );
+    }
+    if (variant === 'eventCard') {
+        return (
+            <Button
+                variant="standardButton"
+                color={'white'}
+                size={'xs'}
+                borderRadius={'full'}
+                outline
             >
                 {children}
             </Button>
