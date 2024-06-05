@@ -4,9 +4,12 @@ import (
 	"time"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/google/uuid"
 )
 
 type EventPreview struct {
+	ID uuid.UUID `json:"id"`
+
 	Title string `json:"title"`
 
 	EventType models.EventType `json:"event_type"`
