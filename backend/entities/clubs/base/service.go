@@ -1,10 +1,9 @@
 package base
 
 import (
-	"fmt"
-
 	"github.com/GenerateNU/sac/backend/entities/clubs"
 	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/errs"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/garrettladley/fiberpaginate"
@@ -59,7 +58,7 @@ func (c *ClubService) UpdateClub(id string, clubBody UpdateClubRequestBody) (*mo
 	}
 
 	if utilities.AtLeastOne(clubBody, UpdateClubRequestBody{}) {
-		return nil, fmt.Errorf("at least one field must be present")
+		return nil, errs.ErrAtLeastOne
 	}
 
 	if err := utilities.Validate(c.Validate, clubBody); err != nil {

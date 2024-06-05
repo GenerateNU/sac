@@ -23,7 +23,6 @@ import (
 func (m *AuthMiddlewareService) IsSuper(c *fiber.Ctx) bool {
 	claims, err := locals.CustomClaims(c)
 	if err != nil {
-		_ = err
 		return false
 	}
 	if claims == nil {

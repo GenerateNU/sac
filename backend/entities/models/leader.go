@@ -4,7 +4,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type PointOfContact struct {
+type Leader struct {
 	Model
 
 	Name     string `json:"name"`
@@ -14,4 +14,8 @@ type PointOfContact struct {
 	ClubID uuid.UUID `json:"-"`
 
 	PhotoFile File `gorm:"polymorphic:Owner;" json:"photo_file"`
+}
+
+func (l Leader) TableName() string {
+	return "leadership"
 }

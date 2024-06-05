@@ -32,12 +32,12 @@ func NewEventController(eventService EventServiceInterface) *EventController {
 // @Failure     500   {object}      error
 // @Router		/events/  [get]
 func (e *EventController) GetAllEvents(c *fiber.Ctx) error {
-	pagination, ok := fiberpaginate.FromContext(c)
+	pageInfo, ok := fiberpaginate.FromContext(c)
 	if !ok {
-		return utilities.ErrExpectedPagination
+		return utilities.ErrExpectedPageInfo
 	}
 
-	events, err := e.eventService.GetEvents(*pagination)
+	events, err := e.eventService.GetEvents(*pageInfo)
 	if err != nil {
 		return err
 	}

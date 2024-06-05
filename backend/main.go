@@ -35,8 +35,7 @@ func main() {
 
 	constants.SEARCH_URI = config.Search.URI
 
-	err = checkServerRunning(config.Application.Host, config.Application.Port)
-	if err == nil {
+	if checkServerRunning(config.Application.Host, config.Application.Port) == nil {
 		utilities.Exit("A server is already running on %s:%d.\n", config.Application.Host, config.Application.Port)
 	}
 
