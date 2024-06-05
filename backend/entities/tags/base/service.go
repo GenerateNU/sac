@@ -1,10 +1,9 @@
 package base
 
 import (
-	"errors"
-
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/entities/tags"
+	"github.com/GenerateNU/sac/backend/errs"
 
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
@@ -59,7 +58,7 @@ func (t *TagService) UpdateTag(tagID string, tagBody UpdateTagRequestBody) (*mod
 	}
 
 	if utilities.AtLeastOne(tagBody, UpdateTagRequestBody{}) {
-		return nil, errors.New("at least one field must be present")
+		return nil, errs.ErrAtLeastOne
 	}
 
 	if err := utilities.Validate(t.Validate, tagBody); err != nil {

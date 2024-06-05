@@ -1,11 +1,10 @@
 package base
 
 import (
-	"errors"
-
 	"github.com/GenerateNU/sac/backend/auth"
 	authEntities "github.com/GenerateNU/sac/backend/entities/auth"
 	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/errs"
 	"github.com/garrettladley/fiberpaginate"
 	"github.com/google/uuid"
 
@@ -55,7 +54,7 @@ func (u *UserService) UpdateUser(id string, userBody UpdateUserRequestBody) (*mo
 	}
 
 	if utilities.AtLeastOne(userBody, UpdateUserRequestBody{}) {
-		return nil, errors.New("no fields to update")
+		return nil, errs.ErrAtLeastOne
 	}
 
 	if err := utilities.Validate(u.Validate, userBody); err != nil {

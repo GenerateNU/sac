@@ -34,12 +34,12 @@ func NewUserController(userService UserServiceInterface) *UserController {
 // @Failure     500   {object}      error
 // @Router		/users/  [get]
 func (u *UserController) GetUsers(c *fiber.Ctx) error {
-	pagination, ok := fiberpaginate.FromContext(c)
+	pageInfo, ok := fiberpaginate.FromContext(c)
 	if !ok {
-		return utilities.ErrExpectedPagination
+		return utilities.ErrExpectedPageInfo
 	}
 
-	users, err := u.userService.GetUsers(*pagination)
+	users, err := u.userService.GetUsers(*pageInfo)
 	if err != nil {
 		return err
 	}
