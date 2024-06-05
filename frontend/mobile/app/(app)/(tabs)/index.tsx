@@ -3,7 +3,7 @@ import { Pressable, StyleSheet } from 'react-native';
 
 import { router } from 'expo-router';
 
-import { Box, Text } from '@/app/(design-system)';
+import { Box, MultiSelect, Text } from '@/app/(design-system)';
 import { EventCard } from '@/app/(design-system)/components/EventCard';
 
 const HomePage = () => {
@@ -27,6 +27,7 @@ const HomePage = () => {
                     image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLF3ord7lnV_5Je-pC2AUgUiesHNPcZlpI7A&s"
                 />
             </Pressable>
+            <MultiSelect />
         </Box>
     );
 };
