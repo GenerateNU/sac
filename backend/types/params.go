@@ -14,12 +14,12 @@ import (
 
 type RouteParams struct {
 	Router            fiber.Router
-	AuthMiddleware    *authMiddleware.AuthMiddlewareService
+	AuthMiddleware    authMiddleware.AuthMiddlewareService
 	UtilityMiddleware *utilityMiddleware.UtilityMiddlewareService
 	ServiceParams     ServiceParams
 }
 
-func NewRouteParams(router fiber.Router, authMiddleware *authMiddleware.AuthMiddlewareService, utilityMiddleware *utilityMiddleware.UtilityMiddlewareService, serviceParams ServiceParams) RouteParams {
+func NewRouteParams(router fiber.Router, authMiddleware authMiddleware.AuthMiddlewareService, utilityMiddleware *utilityMiddleware.UtilityMiddlewareService, serviceParams ServiceParams) RouteParams {
 	return RouteParams{
 		Router:            router,
 		AuthMiddleware:    authMiddleware,

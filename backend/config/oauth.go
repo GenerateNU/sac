@@ -18,7 +18,7 @@ type OAuthSettings struct {
 	Prompt               string
 }
 
-type OauthProviderSettings struct {
+type OAuthProviderSettings struct {
 	GoogleOAuthSettings  *OAuthSettings
 	OutlookOAuthSettings *OAuthSettings
 }

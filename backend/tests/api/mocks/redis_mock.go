@@ -7,7 +7,6 @@ import (
 	"github.com/GenerateNU/sac/backend/database/store"
 )
 
-// RedisMockClient implements StoreClientInterface
 type RedisMockClient struct{}
 
 func NewRedisMockClient() *RedisMockClient {
@@ -22,7 +21,7 @@ func (r *RedisMockClient) Get(ctx context.Context, key string) (string, error) {
 	return "", nil
 }
 
-func (r *RedisMockClient) Del(ctx context.Context, key string) error {
+func (r *RedisMockClient) Delete(ctx context.Context, key string) error {
 	return nil
 }
 
@@ -46,60 +45,13 @@ func (r *RedisMockClient) Close(ctx context.Context) error {
 	return nil
 }
 
-// ActiveTokenMock implements ActiveTokenInterface
-type ActiveTokenMock struct {
-	StoreClient store.StoreClientInterface
-}
-
-func NewActiveTokenMock(storeClient store.StoreClientInterface) *ActiveTokenMock {
-	return &ActiveTokenMock{
-		StoreClient: storeClient,
-	}
-}
-
-func (a *ActiveTokenMock) StoreRefreshToken(ctx context.Context, token string, userID string, expiry time.Duration) error {
-	return nil
-}
-
-func (a *ActiveTokenMock) GetRefreshToken(ctx context.Context, token string) (string, error) {
-	return "", nil
-}
-
-func (a *ActiveTokenMock) IsActive(ctx context.Context, token string) (bool, error) {
-	return false, nil
-}
-
-func (a *ActiveTokenMock) DeleteRefreshToken(ctx context.Context, token string) error {
-	return nil
-}
-
-// BlacklistMock implements BlacklistInterface
-type BlacklistMock struct {
-	StoreClient store.StoreClientInterface
-}
-
-func NewBlacklistMock(storeClient store.StoreClientInterface) *BlacklistMock {
-	return &BlacklistMock{
-		StoreClient: storeClient,
-	}
-}
-
-func (b *BlacklistMock) BlacklistToken(ctx context.Context, token string, expiry time.Duration) error {
-	return nil
-}
-
-func (b *BlacklistMock) IsTokenBlacklisted(ctx context.Context, token string) (bool, error) {
-	return false, nil
-}
-
-// LimiterMock implements LimiterInterface
 type LimiterMock struct {
-	StoreClient store.StoreClientInterface
+	store.Storer
 }
 
-func NewLimiterMock(storeClient store.StoreClientInterface) *LimiterMock {
+func NewLimiterMock(storer store.Storer) *LimiterMock {
 	return &LimiterMock{
-		StoreClient: storeClient,
+		storer,
 	}
 }
 
@@ -121,4 +73,30 @@ func (l *LimiterMock) Reset() error {
 
 func (l *LimiterMock) Close() error {
 	return nil
+}
+
+type RefresherMock struct {
+	store.Storer
+}
+
+func NewRefresherMock(storer store.Storer) *RefresherMock {
+	return &RefresherMock{
+		storer,
+	}
+}
+
+func (r *RefresherMock) Get(ctx context.Context, userID string) (string, error) {
+	return "", nil
+}
+
+func (r *RefresherMock) Set(ctx context.Context, userID string, token string, expiry time.Duration) error {
+	return nil
+}
+
+func (r *RefresherMock) Delete(ctx context.Context, userID string) error {
+	return nil
+}
+
+func (r *RefresherMock) Exists(ctx context.Context, userID string) (bool, error) {
+	return false, nil
 }

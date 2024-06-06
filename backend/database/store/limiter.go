@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
-// LimiterInterface is an implementation of https://github.com/gofiber/storage
-type LimiterInterface interface {
+// Limiter is an implementation of https://github.com/gofiber/storage
+type Limiter interface {
 	Get(key string) ([]byte, error)
 	Set(key string, val []byte, exp time.Duration) error
 	Delete(key string) error
@@ -14,18 +14,18 @@ type LimiterInterface interface {
 	Close() error
 }
 
-type Limiter struct {
-	StoreClient StoreClientInterface
+type Limit struct {
+	store Storer
 }
 
-func NewLimiter(storeClient StoreClientInterface) *Limiter {
-	return &Limiter{
-		StoreClient: storeClient,
+func NewLimit(store Storer) *Limit {
+	return &Limit{
+		store: store,
 	}
 }
 
-func (l *Limiter) Get(key string) ([]byte, error) {
-	value, err := l.StoreClient.Get(context.Background(), key)
+func (l *Limit) Get(key string) ([]byte, error) {
+	value, err := l.store.Get(context.Background(), key)
 	if err != nil {
 		return nil, err
 	}
@@ -33,18 +33,18 @@ func (l *Limiter) Get(key string) ([]byte, error) {
 	return []byte(value), nil
 }
 
-func (l *Limiter) Set(key string, val []byte, exp time.Duration) error {
-	return l.StoreClient.Set(context.Background(), key, string(val), exp)
+func (l *Limit) Set(key string, val []byte, exp time.Duration) error {
+	return l.store.Set(context.Background(), key, string(val), exp)
 }
 
-func (l *Limiter) Delete(key string) error {
-	return l.StoreClient.Del(context.Background(), key)
+func (l *Limit) Delete(key string) error {
+	return l.store.Delete(context.Background(), key)
 }
 
-func (l *Limiter) Reset() error {
-	return l.StoreClient.FlushAll(context.Background())
+func (l *Limit) Reset() error {
+	return l.store.FlushAll(context.Background())
 }
 
-func (l *Limiter) Close() error {
-	return l.StoreClient.Close(context.Background())
+func (l *Limit) Close() error {
+	return l.store.Close(context.Background())
 }

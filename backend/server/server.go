@@ -25,6 +25,8 @@ import (
 	utilityMiddleware "github.com/GenerateNU/sac/backend/middleware/utility"
 	search "github.com/GenerateNU/sac/backend/search/base"
 
+	oauthInt "github.com/GenerateNU/sac/backend/integrations/oauth"
+
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/contrib/otelfiber"
@@ -56,7 +58,13 @@ func Init(db *gorm.DB, stores *store.Stores, integrations integrations.Integrati
 	}
 
 	jwt := authenticator.NewJWTClient(settings.Auth, jwt.SigningMethodHS256)
-	authMiddleware := authMiddleware.New(db, validate, settings.Auth, stores)
+	authMiddleware := authMiddleware.New(
+		db,
+		validate,
+		settings.Auth,
+		stores,
+		oauthInt.NewHandler(db, stores, integrations.OAuth, validate),
+	)
 	utilityMiddleware := utilityMiddleware.New(fiberpaginate.New(), stores)
 
 	apiv1 := app.Group("/api/v1")

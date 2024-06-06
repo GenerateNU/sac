@@ -6,6 +6,10 @@ import (
 	m "github.com/garrettladley/mattress"
 )
 
+const (
+	tenantID = "a8eec281-aaa3-4dae-ac9b-9a398b9215e7"
+)
+
 type intermdeiateOutlookOAuthSettings struct {
 	ClientID     string `env:"CLIENT_ID"`
 	ClientSecret string `env:"CLIENT_SECRET"`
@@ -24,11 +28,11 @@ func (i *intermdeiateOutlookOAuthSettings) into() (*OAuthSettings, error) {
 	}
 
 	return &OAuthSettings{
-		BaseURL:      "https://login.microsoftonline.com/common/oauth2/v2.0",
-		TokenURL:     "https://login.microsoftonline.com/common/oauth2/v2.0",
+		BaseURL:      fmt.Sprintf("https://login.microsoftonline.com/%s/oauth2/v2.0", tenantID),
+		TokenURL:     fmt.Sprintf("https://login.microsoftonline.com/%s/oauth2/v2.0", tenantID),
 		ClientID:     secretClientID,
 		ClientSecret: secretClientSecret,
-		Scopes:       "offline_access user.read calendars.readwrite",
+		Scopes:       "offline_access user.read calendars.readwrite openid email profile",
 		ResponseType: "code",
 		RedirectURI:  i.RedirectURI,
 		ResponseMode: "query",

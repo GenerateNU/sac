@@ -278,20 +278,8 @@ func copyCustomClaims(claims *jwt.MapClaims, customClaims map[string]interface{}
 
 func SetResponseTokens(c *fiber.Ctx, tokens *Token) {
 	c.Set("Authorization", fmt.Sprintf("Bearer %s", tokens.AccessToken))
-	c.Cookie(&fiber.Cookie{
-		Name:     "refresh_token",
-		Value:    string(tokens.RefreshToken),
-		Expires:  time.Now().Add(constants.REFRESH_TOKEN_EXPIRY),
-		HTTPOnly: true,
-	})
 }
 
 func ExpireResponseTokens(c *fiber.Ctx) {
 	c.Set("Authorization", "")
-	c.Cookie(&fiber.Cookie{
-		Name:     "refresh_token",
-		Value:    "",
-		Expires:  time.Now().Add(-time.Hour),
-		HTTPOnly: true,
-	})
 }

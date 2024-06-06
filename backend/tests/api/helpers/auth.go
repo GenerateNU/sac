@@ -12,11 +12,10 @@ import (
 )
 
 type TestUser struct {
-	UUID         uuid.UUID
-	Email        string
-	Password     string
-	AccessToken  string
-	RefreshToken string
+	UUID        uuid.UUID
+	Email       string
+	Password    string
+	AccessToken string
 }
 
 func (app *TestApp) Auth(role models.UserRole) {
@@ -57,22 +56,15 @@ func (app *TestApp) authSuper() {
 		accessToken = authHeader[len("Bearer "):]
 	}
 
-	for _, cookie := range resp.Cookies() {
-		if cookie.Name == "refresh_token" {
-			refreshToken = cookie.Value
-		}
-	}
-
 	if accessToken == "" || refreshToken == "" {
 		panic("Failed to authenticate super user")
 	}
 
 	app.TestUser = &TestUser{
-		UUID:         database.SuperUserUUID,
-		Email:        email,
-		Password:     password.Expose(),
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
+		UUID:        database.SuperUserUUID,
+		Email:       email,
+		Password:    password.Expose(),
+		AccessToken: accessToken,
 	}
 }
 
@@ -119,22 +111,15 @@ func (app *TestApp) authStudent() {
 		accessToken = authHeader[len("Bearer "):]
 	}
 
-	for _, cookie := range resp.Cookies() {
-		if cookie.Name == "refresh_token" {
-			refreshToken = cookie.Value
-		}
-	}
-
 	if accessToken == "" || refreshToken == "" {
 		panic("Failed to authenticate sample student user")
 	}
 
 	app.TestUser = &TestUser{
-		UUID:         studentUserUUID,
-		Email:        studentUser.Email,
-		Password:     rawPassword,
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
+		UUID:        studentUserUUID,
+		Email:       studentUser.Email,
+		Password:    rawPassword,
+		AccessToken: accessToken,
 	}
 }
 

@@ -6,16 +6,17 @@ import (
 	"github.com/GenerateNU/sac/backend/auth"
 	authEntities "github.com/GenerateNU/sac/backend/entities/auth"
 	users "github.com/GenerateNU/sac/backend/entities/users/base"
+	"github.com/GenerateNU/sac/backend/locals"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/fiber/v2"
 )
 
 type AuthController struct {
-	authService AuthServiceInterface
+	AuthService
 }
 
-func NewAuthController(authService AuthServiceInterface) *AuthController {
-	return &AuthController{authService: authService}
+func NewAuthController(authService AuthService) *AuthController {
+	return &AuthController{authService}
 }
 
 // Login godoc
@@ -39,7 +40,7 @@ func (a *AuthController) Login(c *fiber.Ctx) error {
 		return utilities.InvalidJSON()
 	}
 
-	user, tokens, err := a.authService.Login(c.UserContext(), userBody)
+	user, tokens, err := a.AuthService.Login(c.Context(), userBody)
 	if err != nil {
 		return err
 	}
@@ -70,7 +71,7 @@ func (a *AuthController) Register(c *fiber.Ctx) error {
 		return utilities.InvalidJSON()
 	}
 
-	user, tokens, err := a.authService.Register(c.UserContext(), userBody)
+	user, tokens, err := a.AuthService.Register(c.Context(), userBody)
 	if err != nil {
 		return err
 	}
@@ -78,36 +79,6 @@ func (a *AuthController) Register(c *fiber.Ctx) error {
 	auth.SetResponseTokens(c, tokens)
 
 	return c.Status(http.StatusCreated).JSON(user)
-}
-
-// Refresh godoc
-//
-// @Summary		Refreshes a user's access token and returns a new pair of tokens
-// @Description	Refreshes a user's access token and returns a new pair of tokens
-// @ID			refresh-user
-// @Tags      	auth
-// @Accept		json
-// @Produce		json
-// @Success		200	  {object}	  utilities.SuccessResponse
-// @Failure     400   {object}    error
-// @Failure     404   {object}    error
-// @Failure     500   {object}    error
-// @Router		/auth/refresh  [post]
-func (a *AuthController) Refresh(c *fiber.Ctx) error {
-	var refreshBody RefreshTokenCookieBody
-
-	if err := c.CookieParser(&refreshBody); err != nil {
-		return utilities.InvalidCookies()
-	}
-
-	tokens, err := a.authService.Refresh(c.UserContext(), refreshBody.RefreshToken)
-	if err != nil {
-		return err
-	}
-
-	auth.SetResponseTokens(c, tokens)
-
-	return c.SendStatus(http.StatusOK)
 }
 
 // Logout godoc
@@ -121,7 +92,12 @@ func (a *AuthController) Refresh(c *fiber.Ctx) error {
 // @Success		200	  {object}	  utilities.SuccessResponse
 // @Router		/auth/logout  [post]
 func (a *AuthController) Logout(c *fiber.Ctx) error {
-	if err := a.authService.Logout(c.UserContext(), c.Get("Authorization"), c.Cookies("refresh_token")); err != nil {
+	userID, err := locals.UserIDFrom(c)
+	if err != nil {
+		return err
+	}
+
+	if err := a.AuthService.Logout(c.Context(), *userID); err != nil {
 		return err
 	}
 
@@ -151,7 +127,7 @@ func (a *AuthController) ForgotPassword(c *fiber.Ctx) error {
 		return utilities.InvalidJSON()
 	}
 
-	if err := a.authService.ForgotPassword(emailBody.Email); err != nil {
+	if err := a.AuthService.ForgotPassword(emailBody.Email); err != nil {
 		return err
 	}
 
@@ -180,7 +156,7 @@ func (a *AuthController) VerifyPasswordResetToken(c *fiber.Ctx) error {
 		return utilities.InvalidJSON()
 	}
 
-	if err := a.authService.VerifyPasswordResetToken(tokenBody); err != nil {
+	if err := a.AuthService.VerifyPasswordResetToken(tokenBody); err != nil {
 		return err
 	}
 
@@ -208,7 +184,7 @@ func (a *AuthController) SendCode(c *fiber.Ctx) error {
 		return utilities.InvalidJSON()
 	}
 
-	if err := a.authService.SendCode(emailBody.Email); err != nil {
+	if err := a.AuthService.SendCode(emailBody.Email); err != nil {
 		return err
 	}
 
@@ -236,7 +212,7 @@ func (a *AuthController) VerifyEmail(c *fiber.Ctx) error {
 		return utilities.InvalidJSON()
 	}
 
-	if err := a.authService.VerifyEmail(tokenBody); err != nil {
+	if err := a.AuthService.VerifyEmail(tokenBody); err != nil {
 		return err
 	}
 

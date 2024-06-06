@@ -14,7 +14,6 @@ func Auth(params types.RouteParams) {
 	auth.Post("/register", authController.Register)
 	auth.Post("/logout", authController.Logout)
 	auth.Post("/login", authController.Login)
-	auth.Post("/refresh", authController.Refresh)
 
 	auth.Post("/send-code", params.UtilityMiddleware.Limiter(constants.RATE_LIMIT_MAX_REQUESTS, constants.RATE_LIMIT_DURATION), authController.SendCode)
 	auth.Post("/verify-email", authController.VerifyEmail)

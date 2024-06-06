@@ -6,25 +6,17 @@ import (
 )
 
 type StoresMock struct {
-	Limiter     store.LimiterInterface
-	Blacklist   store.BlacklistInterface
-	ActiveToken store.ActiveTokenInterface
+	store.Limiter
+	store.Refresher
 }
 
-func NewStoresMock(limiter store.LimiterInterface, blacklist store.BlacklistInterface, activeToken store.ActiveTokenInterface) *store.Stores {
+func NewStoresMock(limiter store.Limiter, refresher store.Refresher) *store.Stores {
 	return &store.Stores{
-		Limiter:     limiter,
-		Blacklist:   blacklist,
-		ActiveToken: activeToken,
+		Limiter:   limiter,
+		Refresher: refresher,
 	}
 }
 
 func ConfigureRedisMock() *store.Stores {
-	limiter := mocks.NewLimiterMock(mocks.NewRedisMockClient())
-	blacklist := mocks.NewBlacklistMock(mocks.NewRedisMockClient())
-	activeToken := mocks.NewActiveTokenMock(mocks.NewRedisMockClient())
-
-	stores := NewStoresMock(limiter, blacklist, activeToken)
-
-	return stores
+	return NewStoresMock(mocks.NewLimiterMock(mocks.NewRedisMockClient()), mocks.NewRefresherMock(mocks.NewRedisMockClient()))
 }

@@ -5,17 +5,18 @@ import (
 	"net/http"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/integrations/oauth"
 	"github.com/GenerateNU/sac/backend/locals"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 type OAuthController struct {
-	OAuthService OAuthServiceInterface
+	oauth.Service
 }
 
-func NewOAuthController(oauthService OAuthServiceInterface) *OAuthController {
-	return &OAuthController{OAuthService: oauthService}
+func NewOAuthController(Service oauth.Service) *OAuthController {
+	return &OAuthController{Service}
 }
 
 func (oc *OAuthController) Authorize(c *fiber.Ctx) error {
@@ -32,7 +33,7 @@ func (oc *OAuthController) Authorize(c *fiber.Ctx) error {
 	}
 
 	// Call the respective authorize method:
-	authUrl, err := oc.OAuthService.Authorize(*userID, resourceType)
+	authUrl, err := oc.Service.Authorize(c.Context(), *userID, resourceType)
 	if err != nil {
 		return err
 	}
@@ -40,7 +41,7 @@ func (oc *OAuthController) Authorize(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(*authUrl)
 }
 
-func (oc *OAuthController) Token(c *fiber.Ctx) error {
+func (oc *OAuthController) AuthorizationToken(c *fiber.Ctx) error {
 	// Extract the resource type from the query params:
 	resourceType := models.OAuthResource(c.Query("type"))
 	if resourceType == "" {
@@ -60,7 +61,7 @@ func (oc *OAuthController) Token(c *fiber.Ctx) error {
 	}
 
 	// Call the respective token method:
-	err = oc.OAuthService.Token(*userID, tokenBody, resourceType)
+	err = oc.Service.AuthorizationToken(c.Context(), *userID, tokenBody.Code, tokenBody.State, resourceType)
 	if err != nil {
 		return err
 	}
@@ -81,7 +82,7 @@ func (oc *OAuthController) Revoke(c *fiber.Ctx) error {
 		return err
 	}
 
-	err = oc.OAuthService.Revoke(*userID, resourceType)
+	err = oc.Service.Revoke(c.Context(), *userID, resourceType)
 	if err != nil {
 		return err
 	}

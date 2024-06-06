@@ -100,7 +100,7 @@ func configureIntegrations(config *config.Integrations) *integrations.Integratio
 	return &integrations.Integrations{
 		File:  file.NewAWSProvider(config.AWS),
 		Email: email.NewResendClient(config.Resend, true),
-		OAuth: oauth.OauthProviderSettings{
+		OAuth: oauth.OAuthProviders{
 			Google: oauth.GoogleOAuthClient{
 				OAuthConfig: config.GoogleOauth,
 			},

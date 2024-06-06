@@ -10,24 +10,21 @@ import (
 )
 
 type Stores struct {
-	Limiter     LimiterInterface
-	Blacklist   BlacklistInterface
-	ActiveToken ActiveTokenInterface
+	Limiter   Limiter
+	Refresher Refresher
 }
 
-func NewStores(limiter LimiterInterface, blacklist BlacklistInterface, activeToken ActiveTokenInterface) *Stores {
+func NewStores(limiter Limiter, refresher Refresher) *Stores {
 	return &Stores{
-		Limiter:     limiter,
-		Blacklist:   blacklist,
-		ActiveToken: activeToken,
+		Limiter:   limiter,
+		Refresher: refresher,
 	}
 }
 
 func ConfigureRedis(settings config.Settings) *Stores {
 	stores := NewStores(
-		NewLimiter(NewRedisClient(settings.RedisLimiter.Username, settings.RedisLimiter.Password, settings.RedisLimiter.Host, settings.RedisLimiter.Port, settings.RedisLimiter.DB)),
-		NewBlacklist(NewRedisClient(settings.RedisBlacklist.Username, settings.RedisBlacklist.Password, settings.RedisBlacklist.Host, settings.RedisBlacklist.Port, settings.RedisBlacklist.DB)),
-		NewActiveToken(NewRedisClient(settings.RedisActiveTokens.Username, settings.RedisActiveTokens.Password, settings.RedisActiveTokens.Host, settings.RedisActiveTokens.Port, settings.RedisActiveTokens.DB)),
+		NewLimit(NewRedisClient(settings.RedisLimiter.Username, settings.RedisLimiter.Password, settings.RedisLimiter.Host, settings.RedisLimiter.Port, settings.RedisLimiter.DB)),
+		NewRefresh(NewRedisClient(settings.RedisRefresher.Username, settings.RedisRefresher.Password, settings.RedisRefresher.Host, settings.RedisRefresher.Port, settings.RedisRefresher.DB)),
 	)
 
 	MustEstablishConn()

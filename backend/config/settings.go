@@ -1,14 +1,13 @@
 package config
 
 type Settings struct {
-	Application       ApplicationSettings
-	Database          DatabaseSettings
-	RedisActiveTokens RedisSettings
-	RedisBlacklist    RedisSettings
-	RedisLimiter      RedisSettings
-	SuperUser         SuperUserSettings
-	Auth              AuthSettings
-	Calendar          CalendarSettings
+	Application    ApplicationSettings
+	Database       DatabaseSettings
+	RedisLimiter   RedisSettings
+	RedisRefresher RedisSettings
+	SuperUser      SuperUserSettings
+	Auth           AuthSettings
+	Calendar       CalendarSettings
 	Integrations
 }
 
@@ -21,19 +20,18 @@ type Integrations struct {
 }
 
 type intermediateSettings struct {
-	Application       ApplicationSettings              `envPrefix:"SAC_APPLICATION_"`
-	Database          intermediateDatabaseSettings     `envPrefix:"SAC_DB_"`
-	RedisActiveTokens intermediateRedisSettings        `envPrefix:"SAC_REDIS_ACTIVE_TOKENS_"`
-	RedisBlacklist    intermediateRedisSettings        `envPrefix:"SAC_REDIS_BLACKLIST_"`
-	RedisLimiter      intermediateRedisSettings        `envPrefix:"SAC_REDIS_LIMITER_"`
-	SuperUser         intermediateSuperUserSettings    `envPrefix:"SAC_SUDO_"`
-	Auth              intermediateAuthSettings         `envPrefix:"SAC_AUTH_"`
-	AWS               intermediateAWSSettings          `envPrefix:"SAC_AWS_"`
-	Resend            intermediateResendSettings       `envPrefix:"SAC_RESEND_"`
-	Calendar          intermediateCalendarSettings     `envPrefix:"SAC_CALENDAR_"`
-	GoogleSettings    intermediateGoogleOAuthSettings  `envPrefix:"SAC_GOOGLE_OAUTH_"`
-	OutlookSettings   intermdeiateOutlookOAuthSettings `envPrefix:"SAC_OUTLOOK_OAUTH_"`
-	Search            SearchSettings                   `envPrefix:"SAC_SEARCH_"`
+	Application     ApplicationSettings              `envPrefix:"SAC_APPLICATION_"`
+	Database        intermediateDatabaseSettings     `envPrefix:"SAC_DB_"`
+	RedisLimiter    intermediateRedisSettings        `envPrefix:"SAC_REDIS_LIMITER_"`
+	RedisRefresher  intermediateRedisSettings        `envPrefix:"SAC_REDIS_REFRESHER_"`
+	SuperUser       intermediateSuperUserSettings    `envPrefix:"SAC_SUDO_"`
+	Auth            intermediateAuthSettings         `envPrefix:"SAC_AUTH_"`
+	AWS             intermediateAWSSettings          `envPrefix:"SAC_AWS_"`
+	Resend          intermediateResendSettings       `envPrefix:"SAC_RESEND_"`
+	Calendar        intermediateCalendarSettings     `envPrefix:"SAC_CALENDAR_"`
+	GoogleSettings  intermediateGoogleOAuthSettings  `envPrefix:"SAC_GOOGLE_OAUTH_"`
+	OutlookSettings intermdeiateOutlookOAuthSettings `envPrefix:"SAC_OUTLOOK_OAUTH_"`
+	Search          SearchSettings                   `envPrefix:"SAC_SEARCH_"`
 }
 
 func (i *intermediateSettings) into() (*Settings, error) {
@@ -42,17 +40,12 @@ func (i *intermediateSettings) into() (*Settings, error) {
 		return nil, err
 	}
 
-	redisActiveTokens, err := i.RedisActiveTokens.into()
-	if err != nil {
-		return nil, err
-	}
-
-	redisBlacklist, err := i.RedisBlacklist.into()
-	if err != nil {
-		return nil, err
-	}
-
 	redisLimiter, err := i.RedisLimiter.into()
+	if err != nil {
+		return nil, err
+	}
+
+	redisRefresher, err := i.RedisRefresher.into()
 	if err != nil {
 		return nil, err
 	}
@@ -93,14 +86,13 @@ func (i *intermediateSettings) into() (*Settings, error) {
 	}
 
 	return &Settings{
-		Application:       i.Application,
-		Database:          *database,
-		RedisActiveTokens: *redisActiveTokens,
-		RedisBlacklist:    *redisBlacklist,
-		RedisLimiter:      *redisLimiter,
-		SuperUser:         *superUser,
-		Auth:              *auth,
-		Calendar:          *calendar,
+		Application:    i.Application,
+		Database:       *database,
+		RedisLimiter:   *redisLimiter,
+		RedisRefresher: *redisRefresher,
+		SuperUser:      *superUser,
+		Auth:           *auth,
+		Calendar:       *calendar,
 		Integrations: Integrations{
 			GoogleOauth:  *google,
 			OutlookOauth: *outlook,

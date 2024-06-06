@@ -2,17 +2,17 @@ package oauth
 
 import "github.com/GenerateNU/sac/backend/config"
 
-type OAuthResourceClientInterface interface {
+type OAuthProvider interface {
 	AuthorizeURL(state string) string
 	GetConfig() config.OAuthSettings
 	Revoke(token string) error
 }
 
 type OAuthClient struct {
-	ResourceClient OAuthResourceClientInterface
+	OAuthProvider
 }
 
-type OauthProviderSettings struct {
+type OAuthProviders struct {
 	Outlook OutlookOAuthClient
 	Google  GoogleOAuthClient
 }

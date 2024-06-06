@@ -11,10 +11,10 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-type StoreClientInterface interface {
+type Storer interface {
 	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error
 	Get(ctx context.Context, key string) (string, error)
-	Del(ctx context.Context, key string) error
+	Delete(ctx context.Context, key string) error
 	Exists(ctx context.Context, key string) (bool, error)
 	SetAdd(ctx context.Context, key string, members ...interface{}) error
 	SetIsMember(ctx context.Context, key string, member interface{}) (bool, error)
@@ -51,7 +51,7 @@ func (r *RedisClient) Get(ctx context.Context, key string) (string, error) {
 	return r.client.Get(ctx, key).Result()
 }
 
-func (r *RedisClient) Del(ctx context.Context, key string) error {
+func (r *RedisClient) Delete(ctx context.Context, key string) error {
 	return r.client.Del(ctx, key).Err()
 }
 

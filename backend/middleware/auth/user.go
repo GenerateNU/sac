@@ -6,7 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func (m *AuthMiddlewareService) UserAuthorizeById(c *fiber.Ctx) error {
+func (m *AuthMiddlewareHandler) UserAuthorizeById(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 		if err := m.Authenticate(c); err != nil {
 			return utilities.Unauthorized()
