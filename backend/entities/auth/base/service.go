@@ -127,6 +127,12 @@ func (a *AuthServiceHandler) Register(ctx context.Context, userBody usersEntitie
 		return nil, nil, err
 	}
 
+	storeRefreshTokenCtx, storeRefreshTokenCancel := context.WithTimeoutCause(ctx, constants.REDIS_TIMEOUT, errs.ErrRedisTimeout)
+	defer storeRefreshTokenCancel()
+	if err := a.Stores.Refresher.Set(storeRefreshTokenCtx, string(tokens.RefreshToken), user.ID.String(), constants.REFRESH_TOKEN_EXPIRY); err != nil {
+		return nil, nil, err
+	}
+
 	return user, tokens, nil
 }
 

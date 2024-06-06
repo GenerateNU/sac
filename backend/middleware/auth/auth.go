@@ -73,7 +73,7 @@ func (m *AuthMiddlewareHandler) Authenticate(c *fiber.Ctx) error {
 
 		locals.SetUserID(c, &userID)
 
-		if err := m.OAuth.RefreshToken(c.Context(), userID, models.OAuthResource(models.Google)); err != nil {
+		if err := m.OAuth.RefreshToken(c.Context(), userID, models.Google); err != nil {
 			return err
 		}
 

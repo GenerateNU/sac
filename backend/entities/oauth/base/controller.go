@@ -15,8 +15,8 @@ type OAuthController struct {
 	oauth.Service
 }
 
-func NewOAuthController(Service oauth.Service) *OAuthController {
-	return &OAuthController{Service}
+func NewOAuthController(service oauth.Service) *OAuthController {
+	return &OAuthController{service}
 }
 
 func (oc *OAuthController) Authorize(c *fiber.Ctx) error {
