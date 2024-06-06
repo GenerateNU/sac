@@ -21,7 +21,7 @@ import (
 )
 
 func (m *AuthMiddlewareService) IsSuper(c *fiber.Ctx) bool {
-	claims, err := locals.CustomClaims(c)
+	claims, err := locals.CustomClaimsFrom(c)
 	if err != nil {
 		return false
 	}
@@ -98,7 +98,7 @@ func (m *AuthMiddlewareService) Authorize(requiredPermissions ...auth.Permission
 			return utilities.Unauthorized()
 		}
 
-		claims, err := locals.CustomClaims(c)
+		claims, err := locals.CustomClaimsFrom(c)
 		if err != nil {
 			return err
 		}

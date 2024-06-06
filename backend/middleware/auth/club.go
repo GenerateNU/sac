@@ -25,7 +25,7 @@ func (m *AuthMiddlewareService) ClubAuthorizeById(c *fiber.Ctx, extractor Extrac
 			return err
 		}
 
-		userID, err := locals.UserID(c)
+		userID, err := locals.UserIDFrom(c)
 		if err != nil {
 			return err
 		}

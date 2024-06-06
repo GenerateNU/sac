@@ -3,7 +3,7 @@ package base
 import (
 	"net/http"
 
-	"github.com/GenerateNU/sac/backend/auth"
+	"github.com/GenerateNU/sac/backend/locals"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/garrettladley/fiberpaginate"
 	"github.com/gofiber/fiber/v2"
@@ -66,7 +66,7 @@ func (cl *ClubController) CreateClub(c *fiber.Ctx) error {
 		return utilities.InvalidJSON()
 	}
 
-	userID, err := auth.UserIDFrom(c)
+	userID, err := locals.UserIDFrom(c)
 	if err != nil {
 		return err
 	}
