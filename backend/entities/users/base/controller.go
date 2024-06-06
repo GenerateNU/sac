@@ -63,7 +63,7 @@ func (u *UserController) GetUsers(c *fiber.Ctx) error {
 // @Failure     500   {object}      error
 // @Router		/auth/me  [get]
 func (u *UserController) GetMe(c *fiber.Ctx) error {
-	userID, err := locals.UserID(c)
+	userID, err := locals.UserIDFrom(c)
 	if err != nil {
 		return err
 	}
