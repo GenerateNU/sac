@@ -1,5 +1,5 @@
 import React from 'react';
-import { Linking } from 'react-native';
+import { Linking, TouchableOpacity } from 'react-native';
 
 import { faVideo } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -8,7 +8,6 @@ import { Tag } from '@generatesac/lib';
 import {
     Box,
     Colors,
-    ExpandableText,
     SACColors,
     Text,
     textColorVariants
@@ -21,13 +20,15 @@ interface AboutEventProps {
     description: string;
     zoomLink?: string;
     color: SACColors;
+    onPress: () => void;
 }
 
 export const AboutEvent = ({
     tags,
     color,
     description,
-    zoomLink
+    zoomLink,
+    onPress
 }: AboutEventProps) => {
     const handlePress = () => {
         if (zoomLink) {
@@ -46,7 +47,16 @@ export const AboutEvent = ({
             <Text marginBottom="m" variant="subheader-1">
                 About Event
             </Text>
-            <ExpandableText>{description}</ExpandableText>
+            <TouchableOpacity onPress={onPress}>
+                <Box>
+                    <Text lineHeight={22} numberOfLines={5}>
+                        {description}
+                    </Text>
+                    <Text paddingTop="xs" variant="caption-1">
+                        Read More...
+                    </Text>
+                </Box>
+            </TouchableOpacity>
             <Box paddingTop="xl" flexDirection="row" flexWrap="wrap" gap="xs">
                 {tags.length >= 5
                     ? tags.slice(0, 5).map((item) => renderTag(item))

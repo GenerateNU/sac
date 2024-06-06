@@ -4,6 +4,7 @@ import { FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 
+import ErrorIcon from '@/app/(design-system)/assets/svg/Error.svg';
 import { Item } from '@/types/item';
 
 import { Border } from '../../shared/border';
@@ -16,22 +17,22 @@ interface SelectOneProps {
     data: Item[];
     placeholder: string;
     title?: string;
+    value: Item;
     onChange: (value: Item) => void;
-    error?: boolean;
+    error?: string;
 }
 
 export const SelectOne: React.FC<SelectOneProps> = ({
     data,
     placeholder,
     title,
+    value,
     onChange,
-    error = false
+    error = ''
 }) => {
-    const [selectedItem, setSelectedItem] = useState<Item | null>(null);
     const [dropdownVisible, setDropdownVisible] = useState(false);
 
     const handleSelect = (item: Item) => {
-        setSelectedItem(item);
         onChange(item);
         setDropdownVisible(false);
     };
@@ -39,15 +40,15 @@ export const SelectOne: React.FC<SelectOneProps> = ({
     const renderItem = ({ item, index }: { item: Item; index: number }) => {
         const isLastItem = index === data.length - 1;
         return (
-            <Box>
+            <>
                 <TouchableOpacity
                     style={styles.item}
                     onPress={() => handleSelect(item)}
                 >
-                    <Text>{item.value}</Text>
+                    <Text style={{ flex: 1 }}>{item.value}</Text>
                 </TouchableOpacity>
                 {!isLastItem && <Box style={styles.divider} />}
-            </Box>
+            </>
         );
     };
 
@@ -57,25 +58,23 @@ export const SelectOne: React.FC<SelectOneProps> = ({
     }
 
     return (
-        <Box style={styles.container}>
+        <Box width="100%" borderRadius="medium">
             {title && <Text paddingBottom="xs">{title}</Text>}
             <TouchableOpacity
                 style={[
                     styles.box,
+                    { width: '100%' },
                     { borderColor: error ? Colors.red : Colors.gray }
                 ]}
                 onPress={() => setDropdownVisible(!dropdownVisible)}
             >
                 <Box style={styles.contentContainer}>
-                    <Text
-                        variant="body-1"
-                        color={selectedItem === null ? 'gray' : 'black'}
-                    >
-                        {selectedItem ? selectedItem.value : placeholder}
+                    <Text variant="body-1" color={!value ? 'gray' : 'black'}>
+                        {value ? value.value : placeholder}
                     </Text>
                     <FontAwesomeIcon
                         color={Colors.gray}
-                        icon={dropdownVisible ? faAngleDown : faAngleUp}
+                        icon={dropdownVisible ? faAngleUp : faAngleDown}
                     />
                 </Box>
             </TouchableOpacity>
@@ -88,15 +87,29 @@ export const SelectOne: React.FC<SelectOneProps> = ({
                     />
                 </Box>
             )}
+            <Box
+                gap="xxs"
+                paddingTop="xs"
+                flexDirection="row"
+                alignItems="center"
+            >
+                {!dropdownVisible && (
+                    <Box gap="xxs" flexDirection="row" alignItems="center">
+                        {error && <ErrorIcon />}
+                        <Text
+                            color={error ? 'darkRed' : 'black'}
+                            variant="caption-1"
+                        >
+                            {error}
+                        </Text>
+                    </Box>
+                )}
+            </Box>
         </Box>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        width: '100%',
-        borderRadius: Border.medium
-    },
     box: {
         backgroundColor: 'white',
         width: '100%',
@@ -110,7 +123,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: Spacing.xxs
+        paddingHorizontal: Spacing.xxs,
+        width: '100%'
     },
     dropdown: {
         backgroundColor: 'white',
@@ -121,7 +135,8 @@ const styles = StyleSheet.create({
         marginTop: Spacing.xs
     },
     item: {
-        padding: Spacing.m
+        padding: Spacing.m,
+        width: '100%'
     },
     divider: {
         height: 1,

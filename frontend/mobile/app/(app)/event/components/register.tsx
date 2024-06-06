@@ -1,11 +1,16 @@
 import React, { forwardRef, useCallback, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { Alert, Linking } from 'react-native';
 
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { ZodError, z } from 'zod';
 
 import { Box, Text } from '@/app/(design-system)';
 import { SelectOne } from '@/app/(design-system)';
 import { Button } from '@/app/(design-system)/components/Button/Button';
 import { Item } from '@/types/item';
+import { googleCalendarTime, httpFormat } from '@/utils/time';
 
 import { Divider } from './divider';
 
@@ -15,10 +20,18 @@ const SaveEventText = `By saving this event, you are automatically signed up for
 
 interface RegisterSheetProps {
     eventType: 'hybrid' | 'in-person' | 'virtual';
+    startTime: Date;
+    endTime: Date;
+    location: string;
+    eventName: string;
+    eventDetail: string;
 }
 
 const RegisterBottomSheet = forwardRef<Ref, RegisterSheetProps>(
-    ({ eventType }, ref) => {
+    (
+        { eventType, eventName, location, eventDetail, startTime, endTime },
+        ref
+    ) => {
         const renderBackdrop = useCallback(
             (props: any) => (
                 <BottomSheetBackdrop
@@ -30,9 +43,10 @@ const RegisterBottomSheet = forwardRef<Ref, RegisterSheetProps>(
             []
         );
 
-        const [format, setFormat] = useState<Item>();
+        const googleCalendar = `https://calendar.google.com/calendar/u/0/r/eventedit?text=${httpFormat(eventName)}&dates=${googleCalendarTime(startTime)}/${googleCalendarTime(endTime)}&location=${httpFormat(location)}&details=${httpFormat(eventDetail)}&sf=true&output=xml`;
+
         const [sheet, setSheet] = useState('register');
-        const [attending, setAttending] = useState<Item>();
+        const [attending, _] = useState<Item>();
 
         const handleRegisterPress = () => {
             if (attending?.key === 'maybe') {
@@ -54,20 +68,14 @@ const RegisterBottomSheet = forwardRef<Ref, RegisterSheetProps>(
                 backdropComponent={renderBackdrop}
             >
                 {sheet === 'register' && (
-                    <Register
-                        onChange={setAttending}
-                        onPress={handleRegisterPress}
-                        value={attending}
-                    />
+                    <Register onPress={handleRegisterPress} />
                 )}
                 {sheet === 'attend' && (
-                    <AttendanceType
-                        onPress={() => setSheet('save')}
-                        onChange={setFormat}
-                        value={format}
-                    />
+                    <AttendanceType onPress={() => setSheet('save')} />
                 )}
-                {sheet === 'save' && <SaveEvent />}
+                {sheet === 'save' && (
+                    <SaveEvent googleCalendar={googleCalendar} />
+                )}
             </BottomSheet>
         );
     }
@@ -75,39 +83,89 @@ const RegisterBottomSheet = forwardRef<Ref, RegisterSheetProps>(
 
 interface RegisterProps {
     onPress: () => void;
-    onChange: (value: Item) => void;
-    value: Item | undefined;
 }
 
-const Register: React.FC<RegisterProps> = ({ onPress, onChange, value }) => (
-    <Box marginHorizontal="xl" flexDirection="column" gap="s">
-        <Text
-            paddingTop="s"
-            textAlign="center"
-            variant="subheader-2"
-            fontWeight="500"
-        >
-            Register
-        </Text>
-        <Divider />
-        <Box paddingTop="m" height={250}>
-            <SelectOne
-                data={[
-                    { key: 'yes', value: 'Yes' },
-                    { key: 'maybe', value: 'Maybe' }
-                ]}
-                onChange={onChange}
-                placeholder="Please select an option"
-                title="Will you be joining us?"
-            />
-        </Box>
-        <Button onPress={onPress} disabled={!value} variant="standardButton">
-            Continue
-        </Button>
-    </Box>
-);
+type UserData = {
+    select: Item;
+};
 
-const SaveEvent: React.FC = () => (
+const userDataSchema = z.object({
+    key: z.string(),
+    value: z.string()
+});
+
+const userInfoSchema = z.object({
+    select: userDataSchema
+});
+
+const Register: React.FC<RegisterProps> = ({ onPress }) => {
+    const {
+        control,
+        handleSubmit,
+        formState: { isValid }
+    } = useForm<UserData>({
+        resolver: zodResolver(userInfoSchema),
+        mode: 'onTouched'
+    });
+
+    const onSubmit = (data: UserData) => {
+        try {
+            onPress();
+            console.log(data);
+        } catch (error) {
+            if (error instanceof ZodError) {
+                Alert.alert('Validation Error', error.errors[0].message);
+            } else {
+                console.error('An unexpected error occurred:', error);
+            }
+        }
+    };
+
+    return (
+        <Box marginHorizontal="xl" flexDirection="column" gap="s">
+            <Text
+                paddingTop="s"
+                textAlign="center"
+                variant="subheader-2"
+                fontWeight="500"
+            >
+                Register
+            </Text>
+            <Divider />
+            <Box paddingTop="m" height={250}>
+                <Controller
+                    control={control}
+                    render={({ field: { onChange, value } }) => (
+                        <SelectOne
+                            data={[
+                                { key: 'yes', value: 'Yes' },
+                                { key: 'maybe', value: 'Maybe' }
+                            ]}
+                            onChange={onChange}
+                            value={value}
+                            placeholder="Please select an option"
+                            title="Will you be joining us?"
+                        />
+                    )}
+                    name="select"
+                />
+            </Box>
+            <Button
+                onPress={handleSubmit(onSubmit)}
+                disabled={!isValid}
+                variant="standardButton"
+            >
+                Continue
+            </Button>
+        </Box>
+    );
+};
+
+interface SaveEventProps {
+    googleCalendar: string;
+    appleCalendar?: string;
+}
+const SaveEvent: React.FC<SaveEventProps> = ({ googleCalendar }) => (
     <Box marginHorizontal="xl" flexDirection="column" gap="s">
         <Text
             paddingTop="s"
@@ -120,7 +178,12 @@ const SaveEvent: React.FC = () => (
         <Divider />
         <Text paddingTop="s">{SaveEventText}</Text>
         <Box marginTop="s" flexDirection="column" gap="s">
-            <Button variant="standardButton">Add to Google Calendar</Button>
+            <Button
+                onPress={() => Linking.openURL(googleCalendar)}
+                variant="standardButton"
+            >
+                <Text>Add to Google Calendar</Text>
+            </Button>
             <Button variant="standardButton">Add to Apple Calendar</Button>
         </Box>
     </Box>
@@ -128,43 +191,72 @@ const SaveEvent: React.FC = () => (
 
 interface AttendanceTypeProps {
     onPress: () => void;
-    onChange: (value: Item) => void;
-    value: Item | undefined;
 }
 
-const AttendanceType: React.FC<AttendanceTypeProps> = ({
-    onPress,
-    onChange,
-    value
-}) => (
-    <Box marginHorizontal="xl" flexDirection="column" gap="s">
-        <Text
-            paddingTop="s"
-            textAlign="center"
-            variant="subheader-2"
-            fontWeight="500"
-        >
-            Register
-        </Text>
-        <Divider />
-        <Text paddingTop="s">
-            This event is available for both in-person and virtual attendance.
-            Please choose your preferred option.
-        </Text>
-        <Box height={170}>
-            <SelectOne
-                data={[
-                    { key: 'in-person', value: 'In-person' },
-                    { key: 'virtual', value: 'Virtual' }
-                ]}
-                onChange={onChange}
-                placeholder="Will you join in-person or virtually?"
-            />
+const AttendanceType: React.FC<AttendanceTypeProps> = ({ onPress }) => {
+    const {
+        control,
+        handleSubmit,
+        formState: { isValid }
+    } = useForm<UserData>({
+        resolver: zodResolver(userInfoSchema),
+        mode: 'onTouched'
+    });
+
+    const onSubmit = (data: UserData) => {
+        try {
+            onPress();
+            console.log(data);
+        } catch (error) {
+            if (error instanceof ZodError) {
+                Alert.alert('Validation Error', error.errors[0].message);
+            } else {
+                console.error('An unexpected error occurred:', error);
+            }
+        }
+    };
+
+    return (
+        <Box marginHorizontal="xl" flexDirection="column" gap="s">
+            <Text
+                paddingTop="s"
+                textAlign="center"
+                variant="subheader-2"
+                fontWeight="500"
+            >
+                Register
+            </Text>
+            <Divider />
+            <Text paddingTop="s">
+                This event is available for both in-person and virtual
+                attendance. Please choose your preferred option.
+            </Text>
+            <Box height={170}>
+                <Controller
+                    control={control}
+                    render={({ field: { onChange, value } }) => (
+                        <SelectOne
+                            data={[
+                                { key: 'in-person', value: 'In-person' },
+                                { key: 'virtual', value: 'Virtual' }
+                            ]}
+                            onChange={onChange}
+                            value={value}
+                            placeholder="Will you join in-person or virtually?"
+                        />
+                    )}
+                    name="select"
+                />
+            </Box>
+            <Button
+                onPress={handleSubmit(onSubmit)}
+                disabled={!isValid}
+                variant="standardButton"
+            >
+                Continue
+            </Button>
         </Box>
-        <Button onPress={onPress} disabled={!value} variant="standardButton">
-            Continue
-        </Button>
-    </Box>
-);
+    );
+};
 
 export { RegisterBottomSheet };

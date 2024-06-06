@@ -17,7 +17,7 @@ type TextboxProps = {
     autoFocus?: boolean;
     readOnly?: boolean;
     inputMode?: 'text' | 'numeric' | 'tel' | 'search' | 'email';
-    onChangeText?: () => void;
+    onChangeText?: (() => void) | ((value: any) => void);
     value?: string;
     maxLength?: number;
     secureTextEntry?: boolean;

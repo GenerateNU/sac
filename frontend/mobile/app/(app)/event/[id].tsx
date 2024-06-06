@@ -20,6 +20,7 @@ import { AboutEvent } from '../event/components/about';
 import { Location } from '../event/components/location';
 import { Overview } from '../event/components/overview';
 import { UpcomingEvent } from '../event/components/upcoming-events';
+import { Description } from './components/description';
 import { RegisterBottomSheet } from './components/register';
 import { ShareEventBottomSheet } from './components/share-event';
 
@@ -49,6 +50,7 @@ const EventPage = () => {
     const IMG_HEIGHT = width;
     const shareEvent = useRef<BottomSheet>(null);
     const register = useRef<BottomSheet>(null);
+    const bottomSheet = useRef<BottomSheet>(null);
 
     useLocalSearchParams<{ id: string }>();
     const scrollRef = useAnimatedRef<Animated.ScrollView>();
@@ -159,6 +161,7 @@ const EventPage = () => {
                             zoomLink={MockEvent.zoomLink}
                             description={MockEvent.description}
                             tags={MockEvent.tags}
+                            onPress={() => bottomSheet.current?.snapToIndex(0)}
                         />
                         <Location location={MockEvent.location} />
                     </Box>
@@ -167,9 +170,15 @@ const EventPage = () => {
             </Animated.ScrollView>
             <ShareEventBottomSheet ref={shareEvent} link={MockEvent.link} />
             <RegisterBottomSheet
+                startTime={MockEvent.startTime}
+                endTime={MockEvent.endTime}
+                eventDetail={MockEvent.description}
+                eventName={MockEvent.eventName}
+                location={MockEvent.location}
                 eventType={MockEvent.eventType}
                 ref={register}
             />
+            <Description description={description} ref={bottomSheet} />
         </Box>
     );
 };

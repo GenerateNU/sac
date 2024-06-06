@@ -3,16 +3,18 @@ import {
     FlatList,
     StyleSheet,
     TextInput,
-    TouchableOpacity
+    TouchableOpacity,
+    View
 } from 'react-native';
 
 import {
     faAngleDown,
     faAngleUp,
-    faXmark
+    faTimes
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 
+import ErrorIcon from '@/app/(design-system)/assets/svg/Error.svg';
 import { Item } from '@/types/item';
 
 import { Border } from '../../shared/border';
@@ -27,7 +29,8 @@ interface MultiSelectProps {
     title: string;
     onChange: (values: Item[]) => void;
     limit?: number;
-    error?: boolean;
+    error?: string;
+    value: Item[];
 }
 
 export const MultiSelect: React.FC<MultiSelectProps> = ({
@@ -36,59 +39,26 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
     title,
     onChange,
     limit = 10,
-    error = false
+    error = '',
+    value
 }) => {
-    const [selectedItems, setSelectedItems] = useState<Item[]>([]);
-    const [dropdownVisible, setDropdownVisible] = useState(false);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [dropdownHeight, setDropdownHeight] = useState<number>(
-        (data.length + 1) * 51.5
-    );
-
     const calculateDropdownHeight = (itemsCount: number) => {
-        let height = (itemsCount + 1) * 52;
-        if (itemsCount >= 5) {
-            height = 255;
-        }
+        let height = 45 + Math.min(itemsCount, 5) * 53;
         return height;
     };
 
-    const handleSearch = (text: string) => {
-        const filteredData = text
-            ? data.filter((item) =>
-                  item.value.toLowerCase().includes(text.toLowerCase())
-              )
-            : data;
-        const newDropdownHeight = calculateDropdownHeight(filteredData.length);
-        setDropdownHeight(newDropdownHeight);
-        setSearchTerm(text);
-    };
+    const [dropdownVisible, setDropdownVisible] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const dropdownHeight = calculateDropdownHeight(data.length);
 
-    const toggleItem = (item: Item) => {
-        const index = selectedItems.findIndex(
-            (selectedItem) => selectedItem.key === item.key
-        );
-        if (index !== -1) {
-            setSelectedItems((prevSelectedItems) => {
-                const newSelectedItems = prevSelectedItems.filter(
-                    (selectedItem) => selectedItem.key !== item.key
-                );
-                onChange(newSelectedItems);
-                return newSelectedItems;
-            });
-        } else {
-            if (selectedItems.length < limit) {
-                setSelectedItems((prevSelectedItems) => {
-                    const newSelectedItems = [...prevSelectedItems, item];
-                    onChange(newSelectedItems);
-                    return newSelectedItems;
-                });
-            }
-        }
-    };
+    const filteredData = searchTerm
+        ? data.filter((item) =>
+              item.value.toLowerCase().includes(searchTerm.toLowerCase())
+          )
+        : data;
 
     const renderItem = ({ item, index }: { item: Item; index: number }) => {
-        const isSelected = selectedItems.some(
+        const isSelected = value.some(
             (selectedItem) => selectedItem.key === item.key
         );
         const isLastItem = index === filteredData.length - 1;
@@ -106,76 +76,85 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
         );
     };
 
-    const filteredData = searchTerm
-        ? data.filter((item) =>
-              item.value.toLowerCase().includes(searchTerm.toLowerCase())
-          )
-        : data;
-
     const handleComponentPress = () => {
         setDropdownVisible(!dropdownVisible);
     };
 
+    const toggleItem = (item: Item) => {
+        const index = value.findIndex(
+            (selectedItem) => selectedItem.key === item.key
+        );
+        if (index !== -1) {
+            const newSelectedItems = value.filter(
+                (selectedItem) => selectedItem.key !== item.key
+            );
+            onChange(newSelectedItems);
+        } else {
+            if (value.length < limit) {
+                const newSelectedItems = [...value, item];
+                onChange(newSelectedItems);
+            }
+        }
+    };
+
     return (
-        <TouchableOpacity
-            style={[
-                styles.container,
-                { height: dropdownVisible ? dropdownHeight : undefined }
-            ]}
-            onPress={handleComponentPress}
-        >
-            <Text style={styles.title}>{title}</Text>
+        <Box style={[styles.container]}>
+            <Text paddingBottom="xs">{title}</Text>
             <Box
                 style={[
                     styles.box,
                     { borderColor: error ? Colors.red : Colors.gray }
                 ]}
             >
-                <Box style={styles.contentContainer}>
-                    <Box
-                        width={selectedItems.length === 0 ? '0%' : '80%'}
-                        marginVertical="s"
-                        alignItems="center"
-                        flexDirection="row"
-                        flexWrap="wrap"
+                <TouchableOpacity
+                    onPress={handleComponentPress}
+                    style={styles.input}
+                >
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            flex: 1
+                        }}
                     >
-                        {selectedItems.map((item) => (
-                            <TouchableOpacity
-                                key={item.key}
-                                style={styles.tag}
-                                onPress={() => toggleItem(item)}
-                            >
-                                <Text style={styles.tagText}>{item.value}</Text>
-                                <FontAwesomeIcon
-                                    icon={faXmark}
-                                    color={Colors.black}
-                                />
-                            </TouchableOpacity>
-                        ))}
-                    </Box>
-                    <TouchableOpacity
-                        onPress={handleComponentPress}
-                        style={styles.input}
-                    >
-                        {selectedItems.length === 0 && (
+                        {value.length === 0 && (
                             <Text style={styles.placeholder}>
                                 {placeholder}
                             </Text>
                         )}
-                        <FontAwesomeIcon
-                            icon={dropdownVisible ? faAngleUp : faAngleDown}
-                            color={Colors.gray}
-                        />
-                    </TouchableOpacity>
-                </Box>
+                        <View
+                            style={{ flexDirection: 'row', flexWrap: 'wrap' }}
+                        >
+                            {value.map((item) => (
+                                <TouchableOpacity
+                                    key={item.key}
+                                    style={styles.tag}
+                                    onPress={() => toggleItem(item)}
+                                >
+                                    <Text style={styles.tagText}>
+                                        {item.value}
+                                    </Text>
+                                    <FontAwesomeIcon
+                                        icon={faTimes}
+                                        color={Colors.black}
+                                    />
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    </View>
+                    <FontAwesomeIcon
+                        icon={dropdownVisible ? faAngleUp : faAngleDown}
+                        color={Colors.gray}
+                    />
+                </TouchableOpacity>
             </Box>
             {dropdownVisible && (
-                <Box style={styles.dropdown}>
+                <Box style={[styles.dropdown, { height: dropdownHeight }]}>
                     <TextInput
                         placeholder="Search..."
                         style={styles.searchInput}
                         value={searchTerm}
-                        onChangeText={handleSearch}
+                        onChangeText={(text) => setSearchTerm(text)}
                     />
                     <FlatList
                         data={filteredData}
@@ -184,7 +163,25 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
                     />
                 </Box>
             )}
-        </TouchableOpacity>
+            <Box
+                gap="xxs"
+                paddingTop="xs"
+                flexDirection="row"
+                alignItems="center"
+            >
+                {!dropdownVisible && (
+                    <Box gap="xxs" flexDirection="row" alignItems="center">
+                        {error && <ErrorIcon />}
+                        <Text
+                            color={error ? 'darkRed' : 'black'}
+                            variant="caption-1"
+                        >
+                            {error}
+                        </Text>
+                    </Box>
+                )}
+            </Box>
+        </Box>
     );
 };
 
@@ -201,21 +198,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: Spacing.xs,
         borderRadius: Spacing.xs
     },
-    contentContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between'
-    },
     dropdown: {
         backgroundColor: 'white',
         borderColor: Colors.gray,
         borderWidth: 1,
         borderRadius: Border.base,
-        marginTop: Spacing.xxs
-    },
-    title: {
-        fontSize: 18,
-        marginBottom: Spacing.xs
+        marginTop: Spacing.xs
     },
     item: {
         flexDirection: 'row',
@@ -235,7 +223,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: Spacing.m,
         paddingHorizontal: Spacing.xxs,
-        justifyContent: 'space-around'
+        justifyContent: 'space-between'
     },
     placeholder: {
         flex: 1,
@@ -262,9 +250,6 @@ const styles = StyleSheet.create({
         borderRadius: Border.base,
         paddingHorizontal: Spacing.s,
         margin: Spacing.xxs
-    },
-    selectButtonText: {
-        color: 'white'
     },
     divider: {
         height: 1,

@@ -112,3 +112,32 @@ export const eventTime = (
 
     return parts.join(' ');
 };
+
+export const googleCalendarTime = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+
+    const formattedTime = `${year}${month}${day}T${hours}${minutes}${seconds}Z`;
+    return formattedTime;
+};
+
+export const httpFormat = (str: string) => {
+    str = encodeURIComponent(str);
+    const specialCharactersMap: { [key: string]: string } = {
+        "'": '%27'
+    };
+
+    for (const char in specialCharactersMap) {
+        if (str.includes(char)) {
+            str = str.replace(
+                new RegExp(char, 'g'),
+                specialCharactersMap[char]
+            );
+        }
+    }
+    return str;
+};
