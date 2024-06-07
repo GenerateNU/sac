@@ -1,7 +1,8 @@
 import { StyleSheet } from 'react-native';
 import { CodeField, Cursor } from 'react-native-confirmation-code-field';
 
-import { Text } from '@/app/(design-system)';
+import { Colors, Spacing, Text } from '@/app/(design-system)';
+import { Border } from '@/app/(design-system)/shared/border';
 
 interface EmailFormProps {
     onComplete: (text: string) => void;
@@ -49,7 +50,7 @@ const styles = StyleSheet.create({
         width: '80%',
         marginLeft: 'auto',
         marginRight: 'auto',
-        marginTop: 20,
+        marginTop: Spacing.l,
         alignItems: 'center',
         justifyContent: 'center',
         gap: 5
@@ -61,10 +62,10 @@ const styles = StyleSheet.create({
         fontSize: 24,
         borderWidth: 1,
         textAlign: 'center',
-        borderRadius: 8
+        borderRadius: Border.base
     },
     focusCell: {
-        borderColor: '#000'
+        borderColor: Colors.black
     }
 });
 

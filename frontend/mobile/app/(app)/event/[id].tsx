@@ -46,13 +46,12 @@ const MockEvent = {
 };
 
 const EventPage = () => {
+    useLocalSearchParams<{ id: string }>();
     const { width } = Dimensions.get('window');
     const IMG_HEIGHT = width;
     const shareEvent = useRef<BottomSheet>(null);
     const register = useRef<BottomSheet>(null);
     const bottomSheet = useRef<BottomSheet>(null);
-
-    useLocalSearchParams<{ id: string }>();
     const scrollRef = useAnimatedRef<Animated.ScrollView>();
     const scrollOffset = useScrollViewOffset(scrollRef);
 

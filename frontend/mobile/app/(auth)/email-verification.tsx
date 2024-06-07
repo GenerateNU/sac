@@ -15,7 +15,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 
-import { Box, Colors, Text } from '../(design-system)';
+import { Box, Colors, Spacing, Text } from '../(design-system)';
+import { Border } from '../(design-system)/shared/border';
 import EmailVerificationForm from './components/email-verification';
 import { SmallText } from './components/small-text';
 
@@ -161,7 +162,7 @@ const styles = StyleSheet.create({
         width: '80%',
         marginLeft: 'auto',
         marginRight: 'auto',
-        marginTop: 20,
+        marginTop: Spacing.m,
         alignItems: 'center',
         justifyContent: 'center',
         gap: 5
@@ -174,10 +175,10 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: '#00000030',
         textAlign: 'center',
-        borderRadius: 8
+        borderRadius: Border.base
     },
     focusCell: {
-        borderColor: '#000'
+        borderColor: Colors.black
     }
 });
 
