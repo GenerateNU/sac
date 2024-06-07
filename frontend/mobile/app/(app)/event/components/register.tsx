@@ -46,17 +46,6 @@ const RegisterBottomSheet = forwardRef<Ref, RegisterSheetProps>(
         const googleCalendar = `https://calendar.google.com/calendar/u/0/r/eventedit?text=${httpFormat(eventName)}&dates=${googleCalendarTime(startTime)}/${googleCalendarTime(endTime)}&location=${httpFormat(location)}&details=${httpFormat(eventDetail)}&sf=true&output=xml`;
 
         const [sheet, setSheet] = useState('register');
-        const [attending, _] = useState<Item>();
-
-        const handleRegisterPress = () => {
-            if (attending?.key === 'maybe') {
-                setSheet('save');
-            } else if (eventType === 'hybrid') {
-                setSheet('attend');
-            } else {
-                setSheet('save');
-            }
-        };
 
         return (
             <BottomSheet
@@ -68,7 +57,7 @@ const RegisterBottomSheet = forwardRef<Ref, RegisterSheetProps>(
                 backdropComponent={renderBackdrop}
             >
                 {sheet === 'register' && (
-                    <Register onPress={handleRegisterPress} />
+                    <Register setSheet={setSheet} eventType={eventType} />
                 )}
                 {sheet === 'attend' && (
                     <AttendanceType onPress={() => setSheet('save')} />
@@ -82,7 +71,8 @@ const RegisterBottomSheet = forwardRef<Ref, RegisterSheetProps>(
 );
 
 interface RegisterProps {
-    onPress: () => void;
+    setSheet: React.Dispatch<React.SetStateAction<string>>;
+    eventType: 'hybrid' | 'in-person' | 'virtual';
 }
 
 type UserData = {
@@ -98,7 +88,7 @@ const userInfoSchema = z.object({
     select: userDataSchema
 });
 
-const Register: React.FC<RegisterProps> = ({ onPress }) => {
+const Register: React.FC<RegisterProps> = ({ setSheet, eventType }) => {
     const {
         control,
         handleSubmit,
@@ -110,7 +100,13 @@ const Register: React.FC<RegisterProps> = ({ onPress }) => {
 
     const onSubmit = (data: UserData) => {
         try {
-            onPress();
+            if (data.select.key === 'maybe') {
+                setSheet('save');
+            } else if (data.select.key === 'yes' && eventType === 'hybrid') {
+                setSheet('attend');
+            } else {
+                setSheet('save');
+            }
             console.log(data);
         } catch (error) {
             if (error instanceof ZodError) {

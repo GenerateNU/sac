@@ -88,7 +88,7 @@ export const UserInfo: React.FC<UserInfoProps> = ({ onPress }) => {
                         data={major()}
                         limit={3}
                         value={value || []}
-                        placeholder="Select your major"
+                        placeholder="Select up to 3 majors"
                     />
                 )}
                 name="major"

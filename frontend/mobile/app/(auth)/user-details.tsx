@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
-import { Animated, Dimensions, ScrollView } from 'react-native';
+import { Animated, Dimensions } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Box } from '../(design-system)';
@@ -18,7 +19,10 @@ const UserDetails = () => {
         {
             key: 'UserInfo',
             component: (
-                <ScrollView style={{ width: width }}>
+                <ScrollView
+                    contentContainerStyle={{ paddingBottom: 100 }}
+                    style={{ width: width }}
+                >
                     <UserInfo onPress={() => handleNext(1)} />
                 </ScrollView>
             )
