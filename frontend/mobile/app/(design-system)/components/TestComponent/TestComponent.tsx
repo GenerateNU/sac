@@ -1,15 +1,32 @@
 import { Dimensions, Animated, Easing } from "react-native";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { GestureEventPayload, PanGestureHandler, PanGestureHandlerEventPayload, ScrollView, State } from "react-native-gesture-handler";
 import { Box } from "../Box/Box";
 import Day from "./Day";
 import { Spacing } from "../../shared/spacing";
 import { EventSection } from "../Calendar/mockData";
 import { EventCardCalendarSkeleton } from "../EventCard/Skeletons/EventCardCalendarSkeleton";
+import { Text } from "../Text/Text";
+import { CalendarContext } from "react-native-calendars-sac";
+import { UpdateSources } from "react-native-calendars-sac/src/expandableCalendar/commons";
 
 type SwipeDirection = 'left' | 'right';
 
-type TestComponentProps = {
+type FetchNewEventsProps =  {
+    direction: 'base';
+    date: string;
+  }
+type FetchNewEventsPropsWithoutDate = {
+    direction: 'start' | 'end';
+}
+
+export type FetchNewEventsPropsUnion = FetchNewEventsProps | FetchNewEventsPropsWithoutDate;
+export type RefreshDirection = 'start' | 'end' | 'base';
+
+
+export const DAY_EPOCH_TIME = 1000 * 60 * 60 * 24;
+
+type InfiniteScrollCarouselProps = {
     // The events currently loaded waiting to be rendered / currently being rendered
     loadedEvents: EventSection[];
     // The number of events to load at a time
@@ -19,16 +36,25 @@ type TestComponentProps = {
     // Refresh threshhold for loading new events: a number between 0 and 1:
     refreshThreshhold: number,
     // Callback function to intiate on threshold reach:
-    onRefreshThreasholdReach: (direction: 'start' | 'end') => void,
+    refetchEvents: (props: FetchNewEventsPropsUnion) => void,
+    // Check to see if the API call has errored:
+    error?: boolean,
+    // State variable to track whether a date was pressed or not:
+    datePress: boolean,
+    // Function to set the date press state:
+    setDatePress: React.Dispatch<React.SetStateAction<boolean>>,
 }
 
-export default function TestComponent({ 
+export default function InfiniteScrollCarousel({ 
     loadedEvents,
     loadBatchSize,
     isLoading,
     refreshThreshhold,
-    onRefreshThreasholdReach,
-}: TestComponentProps) {
+    refetchEvents,
+    error,
+    datePress,
+    setDatePress,
+}: InfiniteScrollCarouselProps) {
     // Ensure that the loaded events are at least 3:
     if (loadedEvents.length < 3 && !isLoading) {
         throw new Error('Loaded events must be at least 3');
@@ -67,7 +93,7 @@ export default function TestComponent({
     // Keep track of the number of events loaded on most recent batch:
     const old_events = useRef<EventSection[]>([]);
 
-    const recent_refresh_direction = useRef<'start' | 'end'>('end');
+    const recent_refresh_direction = useRef<RefreshDirection>('end');
 
     // The number of items away from the edge that will trigger a refetch:
     const refresh_threshold_item_count = Math.floor(Math.floor(loadBatchSize / 2) * Math.min(Math.abs(refreshThreshhold), 1));
@@ -78,30 +104,50 @@ export default function TestComponent({
     // Keep track if the page has been initially loaded:
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
+    /** 
+     * CODE FOR CONNECTING COMPONENT TO CALENDAR
+     * - Is entirely dependent on the react-native-calendars dep
+     **/
+    const { date, setDate } = useContext(CalendarContext)
+
+    // useEffect for handling the initial load:
     useEffect(() => {
         if (!isLoading && !initialLoadComplete) {
-            setEvents([
-                loadedEvents[data_index_array.current[0]],
-                loadedEvents[data_index_array.current[1]],
-                loadedEvents[data_index_array.current[2]]
-            ])
+            updateEventsToCurrent(loadedEvents, 'base');
             setInitialLoadComplete(true);
-            old_events.current = [...loadedEvents]
-            console.log('event total now at: ', loadedEvents.length);
+            old_events.current = [...loadedEvents];         
         }
     }, [isLoading]);
 
+    // useEffect for handling events added after initial load is complete:
     useEffect(() => {
         if (loadedEvents && initialLoadComplete) {
             const totalNewEvents = loadedEvents.length - old_events.current.length;
             if (recent_refresh_direction.current === 'start') {
                 data_index_array.current = data_index_array.current.map((index) => index + totalNewEvents)
             }
-            old_events.current = [...loadedEvents]
-            console.log('event total now at: ', loadedEvents.length);
 
+            // Handle when the user is looking at a loading screen:
+            console.log('main_index:', main_index.current);
+            console.log('new events: ', loadedEvents);
+            if (!old_events.current[data_index_array.current[main_index.current]].date) {
+                updateEventsToCurrent(loadedEvents, 'base');
+            }
+            old_events.current = [...loadedEvents]
         }
     }, [loadedEvents])
+
+    useEffect(() => {
+        if (datePress) {
+            handleCalendarDateSelect(
+                loadedEvents,
+                date,
+                data_index_array.current,
+                main_index.current
+            );
+            setDatePress(false);
+        }
+    }, [datePress])
 
     // Handle swipe gestures: 
     const handleGestureEvent = Animated.event(
@@ -124,41 +170,158 @@ export default function TestComponent({
         }
     );
 
-    const handleEventChange = (swipeDirection: SwipeDirection, mainIndex: number) => {
-        let targetIndex: number;
-        if (swipeDirection === 'left') {
-            targetIndex = mainIndex === 0 ? 2 : mainIndex - 1
-            data_index_array.current[targetIndex] += 3;
+    const handleCalendarDateSelect = (
+        loadedEvents: EventSection[],
+        newSelectedDateString: string,
+        dataIndexArray: number[],
+        mainIndex: number,
+    ) => {
+        // If there are no events loaded:
+        if (loadedEvents.length === 0) {
+            return;
+        }
+
+        const earliestDate = new Date(loadedEvents[0].date);
+        const latestDate = new Date(loadedEvents[loadedEvents.length - 1].date);
+        const currentDate = new Date(loadedEvents[dataIndexArray[mainIndex]].date)
+        const newSelectedDate = new Date(newSelectedDateString);
+
+        // Determine the direction of the click:
+        const direction = newSelectedDate.getTime() > currentDate.getTime() ? 'end' : 'start';
+
+        // Compute how many indices the select jump is - the number of days between the current day and the selected day:
+        const daysBetween = Math.floor((newSelectedDate.getTime() - currentDate.getTime()) / DAY_EPOCH_TIME);
+
+        // If date is in the range of the loaded dates: 
+        if (newSelectedDate.getTime() >= earliestDate.getTime() && newSelectedDate.getTime() <= latestDate.getTime()) {
+            // Update indices:
+            data_index_array.current = dataIndexArray.map((index) => index + daysBetween)
+
+            // Compute how far away the new index is from the end of the list:
+            const distanceFromListEnd = direction === 'end' 
+                ? loadedEvents.length - data_index_array.current[mainIndex]
+                : data_index_array.current[mainIndex];
+
+
+            // Update the events in view:
+            updateEventsToCurrent(loadedEvents, "base");
+
+            // Fetch more dates in the direction of click:
+            if (distanceFromListEnd <= refresh_threshold_item_count) {
+                triggerRefresh(direction);
+            }
+        }
+        // If the date is outside the range of the loaded dates:
+        else {
+            // Reset initial load:
+            setInitialLoadComplete(false);
+
+            const indexes = [
+                Math.floor(loadBatchSize / 2) - 1,
+                Math.floor(loadBatchSize / 2),
+                Math.floor(loadBatchSize / 2) + 1
+            ]
+
+            // Reset the data index array:
+            data_index_array.current = [
+                main_index.current === 1 ? indexes[0] : main_index.current === 0 ? indexes[1] : indexes[2],
+                main_index.current === 1 ? indexes[1] : main_index.current === 0 ? indexes[2] : indexes[0],
+                main_index.current === 1 ? indexes[2] : main_index.current === 0 ? indexes[0] : indexes[1]
+            ];
+
+            // Trigger date refresh:
+            triggerRefresh("base");
+        }
+    }
+
+    const triggerRefresh = (refreshDirection: RefreshDirection) => {
+        recent_refresh_direction.current = refreshDirection;
+        if (refreshDirection === 'base') {
+            refetchEvents({ direction: refreshDirection, date: date });
+        } else {
+            console.log('fetching new events')
+            refetchEvents({ direction: refreshDirection });
+        }
+    }
+
+    const updateEventsToCurrent = (loadedEvents: EventSection[], type: SwipeDirection | 'base', targetIndex?: number) => {
+        if (type === 'base') {
+            setEvents([
+                loadedEvents[data_index_array.current[0]],
+                loadedEvents[data_index_array.current[1]],
+                loadedEvents[data_index_array.current[2]]
+            ])
+            old_events.current = [...loadedEvents]
+            return;
+        }
+
+        if (targetIndex === undefined) {
+            throw new Error('Target index must be defined');
+        }
+        if (type === 'left') {
             setEvents((prevEvents) => {
                 prevEvents[targetIndex] = loadedEvents[data_index_array.current[targetIndex]]
                 return [...prevEvents]
             })
+        } else {
+            setEvents((prevEvents) => {
+                prevEvents[targetIndex] = loadedEvents[data_index_array.current[targetIndex]]
+                return [...prevEvents]
+            })
+        }
+    }
+
+     // Used for triggering a date change on the calendar when the user scrolls:
+     const handleDateChangeOnPan = (direction: SwipeDirection) => {
+        let directionMultiplier = direction === 'left' ? 1 : -1;
+        const newDateTimeStamp = new Date(date).getTime() + DAY_EPOCH_TIME * directionMultiplier;
+        setDate(new Date(newDateTimeStamp).toISOString().split('T')[0], UpdateSources.PAGE_SCROLL);    
+    }
+
+    // Used to handle re-render on pan of react components and trigger data refetch:
+    const handleCalendarDatePan = (swipeDirection: SwipeDirection, mainIndex: number) => {
+        let targetIndex: number;
+        if (swipeDirection === 'left') {
+            targetIndex = mainIndex === 0 ? 2 : mainIndex - 1
+            data_index_array.current[targetIndex] += 3;
+
+            // Update the current events in view:
+            updateEventsToCurrent(loadedEvents, 'left', targetIndex);
+
             const distanceFromEnd = loadedEvents.length - data_index_array.current[targetIndex]
             if (distanceFromEnd === refresh_threshold_item_count) {
-                recent_refresh_direction.current = 'end';
-                onRefreshThreasholdReach('end')
+                triggerRefresh('end')
             }
         }
         else {
             targetIndex = (mainIndex + 1) % 3
             data_index_array.current[targetIndex] -= 3;
-            setEvents((prevEvents) => {
-                prevEvents[targetIndex] = loadedEvents[data_index_array.current[targetIndex]]
-                return [...prevEvents]
-            })
+
+            // Update the current events in view:
+            updateEventsToCurrent(loadedEvents, 'right', targetIndex);
 
             const distanceFromStart = data_index_array.current[targetIndex]
+            console.log(distanceFromStart);
+            console.log(refresh_threshold_item_count);
             if (distanceFromStart === refresh_threshold_item_count) {
-                recent_refresh_direction.current = 'start';
-                onRefreshThreasholdReach('start')
+                triggerRefresh('start')
             }
         }
+
+        // Update the calendar to reflect the pan:
+        handleDateChangeOnPan(swipeDirection);
     }
 
     // Handle the pan animation:
-    const handlePanAnimation = (mainIndex: number, panVelocity: number) => {
+    const handlePanAnimation = (mainIndex: number) => {
+        const currIndex = data_index_array.current[mainIndex];
+        const beforeThreshold =  currIndex === refresh_threshold_item_count + 2 
+                                || currIndex === loadedEvents.length - refresh_threshold_item_count - 1;
+
         // Card not been fully swiped:
-        if (record_translateX_array.current[mainIndex] < width / 2 && record_translateX_array.current[mainIndex] > -width / 2) {
+        if ((record_translateX_array.current[mainIndex] < width / 2 
+        && record_translateX_array.current[mainIndex] > -width / 2)
+        || (isLoading && beforeThreshold)) {
             // Set the current translateX value of main index to 0:
             record_translateX_array.current[mainIndex] = 0;
 
@@ -203,7 +366,7 @@ export default function TestComponent({
                 }
             }) as Animated.CompositeAnimation[];
             Animated.parallel(animation_array, { stopTogether: true }).start(() => {
-                handleEventChange('left', mainIndex)
+                handleCalendarDatePan('left', mainIndex)
                 // Update the main index:
                 main_index.current = (mainIndex + 1) % 3;
             })
@@ -233,7 +396,7 @@ export default function TestComponent({
                 }
             }) as Animated.CompositeAnimation[];
             Animated.parallel(animation_array, { stopTogether: true }).start(() => {
-                handleEventChange('right', mainIndex)
+                handleCalendarDatePan('right', mainIndex)
                 // Update the main index:
                 main_index.current = mainIndex === 0 ? 2 : mainIndex - 1;
             })
@@ -245,25 +408,11 @@ export default function TestComponent({
         // If the finger has been lifted
         if (nativeEvent.state === State.END) {
             old_translateX.current = 0;
-            handlePanAnimation(
-                main_index.current,
-                nativeEvent.velocityX,
-            );
+            handlePanAnimation(main_index.current);
         }
     }
 
-    const renderItem = (index: number) => {
-        return (
-            <ScrollView 
-                style={{ marginHorizontal: Spacing.s }}
-                showsVerticalScrollIndicator={false}
-            >
-                <Day section={events[index]} />
-            </ScrollView>
-        )
-    }
-
-    if (!initialLoadComplete) {
+    const renderLoading = () => {
         return (
             <Box flexDirection="column" gap="s" marginVertical="s">
                 <EventCardCalendarSkeleton />
@@ -271,6 +420,51 @@ export default function TestComponent({
                 <EventCardCalendarSkeleton />
             </Box>
         )
+    }
+
+    const renderItem = (index: number) => {
+        const item = events[index];
+
+        // If the item exists:
+        if (item?.date) {
+            return (
+                <ScrollView 
+                    style={{ marginHorizontal: Spacing.s }}
+                    showsVerticalScrollIndicator={false}
+                >
+                    <Day section={events[index]} />
+                </ScrollView>
+            )
+        }
+        // If we are waiting to return data:
+        if (isLoading) {
+            return renderLoading();
+        }
+        // If there was an API error:
+        if (error) {
+            return (
+                <ScrollView
+                    style={{ paddingHorizontal: Spacing.s, width: '100%' }}
+                    showsVerticalScrollIndicator={false}
+                >
+                    <Day section={{ date: date, data: {} }} error />
+                </ScrollView>
+            )
+        }
+        else {
+            return (
+                <ScrollView
+                    style={{ paddingHorizontal: Spacing.s, width: '100%' }}
+                    showsVerticalScrollIndicator={false}
+                >
+                    <Day section={{ date: date, data: {} }}/>
+                </ScrollView>
+            )
+        }
+    }
+
+    if (!initialLoadComplete) {
+        return renderLoading();
     }
 
     return (

@@ -1,61 +1,16 @@
 import { SafeAreaView, StyleSheet, Text } from 'react-native';
 
 import { GlobalLayout } from '@/app/(design-system)/components/GlobalLayout/GlobalLayout';
-import TestComponent from '@/app/(design-system)/components/TestComponent/TestComponent';
+import InfiniteScrollCarousel from '@/app/(design-system)/components/TestComponent/TestComponent';
 import { getEvents } from '@/app/(design-system)/components/TestComponent/mock/mockData';
 import { EventSection } from '@/app/(design-system)/components/Calendar/mockData';
 import { useCallback, useEffect, useState } from 'react';
 
-const TODAY = new Date(); 
-const DAY_EPOCH_TIME = 1000 * 60 * 60 * 24;
-
 const HomePage = () => {
-    const [loadedEvents, setLoadedEvents] = useState<EventSection[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [minDate, setMinDate] = useState(TODAY.getTime() - DAY_EPOCH_TIME * 7);
-    const [maxDate, setMaxDate] = useState(TODAY.getTime() + DAY_EPOCH_TIME * 7);
-
-    useEffect(() => {
-        setTimeout(() => {
-            fetchEvents(minDate, maxDate)
-                .then((events) => {
-                    setLoadedEvents(events);
-                    setIsLoading(false);
-                });
-        }, 2000)
-    }, []);
-
-    const fetchEvents = async (startTime: number, endTime: number) => {
-        const events = getEvents(startTime, endTime);
-        console.log('new events fetched!')
-        return events;
-    };
-
-    const fetchNewEvents = useCallback(async (direction: 'start' | 'end') => {
-        if (direction === 'start') {
-            console.log('fetching new events start!')
-            const newEvents = await fetchEvents(minDate - DAY_EPOCH_TIME * 7, minDate);
-            setMinDate(minDate - DAY_EPOCH_TIME * 7);
-            setLoadedEvents((oldEvents) => [...newEvents, ...oldEvents]);
-        } else {
-            console.log('fetching new events end!')
-            const newEvents = await fetchEvents(maxDate + DAY_EPOCH_TIME, maxDate + DAY_EPOCH_TIME * 8);
-            setMaxDate(maxDate + DAY_EPOCH_TIME * 8);
-            setLoadedEvents((oldEvents) => [...oldEvents, ...newEvents]);
-        }
-    }, [minDate, maxDate, loadedEvents]);
-
     return (
         <GlobalLayout>
             <SafeAreaView style={styles.container}>
                 <Text style={styles.title}>Home</Text>
-                <TestComponent
-                    loadedEvents={loadedEvents}
-                    loadBatchSize={15}
-                    isLoading={isLoading}
-                    refreshThreshhold={0.25}
-                    onRefreshThreasholdReach={fetchNewEvents}
-                />
                 {/* <ScrollView showsVerticalScrollIndicator={false}>
                     <EventCard
                         event="Spring Showcase"

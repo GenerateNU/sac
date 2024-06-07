@@ -8,6 +8,7 @@ import AgendaTimeSection from '../Calendar/Agenda/AgendaTimeSection';
 
 type DayProps = {
     section: EventSection;
+    error?: boolean;
 };
 
 function formatSectionHeader(date: string) {
@@ -22,7 +23,7 @@ function formatSectionHeader(date: string) {
     return `${dayOfWeek} ${addedZero ? '0' : ''}${dayOfMonth}`;
 }
 
-export default function Day({ section }: DayProps) {
+export default function Day({ section, error }: DayProps) {
     const keys = Object.keys(section.data).sort();
 
     return (
@@ -40,9 +41,11 @@ export default function Day({ section }: DayProps) {
                 );
             })}
             {keys.length === 0 && (
-                <Text textAlign="center" marginVertical="s">
-                    No Events Today
-                </Text>
+                <Box>
+                    <Text textAlign="center" marginVertical="s">
+                        {error ? "Oops, something went wrong!" : "No Events Today" }
+                    </Text>
+                </Box>
             )}
         </Box>
     );
