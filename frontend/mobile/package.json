@@ -26,6 +26,7 @@
         "@generatesac/lib": "^0.0.1",
         "@gorhom/bottom-sheet": "^4.6.3",
         "@hookform/resolvers": "^3.4.2",
+        "@react-native-community/clipboard": "^1.5.1",
         "@react-navigation/native": "^6.0.2",
         "@reduxjs/toolkit": "^2.2.5",
         "@rneui/base": "^4.0.0-rc.8",

@@ -9,8 +9,9 @@ import { ZodError, z } from 'zod';
 import { Box, Text } from '@/app/(design-system)';
 import { SelectOne } from '@/app/(design-system)';
 import { Button } from '@/app/(design-system)/components/Button/Button';
+import { CalendarLink } from '@/types/calendarLink';
 import { Item } from '@/types/item';
-import { googleCalendarTime, httpFormat } from '@/utils/time';
+import { createGoogleCalendarLink } from '@/utils/string';
 
 import { Divider } from './divider';
 
@@ -32,6 +33,8 @@ const RegisterBottomSheet = forwardRef<Ref, RegisterSheetProps>(
         { eventType, eventName, location, eventDetail, startTime, endTime },
         ref
     ) => {
+        const [sheet, setSheet] = useState('register');
+
         const renderBackdrop = useCallback(
             (props: any) => (
                 <BottomSheetBackdrop
@@ -43,9 +46,13 @@ const RegisterBottomSheet = forwardRef<Ref, RegisterSheetProps>(
             []
         );
 
-        const googleCalendar = `https://calendar.google.com/calendar/u/0/r/eventedit?text=${httpFormat(eventName)}&dates=${googleCalendarTime(startTime)}/${googleCalendarTime(endTime)}&location=${httpFormat(location)}&details=${httpFormat(eventDetail)}&sf=true&output=xml`;
-
-        const [sheet, setSheet] = useState('register');
+        const CALENDAR_INFO: CalendarLink = {
+            eventDetail: eventDetail,
+            eventName: eventName,
+            location: location,
+            startTime: startTime,
+            endTime: endTime
+        };
 
         return (
             <BottomSheet
@@ -63,7 +70,9 @@ const RegisterBottomSheet = forwardRef<Ref, RegisterSheetProps>(
                     <AttendanceType onPress={() => setSheet('save')} />
                 )}
                 {sheet === 'save' && (
-                    <SaveEvent googleCalendar={googleCalendar} />
+                    <SaveEvent
+                        googleCalendar={createGoogleCalendarLink(CALENDAR_INFO)}
+                    />
                 )}
             </BottomSheet>
         );

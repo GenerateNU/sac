@@ -66,7 +66,7 @@ const WelcomePage = () => {
                     headerLeft: () => <Wordmark />,
                     headerRight: () => (
                         <TouchableOpacity
-                            onPress={() => router.push('/(auth)/signup')}
+                            onPress={() => router.push('/(auth)/user-details')}
                         >
                             <Text>Skip</Text>
                         </TouchableOpacity>

@@ -1,10 +1,7 @@
 import React, { forwardRef, useCallback, useState } from 'react';
-import { Clipboard } from 'react-native';
 
-// TODO: Clipboard from react-native deprecated but still work, need to switch
-// to react-native-community dependency but it's not working
-// import Clipboard from '@react-native-community/clipboard';
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import Clipboard from '@react-native-community/clipboard';
 
 import { Box, Text } from '@/app/(design-system)';
 import { Button } from '@/app/(design-system)/components/Button/Button';

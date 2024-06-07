@@ -124,20 +124,3 @@ export const googleCalendarTime = (date: Date) => {
     const formattedTime = `${year}${month}${day}T${hours}${minutes}${seconds}Z`;
     return formattedTime;
 };
-
-export const httpFormat = (str: string) => {
-    str = encodeURIComponent(str);
-    const specialCharactersMap: { [key: string]: string } = {
-        "'": '%27'
-    };
-
-    for (const char in specialCharactersMap) {
-        if (str.includes(char)) {
-            str = str.replace(
-                new RegExp(char, 'g'),
-                specialCharactersMap[char]
-            );
-        }
-    }
-    return str;
-};
