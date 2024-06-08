@@ -25,9 +25,9 @@ func NewStores(limiter LimiterInterface, blacklist BlacklistInterface, activeTok
 
 func ConfigureRedis(settings config.Settings) *Stores {
 	stores := NewStores(
-		NewLimiter(NewRedisClient(settings.RedisLimiter.Username, settings.RedisLimiter.Host, settings.RedisLimiter.Port, settings.RedisLimiter.Password, settings.RedisLimiter.DB)),
-		NewBlacklist(NewRedisClient(settings.RedisBlacklist.Username, settings.RedisBlacklist.Host, settings.RedisBlacklist.Port, settings.RedisBlacklist.Password, settings.RedisBlacklist.DB)),
-		NewActiveToken(NewRedisClient(settings.RedisActiveTokens.Username, settings.RedisActiveTokens.Host, settings.RedisActiveTokens.Port, settings.RedisActiveTokens.Password, settings.RedisActiveTokens.DB)),
+		NewLimiter(NewRedisClient(settings.RedisLimiter.Username, settings.RedisLimiter.Password, settings.RedisLimiter.Host, settings.RedisLimiter.Port, settings.RedisLimiter.DB)),
+		NewBlacklist(NewRedisClient(settings.RedisBlacklist.Username, settings.RedisBlacklist.Password, settings.RedisBlacklist.Host, settings.RedisBlacklist.Port, settings.RedisBlacklist.DB)),
+		NewActiveToken(NewRedisClient(settings.RedisActiveTokens.Username, settings.RedisActiveTokens.Password, settings.RedisActiveTokens.Host, settings.RedisActiveTokens.Port, settings.RedisActiveTokens.DB)),
 	)
 
 	MustEstablishConn()

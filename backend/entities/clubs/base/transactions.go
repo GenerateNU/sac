@@ -2,6 +2,7 @@ package base
 
 import (
 	"errors"
+	"log/slog"
 
 	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/utilities"
@@ -47,6 +48,7 @@ func CreateClub(db *gorm.DB, userId uuid.UUID, club models.Club) (*models.Club, 
 
 	if err := tx.Create(&club).Error; err != nil {
 		tx.Rollback()
+		slog.Info("err in create club", "err", err)
 		return nil, err
 	}
 
@@ -58,6 +60,7 @@ func CreateClub(db *gorm.DB, userId uuid.UUID, club models.Club) (*models.Club, 
 
 	if err := tx.Create(&membership).Error; err != nil {
 		tx.Rollback()
+		slog.Info("err in create membership", "err", err)
 		return nil, err
 	}
 
@@ -71,8 +74,7 @@ func CreateClub(db *gorm.DB, userId uuid.UUID, club models.Club) (*models.Club, 
 		return nil, err
 	}
 
-	err = search.Upsert[models.Club](db, constants.CLUBS_INDEX, club.ID.String(), &club)
-	if err != nil {
+	if err := search.Upsert[models.Club](db, constants.CLUBS_INDEX, club.ID.String(), &club); err != nil {
 		return nil, err
 	}
 

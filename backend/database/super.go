@@ -32,14 +32,10 @@ func SuperUser(superUserSettings config.SuperUserSettings) (*models.User, error)
 
 func SuperClub() models.Club {
 	return models.Club{
-		Name:             "SAC",
-		Preview:          "SAC",
-		Description:      "SAC",
-		NumMembers:       0,
-		IsRecruiting:     true,
-		RecruitmentCycle: models.Always,
-		RecruitmentType:  models.Application,
-		ApplicationLink:  "https://generatenu.com/apply",
-		Logo:             "https://aws.amazon.com/s3",
+		Name:        "SAC",
+		Preview:     "SAC",
+		Description: "SAC",
+		NumMembers:  0,
+		Logo:        "https://aws.amazon.com/s3",
 	}
 }

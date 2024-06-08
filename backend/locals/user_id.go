@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func UserID(c *fiber.Ctx) (*uuid.UUID, error) {
+func UserIDFrom(c *fiber.Ctx) (*uuid.UUID, error) {
 	userID := c.Locals(userIDKey)
 	if userID == nil {
 		return nil, utilities.Forbidden()

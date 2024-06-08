@@ -24,8 +24,8 @@ func RegisterCustomValidators() (*validator.Validate, error) {
 		return nil, err
 	}
 
-	if err := validate.RegisterValidation("contact_pointer", func(fl validator.FieldLevel) bool {
-		return validateContactPointer(validate, fl)
+	if err := validate.RegisterValidation("social_pointer", func(fl validator.FieldLevel) bool {
+		return validateSocialPointer(validate, fl)
 	}); err != nil {
 		return nil, err
 	}
@@ -58,16 +58,16 @@ func validateS3URL(fl validator.FieldLevel) bool {
 	return strings.HasPrefix(fl.Field().String(), "https://s3.amazonaws.com/")
 }
 
-func validateContactPointer(validate *validator.Validate, fl validator.FieldLevel) bool {
-	contact, ok := fl.Parent().Interface().(struct {
-		Type    models.ContactType
+func validateSocialPointer(validate *validator.Validate, fl validator.FieldLevel) bool {
+	social, ok := fl.Parent().Interface().(struct {
+		Type    models.SocialType
 		Content string
 	})
 	if !ok {
 		return false
 	}
 
-	validationRules := map[models.ContactType]string{
+	validationRules := map[models.SocialType]string{
 		models.Facebook:   "http_url",
 		models.Instagram:  "http_url",
 		models.X:          "http_url",
@@ -80,12 +80,12 @@ func validateContactPointer(validate *validator.Validate, fl validator.FieldLeve
 		models.CustomSite: "http_url",
 	}
 
-	rule, ok := validationRules[contact.Type]
+	rule, ok := validationRules[social.Type]
 	if !ok {
 		return false // invalid contact type
 	}
 
-	return validate.Var(contact.Content, rule) == nil && strings.HasPrefix(contact.Content, models.GetContentPrefix(contact.Type))
+	return validate.Var(social.Content, rule) == nil && strings.HasPrefix(social.Content, models.GetSocialPrefix(social.Type))
 }
 
 func validateNotEqualIfNotEmpty(fl validator.FieldLevel) bool {

@@ -2,11 +2,12 @@ package base
 
 import (
 	p "github.com/GenerateNU/sac/backend/auth"
-	"github.com/GenerateNU/sac/backend/entities/clubs/contacts"
 	"github.com/GenerateNU/sac/backend/entities/clubs/events"
 	"github.com/GenerateNU/sac/backend/entities/clubs/followers"
+	"github.com/GenerateNU/sac/backend/entities/clubs/leadership"
 	"github.com/GenerateNU/sac/backend/entities/clubs/members"
-	"github.com/GenerateNU/sac/backend/entities/clubs/pocs"
+	"github.com/GenerateNU/sac/backend/entities/clubs/recruitment"
+	"github.com/GenerateNU/sac/backend/entities/clubs/socials"
 	"github.com/GenerateNU/sac/backend/entities/clubs/tags"
 	authMiddleware "github.com/GenerateNU/sac/backend/middleware/auth"
 
@@ -20,9 +21,10 @@ func ClubRoutes(clubParams types.RouteParams) {
 	tags.ClubTag(clubParams)
 	followers.ClubFollower(clubParams)
 	members.ClubMember(clubParams)
-	contacts.ClubContact(clubParams)
+	leadership.ClubLeader(clubParams)
 	events.ClubEvent(clubParams)
-	pocs.ClubPointOfContact(clubParams)
+	socials.ClubSocial(clubParams)
+	recruitment.ClubRecruitment(clubParams)
 }
 
 func ClubRouter(clubParams types.RouteParams) fiber.Router {

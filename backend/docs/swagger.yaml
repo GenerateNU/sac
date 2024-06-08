@@ -5,7 +5,6 @@ definitions:
         type: string
       password:
         description: 'MARK: must be validated manually'
-        maxLength: 255
         type: string
     required:
     - email
@@ -15,11 +14,9 @@ definitions:
     properties:
       new_password:
         description: 'MARK: must be validated manually'
-        maxLength: 255
         type: string
       old_password:
         description: 'MARK: must be validated manually'
-        maxLength: 255
         type: string
     required:
     - new_password
@@ -874,12 +871,12 @@ definitions:
   base.VerifyPasswordResetTokenRequestBody:
     properties:
       new_password:
-        minLength: 8
+        description: 'MARK: must be validated manually'
         type: string
       token:
         type: string
       verify_new_password:
-        minLength: 8
+        description: 'MARK: must be validated manually'
         type: string
     required:
     - new_password
@@ -894,29 +891,12 @@ definitions:
     required:
     - name
     type: object
-  contacts.PutContactRequestBody:
+  models.Application:
     properties:
-      content:
-        maxLength: 255
+      description:
         type: string
-      type:
-        allOf:
-        - $ref: '#/definitions/models.ContactType'
-        enum:
-        - facebook
-        - instagram
-        - x
-        - linkedin
-        - youtube
-        - github
-        - slack
-        - discord
-        - email
-        - customSite
-        maxLength: 255
-    required:
-    - content
-    - type
+      title:
+        type: string
     type: object
   models.Category:
     properties:
@@ -934,8 +914,6 @@ definitions:
     type: object
   models.Club:
     properties:
-      application_link:
-        type: string
       created_at:
         example: "2023-09-20T16:34:50Z"
         type: string
@@ -944,8 +922,6 @@ definitions:
       id:
         example: 123e4567-e89b-12d3-a456-426614174000
         type: string
-      is_recruiting:
-        type: boolean
       logo:
         type: string
       name:
@@ -956,10 +932,8 @@ definitions:
         type: string
       preview:
         type: string
-      recruitment_cycle:
-        $ref: '#/definitions/models.RecruitmentCycle'
-      recruitment_type:
-        $ref: '#/definitions/models.RecruitmentType'
+      recruitment:
+        $ref: '#/definitions/models.Recruitment'
       updated_at:
         example: "2023-09-20T16:34:50Z"
         type: string
@@ -998,46 +972,6 @@ definitions:
     - CPS
     - CS
     - CSSH
-  models.Contact:
-    properties:
-      content:
-        type: string
-      created_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-      id:
-        example: 123e4567-e89b-12d3-a456-426614174000
-        type: string
-      type:
-        $ref: '#/definitions/models.ContactType'
-      updated_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-    type: object
-  models.ContactType:
-    enum:
-    - facebook
-    - instagram
-    - x
-    - linkedin
-    - youtube
-    - github
-    - slack
-    - discord
-    - email
-    - customSite
-    type: string
-    x-enum-varnames:
-    - Facebook
-    - Instagram
-    - X
-    - LinkedIn
-    - YouTube
-    - GitHub
-    - Slack
-    - Discord
-    - Email
-    - CustomSite
   models.Event:
     properties:
       created_at:
@@ -1119,6 +1053,26 @@ definitions:
     x-enum-varnames:
     - December
     - May
+  models.Leader:
+    properties:
+      created_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      email:
+        type: string
+      id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      name:
+        type: string
+      photo_file:
+        $ref: '#/definitions/models.File'
+      position:
+        type: string
+      updated_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+    type: object
   models.Major:
     enum:
     - africanaStudies
@@ -1323,25 +1277,18 @@ definitions:
     - Spanish
     - SpeechLanguagePathologyAndAudiology
     - Theatre
-  models.PointOfContact:
+  models.Recruitment:
     properties:
-      created_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
-      email:
-        type: string
-      id:
-        example: 123e4567-e89b-12d3-a456-426614174000
-        type: string
-      name:
-        type: string
-      photo_file:
-        $ref: '#/definitions/models.File'
-      position:
-        type: string
-      updated_at:
-        example: "2023-09-20T16:34:50Z"
-        type: string
+      applications:
+        items:
+          $ref: '#/definitions/models.Application'
+        type: array
+      cycle:
+        $ref: '#/definitions/models.RecruitmentCycle'
+      is_recruiting:
+        type: boolean
+      type:
+        $ref: '#/definitions/models.RecruitmentType'
     type: object
   models.RecruitmentCycle:
     enum:
@@ -1362,9 +1309,49 @@ definitions:
     - application
     type: string
     x-enum-varnames:
-    - Unrestricted
-    - Tryout
-    - Application
+    - RecruitmentTypeUnrestricted
+    - RecruitmentTypeTryout
+    - RecruitmentTypeApplication
+  models.Social:
+    properties:
+      content:
+        type: string
+      created_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+      id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+      type:
+        $ref: '#/definitions/models.SocialType'
+      updated_at:
+        example: "2023-09-20T16:34:50Z"
+        type: string
+    type: object
+  models.SocialType:
+    enum:
+    - facebook
+    - instagram
+    - x
+    - linkedin
+    - youtube
+    - github
+    - slack
+    - discord
+    - email
+    - customSite
+    type: string
+    x-enum-varnames:
+    - Facebook
+    - Instagram
+    - X
+    - LinkedIn
+    - YouTube
+    - GitHub
+    - Slack
+    - Discord
+    - Email
+    - CustomSite
   models.Tag:
     properties:
       category_id:
@@ -1415,6 +1402,30 @@ definitions:
         example: "2023-09-20T16:34:50Z"
         type: string
     type: object
+  socials.PutSocialRequestBody:
+    properties:
+      content:
+        maxLength: 255
+        type: string
+      type:
+        allOf:
+        - $ref: '#/definitions/models.SocialType'
+        enum:
+        - facebook
+        - instagram
+        - x
+        - linkedin
+        - youtube
+        - github
+        - slack
+        - discord
+        - email
+        - customSite
+        maxLength: 255
+    required:
+    - content
+    - type
+    type: object
   tags.CreateClubTagsRequestBody:
     properties:
       tags:
@@ -1432,6 +1443,20 @@ definitions:
         type: array
     required:
     - tags
+    type: object
+  types.SearchResult-models_Club:
+    properties:
+      results:
+        items:
+          $ref: '#/definitions/models.Club'
+        type: array
+    type: object
+  types.SearchResult-models_Event:
+    properties:
+      results:
+        items:
+          $ref: '#/definitions/models.Event'
+        type: array
     type: object
   utilities.SuccessResponse:
     properties:
@@ -1555,7 +1580,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Refreshes a user's access token
+      description: Refreshes a user's access token and returns a new pair of tokens
       operationId: refresh-user
       produces:
       - application/json
@@ -1573,7 +1598,7 @@ paths:
         "500":
           description: Internal Server Error
           schema: {}
-      summary: Refreshes a user's access token
+      summary: Refreshes a user's access token and returns a new pair of tokens
       tags:
       - auth
   /auth/register:
@@ -2132,76 +2157,6 @@ paths:
       summary: Update a club
       tags:
       - club
-  /clubs/{clubID}/contacts/:
-    get:
-      description: Retrieves all contacts associated with a club
-      operationId: get-contacts-by-club
-      parameters:
-      - description: Club ID
-        in: path
-        name: clubID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.Contact'
-            type: array
-        "400":
-          description: Bad Request
-          schema: {}
-        "404":
-          description: Not Found
-          schema: {}
-        "500":
-          description: Internal Server Error
-          schema: {}
-      summary: Retrieve all contacts for a club
-      tags:
-      - club-contact
-    put:
-      consumes:
-      - application/json
-      description: Creates a contact
-      operationId: put-contact
-      parameters:
-      - description: Club ID
-        in: path
-        name: clubID
-        required: true
-        type: string
-      - description: Contact Body
-        in: body
-        name: contactBody
-        required: true
-        schema:
-          $ref: '#/definitions/contacts.PutContactRequestBody'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/models.Contact'
-        "400":
-          description: Bad Request
-          schema: {}
-        "401":
-          description: Unauthorized
-          schema: {}
-        "404":
-          description: Not Found
-          schema: {}
-        "500":
-          description: Internal Server Error
-          schema: {}
-      summary: Creates a contact
-      tags:
-      - club-contact
   /clubs/{clubID}/events/:
     get:
       description: Retrieves all events associated with a club
@@ -2280,6 +2235,211 @@ paths:
       summary: Retrieve all followers for a club
       tags:
       - club-follower
+  /clubs/{clubID}/leadership/:
+    get:
+      description: Retrieves all leadership associated with a club
+      operationId: get-leadership-by-club
+      parameters:
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Leader'
+            type: array
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Retrieve all leadership for a club
+      tags:
+      - club-leader
+    post:
+      consumes:
+      - multipart/form-data
+      description: Creates a leader associated with a club
+      operationId: create-leader-by-club
+      parameters:
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Leader'
+        "400":
+          description: Bad Request
+          schema: {}
+        "401":
+          description: Unauthorized
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Create a leader for a club
+      tags:
+      - club-leader
+  /clubs/{clubID}/leadership/{leaderID}:
+    delete:
+      description: Delete a leader associated with a club
+      operationId: delete-leader-by-club
+      parameters:
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      - description: leader ID
+        in: path
+        name: leaderID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Delete a leader for a club
+      tags:
+      - club-leader
+    get:
+      description: Retrieves a leader associated with a club
+      operationId: get-leader-by-club
+      parameters:
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      - description: leader ID
+        in: path
+        name: leaderID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Leader'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Retrieve a leader for a club
+      tags:
+      - club-leader
+    patch:
+      consumes:
+      - multipart/form-data
+      description: Updates a leader photo associated with a club
+      operationId: update-leader-photo-by-club
+      parameters:
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      - description: leader ID
+        in: path
+        name: leaderID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Leader'
+        "400":
+          description: Bad Request
+          schema: {}
+        "401":
+          description: Unauthorized
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Update a leader photo for a club
+      tags:
+      - club-leader
+    put:
+      consumes:
+      - application/json
+      description: Updates a leader associated with a club
+      operationId: update-leader-by-club
+      parameters:
+      - description: Club ID
+        in: path
+        name: clubID
+        required: true
+        type: string
+      - description: leader ID
+        in: path
+        name: leaderID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Leader'
+        "400":
+          description: Bad Request
+          schema: {}
+        "401":
+          description: Unauthorized
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Update a leader for a club
+      tags:
+      - club-leader
   /clubs/{clubID}/members/:
     delete:
       description: Deletes a member associated with a club
@@ -2396,152 +2556,10 @@ paths:
       summary: Create a new member for a club
       tags:
       - club-member
-  /clubs/{clubID}/poc/:
-    post:
-      consumes:
-      - multipart/form-data
-      description: Creates a point of contact associated with a club
-      operationId: create-point-of-contact-by-club
-      parameters:
-      - description: Club ID
-        in: path
-        name: clubID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/models.PointOfContact'
-        "400":
-          description: Bad Request
-          schema: {}
-        "401":
-          description: Unauthorized
-          schema: {}
-        "404":
-          description: Not Found
-          schema: {}
-        "500":
-          description: Internal Server Error
-          schema: {}
-      summary: Create a point of contact for a club
-      tags:
-      - club-point-of-contact
-  /clubs/{clubID}/poc/{pocID}:
-    delete:
-      description: Delete a point of contact associated with a club
-      operationId: delete-point-of-contact-by-club
-      parameters:
-      - description: Club ID
-        in: path
-        name: clubID
-        required: true
-        type: string
-      - description: Point of Contact ID
-        in: path
-        name: pocID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-        "400":
-          description: Bad Request
-          schema: {}
-        "404":
-          description: Not Found
-          schema: {}
-        "500":
-          description: Internal Server Error
-          schema: {}
-      summary: Delete a point of contact for a club
-      tags:
-      - club-point-of-contact
-    patch:
-      consumes:
-      - multipart/form-data
-      description: Updates a point of contact photo associated with a club
-      operationId: update-point-of-contact-photo-by-club
-      parameters:
-      - description: Club ID
-        in: path
-        name: clubID
-        required: true
-        type: string
-      - description: Point of Contact ID
-        in: path
-        name: pocID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.PointOfContact'
-        "400":
-          description: Bad Request
-          schema: {}
-        "401":
-          description: Unauthorized
-          schema: {}
-        "404":
-          description: Not Found
-          schema: {}
-        "500":
-          description: Internal Server Error
-          schema: {}
-      summary: Update a point of contact photo for a club
-      tags:
-      - club-point-of-contact
-    put:
-      consumes:
-      - application/json
-      description: Updates a point of contact associated with a club
-      operationId: update-point-of-contact-by-club
-      parameters:
-      - description: Club ID
-        in: path
-        name: clubID
-        required: true
-        type: string
-      - description: Point of Contact ID
-        in: path
-        name: pocID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.PointOfContact'
-        "400":
-          description: Bad Request
-          schema: {}
-        "401":
-          description: Unauthorized
-          schema: {}
-        "404":
-          description: Not Found
-          schema: {}
-        "500":
-          description: Internal Server Error
-          schema: {}
-      summary: Update a point of contact for a club
-      tags:
-      - club-point-of-contact
-  /clubs/{clubID}/pocs/:
+  /clubs/{clubID}/socials/:
     get:
-      description: Retrieves all point of contacts associated with a club
-      operationId: get-point-of-contacts-by-club
+      description: Retrieves all socials associated with a club
+      operationId: get-socials-by-club
       parameters:
       - description: Club ID
         in: path
@@ -2555,7 +2573,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.PointOfContact'
+              $ref: '#/definitions/models.Social'
             type: array
         "400":
           description: Bad Request
@@ -2566,33 +2584,38 @@ paths:
         "500":
           description: Internal Server Error
           schema: {}
-      summary: Retrieve all point of contacts for a club
+      summary: Retrieve all socials for a club
       tags:
-      - club-point-of-contact
-  /clubs/{clubID}/pocs/{pocID}:
-    get:
-      description: Retrieves a point of contact associated with a club
-      operationId: get-point-of-contact-by-club
+      - club-social
+    put:
+      consumes:
+      - application/json
+      description: Creates a social
+      operationId: put-social
       parameters:
       - description: Club ID
         in: path
         name: clubID
         required: true
         type: string
-      - description: Point of Contact ID
-        in: path
-        name: pocID
+      - description: Social Body
+        in: body
+        name: socialBody
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/socials.PutSocialRequestBody'
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
-            $ref: '#/definitions/models.PointOfContact'
+            $ref: '#/definitions/models.Social'
         "400":
           description: Bad Request
+          schema: {}
+        "401":
+          description: Unauthorized
           schema: {}
         "404":
           description: Not Found
@@ -2600,9 +2623,9 @@ paths:
         "500":
           description: Internal Server Error
           schema: {}
-      summary: Retrieve a point of contact for a club
+      summary: Creates a social
       tags:
-      - club-point-of-contact
+      - club-social
   /clubs/{clubID}/tags/:
     get:
       description: Retrieves all tags associated with a club
@@ -2712,110 +2735,6 @@ paths:
       summary: Delete a tag for a club
       tags:
       - club-tag
-  /contacts/:
-    get:
-      description: Retrieves all contacts
-      operationId: get-contacts
-      parameters:
-      - description: Limit
-        in: query
-        name: limit
-        type: integer
-      - description: Page
-        in: query
-        name: page
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.Contact'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            type: string
-        "404":
-          description: Not Found
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error
-          schema:
-            type: string
-      summary: Retrieve all contacts
-      tags:
-      - contact
-  /contacts/{contactID}/:
-    delete:
-      consumes:
-      - application/json
-      description: Deletes a contact
-      operationId: delete-contact
-      parameters:
-      - description: Contact ID
-        in: path
-        name: contactID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/models.Contact'
-        "400":
-          description: Bad Request
-          schema:
-            type: string
-        "404":
-          description: Not Found
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error
-          schema:
-            type: string
-      summary: Deletes a contact
-      tags:
-      - contact
-    get:
-      consumes:
-      - application/json
-      description: Retrieves a contact by id
-      operationId: get-contact
-      parameters:
-      - description: Contact ID
-        in: path
-        name: contactID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/models.Contact'
-        "400":
-          description: Bad Request
-          schema:
-            type: string
-        "404":
-          description: Not Found
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error
-          schema:
-            type: string
-      summary: Retrieves a contact
-      tags:
-      - contact
   /events/:
     get:
       description: Retrieves all events
@@ -3013,7 +2932,7 @@ paths:
       summary: Retrieve a file
       tags:
       - file
-  /pocs/:
+  /leader/:
     get:
       description: Retrieves all point of contacts
       operationId: get-point-of-contacts
@@ -3033,7 +2952,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.PointOfContact'
+              $ref: '#/definitions/models.Leader'
             type: array
         "400":
           description: Bad Request
@@ -3050,14 +2969,14 @@ paths:
       summary: Retrieve all point of contacts
       tags:
       - point of contact
-  /pocs/{pocID}/:
+  /leader/{leaderID}/:
     get:
       description: Retrieves a point of contact by id
       operationId: get-point-of-contact
       parameters:
       - description: Point of Contact ID
         in: path
-        name: pocID
+        name: leaderID
         required: true
         type: string
       produces:
@@ -3066,7 +2985,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.PointOfContact'
+            $ref: '#/definitions/models.Leader'
         "400":
           description: Bad Request
           schema:
@@ -3082,6 +3001,206 @@ paths:
       summary: Retrieves a point of contact
       tags:
       - point of contact
+  /search/clubs:
+    get:
+      consumes:
+      - application/json
+      description: Searches through clubs
+      operationId: search-clubs
+      parameters:
+      - in: query
+        name: max_members
+        type: integer
+      - in: query
+        name: min_members
+        type: integer
+      - in: query
+        name: search
+        type: string
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: tags
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.SearchResult-models_Club'
+            type: array
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Searches through clubs
+      tags:
+      - search
+  /search/events:
+    get:
+      consumes:
+      - application/json
+      description: Searches through events
+      operationId: search-event
+      parameters:
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: clubs
+        type: array
+      - in: query
+        name: end_time
+        type: string
+      - collectionFormat: csv
+        in: query
+        items:
+          enum:
+          - hybrid
+          - in_person
+          - virtual
+          type: string
+        name: event_type
+        type: array
+      - in: query
+        name: search
+        type: string
+      - in: query
+        name: start_time
+        type: string
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: tags
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.SearchResult-models_Event'
+            type: array
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Searches through events
+      tags:
+      - search
+  /socials/:
+    get:
+      description: Retrieves all socials
+      operationId: get-socials
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Social'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Retrieve all socials
+      tags:
+      - social
+  /socials/{socialID}/:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a social
+      operationId: delete-social
+      parameters:
+      - description: Social ID
+        in: path
+        name: socialID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Social'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Deletes a social
+      tags:
+      - social
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a social by id
+      operationId: get-social
+      parameters:
+      - description: Social ID
+        in: path
+        name: socialID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Social'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Retrieves a social
+      tags:
+      - social
   /tags:
     get:
       description: Retrieves all tags

@@ -16,7 +16,8 @@ const Texts = {
         fontFamily: 'DMSans-Medium',
         fontSize: 20,
         fontStyle: 'normal',
-        fontWeight: '500'
+        fontWeight: '500',
+        lineHeight: 'normal'
     },
     'body-1': {
         fontFamily: 'DMSans-Regular',

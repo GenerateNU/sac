@@ -1,4 +1,5 @@
-import { FormattedTime } from '../types/time';
+import { FormattedTime } from '@/types/time';
+
 import { Options } from './timeOptions';
 
 // calculate duration of event

@@ -1,9 +1,9 @@
 import { Tag } from '@generatesac/lib';
 
-import { EventCardBig } from './EventCardBig';
-import { EventCardCalendar } from './EventCardCalendar';
-import { EventCardClub } from './EventCardClub';
-import { EventCardSmall } from './EventCardSmall';
+import { EventCardBig } from './Variants/EventCardBig';
+import { EventCardCalendar } from './Variants/EventCardCalendar';
+import { EventCardClub } from './Variants/EventCardClub';
+import { EventCardSmall } from './Variants/EventCardSmall';
 
 interface EventCardProps {
     event: string;
