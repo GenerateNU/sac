@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
         marginTop: Spacing.l,
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 5
+        gap: Spacing.xxs,
     },
     cell: {
         width: 50,
