@@ -27,6 +27,7 @@ const CalendarPage = () => {
     const [maxDate, setMaxDate] = useState(TODAY.getTime() + DAY_EPOCH_TIME * BATCH_SIZE_HALF);
     const [datePress, setDatePress] = useState(false);
     const oldEvents = useRef<EventSection[]>([]);
+    const recentRefresh = useRef<string>();
 
     const emptyDatePlaceholder = new Array(BATCH_SIZE_HALF).fill({});
 
@@ -43,8 +44,10 @@ const CalendarPage = () => {
     };
 
     const fetchNewEvents = useCallback(async (props: FetchNewEventsPropsUnion) => {
-        if (loadedEvents.length > 0 
-            && (!loadedEvents[0].date || !loadedEvents[loadedEvents.length - 1].date)) return;
+        // Create a random string identifier for the refresh:
+        const refreshId = Math.random().toString(36).substring(7);
+        recentRefresh.current = refreshId;
+        console.log('refreshID:', refreshId);
 
         const { direction } = props;
         if (direction === 'start') {
@@ -55,6 +58,7 @@ const CalendarPage = () => {
             setIsLoading(true);
             setTimeout(async () => {
                 const newEvents = await fetchEvents(minDate - DAY_EPOCH_TIME * BATCH_SIZE_HALF, minDate - DAY_EPOCH_TIME);
+                if (recentRefresh.current !== refreshId) return;
                 setMinDate(minDate - DAY_EPOCH_TIME * BATCH_SIZE_HALF);
                 setLoadedEvents([...newEvents, ...oldEvents.current]);
                 setIsLoading(false)
@@ -68,6 +72,7 @@ const CalendarPage = () => {
             setIsLoading(true);
             setTimeout(async () => {
                 const newEvents = await fetchEvents(maxDate + DAY_EPOCH_TIME, maxDate + DAY_EPOCH_TIME * (BATCH_SIZE_HALF + 1));
+                if (recentRefresh.current !== refreshId) return;
                 setMaxDate(maxDate + DAY_EPOCH_TIME * (BATCH_SIZE_HALF + 1));
                 setLoadedEvents([...oldEvents.current, ...newEvents]);
                 setIsLoading(false);
@@ -83,9 +88,12 @@ const CalendarPage = () => {
             setIsLoading(true);
             setTimeout(async () => {
                 const newEvents = await fetchEvents(minDateNew, maxDateNew);
+                console.log(new Date(minDateNew), new Date(maxDateNew));
+                if (recentRefresh.current !== refreshId) return;
+                console.log('request not cancelled!');
                 setLoadedEvents(newEvents);
                 setIsLoading(false);
-            })
+            }, 3000)
         }
         else return;
     }, [minDate, maxDate, loadedEvents]);

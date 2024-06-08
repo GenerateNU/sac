@@ -9,6 +9,7 @@
         "web": "expo start --web",
         "test": "echo \"Woah there, we have no frontend tests as of right now. Let's just say we're passing.\" && exit 0",
         "lint": "eslint . --ext ts,tsx",
+        "build": "eas build -p ios",
         "format": "prettier --write ."
     },
     "jest": {

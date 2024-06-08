@@ -6,7 +6,6 @@ import Day from "./Day";
 import { Spacing } from "../../shared/spacing";
 import { EventSection } from "../Calendar/mockData";
 import { EventCardCalendarSkeleton } from "../EventCard/Skeletons/EventCardCalendarSkeleton";
-import { Text } from "../Text/Text";
 import { CalendarContext } from "react-native-calendars-sac";
 import { UpdateSources } from "react-native-calendars-sac/src/expandableCalendar/commons";
 
@@ -138,6 +137,7 @@ export default function InfiniteScrollCarousel({
     }, [loadedEvents])
 
     useEffect(() => {
+        console.log(datePress);
         if (datePress) {
             handleCalendarDateSelect(
                 loadedEvents,
@@ -185,6 +185,12 @@ export default function InfiniteScrollCarousel({
         const latestDate = new Date(loadedEvents[loadedEvents.length - 1].date);
         const currentDate = new Date(loadedEvents[dataIndexArray[mainIndex]].date)
         const newSelectedDate = new Date(newSelectedDateString);
+
+        // If the calendar is currently fetching and the last fetch was an initial load:
+        if (isLoading && recent_refresh_direction.current === 'base') {
+            triggerRefresh('base');
+            return;
+        }
 
         // Determine the direction of the click:
         const direction = newSelectedDate.getTime() > currentDate.getTime() ? 'end' : 'start';
@@ -234,16 +240,19 @@ export default function InfiniteScrollCarousel({
         }
     }
 
+    // Trigger a refresh of events:
     const triggerRefresh = (refreshDirection: RefreshDirection) => {
         recent_refresh_direction.current = refreshDirection;
         if (refreshDirection === 'base') {
+            console.log('trigger refresh ', refreshDirection)
             refetchEvents({ direction: refreshDirection, date: date });
         } else {
-            console.log('fetching new events')
+            console.log('trigger refresh ', refreshDirection)
             refetchEvents({ direction: refreshDirection });
         }
     }
 
+    // Update the events to what is currently been viewed:
     const updateEventsToCurrent = (loadedEvents: EventSection[], type: SwipeDirection | 'base', targetIndex?: number) => {
         if (type === 'base') {
             setEvents([
