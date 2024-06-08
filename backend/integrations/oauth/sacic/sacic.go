@@ -233,13 +233,8 @@ func Logout(c *fiber.Ctx) error {
 // assign your own function to this variable that returns the provider
 // name for your request.
 func GetProviderName(c *fiber.Ctx) (string, error) {
-	// try to get it from the url param "provider"
-	if p := c.Query("provider"); p != "" {
-		return p, nil
-	}
-
 	// try to get it from the url param ":provider"
-	if p := c.Query(":provider"); p != "" {
+	if p := c.Params("provider"); p != "" {
 		return p, nil
 	}
 

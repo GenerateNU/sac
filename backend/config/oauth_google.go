@@ -1,18 +1,30 @@
 package config
 
+import m "github.com/garrettladley/mattress"
+
 type GoogleOAuthSettings struct {
-	OAuthSettings
+	Key    *m.Secret[string]
+	Secret *m.Secret[string]
 }
 
 type intermediateGoogleOAuthSettings struct {
-	intermediateOAuthSettings
+	Key    string `env:"KEY"`
+	Secret string `env:"SECRET"`
 }
 
 func (i *intermediateGoogleOAuthSettings) into() (*GoogleOAuthSettings, error) {
-	res, err := i.intermediateOAuthSettings.into()
+	secretKey, err := m.NewSecret(i.Key)
 	if err != nil {
 		return nil, err
 	}
 
-	return &GoogleOAuthSettings{*res}, nil
+	secretSecret, err := m.NewSecret(i.Secret)
+	if err != nil {
+		return nil, err
+	}
+
+	return &GoogleOAuthSettings{
+		Key:    secretKey,
+		Secret: secretSecret,
+	}, nil
 }

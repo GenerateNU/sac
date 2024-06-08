@@ -11,7 +11,7 @@ services:
       - REDIS_PASSWORD=redis_session!#1
       - REDIS_DISABLE_DEFAULT_USER="true"
     volumes:
-      - redis-limiter-data:/data
+      - redis-session-data:/data
   redis-limiter:
     build:
       context: .
@@ -64,8 +64,7 @@ services:
       - opensearch-net
 
 volumes:
-  redis-active-data:
-  redis-blacklist-data:
+  redis-session-data:
   redis-limiter-data:
   opensearch-data1:
 

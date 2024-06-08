@@ -2,6 +2,7 @@ package base
 
 import (
 	"fmt"
+	"log/slog"
 
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/integrations/email"
@@ -45,6 +46,7 @@ func NewParams(sessionSecret *m.Secret[string], store fiber.Storage, msftSetting
 func Auth(params Params) {
 	sacic.Init(params.sessionSecret, params.store)
 
+	slog.Info("debug", "key", params.msftSettings.Key.Expose(), "secret", params.msftSettings.Secret.Expose(), "tenant", params.msftSettings.Tenant)
 	oauth.UseProviders(
 		msft.New(params.msftSettings.Key, params.msftSettings.Secret, fmt.Sprintf("%s/auth/microsoftonline/callback", params.applicationURL), params.msftSettings.Tenant),
 		goog.New(params.googSettings.Key, params.googSettings.Secret, fmt.Sprintf("%s/auth/google/callback", params.applicationURL)),

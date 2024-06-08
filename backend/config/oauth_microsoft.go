@@ -1,26 +1,36 @@
 package config
 
+import m "github.com/garrettladley/mattress"
+
 const (
-	tenantID = "a8eec281-aaa3-4dae-ac9b-9a398b9215e7"
+	tenantID string = "a8eec281-aaa3-4dae-ac9b-9a398b9215e7"
 )
 
 type MicrosoftOAuthSettings struct {
-	OAuthSettings
+	Key    *m.Secret[string]
+	Secret *m.Secret[string]
 	Tenant string
 }
 
 type intermediateMicrosoftOAuthSetting struct {
-	intermediateOAuthSettings
+	Key    string `env:"KEY"`
+	Secret string `env:"SECRET"`
 }
 
 func (i *intermediateMicrosoftOAuthSetting) into() (*MicrosoftOAuthSettings, error) {
-	res, err := i.intermediateOAuthSettings.into()
+	secretKey, err := m.NewSecret(i.Key)
+	if err != nil {
+		return nil, err
+	}
+
+	secretSecret, err := m.NewSecret(i.Secret)
 	if err != nil {
 		return nil, err
 	}
 
 	return &MicrosoftOAuthSettings{
-		OAuthSettings: *res,
-		Tenant:        tenantID,
+		Key:    secretKey,
+		Secret: secretSecret,
+		Tenant: tenantID,
 	}, nil
 }
