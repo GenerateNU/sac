@@ -43,15 +43,15 @@ func NewParams(sessionSecret *m.Secret[string], store fiber.Storage, msftSetting
 
 func Auth(params Params) {
 	goth.UseProviders(
-		msft.New(params.msftSettings.Key, params.msftSettings.Secret, fmt.Sprintf("%s/api/v1/auth/callback/microsoftonline", params.applicationURL), params.msftSettings.Tenant),
-		goog.New(params.googSettings.Key, params.googSettings.Secret, fmt.Sprintf("%s/api/v1/auth/callback/google", params.applicationURL)),
+		msft.New(params.msftSettings.Key, params.msftSettings.Secret, fmt.Sprintf("%s/api/v1/auth/microsoftonline/callback", params.applicationURL), params.msftSettings.Tenant),
+		goog.New(params.googSettings.Key, params.googSettings.Secret, fmt.Sprintf("%s/api/v1/auth/google/callback", params.applicationURL)),
 	)
 
 	handler := Handler{db: params.db, emailer: params.emailer, validate: params.validate}
 
 	params.router.Route("/auth", func(r fiber.Router) {
-		r.Get("/login/:provider", handler.Provider)
-		r.Get("/callback/:provider", handler.ProviderCallback)
+		r.Get("/:provider", handler.Provider)
+		r.Get(":provider/callback/", handler.ProviderCallback)
 		r.Get("/logout", handler.ProviderLogout)
 	})
 }
