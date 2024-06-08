@@ -35,7 +35,7 @@ interface ClubPageProps {
     club: Club;
     tags: TagProps[];
     events: Event[];
-    contacts: Contact[];
+    contacts?: Contact[];
     color: SACColors;
     pointOfContacts: POCProps[];
 }
