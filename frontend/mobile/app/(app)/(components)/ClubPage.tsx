@@ -44,7 +44,6 @@ export const ClubPage: React.FC<ClubPageProps> = ({
     club,
     tags,
     events,
-    contacts,
     color,
     pointOfContacts
 }) => {
