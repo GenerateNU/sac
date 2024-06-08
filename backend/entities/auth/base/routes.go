@@ -2,19 +2,17 @@ package base
 
 import (
 	"fmt"
-	"log/slog"
 
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/integrations/email"
-	"github.com/GenerateNU/sac/backend/integrations/oauth"
 	"github.com/GenerateNU/sac/backend/integrations/oauth/goog"
 	"github.com/GenerateNU/sac/backend/integrations/oauth/msft"
-	"github.com/GenerateNU/sac/backend/integrations/oauth/sacic"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 
 	m "github.com/garrettladley/mattress"
+	"github.com/markbates/goth"
 )
 
 type Params struct {
@@ -44,19 +42,16 @@ func NewParams(sessionSecret *m.Secret[string], store fiber.Storage, msftSetting
 }
 
 func Auth(params Params) {
-	sacic.Init(params.sessionSecret, params.store)
-
-	slog.Info("debug", "key", params.msftSettings.Key.Expose(), "secret", params.msftSettings.Secret.Expose(), "tenant", params.msftSettings.Tenant)
-	oauth.UseProviders(
-		msft.New(params.msftSettings.Key, params.msftSettings.Secret, fmt.Sprintf("%s/auth/microsoftonline/callback", params.applicationURL), params.msftSettings.Tenant),
-		goog.New(params.googSettings.Key, params.googSettings.Secret, fmt.Sprintf("%s/auth/google/callback", params.applicationURL)),
+	goth.UseProviders(
+		msft.New(params.msftSettings.Key, params.msftSettings.Secret, fmt.Sprintf("%s/api/v1/auth/callback/microsoftonline", params.applicationURL), params.msftSettings.Tenant),
+		goog.New(params.googSettings.Key, params.googSettings.Secret, fmt.Sprintf("%s/api/v1/auth/callback/google", params.applicationURL)),
 	)
 
 	handler := Handler{db: params.db, emailer: params.emailer, validate: params.validate}
 
 	params.router.Route("/auth", func(r fiber.Router) {
-		r.Get("/:provider", handler.Provider)
-		r.Get("/:provider/callback", handler.ProviderCallback)
-		r.Get("/:provider/logout", handler.ProviderLogout)
+		r.Get("/login/:provider", handler.Provider)
+		r.Get("/callback/:provider", handler.ProviderCallback)
+		r.Get("/logout", handler.ProviderLogout)
 	})
 }

@@ -9,5 +9,11 @@ type ApplicationSettings struct {
 }
 
 func (s *ApplicationSettings) ApplicationURL() string {
-	return fmt.Sprintf("http://%s:%d", s.Host, s.Port)
+	var host string
+	if s.Host == "127.0.0.1" {
+		host = "localhost"
+	} else {
+		host = s.Host
+	}
+	return fmt.Sprintf("http://%s:%d", host, s.Port)
 }
