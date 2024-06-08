@@ -14,7 +14,6 @@ interface PointOfContactProps {
 }
 
 export const PointOfContact: React.FC<PointOfContactProps> = ({
-    imageUrl,
     name,
     position,
     color
