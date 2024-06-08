@@ -16,7 +16,6 @@ import (
 	events "github.com/GenerateNU/sac/backend/entities/events/base"
 	files "github.com/GenerateNU/sac/backend/entities/files/base"
 	leader "github.com/GenerateNU/sac/backend/entities/leadership/base"
-	oauth "github.com/GenerateNU/sac/backend/entities/oauth/base"
 	socials "github.com/GenerateNU/sac/backend/entities/socials/base"
 	tags "github.com/GenerateNU/sac/backend/entities/tags/base"
 	users "github.com/GenerateNU/sac/backend/entities/users/base"
@@ -24,8 +23,6 @@ import (
 	authMiddleware "github.com/GenerateNU/sac/backend/middleware/auth"
 	utilityMiddleware "github.com/GenerateNU/sac/backend/middleware/utility"
 	search "github.com/GenerateNU/sac/backend/search/base"
-
-	oauthInt "github.com/GenerateNU/sac/backend/integrations/oauth"
 
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
@@ -58,12 +55,12 @@ func Init(db *gorm.DB, stores *store.Stores, integrations integrations.Integrati
 	}
 
 	jwt := authenticator.NewJWTClient(settings.Auth, jwt.SigningMethodHS256)
+
 	authMiddleware := authMiddleware.New(
 		db,
 		validate,
 		settings.Auth,
 		stores,
-		oauthInt.NewHandler(db, stores, integrations.OAuth, validate),
 	)
 	utilityMiddleware := utilityMiddleware.New(fiberpaginate.New(), stores)
 
@@ -101,7 +98,6 @@ func allRoutes(app *fiber.App, routeParams types.RouteParams) {
 	events.EventRoutes(routeParams)
 	files.File(routeParams)
 	search.SearchRoutes(routeParams)
-	oauth.OAuth(routeParams)
 }
 
 func newFiberApp(appSettings config.ApplicationSettings) *fiber.App {
@@ -112,7 +108,7 @@ func newFiberApp(appSettings config.ApplicationSettings) *fiber.App {
 	})
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     fmt.Sprintf("http://%s:%d", appSettings.Host, appSettings.Port),
+		AllowOrigins:     appSettings.ApplicationURL(),
 		AllowCredentials: true,
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
 		AllowMethods:     "GET, POST, PUT, DELETE, OPTIONS",

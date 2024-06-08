@@ -22,7 +22,7 @@ require (
 	github.com/swaggo/swag v1.16.3
 	go.opentelemetry.io/otel/sdk v1.27.0
 	go.opentelemetry.io/otel/trace v1.27.0
-	golang.org/x/crypto v0.23.0
+	golang.org/x/oauth2 v0.15.0
 	golang.org/x/text v0.15.0
 	gorm.io/driver/postgres v1.5.7
 	gorm.io/gorm v1.25.10
@@ -39,10 +39,13 @@ require (
 )
 
 require (
+	cloud.google.com/go/compute v1.23.3 // indirect
+	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
+	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
@@ -51,6 +54,9 @@ require (
 	go.opentelemetry.io/contrib v1.17.0 // indirect
 	go.opentelemetry.io/otel/metric v1.27.0 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
+	golang.org/x/crypto v0.23.0 // indirect
+	google.golang.org/appengine v1.6.7 // indirect
+	google.golang.org/protobuf v1.33.0 // indirect
 )
 
 require (
@@ -77,6 +83,7 @@ require (
 	github.com/klauspost/compress v1.17.7 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
+	github.com/markbates/going v1.0.3
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect

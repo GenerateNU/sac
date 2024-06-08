@@ -1,6 +1,7 @@
 package users
 
 import (
+	"context"
 	"errors"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
@@ -19,7 +20,7 @@ func GetUser(db *gorm.DB, id uuid.UUID, preloads ...transactions.OptionalQuery) 
 		query = preload(query)
 	}
 
-	if err := query.Omit("password_hash").First(&user, id).Error; err != nil {
+	if err := query.First(&user, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, utilities.ErrNotFound
 		}
@@ -42,24 +43,31 @@ func GetUserByEmail(db *gorm.DB, email string) (*models.User, error) {
 	return &user, nil
 }
 
-func UpdateEmailVerification(db *gorm.DB, id uuid.UUID) error {
-	result := db.Model(&models.User{}).Where("id = ?", id).Update("is_verified", true)
-	if result.RowsAffected == 0 {
-		if result.Error == nil {
-			return utilities.ErrNotFound
+func VerifyEmail(ctx context.Context, db *gorm.DB, token string, userID uuid.UUID) error {
+	tx := db.WithContext(ctx).Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
 		}
-		return result.Error
-	}
-	return nil
-}
+	}()
 
-func UpdatePassword(db *gorm.DB, id uuid.UUID, passwordHash string) error {
-	result := db.Model(&models.User{}).Where("id = ?", id).Update("password_hash", passwordHash)
+	result := tx.Model(&models.User{}).Where("id = ?", userID).Update("is_verified", "verified")
 	if result.RowsAffected == 0 {
 		if result.Error == nil {
+			tx.Rollback()
 			return utilities.ErrNotFound
 		}
+		tx.Rollback()
 		return result.Error
 	}
-	return nil
+
+	if err := tx.Create(&models.VerificationDeletionQueue{
+		VerificationToken: token,
+		UserID:            userID,
+	}).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit().Error
 }

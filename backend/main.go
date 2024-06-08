@@ -8,6 +8,8 @@ import (
 	"net"
 	"path/filepath"
 
+	"github.com/GenerateNU/sac/backend/background"
+	"github.com/GenerateNU/sac/backend/background/jobs"
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/database"
@@ -16,10 +18,10 @@ import (
 	"github.com/GenerateNU/sac/backend/integrations"
 	"github.com/GenerateNU/sac/backend/integrations/email"
 	"github.com/GenerateNU/sac/backend/integrations/file"
-	"github.com/GenerateNU/sac/backend/integrations/oauth"
 	"github.com/GenerateNU/sac/backend/server"
 	"github.com/GenerateNU/sac/backend/telemetry"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"gorm.io/gorm"
 )
 
 func main() {
@@ -38,6 +40,8 @@ func main() {
 	if checkServerRunning(config.Application.Host, config.Application.Port) == nil {
 		utilities.Exit("A server is already running on %s:%d.\n", config.Application.Host, config.Application.Port)
 	}
+
+	ctx := context.Background()
 
 	db, err := database.ConfigureDB(*config)
 	if err != nil {
@@ -59,10 +63,11 @@ func main() {
 		// }
 	}
 
-	err = database.ConnPooling(db)
-	if err != nil {
+	if err := database.ConnPooling(db); err != nil {
 		utilities.Exit("Error with connection pooling: %s", err.Error())
 	}
+
+	startBackgroundJobs(ctx, db)
 
 	stores := store.ConfigureRedis(*config)
 
@@ -100,13 +105,11 @@ func configureIntegrations(config *config.Integrations) *integrations.Integratio
 	return &integrations.Integrations{
 		File:  file.NewAWSProvider(config.AWS),
 		Email: email.NewResendClient(config.Resend, true),
-		OAuth: oauth.OAuthProviders{
-			Google: oauth.GoogleOAuthClient{
-				OAuthConfig: config.GoogleOauth,
-			},
-			Outlook: oauth.OutlookOAuthClient{
-				OAuthConfig: config.OutlookOauth,
-			},
-		},
 	}
+}
+
+func startBackgroundJobs(ctx context.Context, db *gorm.DB) {
+	jobs := jobs.New(db)
+	background.Go(jobs.DeleteExpiredVerificationTokens(ctx))
+	background.Go(jobs.DeleteVerificationTokens(ctx))
 }

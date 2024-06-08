@@ -3,7 +3,6 @@ package base
 import (
 	"net/http"
 
-	authEntities "github.com/GenerateNU/sac/backend/entities/auth"
 	"github.com/GenerateNU/sac/backend/locals"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/garrettladley/fiberpaginate"
@@ -128,37 +127,6 @@ func (u *UserController) UpdateUser(c *fiber.Ctx) error {
 	}
 
 	return c.Status(http.StatusOK).JSON(updatedUser)
-}
-
-// UpdatePassword godoc
-//
-// @Summary		Update a user's password
-// @Description	Updates a user's password
-// @ID			update-password
-// @Tags      	user
-// @Accept		json
-// @Produce		json
-// @Param		userID		path	string	true	"User ID"
-// @Param		passwordBody	body	authEntities.UpdatePasswordRequestBody	true	"Password Body"
-// @Success		200	  {string}	    utilities.SuccessResponse
-// @Failure     400   {object}      error
-// @Failure     401   {object}      error
-// @Failure     404   {object}      error
-// @Failure     500   {object}      error
-// @Router		/users/{userID}/password  [patch]
-func (u *UserController) UpdatePassword(c *fiber.Ctx) error {
-	var passwordBody authEntities.UpdatePasswordRequestBody
-
-	if err := c.BodyParser(&passwordBody); err != nil {
-		return utilities.InvalidJSON()
-	}
-
-	err := u.userService.UpdatePassword(c.Params("userID"), passwordBody)
-	if err != nil {
-		return err
-	}
-
-	return utilities.FiberMessage(c, http.StatusOK, "success")
 }
 
 // DeleteUser godoc

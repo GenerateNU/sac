@@ -12,26 +12,26 @@ type Settings struct {
 }
 
 type Integrations struct {
-	GoogleOauth  OAuthSettings
-	OutlookOauth OAuthSettings
-	AWS          AWSSettings
-	Resend       ResendSettings
-	Search       SearchSettings
+	Google   GoogleOAuthSettings
+	Microsft MicrosoftOAuthSettings
+	AWS      AWSSettings
+	Resend   ResendSettings
+	Search   SearchSettings
 }
 
 type intermediateSettings struct {
-	Application     ApplicationSettings              `envPrefix:"SAC_APPLICATION_"`
-	Database        intermediateDatabaseSettings     `envPrefix:"SAC_DB_"`
-	RedisLimiter    intermediateRedisSettings        `envPrefix:"SAC_REDIS_LIMITER_"`
-	RedisRefresher  intermediateRedisSettings        `envPrefix:"SAC_REDIS_REFRESHER_"`
-	SuperUser       intermediateSuperUserSettings    `envPrefix:"SAC_SUDO_"`
-	Auth            intermediateAuthSettings         `envPrefix:"SAC_AUTH_"`
-	AWS             intermediateAWSSettings          `envPrefix:"SAC_AWS_"`
-	Resend          intermediateResendSettings       `envPrefix:"SAC_RESEND_"`
-	Calendar        intermediateCalendarSettings     `envPrefix:"SAC_CALENDAR_"`
-	GoogleSettings  intermediateGoogleOAuthSettings  `envPrefix:"SAC_GOOGLE_OAUTH_"`
-	OutlookSettings intermdeiateOutlookOAuthSettings `envPrefix:"SAC_OUTLOOK_OAUTH_"`
-	Search          SearchSettings                   `envPrefix:"SAC_SEARCH_"`
+	Application    ApplicationSettings               `envPrefix:"SAC_APPLICATION_"`
+	Database       intermediateDatabaseSettings      `envPrefix:"SAC_DB_"`
+	RedisLimiter   intermediateRedisSettings         `envPrefix:"SAC_REDIS_LIMITER_"`
+	RedisRefresher intermediateRedisSettings         `envPrefix:"SAC_REDIS_REFRESHER_"`
+	SuperUser      intermediateSuperUserSettings     `envPrefix:"SAC_SUDO_"`
+	Auth           intermediateAuthSettings          `envPrefix:"SAC_AUTH_"`
+	AWS            intermediateAWSSettings           `envPrefix:"SAC_AWS_"`
+	Resend         intermediateResendSettings        `envPrefix:"SAC_RESEND_"`
+	Calendar       intermediateCalendarSettings      `envPrefix:"SAC_CALENDAR_"`
+	Google         intermediateGoogleOAuthSettings   `envPrefix:"SAC_GOOGLE_OAUTH_"`
+	Microsft       intermediateMicrosoftOAuthSetting `envPrefix:"SAC_MICROSOFT_OAUTH_"`
+	Search         SearchSettings                    `envPrefix:"SAC_SEARCH_"`
 }
 
 func (i *intermediateSettings) into() (*Settings, error) {
@@ -75,12 +75,12 @@ func (i *intermediateSettings) into() (*Settings, error) {
 		return nil, err
 	}
 
-	google, err := i.GoogleSettings.into()
+	google, err := i.Google.into()
 	if err != nil {
 		return nil, err
 	}
 
-	outlook, err := i.OutlookSettings.into()
+	microsoft, err := i.Microsft.into()
 	if err != nil {
 		return nil, err
 	}
@@ -94,11 +94,11 @@ func (i *intermediateSettings) into() (*Settings, error) {
 		Auth:           *auth,
 		Calendar:       *calendar,
 		Integrations: Integrations{
-			GoogleOauth:  *google,
-			OutlookOauth: *outlook,
-			AWS:          *aws,
-			Resend:       *resend,
-			Search:       i.Search,
+			Google:   *google,
+			Microsft: *microsoft,
+			AWS:      *aws,
+			Resend:   *resend,
+			Search:   i.Search,
 		},
 	}, nil
 }

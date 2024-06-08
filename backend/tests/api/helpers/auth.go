@@ -3,10 +3,8 @@ package helpers
 import (
 	"fmt"
 
-	"github.com/GenerateNU/sac/backend/auth"
 	"github.com/GenerateNU/sac/backend/database"
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
@@ -14,7 +12,6 @@ import (
 type TestUser struct {
 	UUID        uuid.UUID
 	Email       string
-	Password    string
 	AccessToken string
 }
 
@@ -63,96 +60,34 @@ func (app *TestApp) authSuper() {
 	app.TestUser = &TestUser{
 		UUID:        database.SuperUserUUID,
 		Email:       email,
-		Password:    password.Expose(),
 		AccessToken: accessToken,
 	}
 }
 
 func (app *TestApp) authStudent() {
-	studentUser, rawPassword := SampleStudentFactory()
-
-	resp, err := app.Send(TestRequest{
-		Method: fiber.MethodPost,
-		Path:   "/api/v1/users/",
-		Body:   SampleStudentJSONFactory(studentUser, rawPassword),
-	})
-	if err != nil {
-		panic(fmt.Sprintf("Failed to create sample student user: %v", err))
-	}
-	var respBody map[string]interface{}
-
-	err = json.NewDecoder(resp.Body).Decode(&respBody)
-	if err != nil {
-		panic(fmt.Sprintf("Failed to decode response body: %v", err))
-	}
-
-	rawStudentUserUUID := respBody["id"].(string)
-	studentUserUUID, err := uuid.Parse(rawStudentUserUUID)
-	if err != nil {
-		panic(fmt.Sprintf("Failed to parse student user UUID: %v", err))
-	}
-
-	resp, err = app.Send(TestRequest{
-		Method: fiber.MethodPost,
-		Path:   "/api/v1/auth/login",
-		Body: &map[string]interface{}{
-			"email":    studentUser.Email,
-			"password": rawPassword,
-		},
-	})
-	if err != nil {
-		panic(fmt.Sprintf("Failed to authenticate sample student user: %v", err))
-	}
-	var accessToken string
-	var refreshToken string
-
-	authHeader := resp.Header.Get("Authorization")
-	if authHeader != "" {
-		accessToken = authHeader[len("Bearer "):]
-	}
-
-	if accessToken == "" || refreshToken == "" {
-		panic("Failed to authenticate sample student user")
-	}
-
-	app.TestUser = &TestUser{
-		UUID:        studentUserUUID,
-		Email:       studentUser.Email,
-		Password:    rawPassword,
-		AccessToken: accessToken,
-	}
+	app.TestUser = nil
 }
 
-func SampleStudentFactory() (models.User, string) {
-	password := "1234567890&"
-	hashedPassword, err := auth.ComputeHash(password)
-	if err != nil {
-		panic(fmt.Sprintf("Failed to hash password: %v", err))
-	}
-
+func SampleStudentFactory() models.User {
 	return models.User{
 		Role:            models.Student,
-		FirstName:       "Jane",
-		LastName:        "Doe",
+		Name:            "Jane Doe",
 		Email:           "doe.jane@northeastern.edu",
-		PasswordHash:    *hashedPassword,
 		Major0:          models.ComputerScience,
 		Major1:          models.Economics,
 		College:         models.KCCS,
 		GraduationCycle: models.May,
 		GraduationYear:  2025,
-	}, password
+	}
 }
 
-func SampleStudentJSONFactory(sampleStudent models.User, rawPassword string) *map[string]interface{} {
+func SampleStudentJSONFactory(sampleStudent models.User) *map[string]interface{} {
 	if sampleStudent.Role != models.Student {
 		panic("User is not a student")
 	}
 	return &map[string]interface{}{
-		"first_name":       sampleStudent.FirstName,
-		"last_name":        sampleStudent.LastName,
+		"name":             sampleStudent.Name,
 		"email":            sampleStudent.Email,
-		"password":         rawPassword,
 		"major0":           string(sampleStudent.Major0),
 		"major1":           string(sampleStudent.Major1),
 		"major2":           string(sampleStudent.Major2),

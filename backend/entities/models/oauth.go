@@ -9,8 +9,8 @@ import (
 type OAuthResource string
 
 const (
-	Google  OAuthResource = "google"
-	Outlook OAuthResource = "outlook"
+	Google   OAuthResource = "google"
+	Microsft OAuthResource = "microsft"
 )
 
 type UserOAuthTokens struct {

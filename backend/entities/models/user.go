@@ -8,10 +8,8 @@ type User struct {
 	Model
 
 	Role            UserRole        `json:"role"`
-	FirstName       string          `json:"first_name"`
-	LastName        string          `json:"last_name"`
+	Name            string          `json:"name"`
 	Email           string          `json:"email"`
-	PasswordHash    string          `json:"-"`
 	Major0          Major           `json:"major0"`
 	Major1          Major           `json:"major1"`
 	Major2          Major           `json:"major2"`

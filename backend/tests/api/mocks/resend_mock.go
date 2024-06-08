@@ -6,19 +6,19 @@ import (
 
 type ResendMockClient struct{}
 
-func NewResendMockClient() email.EmailClientInterface {
+func NewResendMockClient() email.Emailer {
 	return &ResendMockClient{}
 }
 
-func (c *ResendMockClient) SendPasswordResetEmail(name, email, token string) error {
+func (c *ResendMockClient) SendPasswordReset(name, email, token string) error {
 	return nil
 }
 
-func (c *ResendMockClient) SendEmailVerification(email, code string) error {
+func (c *ResendMockClient) SendVerification(email, code string) error {
 	return nil
 }
 
-func (c *ResendMockClient) SendWelcomeEmail(name, email string) error {
+func (c *ResendMockClient) SendWelcome(name, email string) error {
 	return nil
 }
 

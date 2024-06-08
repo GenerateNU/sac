@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile.redis
     container_name: redis_limiter
     ports:
-      - 6381:6379
+      - 6380:6379
     environment:
       - REDIS_USERNAME=redis_limiter
       - REDIS_PASSWORD=redis_limiter!#1
@@ -21,7 +21,7 @@ services:
       - 6381:6379
     environment:
       - REDIS_USERNAME=redis_refresher
-      - REDIS_PASSWORD=redis_refresher!#3
+      - REDIS_PASSWORD=redis_refresher!#1
       - REDIS_DISABLE_DEFAULT_USER="true"
     volumes:
       - redis-limiter-data:/data
