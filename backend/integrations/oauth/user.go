@@ -3,6 +3,8 @@ package oauth
 import (
 	"encoding/gob"
 	"time"
+
+	"github.com/GenerateNU/sac/backend/entities/models"
 )
 
 func init() {
@@ -28,4 +30,13 @@ type User struct {
 	RefreshToken      string
 	ExpiresAt         time.Time
 	IDToken           string
+}
+
+func (u *User) Into() *models.User {
+	return &models.User{
+		Role:      models.Student,
+		Name:      u.Name,
+		Email:     u.Email,
+		AvatarURL: u.AvatarURL,
+	}
 }

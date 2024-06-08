@@ -156,7 +156,11 @@ func CompleteUserAuth(c *fiber.Ctx) (oauth.User, error) {
 	if err != nil {
 		return oauth.User{}, err
 	}
-	defer Logout(c)
+	defer func() {
+		if err := Logout(c); err != nil {
+			slog.Error("sacic: error logging out", "error", err)
+		}
+	}()
 	sess, err := provider.UnmarshalSession(value)
 	if err != nil {
 		return oauth.User{}, err
@@ -223,7 +227,9 @@ func Logout(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	sess.Destroy()
+	if err := sess.Destroy(); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -280,7 +286,10 @@ func StoreInSession(key string, value string, c *fiber.Ctx) error {
 		return err
 	}
 
-	sess.Save()
+	if err := sess.Save(); err != nil {
+		return err
+	}
+
 	return nil
 }
 

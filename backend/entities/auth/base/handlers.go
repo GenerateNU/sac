@@ -36,7 +36,9 @@ func (h *Handler) Provider(c *fiber.Ctx) error {
 		slog.Info("user auth callback", "user", sacUser)
 		locals.SetUser(c, sacUser)
 	} else {
-		sacic.BeginAuthHandler(c)
+		if err := sacic.BeginAuthHandler(c); err != nil {
+			return err
+		}
 	}
 	return nil
 }

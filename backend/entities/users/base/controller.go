@@ -45,8 +45,6 @@ func (u *UserController) GetUsers(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(&users)
 }
 
-
-
 // GetUser godoc
 //
 // @Summary		Retrieve a user

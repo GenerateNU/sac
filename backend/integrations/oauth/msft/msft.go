@@ -18,7 +18,8 @@ import (
 )
 
 const (
-	authURLFmt      string = "https://login.microsoftonline.com/%s/oauth2/v2.0/authorize"
+	authURLFmt string = "https://login.microsoftonline.com/%s/oauth2/v2.0/authorize"
+	// #nosec G101
 	tokenURLFmt     string = "https://login.microsoftonline.com/%s/oauth2/v2.0/token"
 	endpointProfile string = "https://graph.microsoft.com/v1.0/me"
 )

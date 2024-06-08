@@ -13,7 +13,7 @@ func FindOrCreateUser(ctx context.Context, db *gorm.DB, user oauth.User) (*model
 	var sacUser models.User
 	if err := db.WithContext(ctx).Where("email = ?", user.Email).First(&sacUser).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			if err := createUser(ctx, db, &models.User{Role: models.Student, Name: user.Name, Email: user.Email, AvatarURL: user.AvatarURL}); err != nil {
+			if err := createUser(ctx, db, user.Into()); err != nil {
 				return nil, err
 			}
 		} else {
