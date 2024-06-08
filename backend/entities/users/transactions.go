@@ -61,10 +61,7 @@ func VerifyEmail(ctx context.Context, db *gorm.DB, token string, userID uuid.UUI
 		return result.Error
 	}
 
-	if err := tx.Create(&models.VerificationDeletionQueue{
-		VerificationToken: token,
-		UserID:            userID,
-	}).Error; err != nil {
+	if err := tx.Where("token = ? AND user_id = ?", token, userID).Delete(&models.Verification{}).Error; err != nil {
 		tx.Rollback()
 		return err
 	}

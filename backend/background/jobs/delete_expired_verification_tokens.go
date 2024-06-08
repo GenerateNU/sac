@@ -17,7 +17,7 @@ func (j *Jobs) DeleteExpiredVerificationTokens(ctx context.Context) background.J
 
 		for range t.C {
 			slog.Info("deleting expired verification tokens")
-			if err := deleteExpiredVerificationTokens(ctx, j.db, constants.DELETE_EXPIRED_TOKEN_LIMIT); err != nil {
+			if err := deleteExpiredVerificationTokens(ctx, j.db, constants.DELETE_EXPIRED_VERIFICATION_LIMIT); err != nil {
 				slog.Error("failed to delete expired verification tokens", "err", err)
 			}
 		}

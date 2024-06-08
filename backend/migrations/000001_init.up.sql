@@ -277,12 +277,6 @@ CREATE TABLE IF NOT EXISTS verifications(
     PRIMARY KEY(user_id, expires_at)
 );
 
-CREATE TABLE verifications_deletion_queue (
-    verification_token uuid NOT NULL REFERENCES verifications(user_id),
-    user_id uuid NOT NULL REFERENCES users(id),
-    PRIMARY KEY(verification_id, user_id)
-);
-
 CREATE UNIQUE INDEX IF NOT EXISTS uni_verifications_token ON verifications USING btree ("token");
 
 CREATE TYPE OAuthResourceType AS ENUM ('google', 'microsoft');
