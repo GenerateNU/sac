@@ -64,12 +64,12 @@ func (cat *CategoryController) CreateCategory(c *fiber.Ctx) error {
 // @Failure     500   {string}      error
 // @Router		/categories/  [get]
 func (cat *CategoryController) GetCategories(c *fiber.Ctx) error {
-	pagination, ok := fiberpaginate.FromContext(c)
+	pageInfo, ok := fiberpaginate.FromContext(c)
 	if !ok {
-		return utilities.ErrExpectedPagination
+		return utilities.ErrExpectedPageInfo
 	}
 
-	categories, err := cat.categoryService.GetCategories(*pagination)
+	categories, err := cat.categoryService.GetCategories(*pageInfo)
 	if err != nil {
 		return err
 	}

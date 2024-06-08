@@ -10,9 +10,9 @@ import (
 )
 
 var (
-	ErrNotFound           = errors.New("not found")
-	ErrDuplicate          = errors.New("duplicate")
-	ErrExpectedPagination = errors.New("expected pagination. make sure to use the fiberpaginate middleware")
+	ErrNotFound         = errors.New("not found")
+	ErrDuplicate        = errors.New("duplicate")
+	ErrExpectedPageInfo = errors.New("expected page info. make sure to use the fiberpaginate middleware")
 )
 
 func IsNotFound(err error) bool {
@@ -23,8 +23,8 @@ func IsDuplicate(err error) bool {
 	return errors.Is(err, ErrDuplicate)
 }
 
-func IsExpectedPagination(err error) bool {
-	return errors.Is(err, ErrExpectedPagination)
+func IsExpectedPageInfo(err error) bool {
+	return errors.Is(err, ErrExpectedPageInfo)
 }
 
 type APIError struct {
@@ -86,7 +86,7 @@ func ErrorHandler(c *fiber.Ctx, err error) error {
 		apiErr = NewAPIError(http.StatusNotFound, err)
 	case ErrDuplicate:
 		apiErr = NewAPIError(http.StatusConflict, err)
-	case ErrExpectedPagination:
+	case ErrExpectedPageInfo:
 		apiErr = NewAPIError(http.StatusInternalServerError, err)
 	default:
 		if castedErr, ok := err.(APIError); ok {

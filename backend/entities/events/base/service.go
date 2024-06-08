@@ -1,6 +1,8 @@
 package base
 
 import (
+	"errors"
+
 	"github.com/GenerateNU/sac/backend/entities/events"
 	"github.com/GenerateNU/sac/backend/entities/models"
 
@@ -11,7 +13,8 @@ import (
 
 type EventServiceInterface interface {
 	// getters
-	GetEvents(pageInfo fiberpaginate.PageInfo) ([]models.Event, error)
+	GetEvents(pageInfo fiberpaginate.PageInfo, start string, end string) ([]models.Event, error)
+	GetEventsPreview(pageInfo fiberpaginate.PageInfo, start string, end string) ([]EventPreview, error)
 	GetEvent(eventID string) (*models.Event, error)
 	// event cud
 	CreateEvent(body events.CreateEventRequestBody) (*models.Event, error)
@@ -27,8 +30,48 @@ func NewEventService(serviceParams types.ServiceParams) EventServiceInterface {
 	return &EventService{serviceParams}
 }
 
-func (e *EventService) GetEvents(pageInfo fiberpaginate.PageInfo) ([]models.Event, error) {
-	return GetEvents(e.DB, pageInfo)
+func (e *EventService) GetEvents(pageInfo fiberpaginate.PageInfo, start string, end string) ([]models.Event, error) {
+	if start != "" && end != "" {
+		return GetEvents(e.DB, pageInfo)
+	}
+
+	startTime, err := utilities.ParseTime(start, utilities.YYYY_dash_MM_dash_DD)
+	if err != nil {
+		return nil, utilities.BadRequest(err)
+	}
+
+	endTime, err := utilities.ParseTime(end, utilities.YYYY_dash_MM_dash_DD)
+	if err != nil {
+		return nil, utilities.BadRequest(err)
+	}
+
+	if startTime.After(endTime) {
+		return nil, utilities.BadRequest(errors.New("start time must be before end time"))
+	}
+
+	return GetEventsByTime(e.DB, pageInfo, startTime, endTime)
+}
+
+func (e *EventService) GetEventsPreview(pageInfo fiberpaginate.PageInfo, start string, end string) ([]EventPreview, error) {
+	if start != "" && end != "" {
+		return GetEventsPreview(e.DB, pageInfo)
+	}
+
+	startTime, err := utilities.ParseTime(start, utilities.YYYY_dash_MM_dash_DD)
+	if err != nil {
+		return nil, utilities.BadRequest(err)
+	}
+
+	endTime, err := utilities.ParseTime(end, utilities.YYYY_dash_MM_dash_DD)
+	if err != nil {
+		return nil, utilities.BadRequest(err)
+	}
+
+	if startTime.After(endTime) {
+		return nil, utilities.BadRequest(errors.New("start time must be before end time"))
+	}
+
+	return GetEventsPreviewByTime(e.DB, pageInfo, startTime, endTime)
 }
 
 func (e *EventService) GetEvent(eventID string) (*models.Event, error) {

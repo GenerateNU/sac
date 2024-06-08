@@ -22,7 +22,7 @@ func InitDB() error {
 }
 
 func DownDB() error {
-	config, err := config.GetConfiguration(CONFIG)
+	config, err := config.GetConfiguration(CONFIG_FILE)
 	if err != nil {
 		return err
 	}
@@ -33,8 +33,7 @@ func DownDB() error {
 	cmd.Dir = ROOT_DIR
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	err = cmd.Run()
-	if err != nil {
+	if cmd.Run() != nil {
 		return fmt.Errorf("error running down migrations: %w", err)
 	}
 
@@ -42,7 +41,7 @@ func DownDB() error {
 }
 
 func CleanTestDBs() error {
-	config, err := config.GetConfiguration(CONFIG)
+	config, err := config.GetConfiguration(CONFIG_FILE)
 	if err != nil {
 		return err
 	}
@@ -102,7 +101,7 @@ func CleanTestDBs() error {
 }
 
 func InsertDB() error {
-	config, err := config.GetConfiguration(CONFIG)
+	config, err := config.GetConfiguration(CONFIG_FILE)
 	if err != nil {
 		return err
 	}

@@ -8,7 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func CustomClaims(c *fiber.Ctx) (*auth.CustomClaims, error) {
+func CustomClaimsFrom(c *fiber.Ctx) (*auth.CustomClaims, error) {
 	rawClaims := c.Locals(claimsKey)
 	if rawClaims == nil {
 		return nil, utilities.Forbidden()

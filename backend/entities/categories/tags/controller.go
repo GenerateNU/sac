@@ -32,12 +32,12 @@ func NewCategoryTagController(categoryTagService CategoryTagServiceInterface) *C
 // @Failure     500   {object}      error
 // @Router		/categories/{categoryID}/tags/  [get]
 func (ct *CategoryTagController) GetTagsByCategory(c *fiber.Ctx) error {
-	pagination, ok := fiberpaginate.FromContext(c)
+	pageInfo, ok := fiberpaginate.FromContext(c)
 	if !ok {
-		return utilities.ErrExpectedPagination
+		return utilities.ErrExpectedPageInfo
 	}
 
-	tags, err := ct.categoryTagService.GetTagsByCategory(c.Params("categoryID"), *pagination)
+	tags, err := ct.categoryTagService.GetTagsByCategory(c.Params("categoryID"), *pageInfo)
 	if err != nil {
 		return err
 	}

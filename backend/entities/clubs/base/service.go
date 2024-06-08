@@ -1,19 +1,19 @@
 package base
 
 import (
-	"fmt"
-
 	"github.com/GenerateNU/sac/backend/entities/clubs"
 	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/errs"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/garrettladley/fiberpaginate"
+	"github.com/google/uuid"
 )
 
 type ClubServiceInterface interface {
 	GetClubs(pageInfo fiberpaginate.PageInfo) ([]models.Club, error)
 	GetClub(id string) (*models.Club, error)
-	CreateClub(clubBody CreateClubRequestBody) (*models.Club, error)
+	CreateClub(userID uuid.UUID, clubBody CreateClubRequestBody) (*models.Club, error)
 	UpdateClub(id string, clubBody UpdateClubRequestBody) (*models.Club, error)
 	DeleteClub(id string) error
 }
@@ -30,7 +30,7 @@ func (c *ClubService) GetClubs(pagination fiberpaginate.PageInfo) ([]models.Club
 	return GetClubs(c.DB, pagination)
 }
 
-func (c *ClubService) CreateClub(clubBody CreateClubRequestBody) (*models.Club, error) {
+func (c *ClubService) CreateClub(userID uuid.UUID, clubBody CreateClubRequestBody) (*models.Club, error) {
 	if err := utilities.Validate(c.Validate, clubBody); err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func (c *ClubService) CreateClub(clubBody CreateClubRequestBody) (*models.Club, 
 		return nil, err
 	}
 
-	return CreateClub(c.DB, clubBody.UserID, *club)
+	return CreateClub(c.DB, userID, *club)
 }
 
 func (c *ClubService) GetClub(id string) (*models.Club, error) {
@@ -59,7 +59,7 @@ func (c *ClubService) UpdateClub(id string, clubBody UpdateClubRequestBody) (*mo
 	}
 
 	if utilities.AtLeastOne(clubBody, UpdateClubRequestBody{}) {
-		return nil, fmt.Errorf("at least one field must be present")
+		return nil, errs.ErrAtLeastOne
 	}
 
 	if err := utilities.Validate(c.Validate, clubBody); err != nil {
