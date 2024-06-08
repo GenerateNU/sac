@@ -133,7 +133,7 @@ const WelcomePage = () => {
                                     height={3}
                                     width={20}
                                     backgroundColor="gray"
-                                    borderRadius="small"
+                                    borderRadius="sm"
                                     marginHorizontal="xxs"
                                     overflow="hidden"
                                 >

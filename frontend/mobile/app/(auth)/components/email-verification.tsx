@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         borderWidth: 1,
         textAlign: 'center',
-        borderRadius: Border.base
+        borderRadius: Border.sm
     },
     focusCell: {
         borderColor: Colors.black

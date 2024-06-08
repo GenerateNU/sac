@@ -69,7 +69,7 @@ export const TextBox: React.FC<TextboxProps> = ({
 const styles = createStyles({
     textInput: {
         borderWidth: 1,
-        borderRadius: 'base',
+        borderRadius: 'sm',
         backgroundColor: 'white',
         padding: 'm',
         marginBottom: 'xs',

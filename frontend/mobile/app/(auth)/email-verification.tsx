@@ -16,7 +16,6 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 
 import { Box, Colors, Spacing, Text } from '../(design-system)';
-import { Border } from '../(design-system)/shared/border';
 import EmailVerificationForm from './components/email-verification';
 import { SmallText } from './components/small-text';
 
@@ -166,19 +165,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 5
-    },
-    cell: {
-        width: 50,
-        height: 50,
-        lineHeight: 46,
-        fontSize: 24,
-        borderWidth: 2,
-        borderColor: '#00000030',
-        textAlign: 'center',
-        borderRadius: Border.base
-    },
-    focusCell: {
-        borderColor: Colors.black
     }
 });
 

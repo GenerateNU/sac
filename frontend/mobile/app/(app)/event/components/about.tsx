@@ -37,7 +37,7 @@ export const AboutEvent = ({
     };
 
     const renderTag = (item: Tag) => (
-        <TagComponent key={item.id} state="selected" color={color}>
+        <TagComponent key={item.id} variant="selected" color={color}>
             <Text variant="body-2">{item.name}</Text>
         </TagComponent>
     );

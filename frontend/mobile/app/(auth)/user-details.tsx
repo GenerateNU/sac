@@ -82,7 +82,7 @@ const UserDetails = () => {
                                     height={3}
                                     width={'32%'}
                                     backgroundColor="gray"
-                                    borderRadius="small"
+                                    borderRadius="sm"
                                     marginHorizontal="xxs"
                                     overflow="hidden"
                                 >

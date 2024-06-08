@@ -58,7 +58,7 @@ export const SelectOne: React.FC<SelectOneProps> = ({
     }
 
     return (
-        <Box width="100%" borderRadius="medium">
+        <Box width="100%" borderRadius="md">
             {title && <Text paddingBottom="xs">{title}</Text>}
             <TouchableOpacity
                 style={[
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         justifyContent: 'center',
         paddingHorizontal: Spacing.s,
-        borderRadius: Border.base,
+        borderRadius: Border.sm,
         height: 52
     },
     contentContainer: {
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
         borderColor: Colors.gray,
         borderWidth: 1,
         width: '100%',
-        borderRadius: Border.base,
+        borderRadius: Border.sm,
         marginTop: Spacing.xs
     },
     item: {

@@ -188,7 +188,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
 const styles = StyleSheet.create({
     container: {
         width: '100%',
-        borderRadius: Border.base
+        borderRadius: Border.sm
     },
     box: {
         backgroundColor: 'white',
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderColor: Colors.gray,
         borderWidth: 1,
-        borderRadius: Border.base,
+        borderRadius: Border.sm,
         marginTop: Spacing.xs
     },
     item: {
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
     },
     tag: {
         backgroundColor: Colors.gray,
-        borderRadius: Border.base,
+        borderRadius: Border.sm,
         paddingVertical: Spacing.xxs,
         paddingHorizontal: Spacing.xs,
         marginRight: Spacing.xxs,
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
         height: 40,
         borderColor: Colors.gray,
         borderWidth: 1,
-        borderRadius: Border.base,
+        borderRadius: Border.sm,
         paddingHorizontal: Spacing.s,
         margin: Spacing.xxs
     },
