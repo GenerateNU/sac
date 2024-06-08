@@ -39,4 +39,16 @@ SAC uses environment variables for configuration. SAC will, by default, pull the
 | SAC_CALENDAR_MAX_TERMINATION_DATE    | calendar   | max termination date for calendar integrations. |
 
 # Deployment design
-SAC
+SAC uses Terraform to manage its infrastructure. `deployment/state-config` contains the resources needed to create a DynamoDB table and S3 bucket for terraform state storage, as well as certiifcates for the SAC domain. `deployment/sac` contains the resources needed to create SAC's backend, and its module structure is as follows:
+* `network/`: Networking configuration
+    * `vpc/`: VPC, subnets, and routing tables.
+    * `security-groups/`: Security groups for instances
+* `services/`: Go backend
+    * `load-balancer/`: Elastic load balancer
+    * `backend/`: Go backend auto-scaler + EC2 instance
+* `data-storage/`: Data providers
+    * `postgresql/`: Postgres RDS instance
+    * `s3/`: S3 bucket for images
+    * `redis/`: EC2 instance for redis
+    * `opensearch/`: EC2 instance for opensearch
+
