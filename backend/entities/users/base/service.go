@@ -4,7 +4,6 @@ import (
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/errs"
 	"github.com/garrettladley/fiberpaginate"
-	"github.com/google/uuid"
 
 	"github.com/GenerateNU/sac/backend/entities/users"
 	"github.com/GenerateNU/sac/backend/types"
@@ -13,7 +12,6 @@ import (
 
 type UserServiceInterface interface {
 	GetUsers(pageInfo fiberpaginate.PageInfo) ([]models.User, error)
-	GetMe(id uuid.UUID) (*models.User, error)
 	GetUser(id string) (*models.User, error)
 	UpdateUser(id string, userBody UpdateUserRequestBody) (*models.User, error)
 	DeleteUser(id string) error
@@ -29,10 +27,6 @@ func NewUserService(serviceParams types.ServiceParams) UserServiceInterface {
 
 func (u *UserService) GetUsers(pageInfo fiberpaginate.PageInfo) ([]models.User, error) {
 	return GetUsers(u.DB, pageInfo)
-}
-
-func (u *UserService) GetMe(id uuid.UUID) (*models.User, error) {
-	return users.GetUser(u.DB, id)
 }
 
 func (u *UserService) GetUser(id string) (*models.User, error) {

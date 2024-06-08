@@ -25,8 +25,6 @@ DROP TABLE IF EXISTS user_event_waitlists CASCADE;
 
 DROP TABLE IF EXISTS user_tags CASCADE;
 
-DROP TABLE IF EXISTS verification_tasks CASCADE;
-
 DROP TABLE IF EXISTS verifications CASCADE;
 
 DROP TABLE IF EXISTS user_oauth_tokens CASCADE;
@@ -46,6 +44,8 @@ DROP TABLE IF EXISTS applications CASCADE;
 DROP TABLE IF EXISTS recruitment CASCADE;
 
 DROP TABLE IF EXISTS "users" CASCADE;
+
+DROP TABLE IF EXISTS welcome_tasks;
 
 DROP TYPE IF EXISTS recruitment_cycle CASCADE;
 

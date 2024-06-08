@@ -3,7 +3,6 @@ package base
 import (
 	"net/http"
 
-	"github.com/GenerateNU/sac/backend/locals"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/garrettladley/fiberpaginate"
 
@@ -46,34 +45,7 @@ func (u *UserController) GetUsers(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(&users)
 }
 
-// Me godoc
-//
-// @Summary		Retrieves the currently authenticated user
-// @Description	Retrieves the currently authenticated user
-// @ID			get-me
-// @Tags      	auth
-// @Accept		json
-// @Produce		json
-// @Security   Bearer
-// @Success		200	  {object}	    models.User
-// @Failure     400   {object}      error
-// @Failure     401   {object}      error
-// @Failure     404   {object}		error
-// @Failure     500   {object}      error
-// @Router		/auth/me  [get]
-func (u *UserController) GetMe(c *fiber.Ctx) error {
-	userID, err := locals.UserIDFrom(c)
-	if err != nil {
-		return err
-	}
 
-	user, err := u.userService.GetMe(*userID)
-	if err != nil {
-		return err
-	}
-
-	return c.Status(http.StatusOK).JSON(user)
-}
 
 // GetUser godoc
 //

@@ -6,8 +6,8 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/constants"
-	m "github.com/garrettladley/mattress"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -26,12 +26,12 @@ type RedisClient struct {
 	client *redis.Client
 }
 
-func NewRedisClient(username string, password *m.Secret[string], host string, port uint, db int) *RedisClient {
+func NewRedisClient(settings config.RedisSettings) *RedisClient {
 	client := redis.NewClient(&redis.Options{
-		Username:              username,
-		Password:              password.Expose(),
-		Addr:                  fmt.Sprintf("%s:%d", host, port),
-		DB:                    db,
+		Username:              settings.Username,
+		Password:              settings.Password.Expose(),
+		Addr:                  fmt.Sprintf("%s:%d", settings.Host, settings.Port),
+		DB:                    settings.DB,
 		PoolSize:              10 * runtime.GOMAXPROCS(0),
 		MaxActiveConns:        constants.REDIS_MAX_OPEN_CONNECTIONS,
 		MaxIdleConns:          constants.REDIS_MAX_IDLE_CONNECTIONS,

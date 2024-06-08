@@ -30,17 +30,15 @@ func NewRouteParams(router fiber.Router, authMiddleware authMiddleware.AuthMiddl
 type ServiceParams struct {
 	DB           *gorm.DB
 	Validate     *validator.Validate
-	Auth         *config.AuthSettings
 	Calendar     *config.CalendarSettings
 	Stores       *store.Stores
 	Integrations integrations.Integrations
 }
 
-func NewServiceParams(db *gorm.DB, validate *validator.Validate, auth *config.AuthSettings, calendar *config.CalendarSettings, stores *store.Stores, integrations integrations.Integrations) ServiceParams {
+func NewServiceParams(db *gorm.DB, validate *validator.Validate, calendar *config.CalendarSettings, stores *store.Stores, integrations integrations.Integrations) ServiceParams {
 	return ServiceParams{
 		DB:           db,
 		Validate:     validate,
-		Auth:         auth,
 		Calendar:     calendar,
 		Stores:       stores,
 		Integrations: integrations,

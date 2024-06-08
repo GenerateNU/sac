@@ -7,16 +7,16 @@ import (
 
 type StoresMock struct {
 	store.Limiter
-	store.Refresher
+	store.Storer
 }
 
-func NewStoresMock(limiter store.Limiter, refresher store.Refresher) *store.Stores {
+func NewStoresMock(session store.Storer, limiter store.Limiter) *store.Stores {
 	return &store.Stores{
-		Limiter:   limiter,
-		Refresher: refresher,
+		Session: session,
+		Limiter: limiter,
 	}
 }
 
 func ConfigureRedisMock() *store.Stores {
-	return NewStoresMock(mocks.NewLimiterMock(mocks.NewRedisMockClient()), mocks.NewRefresherMock(mocks.NewRedisMockClient()))
+	return NewStoresMock(mocks.NewRedisClient(), mocks.NewLimiter(mocks.NewRedisClient()))
 }

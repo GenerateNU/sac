@@ -4,9 +4,13 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"log"
 	"log/slog"
 	"net"
+	"os"
+	"os/signal"
 	"path/filepath"
+	"syscall"
 
 	"github.com/GenerateNU/sac/backend/background"
 	"github.com/GenerateNU/sac/backend/background/jobs"
@@ -21,15 +25,14 @@ import (
 	"github.com/GenerateNU/sac/backend/server"
 	"github.com/GenerateNU/sac/backend/telemetry"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
+
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
 func main() {
-	onlyMigrate := flag.Bool("only-migrate", false, "Specify if you want to only perform the database migration")
-	seedSearch := flag.Bool("seed-search", true, "Specify if you want to seed the opensearch nodes.")
-	configPath := flag.String("config", filepath.Join("..", "config", ".env.dev"), "Specify the path to the config file (.env)")
-
-	flag.Parse()
+	onlyMigrate, seedSearch, configPath := parseFlags()
 	config, err := config.GetConfiguration(*configPath)
 	if err != nil {
 		utilities.Exit("Error getting configuration: %s", err.Error())
@@ -53,14 +56,7 @@ func main() {
 	}
 
 	if *seedSearch {
-		slog.Info("to appease linter", "seedSearch", *seedSearch)
-		// if err := search.SeedClubs(db); err != nil {
-		// 	return
-		// }
-
-		// if err := search.SeedEvents(db); err != nil {
-		// 	return
-		// }
+		seedSearchData(db)
 	}
 
 	if err := database.ConnPooling(db); err != nil {
@@ -69,26 +65,25 @@ func main() {
 
 	startBackgroundJobs(ctx, db)
 
-	stores := store.ConfigureRedis(*config)
-
+	stores := store.ConfigureStores(config.RedisSession, config.RedisLimiter)
 	integrations := configureIntegrations(&config.Integrations)
 
 	tp := telemetry.InitTracer()
-
-	slog.Info("appease linter since we aren't tracing anything yet", "tracer", telemetry.Tracer)
-
-	defer func() {
-		if err := tp.Shutdown(context.Background()); err != nil {
-			slog.Error("error shutting down tracer", "error", err)
-		}
-	}()
+	defer shutdownTracer(tp)
 
 	app := server.Init(db, stores, *integrations, *config)
 
-	err = app.Listen(fmt.Sprintf("%s:%d", config.Application.Host, config.Application.Port))
-	if err != nil {
-		utilities.Exit("Error starting server: %s", err.Error())
-	}
+	go startServer(app, config.Application.Host, config.Application.Port)
+
+	waitForShutdown(app)
+}
+
+func parseFlags() (onlyMigrate, seedSearch *bool, configPath *string) {
+	onlyMigrate = flag.Bool("only-migrate", false, "Specify if you want to only perform the database migration")
+	seedSearch = flag.Bool("seed-search", true, "Specify if you want to seed the opensearch nodes.")
+	configPath = flag.String("config", filepath.Join("..", "config", ".env.dev"), "Specify the path to the config file (.env)")
+	flag.Parse()
+	return
 }
 
 func checkServerRunning(host string, port uint16) error {
@@ -101,6 +96,22 @@ func checkServerRunning(host string, port uint16) error {
 	return nil
 }
 
+func seedSearchData(db *gorm.DB) {
+	slog.Info("to appease linter", "seedSearch", true, "db", db)
+	// if err := search.SeedClubs(db); err != nil {
+	// 	return
+	// }
+
+	// if err := search.SeedEvents(db); err != nil {
+	// 	return
+	// }
+}
+
+func startBackgroundJobs(ctx context.Context, db *gorm.DB) {
+	jobs := jobs.New(db)
+	background.Go(jobs.WelcomeSender(ctx))
+}
+
 func configureIntegrations(config *config.Integrations) *integrations.Integrations {
 	return &integrations.Integrations{
 		File:  file.NewAWSProvider(config.AWS),
@@ -108,9 +119,25 @@ func configureIntegrations(config *config.Integrations) *integrations.Integratio
 	}
 }
 
-func startBackgroundJobs(ctx context.Context, db *gorm.DB) {
-	jobs := jobs.New(db)
-	background.Go(jobs.ExpiredVerificationTokensDeleter(ctx))
-	background.Go(jobs.VerificationSender(ctx))
-	background.Go(jobs.WelcomeSender(ctx))
+func shutdownTracer(tp *sdktrace.TracerProvider) {
+	if err := tp.Shutdown(context.Background()); err != nil {
+		slog.Error("error shutting down tracer", "error", err)
+	}
+}
+
+func startServer(app *fiber.App, host string, port uint16) {
+	if err := app.Listen(fmt.Sprintf("%s:%d", host, port)); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
+	}
+}
+
+func waitForShutdown(app *fiber.App) {
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	slog.Info("Shutting down server")
+	if err := app.Shutdown(); err != nil {
+		slog.Error("failed to shutdown server", "error", err)
+	}
+	slog.Info("Server shutdown")
 }

@@ -1,27 +1,27 @@
 services:
+  redis-session:
+    build:
+      context: .
+      dockerfile: Dockerfile.redis
+    container_name: redis_session
+    ports:
+      - 6380:6379
+    environment:
+      - REDIS_USERNAME=redis_session
+      - REDIS_PASSWORD=redis_session!#1
+      - REDIS_DISABLE_DEFAULT_USER="true"
+    volumes:
+      - redis-limiter-data:/data
   redis-limiter:
     build:
       context: .
       dockerfile: Dockerfile.redis
     container_name: redis_limiter
     ports:
-      - 6380:6379
+      - 6381:6379
     environment:
       - REDIS_USERNAME=redis_limiter
       - REDIS_PASSWORD=redis_limiter!#1
-      - REDIS_DISABLE_DEFAULT_USER="true"
-    volumes:
-      - redis-limiter-data:/data
-  redis-refresher:
-    build:
-      context: .
-      dockerfile: Dockerfile.redis
-    container_name: redis_refresher
-    ports:
-      - 6381:6379
-    environment:
-      - REDIS_USERNAME=redis_refresher
-      - REDIS_PASSWORD=redis_refresher!#1
       - REDIS_DISABLE_DEFAULT_USER="true"
     volumes:
       - redis-limiter-data:/data

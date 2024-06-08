@@ -2,7 +2,6 @@ package auth
 
 import (
 	"github.com/GenerateNU/sac/backend/auth"
-	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/database/store"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -19,17 +18,15 @@ type AuthMiddlewareService interface {
 }
 
 type AuthMiddlewareHandler struct {
-	DB       *gorm.DB
-	Validate *validator.Validate
-	Auth     config.AuthSettings
-	Stores   *store.Stores
+	db       *gorm.DB
+	validate *validator.Validate
+	session  store.Storer
 }
 
-func New(db *gorm.DB, validate *validator.Validate, authSettings config.AuthSettings, stores *store.Stores) AuthMiddlewareService {
+func New(db *gorm.DB, validate *validator.Validate, session store.Storer) AuthMiddlewareService {
 	return &AuthMiddlewareHandler{
-		DB:       db,
-		Validate: validate,
-		Auth:     authSettings,
-		Stores:   stores,
+		db:       db,
+		validate: validate,
+		session:  session,
 	}
 }

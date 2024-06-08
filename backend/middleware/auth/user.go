@@ -21,12 +21,12 @@ func (m *AuthMiddlewareHandler) UserAuthorizeById(c *fiber.Ctx) error {
 			return err
 		}
 
-		userID, err := locals.UserIDFrom(c)
+		user, err := locals.UserFrom(c)
 		if err != nil {
 			return err
 		}
 
-		if idAsUUID == userID {
+		if idAsUUID == &user.ID {
 			return c.Next()
 		}
 

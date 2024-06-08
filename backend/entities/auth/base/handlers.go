@@ -1,19 +1,13 @@
 package base
 
 import (
-	"context"
-	"errors"
 	"log/slog"
 	"net/http"
-	"time"
 
-	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/entities/users"
 	"github.com/GenerateNU/sac/backend/integrations/email"
 	"github.com/GenerateNU/sac/backend/integrations/oauth/sacic"
 
 	"github.com/GenerateNU/sac/backend/locals"
-	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
@@ -23,8 +17,6 @@ type Service interface {
 	Provider(c *fiber.Ctx) error
 	ProviderCallback(c *fiber.Ctx) error
 	ProviderLogout(c *fiber.Ctx) error
-	SendCode(c *fiber.Ctx) error
-	VerifyEmail(c *fiber.Ctx) error
 }
 
 type Handler struct {
@@ -66,64 +58,4 @@ func (h *Handler) ProviderLogout(c *fiber.Ctx) error {
 	}
 
 	return c.Redirect("/", http.StatusTemporaryRedirect)
-}
-
-func (h *Handler) SendCode(c *fiber.Ctx) error {
-	var body emailRequestBody
-	if err := c.BodyParser(&body); err != nil {
-		return err
-	}
-
-	user, err := users.GetUserByEmail(h.db, body.Email)
-	if err != nil {
-		return err
-	}
-
-	if user.Status == models.UserStatusVerified {
-		return errors.New("user is already verified")
-	}
-
-	if _, err := GetActiveTokenByUserID(h.db, user.ID); err != nil {
-		if !utilities.IsNotFound(err) {
-			return err
-		}
-	}
-
-	return EnqueueVerification(context.TODO(), h.db, user.ID, user.Email)
-}
-
-func (h *Handler) VerifyEmail(c *fiber.Ctx) error {
-	var body verifyEmailRequestBody
-	if err := c.BodyParser(&body); err != nil {
-		return err
-	}
-
-	if err := utilities.Validate(h.validate, body); err != nil {
-		return err
-	}
-
-	user, err := users.GetUserByEmail(h.db, body.Email)
-	if err != nil {
-		return err
-	}
-
-	if user.Status == models.UserStatusVerified {
-		return errors.New("user is already verified")
-	}
-
-	otp, err := GetToken(h.db, body.Token)
-	if err != nil {
-		return err
-	}
-
-	if otp.Token != body.Token {
-		slog.Error("invalid otp", "otp", otp.Token, "token", body.Token)
-		return utilities.BadRequest(errors.New("invalid otp"))
-	}
-
-	if otp.ExpiresAt.Before(time.Now().UTC()) {
-		return utilities.BadRequest(errors.New("otp expired"))
-	}
-
-	return users.VerifyEmail(c.Context(), h.db, otp.Token, user.ID)
 }

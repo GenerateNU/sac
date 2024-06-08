@@ -12,7 +12,6 @@ require (
 	github.com/goccy/go-json v0.10.3
 	github.com/gofiber/fiber/v2 v2.52.4
 	github.com/gofiber/swagger v1.0.0
-	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.6.0
 	github.com/huandu/go-assert v1.1.6
 	github.com/joho/godotenv v1.5.1

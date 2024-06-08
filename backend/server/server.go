@@ -6,7 +6,6 @@ import (
 	"github.com/garrettladley/fiberpaginate"
 	go_json "github.com/goccy/go-json"
 
-	authenticator "github.com/GenerateNU/sac/backend/auth"
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/database/store"
 
@@ -32,7 +31,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
-	"github.com/golang-jwt/jwt"
 
 	"gorm.io/gorm"
 )
@@ -54,15 +52,13 @@ func Init(db *gorm.DB, stores *store.Stores, integrations integrations.Integrati
 		panic(fmt.Sprintf("Error registering custom validators: %s", err))
 	}
 
-	jwt := authenticator.NewJWTClient(settings.Auth, jwt.SigningMethodHS256)
-
 	authMiddleware := authMiddleware.New(
 		db,
 		validate,
-		settings.Auth,
-		stores,
+		stores.Session,
 	)
-	utilityMiddleware := utilityMiddleware.New(fiberpaginate.New(), stores)
+
+	utilityMiddleware := utilityMiddleware.New(fiberpaginate.New(), stores.Limiter)
 
 	apiv1 := app.Group("/api/v1")
 
@@ -73,8 +69,6 @@ func Init(db *gorm.DB, stores *store.Stores, integrations integrations.Integrati
 		types.NewServiceParams(
 			db,
 			validate,
-			&settings.Auth,
-			jwt,
 			&settings.Calendar,
 			stores,
 			integrations,
@@ -88,7 +82,7 @@ func Init(db *gorm.DB, stores *store.Stores, integrations integrations.Integrati
 
 func allRoutes(app *fiber.App, routeParams types.RouteParams) {
 	Utility(app)
-	auth.Auth(routeParams)
+	auth.Auth(auth.Params{})
 	users.UserRoutes(routeParams)
 	clubs.ClubRoutes(routeParams)
 	socials.Social(routeParams)

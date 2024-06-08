@@ -16,7 +16,6 @@ import (
 )
 
 type Emailer interface {
-	SendVerification(ctx context.Context, email string, code string) error
 	SendWelcome(ctx context.Context, email string, name string) error
 }
 
@@ -30,6 +29,14 @@ func NewResendClient(settings config.ResendSettings, dev bool) Emailer {
 		Client: resend.NewClient(settings.APIKey.Expose()),
 		Dev:    dev,
 	}
+}
+
+func (r *ResendClient) SendWelcome(ctx context.Context, name string, email string) error {
+	if r.Dev {
+		return nil
+	}
+
+	return send(ctx, constants.ONBOARDING_EMAIL, email, "Welcome to Hippo", emails.Welcome(name), r.Client)
 }
 
 func send(ctx context.Context, fromEmail string, toEmail string, subject string, template templ.Component, client *resend.Client) error {
@@ -55,20 +62,4 @@ func send(ctx context.Context, fromEmail string, toEmail string, subject string,
 	}
 
 	return nil
-}
-
-func (r *ResendClient) SendVerification(ctx context.Context, email string, code string) error {
-	if r.Dev {
-		return nil
-	}
-
-	return send(ctx, constants.DEFAULT_FROM_EMAIL, email, "Email Verification", emails.Verification(code), r.Client)
-}
-
-func (r *ResendClient) SendWelcome(ctx context.Context, name string, email string) error {
-	if r.Dev {
-		return nil
-	}
-
-	return send(ctx, constants.ONBOARDING_EMAIL, email, "Welcome to Hippo", emails.Welcome(name), r.Client)
 }

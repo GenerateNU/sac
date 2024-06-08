@@ -17,7 +17,6 @@ CREATE TABLE IF NOT EXISTS "users"(
     college varchar(255),
     graduation_cycle varchar(255),
     graduation_year smallint,
-    STATUS TEXT DEFAULT 'pending_verification' :: character varying,
     PRIMARY KEY(id)
 );
 
@@ -291,14 +290,6 @@ CREATE TABLE IF NOT EXISTS user_oauth_tokens(
     resource_type OAuthResourceType,
     expires_at timestamp WITH time zone NOT NULL,
     PRIMARY KEY(user_id, resource_type)
-);
-
-CREATE TABLE IF NOT EXISTS verification_tasks(
-    user_id uuid NOT NULL,
-    verification_id uuid NOT NULL,
-    attempts integer NOT NULL DEFAULT 0,
-    PRIMARY KEY(user_id, verification_id),
-    CONSTRAINT fk_verification_tasks_verification FOREIGN KEY(verification_id) REFERENCES verifications(id) ON UPDATE CASCADE ON DELETE CASCADE CONSTRAINT fk_verification_tasks_user FOREIGN KEY(user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS welcome_tasks(

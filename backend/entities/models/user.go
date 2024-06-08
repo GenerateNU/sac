@@ -16,7 +16,6 @@ type User struct {
 	College         College         `json:"college"`
 	GraduationCycle GraduationCycle `json:"graduation_cycle"`
 	GraduationYear  int16           `json:"graduation_year"`
-	Status          UserStatus      `json:"status"`
 
 	Tag               []Tag     `gorm:"many2many:user_tags;" json:"-"`
 	Admin             []Club    `gorm:"many2many:user_club_admins;" json:"-"`
