@@ -32,12 +32,12 @@ func NewFileController(fileService FileServiceInterface) *FileController {
 // @Failure     500   {object}    error
 // @Router		/files/  [get]
 func (f *FileController) GetFiles(c *fiber.Ctx) error {
-	pagination, ok := fiberpaginate.FromContext(c)
+	pageInfo, ok := fiberpaginate.FromContext(c)
 	if !ok {
-		return utilities.ErrExpectedPagination
+		return utilities.ErrExpectedPageInfo
 	}
 
-	files, err := f.fileService.GetFiles(*pagination)
+	files, err := f.fileService.GetFiles(*pageInfo)
 	if err != nil {
 		return err
 	}

@@ -13,11 +13,11 @@ import (
 	auth "github.com/GenerateNU/sac/backend/entities/auth/base"
 	categories "github.com/GenerateNU/sac/backend/entities/categories/base"
 	clubs "github.com/GenerateNU/sac/backend/entities/clubs/base"
-	contacts "github.com/GenerateNU/sac/backend/entities/contacts/base"
 	events "github.com/GenerateNU/sac/backend/entities/events/base"
 	files "github.com/GenerateNU/sac/backend/entities/files/base"
+	leader "github.com/GenerateNU/sac/backend/entities/leadership/base"
 	oauth "github.com/GenerateNU/sac/backend/entities/oauth/base"
-	pocs "github.com/GenerateNU/sac/backend/entities/pocs/base"
+	socials "github.com/GenerateNU/sac/backend/entities/socials/base"
 	tags "github.com/GenerateNU/sac/backend/entities/tags/base"
 	users "github.com/GenerateNU/sac/backend/entities/users/base"
 	"github.com/GenerateNU/sac/backend/integrations"
@@ -86,8 +86,8 @@ func allRoutes(app *fiber.App, routeParams types.RouteParams) {
 	auth.Auth(routeParams)
 	users.UserRoutes(routeParams)
 	clubs.ClubRoutes(routeParams)
-	contacts.Contact(routeParams)
-	pocs.PointOfContact(routeParams)
+	socials.Social(routeParams)
+	leader.Leader(routeParams)
 	tags.Tag(routeParams)
 	categories.CategoryRoutes(routeParams)
 	events.EventRoutes(routeParams)

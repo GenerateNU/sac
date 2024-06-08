@@ -1,0 +1,21 @@
+package models
+
+import (
+	"github.com/google/uuid"
+)
+
+type Leader struct {
+	Model
+
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Position string `json:"position"`
+
+	ClubID uuid.UUID `json:"-"`
+
+	PhotoFile File `gorm:"polymorphic:Owner;" json:"photo_file"`
+}
+
+func (l Leader) TableName() string {
+	return "leadership"
+}

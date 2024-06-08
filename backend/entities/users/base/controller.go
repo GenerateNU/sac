@@ -34,12 +34,12 @@ func NewUserController(userService UserServiceInterface) *UserController {
 // @Failure     500   {object}      error
 // @Router		/users/  [get]
 func (u *UserController) GetUsers(c *fiber.Ctx) error {
-	pagination, ok := fiberpaginate.FromContext(c)
+	pageInfo, ok := fiberpaginate.FromContext(c)
 	if !ok {
-		return utilities.ErrExpectedPagination
+		return utilities.ErrExpectedPageInfo
 	}
 
-	users, err := u.userService.GetUsers(*pagination)
+	users, err := u.userService.GetUsers(*pageInfo)
 	if err != nil {
 		return err
 	}
@@ -63,7 +63,7 @@ func (u *UserController) GetUsers(c *fiber.Ctx) error {
 // @Failure     500   {object}      error
 // @Router		/auth/me  [get]
 func (u *UserController) GetMe(c *fiber.Ctx) error {
-	userID, err := locals.UserID(c)
+	userID, err := locals.UserIDFrom(c)
 	if err != nil {
 		return err
 	}

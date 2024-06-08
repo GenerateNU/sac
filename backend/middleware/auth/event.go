@@ -25,7 +25,7 @@ func (m *AuthMiddlewareService) EventAuthorizeById(c *fiber.Ctx, extractor Extra
 			return err
 		}
 
-		userID, err := locals.UserID(c)
+		userID, err := locals.UserIDFrom(c)
 		if err != nil {
 			return err
 		}
