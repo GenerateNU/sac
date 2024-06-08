@@ -5,8 +5,9 @@ import { faComments } from '@fortawesome/free-solid-svg-icons/faComments';
 import { faPenToSquare } from '@fortawesome/free-solid-svg-icons/faPenToSquare';
 import { RecruitmentCycle, RecruitmentType } from '@generatesac/lib';
 
-import { Box, SACColors, createStyles } from '@/app/(design-system)';
-
+import { SACColors } from '../../../shared/colors';
+import { createStyles } from '../../../theme';
+import { Box } from '../../Box/Box';
 import { RecruitmentItem } from '../RecruitmentItem/ClubRecruitmentItem';
 
 interface RecruitmentInfoProps {
@@ -54,7 +55,6 @@ export const RecruitmentInfo = ({
 
 const styles = createStyles({
     recruitmentInfo: {
-        padding: 'l',
         flexDirection: 'row',
         gap: 'm',
         alignItems: 'stretch',

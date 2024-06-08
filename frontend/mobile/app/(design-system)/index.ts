@@ -4,3 +4,6 @@ export * from './theme';
 export * from './shared/colors';
 export * from './shared/spacing';
 export * from './components/Tag/Tag';
+export * from './components/Button/Button';
+export * from './components/ClubRecruitment/RecruitmentInfo/ClubRecruitmentInfo';
+export * from './components/PointOfContactCard/PointOfContactCard';
