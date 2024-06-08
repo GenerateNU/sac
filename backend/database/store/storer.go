@@ -11,15 +11,13 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+// an implementation of https://github.com/gofiber/storage
 type Storer interface {
-	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error
-	Get(ctx context.Context, key string) (string, error)
-	Delete(ctx context.Context, key string) error
-	Exists(ctx context.Context, key string) (bool, error)
-	SetAdd(ctx context.Context, key string, members ...interface{}) error
-	SetIsMember(ctx context.Context, key string, member interface{}) (bool, error)
-	FlushAll(ctx context.Context) error
-	Close(ctx context.Context) error
+	Get(key string) ([]byte, error)
+	Set(key string, val []byte, exp time.Duration) error
+	Delete(key string) error
+	Reset() error
+	Close() error
 }
 
 type RedisClient struct {
@@ -43,35 +41,22 @@ func NewRedisClient(settings config.RedisSettings) *RedisClient {
 	}
 }
 
-func (r *RedisClient) Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error {
-	return r.client.Set(ctx, key, value, expiration).Err()
+func (r *RedisClient) Get(key string) ([]byte, error) {
+	return r.client.Get(context.Background(), key).Bytes()
 }
 
-func (r *RedisClient) Get(ctx context.Context, key string) (string, error) {
-	return r.client.Get(ctx, key).Result()
+func (r *RedisClient) Set(key string, val []byte, exp time.Duration) error {
+	return r.client.Set(context.Background(), key, val, exp).Err()
 }
 
-func (r *RedisClient) Delete(ctx context.Context, key string) error {
-	return r.client.Del(ctx, key).Err()
+func (r *RedisClient) Delete(key string) error {
+	return r.client.Del(context.Background(), key).Err()
 }
 
-func (r *RedisClient) Exists(ctx context.Context, key string) (bool, error) {
-	result, err := r.client.Exists(ctx, key).Result()
-	return result > 0, err
+func (r *RedisClient) Reset() error {
+	return r.client.FlushAll(context.Background()).Err()
 }
 
-func (r *RedisClient) SetAdd(ctx context.Context, key string, members ...interface{}) error {
-	return r.client.SAdd(ctx, key, members...).Err()
-}
-
-func (r *RedisClient) SetIsMember(ctx context.Context, key string, member interface{}) (bool, error) {
-	return r.client.SIsMember(ctx, key, member).Result()
-}
-
-func (r *RedisClient) FlushAll(ctx context.Context) error {
-	return r.client.FlushAll(ctx).Err()
-}
-
-func (r *RedisClient) Close(ctx context.Context) error {
+func (r *RedisClient) Close() error {
 	return r.client.Close()
 }

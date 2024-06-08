@@ -7,10 +7,8 @@ CREATE TABLE IF NOT EXISTS "users"(
     created_at timestamp WITH time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp WITH time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     role varchar(255) NOT NULL DEFAULT 'student' :: character varying,
-    first_name varchar(255) NOT NULL,
-    last_name varchar(255) NOT NULL,
+    name varchar(255) NOT NULL,
     email varchar(255) NOT NULL,
-    password_hash varchar(97) NOT NULL,
     major0 varchar(255),
     major1 varchar(255),
     major2 varchar(255),
@@ -266,37 +264,11 @@ CREATE TABLE IF NOT EXISTS user_tags(
     CONSTRAINT fk_user_tags_tag FOREIGN KEY(tag_id) REFERENCES tags(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS uni_users_email ON "users" USING btree ("email");
-
-CREATE TABLE IF NOT EXISTS verifications(
-    id uuid NOT NULL DEFAULT uuid_generate_v4(),
-    user_id uuid NOT NULL,
-    email varchar(255) NOT NULL,
-    token varchar(255) NOT NULL,
-    expires_at timestamp WITH time zone NOT NULL,
-    PRIMARY KEY(user_id, expires_at)
-);
-
-CREATE UNIQUE INDEX IF NOT EXISTS uni_verifications_token ON verifications USING btree ("token");
-
-CREATE TYPE OAuthResourceType AS ENUM ('google', 'microsoft');
-
--- mark for deletion
-CREATE TABLE IF NOT EXISTS user_oauth_tokens(
-    user_id uuid NOT NULL,
-    refresh_token varchar,
-    access_token varchar,
-    csrf_token varchar(255),
-    resource_type OAuthResourceType,
-    expires_at timestamp WITH time zone NOT NULL,
-    PRIMARY KEY(user_id, resource_type)
-);
-
 CREATE TABLE IF NOT EXISTS welcome_tasks(
     email varchar(255) NOT NULL,
     name varchar(255) NOT NULL,
     attempts integer NOT NULL DEFAULT 0,
-    PRIMARY KEY(email),
+    PRIMARY KEY(email)
 );
 
 COMMIT;

@@ -75,14 +75,24 @@ func Init(db *gorm.DB, stores *store.Stores, integrations integrations.Integrati
 		),
 	)
 
-	allRoutes(app, routeParams)
+	allRoutes(app, routeParams, auth.NewParams(
+		settings.Session.Secret,
+		stores.Session,
+		settings.Microsft,
+		settings.Google,
+		settings.Application.ApplicationURL(),
+		apiv1,
+		db,
+		integrations.Email,
+		validate,
+	))
 
 	return app
 }
 
-func allRoutes(app *fiber.App, routeParams types.RouteParams) {
+func allRoutes(app *fiber.App, routeParams types.RouteParams, authParams auth.Params) {
 	Utility(app)
-	auth.Auth(auth.Params{})
+	auth.Auth(authParams)
 	users.UserRoutes(routeParams)
 	clubs.ClubRoutes(routeParams)
 	socials.Social(routeParams)

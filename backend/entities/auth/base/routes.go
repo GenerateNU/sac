@@ -28,6 +28,20 @@ type Params struct {
 	validate       *validator.Validate
 }
 
+func NewParams(sessionSecret *m.Secret[string], store fiber.Storage, msftSettings config.MicrosoftOAuthSettings, googSettings config.GoogleOAuthSettings, applicationURL string, router fiber.Router, db *gorm.DB, emailer email.Emailer, validate *validator.Validate) Params {
+	return Params{
+		sessionSecret:  sessionSecret,
+		store:          store,
+		msftSettings:   msftSettings,
+		googSettings:   googSettings,
+		applicationURL: applicationURL,
+		router:         router,
+		db:             db,
+		emailer:        emailer,
+		validate:       validate,
+	}
+}
+
 func Auth(params Params) {
 	sacic.Init(params.sessionSecret, params.store)
 

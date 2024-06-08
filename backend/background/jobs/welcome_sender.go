@@ -33,6 +33,12 @@ func (j *Jobs) WelcomeSender(ctx context.Context) background.JobFunc {
 					return
 				}
 
+				if task == nil {
+					slog.Info("no welcome tasks to send")
+					incrementTx.Rollback()
+					return
+				}
+
 				// increment attempts
 				task.Attempts++
 				if err := incrementTx.Save(task).Error; err != nil {
@@ -82,6 +88,11 @@ func (j *Jobs) dequeueWelcomeTask(tx *gorm.DB) (*models.WelcomeTask, error) {
 	if err := tx.Raw("SELECT email, name, attempts FROM welcome_tasks FOR UPDATE SKIP LOCKED LIMIT 1").Scan(&task).Error; err != nil {
 		tx.Rollback()
 		return nil, err
+	}
+
+	if task.Email == "" && task.Name == "" {
+		tx.Rollback()
+		return nil, nil
 	}
 
 	return &task, nil

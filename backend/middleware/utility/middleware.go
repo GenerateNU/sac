@@ -14,10 +14,10 @@ type Service interface {
 
 type Handler struct {
 	paginator fiber.Handler
-	limiter   store.Limiter
+	limiter   store.Storer
 }
 
-func New(paginator fiber.Handler, limiter store.Limiter) Service {
+func New(paginator fiber.Handler, limiter store.Storer) Service {
 	return &Handler{
 		paginator: paginator,
 		limiter:   limiter,
