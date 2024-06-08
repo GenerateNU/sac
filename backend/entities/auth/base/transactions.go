@@ -3,8 +3,11 @@ package base
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
+	"github.com/GenerateNU/sac/backend/auth"
+	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/integrations/oauth"
 	"github.com/GenerateNU/sac/backend/utilities"
@@ -16,9 +19,8 @@ func FindOrCreateUser(ctx context.Context, db *gorm.DB, user oauth.User) (*model
 	var sacUser models.User
 	if err := db.WithContext(ctx).Where("email = ?", user.Email).First(&sacUser).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			newUser := &models.User{Email: user.Email, Name: user.Name, Role: models.Student}
-			if err := db.WithContext(ctx).Create(newUser).Error; err != nil {
-				return newUser, err
+			if err := createUser(ctx, db, &models.User{Email: user.Email, Name: user.Name, Role: models.Student}); err != nil {
+				return nil, err
 			}
 		} else {
 			return nil, err
@@ -60,16 +62,60 @@ func DeleteToken(db *gorm.DB, token string) error {
 	return nil
 }
 
-func SaveToken(db *gorm.DB, userID uuid.UUID, token string, expiry time.Time) error {
-	tokenModel := models.Verification{
-		UserID:    userID,
-		Token:     token,
-		ExpiresAt: expiry,
+func EnqueueVerification(ctx context.Context, db *gorm.DB, userID uuid.UUID, email string) error {
+	tx := db.WithContext(ctx).Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	otp, err := auth.GenerateOTP(constants.OTP_LENGTH)
+	if err != nil {
+		return fmt.Errorf("failed to generate OTP: %w", err)
 	}
 
-	if err := db.Create(&tokenModel).Error; err != nil {
+	verification := models.Verification{
+		UserID:    userID,
+		Email:     email,
+		Token:     *otp,
+		ExpiresAt: time.Now().Add(constants.OTP_EXPIRY).UTC(),
+	}
+
+	if err := tx.Create(&verification).Error; err != nil {
 		return err
 	}
 
-	return nil
+	task := models.VerificationTask{
+		UserID:         userID,
+		VerificationID: verification.ID,
+	}
+
+	if err := tx.Create(&task).Error; err != nil {
+		return err
+	}
+
+	return tx.Commit().Error
+}
+
+func createUser(ctx context.Context, db *gorm.DB, user *models.User) error {
+	tx := db.WithContext(ctx).Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Create(user).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	welcomeTask := models.WelcomeTask{Name: user.Name, Email: user.Email}
+	if err := tx.Create(&welcomeTask).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit().Error
 }

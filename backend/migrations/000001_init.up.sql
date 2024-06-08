@@ -270,10 +270,11 @@ CREATE TABLE IF NOT EXISTS user_tags(
 CREATE UNIQUE INDEX IF NOT EXISTS uni_users_email ON "users" USING btree ("email");
 
 CREATE TABLE IF NOT EXISTS verifications(
+    id uuid NOT NULL DEFAULT uuid_generate_v4(),
     user_id uuid NOT NULL,
-    token varchar(255),
+    email varchar(255) NOT NULL,
+    token varchar(255) NOT NULL,
     expires_at timestamp WITH time zone NOT NULL,
-    "type" varchar(255) NOT NULL,
     PRIMARY KEY(user_id, expires_at)
 );
 
@@ -281,6 +282,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS uni_verifications_token ON verifications USING
 
 CREATE TYPE OAuthResourceType AS ENUM ('google', 'microsoft');
 
+-- mark for deletion
 CREATE TABLE IF NOT EXISTS user_oauth_tokens(
     user_id uuid NOT NULL,
     refresh_token varchar,
@@ -289,6 +291,21 @@ CREATE TABLE IF NOT EXISTS user_oauth_tokens(
     resource_type OAuthResourceType,
     expires_at timestamp WITH time zone NOT NULL,
     PRIMARY KEY(user_id, resource_type)
+);
+
+CREATE TABLE IF NOT EXISTS verification_tasks(
+    user_id uuid NOT NULL,
+    verification_id uuid NOT NULL,
+    attempts integer NOT NULL DEFAULT 0,
+    PRIMARY KEY(user_id, verification_id),
+    CONSTRAINT fk_verification_tasks_verification FOREIGN KEY(verification_id) REFERENCES verifications(id) ON UPDATE CASCADE ON DELETE CASCADE CONSTRAINT fk_verification_tasks_user FOREIGN KEY(user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS welcome_tasks(
+    email varchar(255) NOT NULL,
+    name varchar(255) NOT NULL,
+    attempts integer NOT NULL DEFAULT 0,
+    PRIMARY KEY(email),
 );
 
 COMMIT;

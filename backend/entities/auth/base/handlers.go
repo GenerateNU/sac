@@ -3,16 +3,15 @@ package base
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log/slog"
 	"net/http"
 	"time"
 
-	"github.com/GenerateNU/sac/backend/auth"
-	"github.com/GenerateNU/sac/backend/constants"
+	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/entities/users"
 	"github.com/GenerateNU/sac/backend/integrations/email"
 	"github.com/GenerateNU/sac/backend/integrations/oauth/sacic"
+
 	"github.com/GenerateNU/sac/backend/locals"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/go-playground/validator/v10"
@@ -80,35 +79,17 @@ func (h *Handler) SendCode(c *fiber.Ctx) error {
 		return err
 	}
 
-	if user.IsVerified {
+	if user.Status == models.UserStatusVerified {
 		return errors.New("user is already verified")
 	}
 
-	activeOTP, err := GetActiveTokenByUserID(h.db, user.ID)
-	if err != nil {
+	if _, err := GetActiveTokenByUserID(h.db, user.ID); err != nil {
 		if !utilities.IsNotFound(err) {
 			return err
 		}
 	}
 
-	if activeOTP != nil {
-		if err := h.emailer.SendVerification(context.TODO(), user.Email, activeOTP.Token); err != nil {
-			return err
-		}
-
-		return nil
-	}
-
-	otp, err := auth.GenerateOTP(constants.OTP_LENGTH)
-	if err != nil {
-		return fmt.Errorf("failed to generate OTP: %w", err)
-	}
-
-	if err := SaveToken(h.db, user.ID, *otp, time.Now().Add(constants.OTP_EXPIRY).UTC()); err != nil {
-		return err
-	}
-
-	return nil
+	return EnqueueVerification(context.TODO(), h.db, user.ID, user.Email)
 }
 
 func (h *Handler) VerifyEmail(c *fiber.Ctx) error {
@@ -126,7 +107,7 @@ func (h *Handler) VerifyEmail(c *fiber.Ctx) error {
 		return err
 	}
 
-	if user.IsVerified {
+	if user.Status == models.UserStatusVerified {
 		return errors.New("user is already verified")
 	}
 

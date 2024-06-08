@@ -110,5 +110,7 @@ func configureIntegrations(config *config.Integrations) *integrations.Integratio
 
 func startBackgroundJobs(ctx context.Context, db *gorm.DB) {
 	jobs := jobs.New(db)
-	background.Go(jobs.DeleteExpiredVerificationTokens(ctx))
+	background.Go(jobs.ExpiredVerificationTokensDeleter(ctx))
+	background.Go(jobs.VerificationSender(ctx))
+	background.Go(jobs.WelcomeSender(ctx))
 }

@@ -7,7 +7,9 @@ import (
 )
 
 type Verification struct {
-	UserID    uuid.UUID `json:"user_id"`
-	Token     string    `json:"token"`
-	ExpiresAt time.Time `json:"expires_at"`
+	ID        uuid.UUID `gorm:"primaryKey"`
+	UserID    uuid.UUID `gorm:"primaryKey"`
+	Email     string
+	Token     string
+	ExpiresAt time.Time
 }

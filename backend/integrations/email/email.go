@@ -8,16 +8,16 @@ import (
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/templates/emails"
+	"github.com/afex/hystrix-go/hystrix"
 
 	"github.com/a-h/templ"
 
-	"github.com/afex/hystrix-go/hystrix"
 	"github.com/resend/resend-go/v2"
 )
 
 type Emailer interface {
 	SendVerification(ctx context.Context, email string, code string) error
-	SendWelcome(ctx context.Context, name string, email string) error
+	SendWelcome(ctx context.Context, email string, name string) error
 }
 
 type ResendClient struct {
@@ -26,12 +26,6 @@ type ResendClient struct {
 }
 
 func NewResendClient(settings config.ResendSettings, dev bool) Emailer {
-	hystrix.ConfigureCommand("send-email", hystrix.CommandConfig{
-		Timeout:               5000,
-		MaxConcurrentRequests: 100,
-		ErrorPercentThreshold: 25,
-	})
-
 	return &ResendClient{
 		Client: resend.NewClient(settings.APIKey.Expose()),
 		Dev:    dev,
