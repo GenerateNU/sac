@@ -1,7 +1,7 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
 
-import { Box } from '@/app/(design-system)';
+import { Box } from '../Box/Box';
 
 interface AnimatedImageBoxProps {
     uri: string;

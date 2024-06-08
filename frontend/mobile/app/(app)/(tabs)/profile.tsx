@@ -1,13 +1,30 @@
 import { StyleSheet, Text, View } from 'react-native';
 
+import { ClubPage } from '@/app/(design-system)/components/ClubPage/ClubPage';
 import { GlobalLayout } from '@/app/(design-system)/components/GlobalLayout/GlobalLayout';
+
+import {
+    mockClub,
+    mockContacts,
+    mockEvents,
+    mockTags,
+    pointOfContactMocks
+} from '../(tabs)/mockClubPageData';
 
 const ProfilePage = () => {
     return (
         <GlobalLayout>
-            <View style={styles.container}>
+            {/* <View style={styles.container}>
                 <Text style={styles.title}>Profile</Text>
-            </View>
+            </View> */}
+            <ClubPage
+                club={mockClub}
+                tags={mockTags}
+                events={mockEvents}
+                contacts={mockContacts}
+                pointOfContacts={pointOfContactMocks}
+                color="darkBlue"
+            />
         </GlobalLayout>
     );
 };

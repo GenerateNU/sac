@@ -16,20 +16,17 @@ import {
     Tag as TagProps
 } from '@generatesac/lib';
 
-import {
-    Box,
-    Button,
-    RecruitmentInfo,
-    SACColors,
-    Tag,
-    Text
-} from '@/app/(design-system)';
-import { ClubIcon } from '@/app/(design-system)/components/ClubIcon/ClubIcon';
-import { EventCard } from '@/app/(design-system)/components/EventCard';
-import { PointOfContactList } from '@/app/(design-system)/components/PointOfContactCard/PointofContactsList';
-
+import { SACColors } from '../../shared/colors';
+import { Box } from '../Box/Box';
+import { Button } from '../Button/Button';
+import { ClubIcon } from '../ClubIcon/ClubIcon';
+import { RecruitmentInfo } from '../ClubRecruitment/RecruitmentInfo/ClubRecruitmentInfo';
+import { EventCard } from '../EventCard/EventCard';
+import { EventCardList } from '../EventCard/EventCardList';
+import { PointOfContactList } from '../PointOfContactCard/PointofContactsList';
+import { Tag } from '../Tag/Tag';
+import { Text } from '../Text/Text';
 import { AnimatedImageBox } from './ClubPageHeader';
-import { EventCardList } from './EventCardList';
 
 interface ClubPageProps {
     club: Club;

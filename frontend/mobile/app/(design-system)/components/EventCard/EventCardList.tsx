@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 
 import { Event } from '@generatesac/lib';
 
-import { EventCard } from '@/app/(design-system)/components/EventCard';
+import { EventCard } from './EventCard';
 
 interface EventCardListProps {
     events: Event[];
