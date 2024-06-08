@@ -1,6 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { ClubPage } from '@/app/(design-system)/components/ClubPage/ClubPage';
 import { GlobalLayout } from '@/app/(design-system)/components/GlobalLayout/GlobalLayout';
 
 const ProfilePage = () => {
