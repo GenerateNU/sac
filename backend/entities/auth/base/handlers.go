@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/GenerateNU/sac/backend/integrations/email"
-	"github.com/GenerateNU/sac/backend/integrations/oauth/sacic"
+	"github.com/GenerateNU/sac/backend/integrations/oauth/soth/sothic"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -25,11 +25,22 @@ type Handler struct {
 }
 
 func (h *Handler) Provider(c *fiber.Ctx) error {
-	return sacic.BeginAuthHandler(c)
+	if gothUser, err := sothic.CompleteUserAuth(c); err == nil {
+		slog.Info("user auth", "user", gothUser)
+	} else {
+		url, err := sothic.GetAuthURL(c)
+		if err != nil {
+			return err
+		}
+
+		return c.Redirect(url, http.StatusTemporaryRedirect)
+	}
+
+	return nil
 }
 
 func (h *Handler) ProviderCallback(c *fiber.Ctx) error {
-	user, err := sacic.CompleteUserAuth(c)
+	user, err := sothic.CompleteUserAuth(c)
 	if err != nil {
 		return err
 	}
@@ -40,7 +51,7 @@ func (h *Handler) ProviderCallback(c *fiber.Ctx) error {
 }
 
 func (h *Handler) ProviderLogout(c *fiber.Ctx) error {
-	if err := sacic.Logout(c); err != nil {
+	if err := sothic.Logout(c); err != nil {
 		return err
 	}
 	return c.Redirect("/", http.StatusTemporaryRedirect)

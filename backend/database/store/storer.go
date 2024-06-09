@@ -6,9 +6,10 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/redis/go-redis/v9"
+
+	m "github.com/garrettladley/mattress"
 )
 
 // an implementation of https://github.com/gofiber/storage
@@ -24,12 +25,20 @@ type RedisClient struct {
 	client *redis.Client
 }
 
-func NewRedisClient(settings config.RedisSettings) *RedisClient {
+type RedisSettings interface {
+	Username() string
+	Password() *m.Secret[string]
+	Host() string
+	Port() uint
+	DB() int
+}
+
+func NewRedisClient(settings RedisSettings) *RedisClient {
 	client := redis.NewClient(&redis.Options{
-		Username:              settings.Username,
-		Password:              settings.Password.Expose(),
-		Addr:                  fmt.Sprintf("%s:%d", settings.Host, settings.Port),
-		DB:                    settings.DB,
+		Username:              settings.Username(),
+		Password:              settings.Password().Expose(),
+		Addr:                  fmt.Sprintf("%s:%d", settings.Host(), settings.Port()),
+		DB:                    settings.DB(),
 		PoolSize:              10 * runtime.GOMAXPROCS(0),
 		MaxActiveConns:        constants.REDIS_MAX_OPEN_CONNECTIONS,
 		MaxIdleConns:          constants.REDIS_MAX_IDLE_CONNECTIONS,

@@ -6,11 +6,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/GenerateNU/sac/backend/integrations/oauth/soth"
 	"github.com/GenerateNU/sac/backend/utilities"
-	"github.com/markbates/goth"
 )
 
-// Session is the implementation of `goth.Session` for accessing microsoftonline.
+// Session is the implementation of `soth.Session` for accessing microsoftonline.
 // Refresh token not available for microsoft online: session size hit the limit of max cookie size
 type Session struct {
 	AuthURL     string
@@ -18,19 +18,19 @@ type Session struct {
 	ExpiresAt   time.Time
 }
 
-// GetAuthURL will return the URL set by calling the `BeginAuth` function on the Facebook provider.
+// GetAuthURL will return the URL set by calling the `BeginAuth` function on the Microsoft provider.
 func (s Session) GetAuthURL() (string, error) {
 	if s.AuthURL == "" {
-		return "", errors.New(goth.NoAuthUrlErrorMessage)
+		return "", errors.New(soth.NoAuthUrlErrorMessage)
 	}
 
 	return s.AuthURL, nil
 }
 
-// Authorize the session with Facebook and return the access token to be stored for future use.
-func (s *Session) Authorize(provider goth.Provider, params goth.Params) (string, error) {
+// Authorize the session with Microsoft and return the access token to be stored for future use.
+func (s *Session) Authorize(provider soth.Provider, params soth.Params) (string, error) {
 	p := provider.(*Provider)
-	token, err := p.config.Exchange(goth.ContextForClient(utilities.Client()), params.Get("code"))
+	token, err := p.config.Exchange(soth.ContextForClient(utilities.Client()), params.Get("code"))
 	if err != nil {
 		return "", err
 	}
@@ -56,7 +56,7 @@ func (s Session) String() string {
 }
 
 // UnmarshalSession wil unmarshal a JSON string into a session.
-func (p *Provider) UnmarshalSession(data string) (goth.Session, error) {
+func (p *Provider) UnmarshalSession(data string) (soth.Session, error) {
 	session := &Session{}
 	err := json.NewDecoder(strings.NewReader(data)).Decode(session)
 	return session, err

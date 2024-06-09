@@ -1,4 +1,4 @@
-package sacic
+package sothic
 
 import "github.com/gofiber/fiber/v2"
 

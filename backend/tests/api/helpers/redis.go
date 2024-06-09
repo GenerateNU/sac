@@ -6,13 +6,11 @@ import (
 )
 
 type StoresMock struct {
-	Session store.Storer
 	Limiter store.Storer
 }
 
 func NewStoresMock(session store.Storer, limiter store.Storer) *store.Stores {
 	return &store.Stores{
-		Session: session,
 		Limiter: limiter,
 	}
 }

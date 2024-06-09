@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS "users"(
     college varchar(255),
     graduation_cycle varchar(255),
     graduation_year smallint,
+    avatar_url varchar(255),
     PRIMARY KEY(id)
 );
 

@@ -8,9 +8,10 @@ import (
 	"strings"
 
 	go_json "github.com/goccy/go-json"
-	"github.com/markbates/goth"
 
+	"github.com/GenerateNU/sac/backend/integrations/oauth/soth"
 	"github.com/GenerateNU/sac/backend/utilities"
+
 	"golang.org/x/oauth2"
 
 	m "github.com/garrettladley/mattress"
@@ -70,7 +71,7 @@ func (p *Provider) SetName(name string) {
 func (p *Provider) Debug(debug bool) {}
 
 // BeginAuth asks Google for an authentication endpoint.
-func (p *Provider) BeginAuth(state string) (goth.Session, error) {
+func (p *Provider) BeginAuth(state string) (soth.Session, error) {
 	url := p.config.AuthCodeURL(state, p.authCodeOptions...)
 	session := &Session{
 		AuthURL: url,
@@ -89,9 +90,9 @@ type googleUser struct {
 }
 
 // FetchUser will go to Google and access basic information about the user.
-func (p *Provider) FetchUser(session goth.Session) (goth.User, error) {
+func (p *Provider) FetchUser(session soth.Session) (soth.User, error) {
 	sess := session.(*Session)
-	user := goth.User{
+	user := soth.User{
 		AccessToken:  sess.AccessToken,
 		Provider:     p.Name(),
 		RefreshToken: sess.RefreshToken,
@@ -165,7 +166,7 @@ func (p *Provider) RefreshTokenAvailable() bool {
 // RefreshToken get new access token based on the refresh token
 func (p *Provider) RefreshToken(refreshToken string) (*oauth2.Token, error) {
 	token := &oauth2.Token{RefreshToken: refreshToken}
-	ts := p.config.TokenSource(goth.ContextForClient(utilities.Client()), token)
+	ts := p.config.TokenSource(soth.ContextForClient(utilities.Client()), token)
 	newToken, err := ts.Token()
 	if err != nil {
 		return nil, err

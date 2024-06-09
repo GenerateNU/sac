@@ -1,4 +1,4 @@
-package auth
+package permission
 
 import "github.com/GenerateNU/sac/backend/entities/models"
 

@@ -1,4 +1,4 @@
-package sacic
+package sothic
 
 import (
 	"bytes"
@@ -8,32 +8,103 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log/slog"
 	"net/http"
 	"net/url"
+	"path/filepath"
 	"strings"
 
+	"github.com/GenerateNU/sac/backend/database/store"
+	"github.com/GenerateNU/sac/backend/integrations/oauth/soth"
+	"github.com/caarlos0/env/v11"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
-	"github.com/markbates/goth"
-	"github.com/markbates/goth/gothic"
-)
+	"github.com/joho/godotenv"
 
-// ProviderParamKey can be used as a key in context when passing in a provider
-const ProviderParamKey key = iota
-
-// Session can/should be set by applications using gothic. The default is a cookie store.
-var (
-	SessionStore  *session.Store
-	ErrSessionNil = errors.New("sac/sacic: no SESSION_SECRET environment variable is set. The default cookie store is not available and any calls will fail. Ignore this warning if you are using a different store")
+	m "github.com/garrettladley/mattress"
 )
 
 type key int
 
+// ProviderParamKey can be used as a key in context when passing in a provider
+const ProviderParamKey key = iota
+
+// Session can/should be set by applications using sothic. The default is a cookie store.
+var (
+	SessionStore *session.Store
+)
+
+type storageSettings struct {
+	username string
+	password *m.Secret[string]
+	host     string
+	port     uint
+	db       int
+	// TLSConfig *TLSConfig
+}
+
+func (s *storageSettings) Username() string {
+	return s.username
+}
+
+func (s *storageSettings) Password() *m.Secret[string] {
+	return s.password
+}
+
+func (s *storageSettings) Host() string {
+	return s.host
+}
+
+func (s *storageSettings) Port() uint {
+	return s.port
+}
+
+func (s *storageSettings) DB() int {
+	return s.db
+}
+
+type intermediateStorageSettings struct {
+	Username string `env:"SAC_REDIS_SESSION_USERNAME"`
+	Password string `env:"SAC_REDIS_SESSION_PASSWORD"`
+	Host     string `env:"SAC_REDIS_SESSION_HOST"`
+	Port     uint   `env:"SAC_REDIS_SESSION_PORT"`
+	DB       int    `env:"SAC_REDIS_SESSION_DB"`
+	// TLSConfig *intermediateTLSConfig `env:"TLS_CONFIG"`
+}
+
+func (i *intermediateStorageSettings) into() (*storageSettings, error) {
+	password, err := m.NewSecret(i.Password)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create secret from password: %s", err.Error())
+	}
+
+	return &storageSettings{
+		username: i.Username,
+		password: password,
+		host:     i.Host,
+		port:     i.Port,
+		db:       i.DB,
+		// TLSConfig: i.TLSConfig.into(),
+	}, nil
+}
+
 func init() {
+	if err := godotenv.Load(filepath.Join("..", "config", ".env.dev")); err != nil {
+		panic(fmt.Errorf("failed to load environment variables: %s", err.Error()))
+	}
+
+	intSettings, err := env.ParseAs[intermediateStorageSettings]()
+	if err != nil {
+		panic(fmt.Errorf("failed to parse environment variables: %s", err.Error()))
+	}
+
+	settings, err := intSettings.into()
+	if err != nil {
+		panic(fmt.Errorf("failed to convert environment variables: %s", err.Error()))
+	}
+
 	// optional config
 	config := session.Config{
-		KeyLookup:      fmt.Sprintf("cookie:%s", gothic.SessionName),
+		Storage:        store.NewRedisClient(settings),
 		CookieHTTPOnly: true,
 	}
 
@@ -42,8 +113,8 @@ func init() {
 
 /*
 BeginAuthHandler is a convenience handler for starting the authentication process.
-It expects to be able to get the name of the provider from the query parameters
-as either "provider" or ":provider".
+It expects to be able to get the name of the provider from the path parameters
+as ":provider" or from locals as "provider".
 
 BeginAuthHandler will redirect the user to the appropriate authentication end-point
 for the requested provider.
@@ -77,7 +148,7 @@ func SetState(ctx *fiber.Ctx) string {
 	nonceBytes := make([]byte, 64)
 	_, err := io.ReadFull(rand.Reader, nonceBytes)
 	if err != nil {
-		panic("gothic: source of randomness unavailable: " + err.Error())
+		panic(fmt.Errorf("sothic: source of randomness unavailable: %w", err))
 	}
 	return base64.URLEncoding.EncodeToString(nonceBytes)
 }
@@ -101,7 +172,7 @@ yourself, but that's entirely up to you.
 */
 func GetAuthURL(ctx *fiber.Ctx) (string, error) {
 	if SessionStore == nil {
-		return "", ErrSessionNil
+		return "", errors.New("session store is unexpectedly nil")
 	}
 
 	providerName, err := GetProviderName(ctx)
@@ -109,7 +180,7 @@ func GetAuthURL(ctx *fiber.Ctx) (string, error) {
 		return "", err
 	}
 
-	provider, err := goth.GetProvider(providerName)
+	provider, err := soth.GetProvider(providerName)
 	if err != nil {
 		return "", err
 	}
@@ -124,20 +195,12 @@ func GetAuthURL(ctx *fiber.Ctx) (string, error) {
 		return "", err
 	}
 
-	err = StoreInSession(providerName, sess.Marshal(), ctx)
+	err = StoreInSession(ctx, providerName, sess.Marshal())
 	if err != nil {
 		return "", err
 	}
 
 	return url, err
-}
-
-// Options that affect how CompleteUserAuth works.
-type CompleteUserAuthOptions struct {
-	// True if CompleteUserAuth should automatically end the user's session.
-	//
-	// Defaults to True.
-	ShouldLogout bool
 }
 
 /*
@@ -147,53 +210,35 @@ process and fetches all of the basic information about the user from the provide
 It expects to be able to get the name of the provider from the query parameters
 as either "provider" or ":provider".
 
-This method automatically ends the session. You can prevent this behavior by
-passing in options. Please note that any options provided in addition to the
-first will be ignored.
-
 See https://github.com/markbates/goth/examples/main.go to see this in action.
 */
-func CompleteUserAuth(ctx *fiber.Ctx, options ...CompleteUserAuthOptions) (goth.User, error) {
+func CompleteUserAuth(ctx *fiber.Ctx) (soth.User, error) {
 	if SessionStore == nil {
-		return goth.User{}, ErrSessionNil
+		return soth.User{}, errors.New("session store is unexpectedly nil")
 	}
 
 	providerName, err := GetProviderName(ctx)
 	if err != nil {
-		return goth.User{}, err
+		return soth.User{}, err
 	}
 
-	provider, err := goth.GetProvider(providerName)
+	provider, err := soth.GetProvider(providerName)
 	if err != nil {
-		return goth.User{}, err
+		return soth.User{}, err
 	}
 
-	value, err := GetFromSession(providerName, ctx)
+	value, err := GetFromSession(ctx, providerName)
 	if err != nil {
-		return goth.User{}, err
-	}
-
-	shouldLogout := true
-	if len(options) > 0 && !options[0].ShouldLogout {
-		shouldLogout = false
-	}
-
-	if shouldLogout {
-		defer func() {
-			if err := Logout(ctx); err != nil {
-				slog.Error("error logging out", "error", err)
-			}
-		}()
+		return soth.User{}, err
 	}
 
 	sess, err := provider.UnmarshalSession(value)
 	if err != nil {
-		return goth.User{}, err
+		return soth.User{}, err
 	}
 
-	err = validateState(ctx, sess)
-	if err != nil {
-		return goth.User{}, err
+	if err := validateState(ctx, sess); err != nil {
+		return soth.User{}, err
 	}
 
 	user, err := provider.FetchUser(sess)
@@ -205,21 +250,20 @@ func CompleteUserAuth(ctx *fiber.Ctx, options ...CompleteUserAuthOptions) (goth.
 	// get new token and retry fetch
 	_, err = sess.Authorize(provider, &Params{ctx: ctx})
 	if err != nil {
-		return goth.User{}, err
+		return soth.User{}, err
 	}
 
-	err = StoreInSession(providerName, sess.Marshal(), ctx)
-	if err != nil {
-		return goth.User{}, err
+	if err := StoreInSession(ctx, providerName, sess.Marshal()); err != nil {
+		return soth.User{}, err
 	}
 
-	gu, err := provider.FetchUser(sess)
-	return gu, err
+	su, err := provider.FetchUser(sess)
+	return su, err
 }
 
 // validateState ensures that the state token param from the original
 // AuthURL matches the one included in the current (callback) request.
-func validateState(ctx *fiber.Ctx, sess goth.Session) error {
+func validateState(ctx *fiber.Ctx, sess soth.Session) error {
 	rawAuthURL, err := sess.GetAuthURL()
 	if err != nil {
 		return err
@@ -257,28 +301,17 @@ func Logout(ctx *fiber.Ctx) error {
 // assign your own function to this variable that returns the provider
 // name for your request.
 func GetProviderName(ctx *fiber.Ctx) (string, error) {
-	// try to get it from the url param "provider"
-	if p := ctx.Query("provider"); p != "" {
-		return p, nil
-	}
-
 	// try to get it from the url param ":provider"
 	if p := ctx.Params("provider"); p != "" {
 		return p, nil
 	}
 
-	//  try to get it from the Fasthttp context's value of "provider" key
-	if p := ctx.Get("provider", ""); p != "" {
-		return p, nil
-	}
-
-	// try to get it from the Fasthttp context's value of providerContextKey key
-	if p := ctx.Get(fmt.Sprint(ProviderParamKey), ""); p != "" {
-		return p, nil
+	if p := ctx.Locals("provider"); p != nil {
+		return p.(string), nil
 	}
 
 	// As a fallback, loop over the used providers, if we already have a valid session for any provider (ie. user has already begun authentication with a provider), then return that provider name
-	providers := goth.GetProviders()
+	providers := soth.GetProviders()
 	session, err := SessionStore.Get(ctx)
 	if err != nil {
 		return "", err
@@ -304,7 +337,7 @@ func GetContextWithProvider(ctx *fiber.Ctx, provider string) *fiber.Ctx {
 }
 
 // StoreInSession stores a specified key/value pair in the session.
-func StoreInSession(key string, value string, ctx *fiber.Ctx) error {
+func StoreInSession(ctx *fiber.Ctx, key string, value string) error {
 	session, err := SessionStore.Get(ctx)
 	if err != nil {
 		return err
@@ -320,7 +353,7 @@ func StoreInSession(key string, value string, ctx *fiber.Ctx) error {
 
 // GetFromSession retrieves a previously-stored value from the session.
 // If no value has previously been stored at the specified key, it will return an error.
-func GetFromSession(key string, ctx *fiber.Ctx) (string, error) {
+func GetFromSession(ctx *fiber.Ctx, key string) (string, error) {
 	session, err := SessionStore.Get(ctx)
 	if err != nil {
 		return "", err
@@ -353,7 +386,7 @@ func getSessionValue(store *session.Session, key string) (string, error) {
 	return string(s), nil
 }
 
-func updateSessionValue(session *session.Session, key, value string) error {
+func updateSessionValue(session *session.Session, key string, value string) error {
 	var b bytes.Buffer
 	gz := gzip.NewWriter(&b)
 	if _, err := gz.Write([]byte(value)); err != nil {

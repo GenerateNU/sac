@@ -9,17 +9,21 @@ import (
 )
 
 func UserFrom(c *fiber.Ctx) (*models.User, error) {
-	iUser := c.Locals(userKey)
-	if iUser == nil {
+	lUser := c.Locals(userKey)
+	if lUser == nil {
 		return nil, utilities.Forbidden()
 	}
 
-	user, ok := iUser.(*models.User)
+	user, ok := lUser.(*models.User)
 	if !ok {
 		return nil, fmt.Errorf("user is not of type models.User. got: %T", user)
 	}
 
 	return user, nil
+}
+
+func UserExists(c *fiber.Ctx) bool {
+	return c.Locals(userKey) != nil
 }
 
 func SetUser(c *fiber.Ctx, user *models.User) {

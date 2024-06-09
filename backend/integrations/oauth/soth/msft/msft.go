@@ -7,11 +7,11 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/GenerateNU/sac/backend/integrations/oauth/soth"
 	go_json "github.com/goccy/go-json"
 
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/markbates/going/defaults"
-	"github.com/markbates/goth"
 	"golang.org/x/oauth2"
 
 	m "github.com/garrettladley/mattress"
@@ -42,7 +42,7 @@ func New(clientKey *m.Secret[string], secret *m.Secret[string], callbackURL stri
 	return p
 }
 
-// Provider is the implementation of `goth.Provider` for accessing microsoftonline.
+// Provider is the implementation of `soth.Provider` for accessing microsoftonline.
 type Provider struct {
 	ClientKey    *m.Secret[string]
 	Secret       *m.Secret[string]
@@ -66,16 +66,16 @@ func (p *Provider) SetName(name string) {
 func (p *Provider) Debug(debug bool) {}
 
 // BeginAuth asks MicrosoftOnline for an authentication end-point.
-func (p *Provider) BeginAuth(state string) (goth.Session, error) {
+func (p *Provider) BeginAuth(state string) (soth.Session, error) {
 	return &Session{
 		AuthURL: p.config.AuthCodeURL(state),
 	}, nil
 }
 
 // FetchUser will go to MicrosoftOnline and access basic information about the user.
-func (p *Provider) FetchUser(session goth.Session) (goth.User, error) {
+func (p *Provider) FetchUser(session soth.Session) (soth.User, error) {
 	msSession := session.(*Session)
-	user := goth.User{
+	user := soth.User{
 		AccessToken: msSession.AccessToken,
 		Provider:    p.Name(),
 		ExpiresAt:   msSession.ExpiresAt,
@@ -114,7 +114,7 @@ func (p *Provider) RefreshToken(refreshToken string) (*oauth2.Token, error) {
 	}
 
 	token := &oauth2.Token{RefreshToken: refreshToken}
-	ts := p.config.TokenSource(goth.ContextForClient(utilities.Client()), token)
+	ts := p.config.TokenSource(soth.ContextForClient(utilities.Client()), token)
 	newToken, err := ts.Token()
 	if err != nil {
 		return nil, err
@@ -154,7 +154,7 @@ func newConfig(provider *Provider, scopes []string) *oauth2.Config {
 	return c
 }
 
-func userFromReader(r io.Reader, user *goth.User) error {
+func userFromReader(r io.Reader, user *soth.User) error {
 	buf := &bytes.Buffer{}
 	tee := io.TeeReader(r, buf)
 

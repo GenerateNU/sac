@@ -65,7 +65,7 @@ func main() {
 
 	startBackgroundJobs(ctx, db)
 
-	stores := store.ConfigureStores(config.RedisSession, config.RedisLimiter)
+	stores := store.ConfigureStores(config.RedisLimiter)
 	integrations := configureIntegrations(&config.Integrations)
 
 	tp := telemetry.InitTracer()

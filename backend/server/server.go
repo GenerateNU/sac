@@ -8,6 +8,9 @@ import (
 
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/database/store"
+	"github.com/GenerateNU/sac/backend/integrations/oauth/soth"
+	"github.com/GenerateNU/sac/backend/integrations/oauth/soth/goog"
+	"github.com/GenerateNU/sac/backend/integrations/oauth/soth/msft"
 
 	auth "github.com/GenerateNU/sac/backend/entities/auth/base"
 	categories "github.com/GenerateNU/sac/backend/entities/categories/base"
@@ -52,10 +55,15 @@ func Init(db *gorm.DB, stores *store.Stores, integrations integrations.Integrati
 		panic(fmt.Sprintf("Error registering custom validators: %s", err))
 	}
 
+	applicationURL := settings.Application.ApplicationURL()
+
+	msftProvider := msft.New(settings.Microsft.Key, settings.Microsft.Secret, fmt.Sprintf("%s/api/v1/auth/microsoftonline/callback", applicationURL), settings.Microsft.Tenant)
+	googProvider := goog.New(settings.Google.Key, settings.Google.Secret, fmt.Sprintf("%s/api/v1/auth/google/callback", applicationURL))
+
 	authMiddleware := authMiddleware.New(
 		db,
 		validate,
-		stores.Session,
+		msftProvider,
 	)
 
 	utilityMiddleware := utilityMiddleware.New(fiberpaginate.New(), stores.Limiter)
@@ -75,16 +83,22 @@ func Init(db *gorm.DB, stores *store.Stores, integrations integrations.Integrati
 		),
 	)
 
+	providerFns := []func() soth.Provider{
+		func() soth.Provider {
+			return msftProvider
+		},
+		func() soth.Provider {
+			return googProvider
+		},
+	}
+
 	allRoutes(app, routeParams, auth.NewParams(
-		settings.Session.Secret,
-		stores.Session,
-		settings.Microsft,
-		settings.Google,
-		settings.Application.ApplicationURL(),
+		applicationURL,
 		apiv1,
 		db,
 		integrations.Email,
 		validate,
+		providerFns...,
 	))
 
 	return app

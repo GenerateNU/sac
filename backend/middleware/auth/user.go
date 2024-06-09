@@ -7,29 +7,29 @@ import (
 )
 
 func (m *AuthMiddlewareHandler) UserAuthorizeById(c *fiber.Ctx) error {
-	return func(c *fiber.Ctx) error {
-		if err := m.Authenticate(c); err != nil {
-			return utilities.Unauthorized()
-		}
+	if err := m.Authenticate(c); err != nil {
+		return utilities.Unauthorized()
+	}
 
-		if m.IsSuper(c) {
-			return c.Next()
-		}
+	if m.IsSuper(c) {
+		return c.Next()
+	}
 
-		idAsUUID, err := utilities.ValidateID(c.Params("userID"))
-		if err != nil {
-			return err
-		}
+	idAsUUID, err := utilities.ValidateID(c.Params("userID"))
+	if err != nil {
+		return err
+	}
 
-		user, err := locals.UserFrom(c)
-		if err != nil {
-			return err
-		}
+	user, err := locals.UserFrom(c)
+	if err != nil {
+		return err
+	}
 
-		if idAsUUID == &user.ID {
-			return c.Next()
-		}
+	if idAsUUID == &user.ID {
+		return c.Next()
+	}
 
-		return utilities.Forbidden()
-	}(c)
+	return utilities.Forbidden()
 }
+
+
