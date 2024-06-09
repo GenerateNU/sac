@@ -7,13 +7,13 @@ export const baseApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: API_BASE_URL,
     credentials: "include",
-    prepareHeaders: async (headers, { getState }) => {
-      const token = (getState() as { auth: { token: string } })?.auth.token;
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-      return headers;
-    },
+    // prepareHeaders: async (headers, { getState }) => {
+    //   const token = (getState() as { auth: { token: string } })?.auth.token;
+    //   if (token) {
+    //     headers.set("Authorization", `Bearer ${token}`);
+    //   }
+    //   return headers;
+    // },
   }),
   tagTypes: [
     "User",
@@ -35,11 +35,11 @@ export function handleQueryParams(
   baseUrl: string,
   queryParams?: Record<string, string | number | boolean>,
 ): string {
-  const url = new URL(baseUrl);
+  let url = `${baseUrl}?`;
   if (queryParams) {
     Object.entries(queryParams).forEach(([key, value]) => {
-      url.searchParams.append(key, value.toString());
+      url += `${key}=${value}&`
     });
   }
-  return url.toString();
+  return url;
 }

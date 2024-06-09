@@ -20,7 +20,7 @@ export const eventApi = baseApi.injectEndpoints({
         url: handleQueryParams(`${EVENT_API_BASE_URL}/`, queryParams),
         method: "GET",
       }),
-      providesTags: (result, _, _arg) =>
+      providesTags: (result) =>
         result
           ? result.map((event) => ({ type: "Event", id: event.id }))
           : ["Event"],
@@ -49,10 +49,7 @@ export const eventApi = baseApi.injectEndpoints({
         return eventSchema.parse(response);
       },
     }),
-    updateEvent: builder.mutation<
-      Event,
-      { id: string; body: UpdateEventRequestBody }
-    >({
+    updateEvent: builder.mutation<Event, { id: string; body: UpdateEventRequestBody }>({
       query: ({ id, body }) => ({
         url: `${EVENT_API_BASE_URL}/${id}`,
         method: "PATCH",
@@ -88,7 +85,7 @@ export const eventApi = baseApi.injectEndpoints({
         url: `${EVENT_API_BASE_URL}/${id}/tags`,
         method: "GET",
       }),
-      providesTags: (result, _, _arg) =>
+      providesTags: (result) =>
         result ? result.map((tag) => ({ type: "Tag", id: tag.id })) : ["Tag"],
     }),
   }),
