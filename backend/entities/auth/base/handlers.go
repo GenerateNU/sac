@@ -1,10 +1,12 @@
 package base
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 
 	"github.com/GenerateNU/sac/backend/integrations/email"
+
 	"github.com/GenerateNU/sac/backend/integrations/oauth/soth/sothic"
 
 	"github.com/go-playground/validator/v10"
@@ -25,34 +27,74 @@ type Handler struct {
 }
 
 func (h *Handler) Provider(c *fiber.Ctx) error {
-	if gothUser, err := sothic.CompleteUserAuth(c); err == nil {
-		slog.Info("user auth", "user", gothUser)
-	} else {
-		url, err := sothic.GetAuthURL(c)
+	if gfUser, err := sothic.CompleteUserAuth(c, sothic.CompleteUserAuthOptions{ShouldLogout: false}); err == nil {
+		user, err := FindOrCreateUser(context.TODO(), h.db, gfUser)
 		if err != nil {
 			return err
 		}
 
-		return c.Redirect(url, http.StatusTemporaryRedirect)
-	}
+		if err := sothic.StoreInSession("user", user.Marshal(), c); err != nil {
+			return err
+		}
 
-	return nil
+		return nil
+	} else {
+		return sothic.BeginAuthHandler(c)
+	}
 }
 
 func (h *Handler) ProviderCallback(c *fiber.Ctx) error {
-	user, err := sothic.CompleteUserAuth(c)
+	gfUser, err := sothic.CompleteUserAuth(c, sothic.CompleteUserAuthOptions{ShouldLogout: false})
 	if err != nil {
 		return err
 	}
 
-	slog.Info("user auth callback", "user", user)
+	user, err := FindOrCreateUser(context.TODO(), h.db, gfUser)
+	if err != nil {
+		return err
+	}
 
-	return nil
+	if err := sothic.StoreInSession("user", user.Marshal(), c); err != nil {
+		return err
+	}
+
+	redirectURL, err := sothic.GetFromSession("redirect", c)
+	if err != nil {
+		redirectURL = "/"
+	}
+
+	if err := sothic.SessionStore.Delete("redirect"); err != nil {
+		slog.Error("auth", "provider_callback", err)
+	}
+
+	return c.Redirect(redirectURL)
 }
 
 func (h *Handler) ProviderLogout(c *fiber.Ctx) error {
 	if err := sothic.Logout(c); err != nil {
-		return err
+		slog.Error("auth", "logout", err)
 	}
-	return c.Redirect("/", http.StatusTemporaryRedirect)
+
+	return c.SendString("logout")
+}
+
+// implements http.ResponseWriter
+type FiberResponseWriter struct {
+	c *fiber.Ctx
+}
+
+func (w *FiberResponseWriter) WriteHeader(statusCode int) {
+	w.c.Status(statusCode)
+}
+
+func (w *FiberResponseWriter) Write(data []byte) (int, error) {
+	return w.c.Write(data)
+}
+
+func (w *FiberResponseWriter) Header() http.Header {
+	header := http.Header{}
+	w.c.Response().Header.VisitAll(func(key, value []byte) {
+		header.Add(string(key), string(value))
+	})
+	return header
 }

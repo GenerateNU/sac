@@ -2,14 +2,14 @@ package base
 
 import (
 	"github.com/GenerateNU/sac/backend/integrations/email"
-	"github.com/GenerateNU/sac/backend/integrations/oauth/soth"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/markbates/goth"
 	"gorm.io/gorm"
 )
 
 type Params struct {
-	providers      []soth.Provider
+	providers      []goth.Provider
 	applicationURL string
 	router         fiber.Router
 	db             *gorm.DB
@@ -17,8 +17,8 @@ type Params struct {
 	validate       *validator.Validate
 }
 
-func NewParams(applicationURL string, router fiber.Router, db *gorm.DB, emailer email.Emailer, validate *validator.Validate, providerFns ...func() soth.Provider) Params {
-	providers := make([]soth.Provider, len(providerFns))
+func NewParams(applicationURL string, router fiber.Router, db *gorm.DB, emailer email.Emailer, validate *validator.Validate, providerFns ...func() goth.Provider) Params {
+	providers := make([]goth.Provider, len(providerFns))
 	for i, providerFn := range providerFns {
 		providers[i] = providerFn()
 	}
@@ -34,7 +34,7 @@ func NewParams(applicationURL string, router fiber.Router, db *gorm.DB, emailer 
 }
 
 func Auth(params Params) {
-	soth.UseProviders(
+	goth.UseProviders(
 		params.providers...,
 	)
 
@@ -42,7 +42,7 @@ func Auth(params Params) {
 
 	params.router.Route("/auth", func(r fiber.Router) {
 		r.Get("/:provider", handler.Provider)
-		r.Get(":provider/callback/", handler.ProviderCallback)
+		r.Get(":provider/callback", handler.ProviderCallback)
 		r.Get("/logout", handler.ProviderLogout)
 	})
 }

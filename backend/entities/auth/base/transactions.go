@@ -6,14 +6,15 @@ import (
 
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/integrations/oauth/soth"
+	"github.com/markbates/goth"
 	"gorm.io/gorm"
 )
 
-func FindOrCreateUser(ctx context.Context, db *gorm.DB, user soth.User) (*models.User, error) {
+func FindOrCreateUser(ctx context.Context, db *gorm.DB, user goth.User) (*models.User, error) {
 	var sacUser models.User
 	if err := db.WithContext(ctx).Where("email = ?", user.Email).First(&sacUser).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			if err := createUser(ctx, db, user.Into()); err != nil {
+			if err := createUser(ctx, db, soth.Into(user)); err != nil {
 				return nil, err
 			}
 		} else {

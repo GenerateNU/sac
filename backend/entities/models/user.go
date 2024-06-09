@@ -1,8 +1,15 @@
 package models
 
 import (
+	"encoding/gob"
+
+	go_json "github.com/goccy/go-json"
 	"gorm.io/gorm"
 )
+
+func init() {
+	gob.Register(User{})
+}
 
 type User struct {
 	Model
@@ -27,6 +34,17 @@ type User struct {
 	Answered          []Comment `gorm:"foreignKey:AnsweredByID;" json:"-"`
 	RSVP              []Event   `gorm:"many2many:user_event_rsvps;" json:"-"`
 	Waitlist          []Event   `gorm:"many2many:user_event_waitlists;" json:"-"`
+}
+
+func (u *User) Marshal() string {
+	user, _ := go_json.Marshal(u)
+	return string(user)
+}
+
+func UnmarshalUser(user string) User {
+	u := User{}
+	go_json.Unmarshal([]byte(user), &u)
+	return u
 }
 
 func (u *User) AfterCreate(tx *gorm.DB) (err error) {
