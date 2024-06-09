@@ -1,35 +1,38 @@
 import { SafeAreaView } from 'react-native';
 
-import InfiniteScrollCarousel, { DAY_EPOCH_TIME, FetchNewEventsPropsUnion, RefreshDirection } from '@/app/(design-system)/components/TestComponent/TestComponent';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { EventSection } from '@/app/(design-system)/components/Calendar/mockData';
-import { getEvents } from '@/app/(design-system)/components/TestComponent/mock/mockData';
 import { CalendarProvider, ExpandableCalendar } from 'react-native-calendars-sac';
 import { Box, createStyles } from '@/app/(design-system)';
 import { Theme } from 'react-native-calendars-sac/src/types';
+import { EventSection } from '@/app/(design-system)/components/Calendar/DayTimeSection';
+import Calendar, { DAY_EPOCH_TIME, FetchNewEventsPropsUnion } from '@/app/(design-system)/components/Calendar/Calendar';
+import { eventApi } from '@generatesac/lib';
+import { parseData } from '@/app/(design-system)/components/Calendar/parser/calendarParser';
 
 const TODAY = new Date(); 
-
-const calendarTheme: Theme = {
-    selectedDayBackgroundColor: 'black',
-    todayTextColor: 'black',
-    arrowColor: 'black',
-    textMonthFontWeight: 'bold'
-};
 
 const BATCH_SIZE = 15
 const BATCH_SIZE_HALF = Math.floor(BATCH_SIZE / 2);
 
 const CalendarPage = () => {
     const [loadedEvents, setLoadedEvents] = useState<EventSection[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
     const [minDate, setMinDate] = useState(TODAY.getTime() - DAY_EPOCH_TIME * BATCH_SIZE_HALF);
     const [maxDate, setMaxDate] = useState(TODAY.getTime() + DAY_EPOCH_TIME * BATCH_SIZE_HALF);
     const [datePress, setDatePress] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(false);
     const oldEvents = useRef<EventSection[]>([]);
     const recentRefresh = useRef<string>();
+    const [getEvents] = eventApi.useLazyEventsQuery({});
 
     const emptyDatePlaceholder = new Array(BATCH_SIZE_HALF).fill({});
+
+    const calendarTheme: Theme = {
+        selectedDayBackgroundColor: 'black',
+        todayTextColor: 'black',
+        arrowColor: 'black',
+        textMonthFontWeight: 'bold'
+    };
 
     useEffect(() => {
         fetchNewEvents({ 
@@ -39,17 +42,23 @@ const CalendarPage = () => {
     }, []);
 
     const fetchEvents = async (startTime: number, endTime: number) => {
-        const events = getEvents(startTime, endTime);
-        return events;
-    };
+        const start = new Date(startTime).toISOString().split('T')[0];
+        const end = new Date(endTime).toISOString().split('T')[0];
+
+        return await getEvents({ start, end }).then(({ data, error }) => {
+            if (error) {
+                setError(true);
+            }
+
+            return parseData(startTime, endTime, data);
+        })
+    }
 
     const fetchNewEvents = useCallback(async (props: FetchNewEventsPropsUnion) => {
-        // Create a random string identifier for the refresh:
+        const { direction } = props;
         const refreshId = Math.random().toString(36).substring(7);
         recentRefresh.current = refreshId;
-        console.log('refreshID:', refreshId);
 
-        const { direction } = props;
         if (direction === 'start') {
             // Store the old events:
             oldEvents.current = [...loadedEvents];
@@ -57,12 +66,12 @@ const CalendarPage = () => {
 
             setIsLoading(true);
             setTimeout(async () => {
-                const newEvents = await fetchEvents(minDate - DAY_EPOCH_TIME * BATCH_SIZE_HALF, minDate - DAY_EPOCH_TIME);
+                const newEvents = await fetchEvents(minDate - DAY_EPOCH_TIME * BATCH_SIZE_HALF, minDate);
                 if (recentRefresh.current !== refreshId) return;
                 setMinDate(minDate - DAY_EPOCH_TIME * BATCH_SIZE_HALF);
                 setLoadedEvents([...newEvents, ...oldEvents.current]);
-                setIsLoading(false)
-            }, 2000)
+                setIsLoading(false);
+            }, 200);
         } 
         if (direction === 'end') {
             // Store the old events:
@@ -71,12 +80,12 @@ const CalendarPage = () => {
 
             setIsLoading(true);
             setTimeout(async () => {
-                const newEvents = await fetchEvents(maxDate + DAY_EPOCH_TIME, maxDate + DAY_EPOCH_TIME * (BATCH_SIZE_HALF + 1));
+                const newEvents = await fetchEvents(maxDate, maxDate + DAY_EPOCH_TIME * (BATCH_SIZE_HALF + 1));
                 if (recentRefresh.current !== refreshId) return;
                 setMaxDate(maxDate + DAY_EPOCH_TIME * (BATCH_SIZE_HALF + 1));
                 setLoadedEvents([...oldEvents.current, ...newEvents]);
                 setIsLoading(false);
-            }, 2000);
+            }, 200)
         } 
         if (direction === 'base') {
             const { date } = props;
@@ -88,12 +97,10 @@ const CalendarPage = () => {
             setIsLoading(true);
             setTimeout(async () => {
                 const newEvents = await fetchEvents(minDateNew, maxDateNew);
-                console.log(new Date(minDateNew), new Date(maxDateNew));
                 if (recentRefresh.current !== refreshId) return;
-                console.log('request not cancelled!');
                 setLoadedEvents(newEvents);
                 setIsLoading(false);
-            }, 3000)
+            }, 200)
         }
         else return;
     }, [minDate, maxDate, loadedEvents]);
@@ -118,7 +125,7 @@ const CalendarPage = () => {
                         />
                     </Box>
                 </Box>
-                <InfiniteScrollCarousel
+                <Calendar
                     loadedEvents={loadedEvents}
                     loadBatchSize={BATCH_SIZE}
                     isLoading={isLoading}
@@ -126,6 +133,7 @@ const CalendarPage = () => {
                     refetchEvents={fetchNewEvents}
                     datePress={datePress}
                     setDatePress={setDatePress}
+                    error={error}
                 />
             </CalendarProvider>
         </SafeAreaView>

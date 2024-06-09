@@ -1,10 +1,7 @@
-import { forwardRef } from 'react';
-
 import { formatTime } from '@/utils/time';
-import { EventSection } from '../Calendar/mockData';
 import { Text } from '../Text/Text';
-import { Box } from '../Box/Box';
-import AgendaTimeSection from '../Calendar/Agenda/AgendaTimeSection';
+import { Box } from '@/app/(design-system)/components/Box/Box';
+import DayTimeSection, { EventSection } from '@/app/(design-system)/components/Calendar/DayTimeSection';
 
 type DayProps = {
     section: EventSection;
@@ -26,6 +23,8 @@ function formatSectionHeader(date: string) {
 export default function Day({ section, error }: DayProps) {
     const keys = Object.keys(section.data).sort();
 
+    console.log(error);
+
     return (
         <Box>
             <Text variant="body-1" fontWeight={'bold'} marginTop="l">
@@ -33,7 +32,7 @@ export default function Day({ section, error }: DayProps) {
             </Text>
             {keys.map((key, index) => {
                 return (
-                    <AgendaTimeSection
+                    <DayTimeSection
                         key={`${key}${index}`}
                         time={parseInt(key)}
                         data={section.data[key]}

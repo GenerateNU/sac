@@ -1,10 +1,32 @@
-import { Box } from '../../Box/Box';
-import { Button } from '../../Button/Button';
-import { EventCard } from '../../EventCard/EventCard';
-import { Text } from '../../Text/Text';
-import { EventSectionData } from '../mockData';
+import { Button } from '@/app/(design-system)/components/Button/Button';
+import { EventCard } from '@/app/(design-system)/components/EventCard/EventCard';
+import { Text } from '@/app/(design-system)/components/Text/Text';
+import { Box } from '@/app/(design-system)/components/Box/Box';
+import { Tag } from '@generatesac/lib';
 
-export type AgendaTimeSectionProps = {
+export type EventSectionTimes = {
+    [key: string]: EventSectionData;
+};
+
+export type EventSection = {
+    date: string;
+    data: EventSectionTimes;
+};
+
+export type EventPreview = {
+    title: string;
+    startTime: string;
+    endTime: string;
+    host: string;
+    tags: Tag[];
+};
+
+export type EventSectionData = {
+    overflow: boolean;
+    events: EventPreview[];
+};
+
+export type DayTimeSectionProps = {
     time: number;
     data: EventSectionData;
 };
@@ -48,10 +70,10 @@ function TimeHeader({ time }: { time: number }) {
     );
 }
 
-export default function AgendaTimeSection({
+export default function DayTimeSection({
     time,
     data
-}: AgendaTimeSectionProps) {
+}: DayTimeSectionProps) {
     return (
         <Box>
             <Box>
@@ -69,11 +91,9 @@ export default function AgendaTimeSection({
                                 event={event.title}
                                 variant="calendar"
                                 tags={event.tags}
-                                club={event.host}
-                                startTime={new Date()}
-                                endTime={
-                                    new Date(new Date().getTime() + 1000000)
-                                }
+                                club={'Generate'}
+                                startTime={new Date(event.startTime)}
+                                endTime={new Date(event.endTime)}
                                 logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT800M6T7YVq_f6W49g_UNL29US7gC63nTitg&s"
                                 image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfT6p6kCen0-GphSDogJRd2KoYjg0-QQWuAw9e5JBIBEVTc3Hxho_UwRsZ0IrEi6Ap5oo&usqp=CAU"
                             />

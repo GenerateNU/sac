@@ -1,9 +1,6 @@
 import { SafeAreaView, StyleSheet, Text } from 'react-native';
 
 import { GlobalLayout } from '@/app/(design-system)/components/GlobalLayout/GlobalLayout';
-import InfiniteScrollCarousel from '@/app/(design-system)/components/TestComponent/TestComponent';
-import { getEvents } from '@/app/(design-system)/components/TestComponent/mock/mockData';
-import { EventSection } from '@/app/(design-system)/components/Calendar/mockData';
 import { useCallback, useEffect, useState } from 'react';
 
 const HomePage = () => {
