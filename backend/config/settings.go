@@ -3,6 +3,7 @@ package config
 type Settings struct {
 	Application  ApplicationSettings
 	Database     DatabaseSettings
+	RedisSession RedisSettings
 	RedisLimiter RedisSettings
 	SuperUser    SuperUserSettings
 	Calendar     CalendarSettings
@@ -20,6 +21,7 @@ type Integrations struct {
 type intermediateSettings struct {
 	Application  ApplicationSettings               `envPrefix:"SAC_APPLICATION_"`
 	Database     intermediateDatabaseSettings      `envPrefix:"SAC_DB_"`
+	RedisSession intermediateRedisSettings         `envPrefix:"SAC_REDIS_SESSION_"`
 	RedisLimiter intermediateRedisSettings         `envPrefix:"SAC_REDIS_LIMITER_"`
 	SuperUser    intermediateSuperUserSettings     `envPrefix:"SAC_SUDO_"`
 	AWS          intermediateAWSSettings           `envPrefix:"SAC_AWS_"`
