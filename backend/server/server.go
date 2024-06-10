@@ -5,10 +5,11 @@ import (
 
 	"github.com/garrettladley/fiberpaginate"
 	go_json "github.com/goccy/go-json"
-	"github.com/markbates/goth"
 
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/database/store"
+
+	"github.com/GenerateNU/sac/backend/integrations/oauth/soth/goog"
 	"github.com/GenerateNU/sac/backend/integrations/oauth/soth/msft"
 
 	auth "github.com/GenerateNU/sac/backend/entities/auth/base"
@@ -57,7 +58,7 @@ func Init(db *gorm.DB, stores *store.Stores, integrations integrations.Integrati
 	applicationURL := settings.Application.ApplicationURL()
 
 	msftProvider := msft.New(settings.Microsft.Key, settings.Microsft.Secret, fmt.Sprintf("%s/api/v1/auth/microsoftonline/callback", applicationURL), settings.Microsft.Tenant)
-	// googProvider := goog.New(settings.Google.Key, settings.Google.Secret, fmt.Sprintf("%s/api/v1/auth/google/callback", applicationURL))
+	googProvider := goog.New(settings.Google.Key, settings.Google.Secret, fmt.Sprintf("%s/api/v1/auth/google/callback", applicationURL))
 
 	authMiddleware := authMiddleware.New(
 		db,
@@ -82,20 +83,16 @@ func Init(db *gorm.DB, stores *store.Stores, integrations integrations.Integrati
 		),
 	)
 
-	providerFns := []func() goth.Provider{
-		func() goth.Provider {
-			return msftProvider
-		},
-	}
-
-	allRoutes(app, routeParams, auth.NewParams(
-		applicationURL,
-		apiv1,
-		db,
-		integrations.Email,
-		validate,
-		providerFns...,
-	))
+	allRoutes(app, routeParams,
+		auth.NewParams(
+			msftProvider,
+			applicationURL,
+			apiv1,
+			db,
+			integrations.Email,
+			validate,
+			googProvider,
+		))
 
 	return app
 }

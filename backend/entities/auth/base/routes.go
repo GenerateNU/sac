@@ -2,45 +2,39 @@ package base
 
 import (
 	"github.com/GenerateNU/sac/backend/integrations/email"
+	"github.com/GenerateNU/sac/backend/integrations/oauth/soth"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
-	"github.com/markbates/goth"
 	"gorm.io/gorm"
 )
 
 type Params struct {
-	providers      []goth.Provider
+	authProvider   soth.Provider
+	providers      []soth.Provider
 	applicationURL string
 	router         fiber.Router
 	db             *gorm.DB
-	emailer        email.Emailer
-	validate       *validator.Validate
 }
 
-func NewParams(applicationURL string, router fiber.Router, db *gorm.DB, emailer email.Emailer, validate *validator.Validate, providerFns ...func() goth.Provider) Params {
-	providers := make([]goth.Provider, len(providerFns))
-	for i, providerFn := range providerFns {
-		providers[i] = providerFn()
-	}
-
+func NewParams(authProvider soth.Provider, applicationURL string, router fiber.Router, db *gorm.DB, emailer email.Emailer, validate *validator.Validate, providers ...soth.Provider) Params {
 	return Params{
+		authProvider:   authProvider,
 		providers:      providers,
 		applicationURL: applicationURL,
 		router:         router,
 		db:             db,
-		emailer:        emailer,
-		validate:       validate,
 	}
 }
 
 func Auth(params Params) {
-	goth.UseProviders(
-		params.providers...,
+	soth.UseProviders(
+		append(params.providers, params.authProvider)...,
 	)
 
-	handler := Handler{db: params.db, emailer: params.emailer, validate: params.validate}
+	handler := Handler{db: params.db, authProvider: params.authProvider}
 
 	params.router.Route("/auth", func(r fiber.Router) {
+		r.Get("/login", handler.Login)
 		r.Get("/:provider", handler.Provider)
 		r.Get(":provider/callback", handler.ProviderCallback)
 		r.Get("/logout", handler.ProviderLogout)
