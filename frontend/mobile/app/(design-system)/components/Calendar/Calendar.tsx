@@ -279,9 +279,11 @@ export default function Calendar({
         }
 
         if (targetIndex === undefined) {
-            throw new Error('Target index must be defined for left / right swipe direction');
+            throw new Error(
+                'Target index must be defined for left / right swipe direction'
+            );
         }
-            
+
         setEvents((prevEvents) => {
             prevEvents[targetIndex] =
                 allLoadedEvents[data_index_array.current[targetIndex]];

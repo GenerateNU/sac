@@ -2,13 +2,10 @@ import { Box } from '@/app/(design-system)/components/Box/Box';
 import DayTimeSection, {
     EventSection
 } from '@/app/(design-system)/components/Calendar/DayTimeSection';
+import NoEventsIcon from '@/assets/svg/NoSearchResult.svg';
 import { formatTime } from '@/utils/time';
-import { faCalendar } from '@fortawesome/free-solid-svg-icons/';
 
 import { Text } from '../Text/Text';
-import { Icon } from '../Icon/Icon';
-import { Image, Svg } from 'react-native-svg';
-import NoEventsIcon from '@/assets/svg/NoSearchResult.svg'
 
 type DayProps = {
     section: EventSection;
@@ -39,25 +36,22 @@ export default function Day({ section, error }: DayProps) {
                     <DayTimeSection
                         key={`${key}${index}`}
                         time={parseInt(key)}
-                        date={section.date}
                         data={section.data[key]}
                     />
                 );
             })}
             {keys.length === 0 && (
-                <Box width='100%' alignItems='center'>
+                <Box width="100%" alignItems="center">
                     {!error && <NoEventsIcon height={175} />}
-                    <Text textAlign="center" fontWeight='bold' color='darkGray'>
+                    <Text textAlign="center" fontWeight="bold" color="darkGray">
                         {error
                             ? 'Oops, something went wrong!'
-                            : 'No events today'
-                        }
+                            : 'No events today'}
                     </Text>
-                    <Text color='darkGray' variant='body-2' marginTop='s'>
+                    <Text color="darkGray" variant="body-2" marginTop="s">
                         {error
                             ? 'Please try again later'
-                            : 'Make sure to check again soon!'
-                        }
+                            : 'Make sure to check again soon!'}
                     </Text>
                 </Box>
             )}

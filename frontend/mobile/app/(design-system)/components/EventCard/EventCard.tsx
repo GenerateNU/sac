@@ -24,7 +24,7 @@ export const EventCard = ({
     image,
     logo,
     tags,
-    variant,
+    variant
 }: EventCardProps) => {
     switch (variant) {
         case 'big':
