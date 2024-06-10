@@ -137,6 +137,7 @@ const CalendarPage = () => {
             direction: 'base',
             date: TODAY.toISOString().split('T')[0]
         });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
