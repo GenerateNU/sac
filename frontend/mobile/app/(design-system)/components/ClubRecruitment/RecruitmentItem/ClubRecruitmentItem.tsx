@@ -1,9 +1,12 @@
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 
-import { Box, SACColors, Text, createStyles } from '@/app/(design-system)';
 import { firstLetterUppercase } from '@/utils/string';
 
+import { SACColors } from '../../../shared/colors';
+import { createStyles } from '../../../theme';
+import { Box } from '../../Box/Box';
 import { Icon } from '../../Icon/Icon';
+import { Text } from '../../Text/Text';
 
 interface RecruitmentItemProps {
     icon: IconDefinition;
@@ -22,7 +25,7 @@ export const RecruitmentItem = ({
         <Box borderColor={color} {...styles.recruitmentItem}>
             <Box {...styles.recruitmentItemContent}>
                 <Icon size={'md'} color={color} icon={icon} />
-                <Text variant="body-1" {...styles.recruitmentItemTitle}>
+                <Text variant="caption-1" {...styles.recruitmentItemTitle}>
                     {firstLetterUppercase(title)}
                 </Text>
                 <Text variant="caption-1" style={{ textAlign: 'center' }}>
@@ -36,10 +39,9 @@ export const RecruitmentItem = ({
 const styles = createStyles({
     recruitmentItem: {
         alignItems: 'center',
-        borderWidth: 1,
         borderRadius: 'sm',
-        borderColor: 'gray',
-        width: '33%'
+        width: '33%',
+        padding: 's'
     },
     recruitmentItemContent: {
         paddingVertical: 'l',
