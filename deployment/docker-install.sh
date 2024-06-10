@@ -1,7 +1,6 @@
 sudo yum update -y
 sudo yum install -y docker
 sudo systemctl enable --now docker
-sudo systemctl status docker
 sudo usermod -a -G docker ec2-user
 
 # Install the docker compose plugin for all users
