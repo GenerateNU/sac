@@ -36,15 +36,21 @@ type User struct {
 	Waitlist          []Event   `gorm:"many2many:user_event_waitlists;" json:"-"`
 }
 
-func (u *User) Marshal() string {
-	user, _ := go_json.Marshal(u)
-	return string(user)
+func (u *User) Marshal() (*string, error) {
+	user, err := go_json.Marshal(u)
+	if err != nil {
+		return nil, err
+	}
+	strUser := string(user)
+	return &strUser, nil
 }
 
-func UnmarshalUser(user string) User {
+func UnmarshalUser(user string) *User {
 	u := User{}
-	go_json.Unmarshal([]byte(user), &u)
-	return u
+	if err := go_json.Unmarshal([]byte(user), &u); err != nil {
+		return nil
+	}
+	return &u
 }
 
 func (u *User) AfterCreate(tx *gorm.DB) (err error) {

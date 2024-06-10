@@ -33,7 +33,12 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 			return err
 		}
 
-		if err := sothic.StoreInSession("user", user.Marshal(), c); err != nil {
+		strUser, err := user.Marshal()
+		if err != nil {
+			return err
+		}
+
+		if err := sothic.StoreInSession("user", *strUser, c); err != nil {
 			return err
 		}
 
@@ -50,7 +55,12 @@ func (h *Handler) Provider(c *fiber.Ctx) error {
 			return err
 		}
 
-		if err := sothic.StoreInSession("user", user.Marshal(), c); err != nil {
+		strUser, err := user.Marshal()
+		if err != nil {
+			return err
+		}
+
+		if err := sothic.StoreInSession("user", *strUser, c); err != nil {
 			return err
 		}
 
@@ -82,7 +92,12 @@ func (h *Handler) ProviderCallback(c *fiber.Ctx) error {
 		return err
 	}
 
-	if err := sothic.StoreInSession("user", user.Marshal(), c); err != nil {
+	strUser, err := user.Marshal()
+	if err != nil {
+		return err
+	}
+
+	if err := sothic.StoreInSession("user", *strUser, c); err != nil {
 		return err
 	}
 

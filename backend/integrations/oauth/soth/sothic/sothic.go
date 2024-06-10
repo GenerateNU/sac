@@ -362,8 +362,7 @@ func StoreInSession(key string, value string, c *fiber.Ctx) error {
 	}
 
 	// saved here
-	session.Save()
-	return nil
+	return session.Save()
 }
 
 // GetFromSession retrieves a previously-stored value from the session.
