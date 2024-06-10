@@ -32,7 +32,7 @@ jobs:
           queries: security-and-quality
       - name: Build
         run: |
-          cd ./backend/ && go build -o backend main.go
+          cd ./backend/ && go install github.com/a-h/templ/cmd/templ@latest && templ generate && go build -o backend main.go
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:

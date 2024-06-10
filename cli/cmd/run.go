@@ -40,7 +40,7 @@ var runBeCmd = &cobra.Command{
 		seedSearch, _ := cmd.Flags().GetBool("seed-search")
 
 		if migrate {
-			err := helpers.Execute(exec.Command("go", "run", "main.go", "--only-migrate"), helpers.BACKEND_DIR)
+			err := helpers.Execute(exec.Command("templ", "generate", "&&", "go", "run", "main.go", "--only-migrate"), helpers.BACKEND_DIR)
 			if err != nil {
 				fmt.Println(err)
 				os.Exit(1)
@@ -48,7 +48,7 @@ var runBeCmd = &cobra.Command{
 		}
 
 		if seedSearch {
-			err := helpers.Execute(exec.Command("go", "run", "main.go", "--seed-search"), helpers.BACKEND_DIR)
+			err := helpers.Execute(exec.Command("templ", "generate", "&&", "go", "run", "main.go", "--seed-search"), helpers.BACKEND_DIR)
 			if err != nil {
 				fmt.Println(err)
 				os.Exit(1)
