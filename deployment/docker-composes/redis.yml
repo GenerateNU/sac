@@ -9,7 +9,7 @@ services:
     ports:
       - 6379:6379
     environment:
-      - REDIS_PASSWORD=redispassword!#1
+      - REDIS_PASSWORD="${ACTIVE_TOKENS_PASSWORD}"
     volumes:
       - redis-active-data:/data
 
@@ -19,7 +19,7 @@ services:
     ports:
       - 6380:6379
     environment:
-      - REDIS_PASSWORD=redispassword!#2
+      - REDIS_PASSWORD="${BLACKLIST_PASSWORD}"
     volumes:
       - redis-blacklist-data:/data
 
@@ -29,7 +29,7 @@ services:
     ports:
       - 6381:6379
     environment:
-      - REDIS_PASSWORD=redispassword!#3
+      - REDIS_PASSWORD="${LIMITER_PASSWORD}"
     volumes:
       - redis-limiter-data:/data
 

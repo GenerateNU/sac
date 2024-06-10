@@ -1,7 +1,7 @@
 resource "aws_launch_template" "this_template" {
   image_id = "ami-00beae93a2d981137"
 
-  instance_type = "t3.micro"
+  instance_type = "t2.micro"
 
   user_data = base64encode(templatefile("${path.module}/init.sh", {}))
 

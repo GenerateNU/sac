@@ -38,7 +38,7 @@ module "sac_postgresql" {
 
     allocated_storage = 10
     engine = "postgres"
-    instance_class = "db.t3.micro"
+    instance_class = "db.t2.micro"
     name = "sac"
     subnet_ids = module.sac_vpc.private_subnet_ids
 
