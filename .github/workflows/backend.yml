@@ -87,7 +87,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go
       - name: Install Dependencies
-        run: cd ./backend/ && go install github.com/a-h/templ/cmd/templ@latest && go get ./...
+        run: cd ./backend/ && go install github.com/a-h/templ/cmd/templ@latest && templ generate && go get ./...
       - name: Increase max_connections in PostgreSQL
         run: |
           CONTAINER_ID=$(docker ps --filter "publish=5432" --format "{{.ID}}")
