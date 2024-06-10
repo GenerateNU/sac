@@ -1,7 +1,6 @@
 package base
 
 import (
-	p "github.com/GenerateNU/sac/backend/auth"
 	"github.com/GenerateNU/sac/backend/entities/clubs/events"
 	"github.com/GenerateNU/sac/backend/entities/clubs/followers"
 	"github.com/GenerateNU/sac/backend/entities/clubs/leadership"
@@ -10,6 +9,7 @@ import (
 	"github.com/GenerateNU/sac/backend/entities/clubs/socials"
 	"github.com/GenerateNU/sac/backend/entities/clubs/tags"
 	authMiddleware "github.com/GenerateNU/sac/backend/middleware/auth"
+	"github.com/GenerateNU/sac/backend/permission"
 
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/gofiber/fiber/v2"
@@ -34,7 +34,7 @@ func ClubRouter(clubParams types.RouteParams) fiber.Router {
 	clubs := clubParams.Router.Group("/clubs")
 
 	clubs.Get("/", clubParams.UtilityMiddleware.Paginator, clubController.GetClubs)
-	clubs.Post("/", clubParams.AuthMiddleware.Authorize(p.CreateAll), clubController.CreateClub)
+	clubs.Post("/", clubParams.AuthMiddleware.Authorize(permission.CreateAll), clubController.CreateClub)
 
 	// api/v1/clubs/:clubID/*
 	clubID := clubs.Group("/:clubID")
@@ -45,7 +45,7 @@ func ClubRouter(clubParams types.RouteParams) fiber.Router {
 		authMiddleware.AttachExtractor(clubParams.AuthMiddleware.ClubAuthorizeById, authMiddleware.ExtractFromParams("clubID")),
 		clubController.UpdateClub,
 	)
-	clubID.Delete("/", clubParams.AuthMiddleware.Authorize(p.DeleteAll), clubController.DeleteClub)
+	clubID.Delete("/", clubParams.AuthMiddleware.Authorize(permission.DeleteAll), clubController.DeleteClub)
 
 	return clubID
 }

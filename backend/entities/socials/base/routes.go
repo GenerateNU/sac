@@ -1,7 +1,7 @@
 package base
 
 import (
-	"github.com/GenerateNU/sac/backend/auth"
+	"github.com/GenerateNU/sac/backend/permission"
 	"github.com/GenerateNU/sac/backend/types"
 )
 
@@ -13,5 +13,5 @@ func Social(socialParams types.RouteParams) {
 
 	socials.Get("/", socialParams.UtilityMiddleware.Paginator, socialController.GetSocials)
 	socials.Get("/:socialID", socialController.GetSocial)
-	socials.Delete("/:socialID", socialParams.AuthMiddleware.Authorize(auth.DeleteAll), socialController.DeleteSocial)
+	socials.Delete("/:socialID", socialParams.AuthMiddleware.Authorize(permission.DeleteAll), socialController.DeleteSocial)
 }

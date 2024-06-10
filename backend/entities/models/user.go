@@ -1,24 +1,29 @@
 package models
 
 import (
+	"encoding/gob"
+
+	go_json "github.com/goccy/go-json"
 	"gorm.io/gorm"
 )
+
+func init() {
+	gob.Register(User{})
+}
 
 type User struct {
 	Model
 
 	Role            UserRole        `json:"role"`
-	FirstName       string          `json:"first_name"`
-	LastName        string          `json:"last_name"`
+	Name            string          `json:"name"`
 	Email           string          `json:"email"`
-	PasswordHash    string          `json:"-"`
 	Major0          Major           `json:"major0"`
 	Major1          Major           `json:"major1"`
 	Major2          Major           `json:"major2"`
 	College         College         `json:"college"`
 	GraduationCycle GraduationCycle `json:"graduation_cycle"`
 	GraduationYear  int16           `json:"graduation_year"`
-	IsVerified      bool            `json:"is_verified"`
+	AvatarURL       string          `json:"avatar_url"`
 
 	Tag               []Tag     `gorm:"many2many:user_tags;" json:"-"`
 	Admin             []Club    `gorm:"many2many:user_club_admins;" json:"-"`
@@ -29,6 +34,23 @@ type User struct {
 	Answered          []Comment `gorm:"foreignKey:AnsweredByID;" json:"-"`
 	RSVP              []Event   `gorm:"many2many:user_event_rsvps;" json:"-"`
 	Waitlist          []Event   `gorm:"many2many:user_event_waitlists;" json:"-"`
+}
+
+func (u *User) Marshal() (*string, error) {
+	user, err := go_json.Marshal(u)
+	if err != nil {
+		return nil, err
+	}
+	strUser := string(user)
+	return &strUser, nil
+}
+
+func UnmarshalUser(user string) *User {
+	u := User{}
+	if err := go_json.Unmarshal([]byte(user), &u); err != nil {
+		return nil
+	}
+	return &u
 }
 
 func (u *User) AfterCreate(tx *gorm.DB) (err error) {

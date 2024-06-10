@@ -2,43 +2,49 @@ package auth
 
 import (
 	"slices"
+	"time"
 
 	"github.com/GenerateNU/sac/backend/entities/clubs"
-	"github.com/GenerateNU/sac/backend/locals"
+	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/integrations/oauth/soth/sothic"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/fiber/v2"
 )
 
 // Authorizes admins of the specific club to make this request, skips check if super user
-func (m *AuthMiddlewareService) ClubAuthorizeById(c *fiber.Ctx, extractor ExtractID) error {
-	return func(c *fiber.Ctx) error {
-		if err := m.Authenticate(c); err != nil {
-			return utilities.Unauthorized()
-		}
+func (m *AuthMiddlewareHandler) ClubAuthorizeById(c *fiber.Ctx, extractor ExtractID) error {
+	strUser, err := sothic.GetFromSession("user", c)
+	if err != nil {
+		c.Cookie(&fiber.Cookie{
+			Name:    "redirect",
+			Value:   c.OriginalURL(),
+			Expires: time.Now().Add(5 * time.Minute),
+			// MARK: secure should be true in prod
+			// use go build tags to do this
+			HTTPOnly: true,
+		})
+		return c.Redirect("/api/v1/auth/login")
+	}
 
-		if m.IsSuper(c) {
-			return c.Next()
-		}
+	user := models.UnmarshalUser(strUser)
 
-		clubUUID, err := extractor(c)
-		if err != nil {
-			return err
-		}
+	if user.Role == models.Super {
+		return c.Next()
+	}
 
-		userID, err := locals.UserIDFrom(c)
-		if err != nil {
-			return err
-		}
+	clubUUID, err := extractor(c)
+	if err != nil {
+		return err
+	}
 
-		clubAdmin, err := clubs.GetAdminIDs(m.DB, *clubUUID)
-		if err != nil {
-			return err
-		}
+	clubAdmin, err := clubs.GetAdminIDs(m.db, *clubUUID)
+	if err != nil {
+		return err
+	}
 
-		if slices.Contains(clubAdmin, *userID) {
-			return c.Next()
-		}
+	if slices.Contains(clubAdmin, user.ID) {
+		return c.Next()
+	}
 
-		return utilities.Forbidden()
-	}(c)
+	return utilities.Forbidden()
 }
