@@ -1,8 +1,4 @@
 services:
-  server:
-    build:
-      context: .
-  
   redis-active-tokens:
     image: redis/redis-stack-server:latest
     container_name: redis_active_tokens
