@@ -90,6 +90,7 @@ export default function DayTimeSection({ time, data }: DayTimeSectionProps) {
                                 variant="calendar"
                                 tags={event.tags}
                                 club={'Generate'}
+                                clubId={event.host}
                                 startTime={new Date(event.startTime)}
                                 endTime={new Date(event.endTime)}
                                 logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT800M6T7YVq_f6W49g_UNL29US7gC63nTitg&s"

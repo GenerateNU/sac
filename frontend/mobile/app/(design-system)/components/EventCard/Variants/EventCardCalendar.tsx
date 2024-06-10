@@ -9,10 +9,12 @@ import { createOptions, eventTime, happeningNow } from '@/utils/time';
 
 import { EventTags } from '../EventCardTags/EventCardTags';
 import { sharedStyles } from '../shared/styles';
+import { router } from 'expo-router';
 
 interface EventCardCalendarProps {
     event: string;
     club: string;
+    clubId: string;
     startTime: Date;
     endTime: Date;
     image: string;
@@ -23,6 +25,7 @@ interface EventCardCalendarProps {
 export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
     event,
     club,
+    clubId,
     startTime,
     endTime,
     image,
@@ -34,7 +37,7 @@ export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
 
     return (
         <Box position="relative">
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => router.navigate(`/event/${clubId}`)}>
                 {isHappening && (
                     <Box {...styles.isHappeningContainer}>
                         <Box {...styles.isHappeningContent}>

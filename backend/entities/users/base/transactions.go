@@ -15,23 +15,11 @@ import (
 
 func GetUsers(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.User, error) {
 	var users []models.User
-	if err := db.Omit("password_hash").Scopes(utilities.IntoScope(pageInfo, db)).Find(&users).Error; err != nil {
+	if err := db.Scopes(utilities.IntoScope(pageInfo, db)).Find(&users).Error; err != nil {
 		return nil, err
 	}
 
 	return users, nil
-}
-
-func GetUserPasswordHash(db *gorm.DB, id uuid.UUID) (*string, error) {
-	var user models.User
-	if err := db.Select("password_hash").First(&user, id).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, utilities.ErrNotFound
-		}
-		return nil, err
-	}
-
-	return &user.PasswordHash, nil
 }
 
 func UpdateUser(db *gorm.DB, id uuid.UUID, user models.User) (*models.User, error) {

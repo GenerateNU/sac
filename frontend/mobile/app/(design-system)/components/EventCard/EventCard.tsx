@@ -8,6 +8,7 @@ import { EventCardSmall } from './Variants/EventCardSmall';
 interface EventCardProps {
     event: string;
     club: string;
+    clubId: string;
     startTime: Date;
     endTime: Date;
     tags?: Tag[];
@@ -19,12 +20,13 @@ interface EventCardProps {
 export const EventCard = ({
     event,
     club,
+    clubId,
     startTime,
     endTime,
     image,
     logo,
     tags,
-    variant
+    variant,
 }: EventCardProps) => {
     switch (variant) {
         case 'big':
@@ -32,6 +34,7 @@ export const EventCard = ({
                 <EventCardBig
                     event={event}
                     club={club}
+                    clubId={clubId}
                     startTime={startTime}
                     endTime={endTime}
                     image={image}
@@ -42,6 +45,7 @@ export const EventCard = ({
                 <EventCardSmall
                     event={event}
                     club={club}
+                    clubId={clubId}
                     startTime={startTime}
                     endTime={endTime}
                     image={image}
@@ -52,6 +56,7 @@ export const EventCard = ({
                 <EventCardClub
                     event={event}
                     club={club}
+                    clubId={clubId}
                     startTime={startTime}
                     endTime={endTime}
                     image={image}
@@ -64,6 +69,7 @@ export const EventCard = ({
                 <EventCardCalendar
                     event={event}
                     club={club}
+                    clubId={clubId}
                     startTime={startTime}
                     endTime={endTime}
                     image={image}
@@ -76,6 +82,7 @@ export const EventCard = ({
                 <EventCardBig
                     event={event}
                     club={club}
+                    clubId={clubId}
                     startTime={startTime}
                     endTime={endTime}
                     image={image}

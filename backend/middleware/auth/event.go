@@ -2,43 +2,49 @@ package auth
 
 import (
 	"slices"
+	"time"
 
 	"github.com/GenerateNU/sac/backend/entities/events"
+	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/integrations/oauth/soth/sothic"
 	"github.com/GenerateNU/sac/backend/locals"
 	"github.com/GenerateNU/sac/backend/utilities"
+
 	"github.com/gofiber/fiber/v2"
 )
 
 // Authorizes admins of the host club of this event to make this request, skips check if super user
-func (m *AuthMiddlewareService) EventAuthorizeById(c *fiber.Ctx, extractor ExtractID) error {
-	return func(c *fiber.Ctx) error {
-		if err := m.Authenticate(c); err != nil {
-			return utilities.Unauthorized()
-		}
+func (m *AuthMiddlewareHandler) EventAuthorizeById(c *fiber.Ctx, extractor ExtractID) error {
+	strUser, err := sothic.GetFromSession("user", c)
+	if err != nil {
+		c.Cookie(&fiber.Cookie{
+			Name:    "redirect",
+			Value:   c.OriginalURL(),
+			Expires: time.Now().Add(5 * time.Minute),
+			// MARK: secure should be true in prod
+			// use go build tags to do this
+			HTTPOnly: true,
+		})
 
-		if m.IsSuper(c) {
-			return c.Next()
-		}
+		return c.Redirect("/api/v1/auth/login")
+	}
 
-		eventUUID, err := extractor(c)
-		if err != nil {
-			return err
-		}
+	user := models.UnmarshalUser(strUser)
 
-		userID, err := locals.UserIDFrom(c)
-		if err != nil {
-			return err
-		}
+	eventUUID, err := extractor(c)
+	if err != nil {
+		return err
+	}
 
-		eventHostAdmin, err := events.GetEventHostAdminIDs(m.DB, *eventUUID)
-		if err != nil {
-			return err
-		}
+	eventHostAdmin, err := events.GetEventHostAdminIDs(m.db, *eventUUID)
+	if err != nil {
+		return err
+	}
 
-		if slices.Contains(eventHostAdmin, *userID) {
-			return c.Next()
-		}
+	if slices.Contains(eventHostAdmin, user.ID) {
+		locals.SetUser(c, user)
+		return c.Next()
+	}
 
-		return utilities.Forbidden()
-	}(c)
+	return utilities.Forbidden()
 }

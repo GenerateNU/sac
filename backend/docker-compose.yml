@@ -1,32 +1,17 @@
 services:
-  redis-active-tokens:
+  redis-session:
     build:
       context: .
       dockerfile: Dockerfile.redis
-    container_name: redis_active_tokens
-    ports:
-      - 6379:6379
-    environment:
-      - REDIS_USERNAME=redis_active_tokens
-      - REDIS_PASSWORD=redis_active_tokens!#1
-      - REDIS_DISABLE_DEFAULT_USER="true"
-    volumes:
-      - redis-active-data:/data
-
-  redis-blacklist:
-    build:
-      context: .
-      dockerfile: Dockerfile.redis
-    container_name: redis_blacklist
+    container_name: redis_session
     ports:
       - 6380:6379
     environment:
-      - REDIS_USERNAME=redis_blacklist
-      - REDIS_PASSWORD=redis_blacklist!#2
+      - REDIS_USERNAME=redis_session
+      - REDIS_PASSWORD=redis_session!#1
       - REDIS_DISABLE_DEFAULT_USER="true"
     volumes:
-      - redis-blacklist-data:/data
-
+      - redis-session-data:/data
   redis-limiter:
     build:
       context: .
@@ -36,7 +21,7 @@ services:
       - 6381:6379
     environment:
       - REDIS_USERNAME=redis_limiter
-      - REDIS_PASSWORD=redis_limiter!#3
+      - REDIS_PASSWORD=redis_limiter!#1
       - REDIS_DISABLE_DEFAULT_USER="true"
     volumes:
       - redis-limiter-data:/data
@@ -79,8 +64,7 @@ services:
       - opensearch-net
 
 volumes:
-  redis-active-data:
-  redis-blacklist-data:
+  redis-session-data:
   redis-limiter-data:
   opensearch-data1:
 

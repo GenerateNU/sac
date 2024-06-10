@@ -6,10 +6,12 @@ import { Image } from '@rneui/base';
 
 import { Box, Text } from '@/app/(design-system)';
 import { calculateDuration, createOptions, eventTime } from '@/utils/time';
+import { router } from 'expo-router';
 
 interface EventCardBigProps {
     event: string;
     club: string;
+    clubId: string;
     startTime: Date;
     endTime: Date;
     image: string;
@@ -18,13 +20,14 @@ interface EventCardBigProps {
 export const EventCardBig: React.FC<EventCardBigProps> = ({
     event,
     club,
+    clubId,
     startTime,
     endTime,
     image
 }) => {
     return (
         <Box>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => router.navigate(`/event/${clubId}`)}>
                 <Box gap="xs">
                     <Image
                         containerStyle={{

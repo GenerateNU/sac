@@ -7,7 +7,7 @@ import (
 
 func NewMockDependencies() *integrations.Integrations {
 	return &integrations.Integrations{
-		Email: mocks.NewResendMockClient(),
-		File:  mocks.NewAWSMockClient(),
+		Email: mocks.NewResendClient(),
+		File:  mocks.NewAWSClient(),
 	}
 }

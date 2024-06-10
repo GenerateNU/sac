@@ -22,6 +22,7 @@ const HomePage = () => {
                     variant="small"
                     event={item.name}
                     club={item.host}
+                    clubId='1'
                     startTime={item.start_time}
                     endTime={item.end_time}
                     image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLF3ord7lnV_5Je-pC2AUgUiesHNPcZlpI7A&s"
