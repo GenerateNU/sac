@@ -12,7 +12,7 @@ interface EventCardProps {
     endTime: Date;
     tags?: Tag[];
     image: string;
-    logo: string;
+    logo?: string;
     variant: 'big' | 'small' | 'club' | 'calendar';
 }
 
@@ -55,7 +55,7 @@ export const EventCard = ({
                     startTime={startTime}
                     endTime={endTime}
                     image={image}
-                    logo={logo}
+                    logo={logo ? logo : ''}
                     tags={tags ? tags : []}
                 />
             );
@@ -67,7 +67,7 @@ export const EventCard = ({
                     startTime={startTime}
                     endTime={endTime}
                     image={image}
-                    logo={logo}
+                    logo={logo ? logo : ''}
                     tags={tags ? tags : []}
                 />
             );

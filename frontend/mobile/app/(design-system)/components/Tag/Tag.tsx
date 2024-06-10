@@ -8,6 +8,7 @@ import { Button } from '../Button/Button';
 type TagProps = {
     children: React.ReactNode;
     onPress?: () => void;
+    borderColor?: SACColors;
     color?: SACColors;
     variant?: 'selected' | 'unselected' | 'remove' | 'eventCard';
 };
@@ -15,6 +16,7 @@ type TagProps = {
 export const Tag: React.FC<TagProps> = ({
     children,
     color = defaultColor,
+    borderColor,
     variant = 'selected',
     onPress
 }) => {
@@ -26,6 +28,8 @@ export const Tag: React.FC<TagProps> = ({
                 size={'sm'}
                 borderRadius={'full'}
                 onPress={onPress}
+                borderWidth={borderColor ? 1 : 0}
+                borderColor={borderColor ? borderColor : undefined}
                 outline={variant === 'unselected' ? true : false}
             >
                 {children}
