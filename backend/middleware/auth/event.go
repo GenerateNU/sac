@@ -7,6 +7,7 @@ import (
 	"github.com/GenerateNU/sac/backend/entities/events"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/integrations/oauth/soth/sothic"
+	"github.com/GenerateNU/sac/backend/locals"
 	"github.com/GenerateNU/sac/backend/utilities"
 
 	"github.com/gofiber/fiber/v2"
@@ -41,6 +42,7 @@ func (m *AuthMiddlewareHandler) EventAuthorizeById(c *fiber.Ctx, extractor Extra
 	}
 
 	if slices.Contains(eventHostAdmin, user.ID) {
+		locals.SetUser(c, user)
 		return c.Next()
 	}
 
