@@ -54,7 +54,6 @@ const UserInterestsForm = () => {
         useState<Category>(AllCategory);
     const createUserTags = useCreateUserTags();
 
-    // when a category is selected, set selected category to this category
     const handleCategoryPress = (category: Category) => {
         setSelectedCategory(category);
     };

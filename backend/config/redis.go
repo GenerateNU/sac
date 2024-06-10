@@ -7,12 +7,32 @@ import (
 )
 
 type RedisSettings struct {
-	Username string
-	Password *m.Secret[string]
-	Host     string
-	Port     uint
-	DB       int
+	username string
+	password *m.Secret[string]
+	host     string
+	port     uint
+	db       int
 	// TLSConfig *TLSConfig
+}
+
+func (r RedisSettings) Username() string {
+	return r.username
+}
+
+func (r RedisSettings) Password() *m.Secret[string] {
+	return r.password
+}
+
+func (r RedisSettings) Host() string {
+	return r.host
+}
+
+func (r RedisSettings) Port() uint {
+	return r.port
+}
+
+func (r RedisSettings) DB() int {
+	return r.db
 }
 
 type intermediateRedisSettings struct {
@@ -31,11 +51,11 @@ func (i *intermediateRedisSettings) into() (*RedisSettings, error) {
 	}
 
 	return &RedisSettings{
-		Username: i.Username,
-		Password: password,
-		Host:     i.Host,
-		Port:     i.Port,
-		DB:       i.DB,
+		username: i.Username,
+		password: password,
+		host:     i.Host,
+		port:     i.Port,
+		db:       i.DB,
 		// TLSConfig: i.TLSConfig.into(),
 	}, nil
 }

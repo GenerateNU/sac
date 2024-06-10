@@ -22,7 +22,7 @@ export const RecruitmentItem = ({
     color
 }: RecruitmentItemProps) => {
     return (
-        <Box {...styles.recruitmentItem}>
+        <Box borderColor={color} {...styles.recruitmentItem}>
             <Box {...styles.recruitmentItemContent}>
                 <Icon size={'md'} color={color} icon={icon} />
                 <Text variant="caption-1" {...styles.recruitmentItemTitle}>
@@ -44,8 +44,8 @@ const styles = createStyles({
         padding: 's'
     },
     recruitmentItemContent: {
-        paddingTop: 'm',
-        paddingBottom: 'm',
+        paddingVertical: 'l',
+        paddingHorizontal: 'xxs',
         gap: 'xs',
         flexDirection: 'column',
         alignItems: 'center'

@@ -66,12 +66,12 @@ func (cl *ClubController) CreateClub(c *fiber.Ctx) error {
 		return utilities.InvalidJSON()
 	}
 
-	userID, err := locals.UserIDFrom(c)
+	user, err := locals.UserFrom(c)
 	if err != nil {
 		return err
 	}
 
-	club, err := cl.clubService.CreateClub(*userID, clubBody)
+	club, err := cl.clubService.CreateClub(user.ID, clubBody)
 	if err != nil {
 		return err
 	}

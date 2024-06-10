@@ -4,6 +4,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func (u *UtilityMiddlewareService) Paginator(c *fiber.Ctx) error {
-	return u.paginator(c)
+func (h *Handler) Paginator(c *fiber.Ctx) error {
+	return h.paginator(c)
 }

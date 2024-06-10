@@ -17,7 +17,7 @@ type TextboxProps = {
     autoFocus?: boolean;
     readOnly?: boolean;
     inputMode?: 'text' | 'numeric' | 'tel' | 'search' | 'email';
-    onChangeText?: () => void;
+    onChangeText?: (() => void) | ((value: any) => void);
     value?: string;
     maxLength?: number;
     secureTextEntry?: boolean;
@@ -69,7 +69,7 @@ export const TextBox: React.FC<TextboxProps> = ({
 const styles = createStyles({
     textInput: {
         borderWidth: 1,
-        borderRadius: 'base',
+        borderRadius: 'sm',
         backgroundColor: 'white',
         padding: 'm',
         marginBottom: 'xs',
