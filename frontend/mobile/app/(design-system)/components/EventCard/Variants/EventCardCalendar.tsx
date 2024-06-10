@@ -30,9 +30,10 @@ export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
     tags
 }) => {
     const isHappening = happeningNow(startTime, endTime);
+    const isPast = endTime.getTime() < new Date().getTime();
 
     return (
-        <Box>
+        <Box position='relative'>
             <TouchableOpacity>
                 {isHappening && (
                     <Box {...styles.isHappeningContainer}>
@@ -43,6 +44,7 @@ export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
                         </Box>
                     </Box>
                 )}
+                {isPast && <Box {...styles.pastEvent} />}
                 <Box {...styles.cardContainer}>
                     <Box {...styles.cardSubContainer}>
                         <Image
@@ -132,5 +134,14 @@ const styles = createStyles({
         alignItems: 'center',
         gap: 'xxs',
         flexWrap: 'wrap'
+    },
+    pastEvent: {
+        position:'absolute',
+        width:'100%',
+        height:'100%',
+        backgroundColor:'black',
+        zIndex: 2,
+        borderRadius: 'md',
+        opacity: 0.15
     }
 });

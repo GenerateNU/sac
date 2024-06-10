@@ -30,6 +30,7 @@ export type EventSectionData = {
 export type DayTimeSectionProps = {
     time: number;
     data: EventSectionData;
+    date: string;
 };
 
 function convertNumToTime(num: number) {
@@ -66,12 +67,12 @@ function TimeHeader({ time }: { time: number }) {
                 {hour}
                 {minute ? `:${minute}` : ''} {meridiem}
             </Text>
-            <Box borderBottomColor="gray" borderBottomWidth={1} />
+            <Box flex={1} backgroundColor='gray' height={0.75} />
         </Box>
     );
 }
 
-export default function DayTimeSection({ time, data }: DayTimeSectionProps) {
+export default function DayTimeSection({ time, data, date }: DayTimeSectionProps) {
     return (
         <Box>
             <Box>

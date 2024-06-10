@@ -8,7 +8,7 @@ import { Theme } from 'react-native-calendars-sac/src/types';
 
 import { eventApi } from '@generatesac/lib';
 
-import { Box, createStyles } from '@/app/(design-system)';
+import { Box, Colors, createStyles } from '@/app/(design-system)';
 import Calendar, {
     DAY_EPOCH_TIME,
     FetchNewEventsPropsUnion
@@ -39,7 +39,7 @@ const CalendarPage = () => {
     const emptyDatePlaceholder = new Array(BATCH_SIZE_HALF).fill({});
 
     const calendarTheme: Theme = {
-        selectedDayBackgroundColor: 'black',
+        selectedDayBackgroundColor: Colors.darkRed,
         todayTextColor: 'black',
         arrowColor: 'black',
         textMonthFontWeight: 'bold'
@@ -54,6 +54,8 @@ const CalendarPage = () => {
                 ({ data, error: fetchError }) => {
                     if (fetchError) {
                         setError(true);
+                    } else {
+                        setError(false);
                     }
 
                     return parseData(startTime, endTime, data);

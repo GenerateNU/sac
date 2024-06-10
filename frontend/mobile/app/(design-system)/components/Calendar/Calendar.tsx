@@ -279,21 +279,14 @@ export default function Calendar({
         }
 
         if (targetIndex === undefined) {
-            throw new Error('Target index must be defined');
+            throw new Error('Target index must be defined for left / right swipe direction');
         }
-        if (type === 'left') {
-            setEvents((prevEvents) => {
-                prevEvents[targetIndex] =
-                    allLoadedEvents[data_index_array.current[targetIndex]];
-                return [...prevEvents];
-            });
-        } else {
-            setEvents((prevEvents) => {
-                prevEvents[targetIndex] =
-                    allLoadedEvents[data_index_array.current[targetIndex]];
-                return [...prevEvents];
-            });
-        }
+            
+        setEvents((prevEvents) => {
+            prevEvents[targetIndex] =
+                allLoadedEvents[data_index_array.current[targetIndex]];
+            return [...prevEvents];
+        });
     };
 
     // Used for triggering a date change on the calendar when the user scrolls:
@@ -336,8 +329,7 @@ export default function Calendar({
             updateEventsToCurrent(loadedEvents, 'right', targetIndex);
 
             const distanceFromStart = data_index_array.current[targetIndex];
-            console.log(distanceFromStart);
-            console.log(refresh_threshold_item_count);
+
             if (distanceFromStart === refresh_threshold_item_count) {
                 await triggerRefresh('start');
             }
@@ -477,14 +469,16 @@ export default function Calendar({
 
     const renderItem = (index: number) => {
         const item = events[index];
+        const scrollEnabled = !item?.data || Object.keys(item.data).length > 0;
 
         if (item?.date) {
             return (
                 <ScrollView
                     style={{ paddingHorizontal: Spacing.s, width: '100%' }}
                     showsVerticalScrollIndicator={false}
+                    scrollEnabled={scrollEnabled}
                 >
-                    <Day section={events[index]} error={error} />
+                    <Day section={item} error={error} />
                 </ScrollView>
             );
         }
@@ -507,7 +501,6 @@ export default function Calendar({
     // useEffect for handling the initial load:
     useEffect(() => {
         if (!isLoading && !initialLoadComplete) {
-            console.log('handling initial load', loadedEvents);
             updateEventsToCurrent(loadedEvents, 'base');
             setInitialLoadComplete(true);
             old_events.current = [...loadedEvents];

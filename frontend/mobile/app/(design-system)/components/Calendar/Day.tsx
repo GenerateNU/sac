@@ -3,8 +3,12 @@ import DayTimeSection, {
     EventSection
 } from '@/app/(design-system)/components/Calendar/DayTimeSection';
 import { formatTime } from '@/utils/time';
+import { faCalendar } from '@fortawesome/free-solid-svg-icons/';
 
 import { Text } from '../Text/Text';
+import { Icon } from '../Icon/Icon';
+import { Image, Svg } from 'react-native-svg';
+import NoEventsIcon from '@/assets/svg/NoSearchResult.svg'
 
 type DayProps = {
     section: EventSection;
@@ -25,9 +29,6 @@ function formatSectionHeader(date: string) {
 
 export default function Day({ section, error }: DayProps) {
     const keys = Object.keys(section.data).sort();
-
-    console.log(error);
-
     return (
         <Box>
             <Text variant="body-1" fontWeight={'bold'} marginTop="l">
@@ -38,16 +39,25 @@ export default function Day({ section, error }: DayProps) {
                     <DayTimeSection
                         key={`${key}${index}`}
                         time={parseInt(key)}
+                        date={section.date}
                         data={section.data[key]}
                     />
                 );
             })}
             {keys.length === 0 && (
-                <Box>
-                    <Text textAlign="center" marginVertical="s">
+                <Box width='100%' alignItems='center'>
+                    {!error && <NoEventsIcon height={175} />}
+                    <Text textAlign="center" fontWeight='bold' color='darkGray'>
                         {error
                             ? 'Oops, something went wrong!'
-                            : 'No Events Today'}
+                            : 'No events today'
+                        }
+                    </Text>
+                    <Text color='darkGray' variant='body-2' marginTop='s'>
+                        {error
+                            ? 'Please try again later'
+                            : 'Make sure to check again soon!'
+                        }
                     </Text>
                 </Box>
             )}

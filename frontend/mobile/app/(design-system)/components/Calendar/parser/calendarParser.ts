@@ -6,45 +6,6 @@ import {
     EventSection
 } from '@/app/(design-system)/components/Calendar/DayTimeSection';
 
-export const mockData: Event[] = [
-    {
-        id: 'ae6e7813-7f9a-48d9-a83d-8d313268617b',
-        created_at: '2024-06-07T23:36:29.326493-04:00',
-        updated_at: '2024-06-07T23:36:29.326493-04:00',
-        name: 'All Hands',
-        preview:
-            'Join us for mid-semester presentations on all the amazing projects!',
-        description: 'Wowza',
-        host: '464f73bc-198b-48a1-8c38-77bd9ed173be',
-        event_type: 'hybrid',
-        location: 'ISEC Auditorium',
-        link: 'http://www.applytogenerate.com',
-        is_public: true,
-        is_draft: false,
-        is_archived: false,
-        start_time: '2024-02-27T14:00:00-05:00',
-        end_time: '2024-02-27T16:00:00-05:00'
-    },
-    {
-        id: '4b8123f8-82be-4096-b5c9-1c325d97b733',
-        created_at: '2024-06-07T23:42:15.588637-04:00',
-        updated_at: '2024-06-07T23:42:15.588637-04:00',
-        name: 'All Hands',
-        preview:
-            'Join us for mid-semester presentations on all the amazing projects!',
-        description: 'Wowza',
-        host: '464f73bc-198b-48a1-8c38-77bd9ed173be',
-        event_type: 'hybrid',
-        location: 'ISEC Auditorium',
-        link: 'http://www.applytogenerate.com',
-        is_public: true,
-        is_draft: false,
-        is_archived: false,
-        start_time: '2024-02-27T14:00:00-05:00',
-        end_time: '2024-02-27T16:00:00-05:00'
-    }
-];
-
 export function parseData(start: number, end: number, data?: Event[]) {
     // Parsed data:
     const parsedData: EventSection[] = [];
