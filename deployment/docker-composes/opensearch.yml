@@ -39,7 +39,6 @@ services:
 
 volumes:
   opensearch-data1:
-  opensearch-data2:
 
 networks:
   opensearch-net:
