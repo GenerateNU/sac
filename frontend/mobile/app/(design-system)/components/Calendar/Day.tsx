@@ -1,7 +1,10 @@
-import { formatTime } from '@/utils/time';
-import { Text } from '../Text/Text';
 import { Box } from '@/app/(design-system)/components/Box/Box';
-import DayTimeSection, { EventSection } from '@/app/(design-system)/components/Calendar/DayTimeSection';
+import DayTimeSection, {
+    EventSection
+} from '@/app/(design-system)/components/Calendar/DayTimeSection';
+import { formatTime } from '@/utils/time';
+
+import { Text } from '../Text/Text';
 
 type DayProps = {
     section: EventSection;
@@ -42,10 +45,12 @@ export default function Day({ section, error }: DayProps) {
             {keys.length === 0 && (
                 <Box>
                     <Text textAlign="center" marginVertical="s">
-                        {error ? "Oops, something went wrong!" : "No Events Today" }
+                        {error
+                            ? 'Oops, something went wrong!'
+                            : 'No Events Today'}
                     </Text>
                 </Box>
             )}
         </Box>
     );
-};
+}

@@ -56,8 +56,8 @@ const RootLayout = () => {
         <GestureHandlerRootView style={{ flex: 1 }}>
             <Provider store={store}>
                 <ThemeProvider theme={theme}>
-                        <StatusBar style="light" />
-                        <InitalLayout />
+                    <StatusBar style="light" />
+                    <InitalLayout />
                 </ThemeProvider>
             </Provider>
         </GestureHandlerRootView>

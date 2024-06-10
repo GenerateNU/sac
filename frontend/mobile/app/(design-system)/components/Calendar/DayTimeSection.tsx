@@ -1,8 +1,9 @@
+import { Tag } from '@generatesac/lib';
+
+import { Box } from '@/app/(design-system)/components/Box/Box';
 import { Button } from '@/app/(design-system)/components/Button/Button';
 import { EventCard } from '@/app/(design-system)/components/EventCard/EventCard';
 import { Text } from '@/app/(design-system)/components/Text/Text';
-import { Box } from '@/app/(design-system)/components/Box/Box';
-import { Tag } from '@generatesac/lib';
 
 export type EventSectionTimes = {
     [key: string]: EventSectionData;
@@ -65,15 +66,12 @@ function TimeHeader({ time }: { time: number }) {
                 {hour}
                 {minute ? `:${minute}` : ''} {meridiem}
             </Text>
-            <Box borderBottomColor="gray" borderBottomWidth={1}/>
+            <Box borderBottomColor="gray" borderBottomWidth={1} />
         </Box>
     );
 }
 
-export default function DayTimeSection({
-    time,
-    data
-}: DayTimeSectionProps) {
+export default function DayTimeSection({ time, data }: DayTimeSectionProps) {
     return (
         <Box>
             <Box>
