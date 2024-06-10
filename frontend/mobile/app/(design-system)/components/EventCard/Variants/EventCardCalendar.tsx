@@ -1,6 +1,8 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 
+import { router } from 'expo-router';
+
 import { Tag } from '@generatesac/lib';
 import { Avatar, Image } from '@rneui/base';
 
@@ -9,7 +11,6 @@ import { createOptions, eventTime, happeningNow } from '@/utils/time';
 
 import { EventTags } from '../EventCardTags/EventCardTags';
 import { sharedStyles } from '../shared/styles';
-import { router } from 'expo-router';
 
 interface EventCardCalendarProps {
     event: string;
@@ -37,7 +38,9 @@ export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
 
     return (
         <Box position="relative">
-            <TouchableOpacity onPress={() => router.navigate(`/event/${clubId}`)}>
+            <TouchableOpacity
+                onPress={() => router.navigate(`/event/${clubId}`)}
+            >
                 {isHappening && (
                     <Box {...styles.isHappeningContainer}>
                         <Box {...styles.isHappeningContent}>

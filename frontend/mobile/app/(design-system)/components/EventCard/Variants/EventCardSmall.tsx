@@ -2,11 +2,12 @@ import React from 'react';
 import { Dimensions } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
+import { router } from 'expo-router';
+
 import { Image } from '@rneui/base';
 
 import { Box, Text } from '@/app/(design-system)';
 import { createOptions, eventTime } from '@/utils/time';
-import { router } from 'expo-router';
 
 interface EventCardSmallProps {
     event: string;
@@ -30,7 +31,9 @@ export const EventCardSmall: React.FC<EventCardSmallProps> = ({
 
     return (
         <Box width={boxWidth}>
-            <TouchableOpacity onPress={() => router.navigate(`/event/${clubId}`)}>
+            <TouchableOpacity
+                onPress={() => router.navigate(`/event/${clubId}`)}
+            >
                 <Box flexDirection="column" gap="xs">
                     <Image
                         containerStyle={{
