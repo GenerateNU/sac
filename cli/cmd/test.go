@@ -100,7 +100,7 @@ var testBackendCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		clear, _ := cmd.Flags().GetBool("clean")
 
-		err := helpers.Execute(exec.Command("go", "test", "-v", "-race", "./..."), helpers.BACKEND_DIR)
+		err := helpers.Execute(exec.Command("templ", "generate", "&&", "go", "test", "-v", "-race", "./..."), helpers.BACKEND_DIR)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -120,7 +120,7 @@ var testCliCmd = &cobra.Command{
 	Short: "CLI testing commands",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
-		err := helpers.Execute(exec.Command("go", "test", "-v", "-race", "./..."), helpers.CLI_DIR)
+		err := helpers.Execute(exec.Command("templ", "generate", "&&", "go", "test", "-v", "-race", "./..."), helpers.CLI_DIR)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

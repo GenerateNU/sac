@@ -102,7 +102,7 @@ var formatBackendCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		err = helpers.Execute(exec.Command("gofumpt", "-l", "-w", "."), helpers.BACKEND_DIR)
+		err = helpers.Execute(exec.Command("templ", "generate", "&&", "gofumpt", "-l", "-w", "."), helpers.BACKEND_DIR)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
@@ -122,7 +122,7 @@ var formatCliCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		err = helpers.Execute(exec.Command("gofumpt", "-l", "-w", "."), helpers.CLI_DIR)
+		err = helpers.Execute(exec.Command("templ", "generate", "&&", "gofumpt", "-l", "-w", "."), helpers.CLI_DIR)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

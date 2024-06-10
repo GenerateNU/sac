@@ -102,7 +102,7 @@ var lintBackendCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		err = helpers.Execute(exec.Command("golangci-lint", "run", "--fix", "--timeout=1m"), helpers.BACKEND_DIR)
+		err = helpers.Execute(exec.Command("templ", "generate", "&&", "golangci-lint", "run", "--fix", "--timeout=1m"), helpers.BACKEND_DIR)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
@@ -122,7 +122,7 @@ var lintCliCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		err = helpers.Execute(exec.Command("golangci-lint", "run", "--fix", "--timeout=1m"), helpers.CLI_DIR)
+		err = helpers.Execute(exec.Command("templ", "generate", "&&", "golangci-lint", "run", "--fix", "--timeout=1m"), helpers.CLI_DIR)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

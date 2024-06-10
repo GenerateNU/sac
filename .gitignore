@@ -1,23 +1,17 @@
-# MacOS
 .DS_Store
 
-# Cli
 sac
 
-# VSCode
 .vscode
 .trunk
 
-# Node modules
 node_modules
 
-# Environment files
 .env
 .env.dev
-
-# Debug files
-backend/tests/api/__debug_*
 .env.prod
+
+backend/tests/api/__debug_*
 
 frontend/mobile/ios/
 frontend/mobile/android/
@@ -25,3 +19,5 @@ tmp/
 ios
 android
 .idea/modules.xml
+
+*_templ.go
