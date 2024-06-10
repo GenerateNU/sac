@@ -4,6 +4,7 @@ import (
 	"slices"
 	"time"
 
+	"github.com/GenerateNU/sac/backend/locals"
 	"github.com/GenerateNU/sac/backend/permission"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
@@ -33,6 +34,7 @@ func (m *AuthMiddlewareHandler) Authorize(requiredPermissions ...permission.Perm
 		user := models.UnmarshalUser(strUser)
 
 		if user.Role == models.Super {
+			locals.SetUser(c, user)
 			return c.Next()
 		}
 
@@ -44,6 +46,7 @@ func (m *AuthMiddlewareHandler) Authorize(requiredPermissions ...permission.Perm
 			}
 		}
 
+		locals.SetUser(c, user)
 		return c.Next()
 	}
 }
