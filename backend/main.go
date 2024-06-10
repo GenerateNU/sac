@@ -22,6 +22,7 @@ import (
 	"github.com/GenerateNU/sac/backend/integrations"
 	"github.com/GenerateNU/sac/backend/integrations/email"
 	"github.com/GenerateNU/sac/backend/integrations/file"
+	"github.com/GenerateNU/sac/backend/integrations/oauth/soth/sothic"
 	"github.com/GenerateNU/sac/backend/server"
 	"github.com/GenerateNU/sac/backend/telemetry"
 	"github.com/GenerateNU/sac/backend/utilities"
@@ -66,6 +67,7 @@ func main() {
 	startBackgroundJobs(ctx, db)
 
 	stores := store.ConfigureStores(config.RedisLimiter)
+	sothic.Init(config.RedisLimiter)
 	integrations := configureIntegrations(&config.Integrations)
 
 	tp := telemetry.InitTracer()

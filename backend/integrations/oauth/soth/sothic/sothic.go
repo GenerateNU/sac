@@ -9,17 +9,14 @@ import (
 	"fmt"
 	"io"
 	"net/url"
-	"path/filepath"
 	"strings"
 
+	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/database/store"
-	"github.com/caarlos0/env/v11"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
-	"github.com/joho/godotenv"
 
 	"github.com/GenerateNU/sac/backend/integrations/oauth/soth"
-	m "github.com/garrettladley/mattress"
 )
 
 type key int
@@ -36,78 +33,10 @@ var (
 	SessionStore *session.Store
 )
 
-type storageSettings struct {
-	username string
-	password *m.Secret[string]
-	host     string
-	port     uint
-	db       int
-	// TLSConfig *TLSConfig
-}
-
-func (s *storageSettings) Username() string {
-	return s.username
-}
-
-func (s *storageSettings) Password() *m.Secret[string] {
-	return s.password
-}
-
-func (s *storageSettings) Host() string {
-	return s.host
-}
-
-func (s *storageSettings) Port() uint {
-	return s.port
-}
-
-func (s *storageSettings) DB() int {
-	return s.db
-}
-
-type intermediateStorageSettings struct {
-	Username string `env:"SAC_REDIS_SESSION_USERNAME"`
-	Password string `env:"SAC_REDIS_SESSION_PASSWORD"`
-	Host     string `env:"SAC_REDIS_SESSION_HOST"`
-	Port     uint   `env:"SAC_REDIS_SESSION_PORT"`
-	DB       int    `env:"SAC_REDIS_SESSION_DB"`
-	// TLSConfig *intermediateTLSConfig `env:"TLS_CONFIG"`
-}
-
-func (i *intermediateStorageSettings) into() (*storageSettings, error) {
-	password, err := m.NewSecret(i.Password)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create secret from password: %s", err.Error())
-	}
-
-	return &storageSettings{
-		username: i.Username,
-		password: password,
-		host:     i.Host,
-		port:     i.Port,
-		db:       i.DB,
-		// TLSConfig: i.TLSConfig.into(),
-	}, nil
-}
-
-func init() {
-	if err := godotenv.Load(filepath.Join("..", "config", ".env.dev")); err != nil {
-		panic(fmt.Errorf("failed to load environment variables: %s", err.Error()))
-	}
-
-	intSettings, err := env.ParseAs[intermediateStorageSettings]()
-	if err != nil {
-		panic(fmt.Errorf("failed to parse environment variables: %s", err.Error()))
-	}
-
-	settings, err := intSettings.into()
-	if err != nil {
-		panic(fmt.Errorf("failed to convert environment variables: %s", err.Error()))
-	}
-
-	// optional config
+// MUST be called before using the package
+func Init(sessionSettings config.RedisSettings) {
 	config := session.Config{
-		Storage:   store.NewRedisClient(settings),
+		Storage:   store.NewRedisClient(sessionSettings),
 		KeyLookup: fmt.Sprintf("cookie:%s", SessionName),
 		// for local
 		CookieHTTPOnly: true,
