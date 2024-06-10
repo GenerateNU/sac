@@ -20,12 +20,12 @@ func NewSearchController(searchService SearchServiceInterface) *SearchController
 //
 // @Summary		Searches through clubs
 // @Description	Searches through clubs
-// @ID			search-club
+// @ID			search-clubs
 // @Tags      	search
 // @Accept		json
 // @Produce		json
-// @Param		searchQuery	query	models.SearchQueryParams	true	"Search Body"
-// @Success		200	  {object}	    []models.ClubSearchResult
+// @Param		searchQuery	query	search_types.ClubSearchRequest	true	"Search Body"
+// @Success		200	  {object}	    []search_types.SearchResult[models.Club]
 // @Failure     404   {object}		error
 // @Failure     500   {object}      error
 // @Router		/search/clubs  [get]
@@ -48,12 +48,12 @@ func (s *SearchController) SearchClubs(c *fiber.Ctx) error {
 //
 // @Summary		Searches through events
 // @Description	Searches through events
-// @ID			search-club
+// @ID			search-event
 // @Tags      	search
 // @Accept		json
 // @Produce		json
-// @Param		searchQuery	query	models.SearchQueryParams	true	"Search Body"
-// @Success		200	  {object}	    []models.EventsSearchResult
+// @Param		searchQuery	query	search_types.EventSearchRequest	true	"Search Body"
+// @Success		200	  {object}	    []search_types.SearchResult[models.Event]
 // @Failure     404   {object}		error
 // @Failure     500   {object}      error
 // @Router		/search/events  [get]

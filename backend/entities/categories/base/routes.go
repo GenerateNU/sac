@@ -1,8 +1,8 @@
 package base
 
 import (
-	"github.com/GenerateNU/sac/backend/auth"
 	"github.com/GenerateNU/sac/backend/entities/categories/tags"
+	"github.com/GenerateNU/sac/backend/permission"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/gofiber/fiber/v2"
 )
@@ -22,15 +22,15 @@ func Category(categoryParams types.RouteParams) fiber.Router {
 	// api/v1/categories/*
 	categories := categoryParams.Router.Group("/categories")
 
-	categories.Post("/", categoryParams.AuthMiddleware.Authorize(auth.CreateAll), categoryController.CreateCategory)
+	categories.Post("/", categoryParams.AuthMiddleware.Authorize(permission.CreateAll), categoryController.CreateCategory)
 	categories.Get("/", categoryParams.UtilityMiddleware.Paginator, categoryController.GetCategories)
 
 	// api/v1/categories/:categoryID/*
 	categoryID := categories.Group("/:categoryID")
 
 	categoryID.Get("/", categoryController.GetCategory)
-	categoryID.Delete("/", categoryParams.AuthMiddleware.Authorize(auth.DeleteAll), categoryController.DeleteCategory)
-	categoryID.Patch("/", categoryParams.AuthMiddleware.Authorize(auth.WriteAll), categoryController.UpdateCategory)
+	categoryID.Delete("/", categoryParams.AuthMiddleware.Authorize(permission.DeleteAll), categoryController.DeleteCategory)
+	categoryID.Patch("/", categoryParams.AuthMiddleware.Authorize(permission.WriteAll), categoryController.UpdateCategory)
 
 	return categoryID
 }

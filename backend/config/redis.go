@@ -7,35 +7,55 @@ import (
 )
 
 type RedisSettings struct {
-	Username string
-	Password *m.Secret[string]
-	Host     string
-	Port     uint
-	DB       int
+	username string
+	password *m.Secret[string]
+	host     string
+	port     uint
+	db       int
 	// TLSConfig *TLSConfig
 }
 
+func (r RedisSettings) Username() string {
+	return r.username
+}
+
+func (r RedisSettings) Password() *m.Secret[string] {
+	return r.password
+}
+
+func (r RedisSettings) Host() string {
+	return r.host
+}
+
+func (r RedisSettings) Port() uint {
+	return r.port
+}
+
+func (r RedisSettings) DB() int {
+	return r.db
+}
+
 type intermediateRedisSettings struct {
-	username string `env:"USERNAME"`
-	password string `env:"PASSWORD"`
-	host     string `env:"HOST"`
-	port     uint   `env:"PORT"`
-	db       int    `env:"DB"`
+	Username string `env:"USERNAME"`
+	Password string `env:"PASSWORD"`
+	Host     string `env:"HOST"`
+	Port     uint   `env:"PORT"`
+	DB       int    `env:"DB"`
 	// TLSConfig *intermediateTLSConfig `env:"TLS_CONFIG"`
 }
 
 func (i *intermediateRedisSettings) into() (*RedisSettings, error) {
-	password, err := m.NewSecret(i.password)
+	password, err := m.NewSecret(i.Password)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create secret from password: %s", err.Error())
 	}
 
 	return &RedisSettings{
-		Username: i.username,
-		Password: password,
-		Host:     i.host,
-		Port:     i.port,
-		DB:       i.db,
+		username: i.Username,
+		password: password,
+		host:     i.Host,
+		port:     i.Port,
+		db:       i.DB,
 		// TLSConfig: i.TLSConfig.into(),
 	}, nil
 }

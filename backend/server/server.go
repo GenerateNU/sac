@@ -6,18 +6,19 @@ import (
 	"github.com/garrettladley/fiberpaginate"
 	go_json "github.com/goccy/go-json"
 
-	authenticator "github.com/GenerateNU/sac/backend/auth"
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/database/store"
+
+	"github.com/GenerateNU/sac/backend/integrations/oauth/soth/goog"
+	"github.com/GenerateNU/sac/backend/integrations/oauth/soth/msft"
 
 	auth "github.com/GenerateNU/sac/backend/entities/auth/base"
 	categories "github.com/GenerateNU/sac/backend/entities/categories/base"
 	clubs "github.com/GenerateNU/sac/backend/entities/clubs/base"
-	contacts "github.com/GenerateNU/sac/backend/entities/contacts/base"
 	events "github.com/GenerateNU/sac/backend/entities/events/base"
 	files "github.com/GenerateNU/sac/backend/entities/files/base"
-	oauth "github.com/GenerateNU/sac/backend/entities/oauth/base"
-	pocs "github.com/GenerateNU/sac/backend/entities/pocs/base"
+	leader "github.com/GenerateNU/sac/backend/entities/leadership/base"
+	socials "github.com/GenerateNU/sac/backend/entities/socials/base"
 	tags "github.com/GenerateNU/sac/backend/entities/tags/base"
 	users "github.com/GenerateNU/sac/backend/entities/users/base"
 	"github.com/GenerateNU/sac/backend/integrations"
@@ -33,7 +34,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
-	"github.com/golang-jwt/jwt"
 
 	"gorm.io/gorm"
 )
@@ -55,9 +55,18 @@ func Init(db *gorm.DB, stores *store.Stores, integrations integrations.Integrati
 		panic(fmt.Sprintf("Error registering custom validators: %s", err))
 	}
 
-	jwt := authenticator.NewJWTClient(settings.Auth, jwt.SigningMethodHS256)
-	authMiddleware := authMiddleware.New(db, validate, settings.Auth, stores)
-	utilityMiddleware := utilityMiddleware.New(fiberpaginate.New(), stores)
+	applicationURL := settings.Application.ApplicationURL()
+
+	msftProvider := msft.New(settings.Microsft.Key, settings.Microsft.Secret, fmt.Sprintf("%s/api/v1/auth/microsoftonline/callback", applicationURL), settings.Microsft.Tenant)
+	googProvider := goog.New(settings.Google.Key, settings.Google.Secret, fmt.Sprintf("%s/api/v1/auth/google/callback", applicationURL))
+
+	authMiddleware := authMiddleware.New(
+		db,
+		validate,
+		msftProvider,
+	)
+
+	utilityMiddleware := utilityMiddleware.New(fiberpaginate.New(), stores.Limiter)
 
 	apiv1 := app.Group("/api/v1")
 
@@ -68,32 +77,38 @@ func Init(db *gorm.DB, stores *store.Stores, integrations integrations.Integrati
 		types.NewServiceParams(
 			db,
 			validate,
-			&settings.Auth,
-			jwt,
 			&settings.Calendar,
 			stores,
 			integrations,
 		),
 	)
 
-	allRoutes(app, routeParams)
+	allRoutes(app, routeParams,
+		auth.NewParams(
+			msftProvider,
+			applicationURL,
+			apiv1,
+			db,
+			integrations.Email,
+			validate,
+			googProvider,
+		))
 
 	return app
 }
 
-func allRoutes(app *fiber.App, routeParams types.RouteParams) {
+func allRoutes(app *fiber.App, routeParams types.RouteParams, authParams auth.Params) {
 	Utility(app)
-	auth.Auth(routeParams)
+	auth.Auth(authParams)
 	users.UserRoutes(routeParams)
 	clubs.ClubRoutes(routeParams)
-	contacts.Contact(routeParams)
-	pocs.PointOfContact(routeParams)
+	socials.Social(routeParams)
+	leader.Leader(routeParams)
 	tags.Tag(routeParams)
 	categories.CategoryRoutes(routeParams)
 	events.EventRoutes(routeParams)
 	files.File(routeParams)
 	search.SearchRoutes(routeParams)
-	oauth.OAuth(routeParams)
 }
 
 func newFiberApp(appSettings config.ApplicationSettings) *fiber.App {
@@ -104,7 +119,7 @@ func newFiberApp(appSettings config.ApplicationSettings) *fiber.App {
 	})
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     fmt.Sprintf("http://%s:%d", appSettings.Host, appSettings.Port),
+		AllowOrigins:     appSettings.ApplicationURL(),
 		AllowCredentials: true,
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
 		AllowMethods:     "GET, POST, PUT, DELETE, OPTIONS",

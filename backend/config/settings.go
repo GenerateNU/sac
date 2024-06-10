@@ -1,112 +1,90 @@
 package config
 
 type Settings struct {
-	Application       ApplicationSettings
-	Database          DatabaseSettings
-	RedisActiveTokens RedisSettings
-	RedisBlacklist    RedisSettings
-	RedisLimiter      RedisSettings
-	SuperUser         SuperUserSettings
-	Auth              AuthSettings
-	Calendar          CalendarSettings
+	Application  ApplicationSettings
+	Database     DatabaseSettings
+	RedisSession RedisSettings
+	RedisLimiter RedisSettings
+	SuperUser    SuperUserSettings
+	Calendar     CalendarSettings
 	Integrations
 }
 
 type Integrations struct {
-	GoogleOauth  OAuthSettings
-	OutlookOauth OAuthSettings
-	AWS          AWSSettings
-	Resend       ResendSettings
-	Search       SearchSettings
+	Google   GoogleOAuthSettings
+	Microsft MicrosoftOAuthSettings
+	AWS      AWSSettings
+	Resend   ResendSettings
+	Search   SearchSettings
 }
 
 type intermediateSettings struct {
-	application       ApplicationSettings              `envPrefix:"SAC_APPLICATION_"`
-	database          intermediateDatabaseSettings     `envPrefix:"SAC_DB_"`
-	redisActiveTokens intermediateRedisSettings        `envPrefix:"SAC_REDIS_ACTIVE_TOKENS_"`
-	redisBlacklist    intermediateRedisSettings        `envPrefix:"SAC_REDIS_BLACKLIST_"`
-	redisLimiter      intermediateRedisSettings        `envPrefix:"SAC_REDIS_LIMITER_"`
-	superUser         intermediateSuperUserSettings    `envPrefix:"SAC_SUDO_"`
-	auth              intermediateAuthSettings         `envPrefix:"SAC_AUTH_"`
-	aws               intermediateAWSSettings          `envPrefix:"SAC_AWS_"`
-	resend            intermediateResendSettings       `envPrefix:"SAC_RESEND_"`
-	calendar          intermediateCalendarSettings     `envPrefix:"SAC_CALENDAR_"`
-	googleSettings    intermediateGoogleOAuthSettings  `envPrefix:"SAC_GOOGLE_OAUTH"`
-	outlookSettings   intermdeiateOutlookOAuthSettings `envPrefix:"SAC_OUTLOOK_OAUTH"`
-	search            SearchSettings                   `env:"SAC_SEARCH"`
+	Application  ApplicationSettings               `envPrefix:"SAC_APPLICATION_"`
+	Database     intermediateDatabaseSettings      `envPrefix:"SAC_DB_"`
+	RedisSession intermediateRedisSettings         `envPrefix:"SAC_REDIS_SESSION_"`
+	RedisLimiter intermediateRedisSettings         `envPrefix:"SAC_REDIS_LIMITER_"`
+	SuperUser    intermediateSuperUserSettings     `envPrefix:"SAC_SUDO_"`
+	AWS          intermediateAWSSettings           `envPrefix:"SAC_AWS_"`
+	Resend       intermediateResendSettings        `envPrefix:"SAC_RESEND_"`
+	Calendar     intermediateCalendarSettings      `envPrefix:"SAC_CALENDAR_"`
+	Google       intermediateGoogleOAuthSettings   `envPrefix:"SAC_GOOGLE_OAUTH_"`
+	Microsft     intermediateMicrosoftOAuthSetting `envPrefix:"SAC_MICROSOFT_OAUTH_"`
+	Search       SearchSettings                    `envPrefix:"SAC_SEARCH_"`
 }
 
 func (i *intermediateSettings) into() (*Settings, error) {
-	database, err := i.database.into()
+	database, err := i.Database.into()
 	if err != nil {
 		return nil, err
 	}
 
-	redisActiveTokens, err := i.redisActiveTokens.into()
+	redisLimiter, err := i.RedisLimiter.into()
 	if err != nil {
 		return nil, err
 	}
 
-	redisBlacklist, err := i.redisBlacklist.into()
+	superUser, err := i.SuperUser.into()
 	if err != nil {
 		return nil, err
 	}
 
-	redisLimiter, err := i.redisLimiter.into()
+	aws, err := i.AWS.into()
 	if err != nil {
 		return nil, err
 	}
 
-	superUser, err := i.superUser.into()
+	resend, err := i.Resend.into()
 	if err != nil {
 		return nil, err
 	}
 
-	auth, err := i.auth.into()
+	calendar, err := i.Calendar.into()
 	if err != nil {
 		return nil, err
 	}
 
-	aws, err := i.aws.into()
+	google, err := i.Google.into()
 	if err != nil {
 		return nil, err
 	}
 
-	resend, err := i.resend.into()
-	if err != nil {
-		return nil, err
-	}
-
-	calendar, err := i.calendar.into()
-	if err != nil {
-		return nil, err
-	}
-
-	google, err := i.googleSettings.into()
-	if err != nil {
-		return nil, err
-	}
-
-	outlook, err := i.outlookSettings.into()
+	microsoft, err := i.Microsft.into()
 	if err != nil {
 		return nil, err
 	}
 
 	return &Settings{
-		Application:       i.application,
-		Database:          *database,
-		RedisActiveTokens: *redisActiveTokens,
-		RedisBlacklist:    *redisBlacklist,
-		RedisLimiter:      *redisLimiter,
-		SuperUser:         *superUser,
-		Auth:              *auth,
-		Calendar:          *calendar,
+		Application:  i.Application,
+		Database:     *database,
+		RedisLimiter: *redisLimiter,
+		SuperUser:    *superUser,
+		Calendar:     *calendar,
 		Integrations: Integrations{
-			GoogleOauth:  *google,
-			OutlookOauth: *outlook,
-			AWS:          *aws,
-			Resend:       *resend,
-			Search:       i.search,
+			Google:   *google,
+			Microsft: *microsoft,
+			AWS:      *aws,
+			Resend:   *resend,
+			Search:   i.Search,
 		},
 	}, nil
 }

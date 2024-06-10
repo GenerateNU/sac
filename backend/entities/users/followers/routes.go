@@ -11,6 +11,4 @@ func UserFollower(userParams types.RouteParams) {
 	userFollower := userParams.Router.Group("/follower")
 
 	userFollower.Get("/", userFollowerController.GetFollowing)
-	userFollower.Post("/:clubID", userParams.AuthMiddleware.UserAuthorizeById, userFollowerController.CreateFollowing)
-	userFollower.Delete("/:clubID", userParams.AuthMiddleware.UserAuthorizeById, userFollowerController.DeleteFollowing)
 }

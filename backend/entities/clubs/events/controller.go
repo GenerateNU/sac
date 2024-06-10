@@ -32,12 +32,12 @@ func NewClubEventController(clubEventService ClubEventServiceInterface) *ClubEve
 // @Failure     500   {object}      error
 // @Router		/clubs/{clubID}/events/  [get]
 func (cl *ClubEventController) GetClubEvents(c *fiber.Ctx) error {
-	pagination, ok := fiberpaginate.FromContext(c)
+	pageInfo, ok := fiberpaginate.FromContext(c)
 	if !ok {
-		return utilities.ErrExpectedPagination
+		return utilities.ErrExpectedPageInfo
 	}
 
-	if events, err := cl.clubEventService.GetClubEvents(c.Params("clubID"), *pagination); err != nil {
+	if events, err := cl.clubEventService.GetClubEvents(c.Params("clubID"), *pageInfo); err != nil {
 		return err
 	} else {
 		return c.Status(http.StatusOK).JSON(events)

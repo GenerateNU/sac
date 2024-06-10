@@ -13,7 +13,7 @@ type IconProps = {
 
 export const Icon: React.FC<IconProps> = ({
     icon,
-    size = 'medium',
+    size = 'md',
     color = defaultColor
 }) => {
     return (
@@ -26,11 +26,17 @@ export const Icon: React.FC<IconProps> = ({
 };
 
 const styles = createStyles({
-    small: {
+    xs: {
+        fontSize: 12
+    },
+    sm: {
         fontSize: 16
     },
-    medium: {
+    md: {
         fontSize: 24
+    },
+    lg: {
+        fontSize: 32
     },
     full: {
         fontSize: 24

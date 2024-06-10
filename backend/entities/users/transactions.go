@@ -1,6 +1,7 @@
 package users
 
 import (
+	"context"
 	"errors"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
@@ -19,7 +20,7 @@ func GetUser(db *gorm.DB, id uuid.UUID, preloads ...transactions.OptionalQuery) 
 		query = preload(query)
 	}
 
-	if err := query.Omit("password_hash").First(&user, id).Error; err != nil {
+	if err := query.First(&user, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, utilities.ErrNotFound
 		}
@@ -29,10 +30,9 @@ func GetUser(db *gorm.DB, id uuid.UUID, preloads ...transactions.OptionalQuery) 
 	return &user, nil
 }
 
-func GetUserByEmail(db *gorm.DB, email string) (*models.User, error) {
+func GetUserByEmail(ctx context.Context, db *gorm.DB, email string) (*models.User, error) {
 	var user models.User
-
-	if err := db.Where("email = ?", email).First(&user).Error; err != nil {
+	if err := db.WithContext(ctx).Where("email = ?", email).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, utilities.ErrNotFound
 		}
@@ -40,26 +40,4 @@ func GetUserByEmail(db *gorm.DB, email string) (*models.User, error) {
 	}
 
 	return &user, nil
-}
-
-func UpdateEmailVerification(db *gorm.DB, id uuid.UUID) error {
-	result := db.Model(&models.User{}).Where("id = ?", id).Update("is_verified", true)
-	if result.RowsAffected == 0 {
-		if result.Error == nil {
-			return utilities.ErrNotFound
-		}
-		return result.Error
-	}
-	return nil
-}
-
-func UpdatePassword(db *gorm.DB, id uuid.UUID, passwordHash string) error {
-	result := db.Model(&models.User{}).Where("id = ?", id).Update("password_hash", passwordHash)
-	if result.RowsAffected == 0 {
-		if result.Error == nil {
-			return utilities.ErrNotFound
-		}
-		return result.Error
-	}
-	return nil
 }

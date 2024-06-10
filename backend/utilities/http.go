@@ -23,6 +23,10 @@ func Request(method string, url string, body []byte, modifiers ...RequestModifie
 	return httpClient.Do(req)
 }
 
+func Client() *http.Client {
+	return httpClient
+}
+
 func IsOk(statusCode int) bool {
 	return statusCode >= 200 && statusCode < 300
 }
@@ -48,10 +52,10 @@ func HeaderKV(key, value string) RequestModifier {
 	}
 }
 
-func Authorization(apiKey string) RequestModifier {
+func Authorization(value string) RequestModifier {
 	return HeaderKVModifier{
 		Key:   "Authorization",
-		Value: fmt.Sprintf("Bearer %s", apiKey),
+		Value: fmt.Sprintf("Bearer %s", value),
 	}
 }
 

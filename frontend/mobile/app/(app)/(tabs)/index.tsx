@@ -1,20 +1,33 @@
-import { StyleSheet, View } from 'react-native';
+import React from 'react';
+import { Pressable, StyleSheet } from 'react-native';
 
-import { Text } from '@/app/(design-system)';
-import { RecruitmentInfo } from '@/app/(design-system)/components/ClubRecruitment/RecruitmentInfo/ClubRecruitmentInfo';
+import { router } from 'expo-router';
+
+import { Box, Text } from '@/app/(design-system)';
+import { EventCard } from '@/app/(design-system)/components/EventCard';
 
 const HomePage = () => {
+    const item = {
+        name: 'Your Event Name',
+        host: 'Your Club Name',
+        start_time: new Date(),
+        end_time: new Date()
+    };
+
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Hello</Text>
-            <RecruitmentInfo
-                recruitmentText="Fill out our application"
-                recruitingType="unrestricted"
-                isRecruiting={true}
-                recruitmentCycle="always"
-                color="aqua"
-            />
-        </View>
+        <Box style={styles.container}>
+            <Text variant="body-1">Home</Text>
+            <Pressable onPress={() => router.push(`/event/1`)}>
+                <EventCard
+                    variant="small"
+                    event={item.name}
+                    club={item.host}
+                    startTime={item.start_time}
+                    endTime={item.end_time}
+                    image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLF3ord7lnV_5Je-pC2AUgUiesHNPcZlpI7A&s"
+                />
+            </Pressable>
+        </Box>
     );
 };
 
@@ -24,14 +37,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     },
-    title: {
-        fontSize: 20,
-        fontWeight: 'bold'
-    },
-    separator: {
-        marginVertical: 30,
-        height: 1,
-        width: '80%'
+    contentContainer: {
+        flex: 1,
+        alignItems: 'center'
     }
 });
 

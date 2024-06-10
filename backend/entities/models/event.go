@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type EventType string
@@ -81,4 +82,8 @@ func (c *Event) ToSearchDocument() interface{} {
 		Tags:        tagIds,
 		Clubs:       clubIds,
 	}
+}
+
+func (c Event) Preload(db *gorm.DB) *gorm.DB {
+	return db.Preload("Tag").Preload("Club")
 }

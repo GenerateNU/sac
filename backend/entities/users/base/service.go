@@ -1,13 +1,9 @@
 package base
 
 import (
-	"errors"
-
-	"github.com/GenerateNU/sac/backend/auth"
-	authEntities "github.com/GenerateNU/sac/backend/entities/auth"
 	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/errs"
 	"github.com/garrettladley/fiberpaginate"
-	"github.com/google/uuid"
 
 	"github.com/GenerateNU/sac/backend/entities/users"
 	"github.com/GenerateNU/sac/backend/types"
@@ -16,10 +12,8 @@ import (
 
 type UserServiceInterface interface {
 	GetUsers(pageInfo fiberpaginate.PageInfo) ([]models.User, error)
-	GetMe(id uuid.UUID) (*models.User, error)
 	GetUser(id string) (*models.User, error)
 	UpdateUser(id string, userBody UpdateUserRequestBody) (*models.User, error)
-	UpdatePassword(id string, passwordBody authEntities.UpdatePasswordRequestBody) error
 	DeleteUser(id string) error
 }
 
@@ -33,10 +27,6 @@ func NewUserService(serviceParams types.ServiceParams) UserServiceInterface {
 
 func (u *UserService) GetUsers(pageInfo fiberpaginate.PageInfo) ([]models.User, error) {
 	return GetUsers(u.DB, pageInfo)
-}
-
-func (u *UserService) GetMe(id uuid.UUID) (*models.User, error) {
-	return users.GetUser(u.DB, id)
 }
 
 func (u *UserService) GetUser(id string) (*models.User, error) {
@@ -55,7 +45,7 @@ func (u *UserService) UpdateUser(id string, userBody UpdateUserRequestBody) (*mo
 	}
 
 	if utilities.AtLeastOne(userBody, UpdateUserRequestBody{}) {
-		return nil, errors.New("no fields to update")
+		return nil, errs.ErrAtLeastOne
 	}
 
 	if err := utilities.Validate(u.Validate, userBody); err != nil {
@@ -68,36 +58,6 @@ func (u *UserService) UpdateUser(id string, userBody UpdateUserRequestBody) (*mo
 	}
 
 	return UpdateUser(u.DB, *idAsUUID, *user)
-}
-
-func (u *UserService) UpdatePassword(id string, passwordBody authEntities.UpdatePasswordRequestBody) error {
-	idAsUUID, err := utilities.ValidateID(id)
-	if err != nil {
-		return err
-	}
-
-	if err := utilities.Validate(u.Validate, passwordBody,
-		*utilities.NewMaybeError("old_password", auth.ValidatePassword(passwordBody.OldPassword)),
-		*utilities.NewMaybeError("new_password", auth.ValidatePassword(passwordBody.NewPassword))); err != nil {
-		return err
-	}
-
-	passwordHash, err := GetUserPasswordHash(u.DB, *idAsUUID)
-	if err != nil {
-		return err
-	}
-
-	correct, passwordErr := auth.CompareHash(passwordBody.OldPassword, *passwordHash)
-	if passwordErr != nil || !correct {
-		return err
-	}
-
-	hash, hashErr := auth.ComputeHash(passwordBody.NewPassword)
-	if hashErr != nil {
-		return err
-	}
-
-	return users.UpdatePassword(u.DB, *idAsUUID, *hash)
 }
 
 func (u *UserService) DeleteUser(id string) error {

@@ -2,9 +2,9 @@ package members
 
 import (
 	"github.com/GenerateNU/sac/backend/entities/clubs"
+	"github.com/GenerateNU/sac/backend/entities/clubs/followers"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/entities/users"
-	"github.com/GenerateNU/sac/backend/entities/users/followers"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/garrettladley/fiberpaginate"
 
@@ -58,7 +58,7 @@ func CreateClubMember(db *gorm.DB, clubID uuid.UUID, userID uuid.UUID) error {
 		return err
 	}
 
-	if err := followers.CreateFollowing(tx, userID, clubID); err != nil {
+	if err := followers.CreateClubFollower(tx, userID, clubID); err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -94,7 +94,7 @@ func DeleteClubMember(db *gorm.DB, clubID uuid.UUID, userID uuid.UUID) error {
 		return err
 	}
 
-	if err := followers.DeleteFollowing(tx, userID, clubID); err != nil {
+	if err := followers.DeleteClubFollower(tx, userID, clubID); err != nil {
 		tx.Rollback()
 		return err
 	}

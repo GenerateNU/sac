@@ -1,69 +1,47 @@
 package base
 
 import (
+	"context"
 	"errors"
-	"time"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/GenerateNU/sac/backend/utilities"
-	"github.com/google/uuid"
+	"github.com/GenerateNU/sac/backend/integrations/oauth/soth"
 	"gorm.io/gorm"
 )
 
-func CreateUser(db *gorm.DB, user *models.User) (*models.User, error) {
-	if err := db.Create(user).Error; err != nil {
-		if errors.Is(err, gorm.ErrDuplicatedKey) {
-			return nil, utilities.ErrDuplicate
-		}
-		return nil, err
-	}
-
-	return user, nil
-}
-
-func GetToken(db *gorm.DB, token string, tokenType models.VerificationType) (*models.Verification, error) {
-	tokenModel := models.Verification{}
-	if err := db.Where("token = ? AND type = ?", token, tokenType).First(&tokenModel).Error; err != nil {
+func FindOrCreateUser(ctx context.Context, db *gorm.DB, user soth.User) (*models.User, error) {
+	var sacUser models.User
+	if err := db.WithContext(ctx).Where("email = ?", user.Email).First(&sacUser).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, utilities.ErrNotFound
+			if err := createUser(ctx, db, user.Into()); err != nil {
+				return nil, err
+			}
+		} else {
+			return nil, err
 		}
-		return nil, err
 	}
 
-	return &tokenModel, nil
+	return &sacUser, nil
 }
 
-func GetActiveTokenByUserID(db *gorm.DB, userID uuid.UUID, tokenType models.VerificationType) (*models.Verification, error) {
-	token := models.Verification{}
-	if err := db.Where("user_id = ? AND expires_at > ? AND type = ?", userID, time.Now().UTC(), tokenType).First(&token).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, utilities.ErrNotFound
+func createUser(ctx context.Context, db *gorm.DB, user *models.User) error {
+	tx := db.WithContext(ctx).Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
 		}
-		return nil, err
-	}
+	}()
 
-	return &token, nil
-}
-
-func DeleteToken(db *gorm.DB, token string, tokenType models.VerificationType) error {
-	if err := db.Where("token = ? AND type = ?", token, tokenType).Delete(&models.Verification{}).Error; err != nil {
+	if err := tx.Create(user).Error; err != nil {
+		tx.Rollback()
 		return err
 	}
 
-	return nil
-}
-
-func SaveToken(db *gorm.DB, userID uuid.UUID, token string, tokenType models.VerificationType, expiry time.Time) error {
-	tokenModel := models.Verification{
-		UserID:    userID,
-		Token:     token,
-		ExpiresAt: expiry,
-		Type:      tokenType,
-	}
-
-	if err := db.Create(&tokenModel).Error; err != nil {
+	welcomeTask := models.WelcomeTask{Name: user.Name, Email: user.Email}
+	if err := tx.Create(&welcomeTask).Error; err != nil {
+		tx.Rollback()
 		return err
 	}
 
-	return nil
+	return tx.Commit().Error
 }

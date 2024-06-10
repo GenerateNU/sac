@@ -71,8 +71,7 @@ func CreateClub(db *gorm.DB, userId uuid.UUID, club models.Club) (*models.Club, 
 		return nil, err
 	}
 
-	err = search.Upsert[models.Club](db, constants.CLUBS_INDEX, club.ID.String(), &club)
-	if err != nil {
+	if err := search.Upsert[models.Club](db, constants.CLUBS_INDEX, club.ID.String(), &club); err != nil {
 		return nil, err
 	}
 

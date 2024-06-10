@@ -1,10 +1,15 @@
-import { Box, Tag } from '@/app/(design-system)';
+import { SafeAreaView } from 'react-native';
+
+import Calendar from '@/app/(design-system)/components/Calendar/Calendar';
+
+// We pull events in a date range from the backend (1 month)
+// Show two weeks before today and two weeks after today
 
 const CalendarPage = () => {
     return (
-        <Box flex={1} alignItems="center" justifyContent="center" padding="m">
-            <Tag variant="darkRed">Calendar</Tag>
-        </Box>
+        <SafeAreaView style={{ flex: 1 }}>
+            <Calendar />
+        </SafeAreaView>
     );
 };
 

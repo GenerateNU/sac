@@ -3,6 +3,7 @@ package base
 import (
 	"net/http"
 
+	"github.com/GenerateNU/sac/backend/locals"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/garrettladley/fiberpaginate"
 	"github.com/gofiber/fiber/v2"
@@ -30,12 +31,12 @@ func NewClubController(clubService ClubServiceInterface) *ClubController {
 // @Failure     500   {object}      error
 // @Router		/clubs/  [get]
 func (cl *ClubController) GetClubs(c *fiber.Ctx) error {
-	pagination, ok := fiberpaginate.FromContext(c)
+	pageInfo, ok := fiberpaginate.FromContext(c)
 	if !ok {
-		return utilities.ErrExpectedPagination
+		return utilities.ErrExpectedPageInfo
 	}
 
-	clubs, err := cl.clubService.GetClubs(*pagination)
+	clubs, err := cl.clubService.GetClubs(*pageInfo)
 	if err != nil {
 		return err
 	}
@@ -65,7 +66,12 @@ func (cl *ClubController) CreateClub(c *fiber.Ctx) error {
 		return utilities.InvalidJSON()
 	}
 
-	club, err := cl.clubService.CreateClub(clubBody)
+	user, err := locals.UserFrom(c)
+	if err != nil {
+		return err
+	}
+
+	club, err := cl.clubService.CreateClub(user.ID, clubBody)
 	if err != nil {
 		return err
 	}
