@@ -1,24 +1,42 @@
 package base
 
 import (
-	"github.com/GenerateNU/sac/backend/constants"
-	"github.com/GenerateNU/sac/backend/types"
+	"github.com/GenerateNU/sac/backend/integrations/email"
+	"github.com/GenerateNU/sac/backend/integrations/oauth/soth"
+	"github.com/go-playground/validator/v10"
+	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 )
 
-func Auth(params types.RouteParams) {
-	authController := NewAuthController(NewAuthService(params.ServiceParams))
+type Params struct {
+	authProvider   soth.Provider
+	providers      []soth.Provider
+	applicationURL string
+	router         fiber.Router
+	db             *gorm.DB
+}
 
-	// api/v1/auth/*
-	auth := params.Router.Group("/auth")
+func NewParams(authProvider soth.Provider, applicationURL string, router fiber.Router, db *gorm.DB, emailer email.Emailer, validate *validator.Validate, providers ...soth.Provider) Params {
+	return Params{
+		authProvider:   authProvider,
+		providers:      providers,
+		applicationURL: applicationURL,
+		router:         router,
+		db:             db,
+	}
+}
 
-	auth.Post("/register", authController.Register)
-	auth.Post("/logout", authController.Logout)
-	auth.Post("/login", authController.Login)
-	auth.Post("/refresh", authController.Refresh)
+func Auth(params Params) {
+	soth.UseProviders(
+		append(params.providers, params.authProvider)...,
+	)
 
-	auth.Post("/send-code", params.UtilityMiddleware.Limiter(constants.RATE_LIMIT_MAX_REQUESTS, constants.RATE_LIMIT_DURATION), authController.SendCode)
-	auth.Post("/verify-email", authController.VerifyEmail)
+	handler := Handler{db: params.db, authProvider: params.authProvider}
 
-	auth.Post("/forgot-password", params.UtilityMiddleware.Limiter(constants.RATE_LIMIT_MAX_REQUESTS, constants.RATE_LIMIT_DURATION), authController.ForgotPassword)
-	auth.Post("/verify-reset", authController.VerifyPasswordResetToken)
+	params.router.Route("/auth", func(r fiber.Router) {
+		r.Get("/login", handler.Login)
+		r.Get("/:provider", handler.Provider)
+		r.Get(":provider/callback", handler.ProviderCallback)
+		r.Get("/logout", handler.ProviderLogout)
+	})
 }

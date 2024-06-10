@@ -22,7 +22,7 @@ func (cr *ClubRecruitmentController) CreateClubRecruitment(c *fiber.Ctx) error {
 		return utilities.InvalidJSON()
 	}
 
-	recruitment, err := cr.clubRecruitmentService.CreateClubRecruitment(c.UserContext(), c.Params("clubID"), body)
+	recruitment, err := cr.clubRecruitmentService.CreateClubRecruitment(c.Context(), c.Params("clubID"), body)
 	if err != nil {
 		return err
 	}
@@ -31,7 +31,7 @@ func (cr *ClubRecruitmentController) CreateClubRecruitment(c *fiber.Ctx) error {
 }
 
 func (cr *ClubRecruitmentController) GetClubRecruitment(c *fiber.Ctx) error {
-	recruitment, err := cr.clubRecruitmentService.GetClubRecruitment(c.UserContext(), c.Params("clubID"))
+	recruitment, err := cr.clubRecruitmentService.GetClubRecruitment(c.Context(), c.Params("clubID"))
 	if err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func (cr *ClubRecruitmentController) UpdateClubRecruitment(c *fiber.Ctx) error {
 		return utilities.InvalidJSON()
 	}
 
-	recruitment, err := cr.clubRecruitmentService.UpdateClubRecruitment(c.UserContext(), c.Params("clubID"), body)
+	recruitment, err := cr.clubRecruitmentService.UpdateClubRecruitment(c.Context(), c.Params("clubID"), body)
 	if err != nil {
 		return err
 	}
@@ -54,7 +54,7 @@ func (cr *ClubRecruitmentController) UpdateClubRecruitment(c *fiber.Ctx) error {
 }
 
 func (cr *ClubRecruitmentController) DeleteClubRecruitment(c *fiber.Ctx) error {
-	if err := cr.clubRecruitmentService.DeleteClubRecruitment(c.UserContext(), c.Params("clubID")); err != nil {
+	if err := cr.clubRecruitmentService.DeleteClubRecruitment(c.Context(), c.Params("clubID")); err != nil {
 		return err
 	}
 
@@ -67,7 +67,7 @@ func (cr *ClubRecruitmentController) CreateClubRecruitmentApplication(c *fiber.C
 		return utilities.InvalidJSON()
 	}
 
-	application, err := cr.clubRecruitmentService.CreateClubRecruitmentApplication(c.UserContext(), c.Params("clubID"), body)
+	application, err := cr.clubRecruitmentService.CreateClubRecruitmentApplication(c.Context(), c.Params("clubID"), body)
 	if err != nil {
 		return err
 	}
@@ -81,7 +81,7 @@ func (cr *ClubRecruitmentController) GetClubRecruitmentApplications(c *fiber.Ctx
 		return utilities.ErrExpectedPageInfo
 	}
 
-	applications, err := cr.clubRecruitmentService.GetClubRecruitmentApplications(c.UserContext(), c.Params("clubID"), *pageInfo)
+	applications, err := cr.clubRecruitmentService.GetClubRecruitmentApplications(c.Context(), c.Params("clubID"), *pageInfo)
 	if err != nil {
 		return err
 	}
@@ -90,7 +90,7 @@ func (cr *ClubRecruitmentController) GetClubRecruitmentApplications(c *fiber.Ctx
 }
 
 func (cr *ClubRecruitmentController) GetClubRecruitmentApplication(c *fiber.Ctx) error {
-	application, err := cr.clubRecruitmentService.GetClubRecruitmentApplication(c.UserContext(), c.Params("clubID"), c.Params("applicationID"))
+	application, err := cr.clubRecruitmentService.GetClubRecruitmentApplication(c.Context(), c.Params("clubID"), c.Params("applicationID"))
 	if err != nil {
 		return err
 	}
@@ -104,7 +104,7 @@ func (cr *ClubRecruitmentController) UpdateClubRecruitmentApplication(c *fiber.C
 		return utilities.InvalidJSON()
 	}
 
-	application, err := cr.clubRecruitmentService.UpdateClubRecruitmentApplication(c.UserContext(), c.Params("clubID"), c.Params("applicationID"), body)
+	application, err := cr.clubRecruitmentService.UpdateClubRecruitmentApplication(c.Context(), c.Params("clubID"), c.Params("applicationID"), body)
 	if err != nil {
 		return err
 	}
@@ -113,7 +113,7 @@ func (cr *ClubRecruitmentController) UpdateClubRecruitmentApplication(c *fiber.C
 }
 
 func (cr *ClubRecruitmentController) DeleteClubRecruitmentApplication(c *fiber.Ctx) error {
-	if err := cr.clubRecruitmentService.DeleteClubRecruitmentApplication(c.UserContext(), c.Params("clubID"), c.Params("applicationID")); err != nil {
+	if err := cr.clubRecruitmentService.DeleteClubRecruitmentApplication(c.Context(), c.Params("clubID"), c.Params("applicationID")); err != nil {
 		return err
 	}
 
