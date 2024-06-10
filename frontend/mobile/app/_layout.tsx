@@ -13,6 +13,7 @@ import { ThemeProvider } from '@shopify/restyle';
 
 import { store } from '@/store/store';
 
+import { AuthProvider, useAuth } from './(auth)/context';
 import { theme } from './(design-system)';
 
 export { ErrorBoundary } from 'expo-router';
@@ -20,12 +21,17 @@ export { ErrorBoundary } from 'expo-router';
 SplashScreen.preventAutoHideAsync();
 
 const InitalLayout = () => {
+    const { loading, authToken } = useAuth();
+
     useEffect(() => {
-        const handleNavigation = () => {
-            router.push('/(tabs)/');
-        };
-        handleNavigation();
-    }, []);
+        if (!loading) {
+            if (authToken) {
+                router.push('/(app)/');
+            } else {
+                router.push('/(auth)/');
+            }
+        }
+    }, [authToken, loading]);
 
     return (
         <>
@@ -58,8 +64,10 @@ const RootLayout = () => {
         <GestureHandlerRootView style={{ flex: 1 }}>
             <Provider store={store}>
                 <ThemeProvider theme={theme}>
-                    <StatusBar style="light" />
-                    <InitalLayout />
+                    <AuthProvider>
+                        <StatusBar style="light" />
+                        <InitalLayout />
+                    </AuthProvider>
                 </ThemeProvider>
             </Provider>
         </GestureHandlerRootView>
