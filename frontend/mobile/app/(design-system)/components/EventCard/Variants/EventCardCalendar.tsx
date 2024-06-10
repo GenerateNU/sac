@@ -1,6 +1,8 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 
+import { router } from 'expo-router';
+
 import { Tag } from '@generatesac/lib';
 import { Avatar, Image } from '@rneui/base';
 
@@ -13,6 +15,7 @@ import { sharedStyles } from '../shared/styles';
 interface EventCardCalendarProps {
     event: string;
     club: string;
+    clubId: string;
     startTime: Date;
     endTime: Date;
     image: string;
@@ -23,6 +26,7 @@ interface EventCardCalendarProps {
 export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
     event,
     club,
+    clubId,
     startTime,
     endTime,
     image,
@@ -30,10 +34,13 @@ export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
     tags
 }) => {
     const isHappening = happeningNow(startTime, endTime);
+    const isPast = endTime.getTime() < new Date().getTime();
 
     return (
-        <Box>
-            <TouchableOpacity>
+        <Box position="relative">
+            <TouchableOpacity
+                onPress={() => router.navigate(`/event/${clubId}`)}
+            >
                 {isHappening && (
                     <Box {...styles.isHappeningContainer}>
                         <Box {...styles.isHappeningContent}>
@@ -43,6 +50,7 @@ export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
                         </Box>
                     </Box>
                 )}
+                {isPast && <Box {...styles.pastEvent} />}
                 <Box {...styles.cardContainer}>
                     <Box {...styles.cardSubContainer}>
                         <Image
@@ -132,5 +140,14 @@ const styles = createStyles({
         alignItems: 'center',
         gap: 'xxs',
         flexWrap: 'wrap'
+    },
+    pastEvent: {
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'black',
+        zIndex: 2,
+        borderRadius: 'md',
+        opacity: 0.15
     }
 });

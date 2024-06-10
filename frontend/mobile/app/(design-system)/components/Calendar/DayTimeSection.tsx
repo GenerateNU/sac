@@ -1,10 +1,33 @@
-import { Box } from '../../Box/Box';
-import { Button } from '../../Button/Button';
-import { EventCard } from '../../EventCard/EventCard';
-import { Text } from '../../Text/Text';
-import { EventSectionData } from '../mockData';
+import { Tag } from '@generatesac/lib';
 
-export type AgendaTimeSectionProps = {
+import { Box } from '@/app/(design-system)/components/Box/Box';
+import { Button } from '@/app/(design-system)/components/Button/Button';
+import { EventCard } from '@/app/(design-system)/components/EventCard/EventCard';
+import { Text } from '@/app/(design-system)/components/Text/Text';
+
+export type EventSectionTimes = {
+    [key: string]: EventSectionData;
+};
+
+export type EventSection = {
+    date: string;
+    data: EventSectionTimes;
+};
+
+export type EventPreview = {
+    title: string;
+    startTime: string;
+    endTime: string;
+    host: string;
+    tags: Tag[];
+};
+
+export type EventSectionData = {
+    overflow: boolean;
+    events: EventPreview[];
+};
+
+export type DayTimeSectionProps = {
     time: number;
     data: EventSectionData;
 };
@@ -43,21 +66,18 @@ function TimeHeader({ time }: { time: number }) {
                 {hour}
                 {minute ? `:${minute}` : ''} {meridiem}
             </Text>
-            <Box borderBottomColor="gray" borderBottomWidth={1} flex={1} />
+            <Box flex={1} backgroundColor="gray" height={0.75} />
         </Box>
     );
 }
 
-export default function AgendaTimeSection({
-    time,
-    data
-}: AgendaTimeSectionProps) {
+export default function DayTimeSection({ time, data }: DayTimeSectionProps) {
     return (
-        <Box flex={1}>
-            <Box flex={1}>
+        <Box>
+            <Box>
                 <TimeHeader time={time} />
             </Box>
-            <Box flex={1} alignItems="center" flexDirection="column" gap="s">
+            <Box alignItems="center" flexDirection="column" gap="s">
                 {data.events.map((event, index) => {
                     return (
                         <Box
@@ -69,11 +89,10 @@ export default function AgendaTimeSection({
                                 event={event.title}
                                 variant="calendar"
                                 tags={event.tags}
-                                club={event.host}
-                                startTime={new Date()}
-                                endTime={
-                                    new Date(new Date().getTime() + 1000000)
-                                }
+                                club={'Generate'}
+                                clubId={event.host}
+                                startTime={new Date(event.startTime)}
+                                endTime={new Date(event.endTime)}
                                 logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT800M6T7YVq_f6W49g_UNL29US7gC63nTitg&s"
                                 image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfT6p6kCen0-GphSDogJRd2KoYjg0-QQWuAw9e5JBIBEVTc3Hxho_UwRsZ0IrEi6Ap5oo&usqp=CAU"
                             />
