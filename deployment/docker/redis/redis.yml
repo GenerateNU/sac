@@ -1,0 +1,34 @@
+services:
+  redis-session:
+    build:
+      context: .
+      dockerfile: Dockerfile.redis
+    container_name: redis_session
+    ports:
+      - 6380:6379
+    environment:
+      - REDIS_USERNAME=${SAC_REDIS_SESSION_USERNAME}
+      - REDIS_PASSWORD=${SAC_REDIS_SESSION_PASSWORD}
+      - REDIS_DISABLE_DEFAULT_USER="true"
+    volumes:
+      - redis-session-data:/data
+  redis-limiter:
+    build:
+      context: .
+      dockerfile: Dockerfile.redis
+    container_name: redis_limiter
+    ports:
+      - 6381:6379
+    environment:
+      - REDIS_USERNAME=${SAC_REDIS_LIMITER_USERNAME}
+      - REDIS_PASSWORD=${SAC_REDIS_LIMITER_PASSWORD}
+      - REDIS_DISABLE_DEFAULT_USER="true"
+    volumes:
+      - redis-limiter-data:/data
+volumes:
+  redis-session-data:
+  redis-limiter-data:
+  opensearch-data1:
+
+networks:
+  opensearch-net:
