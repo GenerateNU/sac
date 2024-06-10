@@ -2,6 +2,8 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
+import { router } from 'expo-router';
+
 import { Image } from '@rneui/base';
 
 import { Box, Text } from '@/app/(design-system)';
@@ -10,6 +12,7 @@ import { calculateDuration, createOptions, eventTime } from '@/utils/time';
 interface EventCardBigProps {
     event: string;
     club: string;
+    clubId: string;
     startTime: Date;
     endTime: Date;
     image: string;
@@ -18,13 +21,16 @@ interface EventCardBigProps {
 export const EventCardBig: React.FC<EventCardBigProps> = ({
     event,
     club,
+    clubId,
     startTime,
     endTime,
     image
 }) => {
     return (
         <Box>
-            <TouchableOpacity>
+            <TouchableOpacity
+                onPress={() => router.navigate(`/event/${clubId}`)}
+            >
                 <Box gap="xs">
                     <Image
                         containerStyle={{

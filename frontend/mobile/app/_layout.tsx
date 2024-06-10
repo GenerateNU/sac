@@ -22,7 +22,7 @@ SplashScreen.preventAutoHideAsync();
 const InitalLayout = () => {
     useEffect(() => {
         const handleNavigation = () => {
-            router.push('/(auth)/');
+            router.push('/(tabs)/');
         };
         handleNavigation();
     }, []);

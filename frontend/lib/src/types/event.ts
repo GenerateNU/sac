@@ -7,7 +7,7 @@ import { rootModelSchema } from "./root";
  */
 
 // Enums:
-const eventTypeEnum = z.enum(["open", "membersOnly"]);
+const eventTypeEnum = z.enum(["hybrid", "in_person", "virtual"]);
 
 // Schemas:
 const createEventRequestBodySchema = z.object({
@@ -35,13 +35,16 @@ const updateEventRequestBodySchema = z.object({
 const eventSchemaIntermediate = z.object({
   name: z.string().max(255),
   preview: z.string().max(255),
-  content: z.string().max(255),
-  start_time: z.date(),
-  end_time: z.date(),
+  description: z.string().max(255),
+  start_time: z.string(),
+  end_time: z.string(),
   location: z.string().max(255),
-  meeting_link: z.string().max(255).optional(),
+  link: z.string().max(255).optional(),
   event_type: eventTypeEnum,
-  is_recurring: z.boolean(),
+  is_recurring: z.boolean().optional(),
+  is_public: z.boolean(),
+  is_draft: z.boolean(),
+  is_archived: z.boolean(),
   host: z.string().uuid(),
 });
 

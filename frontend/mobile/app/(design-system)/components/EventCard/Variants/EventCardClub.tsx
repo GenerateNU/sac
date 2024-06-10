@@ -1,6 +1,8 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 
+import { router } from 'expo-router';
+
 import { Tag } from '@generatesac/lib';
 import { Avatar, Image } from '@rneui/base';
 
@@ -13,6 +15,7 @@ import { sharedStyles } from '../shared/styles';
 interface EventCardClubProps {
     event: string;
     club: string;
+    clubId: string;
     startTime: Date;
     endTime: Date;
     image: string;
@@ -23,6 +26,7 @@ interface EventCardClubProps {
 export const EventCardClub: React.FC<EventCardClubProps> = ({
     event,
     club,
+    clubId,
     startTime,
     endTime,
     image,
@@ -31,7 +35,9 @@ export const EventCardClub: React.FC<EventCardClubProps> = ({
 }) => {
     return (
         <Box>
-            <TouchableOpacity>
+            <TouchableOpacity
+                onPress={() => router.navigate(`/event/${clubId}`)}
+            >
                 <Box {...styles.cardContainer}>
                     <Box {...styles.cardSubContainer}>
                         <Image

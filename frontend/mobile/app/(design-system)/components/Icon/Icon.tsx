@@ -36,7 +36,7 @@ const styles = createStyles({
         fontSize: 24
     },
     lg: {
-        fontSize: 32
+        fontSize: 75
     },
     full: {
         fontSize: 24
