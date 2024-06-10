@@ -1,11 +1,7 @@
 package helpers
 
 import (
-	"fmt"
-
-	"github.com/GenerateNU/sac/backend/database"
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
 
@@ -25,43 +21,7 @@ func (app *TestApp) Auth(role models.UserRole) {
 }
 
 func (app *TestApp) authSuper() {
-	superUser, superUserErr := database.SuperUser(app.Settings.SuperUser)
-	if superUserErr != nil {
-		panic(fmt.Sprintf("Failed to get super user: %v", superUserErr))
-	}
-
-	email := superUser.Email
-	password := app.Settings.SuperUser.Password
-
-	resp, err := app.Send(TestRequest{
-		Method: fiber.MethodPost,
-		Path:   "/api/v1/auth/login",
-		Body: &map[string]interface{}{
-			"email":    email,
-			"password": password.Expose(),
-		},
-	})
-	if err != nil {
-		panic(fmt.Sprintf("Failed to authenticate super user: %v", err))
-	}
-
-	var accessToken string
-	var refreshToken string
-
-	authHeader := resp.Header.Get("Authorization")
-	if authHeader != "" {
-		accessToken = authHeader[len("Bearer "):]
-	}
-
-	if accessToken == "" || refreshToken == "" {
-		panic("Failed to authenticate super user")
-	}
-
-	app.TestUser = &TestUser{
-		UUID:        database.SuperUserUUID,
-		Email:       email,
-		AccessToken: accessToken,
-	}
+	app.TestUser = nil
 }
 
 func (app *TestApp) authStudent() {
