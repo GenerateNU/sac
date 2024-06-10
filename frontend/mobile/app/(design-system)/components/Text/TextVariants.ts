@@ -25,6 +25,12 @@ const Texts = {
         fontStyle: 'normal',
         fontWeight: '400'
     },
+    'body-2': {
+        fontFamily: 'DMSans-Regular',
+        fontSize: 14,
+        fontStyle: 'normal',
+        fontWeight: '400'
+    },
     'caption-1': {
         fontFamily: 'DMSans-Regular',
         fontSize: 12,
