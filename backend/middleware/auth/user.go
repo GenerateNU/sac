@@ -5,6 +5,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/integrations/oauth/soth/sothic"
+	"github.com/GenerateNU/sac/backend/locals"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/gofiber/fiber/v2"
 )
@@ -27,6 +28,7 @@ func (m *AuthMiddlewareHandler) UserAuthorizeById(c *fiber.Ctx) error {
 	user := models.UnmarshalUser(strUser)
 
 	if user.Role == models.Super {
+		locals.SetUser(c, user)
 		return c.Next()
 	}
 
@@ -36,6 +38,7 @@ func (m *AuthMiddlewareHandler) UserAuthorizeById(c *fiber.Ctx) error {
 	}
 
 	if idAsUUID == &user.ID {
+		locals.SetUser(c, user)
 		return c.Next()
 	}
 
