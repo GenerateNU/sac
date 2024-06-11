@@ -6,4 +6,5 @@ const (
 	MAX_IDLE_CONNECTIONS int           = 10
 	MAX_OPEN_CONNECTIONS int           = 100
 	DB_TIMEOUT           time.Duration = 200 * time.Millisecond
+	DB_CACHE_TTL         time.Duration = 60 * time.Second
 )

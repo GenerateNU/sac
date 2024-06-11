@@ -2,14 +2,11 @@ package store
 
 import (
 	"context"
-	"fmt"
-	"runtime"
+	"log/slog"
 	"time"
 
-	"github.com/GenerateNU/sac/backend/constants"
+	"github.com/GenerateNU/sac/backend/config"
 	"github.com/redis/go-redis/v9"
-
-	m "github.com/garrettladley/mattress"
 )
 
 // an implementation of https://github.com/gofiber/storage
@@ -25,36 +22,19 @@ type RedisClient struct {
 	client *redis.Client
 }
 
-type RedisSettings interface {
-	Username() string
-	Password() *m.Secret[string]
-	Host() string
-	Port() uint
-	DB() int
-}
-
-func NewRedisClient(settings RedisSettings) *RedisClient {
-	client := redis.NewClient(&redis.Options{
-		Username:              settings.Username(),
-		Password:              settings.Password().Expose(),
-		Addr:                  fmt.Sprintf("%s:%d", settings.Host(), settings.Port()),
-		DB:                    settings.DB(),
-		PoolSize:              10 * runtime.GOMAXPROCS(0),
-		MaxActiveConns:        constants.REDIS_MAX_OPEN_CONNECTIONS,
-		MaxIdleConns:          constants.REDIS_MAX_IDLE_CONNECTIONS,
-		ContextTimeoutEnabled: true,
-	})
-
+func NewRedisClient(settings config.RedisSettings) *RedisClient {
 	return &RedisClient{
-		client: client,
+		client: settings.Into(),
 	}
 }
 
 func (r *RedisClient) Get(key string) ([]byte, error) {
+	slog.Info("getting", "key", key)
 	return r.client.Get(context.Background(), key).Bytes()
 }
 
 func (r *RedisClient) Set(key string, val []byte, exp time.Duration) error {
+	slog.Info("setting", "key", key, "val", string(val), "exp", exp)
 	return r.client.Set(context.Background(), key, val, exp).Err()
 }
 
