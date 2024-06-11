@@ -9,7 +9,6 @@ import (
 	"net"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"syscall"
 
 	"github.com/GenerateNU/sac/backend/background"
@@ -33,7 +32,7 @@ import (
 
 func main() {
 	onlyMigrate, seedSearch, configPath := parseFlags()
-	config, err := config.GetConfiguration(configPath)
+	config, err := config.GetConfiguration(*configPath)
 	if err != nil {
 		utilities.Exit("Error getting configuration: %s", err.Error())
 	}
@@ -82,7 +81,7 @@ func main() {
 func parseFlags() (onlyMigrate, seedSearch *bool, configPath *string) {
 	onlyMigrate = flag.Bool("only-migrate", false, "Specify if you want to only perform the database migration")
 	seedSearch = flag.Bool("seed-search", true, "Specify if you want to seed the opensearch nodes.")
-	configPath = flag.String("config", filepath.Join("..", "config", ".env.dev"), "Specify the path to the config file (.env)")
+	configPath = flag.String("config", "", "Specify the path to the config file (.env)")
 	flag.Parse()
 	return
 }
