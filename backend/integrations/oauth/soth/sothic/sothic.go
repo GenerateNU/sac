@@ -140,8 +140,7 @@ func GetAuthURL(c *fiber.Ctx) (string, error) {
 		return "", err
 	}
 
-	err = StoreInSession(providerName, sess.Marshal(), c)
-	if err != nil {
+	if err := StoreInSession(providerName, sess.Marshal(), c); err != nil {
 		return "", err
 	}
 
@@ -203,8 +202,7 @@ func CompleteUserAuth(c *fiber.Ctx) (soth.User, error) {
 		return soth.User{}, err
 	}
 
-	err = StoreInSession(providerName, sess.Marshal(), c)
-	if err != nil {
+	if err := StoreInSession(providerName, sess.Marshal(), c); err != nil {
 		return soth.User{}, err
 	}
 
