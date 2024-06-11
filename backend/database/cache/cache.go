@@ -5,7 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
-	"log"
+	"log/slog"
 	"time"
 
 	"github.com/GenerateNU/sac/backend/config"
@@ -85,7 +85,7 @@ func (g *GormCache) queryCallback(db *gorm.DB) {
 		// get value from cache
 		hit, err = g.loadCache(db, key)
 		if err != nil {
-			log.Printf("load cache failed: %v, hit: %v", err, hit)
+			slog.Error("load cache failed", "error", err, "hit", hit)
 			return
 		}
 
@@ -93,7 +93,6 @@ func (g *GormCache) queryCallback(db *gorm.DB) {
 		if hit {
 			return
 		}
-
 	}
 
 	if !hit {
@@ -101,7 +100,7 @@ func (g *GormCache) queryCallback(db *gorm.DB) {
 
 		if enableCache {
 			if err = g.setCache(db, key); err != nil {
-				log.Printf("set cache failed: %v", err)
+				slog.Error("set cache failed", "error", err)
 			}
 		}
 	}
@@ -159,11 +158,15 @@ func (g *GormCache) setCache(db *gorm.DB, key string) error {
 func (g *GormCache) queryDB(db *gorm.DB) {
 	rows, err := db.Statement.ConnPool.QueryContext(db.Statement.Context, db.Statement.SQL.String(), db.Statement.Vars...)
 	if err != nil {
-		db.AddError(err)
+		if err := db.AddError(err); err != nil {
+			slog.Error("error encountered while adding error", "error", err)
+		}
 		return
 	}
 	defer func() {
-		db.AddError(rows.Close())
+		if err := db.AddError(rows.Close()); err != nil {
+			slog.Error("error encountered while closing rows", "error", err)
+		}
 	}()
 	gorm.Scan(rows, db, 0)
 }
