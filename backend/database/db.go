@@ -2,7 +2,6 @@ package database
 
 import (
 	"errors"
-	"time"
 
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/constants"
@@ -20,7 +19,7 @@ func ConfigureDB(settings config.Settings) (*gorm.DB, error) {
 	}
 
 	cache := cache.NewGormCache("db_cache", cache.NewRedisClient(settings.DBCache), cache.CacheConfig{
-		TTL:    60 * time.Second,
+		TTL:    constants.DB_CACHE_TTL,
 		Prefix: "cache:",
 	})
 
