@@ -19,7 +19,7 @@ services:
     container_name: sac_webserver
     build:
       context: ../backend
-      dockerfile: Dockerfile.server
+      dockerfile: ../backend/Dockerfile.server
     env_file:
       - .env.prod
 
@@ -27,7 +27,7 @@ services:
   redis-session:
     build:
       context: ../backend
-      dockerfile: Dockerfile.redis
+      dockerfile: ../backend/Dockerfile.redis
     container_name: redis_session
     ports:
       - 6380:6379
@@ -39,8 +39,8 @@ services:
       - redis-session-data:/data
   redis-limiter:
     build:
-      context: .
-      dockerfile: Dockerfile.redis
+      context: ../backend
+      dockerfile: ../backend/Dockerfile.redis
     container_name: redis_limiter
     ports:
       - 6381:6379
