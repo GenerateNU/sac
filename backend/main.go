@@ -18,6 +18,8 @@ import (
 	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/database"
 	"github.com/GenerateNU/sac/backend/database/store"
+
+	// TODO: disable for prod with build tag
 	_ "github.com/GenerateNU/sac/backend/docs"
 	"github.com/GenerateNU/sac/backend/integrations"
 	"github.com/GenerateNU/sac/backend/integrations/email"
