@@ -1,7 +1,7 @@
 FROM golang:1.22-alpine as builder
 
 WORKDIR /app
-RUN apk add --no-cache make nodejs npm git
+RUN apk add --no-cache git
 
 COPY . ./
 RUN go install github.com/a-h/templ/cmd/templ@latest
