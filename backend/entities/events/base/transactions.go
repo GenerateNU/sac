@@ -6,7 +6,9 @@ import (
 	"time"
 
 	"github.com/GenerateNU/sac/backend/constants"
+	"github.com/GenerateNU/sac/backend/entities/clubs"
 	"github.com/GenerateNU/sac/backend/entities/events"
+	"github.com/GenerateNU/sac/backend/entities/events/tags"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/garrettladley/fiberpaginate"
 
@@ -23,7 +25,29 @@ func GetEvents(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Event, er
 }
 
 func GetEventsPreview(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]EventPreview, error) {
-	return transactionsGetEvents[EventPreview](db, &pageInfo, nil, nil)
+	events, err := transactionsGetEvents[EventStub](db, &pageInfo, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	eventPreviews := make([]EventPreview, len(events))
+	for index, event := range events {
+		tags, err := tags.GetEventTags(db, event.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		eventPreviews[index].Tags = tags
+
+		host, err := clubs.GetClub(db, event.Host)
+		if err != nil {
+			return nil, err
+		}
+
+		eventPreviews[index] = *event.Into(tags, host.Name, host.Logo)
+	}
+
+	return eventPreviews, nil
 }
 
 func GetEventsByTime(db *gorm.DB, pageInfo fiberpaginate.PageInfo, startTime time.Time, endTime time.Time) ([]models.Event, error) {
@@ -31,7 +55,29 @@ func GetEventsByTime(db *gorm.DB, pageInfo fiberpaginate.PageInfo, startTime tim
 }
 
 func GetEventsPreviewByTime(db *gorm.DB, pageInfo fiberpaginate.PageInfo, startTime time.Time, endTime time.Time) ([]EventPreview, error) {
-	return transactionsGetEvents[EventPreview](db, &pageInfo, &startTime, &endTime)
+	events, err := transactionsGetEvents[EventStub](db, &pageInfo, &startTime, &endTime)
+	if err != nil {
+		return nil, err
+	}
+
+	eventPreviews := make([]EventPreview, len(events))
+	for index, event := range events {
+		tags, err := tags.GetEventTags(db, event.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		eventPreviews[index].Tags = tags
+
+		host, err := clubs.GetClub(db, event.Host)
+		if err != nil {
+			return nil, err
+		}
+
+		eventPreviews[index] = *event.Into(tags, host.Name, host.Logo)
+	}
+
+	return eventPreviews, nil
 }
 
 func CreateEvent(db *gorm.DB, event models.Event) (*models.Event, error) {
