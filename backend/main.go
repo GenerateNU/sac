@@ -33,7 +33,7 @@ import (
 
 func main() {
 	onlyMigrate, seedSearch, configPath := parseFlags()
-	config, err := config.GetConfiguration(*configPath)
+	config, err := config.GetConfiguration(configPath)
 	if err != nil {
 		utilities.Exit("Error getting configuration: %s", err.Error())
 	}

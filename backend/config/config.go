@@ -7,9 +7,11 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func GetConfiguration(path string) (*Settings, error) {
-	if err := godotenv.Load(path); err != nil {
-		return nil, fmt.Errorf("failed to load environment variables: %s", err.Error())
+func GetConfiguration(path *string) (*Settings, error) {
+	if path != nil {
+		if err := godotenv.Load(*path); err != nil {
+			return nil, fmt.Errorf("failed to load environment variables: %s", err.Error())
+		}
 	}
 
 	intSettings, err := env.ParseAs[intermediateSettings]()
