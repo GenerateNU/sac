@@ -3,7 +3,7 @@ package config
 type Settings struct {
 	Application  ApplicationSettings
 	Database     DatabaseSettings
-	RedisSession RedisSettings
+	Session      SessionSettings
 	RedisLimiter RedisSettings
 	SuperUser    SuperUserSettings
 	Calendar     CalendarSettings
@@ -22,6 +22,7 @@ type intermediateSettings struct {
 	Application  ApplicationSettings               `envPrefix:"SAC_APPLICATION_"`
 	Database     intermediateDatabaseSettings      `envPrefix:"SAC_DB_"`
 	RedisSession intermediateRedisSettings         `envPrefix:"SAC_REDIS_SESSION_"`
+	Session      intermediateSessionSettings       `envPrefix:"SAC_SESSION_"`
 	RedisLimiter intermediateRedisSettings         `envPrefix:"SAC_REDIS_LIMITER_"`
 	SuperUser    intermediateSuperUserSettings     `envPrefix:"SAC_SUDO_"`
 	AWS          intermediateAWSSettings           `envPrefix:"SAC_AWS_"`
@@ -34,6 +35,16 @@ type intermediateSettings struct {
 
 func (i *intermediateSettings) into() (*Settings, error) {
 	database, err := i.Database.into()
+	if err != nil {
+		return nil, err
+	}
+
+	redisSession, err := i.RedisSession.into()
+	if err != nil {
+		return nil, err
+	}
+
+	session, err := i.Session.into(*redisSession)
 	if err != nil {
 		return nil, err
 	}
@@ -76,6 +87,7 @@ func (i *intermediateSettings) into() (*Settings, error) {
 	return &Settings{
 		Application:  i.Application,
 		Database:     *database,
+		Session:      *session,
 		RedisLimiter: *redisLimiter,
 		SuperUser:    *superUser,
 		Calendar:     *calendar,

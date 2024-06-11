@@ -33,6 +33,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 
 	"gorm.io/gorm"
@@ -117,6 +118,8 @@ func newFiberApp(appSettings config.ApplicationSettings) *fiber.App {
 		JSONDecoder:  go_json.Unmarshal,
 		ErrorHandler: utilities.ErrorHandler,
 	})
+
+	app.Use(recover.New())
 
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     appSettings.ApplicationURL(),

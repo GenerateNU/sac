@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/GenerateNU/sac/backend/integrations/oauth/soth"
@@ -101,7 +102,12 @@ func (h *Handler) ProviderCallback(c *fiber.Ctx) error {
 		return err
 	}
 
-	return c.Redirect(c.Cookies("redirect", "/"))
+	redirect, err := url.PathUnescape(c.Cookies("redirect", "/"))
+	if err != nil {
+		return err
+	}
+
+	return c.Redirect(redirect)
 }
 
 func (h *Handler) ProviderLogout(c *fiber.Ctx) error {

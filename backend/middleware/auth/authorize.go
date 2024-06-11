@@ -1,15 +1,14 @@
 package auth
 
 import (
+	"net/url"
 	"slices"
 	"time"
 
-	"github.com/GenerateNU/sac/backend/locals"
-	"github.com/GenerateNU/sac/backend/permission"
-
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/integrations/oauth/soth/sothic"
-
+	"github.com/GenerateNU/sac/backend/locals"
+	"github.com/GenerateNU/sac/backend/permission"
 	"github.com/GenerateNU/sac/backend/utilities"
 
 	"github.com/gofiber/fiber/v2"
@@ -21,7 +20,7 @@ func (m *AuthMiddlewareHandler) Authorize(requiredPermissions ...permission.Perm
 		if err != nil {
 			c.Cookie(&fiber.Cookie{
 				Name:    "redirect",
-				Value:   c.OriginalURL(),
+				Value:   url.PathEscape(c.OriginalURL()),
 				Expires: time.Now().Add(5 * time.Minute),
 				// MARK: secure should be true in prod
 				// use go build tags to do this

@@ -1,18 +1,21 @@
 FROM golang:1.22-alpine as builder
 
 WORKDIR /app
-RUN apk add --no-cache git
 
-COPY . ./
+COPY . .
+
 RUN go install github.com/a-h/templ/cmd/templ@latest
-RUN templ generate
-RUN go get ./...
-RUN go mod tidy
-RUN go mod download
-RUN go build -tags prod -o bin/sac main.go
 
-FROM scratch
+RUN templ generate
+
+RUN go mod download
+
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o bin/sac main.go
+
+FROM alpine:latest as release
+
 COPY --from=builder /app/bin/sac /sac
 
 EXPOSE 8080
-ENTRYPOINT [ "./sac" ]
+
+ENTRYPOINT [ "/sac" ]
