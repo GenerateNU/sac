@@ -13,7 +13,7 @@ var seedSearchCmd = &cobra.Command{
 	Use:   "seed-search",
 	Short: "Seed Search",
 	Run: func(cmd *cobra.Command, args []string) {
-		err := helpers.Execute(exec.Command("go", "run", "main.go", "seed-search"), helpers.BACKEND_DIR)
+		err := helpers.Execute(exec.Command("templ", "generate", "&&", "go", "run", "main.go", "seed-search"), helpers.BACKEND_DIR)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)

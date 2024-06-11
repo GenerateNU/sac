@@ -123,7 +123,7 @@ func InsertDB() error {
 	if !exists {
 		fmt.Println("Database does not exist or has no tables. Running database migration.")
 
-		migrateCmd := exec.Command("go", "run", "main.go", "--only-migrate")
+		migrateCmd := exec.Command("templ", "generate", "&&", "go", "run", "main.go", "--only-migrate")
 
 		migrateCmd.Dir = BACKEND_DIR
 
