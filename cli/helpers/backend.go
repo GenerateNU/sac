@@ -16,7 +16,7 @@ func RunBackend() error {
 		return fmt.Errorf("error initializing redis: %w", err)
 	}
 
-	err = Execute(exec.Command("go", "run", "main.go"), BACKEND_DIR)
+	err = Execute(exec.Command("templ", "generate", "&&", "go", "run", "main.go"), BACKEND_DIR)
 	if err != nil {
 		return fmt.Errorf("error running backend: %w", err)
 	}
