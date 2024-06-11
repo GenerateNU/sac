@@ -110,8 +110,8 @@ func DeleteEvent(db *gorm.DB, id uuid.UUID) error {
 	return nil
 }
 
-func transactionsGetEvents[T any](db *gorm.DB, pageInfo *fiberpaginate.PageInfo, startTime *time.Time, endTime *time.Time) ([]T, error) {
-	var events []T
+func transactionsGetEvents[E any](db *gorm.DB, pageInfo *fiberpaginate.PageInfo, startTime *time.Time, endTime *time.Time) ([]E, error) {
+	var events []E
 	query := db.Model(&events)
 
 	if startTime != nil && endTime != nil {
