@@ -13,8 +13,8 @@ import (
 
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/database/store"
+	"github.com/GenerateNU/sac/backend/fiber/session"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/session"
 
 	"github.com/GenerateNU/sac/backend/integrations/oauth/soth"
 )
@@ -36,12 +36,9 @@ var (
 // MUST be called before using the package
 func Init(sessionSettings config.RedisSettings) {
 	config := session.Config{
-		Storage:   store.NewRedisClient(sessionSettings),
-		KeyLookup: fmt.Sprintf("cookie:%s", SessionName),
-		// for local
-		CookieHTTPOnly: true,
-		// MARK: secure in prod
-		// TODO: use build tags to set this
+		Storage:      store.NewRedisClient(sessionSettings),
+		KeyLookup:    fmt.Sprintf("header:%s", SessionName),
+		KeyGenerator: func() string { return SessionName },
 	}
 
 	SessionStore = session.New(config)
