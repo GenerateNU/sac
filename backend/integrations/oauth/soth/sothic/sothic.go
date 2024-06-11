@@ -30,7 +30,7 @@ const (
 	ProviderParamKey key = iota
 )
 
-// Session can/should be set by applications using gothic. The default is a cookie store.
+// Session can/should be set by applications using sothic.
 var (
 	SessionStore *session.Store
 	encrypter    func(string) (string, error)
@@ -93,7 +93,7 @@ func SetState(c *fiber.Ctx) string {
 	nonceBytes := make([]byte, 64)
 	_, err := io.ReadFull(rand.Reader, nonceBytes)
 	if err != nil {
-		panic("gothic: source of randomness unavailable: " + err.Error())
+		panic(fmt.Sprintf("sothic: source of randomness unavailable: %v", err.Error()))
 	}
 	return base64.URLEncoding.EncodeToString(nonceBytes)
 }
