@@ -19,5 +19,5 @@
         }
     },
     "exclude": ["node_modules"],
-    "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
+    "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts", "../lib/src/store/globalSlice.ts"]
 }

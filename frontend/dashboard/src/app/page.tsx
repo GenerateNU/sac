@@ -1,5 +1,6 @@
 "use client";
 
+import Tiptap from "../components/dashboard/editor";
 import { UserState, setUser } from "../store/slices/userSlice";
 import { useAppDispatch, useAppSelector } from "../store/store";
 
@@ -20,6 +21,7 @@ export default function Home() {
       <button onClick={() => dispatch(setUser(user))}>Press Me</button>
       SAC Dashboard
       {clubId}
+      <Tiptap />
     </main>
   );
 }
