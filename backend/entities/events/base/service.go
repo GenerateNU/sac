@@ -99,9 +99,9 @@ func serviceGetEvents[E any](db *gorm.DB, pageInfo fiberpaginate.PageInfo, start
 		return nil, utilities.BadRequest(err)
 	}
 
-	if startTime.After(endTime) {
+	if startTime.After(*endTime) {
 		return nil, utilities.BadRequest(errors.New("start time must be before end time"))
 	}
 
-	return getItemsByTimeFunc(db, pageInfo, startTime, endTime)
+	return getItemsByTimeFunc(db, pageInfo, *startTime, *endTime)
 }
