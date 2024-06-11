@@ -84,9 +84,9 @@ func (e *EventService) DeleteEvent(eventID string) error {
 	return DeleteEvent(e.DB, *idAsUUID)
 }
 
-func serviceGetEvents[E any](db *gorm.DB, pageInfo fiberpaginate.PageInfo, start string, end string, getItemsFunc func(*gorm.DB, fiberpaginate.PageInfo) ([]E, error), getItemsByTimeFunc func(*gorm.DB, fiberpaginate.PageInfo, time.Time, time.Time) ([]E, error)) ([]E, error) {
+func serviceGetEvents[E any](db *gorm.DB, pageInfo fiberpaginate.PageInfo, start string, end string, getEFunc func(*gorm.DB, fiberpaginate.PageInfo) ([]E, error), getEByTimeFunc func(*gorm.DB, fiberpaginate.PageInfo, time.Time, time.Time) ([]E, error)) ([]E, error) {
 	if start == "" || end == "" {
-		return getItemsFunc(db, pageInfo)
+		return getEFunc(db, pageInfo)
 	}
 
 	startTime, err := utilities.ParseTime(start, utilities.YYYY_dash_MM_dash_DD)
@@ -103,5 +103,5 @@ func serviceGetEvents[E any](db *gorm.DB, pageInfo fiberpaginate.PageInfo, start
 		return nil, utilities.BadRequest(errors.New("start time must be before end time"))
 	}
 
-	return getItemsByTimeFunc(db, pageInfo, *startTime, *endTime)
+	return getEByTimeFunc(db, pageInfo, *startTime, *endTime)
 }
