@@ -21,7 +21,7 @@ services:
       context: ../backend
       dockerfile: Dockerfile.server
     env_file:
-      - .env
+      - .env.prod
 
   # REDIS
   redis-session:
