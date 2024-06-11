@@ -4,11 +4,11 @@ export type UserState = {
     userId: string;
     email: string;
     accessToken?: string;
-}
+};
 
 const initialState: UserState = {
-    userId: "",
-    email: "",
+    userId: '',
+    email: ''
 };
 
 export const userSlice = createSlice({
@@ -24,16 +24,12 @@ export const userSlice = createSlice({
         setAccessToken: (state, action) => {
             state.accessToken = action.payload;
         },
-        resetAccessToken: state => {
+        resetAccessToken: (state) => {
             state.accessToken = undefined;
         }
     }
-})
+});
 
-export const { 
-    setUser, 
-    resetUser,
-    setAccessToken,
-    resetAccessToken
-} = userSlice.actions;
+export const { setUser, resetUser, setAccessToken, resetAccessToken } =
+    userSlice.actions;
 export default userSlice.reducer;

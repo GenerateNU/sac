@@ -10,9 +10,9 @@ import { StatusBar } from 'expo-status-bar';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { ThemeProvider } from '@shopify/restyle';
 
-import { theme } from './(design-system)';
 import StoreProvider from '../store/StoreProvider';
 import { useAppSelector } from '../store/store';
+import { theme } from './(design-system)';
 
 export { ErrorBoundary } from 'expo-router';
 

@@ -28,4 +28,4 @@ async function deleteToken(key: string) {
     }
 }
 
-export { getToken, saveToken, deleteToken }
+export { getToken, saveToken, deleteToken };

@@ -2,10 +2,9 @@ import { Box } from '@/src/app/(design-system)/components/Box/Box';
 import DayTimeSection, {
     EventSection
 } from '@/src/app/(design-system)/components/Calendar/DayTimeSection';
+import { Text } from '@/src/app/(design-system)/components/Text/Text';
 import NoEventsIcon from '@/src/assets/svg/NoSearchResult.svg';
 import { formatTime } from '@/src/utils/time';
-
-import { Text } from '@/src/app/(design-system)/components/Text/Text';
 
 type DayProps = {
     section: EventSection;

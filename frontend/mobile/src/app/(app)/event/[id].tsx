@@ -17,12 +17,12 @@ import { Button } from '@/src/app/(design-system)/components/Button/Button';
 import { description, events, tags } from '@/src/consts/event-page';
 
 import { AboutEvent } from './components/about';
+import { Description } from './components/description';
 import { Location } from './components/location';
 import { Overview } from './components/overview';
-import { UpcomingEvent } from './components/upcoming-events';
-import { Description } from './components/description';
 import { RegisterBottomSheet } from './components/register';
 import { ShareEventBottomSheet } from './components/share-event';
+import { UpcomingEvent } from './components/upcoming-events';
 
 type EventType = 'in-person' | 'virtual' | 'hybrid';
 
