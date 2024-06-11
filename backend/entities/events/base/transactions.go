@@ -19,19 +19,19 @@ import (
 )
 
 func GetEvents(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Event, error) {
-	return getEvents[models.Event](db, &pageInfo, nil, nil)
+	return transactionsGetEvents[models.Event](db, &pageInfo, nil, nil)
 }
 
 func GetEventsPreview(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]EventPreview, error) {
-	return getEvents[EventPreview](db, &pageInfo, nil, nil)
+	return transactionsGetEvents[EventPreview](db, &pageInfo, nil, nil)
 }
 
 func GetEventsByTime(db *gorm.DB, pageInfo fiberpaginate.PageInfo, startTime time.Time, endTime time.Time) ([]models.Event, error) {
-	return getEvents[models.Event](db, &pageInfo, &startTime, &endTime)
+	return transactionsGetEvents[models.Event](db, &pageInfo, &startTime, &endTime)
 }
 
 func GetEventsPreviewByTime(db *gorm.DB, pageInfo fiberpaginate.PageInfo, startTime time.Time, endTime time.Time) ([]EventPreview, error) {
-	return getEvents[EventPreview](db, &pageInfo, &startTime, &endTime)
+	return transactionsGetEvents[EventPreview](db, &pageInfo, &startTime, &endTime)
 }
 
 func CreateEvent(db *gorm.DB, event models.Event) (*models.Event, error) {
@@ -110,7 +110,7 @@ func DeleteEvent(db *gorm.DB, id uuid.UUID) error {
 	return nil
 }
 
-func getEvents[T any](db *gorm.DB, pageInfo *fiberpaginate.PageInfo, startTime *time.Time, endTime *time.Time) ([]T, error) {
+func transactionsGetEvents[T any](db *gorm.DB, pageInfo *fiberpaginate.PageInfo, startTime *time.Time, endTime *time.Time) ([]T, error) {
 	var events []T
 	query := db.Model(&events)
 
