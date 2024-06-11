@@ -1,22 +1,17 @@
 # syntax=docker/dockerfile:1
-FROM golang:1.22-alpine as builder
+
+FROM golang:1.22.2
 
 WORKDIR /app
-RUN apk add --no-cache git
+
+COPY go.mod go.sum ./
 
 COPY . ./
 RUN go install github.com/a-h/templ/cmd/templ@latest
 RUN templ generate
-RUN go get ./...
-RUN go mod tidy
-RUN go mod download
 
-# Build the Go binary (optimized for production)
-RUN mkdir -p /app/bin
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /app/bin/sac
-
-FROM scratch
-COPY --from=builder /app/bin/sac /sac
+RUN CGO_ENABLED=0 GOOS=linux go build -v -o ./sac
 
 EXPOSE 8080
-ENTRYPOINT [ "./sac" ]
+
+CMD ["/sac"]
