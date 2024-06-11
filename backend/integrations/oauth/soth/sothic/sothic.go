@@ -8,21 +8,23 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/url"
 	"strings"
 
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/database/store"
-	"github.com/GenerateNU/sac/backend/fiber/session"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/session"
 
+	"github.com/GenerateNU/sac/backend/integrations/oauth/crypt"
 	"github.com/GenerateNU/sac/backend/integrations/oauth/soth"
 )
 
 type key int
 
 const (
-	SessionName string = "_sothic_session"
+	SessionName string = "_sac_session"
 
 	// ProviderParamKey can be used as a key in context when passing in a provider
 	ProviderParamKey key = iota
@@ -31,14 +33,23 @@ const (
 // Session can/should be set by applications using gothic. The default is a cookie store.
 var (
 	SessionStore *session.Store
+	encrypter    func(string) (string, error)
+	decrypter    func(string) (string, error)
 )
 
 // MUST be called before using the package
-func Init(sessionSettings config.RedisSettings) {
+func Init(sessionSettings config.SessionSettings) {
 	config := session.Config{
-		Storage:      store.NewRedisClient(sessionSettings),
-		KeyLookup:    fmt.Sprintf("header:%s", SessionName),
-		KeyGenerator: func() string { return SessionName },
+		Storage:   store.NewRedisClient(sessionSettings.Redis),
+		KeyLookup: fmt.Sprintf("header:%s", SessionName),
+	}
+
+	encrypter = func(s string) (string, error) {
+		return crypt.Encrypt(s, sessionSettings.PassPhrase.Expose())
+	}
+
+	decrypter = func(s string) (string, error) {
+		return crypt.Decrypt(s, sessionSettings.PassPhrase.Expose())
 	}
 
 	SessionStore = session.New(config)
@@ -46,8 +57,9 @@ func Init(sessionSettings config.RedisSettings) {
 
 /*
 BeginAuthHandler is a convenience handler for starting the authentication process.
-It expects to be able to get the name of the provider from the query parameters
-as either "provider" or ":provider".
+
+It expects to be able to get the name of the provider from the path parameter
+":provider" or as set by SetProvider.
 
 BeginAuthHandler will redirect the user to the appropriate authentication end-point
 for the requested provider.
@@ -280,6 +292,7 @@ func SetProvider(c *fiber.Ctx, provider string) {
 func StoreInSession(key string, value string, c *fiber.Ctx) error {
 	session, err := SessionStore.Get(c)
 	if err != nil {
+		slog.Info("error getting session", "error", err)
 		return err
 	}
 
@@ -323,7 +336,7 @@ func getSessionValue(store *session.Session, key string) (string, error) {
 		return "", err
 	}
 
-	return string(s), nil
+	return decrypter(string(s))
 }
 
 func updateSessionValue(session *session.Session, key, value string) error {
@@ -339,7 +352,12 @@ func updateSessionValue(session *session.Session, key, value string) error {
 		return err
 	}
 
-	session.Set(key, b.String())
+	encrypted, err := encrypter(b.String())
+	if err != nil {
+		return err
+	}
+
+	session.Set(key, encrypted)
 
 	return nil
 }

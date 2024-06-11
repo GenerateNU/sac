@@ -67,7 +67,7 @@ func main() {
 	startBackgroundJobs(ctx, db)
 
 	stores := store.ConfigureStores(config.RedisLimiter)
-	sothic.Init(config.RedisLimiter)
+	sothic.Init(config.Session)
 	integrations := configureIntegrations(&config.Integrations)
 
 	tp := telemetry.InitTracer()
