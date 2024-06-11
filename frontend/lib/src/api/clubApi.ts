@@ -43,7 +43,7 @@ export const clubApi = baseApi.injectEndpoints({
         url: handleQueryParams(`${CLUB_API_BASE_URL}/`, queryParams),
         method: "GET",
       }),
-      providesTags: (result, _, _arg) =>
+      providesTags: (result) =>
         result
           ? result.map((club) => ({ type: "Club", id: club.id }))
           : ["Club"],
@@ -88,7 +88,7 @@ export const clubApi = baseApi.injectEndpoints({
         url: `${CLUB_API_BASE_URL}/${id}/contacts/`,
         method: "GET",
       }),
-      providesTags: (result, _, _arg) =>
+      providesTags: (result) =>
         result
           ? result.map((contact) => ({
               type: "Contact",
@@ -124,7 +124,7 @@ export const clubApi = baseApi.injectEndpoints({
         ),
         method: "GET",
       }),
-      providesTags: (result, _, _arg) =>
+      providesTags: (result) =>
         result
           ? result.map((event) => ({ type: "Event", id: event.id }))
           : ["Event"],
@@ -143,7 +143,7 @@ export const clubApi = baseApi.injectEndpoints({
         ),
         method: "GET",
       }),
-      providesTags: (result, _, _arg) =>
+      providesTags: (result) =>
         result
           ? result.map((follower) => ({
               type: "Follower",
@@ -165,7 +165,7 @@ export const clubApi = baseApi.injectEndpoints({
         ),
         method: "GET",
       }),
-      providesTags: (result, _, _arg) =>
+      providesTags: (result) =>
         result
           ? result.map((member) => ({ type: "User", id: member.id }))
           : ["User"],
@@ -200,7 +200,7 @@ export const clubApi = baseApi.injectEndpoints({
         url: `${CLUB_API_BASE_URL}/${id}/pocs/`,
         method: "GET",
       }),
-      providesTags: (result, _, _arg) =>
+      providesTags: (result) =>
         result
           ? result.map((poc) => ({
               type: "PointOfContact",
@@ -294,7 +294,7 @@ export const clubApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: (result, _, _arg) =>
+      invalidatesTags: (result) =>
         result ? result.map((tag) => ({ type: "Tag", id: tag.id })) : ["Tag"],
       transformResponse: (response) => {
         return z.array(tagSchema).parse(response);
@@ -305,7 +305,7 @@ export const clubApi = baseApi.injectEndpoints({
         url: `${CLUB_API_BASE_URL}/${id}/tags/`,
         method: "GET",
       }),
-      providesTags: (result, _, _arg) =>
+      providesTags: (result) =>
         result ? result.map((tag) => ({ type: "Tag", id: tag.id })) : ["Tag"],
       transformResponse: (response) => {
         return z.array(tagSchema).parse(response);
