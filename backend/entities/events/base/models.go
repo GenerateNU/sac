@@ -19,3 +19,7 @@ type EventPreview struct {
 	StartTime time.Time `json:"start_time"`
 	EndTime   time.Time `json:"end_time"`
 }
+
+func (ep EventPreview) TableName() string {
+	return "events"
+}
