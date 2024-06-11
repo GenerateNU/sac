@@ -1,6 +1,6 @@
 import {BubbleMenu} from '@tiptap/react';
 import { Editor } from '@tiptap/react'
-import { Bold, Heading1, Heading2, Italic, ListIcon, ListOrdered, UnderlineIcon } from 'lucide-react';
+import { Bold, Heading1, Heading2, Italic, ListIcon } from 'lucide-react';
 
 interface BubbleMenuProps {
     editor: Editor | null;

@@ -13,7 +13,7 @@ interface ToolbarProps {
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
-    const [json, setJSON] = useState("")
+    const [, setJSON] = useState("")
     
     if (!editor) {
         return null
