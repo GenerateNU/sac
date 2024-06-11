@@ -20,6 +20,7 @@ func Encrypt(data string, passphrase string) (string, error) {
 	if len(plaintext) > 1028 {
 		return "", fmt.Errorf("plaintext too long")
 	}
+
 	ciphertext := make([]byte, aes.BlockSize+len(plaintext))
 	iv := ciphertext[:aes.BlockSize]
 	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
