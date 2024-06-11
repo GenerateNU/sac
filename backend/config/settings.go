@@ -3,6 +3,7 @@ package config
 type Settings struct {
 	Application  ApplicationSettings
 	Database     DatabaseSettings
+	DBCache      RedisSettings
 	Session      SessionSettings
 	RedisLimiter RedisSettings
 	SuperUser    SuperUserSettings
@@ -21,6 +22,7 @@ type Integrations struct {
 type intermediateSettings struct {
 	Application  ApplicationSettings               `envPrefix:"SAC_APPLICATION_"`
 	Database     intermediateDatabaseSettings      `envPrefix:"SAC_DB_"`
+	DBCache      intermediateRedisSettings         `envPrefix:"SAC_REDIS_DB_CACHE_"`
 	RedisSession intermediateRedisSettings         `envPrefix:"SAC_REDIS_SESSION_"`
 	Session      intermediateSessionSettings       `envPrefix:"SAC_SESSION_"`
 	RedisLimiter intermediateRedisSettings         `envPrefix:"SAC_REDIS_LIMITER_"`
@@ -35,6 +37,11 @@ type intermediateSettings struct {
 
 func (i *intermediateSettings) into() (*Settings, error) {
 	database, err := i.Database.into()
+	if err != nil {
+		return nil, err
+	}
+
+	dbCache, err := i.DBCache.into()
 	if err != nil {
 		return nil, err
 	}
@@ -86,6 +93,7 @@ func (i *intermediateSettings) into() (*Settings, error) {
 
 	return &Settings{
 		Application:  i.Application,
+		DBCache:      *dbCache,
 		Database:     *database,
 		Session:      *session,
 		RedisLimiter: *redisLimiter,

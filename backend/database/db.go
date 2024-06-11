@@ -2,9 +2,11 @@ package database
 
 import (
 	"errors"
+	"time"
 
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/constants"
+	"github.com/GenerateNU/sac/backend/database/cache"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -14,6 +16,15 @@ import (
 func ConfigureDB(settings config.Settings) (*gorm.DB, error) {
 	db, err := EstablishConn(settings.Database.WithDb(), WithLoggerInfo())
 	if err != nil {
+		return nil, err
+	}
+
+	cache := cache.NewGormCache("db_cache", cache.NewRedisClient(settings.DBCache), cache.CacheConfig{
+		TTL:    60 * time.Second,
+		Prefix: "cache:",
+	})
+
+	if err := db.Use(cache); err != nil {
 		return nil, err
 	}
 
