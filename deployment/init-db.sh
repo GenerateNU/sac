@@ -1,0 +1,2 @@
+go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+migrate -path ../backend/migrations/ -database postgres://${SAC_DB_USERNAME}:${SAC_DB_PASSWORD}@${SAC_DB_HOST}:${SAC_DB_PORT}/${SAC_DB_NAME}?sslmode=disable -verbose up
