@@ -17,7 +17,7 @@ func NewEventController(eventService EventServiceInterface) *EventController {
 	return &EventController{eventService: eventService}
 }
 
-// GetAllEvents godoc
+// GetEvents godoc
 //
 // @Summary		Retrieve all events
 // @Description	Retrieves all events
@@ -31,7 +31,7 @@ func NewEventController(eventService EventServiceInterface) *EventController {
 // @Failure     404   {object}      error
 // @Failure     500   {object}      error
 // @Router		/events/  [get]
-func (e *EventController) GetAllEvents(c *fiber.Ctx) error {
+func (e *EventController) GetEvents(c *fiber.Ctx) error {
 	pageInfo, ok := fiberpaginate.FromContext(c)
 	if !ok {
 		return utilities.ErrExpectedPageInfo
@@ -42,22 +42,11 @@ func (e *EventController) GetAllEvents(c *fiber.Ctx) error {
 		pageInfo = nil
 	}
 
-	start := c.Query("start")
-	end := c.Query("end")
-
-	if c.QueryBool("preview", false) {
-		events, err := e.eventService.GetEventsPreview(*pageInfo, start, end)
-		if err != nil {
-			return err
-		}
-		return c.Status(http.StatusOK).JSON(events)
-	} else {
-		events, err := e.eventService.GetEvents(*pageInfo, start, end)
-		if err != nil {
-			return err
-		}
-		return c.Status(http.StatusOK).JSON(events)
+	events, err := e.eventService.GetEvents(*pageInfo, c.Query("start"), c.Query("end"))
+	if err != nil {
+		return err
 	}
+	return c.Status(http.StatusOK).JSON(events)
 }
 
 // GetEvent godoc

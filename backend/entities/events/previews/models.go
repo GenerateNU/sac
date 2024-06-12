@@ -1,4 +1,4 @@
-package base
+package previews
 
 import (
 	"time"
