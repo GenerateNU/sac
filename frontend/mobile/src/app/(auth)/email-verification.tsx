@@ -15,9 +15,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 
+import { Box, Colors, Spacing, Text } from '../(design-system)';
 import EmailVerificationForm from './components/email-verification';
 import { SmallText } from './components/small-text';
-import { Box, Colors, Spacing, Text } from '../(design-system)';
 
 const EmailVerification: React.FC = () => {
     const email = 'email@northeastern.edu';

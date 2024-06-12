@@ -10,7 +10,7 @@ import { Box, Text } from '../../(design-system)';
 import { MultiSelect, SelectOne } from '../../(design-system)';
 import { Button } from '../../(design-system)/components/Button/Button';
 import { TextBox } from '../../(design-system)/components/Textbox/Textbox';
-import { COLLEGE, graduationYear, MAJORS } from '../../../consts/user-info';
+import { COLLEGE, MAJORS, graduationYear } from '../../../consts/user-info';
 
 type UserInfoData = {
     major: Item[];

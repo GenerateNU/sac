@@ -2,9 +2,6 @@ import React from 'react';
 
 import { Stack } from 'expo-router';
 
-import { Arrow } from '../(design-system)';
-import { Text } from '../(design-system)';
-
 const Layout = () => {
     return (
         <Stack>

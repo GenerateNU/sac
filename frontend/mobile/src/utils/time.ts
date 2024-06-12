@@ -15,7 +15,7 @@ export const calculateDuration = (start: string, end: string) => {
 // format time from Date type
 export const formatTime = (timeString: string): FormattedTime => {
     const time = new Date(timeString);
-    
+
     const daysOfWeek = [
         'Sunday',
         'Monday',
@@ -63,7 +63,6 @@ export const formatTime = (timeString: string): FormattedTime => {
         minute: minutes
     };
 };
-
 
 // return true if an event is happening now
 export const happeningNow = (startTime: string, endTime: string) => {

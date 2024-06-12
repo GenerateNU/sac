@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { router } from 'expo-router';
@@ -70,9 +70,11 @@ const ProfilePage = () => {
                         icon={faUser}
                         text="Edit Profile"
                     />
-                    <ProfileItem icon={faHeart} 
-                    onPress={() => router.push('/user/interests/1')}
-                    text="Edit Interests" />
+                    <ProfileItem
+                        icon={faHeart}
+                        onPress={() => router.push('/user/interests/1')}
+                        text="Edit Interests"
+                    />
                     <Box
                         width="100%"
                         height={1}

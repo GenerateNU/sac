@@ -10,9 +10,10 @@ import { router } from 'expo-router';
 import { faUserLock } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 
+import { Box, Text } from '../(design-system)';
 import { ForgotPasswordForm } from './components/forgot-password-form';
 import { SmallText } from './components/small-text';
-import { Box, Text } from '../(design-system)';
+
 export const ForgotPassword = () => {
     return (
         <Box

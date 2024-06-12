@@ -14,10 +14,10 @@ import {
     faUserPlus
 } from '@fortawesome/free-solid-svg-icons';
 
-import { Screen, ScreenProps } from './components/splash-screen';
-import { Wordmark } from './components/wordmark';
 import { Box, Text } from '../(design-system)';
 import { Button } from '../(design-system)';
+import { Screen, ScreenProps } from './components/splash-screen';
+import { Wordmark } from './components/wordmark';
 
 const WelcomePage = () => {
     const [screen, setScreen] = useState(0);

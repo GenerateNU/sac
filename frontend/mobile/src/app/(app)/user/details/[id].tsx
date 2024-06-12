@@ -12,9 +12,15 @@ import { MultiSelect, SelectOne } from '@/src/app/(design-system)';
 import { Text } from '@/src/app/(design-system)';
 import { Arrow } from '@/src/app/(design-system)';
 import { TextBox } from '@/src/app/(design-system)/components/Textbox/Textbox';
-import { COLLEGE, graduationYear, MAJORS, GRADUATION_CYCLE } from '@/src/consts/user-info';
+import {
+    COLLEGE,
+    GRADUATION_CYCLE,
+    MAJORS,
+    graduationYear
+} from '@/src/consts/user-info';
 import { UserInfoData } from '@/src/types/userInfo';
 import { convertUserData } from '@/src/utils/userInfo';
+
 import { Save } from '../components/save';
 
 const mockUserData = {
@@ -26,8 +32,8 @@ const mockUserData = {
     startYear: 2023,
     graduationYear: null,
     graduationCycle: null,
-    email: 'doe.j@northeastern.edu',
-}
+    email: 'doe.j@northeastern.edu'
+};
 
 const UserDetails = () => {
     const defaultValues: Partial<UserInfoData> = convertUserData(mockUserData);
@@ -39,7 +45,7 @@ const UserDetails = () => {
         formState: { errors, isDirty }
     } = useForm<UserInfoData>({
         mode: 'onTouched',
-        defaultValues,
+        defaultValues
     });
 
     const onSubmit = (data: UserInfoData) => {
@@ -66,7 +72,7 @@ const UserDetails = () => {
                     ),
                     headerTransparent: true,
                     headerShown: true,
-                    headerLeft: () => <Arrow color="black"></Arrow>,
+                    headerLeft: () => <Arrow color="black" />,
                     headerRight: () => (
                         <Save
                             onPress={handleSubmit(onSubmit)}
@@ -101,9 +107,7 @@ const UserDetails = () => {
                                     }}
                                     value={value}
                                     error={
-                                        errors.name
-                                            ? errors.name.message
-                                            : ''
+                                        errors.name ? errors.name.message : ''
                                     }
                                     placeholder="Enter your full name"
                                     title="Full Name"
@@ -121,9 +125,7 @@ const UserDetails = () => {
                                         trigger('email');
                                     }}
                                     error={
-                                        errors.email
-                                            ? errors.email.message
-                                            : ''
+                                        errors.email ? errors.email.message : ''
                                     }
                                     value={value}
                                     title="Email"

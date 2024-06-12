@@ -7,9 +7,9 @@ import {
 
 import { router } from 'expo-router';
 
+import { Box, Text } from '../(design-system)';
 import { LoginForm } from './components/login-form';
 import { SmallText } from './components/small-text';
-import { Box, Text } from '../(design-system)';
 
 const Login = () => {
     return (

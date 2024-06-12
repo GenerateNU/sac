@@ -33,7 +33,10 @@ export const graduationYear = () => {
 export const MAJORS: Item[] = [
     { key: 'africanaStudies', value: 'Africana Studies' },
     { key: 'americanSignLanguage', value: 'American Sign Language' },
-    { key: 'americanSignLanguage-EnglishInterpreting', value: 'American Sign Language-English Interpreting' },
+    {
+        key: 'americanSignLanguage-EnglishInterpreting',
+        value: 'American Sign Language-English Interpreting'
+    },
     { key: 'appliedPhysics', value: 'Applied Physics' },
     { key: 'architecturalStudies', value: 'Architectural Studies' },
     { key: 'architecture', value: 'Architecture' },
@@ -44,22 +47,70 @@ export const MAJORS: Item[] = [
     { key: 'biology', value: 'Biology' },
     { key: 'biomedicalPhysics', value: 'Biomedical Physics' },
     { key: 'businessAdministration', value: 'Business Administration' },
-    { key: 'businessAdministration:Accounting', value: 'Business Administration: Accounting' },
-    { key: 'businessAdministration:AccountingAndAdvisoryServices', value: 'Business Administration: Accounting and Advisory Services' },
-    { key: 'businessAdministration:BrandManagement', value: 'Business Administration: Brand Management' },
-    { key: 'businessAdministration:BusinessAnalytics', value: 'Business Administration: Business Analytics' },
-    { key: 'businessAdministration:CorporateInnovation', value: 'Business Administration: Corporate Innovation' },
-    { key: 'businessAdministration:EntrepreneurialStartups', value: 'Business Administration: Entrepreneurial Startups' },
-    { key: 'businessAdministration:FamilyBusiness', value: 'Business Administration: Family Business' },
-    { key: 'businessAdministration:Finance', value: 'Business Administration: Finance' },
-    { key: 'businessAdministration:Fintech', value: 'Business Administration: Fintech' },
-    { key: 'businessAdministration:HealthcareManagementAndConsulting', value: 'Business Administration: Healthcare Management and Consulting' },
-    { key: 'businessAdministration:Management', value: 'Business Administration: Management' },
-    { key: 'businessAdministration:ManagementInformationSystems', value: 'Business Administration: Management Information Systems' },
-    { key: 'businessAdministration:Marketing', value: 'Business Administration: Marketing' },
-    { key: 'businessAdministration:MarketingAnalytics', value: 'Business Administration: Marketing Analytics' },
-    { key: 'businessAdministration:SocialInnovationAndEntrepreneurship', value: 'Business Administration: Social Innovation and Entrepreneurship' },
-    { key: 'businessAdministration:SupplyChainManagement', value: 'Business Administration: Supply Chain Management' },
+    {
+        key: 'businessAdministration:Accounting',
+        value: 'Business Administration: Accounting'
+    },
+    {
+        key: 'businessAdministration:AccountingAndAdvisoryServices',
+        value: 'Business Administration: Accounting and Advisory Services'
+    },
+    {
+        key: 'businessAdministration:BrandManagement',
+        value: 'Business Administration: Brand Management'
+    },
+    {
+        key: 'businessAdministration:BusinessAnalytics',
+        value: 'Business Administration: Business Analytics'
+    },
+    {
+        key: 'businessAdministration:CorporateInnovation',
+        value: 'Business Administration: Corporate Innovation'
+    },
+    {
+        key: 'businessAdministration:EntrepreneurialStartups',
+        value: 'Business Administration: Entrepreneurial Startups'
+    },
+    {
+        key: 'businessAdministration:FamilyBusiness',
+        value: 'Business Administration: Family Business'
+    },
+    {
+        key: 'businessAdministration:Finance',
+        value: 'Business Administration: Finance'
+    },
+    {
+        key: 'businessAdministration:Fintech',
+        value: 'Business Administration: Fintech'
+    },
+    {
+        key: 'businessAdministration:HealthcareManagementAndConsulting',
+        value: 'Business Administration: Healthcare Management and Consulting'
+    },
+    {
+        key: 'businessAdministration:Management',
+        value: 'Business Administration: Management'
+    },
+    {
+        key: 'businessAdministration:ManagementInformationSystems',
+        value: 'Business Administration: Management Information Systems'
+    },
+    {
+        key: 'businessAdministration:Marketing',
+        value: 'Business Administration: Marketing'
+    },
+    {
+        key: 'businessAdministration:MarketingAnalytics',
+        value: 'Business Administration: Marketing Analytics'
+    },
+    {
+        key: 'businessAdministration:SocialInnovationAndEntrepreneurship',
+        value: 'Business Administration: Social Innovation and Entrepreneurship'
+    },
+    {
+        key: 'businessAdministration:SupplyChainManagement',
+        value: 'Business Administration: Supply Chain Management'
+    },
     { key: 'cellAndMolecularBiology', value: 'Cell and Molecular Biology' },
     { key: 'chemicalEngineering', value: 'Chemical Engineering' },
     { key: 'chemistry', value: 'Chemistry' },
@@ -68,7 +119,10 @@ export const MAJORS: Item[] = [
     { key: 'computerEngineering', value: 'Computer Engineering' },
     { key: 'computerScience', value: 'Computer Science' },
     { key: 'computingAndLaw', value: 'Computing and Law' },
-    { key: 'criminologyAndCriminalJustice', value: 'Criminology and Criminal Justice' },
+    {
+        key: 'criminologyAndCriminalJustice',
+        value: 'Criminology and Criminal Justice'
+    },
     { key: 'culturalAnthropology', value: 'Cultural Anthropology' },
     { key: 'cybersecurity', value: 'Cybersecurity' },
     { key: 'dataScience', value: 'Data Science' },
@@ -76,7 +130,10 @@ export const MAJORS: Item[] = [
     { key: 'economics', value: 'Economics' },
     { key: 'electricalEngineering', value: 'Electrical Engineering' },
     { key: 'english', value: 'English' },
-    { key: 'environmentalAndSustainabilityStudies', value: 'Environmental and Sustainability Studies' },
+    {
+        key: 'environmentalAndSustainabilityStudies',
+        value: 'Environmental and Sustainability Studies'
+    },
     { key: 'environmentalEngineering', value: 'Environmental Engineering' },
     { key: 'environmentalScience', value: 'Environmental Science' },
     { key: 'environmentalStudies', value: 'Environmental Studies' },
@@ -90,22 +147,70 @@ export const MAJORS: Item[] = [
     { key: 'industrialEngineering', value: 'Industrial Engineering' },
     { key: 'internationalAffairs', value: 'International Affairs' },
     { key: 'internationalBusiness', value: 'International Business' },
-    { key: 'internationalBusiness:Accounting', value: 'International Business: Accounting' },
-    { key: 'internationalBusiness:AccountingAndAdvisoryServices', value: 'International Business: Accounting and Advisory Services' },
-    { key: 'internationalBusiness:BrandManagement', value: 'International Business: Brand Management' },
-    { key: 'internationalBusiness:BusinessAnalytics', value: 'International Business: Business Analytics' },
-    { key: 'internationalBusiness:CorporateInnovation', value: 'International Business: Corporate Innovation' },
-    { key: 'internationalBusiness:EntrepreneurialStartups', value: 'International Business: Entrepreneurial Startups' },
-    { key: 'internationalBusiness:FamilyBusiness', value: 'International Business: Family Business' },
-    { key: 'internationalBusiness:Finance', value: 'International Business: Finance' },
-    { key: 'internationalBusiness:Fintech', value: 'International Business: Fintech' },
-    { key: 'internationalBusiness:HealthcareManagementAndConsulting', value: 'International Business: Healthcare Management and Consulting' },
-    { key: 'internationalBusiness:Management', value: 'International Business: Management' },
-    { key: 'internationalBusiness:ManagementInformationSystems', value: 'International Business: Management Information Systems' },
-    { key: 'internationalBusiness:Marketing', value: 'International Business: Marketing' },
-    { key: 'internationalBusiness:MarketingAnalytics', value: 'International Business: Marketing Analytics' },
-    { key: 'internationalBusiness:SocialInnovationAndEntrepreneurship', value: 'International Business: Social Innovation and Entrepreneurship' },
-    { key: 'internationalBusiness:SupplyChainManagement', value: 'International Business: Supply Chain Management' },
+    {
+        key: 'internationalBusiness:Accounting',
+        value: 'International Business: Accounting'
+    },
+    {
+        key: 'internationalBusiness:AccountingAndAdvisoryServices',
+        value: 'International Business: Accounting and Advisory Services'
+    },
+    {
+        key: 'internationalBusiness:BrandManagement',
+        value: 'International Business: Brand Management'
+    },
+    {
+        key: 'internationalBusiness:BusinessAnalytics',
+        value: 'International Business: Business Analytics'
+    },
+    {
+        key: 'internationalBusiness:CorporateInnovation',
+        value: 'International Business: Corporate Innovation'
+    },
+    {
+        key: 'internationalBusiness:EntrepreneurialStartups',
+        value: 'International Business: Entrepreneurial Startups'
+    },
+    {
+        key: 'internationalBusiness:FamilyBusiness',
+        value: 'International Business: Family Business'
+    },
+    {
+        key: 'internationalBusiness:Finance',
+        value: 'International Business: Finance'
+    },
+    {
+        key: 'internationalBusiness:Fintech',
+        value: 'International Business: Fintech'
+    },
+    {
+        key: 'internationalBusiness:HealthcareManagementAndConsulting',
+        value: 'International Business: Healthcare Management and Consulting'
+    },
+    {
+        key: 'internationalBusiness:Management',
+        value: 'International Business: Management'
+    },
+    {
+        key: 'internationalBusiness:ManagementInformationSystems',
+        value: 'International Business: Management Information Systems'
+    },
+    {
+        key: 'internationalBusiness:Marketing',
+        value: 'International Business: Marketing'
+    },
+    {
+        key: 'internationalBusiness:MarketingAnalytics',
+        value: 'International Business: Marketing Analytics'
+    },
+    {
+        key: 'internationalBusiness:SocialInnovationAndEntrepreneurship',
+        value: 'International Business: Social Innovation and Entrepreneurship'
+    },
+    {
+        key: 'internationalBusiness:SupplyChainManagement',
+        value: 'International Business: Supply Chain Management'
+    },
     { key: 'journalism', value: 'Journalism' },
     { key: 'landscapeArchitecture', value: 'Landscape Architecture' },
     { key: 'linguistics', value: 'Linguistics' },
@@ -122,13 +227,19 @@ export const MAJORS: Item[] = [
     { key: 'philosophy', value: 'Philosophy' },
     { key: 'physics', value: 'Physics' },
     { key: 'politicalScience', value: 'Political Science' },
-    { key: 'politicsPhilosophyEconomics', value: 'Politics, Philosophy, and Economics' },
+    {
+        key: 'politicsPhilosophyEconomics',
+        value: 'Politics, Philosophy, and Economics'
+    },
     { key: 'psychology', value: 'Psychology' },
     { key: 'publicHealth', value: 'Public Health' },
     { key: 'publicRelations', value: 'Public Relations' },
     { key: 'religiousStudies', value: 'Religious Studies' },
     { key: 'sociology', value: 'Sociology' },
     { key: 'spanish', value: 'Spanish' },
-    { key: 'speechLanguagePathologyAndAudiology', value: 'Speech Language Pathology and Audiology' },
+    {
+        key: 'speechLanguagePathologyAndAudiology',
+        value: 'Speech Language Pathology and Audiology'
+    },
     { key: 'theatre', value: 'Theatre' }
 ];

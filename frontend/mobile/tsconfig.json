@@ -24,6 +24,14 @@
         "**/*.tsx",
         ".expo/types/**/*.ts",
         "expo-env.d.ts",
-        "../lib/src/store/globalSlice.ts"
-, "../old_mobile/forms/_layout.tsx", "../old_mobile/forms/email-verification.tsx", "../old_mobile/forms/forgot-password.tsx", "../old_mobile/forms/index.tsx", "../old_mobile/forms/login.tsx", "../old_mobile/forms/reset-password.tsx", "../old_mobile/forms/signup.tsx", "../old_mobile/forms/user-details.tsx"    ]
+        "../lib/src/store/globalSlice.ts",
+        "../old_mobile/forms/_layout.tsx",
+        "../old_mobile/forms/email-verification.tsx",
+        "../old_mobile/forms/forgot-password.tsx",
+        "../old_mobile/forms/index.tsx",
+        "../old_mobile/forms/login.tsx",
+        "../old_mobile/forms/reset-password.tsx",
+        "../old_mobile/forms/signup.tsx",
+        "../old_mobile/forms/user-details.tsx"
+    ]
 }
