@@ -1,6 +1,7 @@
 package tags
 
 import (
+	"github.com/GenerateNU/sac/backend/database/cache"
 	"github.com/GenerateNU/sac/backend/entities/clubs"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/entities/tags"
@@ -24,8 +25,9 @@ func CreateClubTags(db *gorm.DB, id uuid.UUID, tags []models.Tag) ([]models.Tag,
 }
 
 func GetClubTags(db *gorm.DB, id uuid.UUID) ([]models.Tag, error) {
-	var tags []models.Tag
+	db = cache.SetUseCache(db, true)
 
+	var tags []models.Tag
 	club, err := clubs.GetClub(db, id, transactions.PreloadTag())
 	if err != nil {
 		return nil, err

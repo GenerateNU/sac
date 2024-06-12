@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { rootModelSchema } from "./root";
+import { tagSchema } from "./tag";
 
 /**
  * TODO: Re-Write After BE Fixes
@@ -35,7 +36,7 @@ const updateEventRequestBodySchema = z.object({
 const eventSchemaIntermediate = z.object({
   name: z.string().max(255),
   preview: z.string().max(255),
-  description: z.string().max(255),
+  description: z.string(),
   start_time: z.string(),
   end_time: z.string(),
   location: z.string().max(255),
@@ -48,7 +49,23 @@ const eventSchemaIntermediate = z.object({
   host: z.string().uuid(),
 });
 
+const eventPreviewSchemaIntermediate = z.object({
+  id: z.string().uuid(),
+  name: z.string().max(255),
+  event_type: eventTypeEnum,
+  location: z.string().max(255),
+  link: z.string().max(255).optional(),
+
+  start_time: z.string(),
+  end_time: z.string(),
+
+  tags: tagSchema.array(),
+  host_name: z.string().max(255),
+  host_logo: z.string().max(255).optional(),
+});
+
 export const eventSchema = eventSchemaIntermediate.merge(rootModelSchema);
+export const eventPreviewSchema = eventPreviewSchemaIntermediate
 
 // Types:
 export type CreateEventRequestBody = z.infer<
@@ -58,3 +75,4 @@ export type UpdateEventRequestBody = z.infer<
   typeof updateEventRequestBodySchema
 >;
 export type Event = z.infer<typeof eventSchema>;
+export type EventPreview = z.infer<typeof eventPreviewSchema>;

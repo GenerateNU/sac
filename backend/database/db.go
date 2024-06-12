@@ -18,12 +18,15 @@ func ConfigureDB(settings config.Settings) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	cache := cache.NewGormCache("db_cache", cache.NewRedisClient(settings.DBCache), cache.CacheConfig{
-		TTL:    constants.DB_CACHE_TTL,
-		Prefix: "cache:",
-	})
+	cachePlugin := &cache.Caches{
+		Conf: &cache.Config{
+			Easer:  true,
+			Cacher: cache.NewRedisCacher(settings.DBCache),
+			TTL:    constants.DB_CACHE_TTL,
+		},
+	}
 
-	if err := db.Use(cache); err != nil {
+	if err := db.Use(cachePlugin); err != nil {
 		return nil, err
 	}
 

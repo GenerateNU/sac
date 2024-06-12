@@ -34,7 +34,7 @@ const CalendarPage = () => {
     const [error, setError] = useState(false);
     const oldEvents = useRef<EventSection[]>([]);
     const recentRefresh = useRef<string>();
-    const [getEvents] = eventApi.useLazyEventsQuery({});
+    const [getEvents] = eventApi.useLazyEventsPreviewQuery({});
 
     const emptyDatePlaceholder = new Array(BATCH_SIZE_HALF).fill({});
 
@@ -58,6 +58,7 @@ const CalendarPage = () => {
                         setError(false);
                     }
 
+                    console.log(data);
                     return parseData(startTime, endTime, data);
                 }
             );

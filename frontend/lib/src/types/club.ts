@@ -33,7 +33,7 @@ export const createClubTagsRequestBodySchema = z.object({
 const clubSchemaIntermediate = z.object({
   name: z.string().max(255),
   preview: z.string().max(255),
-  description: z.string().max(255),
+  description: z.string(),
   num_members: z.number(),
   is_recruiting: z.boolean(),
   application_link: z.string().max(255),

@@ -1,3 +1,3 @@
 # Cache Acknowledgement
 
-## Forked code from @evangwt's [grc package](https://github.com/evangwt/grc) to fit into our internal project structure
+## Forked code from @go-gorm's [caches package](https://github.com/go-gorm/caches/tree/master) to fit into our internal project structure
