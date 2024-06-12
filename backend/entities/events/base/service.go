@@ -2,11 +2,9 @@ package base
 
 import (
 	"errors"
-	"time"
 
 	"github.com/GenerateNU/sac/backend/entities/events"
 	"github.com/GenerateNU/sac/backend/entities/models"
-	"gorm.io/gorm"
 
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
@@ -16,7 +14,6 @@ import (
 type EventServiceInterface interface {
 	// getters
 	GetEvents(pageInfo fiberpaginate.PageInfo, start string, end string) ([]models.Event, error)
-	GetEventsPreview(pageInfo fiberpaginate.PageInfo, start string, end string) ([]EventPreview, error)
 	GetEvent(eventID string) (*models.Event, error)
 	// event cud
 	CreateEvent(body events.CreateEventRequestBody) (*models.Event, error)
@@ -33,11 +30,25 @@ func NewEventService(serviceParams types.ServiceParams) EventServiceInterface {
 }
 
 func (e *EventService) GetEvents(pageInfo fiberpaginate.PageInfo, start string, end string) ([]models.Event, error) {
-	return serviceGetEvents(e.DB, pageInfo, start, end, GetEvents, GetEventsByTime)
-}
+	if start == "" || end == "" {
+		return events.GetEvents(e.DB, pageInfo)
+	}
 
-func (e *EventService) GetEventsPreview(pageInfo fiberpaginate.PageInfo, start string, end string) ([]EventPreview, error) {
-	return serviceGetEvents(e.DB, pageInfo, start, end, GetEventsPreview, GetEventsPreviewByTime)
+	startTime, err := utilities.ParseTime(start, utilities.YYYY_dash_MM_dash_DD)
+	if err != nil {
+		return nil, utilities.BadRequest(err)
+	}
+
+	endTime, err := utilities.ParseTime(end, utilities.YYYY_dash_MM_dash_DD)
+	if err != nil {
+		return nil, utilities.BadRequest(err)
+	}
+
+	if startTime.After(*endTime) {
+		return nil, utilities.BadRequest(errors.New("start time must be before end time"))
+	}
+
+	return GetEventsByTime(e.DB, pageInfo, *startTime, *endTime)
 }
 
 func (e *EventService) GetEvent(eventID string) (*models.Event, error) {
@@ -82,26 +93,4 @@ func (e *EventService) DeleteEvent(eventID string) error {
 	}
 
 	return DeleteEvent(e.DB, *idAsUUID)
-}
-
-func serviceGetEvents[E any](db *gorm.DB, pageInfo fiberpaginate.PageInfo, start string, end string, getEFunc func(*gorm.DB, fiberpaginate.PageInfo) ([]E, error), getEByTimeFunc func(*gorm.DB, fiberpaginate.PageInfo, time.Time, time.Time) ([]E, error)) ([]E, error) {
-	if start == "" || end == "" {
-		return getEFunc(db, pageInfo)
-	}
-
-	startTime, err := utilities.ParseTime(start, utilities.YYYY_dash_MM_dash_DD)
-	if err != nil {
-		return nil, utilities.BadRequest(err)
-	}
-
-	endTime, err := utilities.ParseTime(end, utilities.YYYY_dash_MM_dash_DD)
-	if err != nil {
-		return nil, utilities.BadRequest(err)
-	}
-
-	if startTime.After(*endTime) {
-		return nil, utilities.BadRequest(errors.New("start time must be before end time"))
-	}
-
-	return getEByTimeFunc(db, pageInfo, *startTime, *endTime)
 }
