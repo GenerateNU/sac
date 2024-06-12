@@ -16,8 +16,17 @@ import (
 func GetEvents(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Event, error) {
 	var events []models.Event
 
+	if err := db.Scopes(utilities.IntoScope(pageInfo, db)).Find(&events).Error; err != nil {
+		return nil, err
+	}
+
+	return events, nil
+}
+
+func GetEvent(db *gorm.DB, eventID uuid.UUID, preloads ...transactions.OptionalQuery) (*models.Event, error) {
 	db = cache.SetUseCache(db, true)
 
+	var event models.Event
 	if err := db.Scopes(utilities.IntoScope(pageInfo, db)).Find(&events).Error; err != nil {
 		return nil, err
 	}

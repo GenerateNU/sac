@@ -62,7 +62,11 @@ export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
                             source={{ uri: image }}
                         />
                         <Box flex={2.5} flexDirection="column" gap="xxs">
-                            <Text variant="body-1">{event}</Text>
+                            <Text variant="body-1">
+                                {event.length >= 28
+                                    ? `${event.slice(0, 28).trim()}...`
+                                    : event}
+                            </Text>
                             <Box {...styles.cardContentContainer}>
                                 <Text variant="caption-1" color="darkGray">
                                     {`${eventTime(
@@ -78,7 +82,9 @@ export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
                                         source={{ uri: logo }}
                                     />
                                     <Text color="darkGray" variant="caption-1">
-                                        {club}
+                                        {club.length >= 16
+                                            ? `${club.slice(0, 16).trim()}...`
+                                            : club}
                                     </Text>
                                 </Box>
                             </Box>
