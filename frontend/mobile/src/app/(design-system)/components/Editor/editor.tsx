@@ -13,7 +13,7 @@ import {
     useEditorContent
 } from '@10play/tentap-editor';
 
-import { JsonContent, parseJsonToHtml } from '../../../../utils/jsonToHTML';
+import { JsonContent, parseJsonToHtml } from '@/src/utils/jsonToHTML';
 import { Inter } from './font';
 import { Toolbar } from './toolbar';
 import { CUSTOM_TOOLBAR } from './tools';
