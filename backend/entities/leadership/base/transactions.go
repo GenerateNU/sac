@@ -12,7 +12,7 @@ import (
 )
 
 func GetLeadership(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Leader, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	var leadership []models.Leader
 	result := db.Preload("PhotoFile").Scopes(utilities.IntoScope(pageInfo, db)).Find(&leadership)
@@ -27,7 +27,7 @@ func GetLeadership(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Leade
 }
 
 func GetLeader(db *gorm.DB, id uuid.UUID) (*models.Leader, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	var leader models.Leader
 	if err := db.Preload("PhotoFile").First(&leader, id).Error; err != nil {

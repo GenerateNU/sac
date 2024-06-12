@@ -15,7 +15,7 @@ import (
 )
 
 func GetUsers(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.User, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	var users []models.User
 	if err := db.Scopes(utilities.IntoScope(pageInfo, db)).Find(&users).Error; err != nil {

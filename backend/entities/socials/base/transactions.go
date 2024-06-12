@@ -12,7 +12,7 @@ import (
 )
 
 func GetSocials(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Social, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	var socials []models.Social
 	if err := db.Scopes(utilities.IntoScope(pageInfo, db)).Find(&socials).Error; err != nil {
@@ -23,7 +23,7 @@ func GetSocials(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Social, 
 }
 
 func GetSocial(db *gorm.DB, id uuid.UUID) (*models.Social, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	var social models.Social
 	if err := db.First(&social, id).Error; err != nil {

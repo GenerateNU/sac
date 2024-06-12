@@ -26,7 +26,7 @@ func CreateCategory(db *gorm.DB, category models.Category) (*models.Category, er
 }
 
 func GetCategories(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Category, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	var categories []models.Category
 	if err := db.Scopes(utilities.IntoScope(pageInfo, db)).Find(&categories).Error; err != nil {
@@ -37,7 +37,7 @@ func GetCategories(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Categ
 }
 
 func GetCategory(db *gorm.DB, id uuid.UUID) (*models.Category, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	var category models.Category
 	if err := db.First(&category, id).Error; err != nil {

@@ -15,7 +15,7 @@ import (
 func GetUser(db *gorm.DB, id uuid.UUID, preloads ...transactions.OptionalQuery) (*models.User, error) {
 	var user models.User
 
-	query := cache.SetCache(db, true)
+	query := cache.SetUseCache(db, true)
 
 	for _, preload := range preloads {
 		query = preload(query)
@@ -32,7 +32,7 @@ func GetUser(db *gorm.DB, id uuid.UUID, preloads ...transactions.OptionalQuery) 
 }
 
 func GetUserByEmail(ctx context.Context, db *gorm.DB, email string) (*models.User, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	var user models.User
 	if err := db.WithContext(ctx).Where("email = ?", email).First(&user).Error; err != nil {

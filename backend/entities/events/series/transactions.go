@@ -39,7 +39,7 @@ func CreateEventSeries(db *gorm.DB, seriesID uuid.UUID, events []models.Event) (
 }
 
 func GetEventSeries(db *gorm.DB, seriesID uuid.UUID) ([]models.Event, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	var events []models.Event
 	if err := db.Where("series_id = ?", seriesID).Find(&events).Error; err != nil {

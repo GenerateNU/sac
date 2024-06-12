@@ -27,7 +27,7 @@ func PutClubSocial(db *gorm.DB, social models.Social) (*models.Social, error) {
 }
 
 func GetClubSocials(db *gorm.DB, clubID uuid.UUID) ([]models.Social, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	var club models.Club
 	if err := db.Preload("Social").First(&club, clubID).Error; err != nil {

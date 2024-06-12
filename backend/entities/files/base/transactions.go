@@ -31,7 +31,7 @@ func CreateFile(db *gorm.DB, ownerID uuid.UUID, ownerType string, fileInfo model
 }
 
 func GetFiles(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.File, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	var files []models.File
 	if err := db.Scopes(utilities.IntoScope(pageInfo, db)).Find(&files).Error; err != nil {
@@ -42,7 +42,7 @@ func GetFiles(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.File, erro
 }
 
 func GetFile(db *gorm.DB, fileID uuid.UUID) (*models.File, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	var file models.File
 	if err := db.First(&file, fileID).Error; err != nil {

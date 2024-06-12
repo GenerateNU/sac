@@ -11,7 +11,7 @@ import (
 )
 
 func GetTag(db *gorm.DB, tagID uuid.UUID) (*models.Tag, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	var tag models.Tag
 	if err := db.Where("id = ?", tagID).First(&tag).Error; err != nil {
@@ -25,7 +25,7 @@ func GetTag(db *gorm.DB, tagID uuid.UUID) (*models.Tag, error) {
 }
 
 func GetTagsByIDs(db *gorm.DB, selectedTagIDs []uuid.UUID) ([]models.Tag, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	if len(selectedTagIDs) != 0 {
 		var tags []models.Tag

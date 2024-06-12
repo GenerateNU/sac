@@ -42,7 +42,7 @@ func CreateTag(db *gorm.DB, tag models.Tag) (*models.Tag, error) {
 }
 
 func GetTags(db *gorm.DB) ([]models.Tag, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	var tags []models.Tag
 
@@ -54,7 +54,7 @@ func GetTags(db *gorm.DB) ([]models.Tag, error) {
 }
 
 func GetTagClubs(db *gorm.DB, id uuid.UUID) ([]models.Club, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	tag, err := tags.GetTag(db, id)
 	if err != nil {

@@ -53,7 +53,7 @@ func Search[T types.Searchable](db *gorm.DB, query types.SearchRequest) (*types.
 		ids[i] = result.Id
 	}
 
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	var results []T
 	if err = query.Preload(db).Where("id IN ?", ids).Find(&results).Error; err != nil {
@@ -68,7 +68,7 @@ func Search[T types.Searchable](db *gorm.DB, query types.SearchRequest) (*types.
 func Upsert[T types.Searchable](db *gorm.DB, index string, uuid string, model types.ToSearchDocument) error {
 	var elem T
 
-	query := cache.SetCache(db, true).Model(&elem)
+	query := cache.SetUseCache(db, true).Model(&elem)
 
 	query = elem.Preload(query)
 

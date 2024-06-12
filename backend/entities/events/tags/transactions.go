@@ -26,7 +26,7 @@ func CreateEventTags(db *gorm.DB, id uuid.UUID, tags []models.Tag) ([]models.Tag
 }
 
 func GetEventTags(db *gorm.DB, id uuid.UUID) ([]models.Tag, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	var tags []models.Tag
 	event, err := events.GetEvent(db, id, transactions.PreloadTag())

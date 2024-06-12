@@ -14,7 +14,7 @@ import (
 )
 
 func GetTagsByCategory(db *gorm.DB, categoryID uuid.UUID, pageInfo fiberpaginate.PageInfo) ([]models.Tag, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	var category models.Category
 	if err := db.Where("id = ?", categoryID).First(&category).Error; err != nil {
@@ -34,7 +34,7 @@ func GetTagsByCategory(db *gorm.DB, categoryID uuid.UUID, pageInfo fiberpaginate
 }
 
 func GetTagByCategory(db *gorm.DB, categoryID uuid.UUID, tagID uuid.UUID) (*models.Tag, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	var tag models.Tag
 	if err := db.Where("category_id = ? AND id = ?", categoryID, tagID).First(&tag).Error; err != nil {

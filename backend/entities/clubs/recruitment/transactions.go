@@ -30,7 +30,7 @@ func CreateClubRecruitment(ctx context.Context, db *gorm.DB, clubID *uuid.UUID, 
 }
 
 func GetClubRecruitment(ctx context.Context, db *gorm.DB, clubID *uuid.UUID) (*models.Recruitment, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	club, err := clubs.GetClub(db, *clubID)
 	if err != nil {
@@ -89,7 +89,7 @@ func CreateApplication(ctx context.Context, db *gorm.DB, clubID *uuid.UUID, appl
 }
 
 func GetClubRecruitmentApplications(ctx context.Context, db *gorm.DB, clubID *uuid.UUID, pageInfo fiberpaginate.PageInfo) ([]models.Application, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	recruitment, err := GetClubRecruitment(ctx, db, clubID)
 	if err != nil {
@@ -105,7 +105,7 @@ func GetClubRecruitmentApplications(ctx context.Context, db *gorm.DB, clubID *uu
 }
 
 func GetClubRecruitmentApplication(ctx context.Context, db *gorm.DB, clubID *uuid.UUID, applicationID *uuid.UUID) (*models.Application, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	recruitment, err := GetClubRecruitment(ctx, db, clubID)
 	if err != nil {

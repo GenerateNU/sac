@@ -69,7 +69,7 @@ func CreateClub(db *gorm.DB, userId uuid.UUID, club models.Club) (*models.Club, 
 }
 
 func GetClubs(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Club, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	var clubs []models.Club
 	if err := db.Model(&models.Club{}).Scopes(utilities.IntoScope(pageInfo, db)).Find(&clubs).Error; err != nil {

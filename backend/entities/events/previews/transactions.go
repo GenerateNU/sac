@@ -14,7 +14,7 @@ import (
 )
 
 func GetEventPreivews(db *gorm.DB, pageInfo *fiberpaginate.PageInfo) ([]EventPreview, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	var events []EventStub
 	if err := db.Scopes(utilities.IntoScope(*pageInfo, db)).Find(&events).Error; err != nil {
@@ -25,7 +25,7 @@ func GetEventPreivews(db *gorm.DB, pageInfo *fiberpaginate.PageInfo) ([]EventPre
 }
 
 func GetEventPreviewsByTime(db *gorm.DB, pageInfo *fiberpaginate.PageInfo, startTime *time.Time, endTime *time.Time) ([]EventPreview, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	var events []EventStub
 	query := db.Model(&events)

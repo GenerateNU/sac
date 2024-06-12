@@ -50,7 +50,7 @@ func CreateClubLeader(db *gorm.DB, leader models.Leader, fileIntegrationUpload f
 }
 
 func GetClubLeadership(db *gorm.DB, clubID uuid.UUID) ([]models.Leader, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	var leadership []models.Leader
 	result := db.Preload("PhotoFile").Where("club_id = ?", clubID).Find(&leadership)
@@ -65,7 +65,7 @@ func GetClubLeadership(db *gorm.DB, clubID uuid.UUID) ([]models.Leader, error) {
 }
 
 func GetClubLeader(db *gorm.DB, clubID uuid.UUID, leaderID uuid.UUID) (*models.Leader, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	var leader models.Leader
 	if err := db.Preload("PhotoFile").First(&leader, "id = ? AND club_id = ?", leaderID, clubID).Error; err != nil {
@@ -79,7 +79,7 @@ func GetClubLeader(db *gorm.DB, clubID uuid.UUID, leaderID uuid.UUID) (*models.L
 }
 
 func GetClubLeaderByClubIDAndEmail(db *gorm.DB, clubID uuid.UUID, email string) (*models.Leader, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	var leader models.Leader
 	if err := db.First(&leader, "email = ? AND club_id = ?", email, clubID).Error; err != nil {

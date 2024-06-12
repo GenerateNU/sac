@@ -10,7 +10,7 @@ import (
 )
 
 func GetClubMembership(db *gorm.DB, userID uuid.UUID) ([]models.Club, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	user, err := users.GetUser(db, userID)
 	if err != nil {

@@ -16,7 +16,7 @@ import (
 func GetEvents(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Event, error) {
 	var events []models.Event
 
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	if err := db.Scopes(utilities.IntoScope(pageInfo, db)).Find(&events).Error; err != nil {
 		return nil, err
@@ -26,7 +26,7 @@ func GetEvents(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Event, er
 }
 
 func GetEvent(db *gorm.DB, eventID uuid.UUID, preloads ...transactions.OptionalQuery) (*models.Event, error) {
-	query := cache.SetCache(db, true)
+	query := cache.SetUseCache(db, true)
 
 	for _, preload := range preloads {
 		query = preload(query)
@@ -44,7 +44,7 @@ func GetEvent(db *gorm.DB, eventID uuid.UUID, preloads ...transactions.OptionalQ
 }
 
 func GetEventHostAdminIDs(db *gorm.DB, eventID uuid.UUID) ([]uuid.UUID, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	event, err := GetEvent(db, eventID)
 	if err != nil {
@@ -55,7 +55,7 @@ func GetEventHostAdminIDs(db *gorm.DB, eventID uuid.UUID) ([]uuid.UUID, error) {
 }
 
 func GetFirstEventInSeries(db *gorm.DB, seriesID uuid.UUID) (*models.Event, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	var event models.Event
 	if err := db.Where("series_id = ?", seriesID).First(&event).Error; err != nil {

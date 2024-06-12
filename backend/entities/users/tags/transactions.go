@@ -25,7 +25,7 @@ func CreateUserTags(db *gorm.DB, id uuid.UUID, tags []models.Tag) ([]models.Tag,
 }
 
 func GetUserTags(db *gorm.DB, id uuid.UUID) ([]models.Tag, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	user, err := users.GetUser(db, id)
 	if err != nil {

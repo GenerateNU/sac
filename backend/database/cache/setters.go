@@ -7,13 +7,13 @@ import (
 	"gorm.io/gorm"
 )
 
-// SetCache enables or disables cache based on the value of `useCache`
-func SetCache(db *gorm.DB, useCache bool) *gorm.DB {
+// SetUseCache enables or disables cache based on the value of `useCache`
+func SetUseCache(db *gorm.DB, useCache bool) *gorm.DB {
 	return db.Session(&gorm.Session{Context: setUseCache(useCache)})
 }
 
-// SetCacheTTL sets the cache TTL and ensures caching is enabled
-func SetCacheTTL(db *gorm.DB, ttl time.Duration) *gorm.DB {
+// SetUseCacheTTL sets the cache TTL and ensures caching is enabled
+func SetUseCacheTTL(db *gorm.DB, ttl time.Duration) *gorm.DB {
 	return db.Session(&gorm.Session{Context: context.WithValue(setUseCache(true), cacheTTLKey, ttl)})
 }
 

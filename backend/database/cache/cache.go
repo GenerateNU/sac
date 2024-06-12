@@ -118,7 +118,7 @@ func (g *GormCache) queryCallback(db *gorm.DB) {
 		g.queryDB(db)
 
 		if enableCache {
-			if err = g.setCache(db, key); err != nil {
+			if err = g.SetUseCache(db, key); err != nil {
 				slog.Error("set cache failed", "error", err)
 			}
 		}
@@ -161,7 +161,7 @@ func (g *GormCache) loadCache(db *gorm.DB, key string) (bool, error) {
 	return true, nil
 }
 
-func (g *GormCache) setCache(db *gorm.DB, key string) error {
+func (g *GormCache) SetUseCache(db *gorm.DB, key string) error {
 	ctx := db.Statement.Context
 
 	// get cache ttl from context or config

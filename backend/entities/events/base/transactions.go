@@ -20,13 +20,13 @@ import (
 )
 
 func GetEvents(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Event, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	return events.GetEvents(db, pageInfo)
 }
 
 func GetEventsByTime(db *gorm.DB, pageInfo fiberpaginate.PageInfo, startTime time.Time, endTime time.Time) ([]models.Event, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	var events []models.Event
 	if err := db.Model(&events).Where("start_time >= ? AND end_time <= ?", startTime, endTime).Scopes(utilities.IntoScope(pageInfo, db)).Find(&events).Error; err != nil {

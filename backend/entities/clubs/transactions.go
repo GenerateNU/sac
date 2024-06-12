@@ -12,7 +12,7 @@ import (
 )
 
 func GetClub(db *gorm.DB, id uuid.UUID, preloads ...transactions.OptionalQuery) (*models.Club, error) {
-	query := cache.SetCache(db, true)
+	query := cache.SetUseCache(db, true)
 
 	for _, preload := range preloads {
 		query = preload(query)
@@ -30,7 +30,7 @@ func GetClub(db *gorm.DB, id uuid.UUID, preloads ...transactions.OptionalQuery) 
 }
 
 func GetAdminIDs(db *gorm.DB, clubID uuid.UUID) ([]uuid.UUID, error) {
-	db = cache.SetCache(db, true)
+	db = cache.SetUseCache(db, true)
 
 	var adminIDs []models.Membership
 	if err := db.Where("club_id = ? AND membership_type = ?", clubID, models.MembershipTypeAdmin).Find(&adminIDs).Error; err != nil {
