@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/GenerateNU/sac/backend/constants"
+	"github.com/GenerateNU/sac/backend/database/cache"
 	"github.com/GenerateNU/sac/backend/entities/events"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/garrettladley/fiberpaginate"
@@ -19,12 +20,15 @@ import (
 )
 
 func GetEvents(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Event, error) {
+	db = cache.SetCache(db, true)
+
 	return events.GetEvents(db, pageInfo)
 }
 
 func GetEventsByTime(db *gorm.DB, pageInfo fiberpaginate.PageInfo, startTime time.Time, endTime time.Time) ([]models.Event, error) {
-	var events []models.Event
+	db = cache.SetCache(db, true)
 
+	var events []models.Event
 	if err := db.Model(&events).Where("start_time >= ? AND end_time <= ?", startTime, endTime).Scopes(utilities.IntoScope(pageInfo, db)).Find(&events).Error; err != nil {
 		return nil, err
 	}

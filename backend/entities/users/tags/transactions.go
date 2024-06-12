@@ -1,6 +1,7 @@
 package tags
 
 import (
+	"github.com/GenerateNU/sac/backend/database/cache"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/entities/tags"
 	"github.com/GenerateNU/sac/backend/entities/users"
@@ -9,20 +10,6 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
-
-func GetUserTags(db *gorm.DB, id uuid.UUID) ([]models.Tag, error) {
-	var tags []models.Tag
-
-	user, err := users.GetUser(db, id)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := db.Model(&user).Association("Tag").Find(&tags); err != nil {
-		return nil, err
-	}
-	return tags, nil
-}
 
 func CreateUserTags(db *gorm.DB, id uuid.UUID, tags []models.Tag) ([]models.Tag, error) {
 	user, err := users.GetUser(db, id, transactions.PreloadTag())
@@ -34,6 +21,21 @@ func CreateUserTags(db *gorm.DB, id uuid.UUID, tags []models.Tag) ([]models.Tag,
 		return nil, err
 	}
 
+	return tags, nil
+}
+
+func GetUserTags(db *gorm.DB, id uuid.UUID) ([]models.Tag, error) {
+	db = cache.SetCache(db, true)
+
+	user, err := users.GetUser(db, id)
+	if err != nil {
+		return nil, err
+	}
+
+	var tags []models.Tag
+	if err := db.Model(&user).Association("Tag").Find(&tags); err != nil {
+		return nil, err
+	}
 	return tags, nil
 }
 

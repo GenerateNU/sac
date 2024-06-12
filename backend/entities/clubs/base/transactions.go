@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/GenerateNU/sac/backend/constants"
+	"github.com/GenerateNU/sac/backend/database/cache"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/garrettladley/fiberpaginate"
 
@@ -14,17 +15,6 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
-
-func GetClubs(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Club, error) {
-	query := db.Model(&models.Club{})
-	var clubs []models.Club
-
-	if err := query.Scopes(utilities.IntoScope(pageInfo, query)).Find(&clubs).Error; err != nil {
-		return nil, err
-	}
-
-	return clubs, nil
-}
 
 func CreateClub(db *gorm.DB, userId uuid.UUID, club models.Club) (*models.Club, error) {
 	user, err := users.GetUser(db, userId)
@@ -76,6 +66,17 @@ func CreateClub(db *gorm.DB, userId uuid.UUID, club models.Club) (*models.Club, 
 	}
 
 	return &club, nil
+}
+
+func GetClubs(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Club, error) {
+	db = cache.SetCache(db, true)
+
+	var clubs []models.Club
+	if err := db.Model(&models.Club{}).Scopes(utilities.IntoScope(pageInfo, db)).Find(&clubs).Error; err != nil {
+		return nil, err
+	}
+
+	return clubs, nil
 }
 
 func UpdateClub(db *gorm.DB, id uuid.UUID, club models.Club) (*models.Club, error) {

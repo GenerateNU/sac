@@ -17,9 +17,11 @@ import (
 	"gorm.io/gorm"
 )
 
-var (
-	useCacheKey struct{}
-	cacheTTLKey struct{}
+type key byte
+
+const (
+	useCacheKey key = 0
+	cacheTTLKey key = 1
 )
 
 // GormCache is a cache plugin for gorm
@@ -33,6 +35,7 @@ type GormCache struct {
 type CacheClient interface {
 	Get(ctx context.Context, key string) (interface{}, error)
 	Set(ctx context.Context, key string, value interface{}, ttl time.Duration) error
+	Delete(ctx context.Context, key string) error // Add Delete method
 }
 
 // CacheConfig is a struct for cache options
@@ -57,7 +60,23 @@ func (g *GormCache) Name() string {
 
 // Initialize initializes the plugin
 func (g *GormCache) Initialize(db *gorm.DB) error {
-	return db.Callback().Query().Replace("gorm:query", g.queryCallback)
+	if err := db.Callback().Query().Replace("gorm:query", g.queryCallback); err != nil {
+		return err
+	}
+
+	if err := db.Callback().Create().After("gorm:create").Register("cache:invalidate_create", g.invalidateCallback); err != nil {
+		return err
+	}
+
+	if err := db.Callback().Update().After("gorm:update").Register("cache:invalidate_update", g.invalidateCallback); err != nil {
+		return err
+	}
+
+	if err := db.Callback().Delete().After("gorm:delete").Register("cache:invalidate_delete", g.invalidateCallback); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // queryCallback is a callback function for query operations
@@ -171,11 +190,24 @@ func (g *GormCache) queryDB(db *gorm.DB) {
 	gorm.Scan(rows, db, 0)
 }
 
+func (g *GormCache) invalidateCallback(db *gorm.DB) {
+	if db.Error != nil {
+		return
+	}
+
+	if err := g.invalidateCache(db); err != nil {
+		slog.Error("invalidate cache failed", "error", err)
+	}
+}
+
+func (g *GormCache) invalidateCache(db *gorm.DB) error {
+	return g.client.Delete(db.Statement.Context, g.cacheKey(db))
+}
+
 type RedisClient struct {
 	client *redis.Client
 }
 
-// NewRedisClient returns a new RedisClient instance
 func NewRedisClient(settings config.RedisSettings) *RedisClient {
 	return &RedisClient{
 		client: settings.Into(),
@@ -198,4 +230,8 @@ func (r *RedisClient) Set(ctx context.Context, key string, value interface{}, tt
 		return err
 	}
 	return r.client.Set(ctx, key, data, ttl).Err()
+}
+
+func (r *RedisClient) Delete(ctx context.Context, key string) error {
+	return r.client.Del(ctx, key).Err()
 }

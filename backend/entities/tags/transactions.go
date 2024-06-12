@@ -3,6 +3,7 @@ package tags
 import (
 	"errors"
 
+	"github.com/GenerateNU/sac/backend/database/cache"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/google/uuid"
@@ -10,6 +11,8 @@ import (
 )
 
 func GetTag(db *gorm.DB, tagID uuid.UUID) (*models.Tag, error) {
+	db = cache.SetCache(db, true)
+
 	var tag models.Tag
 	if err := db.Where("id = ?", tagID).First(&tag).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -22,6 +25,8 @@ func GetTag(db *gorm.DB, tagID uuid.UUID) (*models.Tag, error) {
 }
 
 func GetTagsByIDs(db *gorm.DB, selectedTagIDs []uuid.UUID) ([]models.Tag, error) {
+	db = cache.SetCache(db, true)
+
 	if len(selectedTagIDs) != 0 {
 		var tags []models.Tag
 		if err := db.Model(models.Tag{}).Where("id IN ?", selectedTagIDs).Find(&tags).Error; err != nil {

@@ -3,6 +3,7 @@ package base
 import (
 	"errors"
 
+	"github.com/GenerateNU/sac/backend/database/cache"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/garrettladley/fiberpaginate"
 
@@ -14,6 +15,8 @@ import (
 )
 
 func GetUsers(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.User, error) {
+	db = cache.SetCache(db, true)
+
 	var users []models.User
 	if err := db.Scopes(utilities.IntoScope(pageInfo, db)).Find(&users).Error; err != nil {
 		return nil, err

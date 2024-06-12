@@ -5,6 +5,7 @@ import (
 
 	"github.com/garrettladley/fiberpaginate"
 
+	"github.com/GenerateNU/sac/backend/database/cache"
 	"github.com/GenerateNU/sac/backend/entities/clubs"
 	"github.com/GenerateNU/sac/backend/entities/events/tags"
 	"github.com/GenerateNU/sac/backend/utilities"
@@ -13,8 +14,9 @@ import (
 )
 
 func GetEventPreivews(db *gorm.DB, pageInfo *fiberpaginate.PageInfo) ([]EventPreview, error) {
-	var events []EventStub
+	db = cache.SetCache(db, true)
 
+	var events []EventStub
 	if err := db.Scopes(utilities.IntoScope(*pageInfo, db)).Find(&events).Error; err != nil {
 		return nil, err
 	}
@@ -23,8 +25,9 @@ func GetEventPreivews(db *gorm.DB, pageInfo *fiberpaginate.PageInfo) ([]EventPre
 }
 
 func GetEventPreviewsByTime(db *gorm.DB, pageInfo *fiberpaginate.PageInfo, startTime *time.Time, endTime *time.Time) ([]EventPreview, error) {
-	var events []EventStub
+	db = cache.SetCache(db, true)
 
+	var events []EventStub
 	query := db.Model(&events)
 
 	if startTime != nil && endTime != nil {

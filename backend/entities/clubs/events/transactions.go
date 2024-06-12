@@ -1,6 +1,7 @@
 package events
 
 import (
+	"github.com/GenerateNU/sac/backend/database/cache"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/utilities"
 
@@ -10,8 +11,9 @@ import (
 )
 
 func GetClubEvents(db *gorm.DB, clubID uuid.UUID, pageInfo fiberpaginate.PageInfo) ([]models.Event, error) {
-	var events []models.Event
+	db = cache.SetCache(db, true)
 
+	var events []models.Event
 	if err := db.Where("club_id = ?", clubID).Scopes(utilities.IntoScope(pageInfo, db)).Find(&events).Error; err != nil {
 		return nil, err
 	}

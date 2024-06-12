@@ -3,6 +3,7 @@ package base
 import (
 	"errors"
 
+	"github.com/GenerateNU/sac/backend/database/cache"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/garrettladley/fiberpaginate"
@@ -11,6 +12,8 @@ import (
 )
 
 func GetSocials(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Social, error) {
+	db = cache.SetCache(db, true)
+
 	var socials []models.Social
 	if err := db.Scopes(utilities.IntoScope(pageInfo, db)).Find(&socials).Error; err != nil {
 		return nil, err
@@ -20,6 +23,8 @@ func GetSocials(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Social, 
 }
 
 func GetSocial(db *gorm.DB, id uuid.UUID) (*models.Social, error) {
+	db = cache.SetCache(db, true)
+
 	var social models.Social
 	if err := db.First(&social, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
