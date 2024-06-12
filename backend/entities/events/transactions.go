@@ -7,9 +7,20 @@ import (
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/transactions"
 	"github.com/GenerateNU/sac/backend/utilities"
+	"github.com/garrettladley/fiberpaginate"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
+
+func GetEvents(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Event, error) {
+	var events []models.Event
+
+	if err := db.Scopes(utilities.IntoScope(pageInfo, db)).Find(&events).Error; err != nil {
+		return nil, err
+	}
+
+	return events, nil
+}
 
 func GetEvent(db *gorm.DB, eventID uuid.UUID, preloads ...transactions.OptionalQuery) (*models.Event, error) {
 	var event models.Event
