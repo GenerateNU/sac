@@ -2,6 +2,9 @@ import React from 'react';
 
 import { Stack } from 'expo-router';
 
+import { Arrow } from '../(design-system)';
+import { Text } from '../(design-system)';
+
 const Layout = () => {
     return (
         <Stack>
@@ -15,6 +18,14 @@ const Layout = () => {
                     headerTitleStyle: {
                         color: 'white'
                     }
+                }}
+            />
+            <Stack.Screen
+                name="user"
+                options={{
+                    headerTitle: 'Profile',
+                    headerTransparent: true,
+                    headerShown: false
                 }}
             />
         </Stack>

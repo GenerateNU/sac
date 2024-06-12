@@ -9,6 +9,7 @@ import { StatusBar } from 'expo-status-bar';
 
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { ThemeProvider } from '@shopify/restyle';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import StoreProvider from '../store/StoreProvider';
 import { useAppSelector } from '../store/store';
@@ -25,7 +26,7 @@ const InitalLayout = () => {
         if (accessToken) {
             router.push('/(app)/');
         } else {
-            router.push('/(auth)/');
+            router.push('/(app)/profile');
         }
     }, [accessToken]);
 
@@ -56,13 +57,17 @@ const RootLayout = () => {
 
     if (!loaded) return null;
 
+    const queryClient = new QueryClient();
+
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <StoreProvider>
-                <ThemeProvider theme={theme}>
-                    <StatusBar style="light" />
-                    <InitalLayout />
-                </ThemeProvider>
+                <QueryClientProvider client={queryClient}>
+                    <ThemeProvider theme={theme}>
+                        <StatusBar style="light" />
+                        <InitalLayout />
+                    </ThemeProvider>
+                </QueryClientProvider>
             </StoreProvider>
         </GestureHandlerRootView>
     );

@@ -37,6 +37,8 @@
         "@shopify/restyle": "^2.4.4",
         "@stream-io/flat-list-mvcp": "^0.10.3",
         "@svgr/core": "^8.1.0",
+        "@tanstack/react-query": "^5.44.0",
+        "axios": "^1.7.2",
         "expo": "~51.0.2",
         "expo-dev-client": "~4.0.14",
         "expo-font": "~12.0.5",

@@ -3,7 +3,9 @@ import { FormattedTime } from '@/src/types/time';
 import { Options } from './timeOptions';
 
 // calculate duration of event
-export const calculateDuration = (startTime: Date, endTime: Date) => {
+export const calculateDuration = (start: string, end: string) => {
+    const startTime = new Date(start);
+    const endTime = new Date(end);
     const difference = endTime.getTime() - startTime.getTime();
     const hours = Math.floor(difference / (1000 * 60 * 60));
     const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
@@ -11,7 +13,9 @@ export const calculateDuration = (startTime: Date, endTime: Date) => {
 };
 
 // format time from Date type
-export const formatTime = (time: Date): FormattedTime => {
+export const formatTime = (timeString: string): FormattedTime => {
+    const time = new Date(timeString);
+    
     const daysOfWeek = [
         'Sunday',
         'Monday',
@@ -60,8 +64,11 @@ export const formatTime = (time: Date): FormattedTime => {
     };
 };
 
+
 // return true if an event is happening now
-export const happeningNow = (start: Date, end: Date) => {
+export const happeningNow = (startTime: string, endTime: string) => {
+    const start = new Date(startTime);
+    const end = new Date(endTime);
     const currentTime = new Date();
     return currentTime >= start && currentTime <= end;
 };
@@ -82,8 +89,8 @@ export const createOptions = <T extends keyof Options>(
 // select options to display on event time: day of the week, month and date, year, startTime, endTime
 // e.g. eventTime(startTime, endTime, createOptions('dayOfWeek', 'monthAndDate'))
 export const eventTime = (
-    startTime: Date,
-    endTime: Date,
+    startTime: string,
+    endTime: string,
     options: Partial<Record<keyof Options, true>> = {}
 ) => {
     const { dayOfWeek, monthAndDate, year, start, end } = options;
@@ -114,7 +121,9 @@ export const eventTime = (
     return parts.join(' ');
 };
 
-export const googleCalendarTime = (date: Date) => {
+export const googleCalendarTime = (timeString: string) => {
+    const date = new Date(timeString);
+
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');

@@ -7,9 +7,9 @@ import {
 
 import { router } from 'expo-router';
 
-import { Box, Text } from '../(design-system)';
 import { ResetPasswordForm } from './components/reset-password-form';
 import { SmallText } from './components/small-text';
+import { Box, Text } from '../(design-system)';
 
 const ResetPassword = () => {
     return (

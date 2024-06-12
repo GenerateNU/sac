@@ -13,8 +13,8 @@ interface EventCardBigProps {
     event: string;
     club: string;
     clubId: string;
-    startTime: Date;
-    endTime: Date;
+    startTime: string;
+    endTime: string;
     image: string;
 }
 

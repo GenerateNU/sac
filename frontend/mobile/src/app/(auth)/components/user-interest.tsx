@@ -1,17 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import {
-    Alert,
-    Dimensions,
-    FlatList,
-    SafeAreaView,
-    TouchableOpacity
-} from 'react-native';
+import { Alert, Dimensions, FlatList, TouchableOpacity } from 'react-native';
 
 import { Category, Tag } from '@generatesac/lib';
 import { ZodError } from 'zod';
 
-import { CATEGORIES } from '@/src/consts/user-interest';
+import { useCategories } from '@/src/hooks/use-categories';
+import { useTags } from '@/src/hooks/use-tags';
 
 import { Box, Text } from '../../(design-system)';
 import { Button } from '../../(design-system)/components/Button/Button';
@@ -29,10 +24,37 @@ export const UserInterests: React.FC<UserInterestProps> = ({ onPress }) => {
     const { height } = Dimensions.get('window');
     const { handleSubmit } = useForm<UserInterestsData>();
     const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
-    const [selectedCategory, setSelectedCategory] = useState<Category>(
-        CATEGORIES[0]
-    );
+
     const [_, setButtonClicked] = useState<boolean>(false);
+    const {
+        data: categoryData,
+        isLoading: loadingCategories,
+        error: errorCategory
+    } = useCategories();
+    const {
+        data: tagsData,
+        isLoading: loadingTags,
+        error: errorTag
+    } = useTags();
+
+    const [selectedCategory, setSelectedCategory] = useState<Category>();
+
+    useEffect(() => {
+        if (categoryData && categoryData.length > 0) {
+            setSelectedCategory(categoryData[0]);
+        }
+    }, [categoryData]);
+
+    if (loadingTags || loadingCategories) {
+        return <Text>Loading...</Text>;
+    }
+
+    if (errorTag || errorCategory) {
+        return <Text>Error</Text>;
+    }
+
+    const tags = tagsData ? tagsData : [];
+    const categories = categoryData ? categoryData : [];
 
     const selected = (item: Tag) => {
         return selectedTags.includes(item);
@@ -83,53 +105,64 @@ export const UserInterests: React.FC<UserInterestProps> = ({ onPress }) => {
     };
 
     return (
-        <SafeAreaView>
-            <Box
-                paddingHorizontal="xl"
-                flexDirection="column"
-                alignItems="flex-start"
-                justifyContent="center"
-                gap="l"
-            >
-                <Text fontSize={40} variant="header-1">
-                    What are you interested in?
-                </Text>
-                <Text>
-                    Get personalized recommendations. Select one or more to
-                    continue.
-                </Text>
-                <FlatList
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    data={CATEGORIES}
-                    renderItem={renderCategory}
-                    keyExtractor={(item) => item.id.toString()}
-                />
-                <Box height={height / 2.5} flexDirection="row" flexWrap="wrap">
-                    {selectedCategory.tags.map((item: Tag) => (
-                        <Box key={item.id} marginRight="xxs" marginBottom="xs">
-                            <TagComponent
-                                onPress={() => handleTagPress(item)}
-                                borderColor={selected(item) ? 'black' : 'gray'}
-                                color={selected(item) ? 'black' : 'white'}
+        <Box
+            paddingHorizontal="xl"
+            flexDirection="column"
+            alignItems="flex-start"
+            justifyContent="center"
+            gap="l"
+        >
+            <Text fontSize={40} variant="header-1">
+                What are you interested in?
+            </Text>
+            <Text>
+                Get personalized recommendations. Select one or more to
+                continue.
+            </Text>
+            <FlatList
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                data={categories}
+                renderItem={renderCategory}
+                keyExtractor={(item) => item.id.toString()}
+            />
+            <Box height={height / 2.5} flexDirection="row" flexWrap="wrap">
+                {tags &&
+                    tags
+                        .filter(
+                            (tag) => selectedCategory?.id === tag.category_id
+                        )
+                        .map((item: Tag) => (
+                            <Box
+                                key={item.id}
+                                marginRight="xxs"
+                                marginBottom="xs"
                             >
-                                <Text
-                                    color={selected(item) ? 'white' : 'black'}
+                                <TagComponent
+                                    onPress={() => handleTagPress(item)}
+                                    borderColor={
+                                        selected(item) ? 'black' : 'gray'
+                                    }
+                                    color={selected(item) ? 'black' : 'white'}
                                 >
-                                    {item.name}
-                                </Text>
-                            </TagComponent>
-                        </Box>
-                    ))}
-                </Box>
-                <Button
-                    onPress={handleSubmit(onSubmit)}
-                    variant="standardButton"
-                    disabled={selectedTags.length === 0}
-                >
-                    Continue
-                </Button>
+                                    <Text
+                                        color={
+                                            selected(item) ? 'white' : 'black'
+                                        }
+                                    >
+                                        {item.name}
+                                    </Text>
+                                </TagComponent>
+                            </Box>
+                        ))}
             </Box>
-        </SafeAreaView>
+            <Button
+                onPress={handleSubmit(onSubmit)}
+                variant="standardButton"
+                disabled={selectedTags.length === 0}
+            >
+                Continue
+            </Button>
+        </Box>
     );
 };

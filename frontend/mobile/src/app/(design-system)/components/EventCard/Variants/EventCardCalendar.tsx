@@ -16,8 +16,8 @@ interface EventCardCalendarProps {
     event: string;
     club: string;
     clubId: string;
-    startTime: Date;
-    endTime: Date;
+    startTime: string;
+    endTime: string;
     image: string;
     logo: string;
     tags?: Tag[];
@@ -34,7 +34,7 @@ export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
     tags
 }) => {
     const isHappening = happeningNow(startTime, endTime);
-    const isPast = endTime.getTime() < new Date().getTime();
+    const isPast = new Date(endTime).getTime() < new Date().getTime();
 
     return (
         <Box position="relative">

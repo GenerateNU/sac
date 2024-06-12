@@ -15,8 +15,8 @@ interface OverviewProps {
     eventName: string;
     club: string;
     clubId: string;
-    startTime: Date;
-    endTime: Date;
+    startTime: string;
+    endTime: string;
     location: string;
     type: 'in-person' | 'virtual' | 'hybrid';
     color: SACColors;
