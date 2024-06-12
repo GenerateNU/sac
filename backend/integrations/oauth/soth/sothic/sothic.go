@@ -290,7 +290,7 @@ func SetProvider(c *fiber.Ctx, provider string) {
 func StoreInSession(key string, value string, c *fiber.Ctx) error {
 	session, err := SessionStore.Get(c)
 	if err != nil {
-		slog.Info("error getting session", "error", err)
+		slog.Error("error getting session", "error", err)
 		return err
 	}
 

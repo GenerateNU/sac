@@ -2,7 +2,6 @@ package store
 
 import (
 	"context"
-	"log/slog"
 	"time"
 
 	"github.com/GenerateNU/sac/backend/config"
@@ -29,12 +28,10 @@ func NewRedisClient(settings config.RedisSettings) *RedisClient {
 }
 
 func (r *RedisClient) Get(key string) ([]byte, error) {
-	slog.Info("getting", "key", key)
 	return r.client.Get(context.Background(), key).Bytes()
 }
 
 func (r *RedisClient) Set(key string, val []byte, exp time.Duration) error {
-	slog.Info("setting", "key", key, "val", string(val), "exp", exp)
 	return r.client.Set(context.Background(), key, val, exp).Err()
 }
 
