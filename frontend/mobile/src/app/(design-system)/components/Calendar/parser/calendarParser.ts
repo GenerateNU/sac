@@ -1,4 +1,4 @@
-import { Event, EventPreview } from '@generatesac/lib';
+import { EventPreview } from '@generatesac/lib';
 
 import { DAY_EPOCH_TIME } from '@/src/app/(design-system)/components/Calendar/Calendar';
 import {
@@ -12,8 +12,8 @@ const eventPreviewImages = [
     'https://d3jmn01ri1fzgl.cloudfront.net/photoadking/webp_thumbnail/curious-blue-events-instagram-post-template-40q50e11b340f0.webp',
     'https://d1csarkz8obe9u.cloudfront.net/posterpreviews/event-social-media-ad-design-template-6549b45cb5b52f594c8b37d7060c290d_screen.jpg?ts=1570209911',
     'https://d3jmn01ri1fzgl.cloudfront.net/photoadking/webp_thumbnail/wild-sand-events-instagram-post-template-f767rn00607ef2.webp',
-    'https://images.template.net/59201/Red-Nose-Day-Event-Instagram-Post-Template.jpeg',
-]
+    'https://images.template.net/59201/Red-Nose-Day-Event-Instagram-Post-Template.jpeg'
+];
 
 export function parseData(start: number, end: number, data?: EventPreview[]) {
     // Parsed data:
@@ -71,7 +71,9 @@ export function parseData(start: number, end: number, data?: EventPreview[]) {
                 title: event.name,
                 startTime: event.start_time,
                 endTime: event.end_time,
-                image: eventPreviewImages[Math.floor(Math.random() * eventPreviewImages.length)],
+                image: eventPreviewImages[
+                    Math.floor(Math.random() * eventPreviewImages.length)
+                ],
                 host: event.host_name,
                 tags: event.tags
             };
@@ -84,7 +86,9 @@ export function parseData(start: number, end: number, data?: EventPreview[]) {
                     if (parsedData[index].data[startTime].events.length >= 3) {
                         parsedData[index].data[startTime].overflow = true;
                     } else {
-                        parsedData[index].data[startTime].events.push(eventPreview);
+                        parsedData[index].data[startTime].events.push(
+                            eventPreview
+                        );
                     }
                 } else {
                     // Create a new time:

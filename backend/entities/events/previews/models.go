@@ -9,7 +9,7 @@ import (
 
 type Common struct {
 	ID        uuid.UUID        `json:"id"`
-	Name     string            `json:"name"`
+	Name      string           `json:"name"`
 	EventType models.EventType `json:"event_type"`
 	Location  string           `json:"location"`
 	Link      string           `json:"link"`
