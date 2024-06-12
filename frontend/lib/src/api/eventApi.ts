@@ -4,7 +4,9 @@ import { Club, clubSchema } from "../types/club";
 import {
   CreateEventRequestBody,
   Event,
+  EventPreview,
   UpdateEventRequestBody,
+  eventPreviewSchema,
   eventSchema,
 } from "../types/event";
 import { PaginationQueryParams } from "../types/root";
@@ -25,7 +27,21 @@ export const eventApi = baseApi.injectEndpoints({
           ? result.map((event) => ({ type: "Event", id: event.id }))
           : ["Event"],
       transformResponse: (response) => {
+        console.log('here!!!!')
         return z.array(eventSchema).parse(response);
+      },
+    }),
+    eventsPreview: builder.query<EventPreview[], PaginationQueryParams>({
+      query: (queryParams) => ({
+        url: handleQueryParams(`${EVENT_API_BASE_URL}/previews`, queryParams),
+        method: "GET",
+      }),
+      providesTags: (result) =>
+        result
+          ? result.map((event) => ({ type: "Event", id: event.id }))
+          : ["Event"],
+      transformResponse: (response) => {
+        return z.array(eventPreviewSchema).parse(response);
       },
     }),
     event: builder.query<Event, string>({

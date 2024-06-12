@@ -7,9 +7,9 @@ import (
 	"github.com/google/uuid"
 )
 
-type common struct {
+type Common struct {
 	ID        uuid.UUID        `json:"id"`
-	Title     string           `json:"title"`
+	Name      string           `json:"name"`
 	EventType models.EventType `json:"event_type"`
 	Location  string           `json:"location"`
 	Link      string           `json:"link"`
@@ -18,13 +18,13 @@ type common struct {
 }
 
 type EventStub struct {
-	common
+	Common
 	Host uuid.UUID `json:"host"`
 }
 
 func (es *EventStub) Into(tags []models.Tag, hostName string, hostLogo string) *EventPreview {
 	return &EventPreview{
-		common:   es.common,
+		Common:   es.Common,
 		Tags:     tags,
 		HostName: hostName,
 		HostLogo: hostLogo,
@@ -36,7 +36,7 @@ func (es EventStub) TableName() string {
 }
 
 type EventPreview struct {
-	common
+	Common
 	Tags     []models.Tag `json:"tags"`
 	HostName string       `json:"host_name"`
 	HostLogo string       `json:"host_logo"`
