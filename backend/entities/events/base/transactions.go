@@ -6,9 +6,7 @@ import (
 	"time"
 
 	"github.com/GenerateNU/sac/backend/constants"
-	"github.com/GenerateNU/sac/backend/entities/clubs"
 	"github.com/GenerateNU/sac/backend/entities/events"
-	"github.com/GenerateNU/sac/backend/entities/events/tags"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/garrettladley/fiberpaginate"
 
@@ -21,63 +19,17 @@ import (
 )
 
 func GetEvents(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Event, error) {
-	return transactionsGetEvents[models.Event](db, &pageInfo, nil, nil)
-}
-
-func GetEventsPreview(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]EventPreview, error) {
-	events, err := transactionsGetEvents[EventStub](db, &pageInfo, nil, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	eventPreviews := make([]EventPreview, len(events))
-	for index, event := range events {
-		tags, err := tags.GetEventTags(db, event.ID)
-		if err != nil {
-			return nil, err
-		}
-
-		eventPreviews[index].Tags = tags
-
-		host, err := clubs.GetClub(db, event.Host)
-		if err != nil {
-			return nil, err
-		}
-
-		eventPreviews[index] = *event.Into(tags, host.Name, host.Logo)
-	}
-
-	return eventPreviews, nil
+	return events.GetEvents(db, pageInfo)
 }
 
 func GetEventsByTime(db *gorm.DB, pageInfo fiberpaginate.PageInfo, startTime time.Time, endTime time.Time) ([]models.Event, error) {
-	return transactionsGetEvents[models.Event](db, &pageInfo, &startTime, &endTime)
-}
+	var events []models.Event
 
-func GetEventsPreviewByTime(db *gorm.DB, pageInfo fiberpaginate.PageInfo, startTime time.Time, endTime time.Time) ([]EventPreview, error) {
-	events, err := transactionsGetEvents[EventStub](db, &pageInfo, &startTime, &endTime)
-	if err != nil {
+	if err := db.Model(&events).Where("start_time >= ? AND end_time <= ?", startTime, endTime).Scopes(utilities.IntoScope(pageInfo, db)).Find(&events).Error; err != nil {
 		return nil, err
 	}
 
-	eventPreviews := make([]EventPreview, len(events))
-	for index, event := range events {
-		tags, err := tags.GetEventTags(db, event.ID)
-		if err != nil {
-			return nil, err
-		}
-
-		eventPreviews[index].Tags = tags
-
-		host, err := clubs.GetClub(db, event.Host)
-		if err != nil {
-			return nil, err
-		}
-
-		eventPreviews[index] = *event.Into(tags, host.Name, host.Logo)
-	}
-
-	return eventPreviews, nil
+	return events, nil
 }
 
 func CreateEvent(db *gorm.DB, event models.Event) (*models.Event, error) {
@@ -154,23 +106,4 @@ func DeleteEvent(db *gorm.DB, id uuid.UUID) error {
 	}
 
 	return nil
-}
-
-func transactionsGetEvents[E any](db *gorm.DB, pageInfo *fiberpaginate.PageInfo, startTime *time.Time, endTime *time.Time) ([]E, error) {
-	var events []E
-	query := db.Model(&events)
-
-	if startTime != nil && endTime != nil {
-		query = query.Where("start_time >= ? AND end_time <= ?", *startTime, *endTime)
-	}
-
-	if pageInfo != nil {
-		query = query.Scopes(utilities.IntoScope(*pageInfo, db))
-	}
-
-	if err := query.Find(&events).Error; err != nil {
-		return nil, err
-	}
-
-	return events, nil
 }
