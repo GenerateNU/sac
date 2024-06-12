@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/GenerateNU/sac/backend/background"
+	"github.com/GenerateNU/sac/backend/database/cache"
+
 	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"gorm.io/gorm"
@@ -84,6 +86,8 @@ func (j *Jobs) WelcomeSender(ctx context.Context) background.JobFunc {
 }
 
 func (j *Jobs) dequeueWelcomeTask(tx *gorm.DB) (*models.WelcomeTask, error) {
+	tx = cache.SetUseCache(tx, true)
+
 	var task models.WelcomeTask
 	if err := tx.Raw("SELECT email, name, attempts FROM welcome_tasks FOR UPDATE SKIP LOCKED LIMIT 1").Scan(&task).Error; err != nil {
 		tx.Rollback()
