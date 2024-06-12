@@ -185,11 +185,11 @@ func (c *Caches) storeInCache(db *gorm.DB, identifier string, ttl time.Duration)
 type key byte
 
 const (
-	useCacheKey key = 0
-	cacheTTLKey key = 1
+	useCacheKey key = iota
+	cacheTTLKey
 )
 
-type queryType int
+type queryType byte
 
 const (
 	uponQuery queryType = iota
