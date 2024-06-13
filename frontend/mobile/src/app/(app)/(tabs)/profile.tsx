@@ -24,8 +24,6 @@ type ProfileItemProps = {
     onPress?: () => void;
 };
 
-
-
 const ProfileItem = ({ icon, text, textColor, onPress }: ProfileItemProps) => (
     <TouchableOpacity onPress={onPress}>
         <Box
