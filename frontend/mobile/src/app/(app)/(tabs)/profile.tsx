@@ -24,6 +24,8 @@ type ProfileItemProps = {
     onPress?: () => void;
 };
 
+
+
 const ProfileItem = ({ icon, text, textColor, onPress }: ProfileItemProps) => (
     <TouchableOpacity onPress={onPress}>
         <Box
@@ -66,13 +68,13 @@ const ProfilePage = () => {
                 </Box>
                 <Box width="100%">
                     <ProfileItem
-                        onPress={() => router.push('/user/details/1')}
+                        onPress={() => router.push('/user/detail/')}
                         icon={faUser}
                         text="Edit Profile"
                     />
                     <ProfileItem
                         icon={faHeart}
-                        onPress={() => router.push('/user/interests/1')}
+                        onPress={() => router.push('/user/interest/')}
                         text="Edit Interests"
                     />
                     <Box

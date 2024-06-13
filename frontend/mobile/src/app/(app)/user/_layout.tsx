@@ -5,12 +5,10 @@ import { Stack } from 'expo-router';
 const Layout = () => {
     return (
         <Stack>
-            <Stack.Screen name="interests" options={{ headerShown: false }} />
+            <Stack.Screen name="interest" options={{ headerShown: false }} />
             <Stack.Screen
-                name="details"
+                name="detail"
                 options={{
-                    headerTitle: '',
-                    headerTransparent: true,
                     headerShown: false
                 }}
             />

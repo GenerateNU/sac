@@ -22,7 +22,7 @@ import {
 import { UserInfoData } from '@/src/types/userInfo';
 import { convertUserData } from '@/src/utils/userInfo';
 
-import { Save } from '../components/save';
+import { Save } from './components/save';
 
 const mockUserData = {
     name: 'Jane Doe',

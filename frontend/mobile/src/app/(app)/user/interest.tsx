@@ -14,7 +14,7 @@ import { useCategories } from '@/src/hooks/use-categories';
 import { useTags } from '@/src/hooks/use-tags';
 import { formatCategoryOrTag } from '@/src/utils/string';
 
-import { Save } from '../components/save';
+import { Save } from './components/save';
 
 type UserInterestsData = {
     tags: Tag[];
@@ -51,7 +51,7 @@ const mockTags: Tag[] = [
     }
 ];
 
-export const UserInterest = () => {
+const UserInterest = () => {
     const { height } = Dimensions.get('window');
     const { handleSubmit } = useForm<UserInterestsData>();
 
