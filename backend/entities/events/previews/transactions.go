@@ -47,16 +47,37 @@ func processEventStubs(db *gorm.DB, events []EventStub) ([]EventPreview, error) 
 		eventIDs[i] = event.ID
 	}
 
-	var eventTagsMap map[uuid.UUID][]models.Tag
-	if err := db.Model(&models.Tag{}).Joins("JOIN event_tags ON event_tags.tag_id = tags.id").
+	var eventTags []struct {
+		EventID uuid.UUID `gorm:"column:event_id"`
+		TagID   uuid.UUID `gorm:"column:tag_id"`
+		Name    string    `gorm:"column:name"`
+	}
+	if err := db.Table("tags").Select("tags.id as tag_id, tags.name, event_tags.event_id").
+		Joins("JOIN event_tags ON event_tags.tag_id = tags.id").
 		Where("event_tags.event_id IN ?", eventIDs).
-		Find(&eventTagsMap).Error; err != nil {
+		Scan(&eventTags).Error; err != nil {
 		return nil, err
 	}
 
-	var hostsMap map[uuid.UUID]models.Club
-	if err := db.Model(&models.Club{}).Where("id IN ?", eventIDs).Find(&hostsMap).Error; err != nil {
+	eventTagsMap := make(map[uuid.UUID][]models.Tag)
+	for _, et := range eventTags {
+		eventTagsMap[et.EventID] = append(eventTagsMap[et.EventID],
+			models.Tag{
+				Model: models.Model{
+					ID: et.TagID,
+				},
+				Name: et.Name,
+			})
+	}
+
+	var hosts []models.Club
+	if err := db.Where("id IN ?", eventIDs).Find(&hosts).Error; err != nil {
 		return nil, err
+	}
+
+	hostsMap := make(map[uuid.UUID]models.Club)
+	for _, host := range hosts {
+		hostsMap[host.ID] = host
 	}
 
 	eventPreviews := make([]EventPreview, len(events))
