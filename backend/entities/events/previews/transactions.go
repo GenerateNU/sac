@@ -43,8 +43,8 @@ func GetEventPreviewsByTime(db *gorm.DB, pageInfo *fiberpaginate.PageInfo, start
 
 func processEventStubs(db *gorm.DB, events []EventStub) ([]EventPreview, error) {
 	eventIDs := make([]uuid.UUID, len(events))
-	for i, event := range events {
-		eventIDs[i] = event.ID
+	for index, event := range events {
+		eventIDs[index] = event.ID
 	}
 
 	var eventTags []struct {
@@ -81,8 +81,8 @@ func processEventStubs(db *gorm.DB, events []EventStub) ([]EventPreview, error) 
 	}
 
 	eventPreviews := make([]EventPreview, len(events))
-	for i, event := range events {
-		eventPreviews[i] = *event.Into(eventTagsMap[event.ID], hostsMap[event.Host].Name, hostsMap[event.Host].Logo)
+	for index, event := range events {
+		eventPreviews[index] = *event.Into(eventTagsMap[event.ID], hostsMap[event.Host].Name, hostsMap[event.Host].Logo)
 	}
 
 	return eventPreviews, nil
