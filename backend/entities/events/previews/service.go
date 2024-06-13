@@ -22,7 +22,7 @@ func NewService(serviceParams types.ServiceParams) Service {
 
 func (h *Handler) GetEventPreviews(pageInfo *fiberpaginate.PageInfo, start string, end string) ([]EventPreview, error) {
 	if start == "" || end == "" {
-		return GetEventPreivews(h.DB, pageInfo)
+		return GetEventPreviews(h.DB, pageInfo)
 	}
 
 	startTime, err := utilities.ParseTime(start, utilities.YYYY_dash_MM_dash_DD)
