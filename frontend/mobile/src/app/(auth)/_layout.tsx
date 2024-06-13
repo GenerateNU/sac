@@ -16,60 +16,6 @@ const Layout = () => {
                     headerTransparent: true
                 }}
             />
-            <Stack.Screen
-                name="login"
-                options={{
-                    headerShown: true,
-                    headerTitle: '',
-                    headerTransparent: true,
-                    headerLeft: () => <Wordmark color="white" />
-                }}
-            />
-            <Stack.Screen
-                name="signup"
-                options={{
-                    headerShown: true,
-                    headerTitle: '',
-                    headerTransparent: true,
-                    headerLeft: () => <Wordmark color="white" />
-                }}
-            />
-            <Stack.Screen
-                name="email-verification"
-                options={{
-                    headerShown: true,
-                    headerTitle: '',
-                    headerTransparent: true,
-                    headerLeft: () => <Arrow color="black" />
-                }}
-            />
-            <Stack.Screen
-                name="forgot-password"
-                options={{
-                    headerShown: true,
-                    headerTitle: '',
-                    headerTransparent: true,
-                    headerLeft: () => <Arrow color="black" />
-                }}
-            />
-            <Stack.Screen
-                name="reset-password"
-                options={{
-                    headerShown: true,
-                    headerTitle: '',
-                    headerTransparent: true,
-                    headerLeft: () => <Wordmark color="white" />
-                }}
-            />
-            <Stack.Screen
-                name="user-details"
-                options={{
-                    headerShown: true,
-                    headerTitle: '',
-                    headerTransparent: true,
-                    headerLeft: () => <Arrow color="black" />
-                }}
-            />
         </Stack>
     );
 };

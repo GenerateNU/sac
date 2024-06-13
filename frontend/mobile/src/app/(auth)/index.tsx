@@ -54,7 +54,7 @@ const WelcomePage = () => {
                 animated: true
             });
         } else {
-            router.push('/(auth)/signup');
+            router.push('/(app)/');
         }
     };
 
@@ -66,7 +66,7 @@ const WelcomePage = () => {
                     headerLeft: () => <Wordmark />,
                     headerRight: () => (
                         <TouchableOpacity
-                            onPress={() => router.push('/(auth)/user-details')}
+                            onPress={() => router.push('/(app)/')}
                         >
                             <Text>Skip</Text>
                         </TouchableOpacity>
