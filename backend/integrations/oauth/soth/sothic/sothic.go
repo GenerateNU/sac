@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"net/http"
 	"net/url"
 	"strings"
 
@@ -72,7 +73,8 @@ func BeginAuthHandler(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString(err.Error())
 	}
 
-	return c.Redirect(url, fiber.StatusTemporaryRedirect)
+	c.Set("redirect", url)
+	return c.SendStatus(http.StatusOK)
 }
 
 // SetState sets the state string associated with the given request.
