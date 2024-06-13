@@ -40,7 +40,7 @@ export const startYear = () => {
         });
     }
     return graduationYears;
-}
+};
 
 export const MAJORS: Item[] = [
     { key: 'africanaStudies', value: 'Africana Studies' },
