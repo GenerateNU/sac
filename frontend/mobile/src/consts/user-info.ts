@@ -19,7 +19,7 @@ export const GRADUATION_CYCLE: Item[] = [
 
 export const graduationYear = () => {
     var year = new Date().getFullYear();
-    const range = 5;
+    const range = 6;
     const graduationYears: Item[] = [];
     for (let i = 0; i < range; i++) {
         graduationYears.push({
@@ -29,6 +29,18 @@ export const graduationYear = () => {
     }
     return graduationYears;
 };
+
+export const startYear = () => {
+    var year = new Date().getFullYear();
+    const graduationYears: Item[] = [];
+    for (let i = 5; i >= 0; i--) {
+        graduationYears.push({
+            key: String(year - i),
+            value: String(year - i)
+        });
+    }
+    return graduationYears;
+}
 
 export const MAJORS: Item[] = [
     { key: 'africanaStudies', value: 'Africana Studies' },

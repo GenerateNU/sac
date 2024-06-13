@@ -16,7 +16,8 @@ import {
     COLLEGE,
     GRADUATION_CYCLE,
     MAJORS,
-    graduationYear
+    graduationYear,
+    startYear
 } from '@/src/consts/user-info';
 import { UserInfoData } from '@/src/types/userInfo';
 import { convertUserData } from '@/src/utils/userInfo';
@@ -181,7 +182,7 @@ const UserDetails = () => {
                                     onChange={onChange}
                                     placeholder="Select start year"
                                     title="Start Year"
-                                    data={graduationYear()}
+                                    data={startYear()}
                                 />
                             )}
                             name="startYear"
