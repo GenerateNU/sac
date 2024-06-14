@@ -60,6 +60,7 @@ const EventPage = () => {
 
     const [getEvent, { isLoading: eventLoading, error: eventError, data: event }] = eventApi.useLazyEventQuery();
     const [getClub, { isLoading: clubLoading, error: clubError, data: club }] = clubApi.useLazyClubQuery();
+    const [getEventTags, { isLoading: tagsLoading, error: tagsError, data: tags }] = eventApi.useLazyEventTagsQuery();
 
     const imageAnimatedStyle = useAnimatedStyle(() => {
         return {
@@ -97,13 +98,27 @@ const EventPage = () => {
     });
 
     useEffect(() => {
+        // Fetch events
         getEvent(id as string)
-            .then((data) => {
-                if (!error) {
-                    console.log(data);
+            .then(({ data: eventData }) => {
+                if (eventData) {
+                    // Fetch club
+                    getClub(eventData.host as string)
+                        .then(({ data: clubData }) => {
+                            console.log(clubData);
+                        });
+                    // Fetch tags:
+                    getEventTags(eventData.id)
+                        .then(({ data: tagsData }) => {
+                            console.log(tagsData);
+                        });
                 }
             })
     }, [retriggerFetch]);
+
+    const apiLoading = eventLoading || clubLoading || tagsLoading;
+    const apiError = eventError || clubError || tagsError;
+    const allData = event && tags && club
 
     return (
             <Box backgroundColor="white" height={'100%'}>
@@ -117,10 +132,10 @@ const EventPage = () => {
                     },
                     headerLeft: () => (
                         <Animated.View style={headerAnimatedStyle}>
-                            <Arrow color={error ? 'black' : "white"} />
+                            <Arrow color={eventError || clubError ? 'black' : "white"} />
                         </Animated.View>
                     ),
-                    headerRight: !error ? () => (
+                    headerRight: !eventError || clubError ? () => (
                         <Animated.View style={headerAnimatedStyle}>
                             <KebabMenu
                                 onPress={() =>
@@ -137,11 +152,11 @@ const EventPage = () => {
                 scrollEventThrottle={16}
                 ref={scrollRef}
             >
-                {eventLoading || clubLoading
+                {apiLoading
                     ? <EventPageSkeleton />
-                    : eventError || clubError
+                    : apiError
                         ? <EventPageError refetch={setRetriggerFetch}/>
-                        : event && club && <>
+                        : allData && <>
                             <Box>
                                 <Animated.Image
                                     source={{
@@ -161,7 +176,7 @@ const EventPage = () => {
                                             logo={MockEvent.logo}
                                             eventName={event.name}
                                             color={MockEvent.color}
-                                            club={event.host}
+                                            club={club?.name}
                                             startTime={new Date(event.start_time)}
                                             endTime={new Date(event.end_time)}
                                             location={event.location}
@@ -179,7 +194,7 @@ const EventPage = () => {
                                         color={MockEvent.color}
                                         zoomLink={event.link}
                                         description={event.description}
-                                        tags={MockEvent.tags}
+                                        tags={tags}
                                         onPress={() => bottomSheet.current?.snapToIndex(0)}
                                     />
                                     <Location location={event.location} />
