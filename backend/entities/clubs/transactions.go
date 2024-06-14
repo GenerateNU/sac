@@ -44,3 +44,14 @@ func GetAdminIDs(db *gorm.DB, clubID uuid.UUID) ([]uuid.UUID, error) {
 
 	return adminUUIDs, nil
 }
+
+func IsMember(db *gorm.DB, clubID uuid.UUID, userID uuid.UUID) (bool, error) {
+	db = cache.SetUseCache(db, true)
+
+	var count int64
+	if err := db.Table("user_club_members").Where("club_id = ? AND user_id = ?", clubID, userID).Count(&count).Error; err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
+}
