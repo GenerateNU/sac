@@ -43,7 +43,7 @@ export function parseData(start: number, end: number, data?: EventPreview[]) {
 
     // Loop over the data and add the events to the correct date:
     data?.forEach((event) => {
-        if (event.tags.length !== 0) {
+        if (event.tags) {
             // Parse the event date:
             const date = new Date(event.start_time);
 
@@ -68,6 +68,7 @@ export function parseData(start: number, end: number, data?: EventPreview[]) {
 
             // Create an event preview:
             const eventPreview: EventCalendarPreview = {
+                id: event.id,
                 title: event.name,
                 startTime: event.start_time,
                 endTime: event.end_time,

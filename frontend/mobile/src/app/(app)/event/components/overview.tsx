@@ -9,6 +9,7 @@ import { Avatar } from '@rneui/base';
 import { Box, Colors, SACColors, Text } from '@/src/app/(design-system)';
 import { firstLetterUppercase } from '@/src/utils/string';
 import { createOptions, eventTime } from '@/src/utils/time';
+import { EventType } from '@generatesac/lib';
 
 interface OverviewProps {
     logo: string;
@@ -18,7 +19,7 @@ interface OverviewProps {
     startTime: Date;
     endTime: Date;
     location: string;
-    type: 'in-person' | 'virtual' | 'hybrid';
+    type: EventType;
     color: SACColors;
 }
 

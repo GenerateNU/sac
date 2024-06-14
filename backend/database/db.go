@@ -2,6 +2,7 @@ package database
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/constants"
@@ -17,6 +18,8 @@ func ConfigureDB(settings config.Settings) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Println(settings.DBCache)
 
 	cachePlugin := &cache.Caches{
 		Conf: &cache.Config{

@@ -83,7 +83,7 @@ const IconButton: React.FC<
     ...rest
 }) => {
     const buttonIcon = <Icon size={size} icon={icon} color={iconColor} />;
-    const localStyles = computeButtonStyles({ disabled, color, size, outline });
+    const localStyles = computeButtonStyles({ disabled, color, size, outline, variant: 'iconButton' });
 
     return (
         <BaseButton
@@ -94,7 +94,7 @@ const IconButton: React.FC<
             {...rest}
         >
             {iconPosition === 'left' && buttonIcon}
-            <Text color={textColorVariants[color ?? 'black']}>{children}</Text>
+            {children && <Text color={textColorVariants[color ?? 'black']}>{children}</Text>}
             {iconPosition === 'right' && buttonIcon}
         </BaseButton>
     );

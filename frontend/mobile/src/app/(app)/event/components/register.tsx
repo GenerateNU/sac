@@ -14,13 +14,14 @@ import { Item } from '@/src/types/item';
 import { createGoogleCalendarLink } from '@/src/utils/string';
 
 import { Divider } from './divider';
+import { EventType } from '@generatesac/lib';
 
 type Ref = BottomSheet;
 
 const SaveEventText = `By saving this event, you are automatically signed up for notifications and this event will be added to your calendar.`;
 
 interface RegisterSheetProps {
-    eventType: 'hybrid' | 'in-person' | 'virtual';
+    eventType: EventType;
     startTime: Date;
     endTime: Date;
     location: string;
@@ -81,7 +82,7 @@ const RegisterBottomSheet = forwardRef<Ref, RegisterSheetProps>(
 
 interface RegisterProps {
     setSheet: React.Dispatch<React.SetStateAction<string>>;
-    eventType: 'hybrid' | 'in-person' | 'virtual';
+    eventType: EventType;
 }
 
 type UserData = {

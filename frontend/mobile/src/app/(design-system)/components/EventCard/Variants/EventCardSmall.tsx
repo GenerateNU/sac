@@ -12,7 +12,7 @@ import { createOptions, eventTime } from '@/src/utils/time';
 interface EventCardSmallProps {
     event: string;
     club: string;
-    clubId: string;
+    eventId: string;
     startTime: Date;
     endTime: Date;
     image: string;
@@ -21,7 +21,7 @@ interface EventCardSmallProps {
 export const EventCardSmall: React.FC<EventCardSmallProps> = ({
     event,
     club,
-    clubId,
+    eventId,
     startTime,
     endTime,
     image
@@ -32,7 +32,7 @@ export const EventCardSmall: React.FC<EventCardSmallProps> = ({
     return (
         <Box width={boxWidth}>
             <TouchableOpacity
-                onPress={() => router.navigate(`/event/${clubId}`)}
+                onPress={() => router.navigate(`/event/${eventId}`)}
             >
                 <Box flexDirection="column" gap="xs">
                     <Image
