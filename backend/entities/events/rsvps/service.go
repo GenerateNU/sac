@@ -3,6 +3,7 @@ package rsvps
 import (
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/types"
+	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/garrettladley/fiberpaginate"
 )
 
@@ -20,17 +21,39 @@ func NewHandler(params types.ServiceParams) Service {
 	return &Handler{params}
 }
 
-// handle if event is private and user is not member
-// handle if event is full, then return appropriate http status code
-// to accomplish ^, add new rsvp capacity and waitlist capacity fields to event. they should be optional and provide a reasonable default
 func (h *Handler) CreateEventRSVP(eventID string, userID string) error {
-	return nil
+	eventIDAsUUID, err := utilities.ValidateID(eventID)
+	if err != nil {
+		return err
+	}
+
+	userIDAsUUID, err := utilities.ValidateID(userID)
+	if err != nil {
+		return err
+	}
+
+	return CreateEventRSVP(h.DB, *eventIDAsUUID, *userIDAsUUID)
 }
 
 func (h *Handler) GetEventRSVPs(eventID string, pageInfo fiberpaginate.PageInfo) ([]models.User, error) {
-	return nil, nil
+	eventIDAsUUID, err := utilities.ValidateID(eventID)
+	if err != nil {
+		return nil, err
+	}
+
+	return GetEventRSVPs(h.DB, *eventIDAsUUID, pageInfo)
 }
 
 func (h *Handler) DeleteEventRSVP(eventID string, userID string) error {
-	return nil
+	eventIDAsUUID, err := utilities.ValidateID(eventID)
+	if err != nil {
+		return err
+	}
+
+	userIDAsUUID, err := utilities.ValidateID(userID)
+	if err != nil {
+		return err
+	}
+
+	return DeleteEventRSVP(h.DB, *eventIDAsUUID, *userIDAsUUID)
 }

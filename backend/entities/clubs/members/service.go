@@ -8,8 +8,8 @@ import (
 )
 
 type ClubMemberServiceInterface interface {
-	GetClubMembers(clubID string, pageInfo fiberpaginate.PageInfo) ([]models.User, error)
 	CreateClubMember(clubID string, userID string) error
+	GetClubMembers(clubID string, pageInfo fiberpaginate.PageInfo) ([]models.User, error)
 	DeleteClubMember(clubID string, userID string) error
 }
 
@@ -19,15 +19,6 @@ type ClubMemberService struct {
 
 func NewClubMemberService(params types.ServiceParams) ClubMemberServiceInterface {
 	return &ClubMemberService{params}
-}
-
-func (cms *ClubMemberService) GetClubMembers(clubID string, pageInfo fiberpaginate.PageInfo) ([]models.User, error) {
-	clubIDAsUUID, err := utilities.ValidateID(clubID)
-	if err != nil {
-		return nil, err
-	}
-
-	return GetClubMembers(cms.DB, *clubIDAsUUID, pageInfo)
 }
 
 func (cms *ClubMemberService) CreateClubMember(clubID string, userID string) error {
@@ -42,6 +33,15 @@ func (cms *ClubMemberService) CreateClubMember(clubID string, userID string) err
 	}
 
 	return CreateClubMember(cms.DB, *clubIDAsUUID, *userIDAsUUID)
+}
+
+func (cms *ClubMemberService) GetClubMembers(clubID string, pageInfo fiberpaginate.PageInfo) ([]models.User, error) {
+	clubIDAsUUID, err := utilities.ValidateID(clubID)
+	if err != nil {
+		return nil, err
+	}
+
+	return GetClubMembers(cms.DB, *clubIDAsUUID, pageInfo)
 }
 
 func (cms *ClubMemberService) DeleteClubMember(clubID string, userID string) error {
