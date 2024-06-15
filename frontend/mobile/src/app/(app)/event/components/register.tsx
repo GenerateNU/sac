@@ -22,8 +22,8 @@ const SaveEventText = `By saving this event, you are automatically signed up for
 
 interface RegisterSheetProps {
     eventType: EventType;
-    startTime: Date;
-    endTime: Date;
+    startTime: string;
+    endTime: string;
     location: string;
     eventName: string;
     eventDetail: string;
@@ -54,6 +54,8 @@ const RegisterBottomSheet = forwardRef<Ref, RegisterSheetProps>(
             startTime: startTime,
             endTime: endTime
         };
+
+        console.log(createGoogleCalendarLink(CALENDAR_INFO));
 
         return (
             <BottomSheet

@@ -9,8 +9,8 @@ interface EventCardProps {
     event: string;
     club: string;
     eventId: string;
-    startTime: Date;
-    endTime: Date;
+    startTime: string;
+    endTime: string;
     tags?: Tag[];
     image: string;
     logo?: string;

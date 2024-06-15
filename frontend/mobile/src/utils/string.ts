@@ -46,3 +46,18 @@ export const createGoogleCalendarLink = ({
     const googleCalendar = `https://calendar.google.com/calendar/u/0/r/eventedit?text=${httpFormat(eventName)}&dates=${googleCalendarTime(startTime)}/${googleCalendarTime(endTime)}&location=${httpFormat(location)}&details=${httpFormat(eventDetail)}&sf=true&output=xml`;
     return googleCalendar;
 };
+
+export const formatCategoryOrTag = (str: string) => {
+    if (str.includes('Pre')) {
+        const index = str.indexOf('Pre');
+        str = str.slice(0, index) + 'Pre-' + str.slice(index + 3);
+        return str;
+    }
+    if (str.includes('And')) {
+        str = str.split('And').join(' and');
+    }
+    if (str === str.toUpperCase()) {
+        return str;
+    }
+    return str.replace(/([A-Z])/g, ' $1').trim();
+};

@@ -16,8 +16,8 @@ interface OverviewProps {
     eventName: string;
     club: string;
     clubId: string;
-    startTime: Date;
-    endTime: Date;
+    startTime: string;
+    endTime: string;
     location: string;
     type: EventType;
     color: SACColors;

@@ -95,8 +95,8 @@ export default function DayTimeSection({ time, data }: DayTimeSectionProps) {
                                 club={event.host_name}
                                 logo={event.host_logo}
                                 eventId={event.id}
-                                startTime={new Date(event.startTime)}
-                                endTime={new Date(event.endTime)}
+                                startTime={event.startTime}
+                                endTime={event.endTime}
                                 image={event.image}
                             />
                         </Box>

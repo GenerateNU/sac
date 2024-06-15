@@ -17,6 +17,7 @@ export const UpcomingEvent: React.FC<UpcomingEventsProps> = ({ events }) => {
         return (
             <Pressable onPress={() => router.push(`/event/${item.id}`)}>
                 <EventCard
+                    clubId={'1'}
                     variant="small"
                     event={item.name}
                     club={item.host}
