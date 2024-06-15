@@ -4,12 +4,12 @@ import {
     faLocationDot
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { EventType } from '@generatesac/lib';
 import { Avatar } from '@rneui/base';
 
 import { Box, Colors, SACColors, Text } from '@/src/app/(design-system)';
 import { firstLetterUppercase } from '@/src/utils/string';
 import { createOptions, eventTime } from '@/src/utils/time';
-import { EventType } from '@generatesac/lib';
 
 interface OverviewProps {
     logo: string;

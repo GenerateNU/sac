@@ -2,6 +2,7 @@ import React, { forwardRef, useCallback, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Alert, Linking } from 'react-native';
 
+import { EventType } from '@generatesac/lib';
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ZodError, z } from 'zod';
@@ -14,7 +15,6 @@ import { Item } from '@/src/types/item';
 import { createGoogleCalendarLink } from '@/src/utils/string';
 
 import { Divider } from './divider';
-import { EventType } from '@generatesac/lib';
 
 type Ref = BottomSheet;
 

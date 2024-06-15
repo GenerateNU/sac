@@ -1,7 +1,8 @@
+import { EventType } from '@generatesac/lib';
+
 import { CalendarLink } from '@/src/types/calendarLink';
 
 import { googleCalendarTime } from './time';
-import { EventType } from '@generatesac/lib';
 
 export const firstLetterUppercase = (str: string) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -16,7 +17,7 @@ export const eventTypeToString = (type: EventType) => {
         case 'virtual':
             return 'Virtual';
     }
-}
+};
 
 export const httpFormat = (str: string) => {
     str = encodeURIComponent(str);

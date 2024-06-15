@@ -9,6 +9,8 @@ import Animated, {
 
 import { Stack, useLocalSearchParams } from 'expo-router';
 
+import { EventType, clubApi } from '@generatesac/lib';
+import { eventApi } from '@generatesac/lib';
 import BottomSheet from '@gorhom/bottom-sheet';
 
 import { Arrow, Box, KebabMenu } from '@/src/app/(design-system)';
@@ -16,16 +18,14 @@ import { SACColors } from '@/src/app/(design-system)';
 import { Button } from '@/src/app/(design-system)/components/Button/Button';
 import { description, events, tags } from '@/src/consts/event-page';
 
-import { EventType, clubApi } from '@generatesac/lib'
 import { AboutEvent } from './components/about';
 import { Description } from './components/description';
+import EventPageError from './components/error';
 import { Location } from './components/location';
 import { Overview } from './components/overview';
 import { RegisterBottomSheet } from './components/register';
 import { ShareEventBottomSheet } from './components/share-event';
-import { eventApi } from '@generatesac/lib';
 import EventPageSkeleton from './components/skeleton';
-import EventPageError from './components/error';
 
 const MockEvent = {
     eventImage:
@@ -58,9 +58,16 @@ const EventPage = () => {
 
     const [retriggerFetch, setRetriggerFetch] = useState(false);
 
-    const [getEvent, { isLoading: eventLoading, error: eventError, data: event }] = eventApi.useLazyEventQuery();
-    const [getClub, { isLoading: clubLoading, error: clubError, data: club }] = clubApi.useLazyClubQuery();
-    const [getEventTags, { isLoading: tagsLoading, error: tagsError, data: tags }] = eventApi.useLazyEventTagsQuery();
+    const [
+        getEvent,
+        { isLoading: eventLoading, error: eventError, data: event }
+    ] = eventApi.useLazyEventQuery();
+    const [getClub, { isLoading: clubLoading, error: clubError, data: club }] =
+        clubApi.useLazyClubQuery();
+    const [
+        getEventTags,
+        { isLoading: tagsLoading, error: tagsError, data: tags }
+    ] = eventApi.useLazyEventTagsQuery();
 
     const imageAnimatedStyle = useAnimatedStyle(() => {
         return {
@@ -99,29 +106,26 @@ const EventPage = () => {
 
     useEffect(() => {
         // Fetch events
-        getEvent(id as string)
-            .then(({ data: eventData }) => {
-                if (eventData) {
-                    // Fetch club
-                    getClub(eventData.host as string)
-                        .then(({ data: clubData }) => {
-                            console.log(clubData);
-                        });
-                    // Fetch tags:
-                    getEventTags(eventData.id)
-                        .then(({ data: tagsData }) => {
-                            console.log(tagsData);
-                        });
-                }
-            })
-    }, [retriggerFetch]);
+        getEvent(id as string).then(({ data: eventData }) => {
+            if (eventData) {
+                // Fetch club
+                getClub(eventData.host as string).then(({ data: clubData }) => {
+                    console.log(clubData);
+                });
+                // Fetch tags:
+                getEventTags(eventData.id).then(({ data: tagsData }) => {
+                    console.log(tagsData);
+                });
+            }
+        });
+    }, [retriggerFetch, id, getClub, getEvent, getEventTags]);
 
     const apiLoading = eventLoading || clubLoading || tagsLoading;
     const apiError = eventError || clubError || tagsError;
-    const allData = event && tags && club
+    const allData = event && tags && club;
 
     return (
-            <Box backgroundColor="white" height={'100%'}>
+        <Box backgroundColor="white" height={'100%'}>
             <Stack.Screen
                 options={{
                     headerTitle: '',
@@ -132,19 +136,26 @@ const EventPage = () => {
                     },
                     headerLeft: () => (
                         <Animated.View style={headerAnimatedStyle}>
-                            <Arrow color={eventError || clubError ? 'black' : "white"} />
-                        </Animated.View>
-                    ),
-                    headerRight: !eventError || clubError ? () => (
-                        <Animated.View style={headerAnimatedStyle}>
-                            <KebabMenu
-                                onPress={() =>
-                                    shareEvent.current?.snapToIndex(0)
+                            <Arrow
+                                color={
+                                    eventError || clubError ? 'black' : 'white'
                                 }
-                                color="white"
                             />
                         </Animated.View>
-                    ) : () => (<></>)
+                    ),
+                    headerRight:
+                        !eventError || clubError
+                            ? () => (
+                                  <Animated.View style={headerAnimatedStyle}>
+                                      <KebabMenu
+                                          onPress={() =>
+                                              shareEvent.current?.snapToIndex(0)
+                                          }
+                                          color="white"
+                                      />
+                                  </Animated.View>
+                              )
+                            : () => <></>
                 }}
             />
             <Animated.ScrollView
@@ -152,11 +163,13 @@ const EventPage = () => {
                 scrollEventThrottle={16}
                 ref={scrollRef}
             >
-                {apiLoading
-                    ? <EventPageSkeleton />
-                    : apiError
-                        ? <EventPageError refetch={setRetriggerFetch}/>
-                        : allData && <>
+                {apiLoading ? (
+                    <EventPageSkeleton />
+                ) : apiError ? (
+                    <EventPageError refetch={setRetriggerFetch} />
+                ) : (
+                    allData && (
+                        <>
                             <Box>
                                 <Animated.Image
                                     source={{
@@ -177,15 +190,22 @@ const EventPage = () => {
                                             eventName={event.name}
                                             color={MockEvent.color}
                                             club={club?.name}
-                                            startTime={new Date(event.start_time)}
+                                            startTime={
+                                                new Date(event.start_time)
+                                            }
                                             endTime={new Date(event.end_time)}
-                                            location={event.location || 'ISEC, Room 204'}
+                                            location={
+                                                event.location ||
+                                                'ISEC, Room 204'
+                                            }
                                             type={event.event_type}
                                         />
                                         <Button
                                             variant="standardButton"
                                             color={MockEvent.color}
-                                            onPress={() => register.current?.snapToIndex(0)}
+                                            onPress={() =>
+                                                register.current?.snapToIndex(0)
+                                            }
                                         >
                                             Register
                                         </Button>
@@ -195,14 +215,21 @@ const EventPage = () => {
                                         zoomLink={event.link}
                                         description={event.description}
                                         tags={tags}
-                                        onPress={() => bottomSheet.current?.snapToIndex(0)}
+                                        onPress={() =>
+                                            bottomSheet.current?.snapToIndex(0)
+                                        }
                                     />
-                                    <Location location={event.location || 'ISEC, Room 204'} />
+                                    <Location
+                                        location={
+                                            event.location || 'ISEC, Room 204'
+                                        }
+                                    />
                                 </Box>
                                 {/* <UpcomingEvent events={MockEvent.events} /> */}
                             </Box>
                         </>
-                }
+                    )
+                )}
             </Animated.ScrollView>
             <ShareEventBottomSheet ref={shareEvent} link={MockEvent.link} />
             <RegisterBottomSheet
@@ -214,7 +241,10 @@ const EventPage = () => {
                 eventType={event?.event_type as EventType}
                 ref={register}
             />
-            <Description description={event?.description as string} ref={bottomSheet} />
+            <Description
+                description={event?.description as string}
+                ref={bottomSheet}
+            />
         </Box>
     );
 };
