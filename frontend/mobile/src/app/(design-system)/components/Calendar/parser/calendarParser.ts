@@ -75,7 +75,8 @@ export function parseData(start: number, end: number, data?: EventPreview[]) {
                 image: eventPreviewImages[
                     Math.floor(Math.random() * eventPreviewImages.length)
                 ],
-                host: event.host_name,
+                host_name: event.host_name,
+                host_logo: event.host_logo ?? "https://www.iconpacks.net/icons/2/free-user-icon-3296-thumb.png",
                 tags: event.tags
             };
 

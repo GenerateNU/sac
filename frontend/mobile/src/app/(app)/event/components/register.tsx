@@ -117,7 +117,6 @@ const Register: React.FC<RegisterProps> = ({ setSheet, eventType }) => {
             } else {
                 setSheet('save');
             }
-            console.log(data);
         } catch (error) {
             if (error instanceof ZodError) {
                 Alert.alert('Validation Error', error.errors[0].message);

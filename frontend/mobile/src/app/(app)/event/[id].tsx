@@ -109,13 +109,9 @@ const EventPage = () => {
         getEvent(id as string).then(({ data: eventData }) => {
             if (eventData) {
                 // Fetch club
-                getClub(eventData.host as string).then(({ data: clubData }) => {
-                    console.log(clubData);
-                });
+                getClub(eventData.host as string)
                 // Fetch tags:
-                getEventTags(eventData.id).then(({ data: tagsData }) => {
-                    console.log(tagsData);
-                });
+                getEventTags(eventData.id)
             }
         });
     }, [retriggerFetch, id, getClub, getEvent, getEventTags]);
@@ -186,7 +182,7 @@ const EventPage = () => {
                                     <Box gap="l">
                                         <Overview
                                             clubId={event.host}
-                                            logo={MockEvent.logo}
+                                            logo={club.logo ?? ''}
                                             eventName={event.name}
                                             color={MockEvent.color}
                                             club={club?.name}

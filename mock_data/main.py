@@ -172,10 +172,6 @@ if not args.skip_generation:
         )
 
         tags = json.loads(tags_response.choices[0].message.content)['tags']
-
-        logoOptions = [
-
-        ]
         
         clubData = {
             "id": str(uuid4()),
@@ -186,7 +182,8 @@ if not args.skip_generation:
             "is_recruiting": random.choice(["TRUE", "FALSE"]),
             "recruitment_cycle": random.choice(["fall", "spring", "fallSpring", "always"]),
             "recruitment_type": random.choice(["unrestricted", "application"]),
-            "tags": tags
+            "tags": tags,
+            "logo": logo
         }
 
         clubs.append(clubData)
@@ -232,20 +229,6 @@ if not args.skip_generation:
                 "tags": random.sample(tags, random.randint(1,len(tags)))              
             })
         bar.next()
-
-#         name: z.string().max(255),
-#   preview: z.string().max(255),
-#   description: z.string(),
-#   start_time: z.string(),
-#   end_time: z.string(),
-#   location: z.string().max(255),
-#   link: z.string().max(255).optional(),
-#   event_type: eventTypeEnum,
-#   is_recurring: z.boolean().optional(),
-#   is_public: z.boolean(),
-#   is_draft: z.boolean(),
-#   is_archived: z.boolean(),
-#   host: z.string().uuid(),
     
     bar.finish()
     print(f"Bad club descriptions (JSON not created properly): {bad_club_descriptions}")
@@ -337,7 +320,7 @@ def delete_existing():
 @transaction
 def fill_clubs():
     print("Creating club data...")
-    cmd = """INSERT INTO "clubs" ("id", "name", "preview", "description", "num_members", "parent") VALUES (%s, %s, %s, %s, %s, %s)"""
+    cmd = """INSERT INTO "clubs" ("id", "name", "preview", "description", "logo", "num_members", "parent") VALUES (%s, %s, %s, %s, %s, %s, %s)"""
 
     for club in clubs:
         data = (
@@ -345,6 +328,7 @@ def fill_clubs():
             club['name'].replace("\'", "''"),
             club['preview'].replace("\'", "''"),
             club['description'].replace('\'', "''"),
+            club['logo'],
             str(club['num_members']),
             PARENT_UUID
         )

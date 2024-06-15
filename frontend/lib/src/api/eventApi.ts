@@ -27,7 +27,6 @@ export const eventApi = baseApi.injectEndpoints({
           ? result.map((event) => ({ type: "Event", id: event.id }))
           : ["Event"],
       transformResponse: (response) => {
-        console.log('here!!!!')
         return z.array(eventSchema).parse(response);
       },
     }),
