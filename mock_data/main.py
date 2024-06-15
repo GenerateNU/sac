@@ -172,6 +172,10 @@ if not args.skip_generation:
         )
 
         tags = json.loads(tags_response.choices[0].message.content)['tags']
+
+        logoOptions = [
+
+        ]
         
         clubData = {
             "id": str(uuid4()),
@@ -229,6 +233,20 @@ if not args.skip_generation:
                 "tags": random.sample(tags, random.randint(1,len(tags)))              
             })
         bar.next()
+
+#         name: z.string().max(255),
+#   preview: z.string().max(255),
+#   description: z.string(),
+#   start_time: z.string(),
+#   end_time: z.string(),
+#   location: z.string().max(255),
+#   link: z.string().max(255).optional(),
+#   event_type: eventTypeEnum,
+#   is_recurring: z.boolean().optional(),
+#   is_public: z.boolean(),
+#   is_draft: z.boolean(),
+#   is_archived: z.boolean(),
+#   host: z.string().uuid(),
     
     bar.finish()
     print(f"Bad club descriptions (JSON not created properly): {bad_club_descriptions}")
