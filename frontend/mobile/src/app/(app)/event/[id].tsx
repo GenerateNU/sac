@@ -179,7 +179,7 @@ const EventPage = () => {
                                             club={club?.name}
                                             startTime={new Date(event.start_time)}
                                             endTime={new Date(event.end_time)}
-                                            location={event.location}
+                                            location={event.location || 'ISEC, Room 204'}
                                             type={event.event_type}
                                         />
                                         <Button
@@ -197,7 +197,7 @@ const EventPage = () => {
                                         tags={tags}
                                         onPress={() => bottomSheet.current?.snapToIndex(0)}
                                     />
-                                    <Location location={event.location} />
+                                    <Location location={event.location || 'ISEC, Room 204'} />
                                 </Box>
                                 {/* <UpcomingEvent events={MockEvent.events} /> */}
                             </Box>

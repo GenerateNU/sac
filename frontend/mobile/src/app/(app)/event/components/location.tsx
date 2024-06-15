@@ -36,7 +36,7 @@ export const Location: React.FC<LocationProps> = ({ location }) => {
     return (
         <Box flexDirection="column" gap="s">
             <Text variant="subheader-1">Location</Text>
-            <Text>{location || 'ISEC, Room 204'}</Text>
+            <Text>{location}</Text>
             <MapView
                 onPress={() => openMap()}
                 style={{ width: '100%', aspectRatio: 1.8, borderRadius: 16 }}
