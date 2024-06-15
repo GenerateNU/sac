@@ -2,6 +2,7 @@ package base
 
 import (
 	"github.com/GenerateNU/sac/backend/entities/events/previews"
+	"github.com/GenerateNU/sac/backend/entities/events/rsvps"
 	"github.com/GenerateNU/sac/backend/entities/events/series"
 	"github.com/GenerateNU/sac/backend/entities/events/tags"
 
@@ -17,6 +18,7 @@ func EventRoutes(eventParams types.RouteParams) {
 	// MARK: must be called first to avoid conflict between api/v1/events/preview and api/v1/events/:eventID
 	previews.EventPreviews(eventParams)
 	EventRouter(eventParams)
+	rsvps.EventsRSVPs(eventParams)
 	series.EventSeries(eventParams)
 	tags.EventTags(eventParams)
 }
