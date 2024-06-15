@@ -109,9 +109,9 @@ const EventPage = () => {
         getEvent(id as string).then(({ data: eventData }) => {
             if (eventData) {
                 // Fetch club
-                getClub(eventData.host as string)
+                getClub(eventData.host as string);
                 // Fetch tags:
-                getEventTags(eventData.id)
+                getEventTags(eventData.id);
             }
         });
     }, [retriggerFetch, id, getClub, getEvent, getEventTags]);
