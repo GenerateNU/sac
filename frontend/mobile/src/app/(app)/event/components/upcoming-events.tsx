@@ -21,8 +21,9 @@ export const UpcomingEvent: React.FC<UpcomingEventsProps> = ({ events }) => {
                     variant="small"
                     event={item.name}
                     club={item.host}
-                    startTime={item.start_time}
-                    endTime={item.end_time}
+                    eventId={item.id}
+                    startTime={new Date(item.start_time)}
+                    endTime={new Date(item.end_time)}
                     image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLF3ord7lnV_5Je-pC2AUgUiesHNPcZlpI7A&s"
                 />
             </Pressable>

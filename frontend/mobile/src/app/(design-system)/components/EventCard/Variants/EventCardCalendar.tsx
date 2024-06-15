@@ -15,7 +15,7 @@ import { sharedStyles } from '../shared/styles';
 interface EventCardCalendarProps {
     event: string;
     club: string;
-    clubId: string;
+    eventId: string;
     startTime: string;
     endTime: string;
     image: string;
@@ -26,7 +26,7 @@ interface EventCardCalendarProps {
 export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
     event,
     club,
-    clubId,
+    eventId,
     startTime,
     endTime,
     image,
@@ -39,7 +39,7 @@ export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
     return (
         <Box position="relative">
             <TouchableOpacity
-                onPress={() => router.navigate(`/event/${clubId}`)}
+                onPress={() => router.navigate(`/event/${eventId}`)}
             >
                 {isHappening && (
                     <Box {...styles.isHappeningContainer}>

@@ -1402,10 +1402,10 @@
     humps "^2.0.1"
     prop-types "^15.7.2"
 
-"@generatesac/lib@0.0.164":
-  version "0.0.164"
-  resolved "https://registry.yarnpkg.com/@generatesac/lib/-/lib-0.0.164.tgz#eb2b4ff426f3d881b99aabf11d883881da207422"
-  integrity sha512-Ba95skKKF+klOfC09KZFGaltg7fg6moBj5/JvfjZX9VA5S2Bcv4bFZ/OxHIxqsmZ/U8SmlVDojQpKA5z46ixuw==
+"@generatesac/lib@0.0.169":
+  version "0.0.169"
+  resolved "https://registry.yarnpkg.com/@generatesac/lib/-/lib-0.0.169.tgz#6a5799bad43b7c08553a04e5e6ed401ed0b7e7ab"
+  integrity sha512-IeWdlMKTi9zdqeaSMWWB+fjma6zf3Z1lO7mPmQ8Q+PJ49CkjJVbF5G9tdYgnJrNSz9+fazr5kFXZZl26eJaN0w==
   dependencies:
     "@reduxjs/toolkit" "^2.2.3"
     react "^18.2.0"

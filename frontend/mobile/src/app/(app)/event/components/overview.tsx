@@ -4,6 +4,7 @@ import {
     faLocationDot
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { EventType } from '@generatesac/lib';
 import { Avatar } from '@rneui/base';
 
 import { Box, Colors, SACColors, Text } from '@/src/app/(design-system)';
@@ -18,7 +19,7 @@ interface OverviewProps {
     startTime: string;
     endTime: string;
     location: string;
-    type: 'in-person' | 'virtual' | 'hybrid';
+    type: EventType;
     color: SACColors;
 }
 

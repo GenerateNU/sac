@@ -12,7 +12,7 @@ import { calculateDuration, createOptions, eventTime } from '@/src/utils/time';
 interface EventCardBigProps {
     event: string;
     club: string;
-    clubId: string;
+    eventId: string;
     startTime: string;
     endTime: string;
     image: string;
@@ -21,7 +21,7 @@ interface EventCardBigProps {
 export const EventCardBig: React.FC<EventCardBigProps> = ({
     event,
     club,
-    clubId,
+    eventId,
     startTime,
     endTime,
     image
@@ -29,7 +29,7 @@ export const EventCardBig: React.FC<EventCardBigProps> = ({
     return (
         <Box>
             <TouchableOpacity
-                onPress={() => router.navigate(`/event/${clubId}`)}
+                onPress={() => router.navigate(`/event/${eventId}`)}
             >
                 <Box gap="xs">
                     <Image
