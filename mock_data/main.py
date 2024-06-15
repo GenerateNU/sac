@@ -186,7 +186,8 @@ if not args.skip_generation:
             "is_recruiting": random.choice(["TRUE", "FALSE"]),
             "recruitment_cycle": random.choice(["fall", "spring", "fallSpring", "always"]),
             "recruitment_type": random.choice(["unrestricted", "application"]),
-            "tags": tags
+            "tags": tags,
+            "logo": logo
         }
 
         clubs.append(clubData)
@@ -337,7 +338,7 @@ def delete_existing():
 @transaction
 def fill_clubs():
     print("Creating club data...")
-    cmd = """INSERT INTO "clubs" ("id", "name", "preview", "description", "num_members", "parent") VALUES (%s, %s, %s, %s, %s, %s)"""
+    cmd = """INSERT INTO "clubs" ("id", "name", "preview", "description", "logo", "num_members", "parent") VALUES (%s, %s, %s, %s, %s, %s, %s)"""
 
     for club in clubs:
         data = (
@@ -345,6 +346,7 @@ def fill_clubs():
             club['name'].replace("\'", "''"),
             club['preview'].replace("\'", "''"),
             club['description'].replace('\'', "''"),
+            club['logo'],
             str(club['num_members']),
             PARENT_UUID
         )

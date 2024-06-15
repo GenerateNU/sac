@@ -19,7 +19,8 @@ export type EventCalendarPreview = {
     title: string;
     startTime: string;
     endTime: string;
-    host: string;
+    host_name: string;
+    host_logo: string;
     image: string;
     tags: Tag[];
 };
@@ -91,11 +92,11 @@ export default function DayTimeSection({ time, data }: DayTimeSectionProps) {
                                 event={event.title}
                                 variant="calendar"
                                 tags={event.tags}
-                                club={event.host}
+                                club={event.host_name}
+                                logo={event.host_logo}
                                 eventId={event.id}
                                 startTime={new Date(event.startTime)}
                                 endTime={new Date(event.endTime)}
-                                logo="https://www.iconpacks.net/icons/2/free-user-icon-3296-thumb.png"
                                 image={event.image}
                             />
                         </Box>

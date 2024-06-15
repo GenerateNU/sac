@@ -132,26 +132,21 @@ const EventPage = () => {
                     },
                     headerLeft: () => (
                         <Animated.View style={headerAnimatedStyle}>
-                            <Arrow
-                                color={
-                                    eventError || clubError ? 'black' : 'white'
-                                }
-                            />
+                            <Arrow color={apiError ? 'black' : 'white'} />
                         </Animated.View>
                     ),
-                    headerRight:
-                        !eventError || clubError
-                            ? () => (
-                                  <Animated.View style={headerAnimatedStyle}>
-                                      <KebabMenu
-                                          onPress={() =>
-                                              shareEvent.current?.snapToIndex(0)
-                                          }
-                                          color="white"
-                                      />
-                                  </Animated.View>
-                              )
-                            : () => <></>
+                    headerRight: !apiError
+                        ? () => (
+                              <Animated.View style={headerAnimatedStyle}>
+                                  <KebabMenu
+                                      onPress={() =>
+                                          shareEvent.current?.snapToIndex(0)
+                                      }
+                                      color="white"
+                                  />
+                              </Animated.View>
+                          )
+                        : () => <></>
                 }}
             />
             <Animated.ScrollView
@@ -182,7 +177,7 @@ const EventPage = () => {
                                     <Box gap="l">
                                         <Overview
                                             clubId={event.host}
-                                            logo={MockEvent.logo}
+                                            logo={club.logo ?? ''}
                                             eventName={event.name}
                                             color={MockEvent.color}
                                             club={club?.name}
