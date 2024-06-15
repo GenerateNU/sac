@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Skeleton } from '@rneui/base';
 
-import { Box, createStyles } from '@/src/app/(design-system)';
+import { Box, Colors, createStyles } from '@/src/app/(design-system)';
 
 export const EventCardCalendarSkeleton = () => {
     return (
@@ -12,35 +12,35 @@ export const EventCardCalendarSkeleton = () => {
                     <Skeleton
                         width={'auto'}
                         height={'auto'}
-                        skeletonStyle={{ backgroundColor: '#FAFAFA' }}
+                        skeletonStyle={{ backgroundColor: Colors.skeleton }}
                     />
                 </Box>
                 <Box flex={1} gap={'xxs'}>
                     <Skeleton
                         width={'50%'}
                         height={20}
-                        skeletonStyle={{ backgroundColor: '#FAFAFA' }}
+                        skeletonStyle={{ backgroundColor: Colors.skeleton }}
                     />
                     <Skeleton
                         width={'75%'}
                         height={15}
-                        skeletonStyle={{ backgroundColor: '#FAFAFA' }}
+                        skeletonStyle={{ backgroundColor: Colors.skeleton }}
                     />
                     <Box flexDirection="row" gap="xxs">
                         <Skeleton
                             width={'20%'}
                             height={20}
-                            skeletonStyle={{ backgroundColor: '#FAFAFA' }}
+                            skeletonStyle={{ backgroundColor: Colors.skeleton }}
                         />
                         <Skeleton
                             width={'20%'}
                             height={20}
-                            skeletonStyle={{ backgroundColor: '#FAFAFA' }}
+                            skeletonStyle={{ backgroundColor: Colors.skeleton }}
                         />
                         <Skeleton
                             width={'20%'}
                             height={20}
-                            skeletonStyle={{ backgroundColor: '#FAFAFA' }}
+                            skeletonStyle={{ backgroundColor: Colors.skeleton }}
                         />
                     </Box>
                 </Box>

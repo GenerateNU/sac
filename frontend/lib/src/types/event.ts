@@ -59,7 +59,7 @@ const eventPreviewSchemaIntermediate = z.object({
   start_time: z.string(),
   end_time: z.string(),
 
-  tags: tagSchema.array(),
+  tags: tagSchema.array().optional().nullable(),
   host_name: z.string().max(255),
   host_logo: z.string().max(255).optional(),
 });
@@ -76,3 +76,4 @@ export type UpdateEventRequestBody = z.infer<
 >;
 export type Event = z.infer<typeof eventSchema>;
 export type EventPreview = z.infer<typeof eventPreviewSchema>;
+export type EventType = z.infer<typeof eventTypeEnum>;

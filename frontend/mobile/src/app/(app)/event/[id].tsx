@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Dimensions } from 'react-native';
 import Animated, {
     interpolate,
@@ -9,6 +9,8 @@ import Animated, {
 
 import { Stack, useLocalSearchParams } from 'expo-router';
 
+import { EventType, clubApi } from '@generatesac/lib';
+import { eventApi } from '@generatesac/lib';
 import BottomSheet from '@gorhom/bottom-sheet';
 
 import { Arrow, Box, KebabMenu } from '@/src/app/(design-system)';
@@ -18,13 +20,12 @@ import { description, events, tags } from '@/src/consts/event-page';
 
 import { AboutEvent } from './components/about';
 import { Description } from './components/description';
+import EventPageError from './components/error';
 import { Location } from './components/location';
 import { Overview } from './components/overview';
 import { RegisterBottomSheet } from './components/register';
 import { ShareEventBottomSheet } from './components/share-event';
-import { UpcomingEvent } from './components/upcoming-events';
-
-type EventType = 'in-person' | 'virtual' | 'hybrid';
+import EventPageSkeleton from './components/skeleton';
 
 const MockEvent = {
     eventImage:
@@ -46,7 +47,7 @@ const MockEvent = {
 };
 
 const EventPage = () => {
-    useLocalSearchParams<{ id: string }>();
+    const { id } = useLocalSearchParams<{ id: string }>();
     const { width } = Dimensions.get('window');
     const IMG_HEIGHT = width;
     const shareEvent = useRef<BottomSheet>(null);
@@ -54,6 +55,19 @@ const EventPage = () => {
     const bottomSheet = useRef<BottomSheet>(null);
     const scrollRef = useAnimatedRef<Animated.ScrollView>();
     const scrollOffset = useScrollViewOffset(scrollRef);
+
+    const [retriggerFetch, setRetriggerFetch] = useState(false);
+
+    const [
+        getEvent,
+        { isLoading: eventLoading, error: eventError, data: event }
+    ] = eventApi.useLazyEventQuery();
+    const [getClub, { isLoading: clubLoading, error: clubError, data: club }] =
+        clubApi.useLazyClubQuery();
+    const [
+        getEventTags,
+        { isLoading: tagsLoading, error: tagsError, data: tags }
+    ] = eventApi.useLazyEventTagsQuery();
 
     const imageAnimatedStyle = useAnimatedStyle(() => {
         return {
@@ -90,8 +104,24 @@ const EventPage = () => {
         };
     });
 
+    useEffect(() => {
+        // Fetch events
+        getEvent(id as string).then(({ data: eventData }) => {
+            if (eventData) {
+                // Fetch club
+                getClub(eventData.host as string);
+                // Fetch tags:
+                getEventTags(eventData.id);
+            }
+        });
+    }, [retriggerFetch, id, getClub, getEvent, getEventTags]);
+
+    const apiLoading = eventLoading || clubLoading || tagsLoading;
+    const apiError = eventError || clubError || tagsError;
+    const allData = event && tags && club;
+
     return (
-        <Box backgroundColor="white">
+        <Box backgroundColor="white" height={'100%'}>
             <Stack.Screen
                 options={{
                     headerTitle: '',
@@ -102,19 +132,26 @@ const EventPage = () => {
                     },
                     headerLeft: () => (
                         <Animated.View style={headerAnimatedStyle}>
-                            <Arrow color="white" />
-                        </Animated.View>
-                    ),
-                    headerRight: () => (
-                        <Animated.View style={headerAnimatedStyle}>
-                            <KebabMenu
-                                onPress={() =>
-                                    shareEvent.current?.snapToIndex(0)
+                            <Arrow
+                                color={
+                                    eventError || clubError ? 'black' : 'white'
                                 }
-                                color="white"
                             />
                         </Animated.View>
-                    )
+                    ),
+                    headerRight:
+                        !eventError || clubError
+                            ? () => (
+                                  <Animated.View style={headerAnimatedStyle}>
+                                      <KebabMenu
+                                          onPress={() =>
+                                              shareEvent.current?.snapToIndex(0)
+                                          }
+                                          color="white"
+                                      />
+                                  </Animated.View>
+                              )
+                            : () => <></>
                 }}
             />
             <Animated.ScrollView
@@ -122,62 +159,88 @@ const EventPage = () => {
                 scrollEventThrottle={16}
                 ref={scrollRef}
             >
-                <Box>
-                    <Animated.Image
-                        source={{
-                            uri: MockEvent.eventImage
-                        }}
-                        style={[
-                            imageAnimatedStyle,
-                            { width: '100%', aspectRatio: 1 }
-                        ]}
-                    />
-                </Box>
-                <Box backgroundColor="white">
-                    <Box margin="xl" gap="xxl">
-                        <Box gap="l">
-                            <Overview
-                                clubId={MockEvent.clubId}
-                                logo={MockEvent.logo}
-                                eventName={MockEvent.eventName}
-                                color={MockEvent.color}
-                                club={MockEvent.club}
-                                startTime={MockEvent.startTime}
-                                endTime={MockEvent.endTime}
-                                location={MockEvent.location}
-                                type={MockEvent.eventType}
-                            />
-                            <Button
-                                variant="standardButton"
-                                color={MockEvent.color}
-                                onPress={() => register.current?.snapToIndex(0)}
-                            >
-                                Register
-                            </Button>
-                        </Box>
-                        <AboutEvent
-                            color={MockEvent.color}
-                            zoomLink={MockEvent.zoomLink}
-                            description={MockEvent.description}
-                            tags={MockEvent.tags}
-                            onPress={() => bottomSheet.current?.snapToIndex(0)}
-                        />
-                        <Location location={MockEvent.location} />
-                    </Box>
-                    <UpcomingEvent events={MockEvent.events} />
-                </Box>
+                {apiLoading ? (
+                    <EventPageSkeleton />
+                ) : apiError ? (
+                    <EventPageError refetch={setRetriggerFetch} />
+                ) : (
+                    allData && (
+                        <>
+                            <Box>
+                                <Animated.Image
+                                    source={{
+                                        uri: MockEvent.eventImage
+                                    }}
+                                    style={[
+                                        imageAnimatedStyle,
+                                        { width: '100%', aspectRatio: 1 }
+                                    ]}
+                                />
+                            </Box>
+                            <Box backgroundColor="white">
+                                <Box margin="xl" gap="xxl">
+                                    <Box gap="l">
+                                        <Overview
+                                            clubId={event.host}
+                                            logo={club.logo ?? ''}
+                                            eventName={event.name}
+                                            color={MockEvent.color}
+                                            club={club?.name}
+                                            startTime={
+                                                new Date(event.start_time)
+                                            }
+                                            endTime={new Date(event.end_time)}
+                                            location={
+                                                event.location ||
+                                                'ISEC, Room 204'
+                                            }
+                                            type={event.event_type}
+                                        />
+                                        <Button
+                                            variant="standardButton"
+                                            color={MockEvent.color}
+                                            onPress={() =>
+                                                register.current?.snapToIndex(0)
+                                            }
+                                        >
+                                            Register
+                                        </Button>
+                                    </Box>
+                                    <AboutEvent
+                                        color={MockEvent.color}
+                                        zoomLink={event.link}
+                                        description={event.description}
+                                        tags={tags}
+                                        onPress={() =>
+                                            bottomSheet.current?.snapToIndex(0)
+                                        }
+                                    />
+                                    <Location
+                                        location={
+                                            event.location || 'ISEC, Room 204'
+                                        }
+                                    />
+                                </Box>
+                                {/* <UpcomingEvent events={MockEvent.events} /> */}
+                            </Box>
+                        </>
+                    )
+                )}
             </Animated.ScrollView>
             <ShareEventBottomSheet ref={shareEvent} link={MockEvent.link} />
             <RegisterBottomSheet
-                startTime={MockEvent.startTime}
-                endTime={MockEvent.endTime}
-                eventDetail={MockEvent.description}
-                eventName={MockEvent.eventName}
-                location={MockEvent.location}
-                eventType={MockEvent.eventType}
+                startTime={new Date(event?.start_time as string)}
+                endTime={new Date(event?.end_time as string)}
+                eventDetail={event?.description as string}
+                eventName={event?.name as string}
+                location={event?.location as string}
+                eventType={event?.event_type as EventType}
                 ref={register}
             />
-            <Description description={description} ref={bottomSheet} />
+            <Description
+                description={event?.description as string}
+                ref={bottomSheet}
+            />
         </Box>
     );
 };

@@ -26,55 +26,55 @@ TOP_N = args.top_n
 PARENT_UUID = args.parent_uuid
 
 MOCK_CATEGORIES_AND_TAGS = {
-    "PreProfessional": [
+    "Pre-Professional": [
         "Premed",
         "Prelaw",
     ],
-    "CulturalAndIdentity": [
+    "Cultural And Identity": [
         "Judaism",
         "Christianity",
         "Hinduism",
         "Islam",
-        "LatinAmerica",
-        "AfricanAmerican",
-        "AsianAmerican",
+        "Latin America",
+        "African American",
+        "Asian American",
         "LGBTQ",
     ],
-    "ArtsAndCreativity": [
-        "PerformingArts",
-        "VisualArts",
-        "CreativeWriting",
+    "Arts And Creativity": [
+        "Performing Arts",
+        "Visual Arts",
+        "Creative Writing",
         "Music",
     ],
-    "SportsAndRecreation": [
+    "Sports And Recreation": [
         "Soccer",
         "Hiking",
         "Climbing",
         "Lacrosse",
     ],
-    "ScienceAndTechnology": [
+    "Science And Technology": [
         "Mathematics",
         "Physics",
         "Biology",
         "Chemistry",
-        "EnvironmentalScience",
+        "Environmental Science",
         "Geology",
         "Neuroscience",
         "Psychology",
-        "SoftwareEngineering",
-        "ArtificialIntelligence",
-        "DataScience",
-        "MechanicalEngineering",
-        "ElectricalEngineering",
-        "IndustrialEngineering",
+        "Software Engineering",
+        "Artificial Intelligence",
+        "Data Science",
+        "Mechanical Engineering",
+        "Electrical Engineering",
+        "Industrial Engineering",
     ],
-    "CommunityServiceAndAdvocacy": [
+    "Community Service And Advocacy": [
         "Volunteerism",
-        "EnvironmentalAdvocacy",
+        "Environmental Advocacy",
         "HumanRights",
-        "CommunityOutreach",
+        "Community Outreach",
     ],
-    "MediaAndCommunication": [
+    "Media And Communication": [
         "Journalism",
         "Broadcasting",
         "Film",
@@ -129,6 +129,7 @@ if not args.skip_generation:
     print("NUEngage request done.")
 
     clubs_json = json.loads(clubs_response.text)['value']
+    print(clubs_json)
     clubs = []
     events = []
 
@@ -136,6 +137,7 @@ if not args.skip_generation:
     bad_club_descriptions = 0
     for club in clubs_json:
         name = club['Name'].replace("(Tentative) ", "").replace("( Tentative) ", "")
+        logo = "https://se-images.campuslabs.com/clink/images/{}".format(club['ProfilePicture'])
         preview = club['Summary'][:250]
         description = club['Description']
 
@@ -149,6 +151,8 @@ if not args.skip_generation:
                     {"role": "user", "content": description_prompt(name, preview)}
                 ]
             )
+
+            print('Created description for club:', name)
 
             description = json.loads(description_response.choices[0].message.content)['description']
             # Some description responses will not contain valid JSON, hence this if check.
@@ -178,7 +182,8 @@ if not args.skip_generation:
             "is_recruiting": random.choice(["TRUE", "FALSE"]),
             "recruitment_cycle": random.choice(["fall", "spring", "fallSpring", "always"]),
             "recruitment_type": random.choice(["unrestricted", "application"]),
-            "tags": tags
+            "tags": tags,
+            "logo": logo
         }
 
         clubs.append(clubData)
@@ -200,6 +205,15 @@ if not args.skip_generation:
                 event_description = "Event description"
 
             times = random_start_and_endtimes()
+            
+            event_type = random.choice(["hybrid", "in_person", "virtual"])
+            link = ""
+            if event_type == "hybrid" or event_type == "virtual":
+                link = "https://northeastern.zoom.us/j/6610103275"
+            
+            location = random.choice(["West Village H", "Curry Student Center", "Snell Library", "Krentzman Quad", "Marino", "ISEC", "ISEC 2"])
+            if event_type == "online":
+                location = ""
 
             events.append({
                 "id": str(uuid4()),
@@ -207,9 +221,11 @@ if not args.skip_generation:
                 "name": f"Event for {clubData["name"]}",
                 "preview": "This club is holding an event.",
                 "description": event_description,
-                "event_type": random.choice(["hybrid", "in_person", "virtual"]),
+                "event_type": event_type,
                 "start_time": times[0].strftime("%Y-%m-%d %H:%M:%S"),
                 "end_time": times[1].strftime("%Y-%m-%d %H:%M:%S"),
+                "link": link, 
+                "location": location,
                 "tags": random.sample(tags, random.randint(1,len(tags)))              
             })
         bar.next()
@@ -304,7 +320,7 @@ def delete_existing():
 @transaction
 def fill_clubs():
     print("Creating club data...")
-    cmd = """INSERT INTO "clubs" ("id", "name", "preview", "description", "num_members", "parent") VALUES (%s, %s, %s, %s, %s, %s)"""
+    cmd = """INSERT INTO "clubs" ("id", "name", "preview", "description", "logo", "num_members", "parent") VALUES (%s, %s, %s, %s, %s, %s, %s)"""
 
     for club in clubs:
         data = (
@@ -312,6 +328,7 @@ def fill_clubs():
             club['name'].replace("\'", "''"),
             club['preview'].replace("\'", "''"),
             club['description'].replace('\'', "''"),
+            club['logo'],
             str(club['num_members']),
             PARENT_UUID
         )

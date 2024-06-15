@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { rootModelSchema } from "./root";
+import { recruitmentSchema } from "./recruitment";
 
 // Schemas:
 export const createClubRequestBodySchema = z.object({
@@ -35,11 +36,10 @@ const clubSchemaIntermediate = z.object({
   preview: z.string().max(255),
   description: z.string(),
   num_members: z.number(),
-  is_recruiting: z.boolean(),
-  application_link: z.string().max(255),
   logo: z.string().max(255).optional(),
   weekly_time_committment: z.number().optional(),
   one_word_to_describe_us: z.string().max(20).optional(),
+  recruitment: recruitmentSchema.optional(),
 });
 
 export const clubSchema = clubSchemaIntermediate.merge(rootModelSchema);
