@@ -59,10 +59,10 @@ const RootLayout = () => {
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <StoreProvider>
-                    <ThemeProvider theme={theme}>
-                        <StatusBar style="light" />
-                        <InitalLayout />
-                    </ThemeProvider>
+                <ThemeProvider theme={theme}>
+                    <StatusBar style="light" />
+                    <InitalLayout />
+                </ThemeProvider>
             </StoreProvider>
         </GestureHandlerRootView>
     );

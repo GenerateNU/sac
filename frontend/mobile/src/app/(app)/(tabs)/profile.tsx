@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         justifyContent: 'flex-start',
         marginVertical: Spacing.m,
-        gap: Spacing.l,
+        gap: Spacing.l
     },
     title: {
         fontSize: 20,

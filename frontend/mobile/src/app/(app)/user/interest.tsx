@@ -54,8 +54,16 @@ const UserInterest = () => {
     const { handleSubmit } = useForm<UserInterestsData>();
 
     const [_, setButtonClicked] = useState<boolean>(false);
-    const { data: tagData, error: tagError, isLoading: tagLoading} = tagApi.useTagsQuery({});
-    const { data: categoryData, error: categoryError, isLoading: categoryLoading} = categoryApi.useCategoriesQuery({});
+    const {
+        data: tagData,
+        error: tagError,
+        isLoading: tagLoading
+    } = tagApi.useTagsQuery({});
+    const {
+        data: categoryData,
+        error: categoryError,
+        isLoading: categoryLoading
+    } = categoryApi.useCategoriesQuery({});
 
     const [selectedCategory, setSelectedCategory] = useState<Category>();
     const [selectedTags, setSelectedTags] = useState<Tag[]>(mockTags);
