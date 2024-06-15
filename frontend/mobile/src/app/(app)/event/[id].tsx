@@ -181,10 +181,8 @@ const EventPage = () => {
                                             eventName={event.name}
                                             color={MockEvent.color}
                                             club={club?.name}
-                                            startTime={
-                                                new Date(event.start_time)
-                                            }
-                                            endTime={new Date(event.end_time)}
+                                            startTime={event.start_time}
+                                            endTime={event.end_time}
                                             location={
                                                 event.location ||
                                                 'ISEC, Room 204'
@@ -224,8 +222,8 @@ const EventPage = () => {
             </Animated.ScrollView>
             <ShareEventBottomSheet ref={shareEvent} link={MockEvent.link} />
             <RegisterBottomSheet
-                startTime={new Date(event?.start_time as string)}
-                endTime={new Date(event?.end_time as string)}
+                startTime={event?.start_time as string}
+                endTime={event?.end_time as string}
                 eventDetail={event?.description as string}
                 eventName={event?.name as string}
                 location={event?.location as string}

@@ -28,7 +28,7 @@ const ProfileItem = ({ icon, text, textColor, onPress }: ProfileItemProps) => (
     <TouchableOpacity onPress={onPress}>
         <Box
             gap="l"
-            paddingVertical="m"
+            paddingVertical="s"
             flexDirection="row"
             alignItems="center"
         >
@@ -98,9 +98,8 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'flex-start',
         justifyContent: 'flex-start',
-        marginHorizontal: Spacing.xl,
-        gap: Spacing.xxl,
-        marginTop: Spacing.xxl
+        marginVertical: Spacing.m,
+        gap: Spacing.l,
     },
     title: {
         fontSize: 20,

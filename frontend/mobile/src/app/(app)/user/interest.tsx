@@ -5,13 +5,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Stack, router } from 'expo-router';
 
-import { Category, Tag } from '@generatesac/lib';
+import { Category, Tag, categoryApi, tagApi } from '@generatesac/lib';
 import { ZodError } from 'zod';
 
 import { Arrow, Box, Spacing, Text } from '@/src/app/(design-system)';
 import { Tag as TagComponent } from '@/src/app/(design-system)';
-import { useCategories } from '@/src/hooks/use-categories';
-import { useTags } from '@/src/hooks/use-tags';
 import { formatCategoryOrTag } from '@/src/utils/string';
 
 import { Save } from './components/save';
@@ -56,16 +54,8 @@ const UserInterest = () => {
     const { handleSubmit } = useForm<UserInterestsData>();
 
     const [_, setButtonClicked] = useState<boolean>(false);
-    const {
-        data: categoryData,
-        isLoading: loadingCategories,
-        error: errorCategory
-    } = useCategories();
-    const {
-        data: tagsData,
-        isLoading: loadingTags,
-        error: errorTag
-    } = useTags();
+    const { data: tagData, error: tagError, isLoading: tagLoading} = tagApi.useTagsQuery({});
+    const { data: categoryData, error: categoryError, isLoading: categoryLoading} = categoryApi.useCategoriesQuery({});
 
     const [selectedCategory, setSelectedCategory] = useState<Category>();
     const [selectedTags, setSelectedTags] = useState<Tag[]>(mockTags);
@@ -78,16 +68,16 @@ const UserInterest = () => {
         }
     }, [categoryData]);
 
-    if (loadingTags || loadingCategories) {
+    if (tagLoading || categoryLoading) {
         return <Text>Loading...</Text>;
     }
 
-    if (errorTag || errorCategory) {
+    if (tagError || categoryError) {
         return <Text>Error</Text>;
     }
 
-    const tags = tagsData ? tagsData : [];
-    const categories = categoryData ? categoryData : [];
+    const tags = tagData ?? [];
+    const categories = categoryData ?? [];
 
     const isSelected = (item: Tag) => {
         return selectedTags.map((tag) => tag.id).includes(item.id);
