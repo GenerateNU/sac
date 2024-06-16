@@ -11,7 +11,7 @@ import (
 )
 
 func (m *AuthMiddlewareHandler) UserAuthorizeById(c *fiber.Ctx) error {
-	strUser, err := sothic.GetFromSession("user", c)
+	strUser, err := sothic.GetFromSession("microsoftonline", c)
 	if err != nil {
 		c.Set("redirect", "/api/v1/auth/login")
 		return c.SendStatus(http.StatusUnauthorized)

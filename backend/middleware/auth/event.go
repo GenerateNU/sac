@@ -15,7 +15,7 @@ import (
 
 // Authorizes admins of the host club of this event to make this request, skips check if super user
 func (m *AuthMiddlewareHandler) EventAuthorizeById(c *fiber.Ctx, extractor ExtractID) error {
-	strUser, err := sothic.GetFromSession("user", c)
+	strUser, err := sothic.GetFromSession("microsoftonline", c)
 	if err != nil {
 		c.Set("redirect", "/api/v1/auth/login")
 		return c.SendStatus(http.StatusUnauthorized)
