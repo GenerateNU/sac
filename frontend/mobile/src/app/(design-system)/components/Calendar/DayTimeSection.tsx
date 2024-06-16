@@ -14,17 +14,20 @@ export type EventSection = {
     data: EventSectionTimes;
 };
 
-export type EventPreview = {
+export type EventCalendarPreview = {
+    id: string;
     title: string;
     startTime: string;
     endTime: string;
-    host: string;
+    host_name: string;
+    host_logo: string;
+    image: string;
     tags: Tag[];
 };
 
 export type EventSectionData = {
     overflow: boolean;
-    events: EventPreview[];
+    events: EventCalendarPreview[];
 };
 
 export type DayTimeSectionProps = {
@@ -37,7 +40,7 @@ function convertNumToTime(num: number) {
     let meridiem = num === 23 ? 'AM' : 'PM';
     let minutes = num % 100;
 
-    if (num !== 0 && (num < 1000 || num > 2300)) {
+    if (num !== 0 && (num < 1000 || num > 2359)) {
         throw new Error('Invalid time');
     }
 
@@ -89,12 +92,12 @@ export default function DayTimeSection({ time, data }: DayTimeSectionProps) {
                                 event={event.title}
                                 variant="calendar"
                                 tags={event.tags}
-                                club={'Generate'}
-                                clubId={event.host}
-                                startTime={new Date(event.startTime)}
-                                endTime={new Date(event.endTime)}
-                                logo="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT800M6T7YVq_f6W49g_UNL29US7gC63nTitg&s"
-                                image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfT6p6kCen0-GphSDogJRd2KoYjg0-QQWuAw9e5JBIBEVTc3Hxho_UwRsZ0IrEi6Ap5oo&usqp=CAU"
+                                club={event.host_name}
+                                logo={event.host_logo}
+                                eventId={event.id}
+                                startTime={event.startTime}
+                                endTime={event.endTime}
+                                image={event.image}
                             />
                         </Box>
                     );

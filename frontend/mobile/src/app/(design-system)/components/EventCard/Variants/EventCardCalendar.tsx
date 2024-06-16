@@ -15,9 +15,9 @@ import { sharedStyles } from '../shared/styles';
 interface EventCardCalendarProps {
     event: string;
     club: string;
-    clubId: string;
-    startTime: Date;
-    endTime: Date;
+    eventId: string;
+    startTime: string;
+    endTime: string;
     image: string;
     logo: string;
     tags?: Tag[];
@@ -26,7 +26,7 @@ interface EventCardCalendarProps {
 export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
     event,
     club,
-    clubId,
+    eventId,
     startTime,
     endTime,
     image,
@@ -34,12 +34,12 @@ export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
     tags
 }) => {
     const isHappening = happeningNow(startTime, endTime);
-    const isPast = endTime.getTime() < new Date().getTime();
+    const isPast = new Date(endTime).getTime() < new Date().getTime();
 
     return (
         <Box position="relative">
             <TouchableOpacity
-                onPress={() => router.navigate(`/event/${clubId}`)}
+                onPress={() => router.navigate(`/event/${eventId}`)}
             >
                 {isHappening && (
                     <Box {...styles.isHappeningContainer}>
@@ -62,7 +62,11 @@ export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
                             source={{ uri: image }}
                         />
                         <Box flex={2.5} flexDirection="column" gap="xxs">
-                            <Text variant="body-1">{event}</Text>
+                            <Text variant="body-1">
+                                {event.length >= 28
+                                    ? `${event.slice(0, 28).trim()}...`
+                                    : event}
+                            </Text>
                             <Box {...styles.cardContentContainer}>
                                 <Text variant="caption-1" color="darkGray">
                                     {`${eventTime(
@@ -78,7 +82,9 @@ export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
                                         source={{ uri: logo }}
                                     />
                                     <Text color="darkGray" variant="caption-1">
-                                        {club}
+                                        {club.length >= 16
+                                            ? `${club.slice(0, 16).trim()}...`
+                                            : club}
                                     </Text>
                                 </Box>
                             </Box>

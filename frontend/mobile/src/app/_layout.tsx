@@ -22,10 +22,10 @@ const InitalLayout = () => {
     const { accessToken } = useAppSelector((state) => state.user);
 
     useEffect(() => {
-        if (accessToken) {
+        if (!accessToken) {
             router.push('/(app)/');
         } else {
-            router.push('/(auth)/');
+            router.push('/(app)/profile');
         }
     }, [accessToken]);
 

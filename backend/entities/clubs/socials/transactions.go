@@ -3,6 +3,7 @@ package socials
 import (
 	"errors"
 
+	"github.com/GenerateNU/sac/backend/database/cache"
 	"github.com/GenerateNU/sac/backend/entities/models"
 
 	"github.com/GenerateNU/sac/backend/utilities"
@@ -26,8 +27,9 @@ func PutClubSocial(db *gorm.DB, social models.Social) (*models.Social, error) {
 }
 
 func GetClubSocials(db *gorm.DB, clubID uuid.UUID) ([]models.Social, error) {
-	var club models.Club
+	db = cache.SetUseCache(db, true)
 
+	var club models.Club
 	if err := db.Preload("Social").First(&club, clubID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, utilities.ErrNotFound

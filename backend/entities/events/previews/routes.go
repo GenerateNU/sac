@@ -7,10 +7,10 @@ import (
 )
 
 func EventPreviews(eventParams types.RouteParams) {
-	eventController := NewEventController(NewService(eventParams.ServiceParams))
+	controller := NewController(NewService(eventParams.ServiceParams))
 
-	// api/v1/events/previews/
-	eventParams.Router.Route("/previews", func(events fiber.Router) {
-		events.Get("/", eventParams.UtilityMiddleware.Paginator, eventController.GetEventPreviews)
+	// api/v1/events/previews/*
+	eventParams.Router.Route("/previews", func(r fiber.Router) {
+		r.Get("/", eventParams.UtilityMiddleware.Paginator, controller.GetEventPreviews)
 	})
 }

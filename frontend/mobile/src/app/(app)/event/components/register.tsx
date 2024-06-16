@@ -2,6 +2,7 @@ import React, { forwardRef, useCallback, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Alert, Linking } from 'react-native';
 
+import { EventType } from '@generatesac/lib';
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ZodError, z } from 'zod';
@@ -20,9 +21,9 @@ type Ref = BottomSheet;
 const SaveEventText = `By saving this event, you are automatically signed up for notifications and this event will be added to your calendar.`;
 
 interface RegisterSheetProps {
-    eventType: 'hybrid' | 'in-person' | 'virtual';
-    startTime: Date;
-    endTime: Date;
+    eventType: EventType;
+    startTime: string;
+    endTime: string;
     location: string;
     eventName: string;
     eventDetail: string;
@@ -54,6 +55,8 @@ const RegisterBottomSheet = forwardRef<Ref, RegisterSheetProps>(
             endTime: endTime
         };
 
+        console.log(createGoogleCalendarLink(CALENDAR_INFO));
+
         return (
             <BottomSheet
                 ref={ref}
@@ -81,7 +84,7 @@ const RegisterBottomSheet = forwardRef<Ref, RegisterSheetProps>(
 
 interface RegisterProps {
     setSheet: React.Dispatch<React.SetStateAction<string>>;
-    eventType: 'hybrid' | 'in-person' | 'virtual';
+    eventType: EventType;
 }
 
 type UserData = {
@@ -116,7 +119,6 @@ const Register: React.FC<RegisterProps> = ({ setSheet, eventType }) => {
             } else {
                 setSheet('save');
             }
-            console.log(data);
         } catch (error) {
             if (error instanceof ZodError) {
                 Alert.alert('Validation Error', error.errors[0].message);

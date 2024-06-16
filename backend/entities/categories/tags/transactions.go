@@ -6,6 +6,7 @@ import (
 	"github.com/garrettladley/fiberpaginate"
 	"github.com/google/uuid"
 
+	"github.com/GenerateNU/sac/backend/database/cache"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/utilities"
 
@@ -13,8 +14,9 @@ import (
 )
 
 func GetTagsByCategory(db *gorm.DB, categoryID uuid.UUID, pageInfo fiberpaginate.PageInfo) ([]models.Tag, error) {
-	var category models.Category
+	db = cache.SetUseCache(db, true)
 
+	var category models.Category
 	if err := db.Where("id = ?", categoryID).First(&category).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, utilities.ErrNotFound
@@ -32,6 +34,8 @@ func GetTagsByCategory(db *gorm.DB, categoryID uuid.UUID, pageInfo fiberpaginate
 }
 
 func GetTagByCategory(db *gorm.DB, categoryID uuid.UUID, tagID uuid.UUID) (*models.Tag, error) {
+	db = cache.SetUseCache(db, true)
+
 	var tag models.Tag
 	if err := db.Where("category_id = ? AND id = ?", categoryID, tagID).First(&tag).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

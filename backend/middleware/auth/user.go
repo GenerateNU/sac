@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"time"
+	"net/http"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/integrations/oauth/soth/sothic"
@@ -13,16 +13,8 @@ import (
 func (m *AuthMiddlewareHandler) UserAuthorizeById(c *fiber.Ctx) error {
 	strUser, err := sothic.GetFromSession("user", c)
 	if err != nil {
-		c.Cookie(&fiber.Cookie{
-			Name:    "redirect",
-			Value:   c.OriginalURL(),
-			Expires: time.Now().Add(5 * time.Minute),
-			// MARK: secure should be true in prod
-			// use go build tags to do this
-			HTTPOnly: true,
-		})
-
-		return c.Redirect("/api/v1/auth/login")
+		c.Set("redirect", "/api/v1/auth/login")
+		return c.SendStatus(http.StatusUnauthorized)
 	}
 
 	user := models.UnmarshalUser(strUser)

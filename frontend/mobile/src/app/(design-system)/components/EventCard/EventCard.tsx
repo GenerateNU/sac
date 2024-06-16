@@ -8,9 +8,9 @@ import { EventCardSmall } from './Variants/EventCardSmall';
 interface EventCardProps {
     event: string;
     club: string;
-    clubId: string;
-    startTime: Date;
-    endTime: Date;
+    eventId: string;
+    startTime: string;
+    endTime: string;
     tags?: Tag[];
     image: string;
     logo?: string;
@@ -20,7 +20,7 @@ interface EventCardProps {
 export const EventCard = ({
     event,
     club,
-    clubId,
+    eventId,
     startTime,
     endTime,
     image,
@@ -34,7 +34,7 @@ export const EventCard = ({
                 <EventCardBig
                     event={event}
                     club={club}
-                    clubId={clubId}
+                    eventId={eventId}
                     startTime={startTime}
                     endTime={endTime}
                     image={image}
@@ -45,7 +45,7 @@ export const EventCard = ({
                 <EventCardSmall
                     event={event}
                     club={club}
-                    clubId={clubId}
+                    eventId={eventId}
                     startTime={startTime}
                     endTime={endTime}
                     image={image}
@@ -56,7 +56,7 @@ export const EventCard = ({
                 <EventCardClub
                     event={event}
                     club={club}
-                    clubId={clubId}
+                    eventId={eventId}
                     startTime={startTime}
                     endTime={endTime}
                     image={image}
@@ -69,7 +69,7 @@ export const EventCard = ({
                 <EventCardCalendar
                     event={event}
                     club={club}
-                    clubId={clubId}
+                    eventId={eventId}
                     startTime={startTime}
                     endTime={endTime}
                     image={image}
@@ -82,7 +82,7 @@ export const EventCard = ({
                 <EventCardBig
                     event={event}
                     club={club}
-                    clubId={clubId}
+                    eventId={eventId}
                     startTime={startTime}
                     endTime={endTime}
                     image={image}

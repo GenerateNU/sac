@@ -17,6 +17,14 @@ const Layout = () => {
                     }
                 }}
             />
+            <Stack.Screen
+                name="user"
+                options={{
+                    headerTitle: 'Profile',
+                    headerTransparent: true,
+                    headerShown: false
+                }}
+            />
         </Stack>
     );
 };

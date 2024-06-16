@@ -8,15 +8,15 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type EventPreviewController struct {
+type Controller struct {
 	service Service
 }
 
-func NewEventController(service Service) *EventPreviewController {
-	return &EventPreviewController{service: service}
+func NewController(service Service) *Controller {
+	return &Controller{service: service}
 }
 
-func (e *EventPreviewController) GetEventPreviews(c *fiber.Ctx) error {
+func (e *Controller) GetEventPreviews(c *fiber.Ctx) error {
 	pageInfo, ok := fiberpaginate.FromContext(c)
 	if !ok {
 		return utilities.ErrExpectedPageInfo
@@ -27,9 +27,9 @@ func (e *EventPreviewController) GetEventPreviews(c *fiber.Ctx) error {
 		pageInfo = nil
 	}
 
-	events, err := e.service.GetEventPreviews(pageInfo, c.Query("start"), c.Query("end"))
+	previews, err := e.service.GetEventPreviews(pageInfo, c.Query("start"), c.Query("end"))
 	if err != nil {
 		return err
 	}
-	return c.Status(http.StatusOK).JSON(events)
+	return c.Status(http.StatusOK).JSON(previews)
 }

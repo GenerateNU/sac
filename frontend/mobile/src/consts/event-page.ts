@@ -5,36 +5,36 @@ export const description =
 export const tags: Tag[] = [
     {
         id: '1',
-        created_at: new Date('2023-01-01T10:00:00Z'),
-        updated_at: new Date('2023-01-10T10:00:00Z'),
+        created_at: '2023-01-01T10:00:00Z',
+        updated_at: '2023-01-10T10:00:00Z',
         name: 'Engineering',
         category_id: '100'
     },
     {
         id: '2',
-        created_at: new Date('2023-02-01T11:00:00Z'),
-        updated_at: new Date('2023-02-10T11:00:00Z'),
+        created_at: '2023-02-01T11:00:00Z',
+        updated_at: '2023-02-10T11:00:00Z',
         name: 'Computer Science',
         category_id: '101'
     },
     {
         id: '3',
-        created_at: new Date('2023-03-01T12:00:00Z'),
-        updated_at: new Date('2023-03-10T12:00:00Z'),
+        created_at: '2023-03-01T12:00:00Z',
+        updated_at: '2023-03-10T12:00:00Z',
         name: 'Design',
         category_id: '102'
     },
     {
         id: '4',
-        created_at: new Date('2023-04-01T13:00:00Z'),
-        updated_at: new Date('2023-04-10T13:00:00Z'),
+        created_at: '2023-04-01T13:00:00Z',
+        updated_at: '2023-04-10T13:00:00Z',
         name: 'Tabling',
         category_id: '103'
     },
     {
         id: '5',
-        created_at: new Date('2023-05-01T14:00:00Z'),
-        updated_at: new Date('2023-05-10T14:00:00Z'),
+        created_at: '2023-05-01T14:00:00Z',
+        updated_at: '2023-05-10T14:00:00Z',
         name: 'Showcase',
         category_id: '104'
     }
@@ -43,63 +43,59 @@ export const tags: Tag[] = [
 export const events: Event[] = [
     {
         id: 'event1',
-        created_at: new Date('2024-06-01T08:00:00Z'),
-        updated_at: new Date('2024-06-01T08:00:00Z'),
-        name: 'Networking Mixer',
-        preview: 'Join us for an evening of networking and socializing!',
-        content:
-            'Our Networking Mixer event provides a casual environment for professionals to connect and build relationships.',
-        start_time: new Date('2024-06-15T18:00:00Z'),
-        end_time: new Date('2024-06-15T20:00:00Z'),
-        location: 'City Center Lounge',
-        event_type: 'open',
-        is_recurring: false,
-        host: 'Business Networking Group',
-        meeting_link: 'https://example.com/networking-mixer'
+        created_at: '2024-06-01T08:00:00Z',
+        updated_at: '2024-06-01T08:00:00Z',
+        name: 'Web Development Workshop',
+        preview: 'Learn the latest web development techniques and frameworks!',
+        description:
+            'This workshop covers topics such as HTML, CSS, JavaScript, and popular frontend frameworks like React and Angular.',
+        start_time: '2024-07-15T10:00:00Z',
+        end_time: '2024-07-15T14:00:00Z',
+        location: 'Tech Hub Co-working Space',
+        event_type: 'in_person',
+        host: 'Tech Skills Academy',
+        is_public: true,
+        is_draft: false,
+        is_archived: false,
+        link: 'https://example.com/web-development-workshop',
+        is_recurring: false
     },
     {
         id: 'event2',
-        created_at: new Date('2024-06-01T09:00:00Z'),
-        updated_at: new Date('2024-06-01T09:00:00Z'),
-        name: 'Exclusive Seminar',
-        preview: 'Limited seating available! Reserve your spot now.',
-        content:
-            'Our Exclusive Seminar offers in-depth insights into the latest industry trends and best practices.',
-        start_time: new Date('2024-06-20T10:00:00Z'),
-        end_time: new Date('2024-06-20T12:00:00Z'),
-        location: 'Grand Ballroom, XYZ Hotel',
-        event_type: 'membersOnly',
-        is_recurring: false,
-        host: 'Industry Experts Association'
+        created_at: '2024-06-15T09:00:00Z',
+        updated_at: '2024-06-15T09:00:00Z',
+        name: 'AI Conference',
+        preview: 'Explore the latest advancements in artificial intelligence!',
+        description:
+            'Join experts from academia and industry as they discuss topics such as machine learning, deep learning, natural language processing, and more.',
+        start_time: '2024-08-20T09:00:00Z',
+        end_time: '2024-08-21T17:00:00Z',
+        location: 'Convention Center',
+        event_type: 'hybrid',
+        host: 'AI Institute',
+        is_public: true,
+        is_draft: false,
+        is_archived: false,
+        link: 'https://example.com/ai-conference',
+        is_recurring: false
     },
     {
         id: 'event3',
-        created_at: new Date('2024-06-02T10:00:00Z'),
-        updated_at: new Date('2024-06-02T10:00:00Z'),
-        name: 'Weekly Yoga Class',
-        preview: 'Relax, rejuvenate, and find your inner balance.',
-        content:
-            'Join us every Thursday for a refreshing yoga session suitable for all levels.',
-        start_time: new Date('2024-06-06T17:30:00Z'),
-        end_time: new Date('2024-06-06T18:30:00Z'),
-        location: 'Sunset Yoga Studio',
-        event_type: 'open',
-        is_recurring: true,
-        host: 'Sunset Yoga Studio'
-    },
-    {
-        id: 'event4',
-        created_at: new Date('2024-06-02T11:00:00Z'),
-        updated_at: new Date('2024-06-02T11:00:00Z'),
-        name: "Beginner's Coding Workshop",
-        preview: 'Learn the basics of coding in a supportive environment.',
-        content:
-            'This workshop is designed for beginners with no prior coding experience.',
-        start_time: new Date('2024-06-12T09:00:00Z'),
-        end_time: new Date('2024-06-12T12:00:00Z'),
-        location: 'Tech Hub Co-working Space',
-        event_type: 'open',
-        is_recurring: false,
-        host: 'Tech Skills Academy'
+        created_at: '2024-07-01T10:00:00Z',
+        updated_at: '2024-07-01T10:00:00Z',
+        name: 'Hackathon',
+        preview: 'Put your coding skills to the test in our annual hackathon!',
+        description:
+            'Gather with fellow developers to collaborate on projects, solve challenges, and showcase your creativity.',
+        start_time: '2024-09-10T12:00:00Z',
+        end_time: '2024-09-12T12:00:00Z',
+        location: 'University Campus',
+        event_type: 'in_person',
+        host: 'Developer Community',
+        is_public: true,
+        is_draft: false,
+        is_archived: false,
+        link: 'https://example.com/hackathon',
+        is_recurring: false
     }
 ];

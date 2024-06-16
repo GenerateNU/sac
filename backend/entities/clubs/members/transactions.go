@@ -1,6 +1,7 @@
 package members
 
 import (
+	"github.com/GenerateNU/sac/backend/database/cache"
 	"github.com/GenerateNU/sac/backend/entities/clubs"
 	"github.com/GenerateNU/sac/backend/entities/clubs/followers"
 	"github.com/GenerateNU/sac/backend/entities/models"
@@ -11,20 +12,6 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
-
-func GetClubMembers(db *gorm.DB, clubID uuid.UUID, pageInfo fiberpaginate.PageInfo) ([]models.User, error) {
-	club, err := clubs.GetClub(db, clubID)
-	if err != nil {
-		return nil, err
-	}
-
-	var users []models.User
-	if err := db.Scopes(utilities.IntoScope(pageInfo, db)).Model(&club).Association("Member").Find(&users); err != nil {
-		return nil, err
-	}
-
-	return users, nil
-}
 
 func CreateClubMember(db *gorm.DB, clubID uuid.UUID, userID uuid.UUID) error {
 	user, err := users.GetUser(db, userID)
@@ -69,6 +56,22 @@ func CreateClubMember(db *gorm.DB, clubID uuid.UUID, userID uuid.UUID) error {
 	}
 
 	return tx.Commit().Error
+}
+
+func GetClubMembers(db *gorm.DB, clubID uuid.UUID, pageInfo fiberpaginate.PageInfo) ([]models.User, error) {
+	db = cache.SetUseCache(db, true)
+
+	club, err := clubs.GetClub(db, clubID)
+	if err != nil {
+		return nil, err
+	}
+
+	var users []models.User
+	if err := db.Scopes(utilities.IntoScope(pageInfo, db)).Model(&club).Association("Member").Find(&users); err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }
 
 func DeleteClubMember(db *gorm.DB, clubID uuid.UUID, userID uuid.UUID) error {

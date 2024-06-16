@@ -3,6 +3,7 @@ package events
 import (
 	"errors"
 
+	"github.com/GenerateNU/sac/backend/database/cache"
 	"github.com/GenerateNU/sac/backend/entities/clubs"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/transactions"
@@ -13,8 +14,9 @@ import (
 )
 
 func GetEvents(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Event, error) {
-	var events []models.Event
+	db = cache.SetUseCache(db, true)
 
+	var events []models.Event
 	if err := db.Scopes(utilities.IntoScope(pageInfo, db)).Find(&events).Error; err != nil {
 		return nil, err
 	}
@@ -23,13 +25,13 @@ func GetEvents(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Event, er
 }
 
 func GetEvent(db *gorm.DB, eventID uuid.UUID, preloads ...transactions.OptionalQuery) (*models.Event, error) {
-	var event models.Event
-
-	query := db
+	query := cache.SetUseCache(db, true)
 
 	for _, preload := range preloads {
 		query = preload(query)
 	}
+
+	var event models.Event
 	if err := query.First(&event, eventID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, utilities.ErrNotFound
@@ -41,6 +43,8 @@ func GetEvent(db *gorm.DB, eventID uuid.UUID, preloads ...transactions.OptionalQ
 }
 
 func GetEventHostAdminIDs(db *gorm.DB, eventID uuid.UUID) ([]uuid.UUID, error) {
+	db = cache.SetUseCache(db, true)
+
 	event, err := GetEvent(db, eventID)
 	if err != nil {
 		return nil, err
@@ -50,6 +54,8 @@ func GetEventHostAdminIDs(db *gorm.DB, eventID uuid.UUID) ([]uuid.UUID, error) {
 }
 
 func GetFirstEventInSeries(db *gorm.DB, seriesID uuid.UUID) (*models.Event, error) {
+	db = cache.SetUseCache(db, true)
+
 	var event models.Event
 	if err := db.Where("series_id = ?", seriesID).First(&event).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

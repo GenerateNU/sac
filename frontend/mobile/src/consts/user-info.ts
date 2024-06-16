@@ -17,119 +17,9 @@ export const GRADUATION_CYCLE: Item[] = [
     { value: 'May', key: 'may' }
 ];
 
-export const MAJOR_ARR = [
-    'Africana Studies',
-    'American Sign Language',
-    'American Sign Language – English Interpreting',
-    'Applied Physics',
-    'Architectural Studies',
-    'Architecture',
-    'Art: Art, Visual Studies',
-    'Behavioral Neuroscience*',
-    'Biochemistry',
-    'Bioengineering',
-    'Biology',
-    'Biomedical Physics',
-    'Bouvé Undeclared',
-    'Business Administration: Accounting',
-    'Business Administration: Accounting and Advisory Services',
-    'Business Administration: Brand Management',
-    'Business Administration: Business Analytics',
-    'Business Administration: Corporate Innovation',
-    'Business Administration: Entrepreneurial Startups',
-    'Business Administration: Family Business',
-    'Business Administration: Finance',
-    'Business Administration: Fintech',
-    'Business Administration: Healthcare Management and Consulting',
-    'Business Administration: Management',
-    'Business Administration: Management Information Systems',
-    'Business Administration: Marketing',
-    'Business Administration: Marketing Analytics',
-    'Business Administration: Social Innovation and Entrepreneurship',
-    'Business Administration: Supply Chain Management',
-    'Business Administration: Undeclared',
-    'Business Administration',
-    'CAMD Undeclared',
-    'Cell and Molecular Biology',
-    'Chemical Engineering',
-    'Chemistry',
-    'Civil Engineering',
-    'COE Undeclared',
-    'Communication Studies',
-    'Computer Engineering',
-    'Computer Science',
-    'Computing and Law',
-    'Criminology and Criminal Justice',
-    'Cultural Anthropology',
-    'Cybersecurity',
-    'Data Science',
-    'Design',
-    'Economics',
-    'Electrical Engineering',
-    'English',
-    'Environmental and Sustainability Sciences',
-    'Environmental Engineering',
-    'Environmental Science',
-    'Environmental Studies',
-    'Explore Program for undeclared students',
-    'Game Art and Animation',
-    'Game Design',
-    'Global Asian Studies',
-    'Health Science',
-    'History',
-    'History, Culture, and Law',
-    'Human Services',
-    'Industrial Engineering',
-    'International Affairs',
-    'International Business: Accounting',
-    'International Business: Accounting and Advisory Services',
-    'International Business: Brand Management',
-    'International Business: Business Analytics',
-    'International Business: Corporate Innovation',
-    'International Business: Entrepreneurial Startups',
-    'International Business: Family Business',
-    'International Business: Finance',
-    'International Business: Fintech',
-    'International Business: Healthcare Management and Consulting',
-    'International Business: Management',
-    'International Business: Management Information Systems',
-    'International Business: Marketing',
-    'International Business: Marketing Analytics',
-    'International Business: Social Innovation and Entrepreneurship',
-    'International Business: Supply Chain Management',
-    'International Business: Undeclared',
-    'Journalism',
-    'Landscape Architecture',
-    'Linguistics',
-    'Marine Biology',
-    'Mathematics',
-    'Mechanical Engineering',
-    'Media and Screen Studies',
-    'Media Arts',
-    'Music',
-    'Music Industry',
-    'Music Technology',
-    'Northeastern Explore Program (Undeclared)',
-    'Nursing',
-    'Pharmaceutical Sciences',
-    'Pharmacy (PharmD)',
-    'Philosophy',
-    'Physics',
-    'Political Science',
-    'Politics, Philosophy, Economics',
-    'Psychology',
-    'Public Health',
-    'Public Relations',
-    'Religious Studies',
-    'Sociology',
-    'Spanish',
-    'Speech Language Pathology and Audiology',
-    'Theatre'
-];
-
 export const graduationYear = () => {
     var year = new Date().getFullYear();
-    const range = 5;
+    const range = 6;
     const graduationYears: Item[] = [];
     for (let i = 0; i < range; i++) {
         graduationYears.push({
@@ -140,13 +30,228 @@ export const graduationYear = () => {
     return graduationYears;
 };
 
-export const major = () => {
-    const majors: Item[] = [];
-    for (let i = 0; i < MAJOR_ARR.length; i++) {
-        majors.push({
-            key: MAJOR_ARR[i],
-            value: MAJOR_ARR[i]
+export const startYear = () => {
+    var year = new Date().getFullYear();
+    const graduationYears: Item[] = [];
+    for (let i = 5; i >= 0; i--) {
+        graduationYears.push({
+            key: String(year - i),
+            value: String(year - i)
         });
     }
-    return majors;
+    return graduationYears;
 };
+
+export const MAJORS: Item[] = [
+    { key: 'africanaStudies', value: 'Africana Studies' },
+    { key: 'americanSignLanguage', value: 'American Sign Language' },
+    {
+        key: 'americanSignLanguage-EnglishInterpreting',
+        value: 'American Sign Language-English Interpreting'
+    },
+    { key: 'appliedPhysics', value: 'Applied Physics' },
+    { key: 'architecturalStudies', value: 'Architectural Studies' },
+    { key: 'architecture', value: 'Architecture' },
+    { key: 'art:ArtVisualStudies', value: 'Art: Art Visual Studies' },
+    { key: 'behavioralNeuroscience', value: 'Behavioral Neuroscience' },
+    { key: 'biochemistry', value: 'Biochemistry' },
+    { key: 'bioengineering', value: 'Bioengineering' },
+    { key: 'biology', value: 'Biology' },
+    { key: 'biomedicalPhysics', value: 'Biomedical Physics' },
+    { key: 'businessAdministration', value: 'Business Administration' },
+    {
+        key: 'businessAdministration:Accounting',
+        value: 'Business Administration: Accounting'
+    },
+    {
+        key: 'businessAdministration:AccountingAndAdvisoryServices',
+        value: 'Business Administration: Accounting and Advisory Services'
+    },
+    {
+        key: 'businessAdministration:BrandManagement',
+        value: 'Business Administration: Brand Management'
+    },
+    {
+        key: 'businessAdministration:BusinessAnalytics',
+        value: 'Business Administration: Business Analytics'
+    },
+    {
+        key: 'businessAdministration:CorporateInnovation',
+        value: 'Business Administration: Corporate Innovation'
+    },
+    {
+        key: 'businessAdministration:EntrepreneurialStartups',
+        value: 'Business Administration: Entrepreneurial Startups'
+    },
+    {
+        key: 'businessAdministration:FamilyBusiness',
+        value: 'Business Administration: Family Business'
+    },
+    {
+        key: 'businessAdministration:Finance',
+        value: 'Business Administration: Finance'
+    },
+    {
+        key: 'businessAdministration:Fintech',
+        value: 'Business Administration: Fintech'
+    },
+    {
+        key: 'businessAdministration:HealthcareManagementAndConsulting',
+        value: 'Business Administration: Healthcare Management and Consulting'
+    },
+    {
+        key: 'businessAdministration:Management',
+        value: 'Business Administration: Management'
+    },
+    {
+        key: 'businessAdministration:ManagementInformationSystems',
+        value: 'Business Administration: Management Information Systems'
+    },
+    {
+        key: 'businessAdministration:Marketing',
+        value: 'Business Administration: Marketing'
+    },
+    {
+        key: 'businessAdministration:MarketingAnalytics',
+        value: 'Business Administration: Marketing Analytics'
+    },
+    {
+        key: 'businessAdministration:SocialInnovationAndEntrepreneurship',
+        value: 'Business Administration: Social Innovation and Entrepreneurship'
+    },
+    {
+        key: 'businessAdministration:SupplyChainManagement',
+        value: 'Business Administration: Supply Chain Management'
+    },
+    { key: 'cellAndMolecularBiology', value: 'Cell and Molecular Biology' },
+    { key: 'chemicalEngineering', value: 'Chemical Engineering' },
+    { key: 'chemistry', value: 'Chemistry' },
+    { key: 'civilEngineering', value: 'Civil Engineering' },
+    { key: 'communicationStudies', value: 'Communication Studies' },
+    { key: 'computerEngineering', value: 'Computer Engineering' },
+    { key: 'computerScience', value: 'Computer Science' },
+    { key: 'computingAndLaw', value: 'Computing and Law' },
+    {
+        key: 'criminologyAndCriminalJustice',
+        value: 'Criminology and Criminal Justice'
+    },
+    { key: 'culturalAnthropology', value: 'Cultural Anthropology' },
+    { key: 'cybersecurity', value: 'Cybersecurity' },
+    { key: 'dataScience', value: 'Data Science' },
+    { key: 'design', value: 'Design' },
+    { key: 'economics', value: 'Economics' },
+    { key: 'electricalEngineering', value: 'Electrical Engineering' },
+    { key: 'english', value: 'English' },
+    {
+        key: 'environmentalAndSustainabilityStudies',
+        value: 'Environmental and Sustainability Studies'
+    },
+    { key: 'environmentalEngineering', value: 'Environmental Engineering' },
+    { key: 'environmentalScience', value: 'Environmental Science' },
+    { key: 'environmentalStudies', value: 'Environmental Studies' },
+    { key: 'gameArtAndAnimation', value: 'Game Art and Animation' },
+    { key: 'gameDesign', value: 'Game Design' },
+    { key: 'globalAsianStudies', value: 'Global Asian Studies' },
+    { key: 'healthScience', value: 'Health Science' },
+    { key: 'history', value: 'History' },
+    { key: 'historyCultureAndLaw', value: 'History, Culture, and Law' },
+    { key: 'humanServices', value: 'Human Services' },
+    { key: 'industrialEngineering', value: 'Industrial Engineering' },
+    { key: 'internationalAffairs', value: 'International Affairs' },
+    { key: 'internationalBusiness', value: 'International Business' },
+    {
+        key: 'internationalBusiness:Accounting',
+        value: 'International Business: Accounting'
+    },
+    {
+        key: 'internationalBusiness:AccountingAndAdvisoryServices',
+        value: 'International Business: Accounting and Advisory Services'
+    },
+    {
+        key: 'internationalBusiness:BrandManagement',
+        value: 'International Business: Brand Management'
+    },
+    {
+        key: 'internationalBusiness:BusinessAnalytics',
+        value: 'International Business: Business Analytics'
+    },
+    {
+        key: 'internationalBusiness:CorporateInnovation',
+        value: 'International Business: Corporate Innovation'
+    },
+    {
+        key: 'internationalBusiness:EntrepreneurialStartups',
+        value: 'International Business: Entrepreneurial Startups'
+    },
+    {
+        key: 'internationalBusiness:FamilyBusiness',
+        value: 'International Business: Family Business'
+    },
+    {
+        key: 'internationalBusiness:Finance',
+        value: 'International Business: Finance'
+    },
+    {
+        key: 'internationalBusiness:Fintech',
+        value: 'International Business: Fintech'
+    },
+    {
+        key: 'internationalBusiness:HealthcareManagementAndConsulting',
+        value: 'International Business: Healthcare Management and Consulting'
+    },
+    {
+        key: 'internationalBusiness:Management',
+        value: 'International Business: Management'
+    },
+    {
+        key: 'internationalBusiness:ManagementInformationSystems',
+        value: 'International Business: Management Information Systems'
+    },
+    {
+        key: 'internationalBusiness:Marketing',
+        value: 'International Business: Marketing'
+    },
+    {
+        key: 'internationalBusiness:MarketingAnalytics',
+        value: 'International Business: Marketing Analytics'
+    },
+    {
+        key: 'internationalBusiness:SocialInnovationAndEntrepreneurship',
+        value: 'International Business: Social Innovation and Entrepreneurship'
+    },
+    {
+        key: 'internationalBusiness:SupplyChainManagement',
+        value: 'International Business: Supply Chain Management'
+    },
+    { key: 'journalism', value: 'Journalism' },
+    { key: 'landscapeArchitecture', value: 'Landscape Architecture' },
+    { key: 'linguistics', value: 'Linguistics' },
+    { key: 'marineBiology', value: 'Marine Biology' },
+    { key: 'mathematics', value: 'Mathematics' },
+    { key: 'mechanicalEngineering', value: 'Mechanical Engineering' },
+    { key: 'mediaAndScreenStudies', value: 'Media and Screen Studies' },
+    { key: 'mediaArts', value: 'Media Arts' },
+    { key: 'music', value: 'Music' },
+    { key: 'musicTechnology', value: 'Music Technology' },
+    { key: 'nursing', value: 'Nursing' },
+    { key: 'pharmaceuticalSciences', value: 'Pharmaceutical Sciences' },
+    { key: 'pharmacy(PharmD)', value: 'Pharmacy (PharmD)' },
+    { key: 'philosophy', value: 'Philosophy' },
+    { key: 'physics', value: 'Physics' },
+    { key: 'politicalScience', value: 'Political Science' },
+    {
+        key: 'politicsPhilosophyEconomics',
+        value: 'Politics, Philosophy, and Economics'
+    },
+    { key: 'psychology', value: 'Psychology' },
+    { key: 'publicHealth', value: 'Public Health' },
+    { key: 'publicRelations', value: 'Public Relations' },
+    { key: 'religiousStudies', value: 'Religious Studies' },
+    { key: 'sociology', value: 'Sociology' },
+    { key: 'spanish', value: 'Spanish' },
+    {
+        key: 'speechLanguagePathologyAndAudiology',
+        value: 'Speech Language Pathology and Audiology'
+    },
+    { key: 'theatre', value: 'Theatre' }
+];

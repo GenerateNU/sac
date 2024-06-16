@@ -55,23 +55,27 @@ func BadRequest(err error) APIError {
 }
 
 func InvalidJSON() APIError {
-	return NewAPIError(http.StatusBadRequest, fmt.Errorf("invalid JSON request data"))
+	return NewAPIError(http.StatusBadRequest, errors.New("invalid JSON request data"))
 }
 
 func Unauthorized() APIError {
-	return NewAPIError(http.StatusUnauthorized, fmt.Errorf("unauthorized"))
+	return NewAPIError(http.StatusUnauthorized, errors.New("unauthorized"))
 }
 
 func Forbidden() APIError {
-	return NewAPIError(http.StatusForbidden, fmt.Errorf("forbidden"))
+	return NewAPIError(http.StatusForbidden, errors.New("forbidden"))
+}
+
+func ForbiddenReason(err error) APIError {
+	return NewAPIError(http.StatusForbidden, err)
 }
 
 func Conflict() APIError {
-	return NewAPIError(http.StatusConflict, fmt.Errorf("conflict"))
+	return NewAPIError(http.StatusConflict, errors.New("conflict"))
 }
 
 func InternalServerError() APIError {
-	return NewAPIError(http.StatusInternalServerError, fmt.Errorf("internal server error"))
+	return NewAPIError(http.StatusInternalServerError, errors.New("internal server error"))
 }
 
 func ErrorHandler(c *fiber.Ctx, err error) error {
