@@ -1,5 +1,4 @@
 import React, { forwardRef, useCallback } from 'react';
-import { Pressable } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { router } from 'expo-router';

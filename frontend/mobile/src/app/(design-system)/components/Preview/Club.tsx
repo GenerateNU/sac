@@ -1,5 +1,5 @@
 import React, { forwardRef, useCallback, useState } from 'react';
-import { Linking, Pressable } from 'react-native';
+import { Linking } from 'react-native';
 
 import { router } from 'expo-router';
 
