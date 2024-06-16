@@ -31,11 +31,12 @@ const (
 	ProviderParamKey key = iota
 )
 
-// Session can/should be set by applications using sothic.
 var (
+	// Session can/should be set by applications using sothic.
 	SessionStore *session.Store
-	encrypter    func(string) (string, error)
-	decrypter    func(string) (string, error)
+
+	encrypter func(string) (string, error)
+	decrypter func(string) (string, error)
 )
 
 // MUST be called before using the package
@@ -314,6 +315,7 @@ func GetFromSession(key string, c *fiber.Ctx) (string, error) {
 
 	value, err := getSessionValue(session, key)
 	if err != nil {
+		slog.Error("error getting session value", "error", err)
 		return "", errors.New("could not find a matching session for this request")
 	}
 
@@ -323,11 +325,15 @@ func GetFromSession(key string, c *fiber.Ctx) (string, error) {
 func getSessionValue(store *session.Session, key string) (string, error) {
 	value := store.Get(key)
 	if value == nil {
-		return "", errors.New("could not find a matching session for this request")
+		return "", fmt.Errorf("key %s not found in session", key)
 	}
 
-	rdata := strings.NewReader(value.(string))
-	r, err := gzip.NewReader(rdata)
+	decrypted, err := decrypter(value.(string))
+	if err != nil {
+		return "", err
+	}
+
+	r, err := gzip.NewReader(strings.NewReader(decrypted))
 	if err != nil {
 		return "", err
 	}
@@ -336,7 +342,7 @@ func getSessionValue(store *session.Session, key string) (string, error) {
 		return "", err
 	}
 
-	return decrypter(string(s))
+	return string(s), nil
 }
 
 func updateSessionValue(session *session.Session, key, value string) error {
