@@ -15,9 +15,9 @@ import { sharedStyles } from '../shared/styles';
 interface EventCardClubProps {
     event: string;
     club: string;
-    clubId: string;
-    startTime: Date;
-    endTime: Date;
+    eventId: string;
+    startTime: string;
+    endTime: string;
     image: string;
     logo: string;
     tags?: Tag[];
@@ -26,7 +26,7 @@ interface EventCardClubProps {
 export const EventCardClub: React.FC<EventCardClubProps> = ({
     event,
     club,
-    clubId,
+    eventId,
     startTime,
     endTime,
     image,
@@ -36,7 +36,7 @@ export const EventCardClub: React.FC<EventCardClubProps> = ({
     return (
         <Box>
             <TouchableOpacity
-                onPress={() => router.navigate(`/event/${clubId}`)}
+                onPress={() => router.navigate(`/event/${eventId}`)}
             >
                 <Box {...styles.cardContainer}>
                     <Box {...styles.cardSubContainer}>

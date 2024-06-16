@@ -10,7 +10,7 @@ import { Box, Text } from '../../(design-system)';
 import { MultiSelect, SelectOne } from '../../(design-system)';
 import { Button } from '../../(design-system)/components/Button/Button';
 import { TextBox } from '../../(design-system)/components/Textbox/Textbox';
-import { COLLEGE, graduationYear, major } from '../../../consts/user-info';
+import { COLLEGE, MAJORS, graduationYear } from '../../../consts/user-info';
 
 type UserInfoData = {
     major: Item[];
@@ -85,7 +85,7 @@ export const UserInfo: React.FC<UserInfoProps> = ({ onPress }) => {
                     <MultiSelect
                         onChange={onChange}
                         title="Major"
-                        data={major()}
+                        data={MAJORS}
                         limit={3}
                         value={value || []}
                         placeholder="Select up to 3 majors"

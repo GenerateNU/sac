@@ -58,7 +58,6 @@ const CalendarPage = () => {
                         setError(false);
                     }
 
-                    console.log(data);
                     return parseData(startTime, endTime, data);
                 }
             );

@@ -54,6 +54,7 @@ export const TextBox: React.FC<TextboxProps> = ({
                 maxLength={maxLength}
                 secureTextEntry={secureTextEntry}
                 {...styles.textInput}
+                opacity={readOnly ? 0.5 : 1}
                 borderColor={error ? 'darkRed' : 'gray'}
             />
             <Box gap="xxs" flexDirection="row" alignItems="center">

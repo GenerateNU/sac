@@ -25,7 +25,7 @@ const InitalLayout = () => {
         if (!accessToken) {
             router.push('/(app)/');
         } else {
-            router.push('/(auth)/');
+            router.push('/(app)/profile');
         }
     }, [accessToken]);
 
