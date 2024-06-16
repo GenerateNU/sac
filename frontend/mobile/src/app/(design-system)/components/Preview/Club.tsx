@@ -1,6 +1,4 @@
 import React, { forwardRef, useCallback, useState } from 'react';
-import { Linking } from 'react-native';
-
 import { router } from 'expo-router';
 
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
@@ -71,7 +69,7 @@ export const ClubPreview = forwardRef<Ref, ClubPreviewProps>(
             <BottomSheet
                 ref={ref}
                 index={-1}
-                snapPoints={mockClub.is_recruiting ? ['50%'] : ['40%']}
+                snapPoints={['45%']}
                 enablePanDownToClose={true}
                 handleComponent={logo}
                 onAnimate={(_, toIndex: number) => {
@@ -90,45 +88,13 @@ export const ClubPreview = forwardRef<Ref, ClubPreviewProps>(
                     <Text paddingTop="s" variant="header-1">
                         {mockClub.name}
                     </Text>
-                    {mockClub.is_recruiting && (
-                        <Button
-                            size="md"
-                            onPress={() =>
-                                Linking.openURL(mockClub.application_link)
-                            }
-                            alignItems="flex-start"
-                            variant="standardButton"
-                            backgroundColor={mockClub.color}
-                        >
-                            <Box
-                                width="100%"
-                                alignItems="flex-start"
-                                flexDirection="column"
-                                backgroundColor={mockClub.color}
-                            >
-                                <Text
-                                    color={textColorVariants[mockClub.color]}
-                                    variant="body-1"
-                                    fontWeight={500}
-                                >
-                                    {mockClub.application_title}
-                                </Text>
-                                <Text
-                                    color={textColorVariants[mockClub.color]}
-                                    variant="body-2"
-                                >
-                                    Application Form: Apply Now!
-                                </Text>
-                            </Box>
-                        </Button>
-                    )}
                     <Box flexDirection="column" gap="xs">
-                        <Text>Who are we?</Text>
-                        <Text variant="caption-1">{mockClub.preview}</Text>
+                        <Text fontWeight='bold'>Who are we?</Text>
+                        <Text variant="body-2">{mockClub.preview}</Text>
                     </Box>
                     <Button
                         onPress={() => router.push(`/club/${clubId}`)}
-                        width="50%"
+                        width="100%"
                         size="md"
                         variant="standardButton"
                         color={mockClub.color}

@@ -10,3 +10,4 @@ export * from "./event";
 export * from "./file";
 export * from "./pointOfContact";
 export * from "./verification";
+export * from "./recruitment";

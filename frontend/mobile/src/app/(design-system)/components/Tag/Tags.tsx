@@ -5,15 +5,15 @@ import { Box } from '../Box/Box';
 import { Text } from '../Text/Text';
 import { Tag as TagComponent } from './Tag';
 
-interface EventTagsProps {
+interface PageTags {
     tags: Tag[];
     color: SACColors;
 }
 
-export const EventPageTags: React.FC<EventTagsProps> = ({ tags, color }) => {
+export const PageTags: React.FC<PageTags> = ({ tags, color }) => {
     const renderTag = (item: Tag) => (
         <TagComponent key={item.id} variant="selected" color={color}>
-            <Text variant="body-2">{item.name}</Text>
+            <Text variant="caption-3">{item.name}</Text>
         </TagComponent>
     );
 

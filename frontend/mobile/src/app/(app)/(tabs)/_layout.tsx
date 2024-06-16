@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { Tabs } from 'expo-router';
 
@@ -7,9 +7,12 @@ import { faCalendarDays } from '@fortawesome/free-solid-svg-icons/faCalendarDays
 import { faHouse } from '@fortawesome/free-solid-svg-icons/faHouse';
 import { faUser } from '@fortawesome/free-solid-svg-icons/faUser';
 
-import { Text } from '@/src/app/(design-system)';
+import { EventPreview, Text } from '@/src/app/(design-system)';
 import { Box } from '@/src/app/(design-system)';
 import { Icon } from '@/src/app/(design-system)/components/Icon/Icon';
+import { useAppDispatch, useAppSelector } from '@/src/store/store';
+import BottomSheet from '@gorhom/bottom-sheet';
+import { setEventShouldPreview } from '@/src/store/slices/eventSlice';
 
 interface TabBarLabelProps {
     focused: boolean;
@@ -34,55 +37,75 @@ const TabBarIcon: React.FC<TabBarIconProps> = ({ focused, icon }) => (
 );
 
 const Layout = () => {
+    const dispatch = useAppDispatch();
+    const eventPreviewRef = useRef<BottomSheet>(null);
+    const clubPreviewRef = useRef<BottomSheet>(null);
+
+    const { shouldPreview: eventShouldPreview, id: eventId } = useAppSelector((state) => state.event);
+
+    useEffect(() => {
+        dispatch(setEventShouldPreview(false));
+    }, [])
+
+    useEffect(() => {
+        if (eventShouldPreview) {
+            eventPreviewRef.current?.snapToIndex(0);
+        }
+    }, [eventShouldPreview]);
+
+
     return (
-        <Tabs
-            screenOptions={{
-                tabBarShowLabel: false,
-                tabBarStyle: {
-                    borderTopWidth: 1,
-                    borderTopColor: 'gray',
-                    height: 85
-                }
-            }}
-            sceneContainerStyle={{
-                backgroundColor: 'white'
-            }}
-        >
-            <Tabs.Screen
-                name="index"
-                options={{
-                    title: 'Home',
-                    headerShown: false,
-                    tabBarLabel: ({ focused }) =>
-                        TabBarLabel({ focused, title: 'Home' }),
-                    tabBarIcon: ({ focused }) =>
-                        TabBarIcon({ focused, icon: faHouse })
+        <>
+            <Tabs
+                screenOptions={{
+                    tabBarShowLabel: false,
+                    tabBarStyle: {
+                        borderTopWidth: 1,
+                        borderTopColor: 'gray',
+                        height: 85
+                    }
                 }}
-            />
-            <Tabs.Screen
-                name="calendar"
-                options={{
-                    title: 'Calendar',
-                    headerShown: false,
-                    tabBarLabel: ({ focused }) =>
-                        TabBarLabel({ focused, title: 'Calendar' }),
-                    tabBarIcon: ({ focused }) =>
-                        TabBarIcon({ focused, icon: faCalendarDays })
+                sceneContainerStyle={{
+                    backgroundColor: 'white'
                 }}
-            />
-            <Tabs.Screen
-                name="profile"
-                options={{
-                    title: 'Profile',
-                    headerShown: true,
-                    headerTransparent: true,
-                    tabBarLabel: ({ focused }) =>
-                        TabBarLabel({ focused, title: 'Profile' }),
-                    tabBarIcon: ({ focused }) =>
-                        TabBarIcon({ focused, icon: faUser })
-                }}
-            />
-        </Tabs>
+            >
+                <Tabs.Screen
+                    name="index"
+                    options={{
+                        title: 'Home',
+                        headerShown: false,
+                        tabBarLabel: ({ focused }) =>
+                            TabBarLabel({ focused, title: 'Home' }),
+                        tabBarIcon: ({ focused }) =>
+                            TabBarIcon({ focused, icon: faHouse })
+                    }}
+                />
+                <Tabs.Screen
+                    name="calendar"
+                    options={{
+                        title: 'Calendar',
+                        headerShown: false,
+                        tabBarLabel: ({ focused }) =>
+                            TabBarLabel({ focused, title: 'Calendar' }),
+                        tabBarIcon: ({ focused }) =>
+                            TabBarIcon({ focused, icon: faCalendarDays })
+                    }}
+                />
+                <Tabs.Screen
+                    name="profile"
+                    options={{
+                        title: 'Profile',
+                        headerShown: true,
+                        headerTransparent: true,
+                        tabBarLabel: ({ focused }) =>
+                            TabBarLabel({ focused, title: 'Profile' }),
+                        tabBarIcon: ({ focused }) =>
+                            TabBarIcon({ focused, icon: faUser })
+                    }}
+                />
+            </Tabs>
+            <EventPreview eventId={eventId} ref={eventPreviewRef} />
+        </>
     );
 };
 

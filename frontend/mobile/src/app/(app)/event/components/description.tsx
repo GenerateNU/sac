@@ -10,10 +10,11 @@ type Ref = BottomSheet;
 
 interface DescriptionProps {
     description: string;
+    type: 'club' | 'event';
 }
 
 export const Description = forwardRef<Ref, DescriptionProps>(
-    ({ description }, ref) => {
+    ({ description, type }, ref) => {
         const renderBackdrop = useCallback(
             (props: any) => (
                 <BottomSheetBackdrop
@@ -46,7 +47,7 @@ export const Description = forwardRef<Ref, DescriptionProps>(
                         variant="subheader-2"
                         fontWeight="500"
                     >
-                        About Event
+                        About {type === 'club' ? 'Us': 'Event'}
                     </Text>
                     <Divider />
                     <Text paddingTop="m">{description}</Text>

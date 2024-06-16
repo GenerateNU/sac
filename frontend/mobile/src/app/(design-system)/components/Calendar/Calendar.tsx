@@ -60,7 +60,7 @@ export default function Calendar({
     refetchEvents,
     error,
     datePress,
-    setDatePress
+    setDatePress,
 }: InfiniteScrollCarouselProps) {
     // Ensure that the load batch size is at least 3:
     if (loadBatchSize < 3) {

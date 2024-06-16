@@ -11,6 +11,8 @@ import { createOptions, eventTime, happeningNow } from '@/src/utils/time';
 
 import { EventTags } from '../EventCardTags/EventCardTags';
 import { sharedStyles } from '../shared/styles';
+import { useAppDispatch } from '@/src/store/store';
+import { setEventId, setEventShouldPreview } from '@/src/store/slices/eventSlice';
 
 interface EventCardCalendarProps {
     event: string;
@@ -35,11 +37,15 @@ export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
 }) => {
     const isHappening = happeningNow(startTime, endTime);
     const isPast = new Date(endTime).getTime() < new Date().getTime();
+    const dispatch = useAppDispatch();
 
     return (
         <Box position="relative">
             <TouchableOpacity
-                onPress={() => router.navigate(`/event/${eventId}`)}
+                onPress={() => { 
+                    dispatch(setEventId(eventId));
+                    dispatch(setEventShouldPreview(true)) 
+                }}
             >
                 {isHappening && (
                     <Box {...styles.isHappeningContainer}>
@@ -63,8 +69,8 @@ export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
                         />
                         <Box flex={2.5} flexDirection="column" gap="xxs">
                             <Text variant="body-1">
-                                {event.length >= 28
-                                    ? `${event.slice(0, 28).trim()}...`
+                                {event.length >= 26
+                                    ? `${event.slice(0, 26).trim()}...`
                                     : event}
                             </Text>
                             <Box {...styles.cardContentContainer}>

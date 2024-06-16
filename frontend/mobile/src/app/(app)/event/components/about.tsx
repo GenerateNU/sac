@@ -14,7 +14,8 @@ import {
 } from '@/src/app/(design-system)';
 import { Button } from '@/src/app/(design-system)/components/Button/Button';
 
-import { EventPageTags } from '../../../(design-system)/components/Tag/Tags';
+import { PageTags } from '../../../(design-system)/components/Tag/Tags';
+import { AboutSection } from '@/src/app/(design-system)/components/AboutSection/AboutSection';
 
 interface AboutEventProps {
     tags: Tag[];
@@ -39,21 +40,13 @@ export const AboutEvent = ({
 
     return (
         <Box flexDirection="column" alignItems="flex-start">
-            <Text marginBottom="m" variant="subheader-1">
-                About Event
-            </Text>
-            <TouchableOpacity onPress={onPress}>
-                <Box>
-                    <Text lineHeight={22} numberOfLines={5}>
-                        {description}
-                    </Text>
-                    <Text paddingTop="xs" variant="caption-1">
-                        Read More...
-                    </Text>
-                </Box>
-            </TouchableOpacity>
+            <AboutSection 
+                description={description}
+                onPress={onPress} 
+                type='event'
+            />
             <Box paddingTop="xl">
-                <EventPageTags tags={tags} color={color} />
+                <PageTags tags={tags} color={color} />
             </Box>
             {zoomLink && (
                 <Button

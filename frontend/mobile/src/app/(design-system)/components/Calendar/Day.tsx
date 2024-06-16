@@ -14,7 +14,7 @@ type DayProps = {
 function formatSectionHeader(date: string) {
     let addedZero = false;
     const { date: dayOfMonth, dayOfWeek } = formatTime(
-        new Date(date + 'T00:00:00')
+        date + 'T00:00:00'
     );
     if (dayOfMonth.length < 2) {
         addedZero = true;
