@@ -325,7 +325,7 @@ func GetFromSession(key string, c *fiber.Ctx) (string, error) {
 func getSessionValue(store *session.Session, key string) (string, error) {
 	value := store.Get(key)
 	if value == nil {
-		return "", errors.New("could not find a matching session for this request")
+		return "", fmt.Errorf("key %s not found in session", key)
 	}
 
 	decrypted, err := decrypter(value.(string))
