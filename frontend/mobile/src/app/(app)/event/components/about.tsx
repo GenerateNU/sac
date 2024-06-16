@@ -12,8 +12,9 @@ import {
     Text,
     textColorVariants
 } from '@/src/app/(design-system)';
-import { Tag as TagComponent } from '@/src/app/(design-system)';
 import { Button } from '@/src/app/(design-system)/components/Button/Button';
+
+import { EventPageTags } from '../../../(design-system)/components/Tag/Tags';
 
 interface AboutEventProps {
     tags: Tag[];
@@ -36,12 +37,6 @@ export const AboutEvent = ({
         }
     };
 
-    const renderTag = (item: Tag) => (
-        <TagComponent key={item.id} variant="selected" color={color}>
-            <Text variant="body-2">{item.name}</Text>
-        </TagComponent>
-    );
-
     return (
         <Box flexDirection="column" alignItems="flex-start">
             <Text marginBottom="m" variant="subheader-1">
@@ -57,10 +52,8 @@ export const AboutEvent = ({
                     </Text>
                 </Box>
             </TouchableOpacity>
-            <Box paddingTop="xl" flexDirection="row" flexWrap="wrap" gap="xs">
-                {tags.length >= 5
-                    ? tags.slice(0, 5).map((item) => renderTag(item))
-                    : tags.map((item) => renderTag(item))}
+            <Box paddingTop="xl">
+                <EventPageTags tags={tags} color={color} />
             </Box>
             {zoomLink && (
                 <Button

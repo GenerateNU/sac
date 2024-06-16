@@ -1,33 +1,41 @@
-import React from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { StyleSheet } from 'react-native';
 
-import { router } from 'expo-router';
+import BottomSheet from '@gorhom/bottom-sheet';
 
-import { Box, Text } from '@/src/app/(design-system)';
-import { EventCard } from '@/src/app/(design-system)/components/EventCard';
+import { ClubPreview, EventPreview } from '@/src/app/(design-system)';
+import { Box, Button, Text } from '@/src/app/(design-system)';
 
 const HomePage = () => {
-    const item = {
-        name: 'Your Event Name',
-        host: 'Your Club Name',
-        start_time: new Date(),
-        end_time: new Date()
-    };
+    const club = useRef<BottomSheet>(null);
+    const event = useRef<BottomSheet>(null);
+
+    const [clubPreview, setClubPreview] = useState('');
+    const [eventPreview, setEventPreview] = useState('');
 
     return (
         <Box style={styles.container}>
             <Text variant="body-1">Home</Text>
-            <Pressable onPress={() => router.push(`/event/1`)}>
-                <EventCard
-                    variant="small"
-                    event={item.name}
-                    club={item.host}
-                    eventId="1"
-                    startTime={item.start_time}
-                    endTime={item.end_time}
-                    image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLF3ord7lnV_5Je-pC2AUgUiesHNPcZlpI7A&s"
-                />
-            </Pressable>
+            <Button
+                onPress={() => {
+                    setClubPreview('1');
+                    club.current?.snapToIndex(0);
+                }}
+                variant="standardButton"
+            >
+                Club Preview
+            </Button>
+            <Button
+                onPress={() => {
+                    setEventPreview('1');
+                    event.current?.snapToIndex(0);
+                }}
+                variant="standardButton"
+            >
+                Event Preview
+            </Button>
+            <EventPreview eventId={eventPreview} ref={event} />
+            <ClubPreview clubId={clubPreview} ref={club} />
         </Box>
     );
 };
