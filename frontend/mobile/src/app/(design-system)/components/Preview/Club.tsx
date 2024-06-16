@@ -30,7 +30,6 @@ const LOGO_HEIGHT = 77;
 
 export const ClubPreview = forwardRef<Ref, ClubPreviewProps>(
     ({ clubId }, ref) => {
-
         const renderBackdrop = useCallback(
             (props: any) => (
                 <BottomSheetBackdrop
