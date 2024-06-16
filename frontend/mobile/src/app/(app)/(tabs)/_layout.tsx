@@ -74,7 +74,8 @@ const Layout = () => {
                 name="profile"
                 options={{
                     title: 'Profile',
-                    headerShown: false,
+                    headerShown: true,
+                    headerTransparent: true,
                     tabBarLabel: ({ focused }) =>
                         TabBarLabel({ focused, title: 'Profile' }),
                     tabBarIcon: ({ focused }) =>

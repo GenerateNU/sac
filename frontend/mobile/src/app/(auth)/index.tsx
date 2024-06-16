@@ -15,7 +15,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import { Box, Text } from '../(design-system)';
-import { Button } from '../(design-system)/components/Button/Button';
+import { Button } from '../(design-system)';
 import { Screen, ScreenProps } from './components/splash-screen';
 import { Wordmark } from './components/wordmark';
 
@@ -54,7 +54,7 @@ const WelcomePage = () => {
                 animated: true
             });
         } else {
-            router.push('/(auth)/signup');
+            router.push('/(app)/');
         }
     };
 
@@ -66,7 +66,7 @@ const WelcomePage = () => {
                     headerLeft: () => <Wordmark />,
                     headerRight: () => (
                         <TouchableOpacity
-                            onPress={() => router.push('/(auth)/user-details')}
+                            onPress={() => router.push('/(app)/')}
                         >
                             <Text>Skip</Text>
                         </TouchableOpacity>

@@ -15,10 +15,12 @@ export type EventSection = {
 };
 
 export type EventCalendarPreview = {
+    id: string;
     title: string;
     startTime: string;
     endTime: string;
-    host: string;
+    host_name: string;
+    host_logo: string;
     image: string;
     tags: Tag[];
 };
@@ -37,8 +39,6 @@ function convertNumToTime(num: number) {
     let time = num;
     let meridiem = num === 23 ? 'AM' : 'PM';
     let minutes = num % 100;
-
-    console.log(num);
 
     if (num !== 0 && (num < 1000 || num > 2359)) {
         throw new Error('Invalid time');
@@ -92,11 +92,11 @@ export default function DayTimeSection({ time, data }: DayTimeSectionProps) {
                                 event={event.title}
                                 variant="calendar"
                                 tags={event.tags}
-                                club={event.host}
-                                clubId={event.host}
-                                startTime={new Date(event.startTime)}
-                                endTime={new Date(event.endTime)}
-                                logo="https://www.iconpacks.net/icons/2/free-user-icon-3296-thumb.png"
+                                club={event.host_name}
+                                logo={event.host_logo}
+                                eventId={event.id}
+                                startTime={event.startTime}
+                                endTime={event.endTime}
                                 image={event.image}
                             />
                         </Box>

@@ -71,7 +71,7 @@ func processEventStubs(db *gorm.DB, events []EventStub) ([]EventPreview, error) 
 	}
 
 	var hosts []models.Club
-	if err := db.Where("id IN ?", eventIDs).Find(&hosts).Error; err != nil {
+	if err := db.Joins("JOIN events ON events.host = clubs.id").Where("events.id IN ?", eventIDs).Find(&hosts).Error; err != nil {
 		return nil, err
 	}
 

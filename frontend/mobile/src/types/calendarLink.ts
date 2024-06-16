@@ -1,7 +1,7 @@
 export type CalendarLink = {
     eventName: string;
-    startTime: Date;
-    endTime: Date;
+    startTime: string;
+    endTime: string;
     location: string;
     eventDetail: string;
 };
