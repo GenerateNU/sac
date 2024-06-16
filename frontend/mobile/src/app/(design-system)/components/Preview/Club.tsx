@@ -18,9 +18,10 @@ interface ClubPreviewProps {
 const mockClub = {
     name: 'Sandbox',
     preview: `Sandbox is Northeastern's student-led software consultancy building software for Northeastern clients. We work closely with clients across Northeastern to help them best leverage computation.`,
-    applicationTitle: 'Apply to be a Member',
-    applicationLink: 'https://google.com',
+    application_title: 'Apply to be a Member',
+    application_link: 'https://google.com',
     color: 'darkBlue' as SACColors,
+    is_recruiting: true,
     logo: 'https://avatars.githubusercontent.com/u/45272992?s=200&v=4'
 };
 
@@ -29,7 +30,6 @@ const LOGO_HEIGHT = 77;
 
 export const ClubPreview = forwardRef<Ref, ClubPreviewProps>(
     ({ clubId }, ref) => {
-        const isRecruiting = true;
 
         const renderBackdrop = useCallback(
             (props: any) => (
@@ -72,7 +72,7 @@ export const ClubPreview = forwardRef<Ref, ClubPreviewProps>(
             <BottomSheet
                 ref={ref}
                 index={-1}
-                snapPoints={isRecruiting ? ['50%'] : ['40%']}
+                snapPoints={mockClub.is_recruiting ? ['50%'] : ['40%']}
                 enablePanDownToClose={true}
                 handleComponent={logo}
                 onAnimate={(_, toIndex: number) => {
@@ -91,11 +91,11 @@ export const ClubPreview = forwardRef<Ref, ClubPreviewProps>(
                     <Text paddingTop="s" variant="header-1">
                         {mockClub.name}
                     </Text>
-                    {isRecruiting && (
+                    {mockClub.is_recruiting && (
                         <Button
                             size="md"
                             onPress={() =>
-                                Linking.openURL(mockClub.applicationLink)
+                                Linking.openURL(mockClub.application_link)
                             }
                             alignItems="flex-start"
                             variant="standardButton"
@@ -112,7 +112,7 @@ export const ClubPreview = forwardRef<Ref, ClubPreviewProps>(
                                     variant="body-1"
                                     fontWeight={500}
                                 >
-                                    {mockClub.applicationTitle}
+                                    {mockClub.application_title}
                                 </Text>
                                 <Text
                                     color={textColorVariants[mockClub.color]}
