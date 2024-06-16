@@ -112,7 +112,7 @@ export const ClubPreview = forwardRef<Ref, ClubPreviewProps>(
                                     variant="body-1"
                                     fontWeight={500}
                                 >
-                                    Title
+                                    {mockClub.applicationTitle}
                                 </Text>
                                 <Text
                                     color={textColorVariants[mockClub.color]}
