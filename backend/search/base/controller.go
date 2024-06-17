@@ -1,7 +1,9 @@
 package base
 
 import (
+	"log"
 	"net/http"
+	"os"
 
 	search_types "github.com/GenerateNU/sac/backend/search/types"
 	"github.com/GenerateNU/sac/backend/utilities"
@@ -30,14 +32,18 @@ func NewSearchController(searchService SearchServiceInterface) *SearchController
 // @Failure     500   {object}      error
 // @Router		/search/clubs  [get]
 func (s *SearchController) SearchClubs(c *fiber.Ctx) error {
+	log.SetOutput(os.Stdout)
+
 	var searchQuery search_types.ClubSearchRequest
 
+	log.Println("RAHHHHHH")
 	if err := c.BodyParser(&searchQuery); err != nil {
 		return utilities.InvalidJSON()
 	}
 
 	result, err := s.searchService.SearchClubs(searchQuery)
 	if err != nil {
+		log.Println("RAHHHHHH XD")
 		return err
 	}
 

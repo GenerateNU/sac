@@ -30,7 +30,7 @@ services:
       dockerfile: ../backend/Dockerfile.redis
     container_name: redis_session
     ports:
-      - 6380:6379
+      - "6379"
     environment:
       - REDIS_USERNAME=${SAC_REDIS_SESSION_USERNAME}
       - REDIS_PASSWORD=${SAC_REDIS_SESSION_PASSWORD}
@@ -42,8 +42,8 @@ services:
       context: ../backend
       dockerfile: ../backend/Dockerfile.redis
     container_name: redis_limiter
-    ports:
-      - 6381:6379
+    expose:
+      - "6379"
     environment:
       - REDIS_USERNAME=${SAC_REDIS_LIMITER_USERNAME}
       - REDIS_PASSWORD=${SAC_REDIS_LIMITER_PASSWORD}
@@ -74,8 +74,9 @@ services:
     ports:
       - 9200:9200
       - 9600:9600 # required for Performance Analyzer
-    networks:
-      - opensearch-net
+    expose:
+      - "9200"
+      - "9600"
   opensearch-dashboards:
     image: opensearchproject/opensearch-dashboards:latest
     container_name: opensearch-dashboards
@@ -86,8 +87,6 @@ services:
     environment:
       OPENSEARCH_HOSTS: '["http://opensearch-node1:9200"]'
       DISABLE_SECURITY_DASHBOARDS_PLUGIN: true
-    networks:
-      - opensearch-net
 
 volumes:
   redis-session-data:
@@ -96,6 +95,3 @@ volumes:
   caddy_data:
     external: true
   caddy_config:
-
-networks:
-  opensearch-net:

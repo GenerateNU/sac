@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # set up redis configuration directory
 mkdir -p /usr/local/etc/redis
@@ -12,7 +12,7 @@ if [ -n ${REDIS_USERNAME} ] && [ -n ${REDIS_PASSWORD} ]; then
 fi
 
 # disable default user
-if [ $(echo ${REDIS_DISABLE_DEFAULT_USER}) == "true" ]; then
+if [ "$REDIS_DISABLE_DEFAULT_USER" == "true" ]; then
     echo "user default off nopass nocommands" >> /usr/local/etc/redis/custom_aclfile.acl
 fi
 

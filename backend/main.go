@@ -21,6 +21,7 @@ import (
 	"github.com/GenerateNU/sac/backend/integrations/email"
 	"github.com/GenerateNU/sac/backend/integrations/file"
 	"github.com/GenerateNU/sac/backend/integrations/oauth/soth/sothic"
+	"github.com/GenerateNU/sac/backend/search"
 	"github.com/GenerateNU/sac/backend/server"
 	"github.com/GenerateNU/sac/backend/telemetry"
 	"github.com/GenerateNU/sac/backend/utilities"
@@ -97,14 +98,13 @@ func checkServerRunning(host string, port uint16) error {
 }
 
 func seedSearchData(db *gorm.DB) {
-	slog.Info("to appease linter", "seedSearch", true, "db", db)
-	// if err := search.SeedClubs(db); err != nil {
-	// 	return
-	// }
+	if err := search.SeedClubs(db); err != nil {
+		return
+	}
 
-	// if err := search.SeedEvents(db); err != nil {
-	// 	return
-	// }
+	if err := search.SeedEvents(db); err != nil {
+		return
+	}
 }
 
 func startBackgroundJobs(ctx context.Context, db *gorm.DB) {
