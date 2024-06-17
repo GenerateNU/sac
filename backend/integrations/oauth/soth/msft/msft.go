@@ -31,10 +31,9 @@ var defaultScopes = []string{"openid", "offline_access", "user.read", "calendars
 // New creates a new microsoftonline Provider, and sets up important connection details.
 // You should always call `msft.New` to get a new Provider. Never try to create
 // one manually.
-func New(clientKey *m.Secret[string], secret *m.Secret[string], callbackURL string, tenant string, scopes ...string) *Provider {
+func New(clientKey *m.Secret[string], callbackURL string, tenant string, scopes ...string) *Provider {
 	p := &Provider{
 		ClientKey:    clientKey,
-		Secret:       secret,
 		CallbackURL:  callbackURL,
 		ProviderName: "microsoftonline",
 		tenant:       tenant,
@@ -47,7 +46,6 @@ func New(clientKey *m.Secret[string], secret *m.Secret[string], callbackURL stri
 // Provider is the implementation of `soth.Provider` for accessing microsoftonline.
 type Provider struct {
 	ClientKey    *m.Secret[string]
-	Secret       *m.Secret[string]
 	CallbackURL  string
 	config       *oauth2.Config
 	ProviderName string
@@ -138,9 +136,8 @@ func newConfig(provider *Provider, scopes []string) *oauth2.Config {
 	}
 
 	c := &oauth2.Config{
-		ClientID:     provider.ClientKey.Expose(),
-		ClientSecret: provider.Secret.Expose(),
-		RedirectURL:  provider.CallbackURL,
+		ClientID:    provider.ClientKey.Expose(),
+		RedirectURL: provider.CallbackURL,
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  authURL,
 			TokenURL: tokenURL,
