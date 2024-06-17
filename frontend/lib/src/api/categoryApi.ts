@@ -32,7 +32,7 @@ export const categoryApi = baseApi.injectEndpoints({
       transformResponse: (response: Category[]) => {
         return z.array(categorySchema).parse(response);
       },
-      providesTags: (result, _, _arg) =>
+      providesTags: (result) =>
         result
           ? result.map((category) => ({
               type: "Category",
@@ -84,7 +84,7 @@ export const categoryApi = baseApi.injectEndpoints({
         ),
         method: "GET",
       }),
-      providesTags: (result, _, _arg) =>
+      providesTags: (result) =>
         result ? result.map((tag) => ({ type: "Tag", id: tag.id })) : ["Tag"],
     }),
     categoryTag: builder.query<Tag, { categoryID: string; tagID: string }>({

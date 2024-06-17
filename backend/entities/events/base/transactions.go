@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/GenerateNU/sac/backend/constants"
+	"github.com/GenerateNU/sac/backend/database/cache"
 	"github.com/GenerateNU/sac/backend/entities/events"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/garrettladley/fiberpaginate"
@@ -19,19 +20,20 @@ import (
 )
 
 func GetEvents(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Event, error) {
-	return getEvents[models.Event](db, &pageInfo, nil, nil)
-}
+	db = cache.SetUseCache(db, true)
 
-func GetEventsPreview(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]EventPreview, error) {
-	return getEvents[EventPreview](db, &pageInfo, nil, nil)
+	return events.GetEvents(db, pageInfo)
 }
 
 func GetEventsByTime(db *gorm.DB, pageInfo fiberpaginate.PageInfo, startTime time.Time, endTime time.Time) ([]models.Event, error) {
-	return getEvents[models.Event](db, &pageInfo, &startTime, &endTime)
-}
+	db = cache.SetUseCache(db, true)
 
-func GetEventsPreviewByTime(db *gorm.DB, pageInfo fiberpaginate.PageInfo, startTime time.Time, endTime time.Time) ([]EventPreview, error) {
-	return getEvents[EventPreview](db, &pageInfo, &startTime, &endTime)
+	var events []models.Event
+	if err := db.Model(&events).Where("start_time >= ? AND end_time <= ?", startTime, endTime).Scopes(utilities.IntoScope(pageInfo, db)).Find(&events).Error; err != nil {
+		return nil, err
+	}
+
+	return events, nil
 }
 
 func CreateEvent(db *gorm.DB, event models.Event) (*models.Event, error) {
@@ -108,23 +110,4 @@ func DeleteEvent(db *gorm.DB, id uuid.UUID) error {
 	}
 
 	return nil
-}
-
-func getEvents[T any](db *gorm.DB, pageInfo *fiberpaginate.PageInfo, startTime *time.Time, endTime *time.Time) ([]T, error) {
-	var events []T
-	query := db.Model(&events)
-
-	if startTime != nil && endTime != nil {
-		query = query.Where("start_time >= ? AND end_time <= ?", *startTime, *endTime)
-	}
-
-	if pageInfo != nil {
-		query = query.Scopes(utilities.IntoScope(*pageInfo, db))
-	}
-
-	if err := query.Find(&events).Error; err != nil {
-		return nil, err
-	}
-
-	return events, nil
 }

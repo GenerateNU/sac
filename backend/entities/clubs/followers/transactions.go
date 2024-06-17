@@ -1,6 +1,7 @@
 package followers
 
 import (
+	"github.com/GenerateNU/sac/backend/database/cache"
 	"github.com/GenerateNU/sac/backend/entities/clubs"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/entities/users"
@@ -11,6 +12,8 @@ import (
 )
 
 func GetClubFollowers(db *gorm.DB, clubID uuid.UUID, pageInfo fiberpaginate.PageInfo) ([]models.User, error) {
+	db = cache.SetUseCache(db, true)
+
 	club, err := clubs.GetClub(db, clubID)
 	if err != nil {
 		return nil, err

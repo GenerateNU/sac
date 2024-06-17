@@ -157,7 +157,7 @@ export const userApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: (result, _, _arg) =>
+      invalidatesTags: (result) =>
         result ? result.map((tag) => ({ type: "Tag", id: tag.id })) : ["Tag"],
       transformResponse: (response) => {
         return z.array(tagSchema).parse(response);

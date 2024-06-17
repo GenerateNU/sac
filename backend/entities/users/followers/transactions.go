@@ -1,6 +1,7 @@
 package followers
 
 import (
+	"github.com/GenerateNU/sac/backend/database/cache"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/entities/users"
 
@@ -9,13 +10,14 @@ import (
 )
 
 func GetClubFollowing(db *gorm.DB, userID uuid.UUID) ([]models.Club, error) {
-	var clubs []models.Club
+	db = cache.SetUseCache(db, true)
 
 	user, err := users.GetUser(db, userID)
 	if err != nil {
 		return nil, err
 	}
 
+	var clubs []models.Club
 	if err := db.Model(&user).Association("Follower").Find(&clubs); err != nil {
 		return nil, err
 	}

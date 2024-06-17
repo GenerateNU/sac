@@ -4,7 +4,6 @@ import (
 	"context"
 	"log/slog"
 	"net/http"
-	"time"
 
 	"github.com/GenerateNU/sac/backend/integrations/oauth/soth"
 	"github.com/GenerateNU/sac/backend/integrations/oauth/soth/sothic"
@@ -71,17 +70,6 @@ func (h *Handler) Provider(c *fiber.Ctx) error {
 }
 
 func (h *Handler) ProviderCallback(c *fiber.Ctx) error {
-	defer func() {
-		c.Cookie(&fiber.Cookie{
-			Name:    "redirect",
-			Value:   "",
-			Expires: time.Now().Add(-1 * time.Hour), // expire the cookie immediately
-			// MARK: secure should be true in prod
-			// use go build tags to do this
-			HTTPOnly: true,
-		})
-	}()
-
 	gfUser, err := sothic.CompleteUserAuth(c)
 	if err != nil {
 		return err
@@ -101,7 +89,7 @@ func (h *Handler) ProviderCallback(c *fiber.Ctx) error {
 		return err
 	}
 
-	return c.Redirect(c.Cookies("redirect", "/"))
+	return c.SendStatus(http.StatusOK)
 }
 
 func (h *Handler) ProviderLogout(c *fiber.Ctx) error {

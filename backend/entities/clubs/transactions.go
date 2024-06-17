@@ -3,6 +3,7 @@ package clubs
 import (
 	"errors"
 
+	"github.com/GenerateNU/sac/backend/database/cache"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/transactions"
 	"github.com/GenerateNU/sac/backend/utilities"
@@ -11,14 +12,13 @@ import (
 )
 
 func GetClub(db *gorm.DB, id uuid.UUID, preloads ...transactions.OptionalQuery) (*models.Club, error) {
-	var club models.Club
-
-	query := db
+	query := cache.SetUseCache(db, true)
 
 	for _, preload := range preloads {
 		query = preload(query)
 	}
 
+	var club models.Club
 	if err := query.First(&club, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, utilities.ErrNotFound
@@ -30,8 +30,9 @@ func GetClub(db *gorm.DB, id uuid.UUID, preloads ...transactions.OptionalQuery) 
 }
 
 func GetAdminIDs(db *gorm.DB, clubID uuid.UUID) ([]uuid.UUID, error) {
-	var adminIDs []models.Membership
+	db = cache.SetUseCache(db, true)
 
+	var adminIDs []models.Membership
 	if err := db.Where("club_id = ? AND membership_type = ?", clubID, models.MembershipTypeAdmin).Find(&adminIDs).Error; err != nil {
 		return nil, err
 	}
@@ -42,4 +43,15 @@ func GetAdminIDs(db *gorm.DB, clubID uuid.UUID) ([]uuid.UUID, error) {
 	}
 
 	return adminUUIDs, nil
+}
+
+func IsMember(db *gorm.DB, clubID uuid.UUID, userID uuid.UUID) (bool, error) {
+	db = cache.SetUseCache(db, true)
+
+	var count int64
+	if err := db.Table("user_club_members").Where("club_id = ? AND user_id = ?", clubID, userID).Count(&count).Error; err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
 }
