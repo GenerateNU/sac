@@ -1,12 +1,15 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 
-import { router } from 'expo-router';
-
 import { Tag } from '@generatesac/lib';
 import { Avatar, Image } from '@rneui/base';
 
 import { Box, Text, createStyles } from '@/src/app/(design-system)';
+import {
+    setEventId,
+    setEventShouldPreview
+} from '@/src/store/slices/eventSlice';
+import { useAppDispatch } from '@/src/store/store';
 import { createOptions, eventTime, happeningNow } from '@/src/utils/time';
 
 import { EventTags } from '../EventCardTags/EventCardTags';
@@ -35,11 +38,15 @@ export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
 }) => {
     const isHappening = happeningNow(startTime, endTime);
     const isPast = new Date(endTime).getTime() < new Date().getTime();
+    const dispatch = useAppDispatch();
 
     return (
         <Box position="relative">
             <TouchableOpacity
-                onPress={() => router.navigate(`/event/${eventId}`)}
+                onPress={() => {
+                    dispatch(setEventId(eventId));
+                    dispatch(setEventShouldPreview(true));
+                }}
             >
                 {isHappening && (
                     <Box {...styles.isHappeningContainer}>
@@ -63,8 +70,8 @@ export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
                         />
                         <Box flex={2.5} flexDirection="column" gap="xxs">
                             <Text variant="body-1">
-                                {event.length >= 28
-                                    ? `${event.slice(0, 28).trim()}...`
+                                {event.length >= 26
+                                    ? `${event.slice(0, 26).trim()}...`
                                     : event}
                             </Text>
                             <Box {...styles.cardContentContainer}>

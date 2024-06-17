@@ -10,9 +10,10 @@ import { StatusBar } from 'expo-status-bar';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { ThemeProvider } from '@shopify/restyle';
 
+import usePreview from '../hooks/usePreview';
 import StoreProvider from '../store/StoreProvider';
 import { useAppSelector } from '../store/store';
-import { theme } from './(design-system)';
+import { ClubPreview, EventPreview, theme } from './(design-system)';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -20,6 +21,16 @@ SplashScreen.preventAutoHideAsync();
 
 const InitalLayout = () => {
     const { accessToken } = useAppSelector((state) => state.user);
+    const {
+        eventPreviewRef,
+        eventId,
+        eventApiError,
+        eventApiLoading,
+        clubPreviewRef,
+        clubId,
+        clubApiError,
+        clubApiLoading
+    } = usePreview();
 
     useEffect(() => {
         if (!accessToken) {
@@ -36,6 +47,18 @@ const InitalLayout = () => {
                 <Stack.Screen name="(auth)" options={{ headerShown: false }} />
                 <Stack.Screen name="(app)" options={{ headerShown: false }} />
             </Stack>
+            <EventPreview
+                ref={eventPreviewRef}
+                eventId={eventId}
+                isLoading={eventApiLoading}
+                error={eventApiError}
+            />
+            <ClubPreview
+                ref={clubPreviewRef}
+                clubId={clubId}
+                isLoading={clubApiLoading}
+                error={clubApiError}
+            />
         </>
     );
 };

@@ -16,10 +16,14 @@ import persistReducer from 'redux-persist/es/persistReducer';
 import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2';
 import { thunk } from 'redux-thunk';
 
+import clubReducer from '@/src/store/slices/clubSlice';
+import eventReducer from '@/src/store/slices/eventSlice';
 import userReducer from '@/src/store/slices/userSlice';
 
 const rootReducer = combineReducers({
     user: userReducer,
+    event: eventReducer,
+    club: clubReducer,
     [baseApi.reducerPath]: baseApi.reducer
 });
 
@@ -30,7 +34,7 @@ const persistanceConfig = {
     storage: AsyncStorage,
     stateReconciler: autoMergeLevel2,
     blacklist: [baseApi.reducerPath],
-    whitelist: ['user']
+    whitelist: ['user', 'event', 'club']
 };
 
 const persistedReducer = persistReducer<RootReducer>(

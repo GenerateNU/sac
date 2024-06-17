@@ -18,6 +18,17 @@ const Layout = () => {
                 }}
             />
             <Stack.Screen
+                name="club"
+                options={{
+                    headerTitle: '',
+                    headerTransparent: true,
+                    headerShown: false,
+                    headerTitleStyle: {
+                        color: 'white'
+                    }
+                }}
+            />
+            <Stack.Screen
                 name="user"
                 options={{
                     headerTitle: 'Profile',

@@ -8,7 +8,7 @@ type EventPageErrorProps = {
     refetch: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const EventPageError = ({ refetch }: EventPageErrorProps) => {
+const PageError = ({ refetch }: EventPageErrorProps) => {
     return (
         <SafeAreaView style={{ margin: Spacing.m, gap: 20 }}>
             <Box width="75%" marginTop="m" gap="m">
@@ -30,4 +30,4 @@ const EventPageError = ({ refetch }: EventPageErrorProps) => {
     );
 };
 
-export default EventPageError;
+export default PageError;
