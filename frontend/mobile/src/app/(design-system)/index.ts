@@ -12,3 +12,6 @@ export * from './components/Dropdown/SelectOne';
 export * from './components/Dropdown/Multiselect';
 export * from './components/PointOfContactCard/PointOfContactCard';
 export * from './components/Tag/Tag';
+export * from './components/Preview/Event/EventPreview';
+export * from './components/Preview/Club/ClubPreview';
+export * from './components/Tag/Tags';

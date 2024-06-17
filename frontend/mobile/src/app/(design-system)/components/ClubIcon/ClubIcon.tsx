@@ -15,7 +15,8 @@ export const ClubIcon: React.FC<ClubIconProps> = ({ imageUrl }) => {
             containerStyle={{
                 borderColor: 'white',
                 borderStyle: 'solid',
-                borderWidth: 2
+                borderWidth: 2,
+                backgroundColor: 'white'
             }}
         />
     );

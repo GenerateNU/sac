@@ -15,11 +15,9 @@ interface RecruitmentInfoProps {
     recruitmentCycle: RecruitmentCycle;
     recruitingType: RecruitmentType;
     isRecruiting?: boolean;
-    recruitmentText: string;
 }
 
 export const RecruitmentInfo = ({
-    recruitmentText,
     color,
     recruitmentCycle,
     recruitingType,
@@ -35,12 +33,8 @@ export const RecruitmentInfo = ({
             />
             <RecruitmentItem
                 icon={faPenToSquare}
-                title={
-                    isRecruiting
-                        ? 'Currently Recruiting'
-                        : 'Currently Not Recruiting'
-                }
-                text={recruitmentText}
+                title={'Recruitment Status'}
+                text={isRecruiting ? 'Currently Recruiting' : 'Not Recruiting'}
                 color={color}
             />
             <RecruitmentItem
