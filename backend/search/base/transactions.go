@@ -3,7 +3,6 @@ package base
 import (
 	"fmt"
 	"io"
-	"log"
 	"log/slog"
 	"net/http"
 
@@ -20,21 +19,16 @@ import (
 func doSearchGetRequest[T, V any](url string, requestBody T) (*V, error) {
 	payload, err := json.Marshal(requestBody)
 	if err != nil {
-		log.Println("json marshal failed")
 		return nil, err
 	}
 
 	resp, err := utilities.Request(http.MethodGet, fmt.Sprintf("%s%s", constants.SEARCH_URI, url), payload, utilities.JSON())
 	if err != nil {
-		log.Println("response failed")
 		return nil, err
 	}
 	defer resp.Body.Close()
 
 	responseBody, err := io.ReadAll(resp.Body)
-	log.Println("response body VVV")
-	log.Println(string(responseBody))
-
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +45,6 @@ func doSearchGetRequest[T, V any](url string, requestBody T) (*V, error) {
 func Search[T types.Searchable](db *gorm.DB, query types.SearchRequest) (*types.SearchResult[T], error) {
 	result, err := doSearchGetRequest[types.SearchEndpointRequest, types.SearchEndpointResponse](fmt.Sprintf("/%s/_search", query.Index()), query.ToSearchEndpointRequest())
 	if err != nil {
-		log.Println("dosearchgetrequest failed")
 		return nil, err
 	}
 
@@ -64,7 +57,6 @@ func Search[T types.Searchable](db *gorm.DB, query types.SearchRequest) (*types.
 
 	var results []T
 	if err = query.Preload(db).Where("id IN ?", ids).Find(&results).Error; err != nil {
-		log.Println("query preload failed")
 		return nil, err
 	}
 
