@@ -5,4 +5,9 @@ ALTER TABLE clubs
 
 DROP INDEX IF EXISTS clubsearch_index;
 
+ALTER TABLE "events"
+    DROP COLUMN IF EXISTS eventsearch_index_col;
+
+DROP INDEX IF EXISTS eventsearch_index;
+
 COMMIT;
