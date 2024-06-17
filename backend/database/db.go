@@ -5,7 +5,6 @@ import (
 
 	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/constants"
-	"github.com/GenerateNU/sac/backend/database/cache"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -18,17 +17,18 @@ func ConfigureDB(settings config.Settings) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	cachePlugin := &cache.Caches{
-		Conf: &cache.Config{
-			Easer:  true,
-			Cacher: cache.NewRedisCacher(settings.DBCache),
-			TTL:    constants.DB_CACHE_TTL,
-		},
-	}
+	// MAKE REDIS NOT ERROR EVERYTIME CHALLENGE (IMPOSSIBLE)
+	// cachePlugin := &cache.Caches{
+	// 	Conf: &cache.Config{
+	// 		Easer:  true,
+	// 		Cacher: cache.NewRedisCacher(settings.DBCache),
+	// 		TTL:    constants.DB_CACHE_TTL,
+	// 	},
+	// }
 
-	if err := db.Use(cachePlugin); err != nil {
-		return nil, err
-	}
+	// if err := db.Use(cachePlugin); err != nil {
+	// 	return nil, err
+	// }
 
 	if err := CreateSuperUserIfNotExists(settings.SuperUser, db); err != nil {
 		return nil, err
