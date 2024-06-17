@@ -17,13 +17,12 @@ export const UpcomingEvent: React.FC<UpcomingEventsProps> = ({ events }) => {
         return (
             <Pressable onPress={() => router.push(`/event/${item.id}`)}>
                 <EventCard
-                    clubId={'1'}
                     variant="small"
                     event={item.name}
                     club={item.host}
                     eventId={item.id}
-                    startTime={new Date(item.start_time)}
-                    endTime={new Date(item.end_time)}
+                    startTime={item.start_time}
+                    endTime={item.end_time}
                     image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLF3ord7lnV_5Je-pC2AUgUiesHNPcZlpI7A&s"
                 />
             </Pressable>

@@ -14,7 +14,7 @@ func GetClubEvents(db *gorm.DB, clubID uuid.UUID, pageInfo fiberpaginate.PageInf
 	db = cache.SetUseCache(db, true)
 
 	var events []models.Event
-	if err := db.Where("club_id = ?", clubID).Scopes(utilities.IntoScope(pageInfo, db)).Find(&events).Error; err != nil {
+	if err := db.Where("host = ?", clubID).Scopes(utilities.IntoScope(pageInfo, db)).Find(&events).Error; err != nil {
 		return nil, err
 	}
 

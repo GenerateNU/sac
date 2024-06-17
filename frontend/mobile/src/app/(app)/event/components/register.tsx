@@ -55,8 +55,6 @@ const RegisterBottomSheet = forwardRef<Ref, RegisterSheetProps>(
             endTime: endTime
         };
 
-        console.log(createGoogleCalendarLink(CALENDAR_INFO));
-
         return (
             <BottomSheet
                 ref={ref}

@@ -7,7 +7,7 @@ import { router } from 'expo-router';
 import { Image } from '@rneui/base';
 
 import { Box, Text } from '@/src/app/(design-system)';
-import { calculateDuration, createOptions, eventTime } from '@/src/utils/time';
+import { createOptions, eventTime } from '@/src/utils/time';
 
 interface EventCardBigProps {
     event: string;
@@ -46,8 +46,6 @@ export const EventCardBig: React.FC<EventCardBigProps> = ({
                         width="100%"
                     >
                         <Text variant="subheader-2">{event}</Text>
-                        <Text />
-                        <Text>{calculateDuration(startTime, endTime)}</Text>
                     </Box>
                     <Text color="darkGray">{club}</Text>
                     <Box flexDirection="row" gap="xs">

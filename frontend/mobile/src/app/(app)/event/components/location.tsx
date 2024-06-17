@@ -1,37 +1,18 @@
+import { Linking, Platform } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import { createOpenLink } from 'react-native-open-maps';
 
 import { Text } from '@/src/app/(design-system)';
 import { Box } from '@/src/app/(design-system)';
-
-// import Geocoder from 'react-native-geocoding';
-// import { useEffect, useState } from 'react';
 
 interface LocationProps {
     location: string;
 }
 
+const scheme = Platform.select({ ios: 'maps://0,0?q=', android: 'geo:0,0?q=' });
+
 export const Location: React.FC<LocationProps> = ({ location }) => {
     const coordinates = { latitude: 42.3393326, longitude: -71.0869942 };
-    const openMap = createOpenLink({ ...coordinates });
-    // Geocoder.init(process.env.GOOGLE_MAPS_API_KEY | '');
-    // const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number }>({
-    //     latitude: 0,
-    //     longitude: 0
-    // });
-    // const openMap = createOpenLink({ ...coordinates });
-    // useEffect(() => {
-    //     async function fetchCoordinates() {
-    //         try {
-    //             const response = await Geocoder.from(location);
-    //             const { lat, lng } = response.results[0].geometry.location;
-    //             setCoordinates({ latitude: lat, longitude: lng });
-    //         } catch (error) {
-    //             console.error('Error fetching coordinates:', error);
-    //         }
-    //     }
-    //     fetchCoordinates();
-    // }, [location]);
+    const openMap = () => Linking.openURL(`${scheme}${location}`);
 
     return (
         <Box flexDirection="column" gap="s">

@@ -35,54 +35,56 @@ const TabBarIcon: React.FC<TabBarIconProps> = ({ focused, icon }) => (
 
 const Layout = () => {
     return (
-        <Tabs
-            screenOptions={{
-                tabBarShowLabel: false,
-                tabBarStyle: {
-                    borderTopWidth: 1,
-                    borderTopColor: 'gray',
-                    height: 85
-                }
-            }}
-            sceneContainerStyle={{
-                backgroundColor: 'white'
-            }}
-        >
-            <Tabs.Screen
-                name="index"
-                options={{
-                    title: 'Home',
-                    headerShown: false,
-                    tabBarLabel: ({ focused }) =>
-                        TabBarLabel({ focused, title: 'Home' }),
-                    tabBarIcon: ({ focused }) =>
-                        TabBarIcon({ focused, icon: faHouse })
+        <>
+            <Tabs
+                screenOptions={{
+                    tabBarShowLabel: false,
+                    tabBarStyle: {
+                        borderTopWidth: 1,
+                        borderTopColor: 'gray',
+                        height: 85
+                    }
                 }}
-            />
-            <Tabs.Screen
-                name="calendar"
-                options={{
-                    title: 'Calendar',
-                    headerShown: false,
-                    tabBarLabel: ({ focused }) =>
-                        TabBarLabel({ focused, title: 'Calendar' }),
-                    tabBarIcon: ({ focused }) =>
-                        TabBarIcon({ focused, icon: faCalendarDays })
+                sceneContainerStyle={{
+                    backgroundColor: 'white'
                 }}
-            />
-            <Tabs.Screen
-                name="profile"
-                options={{
-                    title: 'Profile',
-                    headerShown: true,
-                    headerTransparent: true,
-                    tabBarLabel: ({ focused }) =>
-                        TabBarLabel({ focused, title: 'Profile' }),
-                    tabBarIcon: ({ focused }) =>
-                        TabBarIcon({ focused, icon: faUser })
-                }}
-            />
-        </Tabs>
+            >
+                <Tabs.Screen
+                    name="index"
+                    options={{
+                        title: 'Home',
+                        headerShown: false,
+                        tabBarLabel: ({ focused }) =>
+                            TabBarLabel({ focused, title: 'Home' }),
+                        tabBarIcon: ({ focused }) =>
+                            TabBarIcon({ focused, icon: faHouse })
+                    }}
+                />
+                <Tabs.Screen
+                    name="calendar"
+                    options={{
+                        title: 'Calendar',
+                        headerShown: false,
+                        tabBarLabel: ({ focused }) =>
+                            TabBarLabel({ focused, title: 'Calendar' }),
+                        tabBarIcon: ({ focused }) =>
+                            TabBarIcon({ focused, icon: faCalendarDays })
+                    }}
+                />
+                <Tabs.Screen
+                    name="profile"
+                    options={{
+                        title: 'Profile',
+                        headerShown: true,
+                        headerTransparent: true,
+                        tabBarLabel: ({ focused }) =>
+                            TabBarLabel({ focused, title: 'Profile' }),
+                        tabBarIcon: ({ focused }) =>
+                            TabBarIcon({ focused, icon: faUser })
+                    }}
+                />
+            </Tabs>
+        </>
     );
 };
 
