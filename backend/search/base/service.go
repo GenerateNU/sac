@@ -21,9 +21,9 @@ func NewSearchService(serviceParams types.ServiceParams) SearchServiceInterface 
 }
 
 func (s *SearchService) SearchClubs(query search_types.ClubSearchRequest) (*search_types.SearchResult[models.Club], error) {
-	return Search[models.Club](s.DB, &query)
+	return SearchClubs(s.DB, &query)
 }
 
 func (s *SearchService) SearchEvents(query search_types.EventSearchRequest) (*search_types.SearchResult[models.Event], error) {
-	return Search[models.Event](s.DB, &query)
+	return SearchEvents(s.DB, &query)
 }
