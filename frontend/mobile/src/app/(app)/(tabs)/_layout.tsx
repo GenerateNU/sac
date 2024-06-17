@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 
 import { Tabs } from 'expo-router';
 
@@ -7,12 +7,9 @@ import { faCalendarDays } from '@fortawesome/free-solid-svg-icons/faCalendarDays
 import { faHouse } from '@fortawesome/free-solid-svg-icons/faHouse';
 import { faUser } from '@fortawesome/free-solid-svg-icons/faUser';
 
-import { EventPreview, Text } from '@/src/app/(design-system)';
+import { Text } from '@/src/app/(design-system)';
 import { Box } from '@/src/app/(design-system)';
 import { Icon } from '@/src/app/(design-system)/components/Icon/Icon';
-import { useAppDispatch, useAppSelector } from '@/src/store/store';
-import BottomSheet from '@gorhom/bottom-sheet';
-import { setEventShouldPreview } from '@/src/store/slices/eventSlice';
 
 interface TabBarLabelProps {
     focused: boolean;
@@ -37,23 +34,6 @@ const TabBarIcon: React.FC<TabBarIconProps> = ({ focused, icon }) => (
 );
 
 const Layout = () => {
-    const dispatch = useAppDispatch();
-    const eventPreviewRef = useRef<BottomSheet>(null);
-    const clubPreviewRef = useRef<BottomSheet>(null);
-
-    const { shouldPreview: eventShouldPreview, id: eventId } = useAppSelector((state) => state.event);
-
-    useEffect(() => {
-        dispatch(setEventShouldPreview(false));
-    }, [])
-
-    useEffect(() => {
-        if (eventShouldPreview) {
-            eventPreviewRef.current?.snapToIndex(0);
-        }
-    }, [eventShouldPreview]);
-
-
     return (
         <>
             <Tabs
@@ -104,7 +84,6 @@ const Layout = () => {
                     }}
                 />
             </Tabs>
-            <EventPreview eventId={eventId} ref={eventPreviewRef} />
         </>
     );
 };

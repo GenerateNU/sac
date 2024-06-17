@@ -22,7 +22,7 @@ const initialState: Event & EventClubState = {
     is_public: false,
     preview: '',
     host: '',
-    tags: [],
+    tags: []
 };
 
 export const eventSlice = createSlice({
@@ -59,11 +59,11 @@ export const eventSlice = createSlice({
     }
 });
 
-export const { 
+export const {
     setEvent,
     resetEvent,
     setEventShouldPreview,
     setEventTags,
-    setEventId,
+    setEventId
 } = eventSlice.actions;
 export default eventSlice.reducer;

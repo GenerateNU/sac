@@ -1,5 +1,5 @@
 import React from 'react';
-import { Linking, TouchableOpacity } from 'react-native';
+import { Linking } from 'react-native';
 
 import { faVideo } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -12,10 +12,10 @@ import {
     Text,
     textColorVariants
 } from '@/src/app/(design-system)';
+import { AboutSection } from '@/src/app/(design-system)/components/AboutSection/AboutSection';
 import { Button } from '@/src/app/(design-system)/components/Button/Button';
 
 import { PageTags } from '../../../(design-system)/components/Tag/Tags';
-import { AboutSection } from '@/src/app/(design-system)/components/AboutSection/AboutSection';
 
 interface AboutEventProps {
     tags: Tag[];
@@ -40,10 +40,10 @@ export const AboutEvent = ({
 
     return (
         <Box flexDirection="column" alignItems="flex-start">
-            <AboutSection 
+            <AboutSection
                 description={description}
-                onPress={onPress} 
-                type='event'
+                onPress={onPress}
+                type="event"
             />
             <Box paddingTop="xl">
                 <PageTags tags={tags} color={color} />

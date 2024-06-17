@@ -27,7 +27,7 @@ export const EventCardSmall: React.FC<EventCardSmallProps> = ({
     image
 }) => {
     const screenWidth = Dimensions.get('window').width;
-    const boxWidth = screenWidth * 0.4;
+    const boxWidth = screenWidth * 0.41;
 
     return (
         <Box width={boxWidth}>

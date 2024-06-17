@@ -1,18 +1,19 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 
-import { router } from 'expo-router';
-
 import { Tag } from '@generatesac/lib';
 import { Avatar, Image } from '@rneui/base';
 
 import { Box, Text, createStyles } from '@/src/app/(design-system)';
+import {
+    setEventId,
+    setEventShouldPreview
+} from '@/src/store/slices/eventSlice';
+import { useAppDispatch } from '@/src/store/store';
 import { createOptions, eventTime, happeningNow } from '@/src/utils/time';
 
 import { EventTags } from '../EventCardTags/EventCardTags';
 import { sharedStyles } from '../shared/styles';
-import { useAppDispatch } from '@/src/store/store';
-import { setEventId, setEventShouldPreview } from '@/src/store/slices/eventSlice';
 
 interface EventCardCalendarProps {
     event: string;
@@ -42,9 +43,9 @@ export const EventCardCalendar: React.FC<EventCardCalendarProps> = ({
     return (
         <Box position="relative">
             <TouchableOpacity
-                onPress={() => { 
+                onPress={() => {
                     dispatch(setEventId(eventId));
-                    dispatch(setEventShouldPreview(true)) 
+                    dispatch(setEventShouldPreview(true));
                 }}
             >
                 {isHappening && (

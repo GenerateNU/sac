@@ -47,7 +47,7 @@ export const Description = forwardRef<Ref, DescriptionProps>(
                         variant="subheader-2"
                         fontWeight="500"
                     >
-                        About {type === 'club' ? 'Us': 'Event'}
+                        About {type === 'club' ? 'Us' : 'Event'}
                     </Text>
                     <Divider />
                     <Text paddingTop="m">{description}</Text>

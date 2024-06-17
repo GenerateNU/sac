@@ -1,6 +1,7 @@
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { Box } from "../Box/Box";
-import { Text } from "../Text/Text";
+import { TouchableOpacity } from 'react-native-gesture-handler';
+
+import { Box } from '../Box/Box';
+import { Text } from '../Text/Text';
 
 type AboutSectionProps = {
     type: 'club' | 'event';
@@ -15,9 +16,9 @@ export const AboutSection = ({
 }: AboutSectionProps) => {
     return (
         <Box>
-        <Text marginBottom="m" variant="subheader-1">
-            About {type === 'club' ? 'Us' : 'Event'}
-        </Text>
+            <Text marginBottom="m" variant="subheader-1">
+                About {type === 'club' ? 'Us' : 'Event'}
+            </Text>
             <TouchableOpacity onPress={onPress}>
                 <Box>
                     <Text lineHeight={22} numberOfLines={5}>
@@ -30,4 +31,4 @@ export const AboutSection = ({
             </TouchableOpacity>
         </Box>
     );
-}
+};

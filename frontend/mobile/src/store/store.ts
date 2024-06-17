@@ -16,9 +16,9 @@ import persistReducer from 'redux-persist/es/persistReducer';
 import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2';
 import { thunk } from 'redux-thunk';
 
-import userReducer from '@/src/store/slices/userSlice';
-import eventReducer from '@/src/store/slices/eventSlice';
 import clubReducer from '@/src/store/slices/clubSlice';
+import eventReducer from '@/src/store/slices/eventSlice';
+import userReducer from '@/src/store/slices/userSlice';
 
 const rootReducer = combineReducers({
     user: userReducer,

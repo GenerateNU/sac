@@ -19,7 +19,7 @@ const initialState: Club & ClubState = {
     weekly_time_committment: 0,
     one_word_to_describe_us: '',
     tags: [],
-    events: [],
+    events: []
 };
 
 export const clubSlice = createSlice({
@@ -38,8 +38,10 @@ export const clubSlice = createSlice({
             state.preview = action.payload.preview;
             state.num_members = action.payload.num_members;
             state.logo = action.payload.logo;
-            state.weekly_time_committment = action.payload.weekly_time_committment;
-            state.one_word_to_describe_us = action.payload.one_word_to_describe_us;
+            state.weekly_time_committment =
+                action.payload.weekly_time_committment;
+            state.one_word_to_describe_us =
+                action.payload.one_word_to_describe_us;
             state.recruitment = action.payload.recruitment;
         },
         setClubTags: (state, action) => {
@@ -55,12 +57,12 @@ export const clubSlice = createSlice({
     }
 });
 
-export const { 
-    setClubId, 
-    setClub, 
-    setClubTags, 
+export const {
+    setClubId,
+    setClub,
+    setClubTags,
     setClubEvents,
-    resetClub, 
-    setClubShouldPreview 
+    resetClub,
+    setClubShouldPreview
 } = clubSlice.actions;
 export default clubSlice.reducer;

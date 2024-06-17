@@ -1,5 +1,9 @@
 import React from 'react';
-import Animated, { SharedValue, interpolate, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, {
+    SharedValue,
+    interpolate,
+    useAnimatedStyle
+} from 'react-native-reanimated';
 
 import { Box } from '../Box/Box';
 
@@ -23,7 +27,11 @@ const AnimatedImageHeader: React.FC<AnimatedImageBoxProps> = ({
                     translateY: interpolate(
                         scrollOffset.value,
                         [-imageHeight, 0, imageHeight],
-                        [-imageHeight / (2 * aspectRatio), 0, imageHeight * 0.75]
+                        [
+                            -imageHeight / (2 * aspectRatio),
+                            0,
+                            imageHeight * 0.75
+                        ]
                     )
                 },
                 {
@@ -41,7 +49,10 @@ const AnimatedImageHeader: React.FC<AnimatedImageBoxProps> = ({
         <Box>
             <Animated.Image
                 source={{ uri }}
-                style={[imageAnimatedStyle, { width: '100%', aspectRatio: aspectRatio }]}
+                style={[
+                    imageAnimatedStyle,
+                    { width: '100%', aspectRatio: aspectRatio }
+                ]}
             />
         </Box>
     );

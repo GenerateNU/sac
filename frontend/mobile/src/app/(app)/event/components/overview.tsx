@@ -1,3 +1,5 @@
+import { TouchableOpacity } from 'react-native-gesture-handler';
+
 import {
     faCalendarDays,
     faGlobe,
@@ -8,6 +10,8 @@ import { EventType } from '@generatesac/lib';
 import { Avatar } from '@rneui/base';
 
 import { Box, Colors, SACColors, Text } from '@/src/app/(design-system)';
+import { setClubId, setClubShouldPreview } from '@/src/store/slices/clubSlice';
+import { useAppDispatch } from '@/src/store/store';
 import { firstLetterUppercase } from '@/src/utils/string';
 import { createOptions, eventTime } from '@/src/utils/time';
 
@@ -25,7 +29,7 @@ interface OverviewProps {
 
 export const Overview: React.FC<OverviewProps> = ({
     logo,
-    // clubId,
+    clubId,
     eventName,
     color,
     club,
@@ -34,24 +38,30 @@ export const Overview: React.FC<OverviewProps> = ({
     location,
     type
 }) => {
+    const dispatch = useAppDispatch();
+
     return (
-        <Box
-            flexWrap="wrap"
-            gap="m"
-            flexDirection="column"
-            alignItems="flex-start"
-        >
+        <Box gap="m" flexDirection="column">
             <Box>
                 <Text variant="header-1">{eventName}</Text>
-                <Box
-                    marginTop="xs"
-                    flexDirection="row"
-                    gap="xxs"
-                    alignItems="center"
+                <TouchableOpacity
+                    onPress={() => {
+                        dispatch(setClubId(clubId));
+                        dispatch(setClubShouldPreview(true));
+                    }}
                 >
-                    <Text color="darkGray">Hosted by {club}</Text>
-                    <Avatar rounded source={{ uri: logo }} size={20} />
-                </Box>
+                    <Box
+                        marginTop="xs"
+                        flexWrap="wrap"
+                        flexDirection="row"
+                        gap="xxs"
+                        alignItems="center"
+                        width="70%"
+                    >
+                        <Text color="darkGray">Hosted by {club}</Text>
+                        <Avatar rounded source={{ uri: logo }} size={20} />
+                    </Box>
+                </TouchableOpacity>
             </Box>
             <Box flexDirection="column" gap="xs" width="90%">
                 <Box flexDirection="row" gap="s" alignItems="center">
