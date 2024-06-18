@@ -35,30 +35,3 @@ type Club struct {
 	Event        []Event        `gorm:"many2many:club_events;" json:"-"`
 	Notification []Notification `gorm:"polymorphic:Reference;" json:"-"`
 }
-
-type ClubSearchDocument struct {
-	Name        string   `json:"name"`
-	Preview     string   `json:"preview"`
-	Description string   `json:"description"`
-	NumMembers  int      `json:"num_members"`
-	Tags        []string `json:"tags"`
-}
-
-func (c *Club) ToSearchDocument() interface{} {
-	tagIds := make([]string, len(c.Tag))
-	for i, tag := range c.Tag {
-		tagIds[i] = tag.ID.String()
-	}
-
-	return ClubSearchDocument{
-		Name:        c.Name,
-		Preview:     c.Preview,
-		Description: c.Description,
-		NumMembers:  c.NumMembers,
-		Tags:        tagIds,
-	}
-}
-
-func (c Club) Preload(db *gorm.DB) *gorm.DB {
-	return db.Preload("Tag")
-}
