@@ -1,10 +1,11 @@
-package msft
+package msft_mobile
 
 import (
-	"encoding/json"
 	"errors"
 	"strings"
 	"time"
+
+	go_json "github.com/goccy/go-json"
 
 	"github.com/GenerateNU/sac/backend/integrations/oauth/soth"
 	"github.com/GenerateNU/sac/backend/utilities"
@@ -47,7 +48,7 @@ func (s *Session) Authorize(provider soth.Provider, params soth.Params) (string,
 
 // Marshal the session into a string
 func (s Session) Marshal() string {
-	b, _ := json.Marshal(s)
+	b, _ := go_json.Marshal(s)
 	return string(b)
 }
 
@@ -58,6 +59,6 @@ func (s Session) String() string {
 // UnmarshalSession wil unmarshal a JSON string into a session.
 func (p *Provider) UnmarshalSession(data string) (soth.Session, error) {
 	session := &Session{}
-	err := json.NewDecoder(strings.NewReader(data)).Decode(session)
+	err := go_json.NewDecoder(strings.NewReader(data)).Decode(session)
 	return session, err
 }

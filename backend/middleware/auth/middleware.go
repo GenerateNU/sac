@@ -1,8 +1,6 @@
 package auth
 
 import (
-	"github.com/GenerateNU/sac/backend/integrations/oauth/soth"
-
 	"github.com/GenerateNU/sac/backend/permission"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -19,13 +17,11 @@ type AuthMiddlewareService interface {
 type AuthMiddlewareHandler struct {
 	db       *gorm.DB
 	validate *validator.Validate
-	provider soth.Provider
 }
 
-func New(db *gorm.DB, validate *validator.Validate, provider soth.Provider) AuthMiddlewareService {
+func New(db *gorm.DB, validate *validator.Validate) AuthMiddlewareService {
 	return &AuthMiddlewareHandler{
 		db:       db,
 		validate: validate,
-		provider: provider,
 	}
 }

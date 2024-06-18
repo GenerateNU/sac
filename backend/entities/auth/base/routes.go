@@ -9,29 +9,32 @@ import (
 )
 
 type Params struct {
-	authProvider   soth.Provider
-	providers      []soth.Provider
-	applicationURL string
-	router         fiber.Router
-	db             *gorm.DB
+	webAuthProvider    soth.Provider
+	mobileAuthProvider soth.Provider
+	providers          []soth.Provider
+	applicationURL     string
+	router             fiber.Router
+	db                 *gorm.DB
 }
 
-func NewParams(authProvider soth.Provider, applicationURL string, router fiber.Router, db *gorm.DB, emailer email.Emailer, validate *validator.Validate, providers ...soth.Provider) Params {
+func NewParams(webAuthProvider soth.Provider, mobileAuthProvider soth.Provider, applicationURL string, router fiber.Router, db *gorm.DB, emailer email.Emailer, validate *validator.Validate, providers ...soth.Provider,
+) Params {
 	return Params{
-		authProvider:   authProvider,
-		providers:      providers,
-		applicationURL: applicationURL,
-		router:         router,
-		db:             db,
+		webAuthProvider:    webAuthProvider,
+		mobileAuthProvider: mobileAuthProvider,
+		providers:          providers,
+		applicationURL:     applicationURL,
+		router:             router,
+		db:                 db,
 	}
 }
 
 func Auth(params Params) {
 	soth.UseProviders(
-		append(params.providers, params.authProvider)...,
+		append(params.providers, params.webAuthProvider, params.mobileAuthProvider)...,
 	)
 
-	handler := Handler{db: params.db, authProvider: params.authProvider}
+	handler := Handler{db: params.db, webAuthProvider: params.webAuthProvider, mobileAuthProvider: params.mobileAuthProvider}
 
 	params.router.Route("/auth", func(r fiber.Router) {
 		r.Get("/login", handler.Login)
