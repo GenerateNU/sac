@@ -25,7 +25,7 @@
         "@fortawesome/free-solid-svg-icons": "^6.5.2",
         "@fortawesome/react-fontawesome": "^0.2.2",
         "@fortawesome/react-native-fontawesome": "^0.3.2",
-        "@generatesac/lib": "0.0.177",
+        "@generatesac/lib": "0.0.179",
         "@gorhom/bottom-sheet": "^4.6.3",
         "@hookform/resolvers": "^3.4.2",
         "@react-native-async-storage/async-storage": "^1.23.1",

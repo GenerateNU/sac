@@ -1,16 +1,19 @@
+import { User } from '@generatesac/lib';
 import { createSlice } from '@reduxjs/toolkit';
-import { set } from 'react-hook-form';
 
 export type UserState = {
-    userId: string;
-    email: string;
+    loggedIn: boolean;
     accessToken?: string;
-    sacLoginSession?: string;
 };
 
-const initialState: UserState = {
-    userId: '',
-    email: ''
+const initialState: UserState & User = {
+    id: '',
+    email: '',
+    loggedIn: false,
+    created_at: '',
+    updated_at: '',
+    name: '',
+    role: 'student'
 };
 
 export const userSlice = createSlice({
@@ -18,9 +21,16 @@ export const userSlice = createSlice({
     initialState,
     reducers: {
         setUser: (state, action) => {
-            state.userId = action.payload.userId;
+            state.id = action.payload.id;
             state.email = action.payload.email;
-            state.accessToken = action.payload.accessToken;
+            state.college = action.payload.college;
+            state.graduation_cycle = action.payload.graduation_cycle;
+            state.graduation_year = action.payload.graduation_year;
+            state.major0 = action.payload.major0;
+            state.major1 = action.payload.major1;
+            state.major2 = action.payload.major2;
+            state.name = action.payload.name;
+            state.role = action.payload.role;
         },
         resetUser: () => initialState,
         setAccessToken: (state, action) => {
@@ -28,18 +38,19 @@ export const userSlice = createSlice({
         },
         resetAccessToken: (state) => {
             state.accessToken = undefined;
+            state.loggedIn = false;
         },
-        setSacLoginSession: (state, action) => {
-            state.sacLoginSession = action.payload;
+        setLoggedInState: (state, action) => {
+            state.loggedIn = action.payload;
         }
     }
 });
 
-export const { 
-    setUser, 
-    resetUser, 
-    setAccessToken, 
-    resetAccessToken, 
-    setSacLoginSession 
+export const {
+    setUser,
+    resetUser,
+    setAccessToken,
+    resetAccessToken,
+    setLoggedInState
 } = userSlice.actions;
 export default userSlice.reducer;

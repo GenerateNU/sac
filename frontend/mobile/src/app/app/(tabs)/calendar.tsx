@@ -6,6 +6,8 @@ import {
 } from 'react-native-calendars-sac';
 import { Theme } from 'react-native-calendars-sac/src/types';
 
+import { eventApi } from '@generatesac/lib';
+
 import { Box, Colors, createStyles } from '@/src/app/design-system';
 import Calendar, {
     DAY_EPOCH_TIME,
@@ -13,7 +15,6 @@ import Calendar, {
 } from '@/src/app/design-system/components/Calendar/Calendar';
 import { EventSection } from '@/src/app/design-system/components/Calendar/DayTimeSection';
 import { parseData } from '@/src/app/design-system/components/Calendar/parser/calendarParser';
-import { eventApi } from '@generatesac/lib';
 
 const TODAY = new Date();
 

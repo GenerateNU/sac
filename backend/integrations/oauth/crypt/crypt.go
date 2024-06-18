@@ -17,7 +17,7 @@ func Encrypt(data string, passphrase string) (string, error) {
 	}
 
 	plaintext := []byte(data)
-	if len(plaintext) > 1028 {
+	if len(plaintext) > 4096 {
 		return "", fmt.Errorf("plaintext too long")
 	}
 

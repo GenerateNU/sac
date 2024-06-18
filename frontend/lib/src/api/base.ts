@@ -11,7 +11,7 @@ export const baseApi = createApi({
       // User slice existing must exist in all dependent apps:
       const token = (getState() as { user: { accessToken: string } })?.user?.accessToken;
       if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
+        headers.set("_sac_session", token);
       }
       return headers;
     },

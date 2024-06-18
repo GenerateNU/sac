@@ -11,9 +11,10 @@ import {
     faUser
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { Avatar } from '@rneui/base';
 
 import { GlobalLayout } from '@/src/app/design-system/components/GlobalLayout/GlobalLayout';
+import { resetAccessToken } from '@/src/store/slices/userSlice';
+import { useAppDispatch, useAppSelector } from '@/src/store/store';
 
 import { Box, Colors, SACColors, Spacing, Text } from '../../design-system';
 
@@ -43,6 +44,9 @@ const ProfileItem = ({ icon, text, textColor, onPress }: ProfileItemProps) => (
 );
 
 const ProfilePage = () => {
+    const dispatch = useAppDispatch();
+    const user = useAppSelector((state) => state.user);
+
     return (
         <GlobalLayout>
             <SafeAreaView style={styles.container}>
@@ -52,27 +56,20 @@ const ProfilePage = () => {
                     gap="m"
                     alignItems="center"
                 >
-                    <Avatar
-                        source={{
-                            uri: 'https://media1.popsugar-assets.com/files/thumbor/S6_lryTon-0orhMkLrw6m1yIFww=/1500x1500/filters:format_auto():quality(85):extract_cover()/2017/02/28/003/n/1922441/ace7eba458b602264e7940.39836479_edit_img_image_43244124_1488304081.jpg'
-                        }}
-                        size={60}
-                        rounded
-                    />
                     <Box flexDirection="column" gap="xxs">
-                        <Text variant="subheader-2">Quokka</Text>
-                        <Text>quokka@northeastern.edu</Text>
+                        <Text variant="subheader-2">{user.name}</Text>
+                        <Text>{user.email}</Text>
                     </Box>
                 </Box>
                 <Box width="100%">
                     <ProfileItem
-                        onPress={() => router.push('/user/detail/')}
+                        onPress={() => router.push('/app/user/detail/')}
                         icon={faUser}
                         text="Edit Profile"
                     />
                     <ProfileItem
                         icon={faHeart}
-                        onPress={() => router.push('/user/interest/')}
+                        onPress={() => router.push('/app/user/interest/')}
                         text="Edit Interests"
                     />
                     <Box
@@ -85,6 +82,9 @@ const ProfilePage = () => {
                         icon={faSignOutAlt}
                         text="Logout"
                         textColor="darkRed"
+                        onPress={() => {
+                            dispatch(resetAccessToken());
+                        }}
                     />
                 </Box>
             </SafeAreaView>

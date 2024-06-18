@@ -78,7 +78,7 @@ export const EventPreview = forwardRef<Ref, EventPreviewProps>(
                                 <TouchableOpacity
                                     onPress={() => {
                                         dispatch(setEventShouldPreview(false));
-                                        router.push(`/club/${event.host}`);
+                                        router.push(`/app/club/${event.host}`);
                                     }}
                                 >
                                     <Box
@@ -106,7 +106,7 @@ export const EventPreview = forwardRef<Ref, EventPreviewProps>(
                                 marginTop="l"
                                 onPress={() => {
                                     dispatch(setEventShouldPreview(false));
-                                    router.push(`/event/${eventId}`);
+                                    router.push(`/app/event/${eventId}`);
                                 }}
                                 width="100%"
                                 size="md"

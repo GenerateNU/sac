@@ -107,7 +107,7 @@ export const ClubPreview = forwardRef<Ref, ClubPreviewProps>(
                             <Button
                                 onPress={() => {
                                     dispatch(setClubShouldPreview(false));
-                                    router.push(`/club/${clubId}`);
+                                    router.push(`/app/club/${clubId}`);
                                 }}
                                 width="100%"
                                 size="md"

@@ -17,10 +17,10 @@ func (m *AuthMiddlewareHandler) UserAuthorizeById(c *fiber.Ctx) error {
 		return c.SendStatus(http.StatusUnauthorized)
 	}
 
-	user := models.UnmarshalUser(strUser)
+	user := *models.UnmarshalUser(strUser)
 
 	if user.Role == models.Super {
-		locals.SetUser(c, user)
+		locals.SetUser(c, &user)
 		return c.Next()
 	}
 
@@ -29,8 +29,8 @@ func (m *AuthMiddlewareHandler) UserAuthorizeById(c *fiber.Ctx) error {
 		return err
 	}
 
-	if idAsUUID == &user.ID {
-		locals.SetUser(c, user)
+	if *idAsUUID == user.ID {
+		locals.SetUser(c, &user)
 		return c.Next()
 	}
 

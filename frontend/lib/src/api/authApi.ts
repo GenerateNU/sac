@@ -1,12 +1,9 @@
-import { LoginResponse, RefreshTokenRequestBody } from "../types/auth";
-import {
-  EmailRequestBody,
-  VerifyEmailRequestBody,
-  VerifyPasswordResetTokenRequestBody,
-} from "../types/verification";
-import { baseApi } from "./base";
+import { User, userSchema } from "../types";
+import { LoginResponse, OAuthCallbackRequestQueryParams } from "../types/auth";
+import { baseApi, handleQueryParams } from "./base";
 
 const AUTH_API_BASE_URL = "/auth";
+const PROVIDER = "microsoftonline";
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -26,49 +23,20 @@ export const authApi = baseApi.injectEndpoints({
         }
       },
     }),
-    logout: builder.mutation<void, void>({
+    logout: builder.query<void, void>({
       query: () => ({
         url: `${AUTH_API_BASE_URL}/logout`,
-        method: "POST",
+        method: "GET",
       }),
     }),
-    refresh: builder.mutation<void, RefreshTokenRequestBody>({
-      query: (body) => ({
-        url: "refresh",
-        method: "POST",
-        body,
+    callback: builder.query<User, OAuthCallbackRequestQueryParams>({
+      query: (params) => ({
+        url: handleQueryParams(`${AUTH_API_BASE_URL}/${PROVIDER}/callback`, params),
+        method: "GET",
       }),
-    }),
-    forgotPassword: builder.mutation<void, EmailRequestBody>({
-      query: (body) => ({
-        url: `${AUTH_API_BASE_URL}/forgot-password`,
-        method: "POST",
-        body,
-      }),
-    }),
-    verifyPasswordResetToken: builder.mutation<
-      void,
-      VerifyPasswordResetTokenRequestBody
-    >({
-      query: (body) => ({
-        url: `${AUTH_API_BASE_URL}/verify-reset`,
-        method: "POST",
-        body,
-      }),
-    }),
-    sendCode: builder.mutation<void, EmailRequestBody>({
-      query: (body) => ({
-        url: `${AUTH_API_BASE_URL}/send-code`,
-        method: "POST",
-        body,
-      }),
-    }),
-    verifyEmail: builder.mutation<void, VerifyEmailRequestBody>({
-      query: (body) => ({
-        url: `${AUTH_API_BASE_URL}/verify-email`,
-        method: "POST",
-        body,
-      }),
+      transformResponse: (response) => {
+        return userSchema.parse(response);
+      }
     }),
   }),
 });

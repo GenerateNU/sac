@@ -20,7 +20,7 @@ export { ErrorBoundary } from 'expo-router';
 SplashScreen.preventAutoHideAsync();
 
 const InitalLayout = () => {
-    const { accessToken } = useAppSelector((state) => state.user);
+    const { accessToken, loggedIn } = useAppSelector((state) => state.user);
     const {
         eventPreviewRef,
         eventId,
@@ -33,12 +33,13 @@ const InitalLayout = () => {
     } = usePreview();
 
     useEffect(() => {
-        if (accessToken) {
+        if (accessToken && loggedIn) {
             router.push('/app/');
         } else {
             router.push('/auth/');
         }
-    }, [accessToken]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [loggedIn]);
 
     return (
         <>

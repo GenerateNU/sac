@@ -19,7 +19,7 @@ export const PointOfContactList: React.FC<PointOfContactListProps> = ({
 }) => {
     const renderPointOfContact = ({ item }: { item: PointOfContact }) => {
         return (
-            <Pressable onPress={() => router.push(`/contact/${item.id}`)}>
+            <Pressable onPress={() => router.push(`/app/contact/${item.id}`)}>
                 <PointOfContactComponent
                     imageUrl={item.photo_file.file_url}
                     name={item.name}

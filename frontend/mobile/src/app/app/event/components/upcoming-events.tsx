@@ -15,7 +15,7 @@ interface UpcomingEventsProps {
 export const UpcomingEvent: React.FC<UpcomingEventsProps> = ({ events }) => {
     const renderEventCard = ({ item }: { item: Event }) => {
         return (
-            <Pressable onPress={() => router.push(`/event/${item.id}`)}>
+            <Pressable onPress={() => router.push(`/app/event/${item.id}`)}>
                 <EventCard
                     variant="small"
                     event={item.name}
