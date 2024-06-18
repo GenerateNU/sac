@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM golang:1.22.2
+FROM golang:1.22.2 as builder
 
 WORKDIR /app
 
@@ -13,6 +13,10 @@ RUN templ generate
 
 RUN CGO_ENABLED=0 GOOS=linux go build -v -o ./sac
 
+FROM alpine:latest as release
+
+COPY --from=builder /app/sac /sac
+
 EXPOSE 8080
 
-CMD ["/app/sac"]
+ENTRYPOINT [ "/sac" ]
