@@ -1,9 +1,8 @@
 import { z } from "zod";
 
-// Schemas:
-export const loginRequestBodySchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
+export const loginResponseSchema = z.object({
+  redirect_uri: z.string(),
+  sac_session: z.string(),
 });
 
 export const updatePasswordRequestBodySchema = z.object({
@@ -21,7 +20,7 @@ export const tokensSchema = z.object({
 });
 
 // Types:
-export type LoginRequestBody = z.infer<typeof loginRequestBodySchema>;
+export type LoginResponse = z.infer<typeof loginResponseSchema>;
 export type UpdatePasswordRequestBody = z.infer<
   typeof updatePasswordRequestBodySchema
 >;

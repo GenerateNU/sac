@@ -1,5 +1,4 @@
-import { LoginRequestBody, RefreshTokenRequestBody } from "../types/auth";
-import { User, userSchema } from "../types/user";
+import { LoginResponse, RefreshTokenRequestBody } from "../types/auth";
 import {
   EmailRequestBody,
   VerifyEmailRequestBody,
@@ -11,14 +10,20 @@ const AUTH_API_BASE_URL = "/auth";
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    login: builder.mutation<User, LoginRequestBody>({
-      query: (body) => ({
+    login: builder.query<LoginResponse, void>({
+      query: () => ({
         url: `${AUTH_API_BASE_URL}/login`,
-        method: "POST",
-        body,
+        method: "GET",
+        responseHandler: 'text',
       }),
-      transformResponse: (response: User) => {
-        return userSchema.parse(response);
+      transformResponse: async (_, meta) => {
+        const redirectUri = meta?.response?.headers.get("Redirect") as string;
+        const sac_session = meta?.response?.headers.get("_sac_session") as string;
+
+        return {
+          redirect_uri: redirectUri,
+          sac_session,
+        }
       },
     }),
     logout: builder.mutation<void, void>({

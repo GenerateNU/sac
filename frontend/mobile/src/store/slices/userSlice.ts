@@ -1,9 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { set } from 'react-hook-form';
 
 export type UserState = {
     userId: string;
     email: string;
     accessToken?: string;
+    sacLoginSession?: string;
 };
 
 const initialState: UserState = {
@@ -26,10 +28,18 @@ export const userSlice = createSlice({
         },
         resetAccessToken: (state) => {
             state.accessToken = undefined;
+        },
+        setSacLoginSession: (state, action) => {
+            state.sacLoginSession = action.payload;
         }
     }
 });
 
-export const { setUser, resetUser, setAccessToken, resetAccessToken } =
-    userSlice.actions;
+export const { 
+    setUser, 
+    resetUser, 
+    setAccessToken, 
+    resetAccessToken, 
+    setSacLoginSession 
+} = userSlice.actions;
 export default userSlice.reducer;
