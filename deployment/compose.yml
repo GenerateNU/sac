@@ -24,6 +24,19 @@ services:
       - .env.prod
 
   # REDIS
+  redis-db-cache:
+    build:
+      context: ../backend
+      dockerfile: ../backend/Dockerfile.redis
+    container_name: redis_db_cache
+    ports:
+      - "6379"
+    environment:
+      - REDIS_USERNAME=redis_db_cache
+      - REDIS_PASSWORD=redis_db_cache!#1
+      - REDIS_DISABLE_DEFAULT_USER="true"
+    volumes:
+      - redis-db-cache-data:/data
   redis-session:
     build:
       context: ../backend
@@ -54,6 +67,7 @@ services:
 volumes:
   redis-session-data:
   redis-limiter-data:
+  redis-db-cache-data:
   opensearch-data1:
   caddy_data:
     external: true

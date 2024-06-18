@@ -60,7 +60,7 @@ func Init(db *gorm.DB, stores *store.Stores, integrations integrations.Integrati
 
 	publicURL := settings.Application.PublicUrl
 
-	msftProvider := msft.New(settings.Microsft.Key, settings.Microsft.Secret, fmt.Sprintf("%s/api/v1/auth/microsoftonline/callback", publicURL), settings.Microsft.Tenant)
+	msftProvider := msft.New(settings.Microsft.Key, "myapp://auth/callback", settings.Microsft.Tenant)
 	googProvider := goog.New(settings.Google.Key, settings.Google.Secret, fmt.Sprintf("%s/api/v1/auth/google/callback", publicURL))
 
 	authMiddleware := authMiddleware.New(
