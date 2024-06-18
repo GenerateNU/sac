@@ -3,6 +3,7 @@ package base
 import (
 	"errors"
 
+	"github.com/GenerateNU/sac/backend/database/cache"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/google/uuid"
 
@@ -41,6 +42,8 @@ func CreateTag(db *gorm.DB, tag models.Tag) (*models.Tag, error) {
 }
 
 func GetTags(db *gorm.DB) ([]models.Tag, error) {
+	db = cache.SetUseCache(db, true)
+
 	var tags []models.Tag
 
 	if err := db.Find(&tags).Error; err != nil {
@@ -48,6 +51,22 @@ func GetTags(db *gorm.DB) ([]models.Tag, error) {
 	}
 
 	return tags, nil
+}
+
+func GetTagClubs(db *gorm.DB, id uuid.UUID) ([]models.Club, error) {
+	db = cache.SetUseCache(db, true)
+
+	tag, err := tags.GetTag(db, id)
+	if err != nil {
+		return nil, err
+	}
+
+	var clubs []models.Club
+	if err := db.Model(&tag).Association("Club").Find(&clubs); err != nil {
+		return nil, err
+	}
+
+	return clubs, nil
 }
 
 func UpdateTag(db *gorm.DB, id uuid.UUID, tag models.Tag) (*models.Tag, error) {
@@ -71,19 +90,4 @@ func DeleteTag(db *gorm.DB, tagID uuid.UUID) error {
 	}
 
 	return nil
-}
-
-func GetTagClubs(db *gorm.DB, id uuid.UUID) ([]models.Club, error) {
-	var clubs []models.Club
-
-	tag, err := tags.GetTag(db, id)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := db.Model(&tag).Association("Club").Find(&clubs); err != nil {
-		return nil, err
-	}
-
-	return clubs, nil
 }

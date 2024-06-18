@@ -26,13 +26,9 @@ func CreateEventTags(db *gorm.DB, id uuid.UUID, tags []models.Tag) ([]models.Tag
 
 func GetEventTags(db *gorm.DB, id uuid.UUID) ([]models.Tag, error) {
 	var tags []models.Tag
-
-	event, err := events.GetEvent(db, id, transactions.PreloadTag())
-	if err != nil {
-		return nil, err
-	}
-
-	if err := db.Model(&event).Association("Tag").Find(&tags); err != nil {
+	if err := db.Joins("JOIN event_tags ON event_tags.tag_id = tags.id").
+		Where("event_tags.event_id = ?", id).
+		Find(&tags).Error; err != nil {
 		return nil, err
 	}
 	return tags, nil

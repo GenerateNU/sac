@@ -36,14 +36,12 @@ func (s *SearchController) SearchClubs(c *fiber.Ctx) error {
 
 	var searchQuery search_types.ClubSearchRequest
 
-	log.Println("RAHHHHHH")
 	if err := c.BodyParser(&searchQuery); err != nil {
 		return utilities.InvalidJSON()
 	}
 
 	result, err := s.searchService.SearchClubs(searchQuery)
 	if err != nil {
-		log.Println("RAHHHHHH XD")
 		return err
 	}
 

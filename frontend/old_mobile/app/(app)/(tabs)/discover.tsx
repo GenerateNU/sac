@@ -11,8 +11,8 @@ import { router } from 'expo-router';
 
 import { useClubsQuery, useEventsQuery } from '@sac/lib';
 
-import { SearchBar } from '@/app/(app)/search/_components/search-bar';
-import { TopSearch } from '@/app/(app)/search/_components/top-search';
+import { SearchBar } from '@/src/app/search/_components/search-bar';
+import { TopSearch } from '@/src/app/search/_components/top-search';
 
 import { ClubHomePageCard } from './_components/club-homepage-card';
 import { EventHomePageCardHorizontal } from './_components/event-homepage-card';
@@ -45,7 +45,7 @@ const Discover = () => {
                     searchBoxEditable={false}
                     cancelOrBackButton="Back"
                     onSearchBoxPressed={() => {
-                        router.push('/(app)/search/recents');
+                        router.push('/app/search/recents');
                         return undefined;
                     }}
                 />

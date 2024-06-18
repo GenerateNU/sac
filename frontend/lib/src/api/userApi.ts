@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-import { UpdatePasswordRequestBody } from "../types/auth";
 import { Club, clubSchema } from "../types/club";
 import { PaginationQueryParams } from "../types/root";
 import { Tag, tagSchema } from "../types/tag";
@@ -82,16 +81,6 @@ export const userApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: (_result, _, id) => [{ type: "User", id }],
     }),
-    updatePassword: builder.mutation<
-      void,
-      { id: string; body: UpdatePasswordRequestBody }
-    >({
-      query: ({ id, body }) => ({
-        url: `${USER_API_BASE_URL}/${id}/password`,
-        method: "PATCH",
-        body,
-      }),
-    }),
     userFollowing: builder.query<Club[], string>({
       query: (id) => ({
         url: `${USER_API_BASE_URL}/${id}/follower/`,
@@ -157,7 +146,7 @@ export const userApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: (result, _, _arg) =>
+      invalidatesTags: (result) =>
         result ? result.map((tag) => ({ type: "Tag", id: tag.id })) : ["Tag"],
       transformResponse: (response) => {
         return z.array(tagSchema).parse(response);

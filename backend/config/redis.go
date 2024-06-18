@@ -2,6 +2,10 @@ package config
 
 import (
 	"fmt"
+	"runtime"
+
+	"github.com/GenerateNU/sac/backend/constants"
+	"github.com/redis/go-redis/v9"
 
 	m "github.com/garrettladley/mattress"
 )
@@ -15,24 +19,17 @@ type RedisSettings struct {
 	// TLSConfig *TLSConfig
 }
 
-func (r RedisSettings) Username() string {
-	return r.username
-}
-
-func (r RedisSettings) Password() *m.Secret[string] {
-	return r.password
-}
-
-func (r RedisSettings) Host() string {
-	return r.host
-}
-
-func (r RedisSettings) Port() uint {
-	return r.port
-}
-
-func (r RedisSettings) DB() int {
-	return r.db
+func (r *RedisSettings) Into() *redis.Client {
+	return redis.NewClient(&redis.Options{
+		Username:              r.username,
+		Password:              r.password.Expose(),
+		Addr:                  fmt.Sprintf("%s:%d", r.host, r.port),
+		DB:                    r.db,
+		PoolSize:              10 * runtime.GOMAXPROCS(0),
+		MaxActiveConns:        constants.REDIS_MAX_OPEN_CONNECTIONS,
+		MaxIdleConns:          constants.REDIS_MAX_IDLE_CONNECTIONS,
+		ContextTimeoutEnabled: true,
+	})
 }
 
 type intermediateRedisSettings struct {

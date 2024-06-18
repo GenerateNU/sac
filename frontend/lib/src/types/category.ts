@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 import { rootModelSchema } from "./root";
-import { tagSchema } from "./tag";
 
 // Schemas:
 export const createCategoryRequestBodySchema = z.object({
@@ -10,7 +9,6 @@ export const createCategoryRequestBodySchema = z.object({
 
 export const categorySchemaIntermediate = z.object({
   name: z.string(),
-  tags: z.array(tagSchema),
 });
 
 export const categorySchema = categorySchemaIntermediate.merge(rootModelSchema);

@@ -3,6 +3,7 @@ package base
 import (
 	"errors"
 
+	"github.com/GenerateNU/sac/backend/database/cache"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/garrettladley/fiberpaginate"
 	"github.com/google/uuid"
@@ -25,8 +26,9 @@ func CreateCategory(db *gorm.DB, category models.Category) (*models.Category, er
 }
 
 func GetCategories(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Category, error) {
-	var categories []models.Category
+	db = cache.SetUseCache(db, true)
 
+	var categories []models.Category
 	if err := db.Scopes(utilities.IntoScope(pageInfo, db)).Find(&categories).Error; err != nil {
 		return nil, err
 	}
@@ -35,8 +37,9 @@ func GetCategories(db *gorm.DB, pageInfo fiberpaginate.PageInfo) ([]models.Categ
 }
 
 func GetCategory(db *gorm.DB, id uuid.UUID) (*models.Category, error) {
-	var category models.Category
+	db = cache.SetUseCache(db, true)
 
+	var category models.Category
 	if err := db.First(&category, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, utilities.ErrNotFound
