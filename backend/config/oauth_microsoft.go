@@ -13,8 +13,7 @@ type MicrosoftOAuthSettings struct {
 }
 
 type intermediateMicrosoftOAuthSetting struct {
-	Key    string `env:"KEY"`
-	Secret string `env:"SECRET"`
+	Key string `env:"KEY"`
 }
 
 func (i *intermediateMicrosoftOAuthSetting) into() (*MicrosoftOAuthSettings, error) {
@@ -23,14 +22,8 @@ func (i *intermediateMicrosoftOAuthSetting) into() (*MicrosoftOAuthSettings, err
 		return nil, err
 	}
 
-	secretSecret, err := m.NewSecret(i.Secret)
-	if err != nil {
-		return nil, err
-	}
-
 	return &MicrosoftOAuthSettings{
 		Key:    secretKey,
-		Secret: secretSecret,
 		Tenant: tenantID,
 	}, nil
 }

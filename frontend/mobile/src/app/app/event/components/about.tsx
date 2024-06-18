@@ -1,0 +1,96 @@
+import React from 'react';
+import { Linking } from 'react-native';
+
+import { faVideo } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { Tag } from '@generatesac/lib';
+
+import {
+    Box,
+    Colors,
+    SACColors,
+    Text,
+    textColorVariants
+} from '@/src/app/design-system';
+import { AboutSection } from '@/src/app/design-system/components/AboutSection/AboutSection';
+import { Button } from '@/src/app/design-system/components/Button/Button';
+
+import { PageTags } from '../../../design-system/components/Tag/Tags';
+
+interface AboutEventProps {
+    tags: Tag[];
+    description: string;
+    zoomLink?: string;
+    color: SACColors;
+    onPress: () => void;
+}
+
+export const AboutEvent = ({
+    tags,
+    color,
+    description,
+    zoomLink,
+    onPress
+}: AboutEventProps) => {
+    const handlePress = () => {
+        if (zoomLink) {
+            Linking.openURL(zoomLink);
+        }
+    };
+
+    return (
+        <Box flexDirection="column" alignItems="flex-start">
+            <AboutSection
+                description={description}
+                onPress={onPress}
+                type="event"
+            />
+            <Box paddingTop="xl">
+                <PageTags tags={tags} color={color} />
+            </Box>
+            {zoomLink && (
+                <Button
+                    marginTop="xl"
+                    color={color}
+                    variant="standardButton"
+                    onPress={handlePress}
+                    alignItems="flex-start"
+                    height={56}
+                >
+                    <Box
+                        gap="s"
+                        flexDirection="row"
+                        alignItems="center"
+                        justifyContent="center"
+                    >
+                        <Box
+                            marginTop="xxs"
+                            flexDirection="row"
+                            alignItems="center"
+                            justifyContent="center"
+                            aspectRatio={1}
+                            width={25}
+                            backgroundColor="white"
+                            borderRadius="full"
+                        >
+                            <FontAwesomeIcon
+                                color={Colors[color]}
+                                icon={faVideo}
+                            />
+                        </Box>
+                        <Text
+                            paddingTop="xxs"
+                            color={
+                                textColorVariants[
+                                    color as keyof typeof textColorVariants
+                                ]
+                            }
+                        >
+                            Click here for Zoom Link
+                        </Text>
+                    </Box>
+                </Button>
+            )}
+        </Box>
+    );
+};

@@ -89,7 +89,7 @@ func (h *Handler) ProviderCallback(c *fiber.Ctx) error {
 		return err
 	}
 
-	return c.SendStatus(http.StatusOK)
+	return c.Status(http.StatusOK).JSON(user)
 }
 
 func (h *Handler) ProviderLogout(c *fiber.Ctx) error {
