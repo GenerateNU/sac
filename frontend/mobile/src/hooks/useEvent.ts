@@ -26,7 +26,6 @@ const useEvent = (id: string) => {
 
     useEffect(() => {
         if ((id !== '' && (id !== eventId || shouldPreview)) || apiError) {
-            console.log('fetching data!');
             // Fetch events
             getEvent(id).then(({ data: eventData }) => {
                 dispatch(setEvent(eventData));

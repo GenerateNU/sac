@@ -6,6 +6,7 @@ import { rootModelSchema } from "./root";
 export const userRoleEnum = z.enum(["super", "student"]);
 
 export const collegeEnum = z.enum([
+  "",
   "CAMD",
   "DMSB",
   "KCCS",
@@ -18,6 +19,7 @@ export const collegeEnum = z.enum([
 ]);
 
 export const majorEnum = z.enum([
+  "",
   "africanaStudies",
   "americanSignLanguage",
   "americanSignLanguage-EnglishInterpreting",
@@ -120,7 +122,7 @@ export const majorEnum = z.enum([
   "theatre",
 ]);
 
-export const graduationCycleEnum = z.enum(["december", "may"]);
+export const graduationCycleEnum = z.enum(["december", "may", ""]);
 
 export const yearEnum = z.enum(["1", "2", "3", "4", "5"]);
 
@@ -155,8 +157,7 @@ export const createUserTagsRequestBodySchema = z.object({
 
 const userSchemaIntermediate = z.object({
   role: userRoleEnum,
-  first_name: z.string().min(1),
-  last_name: z.string().min(1),
+  name: z.string().min(1),
   email: z.string().email(),
   major0: majorEnum.optional(),
   major1: majorEnum.optional(),
@@ -164,7 +165,6 @@ const userSchemaIntermediate = z.object({
   college: collegeEnum.optional(),
   graduation_cycle: graduationCycleEnum.optional(),
   graduation_year: z.number().optional(),
-  is_verified: z.boolean(),
 });
 
 export const userSchema = userSchemaIntermediate.merge(rootModelSchema);
