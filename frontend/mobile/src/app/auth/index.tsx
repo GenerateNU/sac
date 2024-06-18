@@ -1,8 +1,6 @@
 import React from 'react';
 import { Image, Linking, SafeAreaView } from 'react-native';
 
-import { router } from 'expo-router';
-
 import { authApi } from '@generatesac/lib';
 
 import Loading from '@/src/assets/gif/loading.gif';
