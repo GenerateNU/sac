@@ -31,6 +31,7 @@ type ServiceParams struct {
 	DB           *gorm.DB
 	Validate     *validator.Validate
 	Calendar     *config.CalendarSettings
+	Search       *config.SearchSettings
 	Stores       *store.Stores
 	Integrations integrations.Integrations
 }

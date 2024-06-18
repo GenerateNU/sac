@@ -4,6 +4,7 @@ import (
 	"github.com/GenerateNU/sac/backend/entities/clubs"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/errs"
+	"github.com/GenerateNU/sac/backend/search"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/garrettladley/fiberpaginate"
@@ -40,6 +41,12 @@ func (c *ClubService) CreateClub(userID uuid.UUID, clubBody CreateClubRequestBod
 		return nil, err
 	}
 
+	result, err := CreateClub(c.DB, userID, *club)
+	if err != nil {
+		return nil, err
+	}
+
+	go search.UpsertClubEmbedding(c.DB)
 	return CreateClub(c.DB, userID, *club)
 }
 
