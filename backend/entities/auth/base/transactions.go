@@ -13,9 +13,11 @@ func FindOrCreateUser(ctx context.Context, db *gorm.DB, user soth.User) (*models
 	var sacUser models.User
 	if err := db.WithContext(ctx).Where("email = ?", user.Email).First(&sacUser).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			if err := createUser(ctx, db, user.Into()); err != nil {
+			user, err := createUser(ctx, db, *user.Into())
+			if err != nil {
 				return nil, err
 			}
+			return user, nil
 		} else {
 			return nil, err
 		}
@@ -24,7 +26,7 @@ func FindOrCreateUser(ctx context.Context, db *gorm.DB, user soth.User) (*models
 	return &sacUser, nil
 }
 
-func createUser(ctx context.Context, db *gorm.DB, user *models.User) error {
+func createUser(ctx context.Context, db *gorm.DB, user models.User) (*models.User, error) {
 	tx := db.WithContext(ctx).Begin()
 	defer func() {
 		if r := recover(); r != nil {
@@ -32,16 +34,16 @@ func createUser(ctx context.Context, db *gorm.DB, user *models.User) error {
 		}
 	}()
 
-	if err := tx.Create(user).Error; err != nil {
+	if err := tx.Create(&user).Error; err != nil {
 		tx.Rollback()
-		return err
+		return nil, err
 	}
 
 	welcomeTask := models.WelcomeTask{Name: user.Name, Email: user.Email}
 	if err := tx.Create(&welcomeTask).Error; err != nil {
 		tx.Rollback()
-		return err
+		return nil, err
 	}
 
-	return tx.Commit().Error
+	return &user, tx.Commit().Error
 }

@@ -1,8 +1,6 @@
 import React from 'react';
 import { Image, Linking, SafeAreaView } from 'react-native';
 
-import { router } from 'expo-router';
-
 import { authApi } from '@generatesac/lib';
 
 import Loading from '@/src/assets/gif/loading.gif';
@@ -55,23 +53,6 @@ const WelcomePage = () => {
                             />
                         ) : (
                             'Continue with Outlook'
-                        )}
-                    </Button>
-                    <Button
-                        variant="standardButton"
-                        color="darkRed"
-                        onPress={() => router.navigate('/auth/callback')}
-                    >
-                        {isLoading ? (
-                            <Image
-                                source={Loading}
-                                style={{
-                                    width: 15,
-                                    height: 15
-                                }}
-                            />
-                        ) : (
-                            'View Callback'
                         )}
                     </Button>
                 </Box>
