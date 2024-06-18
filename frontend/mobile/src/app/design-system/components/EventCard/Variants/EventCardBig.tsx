@@ -29,7 +29,7 @@ export const EventCardBig: React.FC<EventCardBigProps> = ({
     return (
         <Box>
             <TouchableOpacity
-                onPress={() => router.navigate(`/event/${eventId}`)}
+                onPress={() => router.navigate(`/app/event/${eventId}`)}
             >
                 <Box gap="xs">
                     <Image
