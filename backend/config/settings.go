@@ -32,7 +32,7 @@ type intermediateSettings struct {
 	Calendar     intermediateCalendarSettings      `envPrefix:"SAC_CALENDAR_"`
 	Google       intermediateGoogleOAuthSettings   `envPrefix:"SAC_GOOGLE_OAUTH_"`
 	Microsft     intermediateMicrosoftOAuthSetting `envPrefix:"SAC_MICROSOFT_OAUTH_"`
-	Search       SearchSettings                    `envPrefix:"SAC_SEARCH_"`
+	Search       intermediateSearchSettings        `envPrefix:"SAC_SEARCH_"`
 }
 
 func (i *intermediateSettings) into() (*Settings, error) {
@@ -91,6 +91,11 @@ func (i *intermediateSettings) into() (*Settings, error) {
 		return nil, err
 	}
 
+	search, err := i.Search.into()
+	if err != nil {
+		return nil, err
+	}
+
 	return &Settings{
 		Application:  i.Application,
 		DBCache:      *dbCache,
@@ -104,7 +109,7 @@ func (i *intermediateSettings) into() (*Settings, error) {
 			Microsft: *microsoft,
 			AWS:      *aws,
 			Resend:   *resend,
-			Search:   i.Search,
+			Search:   *search,
 		},
 	}, nil
 }
