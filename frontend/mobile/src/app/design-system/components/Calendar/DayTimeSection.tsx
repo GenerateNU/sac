@@ -40,17 +40,15 @@ function convertNumToTime(num: number) {
     let meridiem = num === 23 ? 'AM' : 'PM';
     let minutes = num % 100;
 
-    if (num !== 0 && (num < 1000 || num > 2359)) {
+    if (num !== 0 && (num < 0 || num > 2359)) {
         throw new Error('Invalid time');
     }
 
     time = time / 100;
-
-    if (num < 12) {
-        time += 12;
+    if (time < 12) {
         meridiem = 'AM';
     }
-    if (num > 12) {
+    if (time > 12) {
         time -= 12;
     }
 

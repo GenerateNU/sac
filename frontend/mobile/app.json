@@ -2,7 +2,7 @@
     "expo": {
         "name": "sac-mobile",
         "slug": "student-activity-calendar",
-        "version": "1.0.3",
+        "version": "1.0.4",
         "orientation": "portrait",
         "icon": "./src/assets/images/icon.png",
         "scheme": "myapp",

@@ -57,23 +57,6 @@ const WelcomePage = () => {
                             'Continue with Outlook'
                         )}
                     </Button>
-                    <Button
-                        variant="standardButton"
-                        color="darkRed"
-                        onPress={() => router.navigate('/auth/callback')}
-                    >
-                        {isLoading ? (
-                            <Image
-                                source={Loading}
-                                style={{
-                                    width: 15,
-                                    height: 15
-                                }}
-                            />
-                        ) : (
-                            'View Callback'
-                        )}
-                    </Button>
                 </Box>
             </GlobalLayout>
         </SafeAreaView>
