@@ -5,6 +5,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/entities/events"
 	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/search"
 
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
@@ -65,7 +66,13 @@ func (e *EventService) CreateEvent(body events.CreateEventRequestBody) (*models.
 		return nil, err
 	}
 
-	return CreateEvent(e.DB, *body.Into())
+	result, err := CreateEvent(e.DB, *body.Into())
+	if err != nil {
+		return nil, err
+	}
+
+	go search.UpsertEventEmbedding(e.DB, e.Search, result)
+	return result, err
 }
 
 func (e *EventService) UpdateEvent(eventID string, eventBody events.UpdateEventRequestBody) ([]models.Event, error) {
@@ -83,7 +90,13 @@ func (e *EventService) UpdateEvent(eventID string, eventBody events.UpdateEventR
 		return nil, err
 	}
 
-	return UpdateEvent(e.DB, *idAsUUID, *event, *eventBody.UpdateAllInSeries)
+	result, err := UpdateEvent(e.DB, *idAsUUID, *event, *eventBody.UpdateAllInSeries)
+	if err != nil {
+		return nil, err
+	}
+
+	go search.UpsertEventEmbedding(e.DB, e.Search, &result[0])
+	return result, err
 }
 
 func (e *EventService) DeleteEvent(eventID string) error {

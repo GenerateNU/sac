@@ -48,6 +48,25 @@ func UpsertClubEmbedding(db *gorm.DB, s *config.SearchSettings, club *models.Clu
 	return nil
 }
 
+func UpsertEventEmbedding(db *gorm.DB, s *config.SearchSettings, event *models.Event) error {
+	embedding, err :=
+		createEmbedding(s, fmt.Sprintf("%s %s %s", event.Name, event.Preview, event.Description))
+	if err != nil {
+		return err
+	}
+
+	embeddingStr := floatArrayToSql(embedding)
+
+	queryString := fmt.Sprintf(
+		"UPDATE events SET embedding = '[%s]' WHERE id = '%s'", embeddingStr, event.ID.String())
+
+	if err := db.Exec(queryString).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func floatArrayToSql(embedding []float32) string {
 	embeddingArr := make([]string, len(embedding))
 	for i, f := range embedding {

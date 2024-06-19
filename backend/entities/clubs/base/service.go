@@ -78,6 +78,12 @@ func (c *ClubService) UpdateClub(id string, clubBody UpdateClubRequestBody) (*mo
 		return nil, err
 	}
 
+	result, err := UpdateClub(c.DB, *idAsUUID, *club)
+	if err != nil {
+		return nil, err
+	}
+
+	go search.UpsertClubEmbedding(c.DB, c.Search, result)
 	return UpdateClub(c.DB, *idAsUUID, *club)
 }
 
