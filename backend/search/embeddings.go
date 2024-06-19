@@ -16,26 +16,27 @@ import (
 )
 
 type CreateEmbeddingRequestBody struct {
-	Input []string `json:"input"`
-	Model string   `json:"model"`
+	Input      []string `json:"input"`
+	Model      string   `json:"model"`
+	Dimensions int      `json:"dimensions"`
+}
+
+type EmbeddingResponseItem struct {
+	Embedding []float32 `json:"embedding"`
 }
 
 type CreateEmbeddingResponseBody struct {
-	Data [][]float32 `json:"data"`
+	Data []EmbeddingResponseItem `json:"data"`
 }
 
-func UpsertClubEmbedding(db *gorm.DB, s *config.Settings, club *models.Club) error {
+func UpsertClubEmbedding(db *gorm.DB, s *config.SearchSettings, club *models.Club) error {
 	embedding, err :=
 		createEmbedding(s, fmt.Sprintf("%s %s %s", club.Name, club.Preview, club.Description))
 	if err != nil {
 		return err
 	}
 
-	embeddingArr := make([]string, len(embedding))
-	for i, f := range embedding {
-		embeddingArr[i] = strconv.FormatFloat(float64(f), 'f', -1, 32)
-	}
-	embeddingStr := strings.Join(embeddingArr, ", ")
+	embeddingStr := floatArrayToSql(embedding)
 
 	queryString := fmt.Sprintf(
 		"UPDATE clubs SET embedding = '[%s]' WHERE id = '%s'", embeddingStr, club.ID.String())
@@ -47,11 +48,21 @@ func UpsertClubEmbedding(db *gorm.DB, s *config.Settings, club *models.Club) err
 	return nil
 }
 
-func createEmbedding(s *config.Settings, item string) ([]float32, error) {
+func floatArrayToSql(embedding []float32) string {
+	embeddingArr := make([]string, len(embedding))
+	for i, f := range embedding {
+		embeddingArr[i] = strconv.FormatFloat(float64(f), 'f', -1, 32)
+	}
+	embeddingStr := strings.Join(embeddingArr, ", ")
+	return embeddingStr
+}
+
+func createEmbedding(s *config.SearchSettings, item string) ([]float32, error) {
 	embeddingBody, err := json.Marshal(
 		CreateEmbeddingRequestBody{
-			Input: []string{item},
-			Model: "text-embedding-ada-002",
+			Input:      []string{item},
+			Model:      "text-embedding-3-large",
+			Dimensions: 512,
 		})
 	if err != nil {
 		return nil, err
@@ -65,7 +76,7 @@ func createEmbedding(s *config.Settings, item string) ([]float32, error) {
 	}
 
 	req = utilities.ApplyModifiers(req,
-		utilities.Authorization(s.Integrations.Search.OpenAIApiKey.Expose()),
+		utilities.Authorization(s.OpenAIApiKey.Expose()),
 		utilities.JSON(),
 	)
 
@@ -87,5 +98,5 @@ func createEmbedding(s *config.Settings, item string) ([]float32, error) {
 		return nil, err
 	}
 
-	return embeddingResultBody.Data[0], nil
+	return embeddingResultBody.Data[0].Embedding, nil
 }

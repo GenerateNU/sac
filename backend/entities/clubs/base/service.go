@@ -46,8 +46,8 @@ func (c *ClubService) CreateClub(userID uuid.UUID, clubBody CreateClubRequestBod
 		return nil, err
 	}
 
-	go search.UpsertClubEmbedding(c.DB)
-	return CreateClub(c.DB, userID, *club)
+	go search.UpsertClubEmbedding(c.DB, c.Search, result)
+	return result, err
 }
 
 func (c *ClubService) GetClub(id string) (*models.Club, error) {

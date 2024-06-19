@@ -7,7 +7,7 @@ type SearchSettings struct {
 }
 
 type intermediateSearchSettings struct {
-	OpenAIApiKey string `env:"OPENAI_API_KEY`
+	OpenAIApiKey string `env:"OPENAI_API_KEY"`
 }
 
 func (i *intermediateSearchSettings) into() (*SearchSettings, error) {

@@ -36,11 +36,12 @@ type ServiceParams struct {
 	Integrations integrations.Integrations
 }
 
-func NewServiceParams(db *gorm.DB, validate *validator.Validate, calendar *config.CalendarSettings, stores *store.Stores, integrations integrations.Integrations) ServiceParams {
+func NewServiceParams(db *gorm.DB, validate *validator.Validate, settings *config.Settings, stores *store.Stores, integrations integrations.Integrations) ServiceParams {
 	return ServiceParams{
 		DB:           db,
 		Validate:     validate,
-		Calendar:     calendar,
+		Calendar:     &settings.Calendar,
+		Search:       &settings.Search,
 		Stores:       stores,
 		Integrations: integrations,
 	}
