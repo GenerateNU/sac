@@ -59,7 +59,7 @@ func main() {
 		utilities.Exit("Error with connection pooling: %s", err.Error())
 	}
 
-	startBackgroundJobs(ctx, db)
+	startBackgroundJobs(ctx, db, config)
 
 	stores := store.ConfigureStores(config.RedisLimiter)
 	sothic.Init(config.Session)
@@ -92,9 +92,10 @@ func checkServerRunning(host string, port uint16) error {
 	return nil
 }
 
-func startBackgroundJobs(ctx context.Context, db *gorm.DB) {
-	jobs := jobs.New(db)
+func startBackgroundJobs(ctx context.Context, db *gorm.DB, settings *config.Settings) {
+	jobs := jobs.New(db, settings)
 	background.Go(jobs.WelcomeSender(ctx))
+	background.Go(jobs.ClubEmbeddings(ctx))
 }
 
 func configureIntegrations(config *config.Integrations) *integrations.Integrations {
