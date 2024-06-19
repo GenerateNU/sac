@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Dimensions, Linking } from 'react-native';
 import Animated, {
     interpolate,
@@ -22,7 +22,8 @@ import {
 import { SACColors } from '@/src/app/design-system';
 import { Button } from '@/src/app/design-system/components/Button/Button';
 import useClub from '@/src/hooks/useClub';
-import { useAppSelector } from '@/src/store/store';
+import { setClubId } from '@/src/store/slices/clubSlice';
+import { useAppDispatch, useAppSelector } from '@/src/store/store';
 
 import { AboutSection } from '../../design-system/components/AboutSection/AboutSection';
 import AnimatedImageHeader from '../../design-system/components/AnimatedImageHeader/AnimatedImageHeader';
@@ -46,7 +47,13 @@ const ClubPage = () => {
     const bottomSheet = useRef<BottomSheet>(null);
 
     const club = useAppSelector((state) => state.club);
-    const { setRetriggerFetch, apiLoading, apiError } = useClub(id as string);
+    const dispatch = useAppDispatch();
+    const { setRetriggerFetch, apiLoading, apiError } = useClub();
+
+    useEffect(() => {
+        dispatch(setClubId(id));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const headerAnimatedStyle = useAnimatedStyle(() => {
         return {
