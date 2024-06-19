@@ -9,7 +9,6 @@ import (
 	"net"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"syscall"
 
 	"github.com/GenerateNU/sac/backend/background"
@@ -18,13 +17,11 @@ import (
 	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/database"
 	"github.com/GenerateNU/sac/backend/database/store"
-
-	// TODO: disable for prod with build tag
-	_ "github.com/GenerateNU/sac/backend/docs"
 	"github.com/GenerateNU/sac/backend/integrations"
 	"github.com/GenerateNU/sac/backend/integrations/email"
 	"github.com/GenerateNU/sac/backend/integrations/file"
 	"github.com/GenerateNU/sac/backend/integrations/oauth/soth/sothic"
+	"github.com/GenerateNU/sac/backend/search"
 	"github.com/GenerateNU/sac/backend/server"
 	"github.com/GenerateNU/sac/backend/telemetry"
 	"github.com/GenerateNU/sac/backend/utilities"
@@ -85,7 +82,7 @@ func main() {
 func parseFlags() (onlyMigrate, seedSearch *bool, configPath *string) {
 	onlyMigrate = flag.Bool("only-migrate", false, "Specify if you want to only perform the database migration")
 	seedSearch = flag.Bool("seed-search", true, "Specify if you want to seed the opensearch nodes.")
-	configPath = flag.String("config", filepath.Join("..", "config", ".env.dev"), "Specify the path to the config file (.env)")
+	configPath = flag.String("config", "", "Specify the path to the config file (.env)")
 	flag.Parse()
 	return
 }
@@ -101,14 +98,13 @@ func checkServerRunning(host string, port uint16) error {
 }
 
 func seedSearchData(db *gorm.DB) {
-	slog.Info("to appease linter", "seedSearch", true, "db", db)
-	// if err := search.SeedClubs(db); err != nil {
-	// 	return
-	// }
+	if err := search.SeedClubs(db); err != nil {
+		return
+	}
 
-	// if err := search.SeedEvents(db); err != nil {
-	// 	return
-	// }
+	if err := search.SeedEvents(db); err != nil {
+		return
+	}
 }
 
 func startBackgroundJobs(ctx context.Context, db *gorm.DB) {
