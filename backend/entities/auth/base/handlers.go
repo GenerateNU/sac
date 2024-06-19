@@ -7,6 +7,7 @@ import (
 
 	"github.com/GenerateNU/sac/backend/integrations/oauth/soth"
 	"github.com/GenerateNU/sac/backend/integrations/oauth/soth/sothic"
+	"github.com/GenerateNU/sac/backend/utilities"
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
@@ -20,12 +21,20 @@ type Service interface {
 }
 
 type Handler struct {
-	db           *gorm.DB
-	authProvider soth.Provider
+	db                 *gorm.DB
+	webAuthProvider    soth.Provider
+	mobileAuthProvider soth.Provider
 }
 
 func (h *Handler) Login(c *fiber.Ctx) error {
-	sothic.SetProvider(c, h.authProvider.Name())
+	switch utilities.GetPlatform(c) {
+	case utilities.PlatformWeb:
+		sothic.SetProvider(c, h.webAuthProvider.Name())
+	case utilities.PlatformMobile:
+		sothic.SetProvider(c, h.mobileAuthProvider.Name())
+		sothic.SetProvider(c, h.mobileAuthProvider.Name())
+	}
+
 	if gfUser, err := sothic.CompleteUserAuth(c); err == nil {
 		user, err := FindOrCreateUser(context.TODO(), h.db, gfUser)
 		if err != nil {
