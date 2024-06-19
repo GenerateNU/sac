@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Dimensions } from 'react-native';
 import Animated, {
     interpolate,
@@ -17,7 +17,8 @@ import { SACColors } from '@/src/app/design-system';
 import { Button } from '@/src/app/design-system/components/Button/Button';
 import { description, events, tags } from '@/src/consts/event-page';
 import useEvent from '@/src/hooks/useEvent';
-import { useAppSelector } from '@/src/store/store';
+import { setEventId } from '@/src/store/slices/eventSlice';
+import { useAppDispatch, useAppSelector } from '@/src/store/store';
 
 import AnimatedImageHeader from '../../design-system/components/AnimatedImageHeader/AnimatedImageHeader';
 import PageError from '../../design-system/components/PageError/PageError';
@@ -58,12 +59,18 @@ const EventPage = () => {
     const scrollRef = useAnimatedRef<Animated.ScrollView>();
     const scrollOffset = useScrollViewOffset(scrollRef);
 
+    const dispatch = useAppDispatch();
     const event = useAppSelector((state) => state.event);
     const { name: clubName, logo: clubLogo } = useAppSelector(
         (state) => state.club
     );
 
-    const { setRetriggerFetch, apiLoading, apiError } = useEvent(id as string);
+    const { setRetriggerFetch, apiLoading, apiError } = useEvent();
+
+    useEffect(() => {
+        dispatch(setEventId(id));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const headerAnimatedStyle = useAnimatedStyle(() => {
         return {
