@@ -57,9 +57,9 @@ func Init(db *gorm.DB, stores *store.Stores, integrations integrations.Integrati
 		panic(fmt.Sprintf("Error registering custom validators: %s", err))
 	}
 
-	msftWebProvider := msft_web.New(settings.MicrosoftWeb.Key, settings.MicrosoftWeb.Secret, fmt.Sprintf("%s/api/v1/auth/microsoftonline/callback", settings.Application.BaseUrl), settings.MicrosoftWeb.Tenant)
+	msftWebProvider := msft_web.New(settings.MicrosoftWeb.Key, settings.MicrosoftWeb.Secret, fmt.Sprintf("%s/api/v1/auth/microsoftonline/callback", settings.Application.PublicURL), settings.MicrosoftWeb.Tenant)
 	msftMobileProvider := msft_mobile.New(settings.MicrosoftMobile.Key, "myapp://auth/callback", settings.MicrosoftMobile.Tenant)
-	googProvider := goog.New(settings.Google.Key, settings.Google.Secret, fmt.Sprintf("%s/api/v1/auth/google/callback", settings.Application.BaseUrl))
+	googProvider := goog.New(settings.Google.Key, settings.Google.Secret, fmt.Sprintf("%s/api/v1/auth/google/callback", settings.Application.PublicURL))
 
 	authMiddleware := authMiddleware.New(db, validate)
 
@@ -84,7 +84,7 @@ func Init(db *gorm.DB, stores *store.Stores, integrations integrations.Integrati
 		auth.NewParams(
 			msftWebProvider,
 			msftMobileProvider,
-			settings.Application.BaseUrl,
+			settings.Application.PublicURL,
 			apiv1,
 			db,
 			integrations.Email,
@@ -119,7 +119,7 @@ func newFiberApp(settings config.ApplicationSettings) *fiber.App {
 	app.Use(recover.New())
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     settings.BaseUrl,
+		AllowOrigins:     settings.PublicURL,
 		AllowCredentials: true,
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
 		AllowMethods:     "GET, POST, PUT, DELETE, OPTIONS",

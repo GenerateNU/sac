@@ -17,9 +17,7 @@ type Params struct {
 	db                 *gorm.DB
 }
 
-func NewParams(webAuthProvider soth.Provider, mobileAuthProvider soth.Provider, applicationURL string, router fiber.Router, db *gorm.DB, emailer email.Emailer, validate *validator.Validate, providers ...soth.Provider,
-) Params {
-
+func NewParams(webAuthProvider soth.Provider, mobileAuthProvider soth.Provider, applicationURL string, router fiber.Router, db *gorm.DB, emailer email.Emailer, validate *validator.Validate, providers ...soth.Provider) Params {
 	return Params{
 		webAuthProvider:    webAuthProvider,
 		mobileAuthProvider: mobileAuthProvider,
