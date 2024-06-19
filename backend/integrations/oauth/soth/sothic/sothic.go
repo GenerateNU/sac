@@ -361,12 +361,10 @@ func updateSessionValue(session *session.Session, key, value string) error {
 	if err := gz.Close(); err != nil {
 		return err
 	}
-
 	encrypted, err := encrypter(b.String())
 	if err != nil {
 		return err
 	}
-
 	session.Set(key, encrypted)
 	return nil
 }

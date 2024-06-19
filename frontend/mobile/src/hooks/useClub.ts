@@ -5,7 +5,7 @@ import { clubApi } from '@generatesac/lib';
 import { setClub, setClubEvents, setClubTags } from '../store/slices/clubSlice';
 import { useAppDispatch, useAppSelector } from '../store/store';
 
-const useClub = (id: string) => {
+const useClub = () => {
     const [retriggerFetch, setRetriggerFetch] = useState(false);
 
     const [getClub, { isLoading: clubLoading, error: clubError }] =
@@ -16,26 +16,27 @@ const useClub = (id: string) => {
         clubApi.useLazyClubEventsQuery();
 
     const dispatch = useAppDispatch();
-    const { shouldPreview, id: clubId } = useAppSelector((state) => state.club);
+    const { id: clubId } = useAppSelector((state) => state.club);
 
     const apiLoading = clubLoading || tagsLoading || eventsLoading;
     const apiError = clubError || tagsError || eventsError;
 
     useEffect(() => {
-        if ((id !== '' && (id !== clubId || shouldPreview)) || apiError) {
-            getClub(id).then(({ data: clubData }) => {
+        if (clubId !== '') {
+            getClub(clubId).then(({ data: clubData }) => {
                 if (clubData) {
+                    console.log(clubData);
                     dispatch(setClub(clubData));
                 }
             });
 
-            getClubTags(id).then(({ data: tagData }) => {
+            getClubTags(clubId).then(({ data: tagData }) => {
                 if (tagData) {
                     dispatch(setClubTags(tagData));
                 }
             });
 
-            getEvents({ id }).then(({ data: eventData }) => {
+            getEvents({ id: clubId }).then(({ data: eventData }) => {
                 if (eventData) {
                     const sortedEvents = [...eventData];
                     sortedEvents.sort((a, b) => {
@@ -49,21 +50,13 @@ const useClub = (id: string) => {
                             new Date(event.end_time).getTime() >
                             new Date().getTime()
                     );
+                    console.log('events', events);
                     dispatch(setClubEvents(events));
                 }
             });
         }
-    }, [
-        retriggerFetch,
-        id,
-        getClub,
-        getClubTags,
-        getEvents,
-        dispatch,
-        clubId,
-        apiError,
-        shouldPreview
-    ]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [retriggerFetch, clubId]);
 
     return {
         setRetriggerFetch,
