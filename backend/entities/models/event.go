@@ -24,8 +24,6 @@ type Event struct {
 	Description string     `json:"description"`
 	Host        *uuid.UUID `json:"host"`
 
-	Image string `json:"image"`
-
 	// geoshi
 	EventType EventType `json:"event_type"`
 	Location  string    `json:"location"`

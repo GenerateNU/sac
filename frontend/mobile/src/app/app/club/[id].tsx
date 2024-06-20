@@ -122,7 +122,7 @@ const ClubPage = () => {
                 ) : (
                     <>
                         <AnimatedImageHeader
-                            uri="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLF3ord7lnV_5Je-pC2AUgUiesHNPcZlpI7A&s"
+                            uri="https://i.imgur.com/TM29405.png"
                             scrollOffset={scrollOffset}
                             imageHeight={IMG_HEIGHT}
                             aspectRatio={2.5}

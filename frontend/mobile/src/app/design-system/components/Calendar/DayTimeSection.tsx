@@ -95,7 +95,7 @@ export default function DayTimeSection({ time, data }: DayTimeSectionProps) {
                                 eventId={event.id}
                                 startTime={event.startTime}
                                 endTime={event.endTime}
-                                image={event.image}
+                                image={'https://i.imgur.com/TM29405.png'}
                             />
                         </Box>
                     );

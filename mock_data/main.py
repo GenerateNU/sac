@@ -366,14 +366,13 @@ def fill_clubs():
 @transaction
 def fill_events():
     print("Creating event data...")
-    cmd = """INSERT INTO "events" ("id", "host", "name", "image", "preview", "description", "event_type", "start_time", "end_time", "is_public", "is_draft", "is_archived") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+    cmd = """INSERT INTO "events" ("id", "host", "name", "preview", "description", "event_type", "start_time", "end_time", "is_public", "is_draft", "is_archived") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
 
     for event in events:
         data = (
             event['id'],
             event['club_id'],
             event['name'].replace("\'", "''"),
-            random.choice(randomEventImageData),
             event['preview'].replace("\'", "''"),
             event['description'].replace('\'', "''"),
             event['event_type'],

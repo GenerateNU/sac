@@ -89,7 +89,6 @@ CREATE TABLE IF NOT EXISTS "events"(
     created_at timestamp WITH time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp WITH time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     name varchar(255) NOT NULL,
-    image varchar(255),
     preview varchar(255) NOT NULL,
     description text NOT NULL,
     event_type event_type NOT NULL,

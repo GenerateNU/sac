@@ -170,7 +170,7 @@ const EventPage = () => {
                 ) : (
                     <>
                         <AnimatedImageHeader
-                            uri={event.image as string}
+                            uri={'https://i.imgur.com/TM29405.png'}
                             imageHeight={IMG_HEIGHT}
                             scrollOffset={scrollOffset}
                             aspectRatio={1}

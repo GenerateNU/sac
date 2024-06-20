@@ -63,7 +63,7 @@ export function parseData(start: number, end: number, data?: EventPreview[]) {
                 title: event.name,
                 startTime: event.start_time,
                 endTime: event.end_time,
-                image: event.image as string,
+                image: 'https://i.imgur.com/TM29405.png',
                 host_name: event.host_name,
                 host_logo:
                     event.host_logo ??
