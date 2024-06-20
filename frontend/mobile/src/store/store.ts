@@ -19,6 +19,7 @@ import { thunk } from 'redux-thunk';
 import clubReducer from '@/src/store/slices/clubSlice';
 import eventReducer from '@/src/store/slices/eventSlice';
 import userReducer from '@/src/store/slices/userSlice';
+
 import globalReducer from './slices/globalSlice';
 
 const rootReducer = combineReducers({

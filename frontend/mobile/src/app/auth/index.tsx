@@ -4,11 +4,11 @@ import { Image, Linking, SafeAreaView } from 'react-native';
 import { authApi } from '@generatesac/lib';
 
 import Loading from '@/src/assets/gif/loading.gif';
+import { setAccessToken } from '@/src/store/slices/globalSlice';
 import { useAppDispatch } from '@/src/store/store';
 
 import { Box, Button, Text } from '../design-system';
 import { GlobalLayout } from '../design-system/components/GlobalLayout/GlobalLayout';
-import { setAccessToken } from '@/src/store/slices/globalSlice';
 
 const WelcomePage = () => {
     const [login, { isLoading }] = authApi.useLazyLoginQuery();

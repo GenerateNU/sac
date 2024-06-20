@@ -6,11 +6,11 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { OAuthCallbackRequestQueryParams, authApi } from '@generatesac/lib';
 
 import Loading from '@/src/assets/gif/loading.gif';
+import { setLoggedIn } from '@/src/store/slices/globalSlice';
 import { setUser } from '@/src/store/slices/userSlice';
 import { useAppDispatch, useAppSelector } from '@/src/store/store';
 
 import { Box, Text } from '../design-system';
-import { setLoggedIn } from '@/src/store/slices/globalSlice';
 
 const OAuthCallback = () => {
     const params = useLocalSearchParams();

@@ -1,4 +1,3 @@
-import { Event, Tag } from '@generatesac/lib';
 import { createSlice } from '@reduxjs/toolkit';
 
 type GlobalState = {
@@ -9,7 +8,7 @@ type GlobalState = {
 
 const initialState: GlobalState = {
     platform: 'mobile',
-    loggedIn: false,
+    loggedIn: false
 };
 
 export const globalSlice = createSlice({
@@ -29,9 +28,6 @@ export const globalSlice = createSlice({
     }
 });
 
-export const {
-    setLoggedIn,
-    setAccessToken,
-    resetAccessToken
-} = globalSlice.actions;
+export const { setLoggedIn, setAccessToken, resetAccessToken } =
+    globalSlice.actions;
 export default globalSlice.reducer;
