@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { Dimensions, Linking } from 'react-native';
 import Animated, {
     interpolate,
@@ -10,6 +10,7 @@ import Animated, {
 import { Stack, useLocalSearchParams } from 'expo-router';
 
 import { faExternalLink } from '@fortawesome/free-solid-svg-icons';
+import { clubApi } from '@generatesac/lib';
 import BottomSheet from '@gorhom/bottom-sheet';
 
 import {
@@ -22,7 +23,7 @@ import {
 import { SACColors } from '@/src/app/design-system';
 import { Button } from '@/src/app/design-system/components/Button/Button';
 import useClub from '@/src/hooks/useClub';
-import { setClubId } from '@/src/store/slices/clubSlice';
+import { setUserFollowing } from '@/src/store/slices/userSlice';
 import { useAppDispatch, useAppSelector } from '@/src/store/store';
 
 import { AboutSection } from '../../design-system/components/AboutSection/AboutSection';
@@ -47,13 +48,35 @@ const ClubPage = () => {
     const bottomSheet = useRef<BottomSheet>(null);
 
     const club = useAppSelector((state) => state.club);
+    const { id: user_id, following } = useAppSelector((state) => state.user);
     const dispatch = useAppDispatch();
-    const { setRetriggerFetch, apiLoading, apiError } = useClub();
+    const { setRetriggerFetch, apiLoading, apiError } = useClub(id);
+    const [followClub] = clubApi.useCreateClubFollowerMutation();
+    const [unFollowClub] = clubApi.useDeleteClubFollowerMutation();
 
-    useEffect(() => {
-        dispatch(setClubId(id));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    const clubFollowed = following.includes(id as string);
+
+    const handleUserFollow = (follow: boolean) => {
+        if (id) {
+            if (follow) {
+                followClub({ club_id: id, user_id }).then(({ error }) => {
+                    if (!error) {
+                        dispatch(setUserFollowing([...following, id]));
+                    }
+                });
+            } else {
+                unFollowClub({ club_id: id, user_id }).then(({ error }) => {
+                    if (!error) {
+                        dispatch(
+                            setUserFollowing(
+                                following.filter((clubId) => clubId !== id)
+                            )
+                        );
+                    }
+                });
+            }
+        }
+    };
 
     const headerAnimatedStyle = useAnimatedStyle(() => {
         return {
@@ -92,7 +115,7 @@ const ClubPage = () => {
                 scrollEventThrottle={16}
                 ref={scrollRef}
             >
-                {apiLoading ? (
+                {apiLoading || club.id !== id ? (
                     <ClubPageSkeleton />
                 ) : apiError ? (
                     <PageError refetch={setRetriggerFetch} />
@@ -119,8 +142,11 @@ const ClubPage = () => {
                                         color={color}
                                         size="sm"
                                         variant="standardButton"
+                                        onPress={() =>
+                                            handleUserFollow(!clubFollowed)
+                                        }
                                     >
-                                        Follow
+                                        {clubFollowed ? 'Unfollow' : 'Follow'}
                                     </Button>
                                 </Box>
                             </Box>

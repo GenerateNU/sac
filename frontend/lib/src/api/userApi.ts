@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-import { Club, clubSchema } from "../types/club";
 import { PaginationQueryParams } from "../types/root";
 import { Tag, tagSchema } from "../types/tag";
 import {
@@ -11,6 +10,7 @@ import {
   userSchema,
 } from "../types/user";
 import { baseApi, handleQueryParams } from "./base";
+import { Club, clubSchema } from "../types";
 
 const USER_API_BASE_URL = "/users";
 
@@ -81,54 +81,6 @@ export const userApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: (_result, _, id) => [{ type: "User", id }],
     }),
-    userFollowing: builder.query<Club[], string>({
-      query: (id) => ({
-        url: `${USER_API_BASE_URL}/${id}/follower/`,
-        method: "GET",
-      }),
-      providesTags: (result, _, id) =>
-        result
-          ? [{ type: "Follower", id }, "Club"]
-          : [{ type: "Follower", id }],
-      transformResponse: (response) => {
-        return z.array(clubSchema).parse(response);
-      },
-    }),
-    createUserFollowing: builder.mutation<
-      void,
-      { userID: string; clubID: string }
-    >({
-      query: ({ userID, clubID }) => ({
-        url: `${USER_API_BASE_URL}/${userID}/follower/${clubID}`,
-        method: "POST",
-      }),
-      invalidatesTags: (_result, _, { userID }) => [
-        { type: "Follower", id: userID },
-      ],
-    }),
-    deleteUserFollowing: builder.mutation<
-      void,
-      { userID: string; clubID: string }
-    >({
-      query: ({ userID, clubID }) => ({
-        url: `${USER_API_BASE_URL}/${userID}/follower/${clubID}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: (_result, _, { userID }) => [
-        { type: "Follower", id: userID },
-      ],
-    }),
-    userMembership: builder.query<Club[], string>({
-      query: (id) => ({
-        url: `${USER_API_BASE_URL}/${id}/member/`,
-        method: "GET",
-      }),
-      providesTags: (result, _, id) =>
-        result ? [{ type: "Member", id }, "Club"] : [{ type: "Member", id }],
-      transformResponse: (response) => {
-        return z.array(clubSchema).parse(response);
-      },
-    }),
     userTags: builder.query<Tag[], void>({
       query: () => ({
         url: `${USER_API_BASE_URL}/tags/`,
@@ -159,5 +111,14 @@ export const userApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: (_result, _, id) => [{ type: "Tag", id }],
     }),
+    getUserFollowing: builder.query<Club[], string>({
+      query: (id) => ({
+        url: `${USER_API_BASE_URL}/${id}/follower`,
+        method: "GET",
+      }),
+      transformResponse: (response) => {
+        return z.array(clubSchema).parse(response);
+      },
+    })
   }),
 });

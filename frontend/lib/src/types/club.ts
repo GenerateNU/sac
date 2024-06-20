@@ -42,6 +42,11 @@ const clubSchemaIntermediate = z.object({
   recruitment: recruitmentSchema.optional(),
 });
 
+const createClubFollowerSchema = z.object({
+  club_id: z.string().uuid(),
+  user_id: z.string().uuid(),
+});
+
 export const clubSchema = clubSchemaIntermediate.merge(rootModelSchema);
 
 // Types:
@@ -50,4 +55,5 @@ export type UpdateClubRequestBody = z.infer<typeof updateClubRequestBodySchema>;
 export type CreateClubTagsRequestBody = z.infer<
   typeof createClubTagsRequestBodySchema
 >;
+export type CreateClubFollower = z.infer<typeof createClubFollowerSchema>;
 export type Club = z.infer<typeof clubSchema>;

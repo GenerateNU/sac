@@ -1,13 +1,20 @@
 import { User } from '@generatesac/lib';
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState: User = {
+type UserState = {
+    following: string[];
+    rsvps: string[];
+};
+
+const initialState: User & UserState = {
     id: '',
     email: '',
     created_at: '',
     updated_at: '',
     name: '',
-    role: 'student'
+    role: 'student',
+    following: [],
+    rsvps: []
 };
 
 export const userSlice = createSlice({
@@ -26,9 +33,16 @@ export const userSlice = createSlice({
             state.name = action.payload.name;
             state.role = action.payload.role;
         },
-        resetUser: () => initialState
+        resetUser: () => initialState,
+        setUserFollowing: (state, action) => {
+            state.following = action.payload;
+        },
+        setUserRSVPs: (state, action) => {
+            state.rsvps = action.payload;
+        }
     }
 });
 
-export const { setUser, resetUser } = userSlice.actions;
+export const { setUser, resetUser, setUserFollowing, setUserRSVPs } =
+    userSlice.actions;
 export default userSlice.reducer;

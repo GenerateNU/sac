@@ -9,9 +9,5 @@ type GlobalLayoutProps = {
 const ViewBase = createBox(View);
 
 export const GlobalLayout = ({ children }: GlobalLayoutProps) => {
-    return (
-        <ViewBase flex={1} marginHorizontal={'l'}>
-            {children}
-        </ViewBase>
-    );
+    return <ViewBase marginHorizontal={'l'}>{children}</ViewBase>;
 };
