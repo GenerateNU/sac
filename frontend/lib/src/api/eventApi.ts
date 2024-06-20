@@ -5,13 +5,15 @@ import {
   CreateEventRequestBody,
   Event,
   EventPreview,
+  EventUserParams,
   UpdateEventRequestBody,
   eventPreviewSchema,
   eventSchema,
 } from "../types/event";
 import { PaginationQueryParams } from "../types/root";
-import { Tag } from "../types/tag";
+import { Tag, tagSchema } from "../types/tag";
 import { baseApi, handleQueryParams } from "./base";
+import { User, userSchema } from "../types";
 
 const EVENT_API_BASE_URL = "/events";
 
@@ -102,6 +104,32 @@ export const eventApi = baseApi.injectEndpoints({
       }),
       providesTags: (result) =>
         result ? result.map((tag) => ({ type: "Tag", id: tag.id })) : ["Tag"],
+      transformResponse: (response) => {
+        return z.array(tagSchema).parse(response);
+      }
+    }),
+    createEventRegistration: builder.mutation<User[], EventUserParams>({
+      query: ({ user_id, event_id }) => ({
+        url: `${EVENT_API_BASE_URL}/${event_id}/rsvps/${user_id}`,
+        method: "POST",
+        responseHandler: 'text'
+      }),
+    }),
+    deleteEventRegistration: builder.mutation<void, EventUserParams>({
+      query: ({ user_id, event_id }) => ({
+        url: `${EVENT_API_BASE_URL}/${event_id}/rsvps/${user_id}`,
+        method: "DELETE",
+        responseHandler: 'text',
+      }),
+    }),
+    eventRegistrations: builder.query<User[], string>({
+      query: (id) => ({
+        url: `${EVENT_API_BASE_URL}/${id}/rsvps`,
+        method: "GET",
+      }),
+      transformResponse: (response) => {
+        return z.array(userSchema).parse(response);
+      },
     }),
   }),
 });
