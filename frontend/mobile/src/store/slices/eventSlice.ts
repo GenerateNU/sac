@@ -4,6 +4,7 @@ import { createSlice } from '@reduxjs/toolkit';
 type EventClubState = {
     shouldPreview?: boolean;
     tags: Tag[];
+    rsvps: string[];
 };
 
 const initialState: Event & EventClubState = {
@@ -22,7 +23,8 @@ const initialState: Event & EventClubState = {
     is_public: false,
     preview: '',
     host: '',
-    tags: []
+    tags: [],
+    rsvps: [],
 };
 
 export const eventSlice = createSlice({
@@ -55,6 +57,9 @@ export const eventSlice = createSlice({
         resetEvent: () => initialState,
         setEventShouldPreview: (state, action) => {
             state.shouldPreview = action.payload;
+        },
+        setEventAttendees: (state, action) => {
+            state.rsvps = action.payload;
         }
     }
 });
@@ -64,6 +69,7 @@ export const {
     resetEvent,
     setEventShouldPreview,
     setEventTags,
-    setEventId
+    setEventId,
+    setEventAttendees
 } = eventSlice.actions;
 export default eventSlice.reducer;

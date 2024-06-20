@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Dimensions } from 'react-native';
 import Animated, {
     interpolate,
@@ -9,7 +9,7 @@ import Animated, {
 
 import { Stack, useLocalSearchParams } from 'expo-router';
 
-import { EventType } from '@generatesac/lib';
+import { EventPreview, EventType, eventApi } from '@generatesac/lib';
 import BottomSheet from '@gorhom/bottom-sheet';
 
 import { Arrow, Box, KebabMenu } from '@/src/app/design-system';
@@ -29,6 +29,7 @@ import { Overview } from './components/overview';
 import { RegisterBottomSheet } from './components/register';
 import { ShareEventBottomSheet } from './components/share-event';
 import EventPageSkeleton from './components/skeleton';
+import { setUserRSVPs } from '@/src/store/slices/userSlice';
 
 const MockEvent = {
     eventImage:
@@ -60,17 +61,63 @@ const EventPage = () => {
     const scrollOffset = useScrollViewOffset(scrollRef);
 
     const dispatch = useAppDispatch();
+    const { id: userId, rsvps } = useAppSelector((state) => state.user);
     const event = useAppSelector((state) => state.event);
     const { name: clubName, logo: clubLogo } = useAppSelector(
         (state) => state.club
     );
+    const [userAttending, setUserAttending] = useState(event.rsvps.includes(userId))
 
     const { setRetriggerFetch, apiLoading, apiError } = useEvent();
+    const [registerUser] = eventApi.useCreateEventRegistrationMutation();
+    const [unregisterUser] = eventApi.useDeleteEventRegistrationMutation();
 
     useEffect(() => {
         dispatch(setEventId(id));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    useEffect(() => {
+        if (!userAttending) {
+            register.current?.close();
+        }
+    }, [userAttending]);
+
+    const handleRegistration = () => {
+        registerUser({ user_id: userId, event_id: id as string })
+            .then(({ error }) => {
+                if (error) {
+                    throw new Error()
+                } else {
+                    setUserAttending(true);
+                    const eventPreview: EventPreview = {
+                        id: event.id,
+                        name: event.name,
+                        host_name: clubName,
+                        host_logo: clubLogo,
+                        start_time: event.start_time,
+                        end_time: event.end_time,
+                        location: event.location,
+                        event_type: event.event_type,
+                        link: event.link,
+                    }
+                    dispatch(setUserRSVPs([...event.rsvps, eventPreview ]))
+                }
+            })
+    }
+
+    const handleUnregistration = () => {
+        unregisterUser({ user_id: userId, event_id: id as string })
+            .then(({ error }) => {
+                if (error) {
+                    console.log(error);
+                    throw new Error();
+                } else {
+                    setUserAttending(false);
+                    dispatch(setUserRSVPs([...rsvps.filter((event) => event.id !== id)]))
+                }
+            })
+    }
 
     const headerAnimatedStyle = useAnimatedStyle(() => {
         return {
@@ -101,18 +148,6 @@ const EventPage = () => {
                             <Arrow color={apiError ? 'black' : 'white'} />
                         </Animated.View>
                     ),
-                    headerRight: !apiError
-                        ? () => (
-                              <Animated.View style={headerAnimatedStyle}>
-                                  <KebabMenu
-                                      onPress={() =>
-                                          shareEvent.current?.snapToIndex(0)
-                                      }
-                                      color="white"
-                                  />
-                              </Animated.View>
-                          )
-                        : () => <></>
                 }}
             />
             <Animated.ScrollView
@@ -153,7 +188,7 @@ const EventPage = () => {
                                             register.current?.snapToIndex(0)
                                         }
                                     >
-                                        Register
+                                        {userAttending ? 'Registered': 'Register'}
                                     </Button>
                                 </Box>
                                 <AboutEvent
@@ -180,6 +215,8 @@ const EventPage = () => {
                 eventName={event?.name as string}
                 location={event?.location as string}
                 eventType={event?.event_type as EventType}
+                userAttending={userAttending}
+                onSubmit={userAttending ? handleUnregistration : handleRegistration}
                 ref={register}
             />
             <Description

@@ -114,9 +114,6 @@ export const eventApi = baseApi.injectEndpoints({
         method: "POST",
         responseHandler: 'text'
       }),
-      transformResponse: (response) => {
-        return z.array(userSchema).parse(response);
-      }
     }),
     deleteEventRegistration: builder.mutation<void, EventUserParams>({
       query: ({ user_id, event_id }) => ({

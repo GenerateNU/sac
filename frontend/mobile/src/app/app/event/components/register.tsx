@@ -18,7 +18,7 @@ import { Divider } from './divider';
 
 type Ref = BottomSheet;
 
-const SaveEventText = `By saving this event, you are automatically signed up for notifications and this event will be added to your calendar.`;
+const SaveEventText = `Add the event to your calendar to make sure you are always up to date with your upcoming events!`;
 
 interface RegisterSheetProps {
     eventType: EventType;
@@ -27,14 +27,16 @@ interface RegisterSheetProps {
     location: string;
     eventName: string;
     eventDetail: string;
+    userAttending: boolean;
+    onSubmit: () => void;
 }
 
 const RegisterBottomSheet = forwardRef<Ref, RegisterSheetProps>(
     (
-        { eventType, eventName, location, eventDetail, startTime, endTime },
+        { eventType, eventName, location, eventDetail, startTime, endTime, userAttending, onSubmit },
         ref
     ) => {
-        const [sheet, setSheet] = useState('register');
+        const [sheet, setSheet] = useState(userAttending ? 'unregister' : 'register');
 
         const renderBackdrop = useCallback(
             (props: any) => (
@@ -46,6 +48,17 @@ const RegisterBottomSheet = forwardRef<Ref, RegisterSheetProps>(
             ),
             []
         );
+
+        const handleRegistrationNavAndSubmit = (submit: boolean, nextSheet?: string) => {
+            try {
+                if (submit) {
+                    onSubmit();
+                }
+                if (nextSheet) {
+                    setSheet(nextSheet);
+                }
+            } catch {}
+        }
 
         const CALENDAR_INFO: CalendarLink = {
             eventDetail: eventDetail,
@@ -63,12 +76,16 @@ const RegisterBottomSheet = forwardRef<Ref, RegisterSheetProps>(
                 enablePanDownToClose
                 backgroundStyle={{ backgroundColor: 'white' }}
                 backdropComponent={renderBackdrop}
+                onClose={() => setSheet(userAttending ? 'unregister' : 'register')}
             >
+                {sheet === 'unregister' && (
+                    <Unregister onClick={onSubmit} />
+                )}
                 {sheet === 'register' && (
-                    <Register setSheet={setSheet} eventType={eventType} />
+                    <Register onClick={handleRegistrationNavAndSubmit} eventType={eventType} />
                 )}
                 {sheet === 'attend' && (
-                    <AttendanceType onPress={() => setSheet('save')} />
+                    <AttendanceType onPress={() => handleRegistrationNavAndSubmit(true, 'save')} />
                 )}
                 {sheet === 'save' && (
                     <SaveEvent
@@ -80,8 +97,39 @@ const RegisterBottomSheet = forwardRef<Ref, RegisterSheetProps>(
     }
 );
 
+interface UnregisterProps {
+    onClick: () => void;
+}
+
+const Unregister: React.FC<UnregisterProps> = ({ onClick }) => {
+    return (
+        <Box marginHorizontal="xl" flexDirection="column" gap="s">
+            <Text
+                paddingTop="s"
+                textAlign="center"
+                variant="subheader-2"
+                fontWeight="500"
+            >
+                Unregister
+            </Text>
+            <Divider />
+            <Text paddingTop="s">
+                Are you sure you want to unregister from this event?
+            </Text>
+            <Box marginTop="s" flexDirection="column" gap="s">
+                <Button
+                    onPress={() => onClick()}
+                    variant="standardButton"
+                >
+                    <Text>Yes</Text>
+                </Button>
+            </Box>
+        </Box>
+    );
+}
+
 interface RegisterProps {
-    setSheet: React.Dispatch<React.SetStateAction<string>>;
+    onClick: (submit: boolean, nextSheet?: string) => void
     eventType: EventType;
 }
 
@@ -98,7 +146,7 @@ const userInfoSchema = z.object({
     select: userDataSchema
 });
 
-const Register: React.FC<RegisterProps> = ({ setSheet, eventType }) => {
+const Register: React.FC<RegisterProps> = ({ onClick, eventType }) => {
     const {
         control,
         handleSubmit,
@@ -111,11 +159,11 @@ const Register: React.FC<RegisterProps> = ({ setSheet, eventType }) => {
     const onSubmit = (data: UserData) => {
         try {
             if (data.select.key === 'maybe') {
-                setSheet('save');
+                onClick(false, 'save');
             } else if (data.select.key === 'yes' && eventType === 'hybrid') {
-                setSheet('attend');
+                onClick(false, 'attend');
             } else {
-                setSheet('save');
+                onClick(true, 'save');
             }
         } catch (error) {
             if (error instanceof ZodError) {
@@ -189,7 +237,6 @@ const SaveEvent: React.FC<SaveEventProps> = ({ googleCalendar }) => (
             >
                 <Text>Add to Google Calendar</Text>
             </Button>
-            <Button variant="standardButton">Add to Apple Calendar</Button>
         </Box>
     </Box>
 );

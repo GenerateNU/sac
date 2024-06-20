@@ -15,6 +15,12 @@ import { useAppDispatch } from '@/src/store/store';
 import { firstLetterUppercase } from '@/src/utils/string';
 import { createOptions, eventTime } from '@/src/utils/time';
 
+const eventTypeMappings: Record<EventType, string> = {
+    'in_person': 'In Person',
+    'virtual': 'Virtual',
+    'hybrid': 'Hybrid'
+}
+
 interface OverviewProps {
     logo: string;
     eventName: string;
@@ -97,7 +103,7 @@ export const Overview: React.FC<OverviewProps> = ({
                         color={Colors[color]}
                         icon={faGlobe}
                     />
-                    <Text>{firstLetterUppercase(type)}</Text>
+                    <Text>{eventTypeMappings[type]}</Text>
                 </Box>
             </Box>
         </Box>

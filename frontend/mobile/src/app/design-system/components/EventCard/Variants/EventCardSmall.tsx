@@ -32,7 +32,7 @@ export const EventCardSmall: React.FC<EventCardSmallProps> = ({
     return (
         <Box width={boxWidth}>
             <TouchableOpacity
-                onPress={() => router.navigate(`/event/${eventId}`)}
+                onPress={() => router.navigate(`app/event/${eventId}`)}
             >
                 <Box flexDirection="column" gap="xs">
                     <Image
