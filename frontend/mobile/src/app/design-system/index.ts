@@ -15,3 +15,4 @@ export * from './components/Tag/Tag';
 export * from './components/Preview/Event/EventPreview';
 export * from './components/Preview/Club/ClubPreview';
 export * from './components/Tag/Tags';
+export * from './components/SearchBar/ExplorePage';
