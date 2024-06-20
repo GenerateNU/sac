@@ -32,12 +32,12 @@ type CreateEmbeddingResponseBody struct {
 
 func UpsertClubEmbedding(db *gorm.DB, s *config.SearchSettings, club *models.Club) error {
 	embedding, err :=
-		createEmbedding(s, fmt.Sprintf("%s %s %s", club.Name, club.Preview, club.Description))
+		CreateEmbedding(s, fmt.Sprintf("%s %s %s", club.Name, club.Preview, club.Description))
 	if err != nil {
 		return err
 	}
 
-	embeddingStr := floatArrayToSql(embedding)
+	embeddingStr := FloatArrayToSql(embedding)
 
 	queryString := fmt.Sprintf(
 		"UPDATE clubs SET embedding = '[%s]' WHERE id = '%s'", embeddingStr, club.ID.String())
@@ -54,12 +54,12 @@ func UpsertClubEmbedding(db *gorm.DB, s *config.SearchSettings, club *models.Clu
 
 func UpsertEventEmbedding(db *gorm.DB, s *config.SearchSettings, event *models.Event) error {
 	embedding, err :=
-		createEmbedding(s, fmt.Sprintf("%s %s %s", event.Name, event.Preview, event.Description))
+		CreateEmbedding(s, fmt.Sprintf("%s %s %s", event.Name, event.Preview, event.Description))
 	if err != nil {
 		return err
 	}
 
-	embeddingStr := floatArrayToSql(embedding)
+	embeddingStr := FloatArrayToSql(embedding)
 
 	queryString := fmt.Sprintf(
 		"UPDATE events SET embedding = '[%s]' WHERE id = '%s'", embeddingStr, event.ID.String())
@@ -74,7 +74,7 @@ func UpsertEventEmbedding(db *gorm.DB, s *config.SearchSettings, event *models.E
 	return nil
 }
 
-func floatArrayToSql(embedding []float32) string {
+func FloatArrayToSql(embedding []float32) string {
 	embeddingArr := make([]string, len(embedding))
 	for i, f := range embedding {
 		embeddingArr[i] = strconv.FormatFloat(float64(f), 'f', -1, 32)
@@ -83,7 +83,7 @@ func floatArrayToSql(embedding []float32) string {
 	return embeddingStr
 }
 
-func createEmbedding(s *config.SearchSettings, item string) ([]float32, error) {
+func CreateEmbedding(s *config.SearchSettings, item string) ([]float32, error) {
 	embeddingBody, err := json.Marshal(
 		CreateEmbeddingRequestBody{
 			Input:      []string{item},

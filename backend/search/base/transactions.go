@@ -5,7 +5,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/GenerateNU/sac/backend/config"
 	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/search"
 	"github.com/GenerateNU/sac/backend/search/types"
 	"gorm.io/gorm"
 )
@@ -21,18 +23,34 @@ func joinQuoted(elems []string, seperator string) string {
 	return strings.Join(elemsQuoted, seperator)
 }
 
-func SearchClubs(db *gorm.DB, query *types.ClubSearchRequest) (*types.SearchResult[models.Club], error) {
+func SearchClubs(db *gorm.DB, s *config.SearchSettings, query *types.ClubSearchRequest) (*types.SearchResult[models.Club], error) {
 	var clubs []models.Club
 
 	dbQuery := db.Model(&clubs)
 
+	finalQuery := clubKeywordSearchSQL(query)
+
+	if err := dbQuery.Raw(finalQuery).Scan(&clubs).Error; err != nil {
+		return nil, err
+	}
+
+	// return results
+	return &types.SearchResult[models.Club]{
+		Results: clubs,
+	}, nil
+}
+
+func clubKeywordSearchSQL(query *types.ClubSearchRequest) string {
 	var whereClauses []string
+	rankClause := ""
 	innerJoin := ""
 
 	if query.Search != "" {
 		whereClauses =
 			append(whereClauses,
 				fmt.Sprintf("clubsearch_index_col @@ plainto_tsquery('%s')", query.Search))
+
+		rankClause = fmt.Sprintf(", RANK () OVER (ORDER BY ts_rank_cd(clubsearch_index_col, plainto_tsquery('%s')) DESC)", query.Search)
 	}
 
 	if query.MaxMembers != 0 {
@@ -53,19 +71,14 @@ func SearchClubs(db *gorm.DB, query *types.ClubSearchRequest) (*types.SearchResu
 			fmt.Sprintf("club_tags.tag_id IN (%s)", joinQuoted(query.Tags, ",")))
 	}
 
-	finalQuery := fmt.Sprintf(
-		"SELECT * FROM clubs %s WHERE %s",
-		innerJoin,
-		strings.Join(whereClauses, " AND "))
+	return fmt.Sprintf("SELECT *%s FROM clubs %s WHERE %s", rankClause, innerJoin, strings.Join(whereClauses, " AND "))
+}
 
-	if err := dbQuery.Raw(finalQuery).Scan(&clubs).Error; err != nil {
-		return nil, err
-	}
+//lint:ignore U1000 Ignore unused function temporarily for debugging
+func clubSemanticSearchSQL(embedding []float32) string {
+	embeddingStr := search.FloatArrayToSql(embedding)
 
-	// return results
-	return &types.SearchResult[models.Club]{
-		Results: clubs,
-	}, nil
+	return fmt.Sprintf("SELECT id, RANK () OVER (ORDER BY embedding <=> '[%s]') AS rank FROM clubs ORDER BY embedding <=> '[%s]' LIMIT 20", embeddingStr, embeddingStr)
 }
 
 func SearchEvents(db *gorm.DB, query *types.EventSearchRequest) (*types.SearchResult[models.Event], error) {
@@ -107,7 +120,7 @@ func SearchEvents(db *gorm.DB, query *types.EventSearchRequest) (*types.SearchRe
 	}
 
 	finalQuery := fmt.Sprintf(
-		"SELECT * FROM events %s WHERE %s",
+		"SELECT * FROM events %s WHERE %s LIMIT 20",
 		strings.Join(innerJoins, " "),
 		strings.Join(whereClauses, " AND "))
 
