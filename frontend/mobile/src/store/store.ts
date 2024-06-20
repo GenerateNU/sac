@@ -19,8 +19,10 @@ import { thunk } from 'redux-thunk';
 import clubReducer from '@/src/store/slices/clubSlice';
 import eventReducer from '@/src/store/slices/eventSlice';
 import userReducer from '@/src/store/slices/userSlice';
+import globalReducer from './slices/globalSlice';
 
 const rootReducer = combineReducers({
+    global: globalReducer,
     user: userReducer,
     event: eventReducer,
     club: clubReducer,
@@ -34,7 +36,7 @@ const persistanceConfig = {
     storage: AsyncStorage,
     stateReconciler: autoMergeLevel2,
     blacklist: [baseApi.reducerPath],
-    whitelist: ['user', 'event', 'club']
+    whitelist: ['user', 'event', 'club', 'global']
 };
 
 const persistedReducer = persistReducer<RootReducer>(

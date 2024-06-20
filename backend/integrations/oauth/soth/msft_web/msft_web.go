@@ -34,6 +34,7 @@ var defaultScopes = []string{"openid", "offline_access", "user.read", "calendars
 func New(clientKey *m.Secret[string], secret *m.Secret[string], callbackURL string, tenant string, scopes ...string) *Provider {
 	p := &Provider{
 		ClientKey:    clientKey,
+		Secret: 	  secret,
 		CallbackURL:  callbackURL,
 		ProviderName: "microsoftonlineweb",
 		tenant:       tenant,

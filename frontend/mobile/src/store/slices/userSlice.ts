@@ -1,15 +1,9 @@
 import { User } from '@generatesac/lib';
 import { createSlice } from '@reduxjs/toolkit';
 
-export type UserState = {
-    loggedIn: boolean;
-    accessToken?: string;
-};
-
-const initialState: UserState & User = {
+const initialState: User = {
     id: '',
     email: '',
-    loggedIn: false,
     created_at: '',
     updated_at: '',
     name: '',
@@ -33,24 +27,11 @@ export const userSlice = createSlice({
             state.role = action.payload.role;
         },
         resetUser: () => initialState,
-        setAccessToken: (state, action) => {
-            state.accessToken = action.payload;
-        },
-        resetAccessToken: (state) => {
-            state.accessToken = undefined;
-            state.loggedIn = false;
-        },
-        setLoggedInState: (state, action) => {
-            state.loggedIn = action.payload;
-        }
     }
 });
 
 export const {
     setUser,
     resetUser,
-    setAccessToken,
-    resetAccessToken,
-    setLoggedInState
 } = userSlice.actions;
 export default userSlice.reducer;

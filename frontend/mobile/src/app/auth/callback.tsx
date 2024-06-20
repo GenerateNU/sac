@@ -6,16 +6,17 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { OAuthCallbackRequestQueryParams, authApi } from '@generatesac/lib';
 
 import Loading from '@/src/assets/gif/loading.gif';
-import { setLoggedInState, setUser } from '@/src/store/slices/userSlice';
+import { setUser } from '@/src/store/slices/userSlice';
 import { useAppDispatch, useAppSelector } from '@/src/store/store';
 
 import { Box, Text } from '../design-system';
+import { setLoggedIn } from '@/src/store/slices/globalSlice';
 
 const OAuthCallback = () => {
     const params = useLocalSearchParams();
     const [oAuthCallback] = authApi.useLazyCallbackQuery();
     const dispatch = useAppDispatch();
-    const { accessToken } = useAppSelector((state) => state.user);
+    const { accessToken } = useAppSelector((state) => state.global);
 
     useEffect(() => {
         const { code, session_state, state } =
@@ -25,7 +26,7 @@ const OAuthCallback = () => {
                 ({ data, error }) => {
                     if (data) {
                         dispatch(setUser(data));
-                        dispatch(setLoggedInState(true));
+                        dispatch(setLoggedIn(true));
                         router.push('/app/');
                     }
                     if (error) {

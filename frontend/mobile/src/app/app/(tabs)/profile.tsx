@@ -13,10 +13,10 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 
 import { GlobalLayout } from '@/src/app/design-system/components/GlobalLayout/GlobalLayout';
-import { resetAccessToken } from '@/src/store/slices/userSlice';
 import { useAppDispatch, useAppSelector } from '@/src/store/store';
 
 import { Box, Colors, SACColors, Spacing, Text } from '../../design-system';
+import { resetAccessToken } from '@/src/store/slices/globalSlice';
 
 type ProfileItemProps = {
     icon: IconDefinition;

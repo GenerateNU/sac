@@ -3,7 +3,7 @@ import { LoginResponse, OAuthCallbackRequestQueryParams } from "../types/auth";
 import { baseApi, handleQueryParams } from "./base";
 
 const AUTH_API_BASE_URL = "/auth";
-const PROVIDER = "microsoftonline";
+const PROVIDER = "microsoftonlineweb";
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
