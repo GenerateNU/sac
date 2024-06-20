@@ -14,7 +14,7 @@ const initialState: User & UserState = {
     name: '',
     role: 'student',
     following: [],
-    rsvps: [],
+    rsvps: []
 };
 
 export const userSlice = createSlice({

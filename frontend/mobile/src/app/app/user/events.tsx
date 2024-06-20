@@ -1,18 +1,15 @@
-import { useEffect } from 'react';
 import { SafeAreaView } from 'react-native';
 
 import { Stack, router } from 'expo-router';
 
-import { userApi } from '@generatesac/lib';
-
 import { useAppSelector } from '@/src/store/store';
 
 import { Arrow, Box, Button, Text } from '../../design-system';
-import { GlobalLayout } from '../../design-system/components/GlobalLayout/GlobalLayout';
 import { EventCard } from '../../design-system/components/EventCard';
+import { GlobalLayout } from '../../design-system/components/GlobalLayout/GlobalLayout';
 
 const UserEvents = () => {
-    const { id, rsvps } = useAppSelector((state) => state.user);
+    const { rsvps } = useAppSelector((state) => state.user);
 
     return (
         <>
@@ -37,9 +34,9 @@ const UserEvents = () => {
                         <Box gap="s" width="100%">
                             {rsvps.map((event) => {
                                 return (
-                                    <EventCard 
+                                    <EventCard
                                         key={event.id}
-                                        variant='club'
+                                        variant="club"
                                         event={event.name}
                                         eventId={event.id}
                                         club={event.host_name}
@@ -48,15 +45,13 @@ const UserEvents = () => {
                                         endTime={event.end_time}
                                         image={event.host_logo ?? ''}
                                     />
-                                )
+                                );
                             })}
                             <Box marginTop="m">
                                 <Button
                                     variant="standardButton"
                                     color="darkRed"
-                                    onPress={() =>
-                                        router.push('/app/calendar')
-                                    }
+                                    onPress={() => router.push('/app/calendar')}
                                 >
                                     Explore New Events
                                 </Button>

@@ -33,10 +33,21 @@ interface RegisterSheetProps {
 
 const RegisterBottomSheet = forwardRef<Ref, RegisterSheetProps>(
     (
-        { eventType, eventName, location, eventDetail, startTime, endTime, userAttending, onSubmit },
+        {
+            eventType,
+            eventName,
+            location,
+            eventDetail,
+            startTime,
+            endTime,
+            userAttending,
+            onSubmit
+        },
         ref
     ) => {
-        const [sheet, setSheet] = useState(userAttending ? 'unregister' : 'register');
+        const [sheet, setSheet] = useState(
+            userAttending ? 'unregister' : 'register'
+        );
 
         const renderBackdrop = useCallback(
             (props: any) => (
@@ -49,7 +60,10 @@ const RegisterBottomSheet = forwardRef<Ref, RegisterSheetProps>(
             []
         );
 
-        const handleRegistrationNavAndSubmit = (submit: boolean, nextSheet?: string) => {
+        const handleRegistrationNavAndSubmit = (
+            submit: boolean,
+            nextSheet?: string
+        ) => {
             try {
                 if (submit) {
                     onSubmit();
@@ -58,7 +72,7 @@ const RegisterBottomSheet = forwardRef<Ref, RegisterSheetProps>(
                     setSheet(nextSheet);
                 }
             } catch {}
-        }
+        };
 
         const CALENDAR_INFO: CalendarLink = {
             eventDetail: eventDetail,
@@ -76,16 +90,23 @@ const RegisterBottomSheet = forwardRef<Ref, RegisterSheetProps>(
                 enablePanDownToClose
                 backgroundStyle={{ backgroundColor: 'white' }}
                 backdropComponent={renderBackdrop}
-                onClose={() => setSheet(userAttending ? 'unregister' : 'register')}
+                onClose={() =>
+                    setSheet(userAttending ? 'unregister' : 'register')
+                }
             >
-                {sheet === 'unregister' && (
-                    <Unregister onClick={onSubmit} />
-                )}
+                {sheet === 'unregister' && <Unregister onClick={onSubmit} />}
                 {sheet === 'register' && (
-                    <Register onClick={handleRegistrationNavAndSubmit} eventType={eventType} />
+                    <Register
+                        onClick={handleRegistrationNavAndSubmit}
+                        eventType={eventType}
+                    />
                 )}
                 {sheet === 'attend' && (
-                    <AttendanceType onPress={() => handleRegistrationNavAndSubmit(true, 'save')} />
+                    <AttendanceType
+                        onPress={() =>
+                            handleRegistrationNavAndSubmit(true, 'save')
+                        }
+                    />
                 )}
                 {sheet === 'save' && (
                     <SaveEvent
@@ -117,19 +138,16 @@ const Unregister: React.FC<UnregisterProps> = ({ onClick }) => {
                 Are you sure you want to unregister from this event?
             </Text>
             <Box marginTop="s" flexDirection="column" gap="s">
-                <Button
-                    onPress={() => onClick()}
-                    variant="standardButton"
-                >
+                <Button onPress={() => onClick()} variant="standardButton">
                     <Text>Yes</Text>
                 </Button>
             </Box>
         </Box>
     );
-}
+};
 
 interface RegisterProps {
-    onClick: (submit: boolean, nextSheet?: string) => void
+    onClick: (submit: boolean, nextSheet?: string) => void;
     eventType: EventType;
 }
 

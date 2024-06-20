@@ -6,20 +6,20 @@ import { router } from 'expo-router';
 
 import {
     IconDefinition,
+    faCalendar,
     faSignOutAlt,
-    faUser,
-    faCalendar
+    faUser
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 
 import { GlobalLayout } from '@/src/app/design-system/components/GlobalLayout/GlobalLayout';
+import { resetClub } from '@/src/store/slices/clubSlice';
+import { resetEvent } from '@/src/store/slices/eventSlice';
 import { resetAccessToken } from '@/src/store/slices/globalSlice';
+import { resetUser } from '@/src/store/slices/userSlice';
 import { useAppDispatch, useAppSelector } from '@/src/store/store';
 
 import { Box, Colors, SACColors, Spacing, Text } from '../../design-system';
-import { resetEvent } from '@/src/store/slices/eventSlice';
-import { resetUser } from '@/src/store/slices/userSlice';
-import { resetClub } from '@/src/store/slices/clubSlice';
 
 type ProfileItemProps = {
     icon: IconDefinition;

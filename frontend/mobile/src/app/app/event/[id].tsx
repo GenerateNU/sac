@@ -12,12 +12,13 @@ import { Stack, useLocalSearchParams } from 'expo-router';
 import { EventPreview, EventType, eventApi } from '@generatesac/lib';
 import BottomSheet from '@gorhom/bottom-sheet';
 
-import { Arrow, Box, KebabMenu } from '@/src/app/design-system';
+import { Arrow, Box } from '@/src/app/design-system';
 import { SACColors } from '@/src/app/design-system';
 import { Button } from '@/src/app/design-system/components/Button/Button';
 import { description, events, tags } from '@/src/consts/event-page';
 import useEvent from '@/src/hooks/useEvent';
 import { setEventId } from '@/src/store/slices/eventSlice';
+import { setUserRSVPs } from '@/src/store/slices/userSlice';
 import { useAppDispatch, useAppSelector } from '@/src/store/store';
 
 import AnimatedImageHeader from '../../design-system/components/AnimatedImageHeader/AnimatedImageHeader';
@@ -29,7 +30,6 @@ import { Overview } from './components/overview';
 import { RegisterBottomSheet } from './components/register';
 import { ShareEventBottomSheet } from './components/share-event';
 import EventPageSkeleton from './components/skeleton';
-import { setUserRSVPs } from '@/src/store/slices/userSlice';
 
 const MockEvent = {
     eventImage:
@@ -66,7 +66,9 @@ const EventPage = () => {
     const { name: clubName, logo: clubLogo } = useAppSelector(
         (state) => state.club
     );
-    const [userAttending, setUserAttending] = useState(event.rsvps.includes(userId))
+    const [userAttending, setUserAttending] = useState(
+        event.rsvps.includes(userId)
+    );
 
     const { setRetriggerFetch, apiLoading, apiError } = useEvent();
     const [registerUser] = eventApi.useCreateEventRegistrationMutation();
@@ -84,10 +86,10 @@ const EventPage = () => {
     }, [userAttending]);
 
     const handleRegistration = () => {
-        registerUser({ user_id: userId, event_id: id as string })
-            .then(({ error }) => {
+        registerUser({ user_id: userId, event_id: id as string }).then(
+            ({ error }) => {
                 if (error) {
-                    throw new Error()
+                    throw new Error();
                 } else {
                     setUserAttending(true);
                     const eventPreview: EventPreview = {
@@ -99,25 +101,31 @@ const EventPage = () => {
                         end_time: event.end_time,
                         location: event.location,
                         event_type: event.event_type,
-                        link: event.link,
-                    }
-                    dispatch(setUserRSVPs([...event.rsvps, eventPreview ]))
+                        link: event.link
+                    };
+                    dispatch(setUserRSVPs([...event.rsvps, eventPreview]));
                 }
-            })
-    }
+            }
+        );
+    };
 
     const handleUnregistration = () => {
-        unregisterUser({ user_id: userId, event_id: id as string })
-            .then(({ error }) => {
+        unregisterUser({ user_id: userId, event_id: id as string }).then(
+            ({ error }) => {
                 if (error) {
                     console.log(error);
                     throw new Error();
                 } else {
                     setUserAttending(false);
-                    dispatch(setUserRSVPs([...rsvps.filter((event) => event.id !== id)]))
+                    dispatch(
+                        setUserRSVPs([
+                            ...rsvps.filter((event) => event.id !== id)
+                        ])
+                    );
                 }
-            })
-    }
+            }
+        );
+    };
 
     const headerAnimatedStyle = useAnimatedStyle(() => {
         return {
@@ -147,7 +155,7 @@ const EventPage = () => {
                         <Animated.View style={headerAnimatedStyle}>
                             <Arrow color={apiError ? 'black' : 'white'} />
                         </Animated.View>
-                    ),
+                    )
                 }}
             />
             <Animated.ScrollView
@@ -188,7 +196,9 @@ const EventPage = () => {
                                             register.current?.snapToIndex(0)
                                         }
                                     >
-                                        {userAttending ? 'Registered': 'Register'}
+                                        {userAttending
+                                            ? 'Registered'
+                                            : 'Register'}
                                     </Button>
                                 </Box>
                                 <AboutEvent
@@ -216,7 +226,9 @@ const EventPage = () => {
                 location={event?.location as string}
                 eventType={event?.event_type as EventType}
                 userAttending={userAttending}
-                onSubmit={userAttending ? handleUnregistration : handleRegistration}
+                onSubmit={
+                    userAttending ? handleUnregistration : handleRegistration
+                }
                 ref={register}
             />
             <Description

@@ -24,7 +24,7 @@ const initialState: Event & EventClubState = {
     preview: '',
     host: '',
     tags: [],
-    rsvps: [],
+    rsvps: []
 };
 
 export const eventSlice = createSlice({
