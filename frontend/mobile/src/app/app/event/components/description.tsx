@@ -30,7 +30,7 @@ export const Description = forwardRef<Ref, DescriptionProps>(
             <BottomSheet
                 ref={ref}
                 index={-1}
-                snapPoints={['50%']}
+                snapPoints={['65%']}
                 enablePanDownToClose
                 backgroundStyle={{ backgroundColor: 'white' }}
                 backdropComponent={renderBackdrop}
