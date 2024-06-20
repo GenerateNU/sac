@@ -127,7 +127,7 @@ const EventPage = () => {
                 ) : (
                     <>
                         <AnimatedImageHeader
-                            uri={MockEvent.eventImage}
+                            uri={event.image as string}
                             imageHeight={IMG_HEIGHT}
                             scrollOffset={scrollOffset}
                             aspectRatio={1}

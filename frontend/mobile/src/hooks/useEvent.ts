@@ -25,6 +25,7 @@ const useEvent = () => {
             // Fetch events
             getEvent(eventId).then(({ data: eventData }) => {
                 if (eventData) {
+                    console.log(eventData);
                     dispatch(setEvent(eventData));
                     dispatch(setClubId(eventData?.host));
                 }

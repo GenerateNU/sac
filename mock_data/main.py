@@ -82,6 +82,13 @@ MOCK_CATEGORIES_AND_TAGS = {
     ]
 }
 
+randomEventImageData = [
+    'https://i.imgur.com/TM29405.png',
+    'https://i.imgur.com/IfjHhrs.png',
+    'https://i.imgur.com/TQQ7AEE.png',
+    'https://i.imgur.com/Gp0Wwa8.png',
+]
+
 TAGS_STRING = ", ".join(f"\"{tag}\"" for tag in sum(MOCK_CATEGORIES_AND_TAGS.values(), [])) # for tags_prompt
 
 def description_prompt(name: str, preview: str) -> str:
@@ -218,11 +225,14 @@ if not args.skip_generation:
             location = random.choice(["West Village H", "Curry Student Center", "Snell Library", "Krentzman Quad", "Marino", "ISEC", "ISEC 2"])
             if event_type == "online":
                 location = ""
+            
+            image = random.choice(randomEventImageData)
 
             events.append({
                 "id": str(uuid4()),
                 "club_id": clubData["id"],
                 "name": f"Event for {clubData["name"]}",
+                "image": image,
                 "preview": "This club is holding an event.",
                 "description": event_description,
                 "event_type": event_type,
@@ -356,13 +366,14 @@ def fill_clubs():
 @transaction
 def fill_events():
     print("Creating event data...")
-    cmd = """INSERT INTO "events" ("id", "host", "name", "preview", "description", "event_type", "start_time", "end_time", "is_public", "is_draft", "is_archived") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+    cmd = """INSERT INTO "events" ("id", "host", "name", "image", "preview", "description", "event_type", "start_time", "end_time", "is_public", "is_draft", "is_archived") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
 
     for event in events:
         data = (
             event['id'],
             event['club_id'],
             event['name'].replace("\'", "''"),
+            random.choice(randomEventImageData),
             event['preview'].replace("\'", "''"),
             event['description'].replace('\'', "''"),
             event['event_type'],

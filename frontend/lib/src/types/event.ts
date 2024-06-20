@@ -40,6 +40,7 @@ const eventSchemaIntermediate = z.object({
   start_time: z.string(),
   end_time: z.string(),
   location: z.string().max(255),
+  image: z.string().max(255).optional(),
   link: z.string().max(255).optional(),
   event_type: eventTypeEnum,
   is_recurring: z.boolean().optional(),
@@ -55,6 +56,7 @@ const eventPreviewSchemaIntermediate = z.object({
   event_type: eventTypeEnum,
   location: z.string().max(255),
   link: z.string().max(255).optional(),
+  image: z.string().max(255).optional(),
 
   start_time: z.string(),
   end_time: z.string(),
