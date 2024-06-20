@@ -44,6 +44,7 @@ export const eventSlice = createSlice({
             state.end_time = action.payload.end_time;
             state.location = action.payload.location;
             state.event_type = action.payload.event_type;
+            state.image = action.payload.image;
             state.is_archived = action.payload.is_archived;
             state.is_draft = action.payload.is_draft;
             state.is_recurring = action.payload.is_recurring;

@@ -15,6 +15,7 @@ type Common struct {
 	Link      string           `json:"link"`
 	StartTime time.Time        `json:"start_time"`
 	EndTime   time.Time        `json:"end_time"`
+	Image     string           `json:"image"`
 }
 
 type EventStub struct {
