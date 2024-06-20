@@ -1,7 +1,9 @@
 package rsvps
 
 import (
+	"github.com/GenerateNU/sac/backend/permission"
 	"github.com/GenerateNU/sac/backend/types"
+	"github.com/gofiber/fiber/v2"
 )
 
 func EventsRSVPs(params types.RouteParams) {
