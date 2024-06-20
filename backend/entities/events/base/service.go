@@ -2,6 +2,7 @@ package base
 
 import (
 	"errors"
+	"log/slog"
 
 	"github.com/GenerateNU/sac/backend/entities/events"
 	"github.com/GenerateNU/sac/backend/entities/models"
@@ -71,7 +72,13 @@ func (e *EventService) CreateEvent(body events.CreateEventRequestBody) (*models.
 		return nil, err
 	}
 
-	go search.UpsertEventEmbedding(e.DB, e.Search, result)
+	go func() {
+		err := search.UpsertEventEmbedding(e.DB, e.Search, result)
+
+		if err != nil {
+			slog.Error("Upsert club embedding failed")
+		}
+	}()
 	return result, err
 }
 
@@ -95,7 +102,14 @@ func (e *EventService) UpdateEvent(eventID string, eventBody events.UpdateEventR
 		return nil, err
 	}
 
-	go search.UpsertEventEmbedding(e.DB, e.Search, &result[0])
+	go func() {
+		err := search.UpsertEventEmbedding(e.DB, e.Search, &result[0])
+
+		if err != nil {
+			slog.Error("Upsert club embedding failed")
+		}
+	}()
+
 	return result, err
 }
 

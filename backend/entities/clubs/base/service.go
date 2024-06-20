@@ -1,6 +1,8 @@
 package base
 
 import (
+	"log/slog"
+
 	"github.com/GenerateNU/sac/backend/entities/clubs"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/errs"
@@ -46,7 +48,14 @@ func (c *ClubService) CreateClub(userID uuid.UUID, clubBody CreateClubRequestBod
 		return nil, err
 	}
 
-	go search.UpsertClubEmbedding(c.DB, c.Search, result)
+	go func() {
+		err := search.UpsertClubEmbedding(c.DB, c.Search, result)
+
+		if err != nil {
+			slog.Error("Upsert club embedding failed")
+		}
+	}()
+
 	return result, err
 }
 
@@ -83,7 +92,14 @@ func (c *ClubService) UpdateClub(id string, clubBody UpdateClubRequestBody) (*mo
 		return nil, err
 	}
 
-	go search.UpsertClubEmbedding(c.DB, c.Search, result)
+	go func() {
+		err := search.UpsertClubEmbedding(c.DB, c.Search, result)
+
+		if err != nil {
+			slog.Error("Upsert club embedding failed")
+		}
+	}()
+
 	return UpdateClub(c.DB, *idAsUUID, *club)
 }
 

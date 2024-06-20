@@ -12,15 +12,15 @@ import (
 	"gorm.io/gorm"
 )
 
-// Use this over strings.join so elements can be single quoted if nessecary.
-func joinQuoted(elems []string, seperator string) string {
+// Use this over strings.join so elements can be single quoted if necessary.
+func joinQuoted(elems []string, separator string) string {
 	elemsQuoted := make([]string, len(elems))
 
 	for i, elem := range elems {
 		elemsQuoted[i] = fmt.Sprintf("'%s'", elem)
 	}
 
-	return strings.Join(elemsQuoted, seperator)
+	return strings.Join(elemsQuoted, separator)
 }
 
 func SearchClubs(db *gorm.DB, s *config.SearchSettings, query *types.ClubSearchRequest) (*types.SearchResult[models.Club], error) {
