@@ -1,64 +1,60 @@
 import { useEffect, useState } from 'react';
 
-import { clubApi, eventApi } from '@generatesac/lib';
+import { eventApi } from '@generatesac/lib';
 
-import { setClub } from '../store/slices/clubSlice';
-import { setEvent, setEventTags } from '../store/slices/eventSlice';
+import { setClubId } from '../store/slices/clubSlice';
+import {
+    setEvent,
+    setEventAttendees,
+    setEventTags
+} from '../store/slices/eventSlice';
 import { useAppDispatch, useAppSelector } from '../store/store';
 
-const useEvent = (id: string) => {
+const useEvent = () => {
     const [retriggerFetch, setRetriggerFetch] = useState(false);
 
     const [getEvent, { isLoading: eventLoading, error: eventError }] =
         eventApi.useLazyEventQuery();
-    const [getClub, { isLoading: clubLoading, error: clubError }] =
-        clubApi.useLazyClubQuery();
     const [getEventTags, { isLoading: tagsLoading, error: tagsError }] =
         eventApi.useLazyEventTagsQuery();
+    const [
+        getEventAttendees,
+        { isLoading: attendeesLoading, error: attendeesError }
+    ] = eventApi.useLazyEventRegistrationsQuery();
 
     const dispatch = useAppDispatch();
-    const { shouldPreview, id: eventId } = useAppSelector(
-        (state) => state.event
-    );
+    const { id: eventId } = useAppSelector((state) => state.event);
 
-    const apiLoading = eventLoading || clubLoading || tagsLoading;
-    const apiError = eventError || clubError || tagsError;
+    const apiLoading = eventLoading || tagsLoading || attendeesLoading;
+    const apiError = eventError || tagsError || attendeesError;
 
     useEffect(() => {
-        if ((id !== '' && (id !== eventId || shouldPreview)) || apiError) {
-            console.log('fetching data!');
+        if (eventId !== '') {
             // Fetch events
-            getEvent(id).then(({ data: eventData }) => {
-                dispatch(setEvent(eventData));
+            getEvent(eventId).then(({ data: eventData }) => {
                 if (eventData) {
-                    // Fetch club
-                    getClub(eventData.host as string).then(
-                        ({ data: clubData }) => {
-                            if (clubData) {
-                                dispatch(setClub(clubData));
-                            }
-                        }
-                    );
+                    dispatch(setEvent(eventData));
+                    dispatch(setClubId(eventData?.host));
                 }
             });
 
-            getEventTags(id).then(({ data: tagData }) => {
+            getEventTags(eventId).then(({ data: tagData }) => {
                 if (tagData) {
                     dispatch(setEventTags(tagData));
                 }
             });
+
+            getEventAttendees(eventId).then(({ data: attendeeData }) => {
+                if (attendeeData) {
+                    const attendeeIds = attendeeData.map(
+                        (attendeeData) => attendeeData.id
+                    );
+                    dispatch(setEventAttendees(attendeeIds));
+                }
+            });
         }
-    }, [
-        retriggerFetch,
-        id,
-        getClub,
-        getEvent,
-        getEventTags,
-        dispatch,
-        eventId,
-        shouldPreview,
-        apiError
-    ]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [retriggerFetch, eventId]);
 
     return {
         setRetriggerFetch,

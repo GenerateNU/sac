@@ -10,7 +10,8 @@ import (
 	"github.com/GenerateNU/sac/backend/database/store"
 
 	"github.com/GenerateNU/sac/backend/integrations/oauth/soth/goog"
-	"github.com/GenerateNU/sac/backend/integrations/oauth/soth/msft"
+	"github.com/GenerateNU/sac/backend/integrations/oauth/soth/msft_mobile"
+	"github.com/GenerateNU/sac/backend/integrations/oauth/soth/msft_web"
 
 	auth "github.com/GenerateNU/sac/backend/entities/auth/base"
 	categories "github.com/GenerateNU/sac/backend/entities/categories/base"
@@ -56,16 +57,11 @@ func Init(db *gorm.DB, stores *store.Stores, integrations integrations.Integrati
 		panic(fmt.Sprintf("Error registering custom validators: %s", err))
 	}
 
-	applicationURL := settings.Application.ApplicationURL()
+	msftWebProvider := msft_web.New(settings.MicrosoftWeb.Key, settings.MicrosoftWeb.Secret, fmt.Sprintf("%s/api/v1/auth/microsoftonline/callback", settings.Application.PublicURL), settings.MicrosoftWeb.Tenant)
+	msftMobileProvider := msft_mobile.New(settings.MicrosoftMobile.Key, "myapp://auth/callback", settings.MicrosoftMobile.Tenant)
+	googProvider := goog.New(settings.Google.Key, settings.Google.Secret, fmt.Sprintf("%s/api/v1/auth/google/callback", settings.Application.PublicURL))
 
-	msftProvider := msft.New(settings.Microsft.Key, fmt.Sprintf("%s/api/v1/auth/microsoftonline/callback", applicationURL), settings.Microsft.Tenant)
-	googProvider := goog.New(settings.Google.Key, settings.Google.Secret, fmt.Sprintf("%s/api/v1/auth/google/callback", applicationURL))
-
-	authMiddleware := authMiddleware.New(
-		db,
-		validate,
-		msftProvider,
-	)
+	authMiddleware := authMiddleware.New(db, validate)
 
 	utilityMiddleware := utilityMiddleware.New(fiberpaginate.New(), stores.Limiter)
 
@@ -86,8 +82,9 @@ func Init(db *gorm.DB, stores *store.Stores, integrations integrations.Integrati
 
 	allRoutes(app, routeParams,
 		auth.NewParams(
-			msftProvider,
-			applicationURL,
+			msftWebProvider,
+			msftMobileProvider,
+			settings.Application.PublicURL,
 			apiv1,
 			db,
 			integrations.Email,
@@ -112,7 +109,7 @@ func allRoutes(app *fiber.App, routeParams types.RouteParams, authParams auth.Pa
 	search.SearchRoutes(routeParams)
 }
 
-func newFiberApp(appSettings config.ApplicationSettings) *fiber.App {
+func newFiberApp(settings config.ApplicationSettings) *fiber.App {
 	app := fiber.New(fiber.Config{
 		JSONEncoder:  go_json.Marshal,
 		JSONDecoder:  go_json.Unmarshal,
@@ -122,7 +119,7 @@ func newFiberApp(appSettings config.ApplicationSettings) *fiber.App {
 	app.Use(recover.New())
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     appSettings.ApplicationURL(),
+		AllowOrigins:     settings.PublicURL,
 		AllowCredentials: true,
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
 		AllowMethods:     "GET, POST, PUT, DELETE, OPTIONS",

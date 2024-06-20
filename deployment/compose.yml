@@ -1,0 +1,74 @@
+services:
+  # WEBSERVER
+  caddy: 
+    image: caddy:latest
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - 80:80
+      - 443:443
+      - 443:443/udp
+      - 8443:8443
+      - 8443:8443/udp
+    volumes:
+      - $PWD/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+  webserver:
+    container_name: sac_webserver
+    build:
+      context: ../backend
+      dockerfile: ../backend/Dockerfile.server
+    env_file:
+      - .env.prod
+
+  # REDIS
+  redis-db-cache:
+    build:
+      context: ../backend
+      dockerfile: ../backend/Dockerfile.redis
+    container_name: redis_db_cache
+    ports:
+      - "6379"
+    environment:
+      - REDIS_USERNAME=redis_db_cache
+      - REDIS_PASSWORD=redis_db_cache!#1
+      - REDIS_DISABLE_DEFAULT_USER="true"
+    volumes:
+      - redis-db-cache-data:/data
+  redis-session:
+    build:
+      context: ../backend
+      dockerfile: ../backend/Dockerfile.redis
+    container_name: redis_session
+    ports:
+      - "6379"
+    environment:
+      - REDIS_USERNAME=${SAC_REDIS_SESSION_USERNAME}
+      - REDIS_PASSWORD=${SAC_REDIS_SESSION_PASSWORD}
+      - REDIS_DISABLE_DEFAULT_USER="true"
+    volumes:
+      - redis-session-data:/data
+  redis-limiter:
+    build:
+      context: ../backend
+      dockerfile: ../backend/Dockerfile.redis
+    container_name: redis_limiter
+    expose:
+      - "6379"
+    environment:
+      - REDIS_USERNAME=${SAC_REDIS_LIMITER_USERNAME}
+      - REDIS_PASSWORD=${SAC_REDIS_LIMITER_PASSWORD}
+      - REDIS_DISABLE_DEFAULT_USER="true"
+    volumes:
+      - redis-limiter-data:/data
+
+volumes:
+  redis-session-data:
+  redis-limiter-data:
+  redis-db-cache-data:
+  opensearch-data1:
+  caddy_data:
+    external: true
+  caddy_config:

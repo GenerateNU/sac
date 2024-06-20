@@ -1,14 +1,20 @@
+import { EventPreview, User } from '@generatesac/lib';
 import { createSlice } from '@reduxjs/toolkit';
 
-export type UserState = {
-    userId: string;
-    email: string;
-    accessToken?: string;
+type UserState = {
+    following: string[];
+    rsvps: EventPreview[];
 };
 
-const initialState: UserState = {
-    userId: '',
-    email: ''
+const initialState: User & UserState = {
+    id: '',
+    email: '',
+    created_at: '',
+    updated_at: '',
+    name: '',
+    role: 'student',
+    following: [],
+    rsvps: []
 };
 
 export const userSlice = createSlice({
@@ -16,20 +22,27 @@ export const userSlice = createSlice({
     initialState,
     reducers: {
         setUser: (state, action) => {
-            state.userId = action.payload.userId;
+            state.id = action.payload.id;
             state.email = action.payload.email;
-            state.accessToken = action.payload.accessToken;
+            state.college = action.payload.college;
+            state.graduation_cycle = action.payload.graduation_cycle;
+            state.graduation_year = action.payload.graduation_year;
+            state.major0 = action.payload.major0;
+            state.major1 = action.payload.major1;
+            state.major2 = action.payload.major2;
+            state.name = action.payload.name;
+            state.role = action.payload.role;
         },
         resetUser: () => initialState,
-        setAccessToken: (state, action) => {
-            state.accessToken = action.payload;
+        setUserFollowing: (state, action) => {
+            state.following = action.payload;
         },
-        resetAccessToken: (state) => {
-            state.accessToken = undefined;
+        setUserRSVPs: (state, action) => {
+            state.rsvps = action.payload;
         }
     }
 });
 
-export const { setUser, resetUser, setAccessToken, resetAccessToken } =
+export const { setUser, resetUser, setUserFollowing, setUserRSVPs } =
     userSlice.actions;
 export default userSlice.reducer;

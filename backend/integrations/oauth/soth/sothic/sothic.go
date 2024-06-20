@@ -210,6 +210,7 @@ func CompleteUserAuth(c *fiber.Ctx) (soth.User, error) {
 	}
 
 	gu, err := provider.FetchUser(sess)
+
 	return gu, err
 }
 
@@ -227,6 +228,7 @@ func validateState(c *fiber.Ctx, sess soth.Session) error {
 	}
 
 	originalState := authURL.Query().Get("state")
+
 	if originalState != "" && (originalState != c.Query("state")) {
 		return errors.New("state token mismatch")
 	}
@@ -351,19 +353,18 @@ func updateSessionValue(session *session.Session, key, value string) error {
 	if _, err := gz.Write([]byte(value)); err != nil {
 		return err
 	}
+
 	if err := gz.Flush(); err != nil {
 		return err
 	}
+
 	if err := gz.Close(); err != nil {
 		return err
 	}
-
 	encrypted, err := encrypter(b.String())
 	if err != nil {
 		return err
 	}
-
 	session.Set(key, encrypted)
-
 	return nil
 }

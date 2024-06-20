@@ -1,69 +1,42 @@
-import { LoginRequestBody, RefreshTokenRequestBody } from "../types/auth";
-import { User, userSchema } from "../types/user";
-import {
-  EmailRequestBody,
-  VerifyEmailRequestBody,
-  VerifyPasswordResetTokenRequestBody,
-} from "../types/verification";
-import { baseApi } from "./base";
+import { User, userSchema } from "../types";
+import { LoginResponse, OAuthCallbackRequestQueryParams } from "../types/auth";
+import { baseApi, handleQueryParams } from "./base";
 
 const AUTH_API_BASE_URL = "/auth";
+const PROVIDER = "microsoftonlineweb";
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    login: builder.mutation<User, LoginRequestBody>({
-      query: (body) => ({
+    login: builder.query<LoginResponse, void>({
+      query: () => ({
         url: `${AUTH_API_BASE_URL}/login`,
-        method: "POST",
-        body,
+        method: "GET",
+        responseHandler: 'text',
       }),
-      transformResponse: (response: User) => {
-        return userSchema.parse(response);
+      transformResponse: async (_, meta) => {
+        const redirectUri = meta?.response?.headers.get("Redirect") as string;
+        const sac_session = meta?.response?.headers.get("_sac_session") as string;
+
+        return {
+          redirect_uri: redirectUri,
+          sac_session,
+        }
       },
     }),
-    logout: builder.mutation<void, void>({
+    logout: builder.query<void, void>({
       query: () => ({
         url: `${AUTH_API_BASE_URL}/logout`,
-        method: "POST",
+        method: "GET",
       }),
     }),
-    refresh: builder.mutation<void, RefreshTokenRequestBody>({
-      query: (body) => ({
-        url: "refresh",
-        method: "POST",
-        body,
+    callback: builder.query<User, OAuthCallbackRequestQueryParams>({
+      query: (params) => ({
+        url: handleQueryParams(`${AUTH_API_BASE_URL}/${PROVIDER}/callback`, params),
+        method: "GET",
       }),
-    }),
-    forgotPassword: builder.mutation<void, EmailRequestBody>({
-      query: (body) => ({
-        url: `${AUTH_API_BASE_URL}/forgot-password`,
-        method: "POST",
-        body,
-      }),
-    }),
-    verifyPasswordResetToken: builder.mutation<
-      void,
-      VerifyPasswordResetTokenRequestBody
-    >({
-      query: (body) => ({
-        url: `${AUTH_API_BASE_URL}/verify-reset`,
-        method: "POST",
-        body,
-      }),
-    }),
-    sendCode: builder.mutation<void, EmailRequestBody>({
-      query: (body) => ({
-        url: `${AUTH_API_BASE_URL}/send-code`,
-        method: "POST",
-        body,
-      }),
-    }),
-    verifyEmail: builder.mutation<void, VerifyEmailRequestBody>({
-      query: (body) => ({
-        url: `${AUTH_API_BASE_URL}/verify-email`,
-        method: "POST",
-        body,
-      }),
+      transformResponse: (response) => {
+        return userSchema.parse(response);
+      }
     }),
   }),
 });

@@ -12,27 +12,29 @@ type Settings struct {
 }
 
 type Integrations struct {
-	Google   GoogleOAuthSettings
-	Microsft MicrosoftOAuthSettings
-	AWS      AWSSettings
-	Resend   ResendSettings
-	Search   SearchSettings
+	Google          GoogleOAuthSettings
+	MicrosoftWeb    MicrosoftWebOAuthSettings
+	MicrosoftMobile MicrosoftMobileOAuthSettings
+	AWS             AWSSettings
+	Resend          ResendSettings
+	Search          SearchSettings
 }
 
 type intermediateSettings struct {
-	Application  ApplicationSettings               `envPrefix:"SAC_APPLICATION_"`
-	Database     intermediateDatabaseSettings      `envPrefix:"SAC_DB_"`
-	DBCache      intermediateRedisSettings         `envPrefix:"SAC_REDIS_DB_CACHE_"`
-	RedisSession intermediateRedisSettings         `envPrefix:"SAC_REDIS_SESSION_"`
-	Session      intermediateSessionSettings       `envPrefix:"SAC_SESSION_"`
-	RedisLimiter intermediateRedisSettings         `envPrefix:"SAC_REDIS_LIMITER_"`
-	SuperUser    intermediateSuperUserSettings     `envPrefix:"SAC_SUDO_"`
-	AWS          intermediateAWSSettings           `envPrefix:"SAC_AWS_"`
-	Resend       intermediateResendSettings        `envPrefix:"SAC_RESEND_"`
-	Calendar     intermediateCalendarSettings      `envPrefix:"SAC_CALENDAR_"`
-	Google       intermediateGoogleOAuthSettings   `envPrefix:"SAC_GOOGLE_OAUTH_"`
-	Microsft     intermediateMicrosoftOAuthSetting `envPrefix:"SAC_MICROSOFT_OAUTH_"`
-	Search       intermediateSearchSettings        `envPrefix:"SAC_SEARCH_"`
+	Application     ApplicationSettings                      `envPrefix:"SAC_APPLICATION_"`
+	Database        intermediateDatabaseSettings             `envPrefix:"SAC_DB_"`
+	DBCache         intermediateRedisSettings                `envPrefix:"SAC_REDIS_DB_CACHE_"`
+	RedisSession    intermediateRedisSettings                `envPrefix:"SAC_REDIS_SESSION_"`
+	Session         intermediateSessionSettings              `envPrefix:"SAC_SESSION_"`
+	RedisLimiter    intermediateRedisSettings                `envPrefix:"SAC_REDIS_LIMITER_"`
+	SuperUser       intermediateSuperUserSettings            `envPrefix:"SAC_SUDO_"`
+	AWS             intermediateAWSSettings                  `envPrefix:"SAC_AWS_"`
+	Resend          intermediateResendSettings               `envPrefix:"SAC_RESEND_"`
+	Calendar        intermediateCalendarSettings             `envPrefix:"SAC_CALENDAR_"`
+	Google          intermediateGoogleOAuthSettings          `envPrefix:"SAC_GOOGLE_OAUTH_"`
+	MicrosoftWeb    intermediateMicrosoftWebOAuthSettings    `envPrefix:"SAC_MICROSOFT_OAUTH_WEB_"`
+	MicrosoftMobile intermediateMicrosoftMobileOAuthSettings `envPrefix:"SAC_MICROSOFT_OAUTH_MOBILE_"`
+	Search          SearchSettings                           `envPrefix:"SAC_SEARCH_"`
 }
 
 func (i *intermediateSettings) into() (*Settings, error) {
@@ -86,7 +88,12 @@ func (i *intermediateSettings) into() (*Settings, error) {
 		return nil, err
 	}
 
-	microsoft, err := i.Microsft.into()
+	microsoftWeb, err := i.MicrosoftWeb.into()
+	if err != nil {
+		return nil, err
+	}
+
+	microsoftMobile, err := i.MicrosoftMobile.into()
 	if err != nil {
 		return nil, err
 	}
@@ -105,11 +112,12 @@ func (i *intermediateSettings) into() (*Settings, error) {
 		SuperUser:    *superUser,
 		Calendar:     *calendar,
 		Integrations: Integrations{
-			Google:   *google,
-			Microsft: *microsoft,
-			AWS:      *aws,
-			Resend:   *resend,
-			Search:   *search,
+			Google:          *google,
+			MicrosoftWeb:    *microsoftWeb,
+			MicrosoftMobile: *microsoftMobile,
+			AWS:             *aws,
+			Resend:          *resend,
+			Search:          i.Search,
 		},
 	}, nil
 }

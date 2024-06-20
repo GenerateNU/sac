@@ -18,10 +18,8 @@ const usePreview = () => {
     const { shouldPreview: clubShouldPreview, id: clubId } = useAppSelector(
         (state) => state.club
     );
-    const { apiLoading: eventApiLoading, apiError: eventApiError } =
-        useEvent(eventId);
-    const { apiLoading: clubApiLoading, apiError: clubApiError } =
-        useClub(clubId);
+    const { apiLoading: eventApiLoading, apiError: eventApiError } = useEvent();
+    const { apiLoading: clubApiLoading, apiError: clubApiError } = useClub();
 
     useEffect(() => {
         dispatch(setEventShouldPreview(false));

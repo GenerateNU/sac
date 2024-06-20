@@ -42,14 +42,14 @@ const InitalLayout = () => {
 		const handleNavigation = () => {
 			if (isLoggedIn === null) return fetchCache();
 
-			const inApp = segments[0] === "(app)";
+			const inApp = segments[0] === "app";
 
 			console.log({ isLoggedIn, isVerified, inApp });
 
 			if (isLoggedIn && isVerified === false) {
 				router.push("/(auth)/verification");
 			} else if (isLoggedIn && isVerified) {
-				router.push("/(app)/(tabs)/");
+				router.push("/app/(tabs)/");
 			} else if (!isLoggedIn) {
 				router.push("/(auth)/welcome");
 			}
@@ -79,7 +79,7 @@ const InitalLayout = () => {
 			<StatusBar style="light" />
 			<Stack>
 				<Stack.Screen name="(auth)" options={{ headerShown: false }} />
-				<Stack.Screen name="(app)" options={{ headerShown: false }} />
+				<Stack.Screen name="app" options={{ headerShown: false }} />
 			</Stack>
 		</>
 	);
