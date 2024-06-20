@@ -34,7 +34,7 @@ type intermediateSettings struct {
 	Google          intermediateGoogleOAuthSettings          `envPrefix:"SAC_GOOGLE_OAUTH_"`
 	MicrosoftWeb    intermediateMicrosoftWebOAuthSettings    `envPrefix:"SAC_MICROSOFT_OAUTH_WEB_"`
 	MicrosoftMobile intermediateMicrosoftMobileOAuthSettings `envPrefix:"SAC_MICROSOFT_OAUTH_MOBILE_"`
-	Search          SearchSettings                           `envPrefix:"SAC_SEARCH_"`
+	Search          intermediateSearchSettings               `envPrefix:"SAC_SEARCH_"`
 }
 
 func (i *intermediateSettings) into() (*Settings, error) {
@@ -117,7 +117,7 @@ func (i *intermediateSettings) into() (*Settings, error) {
 			MicrosoftMobile: *microsoftMobile,
 			AWS:             *aws,
 			Resend:          *resend,
-			Search:          i.Search,
+			Search:          *search,
 		},
 	}, nil
 }
