@@ -62,7 +62,7 @@ const ProfilePage = () => {
                     </Box>
                 </Box>
                 <Box width="100%">
-                    <ProfileItem
+                    {/* <ProfileItem
                         onPress={() => router.push('/app/user/detail/')}
                         icon={faUser}
                         text="Edit Profile"
@@ -71,6 +71,11 @@ const ProfilePage = () => {
                         icon={faHeart}
                         onPress={() => router.push('/app/user/interest/')}
                         text="Edit Interests"
+                    /> */}
+                    <ProfileItem
+                        icon={faUser}
+                        onPress={() => router.push('/app/user/following/')}
+                        text="Following"
                     />
                     <Box
                         width="100%"
@@ -94,7 +99,6 @@ const ProfilePage = () => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         flexDirection: 'column',
         alignItems: 'flex-start',
         justifyContent: 'flex-start',

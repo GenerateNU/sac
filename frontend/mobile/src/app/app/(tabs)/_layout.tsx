@@ -50,17 +50,6 @@ const Layout = () => {
                 }}
             >
                 <Tabs.Screen
-                    name="index"
-                    options={{
-                        title: 'Home',
-                        headerShown: false,
-                        tabBarLabel: ({ focused }) =>
-                            TabBarLabel({ focused, title: 'Home' }),
-                        tabBarIcon: ({ focused }) =>
-                            TabBarIcon({ focused, icon: faHouse })
-                    }}
-                />
-                <Tabs.Screen
                     name="calendar"
                     options={{
                         title: 'Calendar',

@@ -14,6 +14,7 @@ import { createOptions, eventTime, happeningNow } from '@/src/utils/time';
 
 import { EventTags } from '../EventCardTags/EventCardTags';
 import { sharedStyles } from '../shared/styles';
+import { setClubId } from '@/src/store/slices/clubSlice';
 
 interface EventCardCalendarProps {
     event: string;

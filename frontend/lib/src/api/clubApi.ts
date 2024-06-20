@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import {
   Club,
+  CreateClubFollower,
   CreateClubRequestBody,
   CreateClubTagsRequestBody,
   UpdateClubRequestBody,
@@ -132,6 +133,22 @@ export const clubApi = baseApi.injectEndpoints({
         return z.array(eventSchema).parse(response);
       },
     }),
+    createClubFollower: builder.mutation<void, CreateClubFollower>({
+      query: ({ club_id, user_id }) => ({
+        url: `${CLUB_API_BASE_URL}/${club_id}/followers/${user_id}`,
+        method: "POST",
+        responseHandler: "text"
+      }),
+      invalidatesTags: ["Follower"],
+    }),
+    deleteClubFollower: builder.mutation<void, CreateClubFollower>({
+      query: ({ club_id, user_id }) => ({
+        url: `${CLUB_API_BASE_URL}/${club_id}/followers/${user_id}`,
+        method: "DELETE",
+        responseHandler: "text"
+      }),
+      invalidatesTags: ["Follower"],
+    }),
     clubFollowers: builder.query<
       User[],
       { id: string; queryParams?: PaginationQueryParams }
@@ -153,47 +170,6 @@ export const clubApi = baseApi.injectEndpoints({
       transformResponse: (response) => {
         return z.array(userSchema).parse(response);
       },
-    }),
-    clubMembers: builder.query<
-      User[],
-      { id: string; queryParams?: PaginationQueryParams }
-    >({
-      query: ({ id, queryParams }) => ({
-        url: handleQueryParams(
-          `${CLUB_API_BASE_URL}/${id}/members/`,
-          queryParams,
-        ),
-        method: "GET",
-      }),
-      providesTags: (result) =>
-        result
-          ? result.map((member) => ({ type: "User", id: member.id }))
-          : ["User"],
-      transformResponse: (response) => {
-        return z.array(userSchema).parse(response);
-      },
-    }),
-    createClubMember: builder.mutation<
-      User,
-      { clubID: string; userID: string }
-    >({
-      query: ({ clubID, userID }) => ({
-        url: `${CLUB_API_BASE_URL}/${clubID}/members/${userID}`,
-        method: "POST",
-      }),
-      invalidatesTags: (result, _, { userID }) =>
-        result ? [{ type: "User", id: userID }] : [],
-    }),
-    deleteClubMember: builder.mutation<
-      void,
-      { clubID: string; userID: string }
-    >({
-      query: ({ clubID, userID }) => ({
-        url: `${CLUB_API_BASE_URL}/${clubID}/members/${userID}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: (result, _, { userID }) =>
-        result ? [{ type: "User", id: userID }] : [],
     }),
     clubPointOfContacts: builder.query<PointOfContact[], string>({
       query: (id) => ({

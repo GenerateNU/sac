@@ -5,7 +5,7 @@ import { clubApi } from '@generatesac/lib';
 import { setClub, setClubEvents, setClubTags } from '../store/slices/clubSlice';
 import { useAppDispatch, useAppSelector } from '../store/store';
 
-const useClub = () => {
+const useClub = (id?: string) => {
     const [retriggerFetch, setRetriggerFetch] = useState(false);
 
     const [getClub, { isLoading: clubLoading, error: clubError }] =
@@ -21,9 +21,11 @@ const useClub = () => {
     const apiLoading = clubLoading || tagsLoading || eventsLoading;
     const apiError = clubError || tagsError || eventsError;
 
+    const idToFetch = id ?? clubId;
+
     useEffect(() => {
-        if (clubId !== '') {
-            getClub(clubId).then(({ data: clubData }) => {
+        if (idToFetch !== '') {
+            getClub(idToFetch).then(({ data: clubData }) => {
                 if (clubData) {
                     dispatch(setClub(clubData));
                 }
@@ -35,7 +37,7 @@ const useClub = () => {
                 }
             });
 
-            getEvents({ id: clubId }).then(({ data: eventData }) => {
+            getEvents({ id: idToFetch }).then(({ data: eventData }) => {
                 if (eventData) {
                     const sortedEvents = [...eventData];
                     sortedEvents.sort((a, b) => {
@@ -54,7 +56,7 @@ const useClub = () => {
             });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [retriggerFetch, clubId]);
+    }, [retriggerFetch, idToFetch]);
 
     return {
         setRetriggerFetch,

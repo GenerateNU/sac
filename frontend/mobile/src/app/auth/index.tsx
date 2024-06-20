@@ -17,6 +17,7 @@ const WelcomePage = () => {
     const handleLogin = () => {
         login().then(async ({ data }) => {
             if (data) {
+                console.log(data.sac_session);
                 await Linking.openURL(data.redirect_uri);
                 dispatch(setAccessToken(data.sac_session));
             }
