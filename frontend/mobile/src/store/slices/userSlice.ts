@@ -4,7 +4,7 @@ import { createSlice } from '@reduxjs/toolkit';
 type UserState = {
     following: string[];
     rsvps: string[];
-}
+};
 
 const initialState: User & UserState = {
     id: '',
@@ -14,7 +14,7 @@ const initialState: User & UserState = {
     name: '',
     role: 'student',
     following: [],
-    rsvps: [],
+    rsvps: []
 };
 
 export const userSlice = createSlice({
@@ -34,14 +34,15 @@ export const userSlice = createSlice({
             state.role = action.payload.role;
         },
         resetUser: () => initialState,
-        setUserFollowing : (state, action) => {
+        setUserFollowing: (state, action) => {
             state.following = action.payload;
         },
-        setUserRSVPs : (state, action) => {
+        setUserRSVPs: (state, action) => {
             state.rsvps = action.payload;
         }
     }
 });
 
-export const { setUser, resetUser, setUserFollowing, setUserRSVPs } = userSlice.actions;
+export const { setUser, resetUser, setUserFollowing, setUserRSVPs } =
+    userSlice.actions;
 export default userSlice.reducer;

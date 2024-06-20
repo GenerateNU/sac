@@ -1,12 +1,15 @@
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { createStyles } from "../../../theme";
-import { Box } from "../../Box/Box";
-import { ClubCardProps } from "../ClubCard";
-import { Text } from "../../Text/Text";
-import { ClubIcon } from "../../ClubIcon/ClubIcon";
-import { router } from "expo-router";
-import { useAppDispatch } from "@/src/store/store";
-import { resetEvent } from "@/src/store/slices/eventSlice";
+import { TouchableOpacity } from 'react-native-gesture-handler';
+
+import { router } from 'expo-router';
+
+import { resetEvent } from '@/src/store/slices/eventSlice';
+import { useAppDispatch } from '@/src/store/store';
+
+import { createStyles } from '../../../theme';
+import { Box } from '../../Box/Box';
+import { ClubIcon } from '../../ClubIcon/ClubIcon';
+import { Text } from '../../Text/Text';
+import { ClubCardProps } from '../ClubCard';
 
 const ClubCardStandard = ({ logo, name, id }: ClubCardProps) => {
     const dispatch = useAppDispatch();
@@ -14,21 +17,23 @@ const ClubCardStandard = ({ logo, name, id }: ClubCardProps) => {
     return (
         <Box {...styles.cardContainer}>
             <TouchableOpacity
-                onPress={() => { 
+                onPress={() => {
                     dispatch(resetEvent());
-                    router.navigate(`/app/club/${id}`)
+                    router.navigate(`/app/club/${id}`);
                 }}
             >
-                <Box { ...styles.cardSubContainer}>
-                   <ClubIcon imageUrl={logo} size={55} />
-                   <Text>
-                        {name.length > 28 ? name.slice(0, 28).trim() + '...' : name}
-                   </Text>
+                <Box {...styles.cardSubContainer}>
+                    <ClubIcon imageUrl={logo} size={55} />
+                    <Text>
+                        {name.length > 28
+                            ? name.slice(0, 28).trim() + '...'
+                            : name}
+                    </Text>
                 </Box>
             </TouchableOpacity>
         </Box>
-    )
-}
+    );
+};
 
 const styles = createStyles({
     cardContainer: {
@@ -38,7 +43,7 @@ const styles = createStyles({
         shadowRadius: 2,
         backgroundColor: 'white',
         borderRadius: 'md',
-        width: '100%',
+        width: '100%'
     },
     cardSubContainer: {
         width: '100%',
@@ -47,7 +52,7 @@ const styles = createStyles({
         backgroundColor: 'white',
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 's',
+        gap: 's'
     }
 });
 

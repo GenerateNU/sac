@@ -1,7 +1,8 @@
-import { Skeleton } from "@rneui/base";
-import { createStyles } from "../../../theme";
-import { Box } from "../../Box/Box";
-import { Colors } from "../../../shared/colors";
+import { Skeleton } from '@rneui/base';
+
+import { Colors } from '../../../shared/colors';
+import { createStyles } from '../../../theme';
+import { Box } from '../../Box/Box';
 
 const ClubCardStandardSkeleton = () => {
     return (
@@ -13,7 +14,7 @@ const ClubCardStandardSkeleton = () => {
                     width={55}
                     skeletonStyle={{ backgroundColor: Colors.skeleton }}
                 />
-                <Skeleton 
+                <Skeleton
                     width="50%"
                     height={30}
                     skeletonStyle={{ backgroundColor: Colors.skeleton }}
@@ -21,7 +22,7 @@ const ClubCardStandardSkeleton = () => {
             </Box>
         </Box>
     );
-}
+};
 
 const styles = createStyles({
     cardContainer: {
@@ -30,7 +31,7 @@ const styles = createStyles({
         shadowOpacity: 0.1,
         shadowRadius: 2,
         backgroundColor: 'white',
-        borderRadius: 'md',
+        borderRadius: 'md'
     },
     cardSubContainer: {
         width: '100%',

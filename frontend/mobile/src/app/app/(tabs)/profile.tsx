@@ -6,7 +6,6 @@ import { router } from 'expo-router';
 
 import {
     IconDefinition,
-    faHeart,
     faSignOutAlt,
     faUser
 } from '@fortawesome/free-solid-svg-icons';

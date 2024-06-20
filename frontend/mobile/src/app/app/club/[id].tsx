@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { Dimensions, Linking } from 'react-native';
 import Animated, {
     interpolate,
@@ -10,6 +10,7 @@ import Animated, {
 import { Stack, useLocalSearchParams } from 'expo-router';
 
 import { faExternalLink } from '@fortawesome/free-solid-svg-icons';
+import { clubApi } from '@generatesac/lib';
 import BottomSheet from '@gorhom/bottom-sheet';
 
 import {
@@ -22,7 +23,7 @@ import {
 import { SACColors } from '@/src/app/design-system';
 import { Button } from '@/src/app/design-system/components/Button/Button';
 import useClub from '@/src/hooks/useClub';
-import { setClubId } from '@/src/store/slices/clubSlice';
+import { setUserFollowing } from '@/src/store/slices/userSlice';
 import { useAppDispatch, useAppSelector } from '@/src/store/store';
 
 import { AboutSection } from '../../design-system/components/AboutSection/AboutSection';
@@ -33,8 +34,6 @@ import { EventCardList } from '../../design-system/components/EventCard/EventCar
 import PageError from '../../design-system/components/PageError/PageError';
 import { Description } from '../event/components/description';
 import ClubPageSkeleton from './components/skeleton';
-import { clubApi } from '@generatesac/lib';
-import { setUserFollowing } from '@/src/store/slices/userSlice';
 
 const color: SACColors = 'darkRed';
 
@@ -49,30 +48,32 @@ const ClubPage = () => {
     const bottomSheet = useRef<BottomSheet>(null);
 
     const club = useAppSelector((state) => state.club);
-    const { id: user_id, following } = useAppSelector((state) => state.user)
+    const { id: user_id, following } = useAppSelector((state) => state.user);
     const dispatch = useAppDispatch();
     const { setRetriggerFetch, apiLoading, apiError } = useClub(id);
     const [followClub] = clubApi.useCreateClubFollowerMutation();
     const [unFollowClub] = clubApi.useDeleteClubFollowerMutation();
-    
+
     const clubFollowed = following.includes(id as string);
 
     const handleUserFollow = (follow: boolean) => {
         if (id) {
             if (follow) {
-                followClub({ club_id: id, user_id })
-                    .then(({ error }) => {
-                        if (!error) {
-                            dispatch(setUserFollowing([...following, id]));
-                        }
-                    })
+                followClub({ club_id: id, user_id }).then(({ error }) => {
+                    if (!error) {
+                        dispatch(setUserFollowing([...following, id]));
+                    }
+                });
             } else {
-                unFollowClub({ club_id: id, user_id })
-                    .then(({ error }) => {
-                        if (!error) {
-                            dispatch(setUserFollowing(following.filter(clubId => clubId !== id)));
-                        }
-                    })
+                unFollowClub({ club_id: id, user_id }).then(({ error }) => {
+                    if (!error) {
+                        dispatch(
+                            setUserFollowing(
+                                following.filter((clubId) => clubId !== id)
+                            )
+                        );
+                    }
+                });
             }
         }
     };
@@ -141,7 +142,9 @@ const ClubPage = () => {
                                         color={color}
                                         size="sm"
                                         variant="standardButton"
-                                        onPress={() => handleUserFollow(!clubFollowed)}
+                                        onPress={() =>
+                                            handleUserFollow(!clubFollowed)
+                                        }
                                     >
                                         {clubFollowed ? 'Unfollow' : 'Follow'}
                                     </Button>

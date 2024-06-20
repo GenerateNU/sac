@@ -4,7 +4,6 @@ import { Tabs } from 'expo-router';
 
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faCalendarDays } from '@fortawesome/free-solid-svg-icons/faCalendarDays';
-import { faHouse } from '@fortawesome/free-solid-svg-icons/faHouse';
 import { faUser } from '@fortawesome/free-solid-svg-icons/faUser';
 
 import { Text } from '@/src/app/design-system';

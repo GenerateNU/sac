@@ -3,7 +3,12 @@ import { Image } from 'react-native';
 
 import { router, useLocalSearchParams } from 'expo-router';
 
-import { Club, OAuthCallbackRequestQueryParams, authApi, userApi } from '@generatesac/lib';
+import {
+    Club,
+    OAuthCallbackRequestQueryParams,
+    authApi,
+    userApi
+} from '@generatesac/lib';
 
 import Loading from '@/src/assets/gif/loading.gif';
 import { setLoggedIn } from '@/src/store/slices/globalSlice';
@@ -20,8 +25,10 @@ const OAuthCallback = () => {
     const { accessToken } = useAppSelector((state) => state.global);
 
     const parseUserFollowing = (clubs: Club[]) => {
-        return clubs.filter((club) => club.name !== 'SAC').map((club) => club.id);
-    }
+        return clubs
+            .filter((club) => club.name !== 'SAC')
+            .map((club) => club.id);
+    };
 
     useEffect(() => {
         const { code, session_state, state } =
@@ -34,14 +41,16 @@ const OAuthCallback = () => {
                         dispatch(setUser(data));
 
                         // Retrieve their following:
-                        await getUserFollowing(data.id)
-                            .then(({ data: followingData }) => {
+                        await getUserFollowing(data.id).then(
+                            ({ data: followingData }) => {
                                 if (followingData) {
-                                    const following = parseUserFollowing(followingData);
+                                    const following =
+                                        parseUserFollowing(followingData);
                                     dispatch(setUserFollowing(following));
                                 }
-                            });
-                                                
+                            }
+                        );
+
                         // Set the user as logged in and redirect to the app:
                         dispatch(setLoggedIn(true));
                         router.push('/app/');
