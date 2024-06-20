@@ -13,7 +13,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 
 import { GlobalLayout } from '@/src/app/design-system/components/GlobalLayout/GlobalLayout';
-import { resetAccessToken } from '@/src/store/slices/userSlice';
+import { resetAccessToken } from '@/src/store/slices/globalSlice';
 import { useAppDispatch, useAppSelector } from '@/src/store/store';
 
 import { Box, Colors, SACColors, Spacing, Text } from '../../design-system';

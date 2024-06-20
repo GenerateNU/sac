@@ -1,19 +1,28 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-export const LOCAL_API_BASE_URL = "http://localhost:3000/api/v1";
+export const LOCAL_API_BASE_URL = "http://127.0.0.1:8080/api/v1";
 export const PROD_API_BASE_URL = "https://studentactivitycalendar.xyz/api/v1";
+
+type GlobalState = {
+  platform: "web" | "mobile";
+  loggedIn: boolean;
+  accessToken?: string;
+};
 
 // BaseAPI for the entire application:
 export const baseApi = createApi({
   baseQuery: fetchBaseQuery({
-    baseUrl: PROD_API_BASE_URL,
+    baseUrl: LOCAL_API_BASE_URL,
     credentials: "include",
     prepareHeaders: async (headers, { getState }) => {
       // User slice existing must exist in all dependent apps:
-      const token = (getState() as { user: { accessToken: string } })?.user?.accessToken;
-      if (token) {
-        headers.set("_sac_session", token);
+      const globalState = (getState() as { global: GlobalState })?.global;
+      if (globalState.accessToken) {
+        // Pass the authentication header:
+        headers.set("_sac_session", globalState.accessToken);
       }
+      // Set the platform header:
+      headers.set("Platform", globalState.platform);
       return headers;
     },
   }),

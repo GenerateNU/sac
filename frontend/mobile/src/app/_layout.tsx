@@ -20,7 +20,7 @@ export { ErrorBoundary } from 'expo-router';
 SplashScreen.preventAutoHideAsync();
 
 const InitalLayout = () => {
-    const { accessToken, loggedIn } = useAppSelector((state) => state.user);
+    const { accessToken, loggedIn } = useAppSelector((state) => state.global);
     const {
         eventPreviewRef,
         eventId,

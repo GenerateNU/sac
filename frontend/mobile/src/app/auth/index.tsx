@@ -4,7 +4,7 @@ import { Image, Linking, SafeAreaView } from 'react-native';
 import { authApi } from '@generatesac/lib';
 
 import Loading from '@/src/assets/gif/loading.gif';
-import { setAccessToken } from '@/src/store/slices/userSlice';
+import { setAccessToken } from '@/src/store/slices/globalSlice';
 import { useAppDispatch } from '@/src/store/store';
 
 import { Box, Button, Text } from '../design-system';

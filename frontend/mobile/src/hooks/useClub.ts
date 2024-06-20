@@ -25,7 +25,6 @@ const useClub = () => {
         if (clubId !== '') {
             getClub(clubId).then(({ data: clubData }) => {
                 if (clubData) {
-                    console.log(clubData);
                     dispatch(setClub(clubData));
                 }
             });
@@ -50,7 +49,6 @@ const useClub = () => {
                             new Date(event.end_time).getTime() >
                             new Date().getTime()
                     );
-                    console.log('events', events);
                     dispatch(setClubEvents(events));
                 }
             });
