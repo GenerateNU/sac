@@ -96,6 +96,7 @@ func startBackgroundJobs(ctx context.Context, db *gorm.DB, settings *config.Sett
 	jobs := jobs.New(db, settings)
 	background.Go(jobs.WelcomeSender(ctx))
 	background.Go(jobs.ClubEmbeddings(ctx))
+	background.Go(jobs.EventEmbeddings(ctx))
 }
 
 func configureIntegrations(config *config.Integrations) *integrations.Integrations {

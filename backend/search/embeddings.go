@@ -13,6 +13,7 @@ import (
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type CreateEmbeddingRequestBody struct {
@@ -41,7 +42,10 @@ func UpsertClubEmbedding(db *gorm.DB, s *config.SearchSettings, club *models.Clu
 	queryString := fmt.Sprintf(
 		"UPDATE clubs SET embedding = '[%s]' WHERE id = '%s'", embeddingStr, club.ID.String())
 
-	if err := db.Exec(queryString).Error; err != nil {
+	// Keep stdout/logs clean, don't output 512 floats
+	session := db.Session(&gorm.Session{Logger: logger.Default.LogMode(logger.Error)})
+
+	if err := session.Exec(queryString).Error; err != nil {
 		return err
 	}
 
@@ -60,7 +64,10 @@ func UpsertEventEmbedding(db *gorm.DB, s *config.SearchSettings, event *models.E
 	queryString := fmt.Sprintf(
 		"UPDATE events SET embedding = '[%s]' WHERE id = '%s'", embeddingStr, event.ID.String())
 
-	if err := db.Exec(queryString).Error; err != nil {
+	// Keep stdout/logs clean, don't output 512 floats
+	session := db.Session(&gorm.Session{Logger: logger.Default.LogMode(logger.Error)})
+
+	if err := session.Exec(queryString).Error; err != nil {
 		return err
 	}
 
