@@ -1,9 +1,9 @@
-import { User } from '@generatesac/lib';
+import { EventPreview, User } from '@generatesac/lib';
 import { createSlice } from '@reduxjs/toolkit';
 
 type UserState = {
     following: string[];
-    rsvps: string[];
+    rsvps: EventPreview[];
 };
 
 const initialState: User & UserState = {

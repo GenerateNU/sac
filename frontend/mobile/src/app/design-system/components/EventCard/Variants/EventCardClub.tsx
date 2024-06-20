@@ -36,7 +36,7 @@ export const EventCardClub: React.FC<EventCardClubProps> = ({
     return (
         <Box>
             <TouchableOpacity
-                onPress={() => router.navigate(`/event/${eventId}`)}
+                onPress={() => router.navigate(`app/event/${eventId}`)}
             >
                 <Box {...styles.cardContainer}>
                     <Box {...styles.cardSubContainer}>

@@ -23,6 +23,12 @@ const Layout = () => {
                     headerShown: false
                 }}
             />
+            <Stack.Screen
+                name="events"
+                options={{
+                    headerShown: false
+                }}
+            />
         </Stack>
     );
 };

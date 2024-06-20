@@ -6,13 +6,17 @@ import { router } from 'expo-router';
 
 import {
     IconDefinition,
+    faCalendar,
     faSignOutAlt,
     faUser
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 
 import { GlobalLayout } from '@/src/app/design-system/components/GlobalLayout/GlobalLayout';
+import { resetClub } from '@/src/store/slices/clubSlice';
+import { resetEvent } from '@/src/store/slices/eventSlice';
 import { resetAccessToken } from '@/src/store/slices/globalSlice';
+import { resetUser } from '@/src/store/slices/userSlice';
 import { useAppDispatch, useAppSelector } from '@/src/store/store';
 
 import { Box, Colors, SACColors, Spacing, Text } from '../../design-system';
@@ -76,6 +80,11 @@ const ProfilePage = () => {
                         onPress={() => router.push('/app/user/following/')}
                         text="Following"
                     />
+                    <ProfileItem
+                        icon={faCalendar}
+                        onPress={() => router.push('/app/user/events/')}
+                        text="Upcoming Events"
+                    />
                     <Box
                         width="100%"
                         height={1}
@@ -88,6 +97,9 @@ const ProfilePage = () => {
                         textColor="darkRed"
                         onPress={() => {
                             dispatch(resetAccessToken());
+                            dispatch(resetEvent());
+                            dispatch(resetUser());
+                            dispatch(resetClub());
                         }}
                     />
                 </Box>

@@ -66,6 +66,11 @@ const eventPreviewSchemaIntermediate = z.object({
   host_logo: z.string().max(255).optional(),
 });
 
+const eventUserParams = z.object({
+  event_id: z.string().uuid(),
+  user_id: z.string().uuid(),
+})
+
 export const eventSchema = eventSchemaIntermediate.merge(rootModelSchema);
 export const eventPreviewSchema = eventPreviewSchemaIntermediate
 
@@ -79,3 +84,4 @@ export type UpdateEventRequestBody = z.infer<
 export type Event = z.infer<typeof eventSchema>;
 export type EventPreview = z.infer<typeof eventPreviewSchema>;
 export type EventType = z.infer<typeof eventTypeEnum>;
+export type EventUserParams = z.infer<typeof eventUserParams>;
