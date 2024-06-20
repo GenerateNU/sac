@@ -8,10 +8,10 @@ import { userApi } from '@generatesac/lib';
 import { useAppSelector } from '@/src/store/store';
 
 import { Arrow, Box, Button, Text } from '../../design-system';
-import { Clubcard } from '../../design-system/components/ClubCard/ClubCard';
 import ClubCardStandardSkeleton from '../../design-system/components/ClubCard/Skeletons/ClubCardStandardSkeleton';
 import { GlobalLayout } from '../../design-system/components/GlobalLayout/GlobalLayout';
 import PageError from '../../design-system/components/PageError/PageError';
+import { Clubcard } from '../../design-system/components/ClubCard/ClubCard';
 
 const Following = () => {
     const { id, following } = useAppSelector((state) => state.user);
