@@ -74,7 +74,7 @@ func Init(db *gorm.DB, stores *store.Stores, integrations integrations.Integrati
 		types.NewServiceParams(
 			db,
 			validate,
-			&settings.Calendar,
+			&settings,
 			stores,
 			integrations,
 		),

@@ -1,9 +1,12 @@
 package base
 
 import (
+	"log/slog"
+
 	"github.com/GenerateNU/sac/backend/entities/clubs"
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/errs"
+	"github.com/GenerateNU/sac/backend/search"
 	"github.com/GenerateNU/sac/backend/types"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/garrettladley/fiberpaginate"
@@ -40,7 +43,20 @@ func (c *ClubService) CreateClub(userID uuid.UUID, clubBody CreateClubRequestBod
 		return nil, err
 	}
 
-	return CreateClub(c.DB, userID, *club)
+	result, err := CreateClub(c.DB, userID, *club)
+	if err != nil {
+		return nil, err
+	}
+
+	go func() {
+		err := search.UpsertClubEmbedding(c.DB, c.Search, result)
+
+		if err != nil {
+			slog.Error("Upsert club embedding failed")
+		}
+	}()
+
+	return result, err
 }
 
 func (c *ClubService) GetClub(id string) (*models.Club, error) {
@@ -70,6 +86,19 @@ func (c *ClubService) UpdateClub(id string, clubBody UpdateClubRequestBody) (*mo
 	if err != nil {
 		return nil, err
 	}
+
+	result, err := UpdateClub(c.DB, *idAsUUID, *club)
+	if err != nil {
+		return nil, err
+	}
+
+	go func() {
+		err := search.UpsertClubEmbedding(c.DB, c.Search, result)
+
+		if err != nil {
+			slog.Error("Upsert club embedding failed")
+		}
+	}()
 
 	return UpdateClub(c.DB, *idAsUUID, *club)
 }

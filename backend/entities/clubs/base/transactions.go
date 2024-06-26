@@ -3,14 +3,12 @@ package base
 import (
 	"errors"
 
-	"github.com/GenerateNU/sac/backend/constants"
 	"github.com/GenerateNU/sac/backend/database/cache"
 	"github.com/GenerateNU/sac/backend/utilities"
 	"github.com/garrettladley/fiberpaginate"
 
 	"github.com/GenerateNU/sac/backend/entities/models"
 	"github.com/GenerateNU/sac/backend/entities/users"
-	search "github.com/GenerateNU/sac/backend/search/base"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -61,10 +59,6 @@ func CreateClub(db *gorm.DB, userId uuid.UUID, club models.Club) (*models.Club, 
 		return nil, err
 	}
 
-	if err := search.Upsert[models.Club](db, constants.CLUBS_INDEX, club.ID.String(), &club); err != nil {
-		return nil, err
-	}
-
 	return &club, nil
 }
 
@@ -107,11 +101,6 @@ func UpdateClub(db *gorm.DB, id uuid.UUID, club models.Club) (*models.Club, erro
 		return nil, err
 	}
 
-	err = search.Upsert[models.Club](db, constants.CLUBS_INDEX, club.ID.String(), &club)
-	if err != nil {
-		return nil, err
-	}
-
 	return &existingClub, tx.Commit().Error
 }
 
@@ -139,11 +128,6 @@ func DeleteClub(db *gorm.DB, id uuid.UUID) error {
 			return utilities.ErrNotFound
 		}
 		return result.Error
-	}
-
-	err = search.Delete(db, constants.CLUBS_INDEX, id.String())
-	if err != nil {
-		return err
 	}
 
 	return tx.Commit().Error

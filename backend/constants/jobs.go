@@ -7,4 +7,6 @@ const (
 	DELETE_EXPIRED_VERIFICATION_LIMIT    int           = 100
 	EMAIL_SENDER_INTERVAL                time.Duration = 5 * time.Second
 	MAX_EMAIL_ATTEMPTS                   int           = 3
+
+	EMBEDDINGS_GENERATION_INTERVAL time.Duration = 1 * time.Second
 )

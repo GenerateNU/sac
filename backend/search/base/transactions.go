@@ -2,112 +2,134 @@ package base
 
 import (
 	"fmt"
-	"io"
-	"log/slog"
-	"net/http"
+	"strings"
+	"time"
 
-	json "github.com/goccy/go-json"
-
-	"github.com/GenerateNU/sac/backend/constants"
-	"github.com/GenerateNU/sac/backend/database/cache"
+	"github.com/GenerateNU/sac/backend/config"
+	"github.com/GenerateNU/sac/backend/entities/models"
+	"github.com/GenerateNU/sac/backend/search"
 	"github.com/GenerateNU/sac/backend/search/types"
-	"github.com/GenerateNU/sac/backend/utilities"
 	"gorm.io/gorm"
 )
 
-// Do a GET request to the OpenSearch instance.
-func doSearchGetRequest[T, V any](url string, requestBody T) (*V, error) {
-	payload, err := json.Marshal(requestBody)
-	if err != nil {
-		return nil, err
+// Use this over strings.join so elements can be single quoted if necessary.
+func joinQuoted(elems []string, separator string) string {
+	elemsQuoted := make([]string, len(elems))
+
+	for i, elem := range elems {
+		elemsQuoted[i] = fmt.Sprintf("'%s'", elem)
 	}
 
-	resp, err := utilities.Request(http.MethodGet, fmt.Sprintf("%s%s", constants.SEARCH_URI, url), payload, utilities.JSON())
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	responseBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	var responseData V
-	err = json.Unmarshal(responseBody, &responseData)
-	if err != nil {
-		return nil, err
-	}
-
-	return &responseData, nil
+	return strings.Join(elemsQuoted, separator)
 }
 
-func Search[T types.Searchable](db *gorm.DB, query types.SearchRequest) (*types.SearchResult[T], error) {
-	result, err := doSearchGetRequest[types.SearchEndpointRequest, types.SearchEndpointResponse](fmt.Sprintf("/%s/_search", query.Index()), query.ToSearchEndpointRequest())
-	if err != nil {
+func SearchClubs(db *gorm.DB, s *config.SearchSettings, query *types.ClubSearchRequest) (*types.SearchResult[models.Club], error) {
+	var clubs []models.Club
+
+	dbQuery := db.Model(&clubs)
+
+	finalQuery := clubKeywordSearchSQL(query)
+
+	if err := dbQuery.Raw(finalQuery).Scan(&clubs).Error; err != nil {
 		return nil, err
 	}
 
-	ids := make([]string, len(result.Hits.Hits))
-	for i, result := range result.Hits.Hits {
-		ids[i] = result.Id
-	}
-
-	db = cache.SetUseCache(db, true)
-
-	var results []T
-	if err = query.Preload(db).Where("id IN ?", ids).Find(&results).Error; err != nil {
-		return nil, err
-	}
-
-	return &types.SearchResult[T]{
-		Results: results,
+	// return results
+	return &types.SearchResult[models.Club]{
+		Results: clubs,
 	}, nil
 }
 
-func Upsert[T types.Searchable](db *gorm.DB, index string, uuid string, model types.ToSearchDocument) error {
-	var elem T
+func clubKeywordSearchSQL(query *types.ClubSearchRequest) string {
+	var whereClauses []string
+	rankClause := ""
+	innerJoin := ""
 
-	query := cache.SetUseCache(db, true).Model(&elem)
+	if query.Search != "" {
+		whereClauses =
+			append(whereClauses,
+				fmt.Sprintf("clubsearch_index_col @@ plainto_tsquery('%s')", query.Search))
 
-	query = elem.Preload(query)
-
-	if err := query.Where("id = ?", uuid).Find(&elem).Error; err != nil {
-		return err
+		rankClause = fmt.Sprintf(", RANK () OVER (ORDER BY ts_rank_cd(clubsearch_index_col, plainto_tsquery('%s')) DESC)", query.Search)
 	}
 
-	doc := model.ToSearchDocument()
-	requestBody := types.Json{
-		"doc":           doc,
-		"doc_as_upsert": true,
-	}
-	payload, err := json.Marshal(requestBody)
-	if err != nil {
-		return err
+	if query.MaxMembers != 0 {
+		whereClauses =
+			append(whereClauses,
+				fmt.Sprintf("num_members <= %d", query.MaxMembers))
 	}
 
-	resp, err := utilities.Request(http.MethodPost, fmt.Sprintf("%s/%s/_update/%s", constants.SEARCH_URI, index, uuid), payload, utilities.JSON())
-	if err != nil {
-		return err
+	if query.MinMembers != 0 {
+		whereClauses =
+			append(whereClauses,
+				fmt.Sprintf("num_members >= %d", query.MinMembers))
 	}
-	defer resp.Body.Close()
 
-	return nil
+	if len(query.Tags) != 0 {
+		innerJoin = "INNER JOIN club_tags ON clubs.id = club_tags.club_id"
+		whereClauses = append(whereClauses,
+			fmt.Sprintf("club_tags.tag_id IN (%s)", joinQuoted(query.Tags, ",")))
+	}
+
+	return fmt.Sprintf("SELECT *%s FROM clubs %s WHERE %s", rankClause, innerJoin, strings.Join(whereClauses, " AND "))
 }
 
-func Delete(db *gorm.DB, index string, uuid string) error {
-	resp, err := utilities.Request(http.MethodDelete, fmt.Sprintf("%s/%s/_doc/%s", constants.SEARCH_URI, index, uuid), nil, utilities.JSON())
-	if err != nil {
-		return err
+//lint:ignore U1000 Ignore unused function temporarily for debugging
+func clubSemanticSearchSQL(embedding []float32) string {
+	embeddingStr := search.FloatArrayToSql(embedding)
+
+	return fmt.Sprintf("SELECT id, RANK () OVER (ORDER BY embedding <=> '[%s]') AS rank FROM clubs ORDER BY embedding <=> '[%s]' LIMIT 20", embeddingStr, embeddingStr)
+}
+
+func SearchEvents(db *gorm.DB, query *types.EventSearchRequest) (*types.SearchResult[models.Event], error) {
+	var events []models.Event
+
+	dbQuery := db.Model(&events)
+
+	var whereClauses []string
+	var innerJoins []string
+
+	if query.Search != "" {
+		whereClauses =
+			append(whereClauses,
+				fmt.Sprintf("eventsearch_index_col @@ plainto_tsquery('%s')", query.Search))
 	}
-	defer resp.Body.Close()
 
-	responseBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return err
+	if !query.StartTime.IsZero() {
+		whereClauses =
+			append(whereClauses,
+				fmt.Sprintf("start_time >= %s", query.StartTime.Format(time.DateTime)))
 	}
 
-	slog.Info("delete successful", "response", string(responseBody), "index", index, "uuid", uuid)
+	if !query.EndTime.IsZero() {
+		whereClauses =
+			append(whereClauses,
+				fmt.Sprintf("end_time <= %s", query.EndTime.Format(time.DateTime)))
+	}
 
-	return nil
+	if len(query.Tags) != 0 {
+		innerJoins = append(innerJoins, "INNER JOIN event_tags ON events.id = event_tags.event_id")
+		whereClauses = append(whereClauses,
+			fmt.Sprintf("event_tags.tag_id IN (%s)", joinQuoted(query.Tags, ",")))
+	}
+
+	if len(query.Clubs) != 0 {
+		innerJoins = append(innerJoins, "INNER JOIN club_events ON events.id = club_events.event_id")
+		whereClauses = append(whereClauses,
+			fmt.Sprintf("club_events.club_id IN (%s)", joinQuoted(query.Clubs, ",")))
+	}
+
+	finalQuery := fmt.Sprintf(
+		"SELECT * FROM events %s WHERE %s LIMIT 20",
+		strings.Join(innerJoins, " "),
+		strings.Join(whereClauses, " AND "))
+
+	if err := dbQuery.Raw(finalQuery).Scan(&events).Error; err != nil {
+		return nil, err
+	}
+
+	// return results
+	return &types.SearchResult[models.Event]{
+		Results: events,
+	}, nil
 }
