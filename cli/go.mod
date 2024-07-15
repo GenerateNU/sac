@@ -5,7 +5,7 @@ go 1.22.2
 require (
 	github.com/GenerateNU/sac/backend v0.0.0-20240427140745-74eb4ec0f597
 	github.com/lib/pq v1.10.9
-	github.com/spf13/cobra v1.8.0
+	github.com/spf13/cobra v1.8.1
 )
 
 require (
